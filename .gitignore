@@ -1,41 +1,21 @@
-# 相依套件
-/vendor/
-/node_modules/
-
-# IDE 和編輯器檔案
-.idea/
-.vscode/
-*.sublime-project
-*.sublime-workspace
-
-# 作業系統檔案
-.DS_Store
-Thumbs.db
-
-# 環境設定
+/vendor
+/node_modules
+/public/storage
+/storage/*.key
+/storage/app/public/*
+/storage/app/private/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
 .env
 .env.*
 !.env.example
-
-# 暫存檔案
 *.log
-*.cache
 .phpunit.result.cache
-
-# 編譯檔案
-*.pyc
-*.pyo
-*.pyd
-__pycache__/
-
-# 測試覆蓋率報告
-/coverage/
-.coverage
-coverage.xml
-*.cover
-
-# 快取目錄
-/storage/framework/
-/storage/logs/
-/storage/app/
-/storage/
+.phpunit.cache
+coverage/
+.idea/
+.vscode/
+*.sqlite
+*.sqlite-journal
