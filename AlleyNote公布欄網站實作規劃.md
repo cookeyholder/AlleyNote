@@ -1,2201 +1,1445 @@
 # AlleyNote 公布欄網站實作規劃
 
-## 0. 測試驅動開發 (TDD) 方法論
+## 0. 測試驅動開發方法論
 
-本專案採用測試驅動開發(TDD)方法論，遵循「紅燈-綠燈-重構」的開發循環：
+### 0.1 測試架構設計
 
-### 0.1 TDD 開發循環
+在三層式架構中，每一層都有其對應的測試類型：
 
-1. **紅燈階段**
-   - 撰寫失敗的測試案例
-   - 定義待實作功能的預期行為
-   - 確認測試確實失敗
-
-2. **綠燈階段**
-   - 撰寫最小可行的實作程式碼
-   - 讓測試案例通過
-   - 不考慮程式碼品質，專注於功能正確性
-
-3. **重構階段**
-   - 改善程式碼品質
-   - 消除重複程式碼
-   - 確保測試持續通過
-
-### 0.2 測試層級規劃
-
-1. **單元測試 (Unit Tests)**
-   - 類別方法測試
-   - 服務函式測試
-   - 資料模型測試
-   - 工具函式測試
-
-2. **整合測試 (Integration Tests)**
-   - API 端點測試
-   - 資料庫操作測試
-   - 服務層整合測試
-   - 外部服務整合測試
-
-3. **端對端測試 (E2E Tests)**
-   - 使用者流程測試
-   - 系統功能測試
-   - 效能測試
-
-### 0.3 TDD 實作準則
-
-1. **測試案例設計原則**
-   - 一個測試只測試一個行為
-   - 測試案例具有描述性的名稱
-   - 遵循 Arrange-Act-Assert 模式
-   - 避免測試間的相依性
-
-2. **程式碼品質準則**
-   - 相依性注入原則 (DI)
-   - 介面隔離原則 (ISP)
-   - 單一職責原則 (SRP)
-   - 開放封閉原則 (OCP)
-
-### 0.4 測試工具與框架設定
-
-#### 1. PHPUnit 配置
-```yaml
-# phpunit.xml
-<phpunit
-    bootstrap="vendor/autoload.php"
-    colors="true"
-    testdox="true"
-    stopOnFailure="false">
-    <testsuites>
-        <testsuite name="Unit">
-            <directory>tests/Unit</directory>
-        </testsuite>
-        <testsuite name="Integration">
-            <directory>tests/Integration</directory>
-        </testsuite>
-        <testsuite name="E2E">
-            <directory>tests/E2E</directory>
-        </testsuite>
-    </testsuites>
-    <coverage>
-        <include>
-            <directory suffix=".php">app</directory>
-        </include>
-        <report>
-            <html outputDirectory="tests/coverage"/>
-            <clover outputFile="tests/coverage.xml"/>
-        </report>
-    </coverage>
-</phpunit>
-```
-
-#### 2. 測試資料庫配置
-```php
-// config/database.php
-'testing' => [
-    'driver' => 'sqlite',
-    'database' => ':memory:',
-    'prefix' => '',
-],
-```
-
-#### 3. 測試輔助工具
-
-1. **測試資料產生器**
-   - Faker 資料產生器設定
+1. **資料存取層測試**
    ```php
-   use Faker\Factory as Faker;
+   namespace Tests\Unit\Repositories;
    
-   $faker = Faker::create('zh_TW');
-   $faker->addProvider(new CustomDataProvider($faker));
+   class PostRepositoryTest extends TestCase
+   {
+       private PDO $db;
+       private PostRepository $repository;
+       
+       protected function setUp(): void
+       {
+           parent::setUp();
+           $this->db = new PDO('sqlite::memory:');
+           $this->repository = new PostRepository($this->db);
+       }
+       
+       /** @test */
+       public function shouldCreateNewPost(): void
+       {
+           // 安排
+           $data = [
+               'title' => '測試文章',
+               'content' => '測試內容'
+           ];
+           
+           // 執行
+           $post = $this->repository->create($data);
+           
+           // 驗證
+           $this->assertNotNull($post['id']);
+           $this->assertEquals('測試文章', $post['title']);
+       }
+   }
    ```
 
-2. **測試替身（Test Doubles）設定**
+2. **業務邏輯層測試**
    ```php
-   // 模擬外部服務
-   $mock = $this->createMock(ExternalService::class);
-   $mock->method('callApi')
-        ->willReturn(['status' => 'success']);
+   namespace Tests\Unit\Services;
    
-   // 模擬資料庫
-   $stub = $this->createStub(Repository::class);
-   $stub->method('find')
-        ->willReturn(new User(['name' => 'Test User']));
+   class PostServiceTest extends TestCase
+   {
+       private PostRepository $repository;
+       private PostService $service;
+       
+       protected function setUp(): void
+       {
+           parent::setUp();
+           $this->repository = $this->createMock(PostRepository::class);
+           $this->service = new PostService($this->repository);
+       }
+       
+       /** @test */
+       public function shouldValidatePostData(): void
+       {
+           // 安排
+           $invalidData = [
+               'title' => '', // 空標題應該被拒絕
+               'content' => '內容'
+           ];
+           
+           // 驗證
+           $this->expectException(ValidationException::class);
+           
+           // 執行
+           $this->service->createPost($invalidData);
+       }
+   }
    ```
 
-### 0.5 測試案例範本
+3. **表現層測試**
+   ```php
+   namespace Tests\Integration;
+   
+   class PostControllerTest extends TestCase
+   {
+       private PostService $service;
+       
+       protected function setUp(): void
+       {
+           parent::setUp();
+           $this->service = $this->app->make(PostService::class);
+       }
+       
+       /** @test */
+       public function shouldReturnCreatedPost(): void
+       {
+           // 安排
+           $data = [
+               'title' => '測試文章',
+               'content' => '測試內容'
+           ];
+           
+           // 執行
+           $response = $this->postJson('/api/posts', $data);
+           
+           // 驗證
+           $response->assertStatus(201)
+                   ->assertJsonStructure([
+                       'data' => ['id', 'title', 'content']
+                   ]);
+       }
+   }
+   ```
 
-#### 1. 單元測試範本
+### 0.2 TDD 開發流程
+
+在三層式架構中，每個功能的開發都遵循由內而外的測試驅動開發流程：
+
+1. **資料存取層 TDD**
+   - 撰寫 Repository 測試
+   - 實作最小可行的資料存取功能
+   - 重構並確保測試通過
+
+2. **業務邏輯層 TDD**
+   - 撰寫 Service 測試（使用 Repository Mock）
+   - 實作業務規則和驗證邏輯
+   - 重構並確保測試通過
+
+3. **表現層 TDD**
+   - 撰寫 Controller 測試
+   - 實作路由和請求處理
+   - 重構並確保測試通過
+
+### 0.3 測試替身使用原則
+
+1. **資料存取層**
+   - 使用 SQLite 記憶體資料庫進行測試
+   - 每個測試後清理資料
+   - 使用交易確保測試資料隔離
+
+2. **業務邏輯層**
+   - 使用 Mock Repository 模擬資料存取
+   - 使用 Stub 回傳預設資料
+   - 使用 Spy 驗證方法呼叫
+
+3. **表現層**
+   - 使用整合測試驗證完整流程
+   - 模擬 HTTP 請求和回應
+   - 驗證 JSON 結構和狀態碼
+
+### 0.4 測試資料管理
+
+1. **測試資料工廠**
+   ```php
+   namespace Tests\Factories;
+   
+   class PostFactory
+   {
+       public static function make(array $overrides = []): array
+       {
+           return array_merge([
+               'title' => '預設測試標題',
+               'content' => '預設測試內容',
+               'user_id' => 1
+           ], $overrides);
+       }
+   }
+   ```
+
+2. **測試資料庫遷移**
+   ```php
+   namespace Tests\Database;
+   
+   class TestMigration
+   {
+       public function up(PDO $db): void
+       {
+           $db->exec("
+               CREATE TABLE posts (
+                   id INTEGER PRIMARY KEY AUTOINCREMENT,
+                   title TEXT NOT NULL,
+                   content TEXT NOT NULL,
+                   user_id INTEGER NOT NULL,
+                   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+               )
+           ");
+       }
+   }
+   ```
+
+### 0.5 測試驗證規則
+
+1. **Repository 測試規則**
+   - 必須測試所有 CRUD 操作
+   - 必須測試異常情況（如：記錄不存在）
+   - 必須驗證資料完整性
+
+2. **Service 測試規則**
+   - 必須測試所有業務規則
+   - 必須測試所有驗證規則
+   - 必須測試異常處理
+   - 必須驗證資料轉換邏輯
+
+3. **Controller 測試規則**
+   - 必須測試所有 HTTP 方法
+   - 必須測試授權規則
+   - 必須測試請求驗證
+   - 必須測試回應格式
+
+### 0.6 測試覆蓋率要求
+
+1. **最低覆蓋率要求**
+   - Repository 層：90%
+   - Service 層：85%
+   - Controller 層：80%
+
+2. **關鍵路徑測試**
+   - 使用者認證流程：100%
+   - 資料驗證邏輯：100%
+   - 權限檢查邏輯：100%
+
+3. **效能測試基準**
+   - 單元測試執行時間 < 100ms
+   - 整合測試執行時間 < 500ms
+
+## 1. 系統架構
+
+### 1.1 三層式架構
+
+系統採用簡單的三層式架構，確保邏輯和資料的分離：
+
+1. **資料存取層 (Data Access Layer)**
+   ```php
+   namespace App\Repositories;
+   
+   class PostRepository
+   {
+       private PDO $db;
+       
+       public function __construct(PDO $db)
+       {
+           $this->db = $db;
+       }
+       
+       // 純資料庫操作，不包含業務邏輯
+       public function find(string $uuid): ?array
+       {
+           $stmt = $this->db->prepare('SELECT * FROM posts WHERE uuid = ?');
+           $stmt->execute([$uuid]);
+           return $stmt->fetch(PDO::FETCH_ASSOC);
+       }
+   }
+   ```
+
+2. **業務邏輯層 (Business Layer)**
+   ```php
+   namespace App\Services;
+   
+   class PostService
+   {
+       private PostRepository $repository;
+       
+       public function __construct(PostRepository $repository)
+       {
+           $this->repository = $repository;
+       }
+       
+       // 包含業務規則和邏輯
+       public function createPost(array $data): array
+       {
+           // 驗證資料
+           $this->validatePost($data);
+           
+           // 處理業務邏輯
+           $data['uuid'] = $this->generateUuid();
+           $data['created_at'] = date('Y-m-d H:i:s');
+           
+           // 儲存資料
+           return $this->repository->create($data);
+       }
+   }
+   ```
+
+3. **表現層 (Presentation Layer)**
+   ```php
+   namespace App\Controllers;
+   
+   class PostController
+   {
+       private PostService $service;
+       
+       public function __construct(PostService $service)
+       {
+           $this->service = $service;
+       }
+       
+       // 處理 HTTP 請求和回應
+       public function create(): Response
+       {
+           $data = $this->validateRequest();
+           $post = $this->service->createPost($data);
+           return new JsonResponse($post);
+       }
+   }
+   ```
+
+### 1.2 檔案儲存分離
+
+1. **檔案儲存結構**
+   ```
+   /var/www/alleynote/
+   ├── public/           # 網站公開檔案
+   ├── storage/          # 資料儲存目錄
+   │   ├── app/         # 應用程式檔案
+   │   ├── files/       # 上傳檔案
+   │   └── backups/     # 備份檔案
+   └── database/        # 資料庫檔案
+       └── alleynote.db # SQLite 資料庫
+   ```
+
+2. **檔案處理服務**
+   ```php
+   namespace App\Services;
+   
+   class FileService
+   {
+       private string $storagePath;
+       
+       public function __construct(string $storagePath)
+       {
+           $this->storagePath = $storagePath;
+       }
+       
+       // 處理檔案上傳
+       public function storeFile(UploadedFile $file): string
+       {
+           $filename = $this->generateUniqueFilename($file);
+           $file->move($this->storagePath, $filename);
+           return $filename;
+       }
+   }
+   ```
+
+### 1.3 備份機制
+
+1. **資料庫備份**
+   ```bash
+   #!/bin/bash
+   # backup_db.sh
+   
+   BACKUP_DIR="/var/www/alleynote/storage/backups/database"
+   DATE=$(date +%Y%m%d_%H%M%S)
+   
+   # 建立備份
+   sqlite3 /var/www/alleynote/database/alleynote.db ".backup '$BACKUP_DIR/db_$DATE.sqlite'"
+   
+   # 壓縮備份
+   gzip "$BACKUP_DIR/db_$DATE.sqlite"
+   
+   # 保留最近 30 天的備份
+   find $BACKUP_DIR -name "db_*.sqlite.gz" -mtime +30 -delete
+   ```
+
+2. **檔案備份**
+   ```bash
+   #!/bin/bash
+   # backup_files.sh
+   
+   BACKUP_DIR="/var/www/alleynote/storage/backups/files"
+   DATE=$(date +%Y%m%d_%H%M%S)
+   
+   # 建立備份
+   tar -czf "$BACKUP_DIR/files_$DATE.tar.gz" /var/www/alleynote/storage/files
+   
+   # 保留最近 30 天的備份
+   find $BACKUP_DIR -name "files_*.tar.gz" -mtime +30 -delete
+   ```
+
+### 1.4 定期工作排程
+
+```crontab
+# 資料庫每日備份
+0 1 * * * /var/www/alleynote/scripts/backup_db.sh
+
+# 檔案每週備份
+0 2 * * 0 /var/www/alleynote/scripts/backup_files.sh
+```
+
+## 2. 詳細實作規範
+
+### 2.1 資料存取規範
+
+1. **Repository 模式**
+   - 所有資料庫操作都必須通過 Repository 類別
+   - Repository 只負責資料存取，不包含業務邏輯
+   - 使用參數化查詢防止 SQL 注入
+
+2. **資料驗證**
+   - 在業務邏輯層進行資料驗證
+   - 使用驗證器模式集中處理驗證規則
+   - 回傳明確的錯誤訊息
+
+### 2.2 業務邏輯規範
+
+1. **Service 模式**
+   - 業務邏輯集中在 Service 類別中
+   - Service 通過建構子注入相依物件
+   - 保持方法單一職責
+
+2. **交易處理**
+   - 在 Service 層處理資料庫交易
+   - 確保資料一致性
+   - 錯誤發生時自動回滾
+
+### 2.3 檔案處理規範
+
+1. **檔案上傳**
+   - 驗證檔案類型和大小
+   - 產生唯一檔名
+   - 使用串流處理大型檔案
+
+2. **檔案儲存**
+   - 依照日期建立目錄結構
+   - 使用相對路徑儲存檔案資訊
+   - 定期清理暫存檔案
+
+### 2.4 資料存取層詳細實作規範
+
+#### 2.4.1 資料庫連線管理
+
+##### 資料庫連線器設計
 ```php
-namespace Tests\Unit;
+namespace App\Database;
 
-use Tests\TestCase;
-use App\Services\PostService;
-use App\Models\Post;
-
-class PostServiceTest extends TestCase
+class DatabaseConnection
 {
-    private PostService $service;
+    private static ?PDO $instance = null;
+    private static array $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false
+    ];
+
+    public static function getInstance(): PDO
+    {
+        if (self::$instance === null) {
+            $dsn = sprintf(
+                'sqlite:%s/database/alleynote.db',
+                getenv('APP_ROOT')
+            );
+            self::$instance = new PDO($dsn, null, null, self::$options);
+        }
+        return self::$instance;
+    }
+
+    public static function beginTransaction(): void
+    {
+        self::getInstance()->beginTransaction();
+    }
+
+    public static function commit(): void
+    {
+        self::getInstance()->commit();
+    }
+
+    public static function rollBack(): void
+    {
+        self::getInstance()->rollBack();
+    }
+}
+```
+
+##### 資料庫交易管理器
+```php
+namespace App\Database;
+
+class TransactionManager
+{
+    public static function execute(callable $callback)
+    {
+        DatabaseConnection::beginTransaction();
+        try {
+            $result = $callback();
+            DatabaseConnection::commit();
+            return $result;
+        } catch (\Exception $e) {
+            DatabaseConnection::rollBack();
+            throw $e;
+        }
+    }
+}
+```
+
+#### 2.4.2 Repository 基礎類別
+
+##### 抽象 Repository
+```php
+namespace App\Repositories;
+
+abstract class AbstractRepository
+{
+    protected PDO $db;
+    protected string $table;
+    protected array $fillable = [];
+
+    public function __construct(PDO $db)
+    {
+        $this->db = $db;
+    }
+
+    protected function create(array $data): array
+    {
+        $fields = array_intersect_key($data, array_flip($this->fillable));
+        $columns = implode(', ', array_keys($fields));
+        $values = implode(', ', array_fill(0, count($fields), '?'));
+        
+        $sql = "INSERT INTO {$this->table} ($columns) VALUES ($values)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(array_values($fields));
+        
+        return $this->find($this->db->lastInsertId());
+    }
+
+    protected function find(string $id): ?array
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE id = ? LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
+    }
+
+    protected function findBy(string $column, $value): ?array
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE $column = ? LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$value]);
+        return $stmt->fetch() ?: null;
+    }
+
+    protected function findWhere(array $conditions): array
+    {
+        $where = [];
+        $params = [];
+        foreach ($conditions as $column => $value) {
+            $where[] = "$column = ?";
+            $params[] = $value;
+        }
+        
+        $sql = "SELECT * FROM {$this->table} WHERE " . implode(' AND ', $where);
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    protected function update(string $id, array $data): bool
+    {
+        $fields = array_intersect_key($data, array_flip($this->fillable));
+        $set = implode(', ', array_map(fn($field) => "$field = ?", array_keys($fields)));
+        
+        $sql = "UPDATE {$this->table} SET $set WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([...array_values($fields), $id]);
+    }
+
+    protected function delete(string $id): bool
+    {
+        $sql = "DELETE FROM {$this->table} WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$id]);
+    }
+
+    protected function paginate(int $page, int $perPage = 15): array
+    {
+        $offset = ($page - 1) * $perPage;
+        
+        // 取得總記錄數
+        $total = $this->db->query("SELECT COUNT(*) FROM {$this->table}")->fetchColumn();
+        
+        // 取得分頁資料
+        $sql = "SELECT * FROM {$this->table} LIMIT ? OFFSET ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$perPage, $offset]);
+        $items = $stmt->fetchAll();
+        
+        return [
+            'items' => $items,
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $perPage,
+            'last_page' => ceil($total / $perPage)
+        ];
+    }
+
+    protected function beginTransaction(): void
+    {
+        $this->db->beginTransaction();
+    }
+
+    protected function commit(): void
+    {
+        $this->db->commit();
+    }
+
+    protected function rollBack(): void
+    {
+        $this->db->rollBack();
+    }
+}
+```
+
+#### 2.4.3 具體 Repository 實作
+
+##### 文章 Repository
+```php
+namespace App\Repositories;
+
+class PostRepository extends AbstractRepository
+{
+    protected string $table = 'posts';
+    protected array $fillable = [
+        'uuid',
+        'title',
+        'content',
+        'user_id',
+        'user_ip',
+        'status',
+        'is_pinned',
+        'publish_date'
+    ];
+
+    public function createPost(array $data): array
+    {
+        return TransactionManager::execute(function () use ($data) {
+            // 產生流水號
+            $seqNumber = $this->generateSequenceNumber();
+            $data['seq_number'] = $seqNumber;
+            
+            // 建立文章
+            $post = $this->create($data);
+            
+            // 處理標籤
+            if (!empty($data['tags'])) {
+                $this->attachTags($post['id'], $data['tags']);
+            }
+            
+            return $post;
+        });
+    }
+
+    public function findByUuid(string $uuid): ?array
+    {
+        return $this->findBy('uuid', $uuid);
+    }
+
+    public function findBySequenceNumber(string $seqNumber): ?array
+    {
+        return $this->findBy('seq_number', $seqNumber);
+    }
+
+    public function getPinnedPosts(): array
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE is_pinned = 1 ORDER BY publish_date DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function searchPosts(array $criteria): array
+    {
+        $where = [];
+        $params = [];
+        
+        if (!empty($criteria['title'])) {
+            $where[] = "title LIKE ?";
+            $params[] = "%{$criteria['title']}%";
+        }
+        
+        if (!empty($criteria['tags'])) {
+            $tagIds = implode(',', $criteria['tags']);
+            $where[] = "id IN (SELECT post_id FROM post_tags WHERE tag_id IN ($tagIds))";
+        }
+        
+        if (!empty($criteria['status'])) {
+            $where[] = "status = ?";
+            $params[] = $criteria['status'];
+        }
+        
+        if (!empty($criteria['date_from'])) {
+            $where[] = "publish_date >= ?";
+            $params[] = $criteria['date_from'];
+        }
+        
+        if (!empty($criteria['date_to'])) {
+            $where[] = "publish_date <= ?";
+            $params[] = $criteria['date_to'];
+        }
+        
+        $sql = "SELECT * FROM {$this->table}";
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(' AND ', $where);
+        }
+        
+        if (!empty($criteria['sort'])) {
+            $sql .= " ORDER BY {$criteria['sort']} " . 
+                   ($criteria['order'] ?? 'DESC');
+        }
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    private function generateSequenceNumber(): string
+    {
+        $year = date('Y');
+        $month = date('m');
+        
+        $sql = "SELECT MAX(seq_number) FROM {$this->table} " .
+               "WHERE strftime('%Y', created_at) = ? " .
+               "AND strftime('%m', created_at) = ?";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$year, $month]);
+        $maxSeq = $stmt->fetchColumn() ?? 0;
+        
+        $nextSeq = $maxSeq + 1;
+        return sprintf('%s%s%05d', $year, $month, $nextSeq);
+    }
+
+    private function attachTags(int $postId, array $tagIds): void
+    {
+        $sql = "INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)";
+        $stmt = $this->db->prepare($sql);
+        
+        foreach ($tagIds as $tagId) {
+            $stmt->execute([$postId, $tagId]);
+        }
+    }
+}
+```
+
+#### 2.4.4 Repository 測試案例
+
+##### 基本 CRUD 測試
+```php
+namespace Tests\Unit\Repositories;
+
+class PostRepositoryTest extends TestCase
+{
+    private PDO $db;
+    private PostRepository $repository;
     
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new PostService();
+        $this->db = new PDO('sqlite::memory:');
+        $this->setupTestDatabase();
+        $this->repository = new PostRepository($this->db);
     }
     
     /** @test */
-    public function shouldCreateNewPost()
+    public function shouldCreatePostWithTags(): void
     {
         // 安排
-        $input = [
+        $data = [
             'title' => '測試文章',
-            'content' => '這是測試內容'
+            'content' => '測試內容',
+            'user_id' => 1,
+            'status' => 1,
+            'tags' => [1, 2, 3]
         ];
         
         // 執行
-        $post = $this->service->create($input);
+        $post = $this->repository->createPost($data);
         
-        // 斷言
-        $this->assertInstanceOf(Post::class, $post);
-        $this->assertEquals('測試文章', $post->title);
-    }
-}
-```
-
-#### 2. 整合測試範本
-```php
-namespace Tests\Integration;
-
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Post;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-class PostApiTest extends TestCase
-{
-    use RefreshDatabase;
-    
-    private User $user;
-    
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->user = User::factory()->create();
+        // 驗證文章基本資料
+        $this->assertNotNull($post['id']);
+        $this->assertEquals('測試文章', $post['title']);
+        
+        // 驗證流水號格式
+        $this->assertMatchesRegularExpression(
+            '/^\d{6}\d{5}$/',
+            $post['seq_number']
+        );
+        
+        // 驗證標籤關聯
+        $sql = "SELECT COUNT(*) FROM post_tags WHERE post_id = ?";
+        $tagCount = $this->db->prepare($sql)->execute([$post['id']])
+            ->fetchColumn();
+        $this->assertEquals(3, $tagCount);
     }
     
     /** @test */
-    public function shouldCreatePostThroughApi()
+    public function shouldFindPostByUuid(): void
     {
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/posts', [
-                'title' => '測試文章',
-                'content' => '這是測試內容'
-            ]);
-            
-        $response->assertStatus(201)
-            ->assertJsonStructure([
-                'data' => ['id', 'title', 'content']
-            ]);
+        // 安排
+        $uuid = 'test-uuid';
+        $this->insertTestPost(['uuid' => $uuid]);
+        
+        // 執行
+        $post = $this->repository->findByUuid($uuid);
+        
+        // 驗證
+        $this->assertNotNull($post);
+        $this->assertEquals($uuid, $post['uuid']);
     }
-}
-```
-
-### 0.6 測試自動化與 CI/CD 整合
-
-#### 1. GitHub Actions 工作流程
-```yaml
-name: Tests
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
     
-    steps:
-    - uses: actions/checkout@v2
+    /** @test */
+    public function shouldReturnNullForNonexistentPost(): void
+    {
+        // 執行
+        $post = $this->repository->findByUuid('non-existent');
+        
+        // 驗證
+        $this->assertNull($post);
+    }
     
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        extensions: mbstring, xml, ctype, sqlite3
+    /** @test */
+    public function shouldSearchPostsByMultipleCriteria(): void
+    {
+        // 安排
+        $this->insertTestPosts();
         
-    - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-        
-    - name: Execute Tests
-      run: |
-        php artisan test --parallel
-        php artisan test:coverage
-        
-    - name: Upload Coverage Report
-      uses: codecov/codecov-action@v2
-      with:
-        file: ./tests/coverage.xml
-```
-
-### 0.7 測試效能指標
-
-#### 1. 測試執行時間目標
-- 單元測試：< 1秒/測試
-- 整合測試：< 3秒/測試
-- 端對端測試：< 10秒/測試
-
-#### 2. 測試維護指標
-1. **測試程式碼品質**
-   - 循環複雜度 < 5
-   - 函式長度 < 20行
-   - 類別長度 < 200行
-
-2. **測試可讀性**
-   - 使用描述性的測試函式名稱
-   - 遵循 AAA (Arrange-Act-Assert) 模式
-   - 每個測試只測試一個行為
-
-3. **測試隔離度**
-   - 避免測試間的相依性
-   - 每次測試後清理測試資料
-   - 使用專用的測試資料庫
-
-### 0.8 定期測試審查清單
-
-1. **每週測試審查**
-   - [ ] 檢查測試覆蓋率報告
-   - [ ] 審查失敗的測試案例
-   - [ ] 更新過時的測試資料
-   - [ ] 檢查測試執行時間
-
-2. **每月測試維護**
-   - [ ] 重構重複的測試程式碼
-   - [ ] 更新測試文件
-   - [ ] 檢查測試相依套件更新
-   - [ ] 最佳化緩慢的測試
-
-## 1. 專案實作概述
-
-本文件詳細說明 AlleyNote 公布欄網站的實作計畫，包含各階段工作項目、技術細節與時程規劃。
-
-### 1.1 專案目標與範疇
-
-依據規格書要求，本專案將實作一個現代化的公布欄系統，主要特點：
-- 使用 PHP 8.4.5 建構後端系統
-- 採用 SQLite3 作為資料庫系統
-- 使用 Docker 進行容器化部署
-- 在 Debian Linux 12 環境運行
-- 使用 NGINX 作為網頁伺服器
-
-### 1.2 技術堆疊清單
-
-#### 後端技術
-- 程式語言：PHP 8.4.5
-- 資料庫：SQLite3
-- Web 伺服器：NGINX
-- 容器化：Docker & Docker Compose
-- 作業系統：Debian Linux 12
-
-#### 前端技術
-- HTML5 & CSS3
-- JavaScript/TypeScript
-- Tailwind CSS
-- CKEditor（最新版）
-
-#### 開發工具
-- Git 版本控制
-- Docker 容器化工具
-- VSCode/PHPStorm IDE
-- Postman API 測試工具
-- phpMyAdmin 資料庫管理工具
-
-## 2. 實作階段規劃
-
-### 2.1 第一階段：環境建置與基礎架構（2週）
-
-#### 2.1.1 測試環境建置（2天）
-1. **測試框架設定**
-   ```
-   /tests
-   ├── Unit/
-   │   ├── Models/
-   │   ├── Services/
-   │   └── Utils/
-   ├── Integration/
-   │   ├── API/
-   │   ├── Database/
-   │   └── Services/
-   └── E2E/
-       ├── Features/
-       └── Scenarios/
-   ```
-
-2. **測試工具建置**
-   - PHPUnit 設定
-   - Mockery 模擬物件框架
-   - Faker 測試資料產生器
-   - PHPUnit-Watcher 自動測試工具
-
-3. **持續整合設定**
-   - GitHub Actions 工作流程
-   - 測試覆蓋率報告
-   - 程式碼品質檢查
-
-#### 2.1.2 基礎架構測試（3天）
-1. **資料庫連接測試**
-   ```php
-   class DatabaseConnectionTest extends TestCase
-   {
-       public function testShouldConnectToDatabase()
-       {
-           $connection = new DatabaseConnection();
-           $this->assertTrue($connection->isConnected());
-       }
-
-       public function testShouldHandleDatabaseError()
-       {
-           $connection = new DatabaseConnection('invalid_path');
-           $this->assertFalse($connection->isConnected());
-       }
-   }
-   ```
-
-2. **路由系統測試**
-   ```php
-   class RouterTest extends TestCase
-   {
-       public function testShouldRouteToCorrectController()
-       {
-           $router = new Router();
-           $route = $router->resolve('/api/v1/posts');
-           $this->assertEquals(PostsController::class, $route->getController());
-       }
-   }
-   ```
-
-#### 2.1.3 開發環境建置（3天）
-1. **Docker 環境配置**
-   - 建立 Dockerfile 
-   - 設定 docker-compose.yml
-   - 配置 PHP-FPM 
-   - 設定 NGINX 伺服器
-
-2. **資料庫環境設定**
-   - 建立 SQLite3 資料庫
-   - 設定資料庫連接
-   - 建立資料庫備份機制
-
-3. **版本控制設定**
-   - 初始化 Git 儲存庫
-   - 設定 .gitignore
-   - 建立開發分支策略
-
-#### 2.1.4 基礎架構實作（4天）
-1. **專案目錄結構建置**
-   ```
-   /
-   ├── app/
-   │   ├── Controllers/
-   │   ├── Models/
-   │   ├── Services/
-   │   └── Repositories/
-   ├── config/
-   ├── database/
-   │   └── migrations/
-   ├── public/
-   ├── resources/
-   │   ├── views/
-   │   ├── js/
-   │   └── css/
-   └── tests/
-   ```
-
-2. **基礎元件實作**
-   - 路由系統
-   - 資料庫連接器
-   - 快取機制
-   - 日誌系統
-   - 錯誤處理機制
-
-#### 2.1.5 安全框架建置（3天）
-- 實作 JWT 驗證機制
-- 設定 CORS 政策
-- 實作 XSS 防護
-- 設定 CSRF 保護
-- 建立 IP 過濾機制
-
-### 2.2 第二階段：核心功能實作（4週）
-
-#### 2.2.1 使用者管理系統（1週）
-
-1. **使用者模型測試**
-   ```php
-   class UserTest extends TestCase
-   {
-       public function testShouldCreateUser()
-       {
-           $userData = [
-               'username' => 'testuser',
-               'email' => 'test@example.com',
-               'password' => 'password123'
-           ];
-           
-           $user = new User($userData);
-           
-           $this->assertEquals('testuser', $user->username);
-           $this->assertTrue($user->verifyPassword('password123'));
-       }
-
-       public function testShouldValidateEmail()
-       {
-           $this->expectException(ValidationException::class);
-           
-           $userData = [
-               'username' => 'testuser',
-               'email' => 'invalid-email',
-               'password' => 'password123'
-           ];
-           
-           new User($userData);
-       }
-   }
-   ```
-
-2. **認證服務測試**
-   ```php
-   class AuthServiceTest extends TestCase
-   {
-       public function testShouldAuthenticateValidUser()
-       {
-           $authService = new AuthService();
-           $token = $authService->authenticate('testuser', 'password123');
-           
-           $this->assertNotNull($token);
-           $this->assertTrue($authService->verifyToken($token));
-       }
-
-       public function testShouldRejectInvalidCredentials()
-       {
-           $this->expectException(AuthenticationException::class);
-           
-           $authService = new AuthService();
-           $authService->authenticate('testuser', 'wrongpassword');
-       }
-   }
-   ```
-
-#### 2.2.2 文章管理系統（2週）
-1. **資料模型設計**
-   - Posts 資料表
-   - Tags 資料表
-   - Attachments 資料表
-   - Post_Views 資料表
-
-2. **功能實作**
-   - 文章 CRUD 操作
-   - 文章編輯器整合（CKEditor）
-   - 文章置頂功能
-   - 草稿系統
-   - 排程發布功能
-   - 搜尋功能實作
-
-#### 2.2.3 附件管理系統（1週）
-1. **功能實作**
-   - 檔案上傳機制
-   - 檔案格式驗證
-   - 檔案大小限制
-   - 預覽功能
-   - 安全性檢查
-
-### 2.3 第三階段：進階功能與優化（3週）
-
-#### 2.3.1 IP 管理系統（1週）
-1. **功能實作**
-   - IP 黑白名單管理
-   - IP 範圍設定（CIDR）
-   - 存取記錄系統
-   - 異常存取偵測
-
-#### 2.3.2 效能優化（1週）
-1. **快取機制實作**
-   - 頁面快取
-   - 查詢快取
-   - 靜態資源快取
-
-2. **效能監控**
-   - 系統監控設定
-   - 效能指標收集
-   - 日誌分析系統
-
-#### 2.3.3 外部整合功能（1週）
-1. **API 開發**
-   - RESTful API 設計
-   - API 文件產生
-   - API 認證機制
-   - 跨域支援設定
-
-### 2.4 第四階段：測試與部署（3週）
-
-#### 2.4.1 測試（2週）
-1. **單元測試**
-   - Controllers 測試
-   - Models 測試
-   - Services 測試
-   - Repositories 測試
-
-2. **整合測試**
-   - API 端點測試
-   - 使用者流程測試
-   - 權限系統測試
-
-3. **效能測試**
-   - 負載測試
-   - 壓力測試
-   - 併發測試
-
-#### 2.4.2 部署準備（1週）
-1. **部署腳本準備**
-   - Docker 部署腳本
-   - 資料庫遷移腳本
-   - 環境設定腳本
-
-2. **文件準備**
-   - 系統文件
-   - API 文件
-   - 使用者手冊
-   - 維運手冊
-
-## 3. 詳細技術實作規劃
-
-### 3.1 資料庫實作細節
-
-#### 3.1.1 資料表結構定義
-
-```sql
--- Users 資料表
-CREATE TABLE users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uuid TEXT NOT NULL UNIQUE,
-    username TEXT NOT NULL UNIQUE,
-    email TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL,
-    status INTEGER DEFAULT 1,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Units 資料表
-CREATE TABLE units (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uuid TEXT NOT NULL UNIQUE,
-    name TEXT NOT NULL,
-    description TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Posts 資料表
-CREATE TABLE posts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uuid TEXT NOT NULL UNIQUE,
-    seq_number INTEGER NOT NULL UNIQUE,
-    title TEXT NOT NULL,
-    content TEXT NOT NULL,
-    user_id INTEGER NOT NULL,
-    user_ip TEXT NOT NULL,
-    views INTEGER DEFAULT 0,
-    is_pinned INTEGER DEFAULT 0,
-    status INTEGER DEFAULT 1,
-    publish_date DATETIME,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-```
-
-## 8. 詳細技術實作細節
-
-### 8.1 資料庫設計與效能優化
-
-#### 8.1.1 索引策略
-```sql
--- Users 資料表索引
-CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_uuid ON users(uuid);
-
--- Posts 資料表索引
-CREATE INDEX idx_posts_user_id ON posts(user_id);
-CREATE INDEX idx_posts_publish_date ON posts(publish_date);
-CREATE INDEX idx_posts_status ON posts(status);
-CREATE INDEX idx_posts_is_pinned ON posts(is_pinned);
-CREATE UNIQUE INDEX idx_posts_seq_number ON posts(seq_number);
-
--- Post_Views 資料表索引
-CREATE INDEX idx_post_views_post_id ON post_views(post_id);
-CREATE INDEX idx_post_views_user_id ON post_views(user_id);
-CREATE INDEX idx_post_views_view_date ON post_views(view_date);
-```
-
-#### 8.1.2 資料表分區策略
-```sql
--- Posts 資料表依照時間分區
-CREATE TABLE posts_2024 (
-    CHECK (publish_date >= '2024-01-01' AND publish_date < '2025-01-01')
-) INHERITS (posts);
-
-CREATE TABLE posts_2025 (
-    CHECK (publish_date >= '2025-01-01' AND publish_date < '2026-01-01')
-) INHERITS (posts);
-
--- 自動分區函式
-CREATE OR REPLACE FUNCTION posts_insert_trigger()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF (NEW.publish_date >= '2024-01-01' AND NEW.publish_date < '2025-01-01') THEN
-        INSERT INTO posts_2024 VALUES (NEW.*);
-    ELSIF (NEW.publish_date >= '2025-01-01' AND NEW.publish_date < '2026-01-01') THEN
-        INSERT INTO posts_2025 VALUES (NEW.*);
-    ELSE
-        RAISE EXCEPTION 'Date out of range';
-    END IF;
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-```
-
-### 8.2 快取策略實作
-
-#### 8.2.1 快取介面與抽象工廠
-```php
-interface CacheInterface
-{
-    public function set(string $key, mixed $value, ?int $ttl = null): bool;
-    public function get(string $key): mixed;
-    public function delete(string $key): bool;
-    public function clear(): bool;
-    public function has(string $key): bool;
-}
-
-enum CacheType
-{
-    case Redis;
-    case File;
-    case Memory;
-}
-
-readonly class CacheConfig
-{
-    public function __construct(
-        public CacheType $type,
-        public array $options = []
-    ) {}
-}
-
-class CacheFactory
-{
-    public static function create(CacheConfig $config): CacheInterface
-    {
-        return match($config->type) {
-            CacheType::Redis => new RedisCache($config->options),
-            CacheType::File => new FileCache($config->options),
-            CacheType::Memory => new MemoryCache($config->options),
-        };
-    }
-}
-```
-
-#### 8.2.2 快取實作（檔案系統為預設）
-```php
-class FileCache implements CacheInterface
-{
-    private const DEFAULT_TTL = 3600;
-    private string $cachePath;
-    private readonly LoggerInterface $logger;
-
-    public function __construct(
-        array $options = [],
-        ?LoggerInterface $logger = null
-    ) {
-        $this->cachePath = $options['path'] ?? '/var/cache/alleynote';
-        $this->logger = $logger ?? new NullLogger();
-        
-        if (!is_dir($this->cachePath)) {
-            mkdir($this->cachePath, 0750, true);
-        }
-    }
-
-    public function set(string $key, mixed $value, ?int $ttl = null): bool
-    {
-        try {
-            $this->validateKey($key);
-            $path = $this->getPath($key);
-            $data = [
-                'value' => $value,
-                'expires' => time() + ($ttl ?? self::DEFAULT_TTL)
-            ];
-            
-            $tempFile = tempnam($this->cachePath, 'cache_');
-            file_put_contents($tempFile, serialize($data));
-            chmod($tempFile, 0640);
-            
-            return rename($tempFile, $path);
-        } catch (Throwable $e) {
-            $this->logger->error('快取寫入失敗', [
-                'key' => $key,
-                'error' => $e->getMessage()
-            ]);
-            return false;
-        }
-    }
-
-    public function get(string $key): mixed
-    {
-        try {
-            $this->validateKey($key);
-            $path = $this->getPath($key);
-            
-            if (!file_exists($path)) {
-                return null;
-            }
-
-            $data = unserialize(file_get_contents($path));
-            if (time() > $data['expires']) {
-                unlink($path);
-                return null;
-            }
-
-            return $data['value'];
-        } catch (Throwable $e) {
-            $this->logger->error('快取讀取失敗', [
-                'key' => $key,
-                'error' => $e->getMessage()
-            ]);
-            return null;
-        }
-    }
-
-    private function validateKey(string $key): void
-    {
-        if (!preg_match('/^[a-zA-Z0-9_.-]+$/', $key)) {
-            throw new InvalidArgumentException('無效的快取鍵名');
-        }
-    }
-
-    private function getPath(string $key): string
-    {
-        return $this->cachePath . '/' . hash('sha256', $key);
-    }
-}
-```
-
-#### 8.2.3 Redis 快取實作（可選）
-```php
-class RedisCache implements CacheInterface
-{
-    private ?Redis $redis = null;
-    private readonly LoggerInterface $logger;
-
-    public function __construct(
-        array $options = [],
-        ?LoggerInterface $logger = null
-    ) {
-        $this->logger = $logger ?? new NullLogger();
-        
-        try {
-            $this->redis = new Redis();
-            $this->redis->connect(
-                $options['host'] ?? '127.0.0.1',
-                $options['port'] ?? 6379,
-                $options['timeout'] ?? 2.0
-            );
-            
-            if (isset($options['password'])) {
-                $this->redis->auth($options['password']);
-            }
-            
-            if (isset($options['database'])) {
-                $this->redis->select($options['database']);
-            }
-        } catch (Throwable $e) {
-            $this->logger->error('Redis 連接失敗，將改用檔案快取', [
-                'error' => $e->getMessage()
-            ]);
-            $this->redis = null;
-        }
-    }
-
-    public function set(string $key, mixed $value, ?int $ttl = null): bool
-    {
-        if (!$this->redis) {
-            return (new FileCache())->set($key, $value, $ttl);
-        }
-
-        try {
-            return $this->redis->set(
-                $this->prefixKey($key),
-                serialize($value),
-                $ttl ? ['EX' => $ttl] : []
-            );
-        } catch (Throwable $e) {
-            $this->logger->error('Redis 寫入失敗', [
-                'key' => $key,
-                'error' => $e->getMessage()
-            ]);
-            return false;
-        }
-    }
-
-    private function prefixKey(string $key): string
-    {
-        return 'alleynote:' . $key;
-    }
-}
-```
-
-#### 8.2.4 快取使用範例
-```php
-class PostService
-{
-    public function __construct(
-        private readonly CacheInterface $cache,
-        private readonly PostRepository $repository
-    ) {}
-
-    public function getPost(string $uuid): ?Post
-    {
-        $cacheKey = "post:$uuid";
-        
-        // 首先嘗試從快取取得
-        $cachedPost = $this->cache->get($cacheKey);
-        if ($cachedPost !== null) {
-            return $cachedPost;
-        }
-        
-        // 從資料庫取得
-        $post = $this->repository->find($uuid);
-        if ($post) {
-            // 存入快取（1小時）
-            $this->cache->set($cacheKey, $post, 3600);
-        }
-        
-        return $post;
-    }
-}
-
-// 使用範例
-$config = new CacheConfig(
-    // 如果有 Redis 就用 Redis，否則自動降級到檔案快取
-    type: extension_loaded('redis') ? CacheType::Redis : CacheType::File,
-    options: [
-        'host' => 'localhost',
-        'port' => 6379,
-        'timeout' => 2.0,
-        'database' => 0
-    ]
-);
-
-$cache = CacheFactory::create($config);
-$postService = new PostService($cache, new PostRepository());
-```
-
-### 8.3 安全性實作細節
-
-#### 8.3.1 密碼雜湊與驗證
-```php
-readonly class PasswordConfig
-{
-    public function __construct(
-        public int $memoryCost = 65536,    // 64MB
-        public int $timeCost = 4,          // 4 次迭代
-        public int $threads = 3,           // 3 個執行緒
-        public int $outputLength = 32      // 256 位元
-    ) {}
-}
-
-class PasswordService
-{
-    private const HASH_ALGO = PASSWORD_ARGON2ID;
-
-    public function __construct(
-        private readonly PasswordConfig $config = new PasswordConfig()
-    ) {}
-
-    public function hash(#[\SensitiveParameter] string $password): string
-    {
-        return password_hash(
-            $password,
-            self::HASH_ALGO,
-            [
-                'memory_cost' => $this->config->memoryCost,
-                'time_cost' => $this->config->timeCost,
-                'threads' => $this->config->threads
-            ]
-        );
-    }
-
-    public function verify(
-        #[\SensitiveParameter] string $password,
-        #[\SensitiveParameter] string $hash
-    ): bool {
-        return password_verify($password, $hash);
-    }
-
-    public function needsRehash(#[\SensitiveParameter] string $hash): bool
-    {
-        return password_needs_rehash(
-            $hash,
-            self::HASH_ALGO,
-            [
-                'memory_cost' => $this->config->memoryCost,
-                'time_cost' => $this->config->timeCost,
-                'threads' => $this->config->threads
-            ]
-        );
-    }
-}
-```
-
-### 8.4 檔案上傳服務實作
-
-#### 8.4.1 檔案處理服務
-```php
-class FileUploadService
-{
-    private const UPLOAD_DIR = '/var/www/uploads';
-    private const MAX_FILE_SIZE = 52428800; // 50MB
-    private const ALLOWED_TYPES = [
-        'image/jpeg',
-        'image/png',
-        'application/pdf',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ];
-
-    public function upload(UploadedFile $file): string
-    {
-        $this->validateFile($file);
-        $filename = $this->generateUniqueFilename($file);
-        $path = $this->getUploadPath($filename);
-        
-        move_uploaded_file($file->getPathname(), $path);
-        
-        return $filename;
-    }
-
-    private function validateFile(UploadedFile $file): void
-    {
-        if ($file->getSize() > self::MAX_FILE_SIZE) {
-            throw new UploadException('檔案太大');
-        }
-
-        if (!in_array($file->getMimeType(), self::ALLOWED_TYPES)) {
-            throw new UploadException('不支援的檔案類型');
-        }
-
-        // 病毒掃描
-        $this->scanFile($file);
-    }
-
-    private function scanFile(UploadedFile $file): void
-    {
-        $scanner = new ClamAV();
-        $result = $scanner->scan($file->getPathname());
-        
-        if ($result->isInfected()) {
-            throw new UploadException('檔案可能包含病毒');
-        }
-    }
-}
-```
-
-### 8.5 效能監控實作
-
-#### 8.5.1 效能追蹤器
-```php
-class PerformanceTracker
-{
-    private $measurements = [];
-    private $startTimes = [];
-
-    public function startMeasurement(string $name): void
-    {
-        $this->startTimes[$name] = microtime(true);
-    }
-
-    public function endMeasurement(string $name): float
-    {
-        if (!isset($this->startTimes[$name])) {
-            throw new RuntimeException("未找到測量開始時間");
-        }
-
-        $duration = microtime(true) - $this->startTimes[$name];
-        $this->measurements[$name][] = $duration;
-
-        return $duration;
-    }
-
-    public function getAverageTime(string $name): float
-    {
-        if (!isset($this->measurements[$name])) {
-            return 0;
-        }
-
-        return array_sum($this->measurements[$name]) / count($this->measurements[$name]);
-    }
-
-    public function exportMetrics(): array
-    {
-        $metrics = [];
-        foreach ($this->measurements as $name => $durations) {
-            $metrics[$name] = [
-                'avg' => $this->getAverageTime($name),
-                'min' => min($durations),
-                'max' => max($durations),
-                'count' => count($durations)
-            ];
-        }
-        return $metrics;
-    }
-}
-```
-
-### 8.6 資料庫交易管理
-
-#### 8.6.1 交易管理器
-```php
-class TransactionManager
-{
-    private $pdo;
-    private $transactionLevel = 0;
-
-    public function __construct(PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
-
-    public function begin(): void
-    {
-        if ($this->transactionLevel === 0) {
-            $this->pdo->beginTransaction();
-        } else {
-            $this->pdo->exec("SAVEPOINT LEVEL{$this->transactionLevel}");
-        }
-        $this->transactionLevel++;
-    }
-
-    public function commit(): void
-    {
-        $this->transactionLevel--;
-        if ($this->transactionLevel === 0) {
-            $this->pdo->commit();
-        }
-    }
-
-    public function rollback(?int $toLevel = null): void
-    {
-        if ($toLevel === null) {
-            $this->pdo->rollBack();
-            $this->transactionLevel = 0;
-            return;
-        }
-
-        if ($toLevel < $this->transactionLevel) {
-            $this->pdo->exec("ROLLBACK TO SAVEPOINT LEVEL{$toLevel}");
-            $this->transactionLevel = $toLevel;
-        }
-    }
-}
-```
-
-### 8.7 搜尋引擎整合
-
-#### 8.7.1 全文搜尋服務
-```php
-class SearchService
-{
-    private PDO $pdo;
-    private $elastic;
-    private const INDEX = 'posts';
-
-    public function __construct(PDO $pdo)
-    {
-        $this->pdo = $pdo;
-        $this->elastic = ClientBuilder::create()
-            ->setHosts(['localhost:9200'])
-            ->build();
-    }
-
-    public function indexPost(string $uuid): void
-    {
-        $stmt = $this->pdo->prepare('
-            SELECT p.*, u.username as author_name, u.name as unit_name
-            FROM posts p
-            LEFT JOIN users u ON p.user_id = u.id
-            LEFT JOIN units un ON p.unit_id = un.id
-            WHERE p.uuid = :uuid
-        ');
-        
-        $stmt->execute(['uuid' => $uuid]);
-        $post = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$post) {
-            throw new RuntimeException('找不到指定文章');
-        }
-
-        // 取得文章標籤
-        $tagStmt = $this->pdo->prepare('
-            SELECT t.name
-            FROM post_tags pt
-            JOIN tags t ON pt.tag_id = t.id
-            WHERE pt.post_id = :post_id
-        ');
-        $tagStmt->execute(['post_id' => $post['id']]);
-        $tags = $tagStmt->fetchAll(PDO::FETCH_COLUMN);
-
-        // 建立搜尋索引
-        $this->elastic->index([
-            'index' => self::INDEX,
-            'id' => $post['uuid'],
-            'body' => [
-                'title' => $post['title'],
-                'content' => $post['content'],
-                'author' => $post['author_name'],
-                'tags' => $tags,
-                'publish_date' => $post['publish_date'],
-                'unit' => $post['unit_name']
-            ]
-        ]);
-    }
-
-    public function search(string $query, array $filters = []): array
-    {
-        // 搜尋 Elasticsearch
-        $searchParams = [
-            'index' => self::INDEX,
-            'body' => [
-                'query' => [
-                    'bool' => [
-                        'must' => [
-                            'multi_match' => [
-                                'query' => $query,
-                                'fields' => ['title^2', 'content', 'tags^1.5']
-                            ]
-                        ],
-                        'filter' => []
-                    ]
-                ],
-                'highlight' => [
-                    'fields' => [
-                        'title' => new \stdClass(),
-                        'content' => new \stdClass()
-                    ]
-                ]
-            ]
+        // 執行
+        $criteria = [
+            'title' => '測試',
+            'tags' => [1],
+            'date_from' => '2025-01-01',
+            'sort' => 'publish_date',
+            'order' => 'DESC'
         ];
-
-        foreach ($filters as $field => $value) {
-            $searchParams['body']['query']['bool']['filter'][] = [
-                'term' => [$field => $value]
-            ];
+        $posts = $this->repository->searchPosts($criteria);
+        
+        // 驗證
+        $this->assertNotEmpty($posts);
+        foreach ($posts as $post) {
+            $this->assertStringContains('測試', $post['title']);
+            $this->assertGreaterThanOrEqual('2025-01-01', $post['publish_date']);
         }
-
-        $results = $this->elastic->search($searchParams);
-
-        // 從資料庫取得完整資料
-        $uuids = array_column($results['hits']['hits'], '_id');
-        if (empty($uuids)) {
-            return ['total' => 0, 'hits' => []];
-        }
-
-        $placeholders = str_repeat('?,', count($uuids) - 1) . '?';
-        $stmt = $this->pdo->prepare("
-            SELECT p.*, u.username as author_name, un.name as unit_name
-            FROM posts p
-            LEFT JOIN users u ON p.user_id = u.id
-            LEFT JOIN units un ON p.unit_id = un.id
-            WHERE p.uuid IN ($placeholders)
+    }
+    
+    /** @test */
+    public function shouldRollbackTransactionOnError(): void
+    {
+        // 安排
+        $data = [
+            'title' => '測試文章',
+            'content' => '測試內容',
+            'tags' => [999] // 不存在的標籤 ID
+        ];
+        
+        // 執行與驗證
+        $this->expectException(\PDOException::class);
+        $this->repository->createPost($data);
+        
+        // 驗證文章未被建立
+        $sql = "SELECT COUNT(*) FROM posts";
+        $count = $this->db->query($sql)->fetchColumn();
+        $this->assertEquals(0, $count);
+    }
+    
+    private function setupTestDatabase(): void
+    {
+        $this->db->exec("
+            CREATE TABLE posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT NOT NULL,
+                seq_number TEXT NOT NULL,
+                title TEXT NOT NULL,
+                content TEXT NOT NULL,
+                user_id INTEGER NOT NULL,
+                status INTEGER NOT NULL DEFAULT 1,
+                is_pinned INTEGER NOT NULL DEFAULT 0,
+                publish_date DATETIME,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
         ");
         
-        $stmt->execute($uuids);
-        $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // 合併搜尋結果與資料庫資料
-        $finalResults = [];
-        foreach ($results['hits']['hits'] as $hit) {
-            foreach ($posts as $post) {
-                if ($post['uuid'] === $hit['_id']) {
-                    $finalResults[] = array_merge(
-                        $post,
-                        ['highlights' => $hit['highlight'] ?? []]
-                    );
-                    break;
-                }
-            }
-        }
-
-        return [
-            'total' => $results['hits']['total']['value'],
-            'hits' => $finalResults
-        ];
-    }
-}
-```
-
-### 8.8 IP 過濾與管理
-
-#### 8.8.1 IP 過濾器
-```php
-class IPFilter
-{
-    private $redis;
-    private const BLACKLIST_KEY = 'ip:blacklist';
-    private const WHITELIST_KEY = 'ip:whitelist';
-    private const RATE_LIMIT_PREFIX = 'ip:rate:';
-    private const RATE_LIMIT = 100; // 每分鐘請求數
-    private const RATE_WINDOW = 60; // 時間窗口（秒）
-
-    public function __construct()
-    {
-        $this->redis = new Redis();
-        $this->redis->connect('127.0.0.1', 6379);
-    }
-
-    public function isAllowed(string $ip): bool
-    {
-        // 檢查白名單
-        if ($this->redis->sIsMember(self::WHITELIST_KEY, $ip)) {
-            return true;
-        }
-
-        // 檢查黑名單
-        if ($this->redis->sIsMember(self::BLACKLIST_KEY, $ip)) {
-            return false;
-        }
-
-        // 檢查頻率限制
-        return $this->checkRateLimit($ip);
-    }
-
-    private function checkRateLimit(string $ip): bool
-    {
-        $key = self::RATE_LIMIT_PREFIX . $ip;
-        $currentCount = $this->redis->incr($key);
-        
-        if ($currentCount === 1) {
-            $this->redis->expire($key, self::RATE_WINDOW);
-        }
-
-        return $currentCount <= self::RATE_LIMIT;
-    }
-
-    public function blockIP(string $ip): void
-    {
-        $this->redis->sAdd(self::BLACKLIST_KEY, $ip);
-        $this->redis->sRem(self::WHITELIST_KEY, $ip);
-    }
-
-    public function allowIP(string $ip): void
-    {
-        $this->redis->sAdd(self::WHITELIST_KEY, $ip);
-        $this->redis->sRem(self::BLACKLIST_KEY, $ip);
-    }
-}
-```
-
-### 8.9 背景工作佇列
-
-#### 8.9.1 佇列工作器
-```php
-class QueueWorker
-{
-    private Redis $redis;
-    private PDO $pdo;
-    private const QUEUE_KEY = 'tasks:queue';
-    private const PROCESSING_KEY = 'tasks:processing';
-    private const MAX_RETRY = 3;
-
-    public function __construct(PDO $pdo)
-    {
-        $this->pdo = $pdo;
-        $this->redis = new Redis();
-        $this->redis->connect('127.0.0.1', 6379);
-    }
-
-    public function enqueue(Task $task): void
-    {
-        // 開始資料庫交易
-        $this->pdo->beginTransaction();
-        
-        try {
-            // 記錄任務到資料庫
-            $stmt = $this->pdo->prepare('
-                INSERT INTO tasks (uuid, type, data, status, created_at)
-                VALUES (:uuid, :type, :data, :status, :created_at)
-            ');
-            
-            $stmt->execute([
-                'uuid' => $task->getUuid(),
-                'type' => $task->getType(),
-                'data' => json_encode($task->getData()),
-                'status' => 'queued',
-                'created_at' => date('Y-m-d H:i:s')
-            ]);
-            
-            // 加入 Redis 佇列
-            $this->redis->lPush(self::QUEUE_KEY, $task->getUuid());
-            
-            $this->pdo->commit();
-        } catch (Exception $e) {
-            $this->pdo->rollBack();
-            throw $e;
-        }
-    }
-
-    public function processNextTask(): void
-    {
-        // 從 Redis 佇列取出任務
-        $taskUuid = $this->redis->rPopLPush(
-            self::QUEUE_KEY,
-            self::PROCESSING_KEY
-        );
-
-        if (!$taskUuid) {
-            return;
-        }
-
-        // 開始資料庫交易
-        $this->pdo->beginTransaction();
-        
-        try {
-            // 從資料庫讀取任務詳情
-            $stmt = $this->pdo->prepare('
-                SELECT * FROM tasks 
-                WHERE uuid = :uuid AND status = :status
-                FOR UPDATE
-            ');
-            
-            $stmt->execute([
-                'uuid' => $taskUuid,
-                'status' => 'queued'
-            ]);
-            
-            $taskData = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$taskData) {
-                $this->pdo->rollBack();
-                return;
-            }
-
-            // 更新任務狀態為處理中
-            $stmt = $this->pdo->prepare('
-                UPDATE tasks 
-                SET status = :status,
-                    started_at = :started_at
-                WHERE uuid = :uuid
-            ');
-            
-            $stmt->execute([
-                'status' => 'processing',
-                'started_at' => date('Y-m-d H:i:s'),
-                'uuid' => $taskUuid
-            ]);
-
-            // 建立任務實例
-            $task = Task::createFromArray($taskData);
-            
-            // 執行任務
-            $task->execute();
-            
-            // 更新任務狀態為完成
-            $stmt = $this->pdo->prepare('
-                UPDATE tasks 
-                SET status = :status,
-                    completed_at = :completed_at
-                WHERE uuid = :uuid
-            ');
-            
-            $stmt->execute([
-                'status' => 'completed',
-                'completed_at' => date('Y-m-d H:i:s'),
-                'uuid' => $taskUuid
-            ]);
-            
-            // 從處理中佇列移除
-            $this->redis->lRem(self::PROCESSING_KEY, $taskUuid, 1);
-            
-            $this->pdo->commit();
-        } catch (Exception $e) {
-            $this->pdo->rollBack();
-            
-            // 更新重試次數和錯誤資訊
-            $stmt = $this->pdo->prepare('
-                UPDATE tasks 
-                SET retry_count = retry_count + 1,
-                    last_error = :error,
-                    status = CASE 
-                        WHEN retry_count >= :max_retry THEN :failed_status
-                        ELSE :queued_status
-                    END
-                WHERE uuid = :uuid
-            ');
-            
-            $stmt->execute([
-                'error' => $e->getMessage(),
-                'max_retry' => self::MAX_RETRY,
-                'failed_status' => 'failed',
-                'queued_status' => 'queued',
-                'uuid' => $taskUuid
-            ]);
-
-            // 如果未達到最大重試次數，重新加入佇列
-            $stmt = $this->pdo->prepare('
-                SELECT retry_count FROM tasks WHERE uuid = :uuid
-            ');
-            $stmt->execute(['uuid' => $taskUuid]);
-            $retryCount = (int)$stmt->fetchColumn();
-            
-            if ($retryCount < self::MAX_RETRY) {
-                $this->redis->lPush(self::QUEUE_KEY, $taskUuid);
-            } else {
-                $this->handleFailedTask($taskUuid, $e);
-            }
-            
-            $this->redis->lRem(self::PROCESSING_KEY, $taskUuid, 1);
-        }
-    }
-
-    private function handleFailedTask(string $taskUuid, Exception $e): void
-    {
-        // 記錄失敗資訊到專門的失敗任務資料表
-        $stmt = $this->pdo->prepare('
-            INSERT INTO failed_tasks (
-                task_uuid,
-                error_message,
-                stack_trace,
-                failed_at
-            ) VALUES (
-                :task_uuid,
-                :error_message,
-                :stack_trace,
-                :failed_at
+        $this->db->exec("
+            CREATE TABLE tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL
             )
-        ');
+        ");
         
+        $this->db->exec("
+            CREATE TABLE post_tags (
+                post_id INTEGER NOT NULL,
+                tag_id INTEGER NOT NULL,
+                FOREIGN KEY (post_id) REFERENCES posts (id),
+                FOREIGN KEY (tag_id) REFERENCES tags (id)
+            )
+        ");
+    }
+    
+    private function insertTestPost(array $data): void
+    {
+        $sql = "INSERT INTO posts (uuid, seq_number, title, content, user_id) 
+                VALUES (:uuid, '202504001', :title, :content, :user_id)";
+        
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            'task_uuid' => $taskUuid,
-            'error_message' => $e->getMessage(),
-            'stack_trace' => $e->getTraceAsString(),
-            'failed_at' => date('Y-m-d H:i:s')
+            'uuid' => $data['uuid'] ?? 'test-uuid',
+            'title' => $data['title'] ?? '測試文章',
+            'content' => $data['content'] ?? '測試內容',
+            'user_id' => $data['user_id'] ?? 1
         ]);
     }
-}
-```
-
-### 8.10 日誌記錄系統
-
-#### 8.10.1 日誌記錄器
-```php
-class Logger
-{
-    private const LOG_PATH = '/var/log/alleynote';
-    private const MAX_LOG_SIZE = 104857600; // 100MB
-    private const MAX_LOG_FILES = 10;
-
-    private function rotate(): void
-    {
-        $logFile = self::LOG_PATH . '/app.log';
-        if (file_exists($logFile) && filesize($logFile) > self::MAX_LOG_SIZE) {
-            for ($i = self::MAX_LOG_FILES - 1; $i > 0; $i--) {
-                $oldFile = "{$logFile}.{$i}";
-                $newFile = "{$logFile}." . ($i + 1);
-                if (file_exists($oldFile)) {
-                    rename($oldFile, $newFile);
-                }
-            }
-            rename($logFile, "{$logFile}.1");
-        }
-    }
-
-    public function log(string $level, string $message, array $context = []): void
-    {
-        $this->rotate();
-        
-        $entry = [
-            'timestamp' => date('c'),
-            'level' => $level,
-            'message' => $message,
-            'context' => $context
-        ];
-
-        file_put_contents(
-            self::LOG_PATH . '/app.log',
-            json_encode($entry) . "\n",
-            FILE_APPEND
-        );
-    }
-}
-```
-
-### 8.11 資料庫互動實作
-
-#### 8.11.1 資料庫連線與查詢
-```php
-readonly class DatabaseConfig
-{
-    public function __construct(
-        public string $path,
-        public int $timeout = 2000,
-        public bool $readOnly = false,
-        public string $encoding = 'UTF-8'
-    ) {}
-}
-
-class Database
-{
-    private PDO $pdo;
-    private readonly LoggerInterface $logger;
-
-    public function __construct(
-        DatabaseConfig $config,
-        ?LoggerInterface $logger = null
-    ) {
-        $this->logger = $logger ?? new NullLogger();
-        
-        $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_TIMEOUT => $config->timeout,
-            PDO::ATTR_CASE => PDO::CASE_NATURAL,
-            PDO::SQLITE_ATTR_OPEN_FLAGS => $config->readOnly 
-                ? PDO::SQLITE_OPEN_READONLY 
-                : PDO::SQLITE_OPEN_READWRITE | PDO::SQLITE_OPEN_CREATE
-        ];
-
-        $dsn = "sqlite:{$config->path}";
-        
-        try {
-            $this->pdo = new PDO($dsn, null, null, $options);
-            $this->pdo->exec("PRAGMA encoding = '{$config->encoding}'");
-        } catch (PDOException $e) {
-            $this->logger->error('資料庫連線失敗', [
-                'error' => $e->getMessage(),
-                'dsn' => $dsn
-            ]);
-            throw $e;
-        }
-    }
-
-    public function query(string $sql, array $params = []): PDOStatement
-    {
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
-    }
-
-    /**
-     * 使用 PHP 8.4 新的 Iterator 綁定功能執行批次查詢
-     */
-    public function batchInsert(string $sql, Iterator $records): int
-    {
-        $stmt = $this->pdo->prepare($sql);
-        $count = 0;
-        
-        foreach ($records as $record) {
-            $stmt->execute((array) $record);
-            $count++;
-        }
-        
-        return $count;
-    }
-}
-```
-
-#### 8.11.2 資料庫儲存庫基底類別
-```php
-abstract readonly class BaseRepository
-{
-    public function __construct(
-        protected Database $db,
-        protected LoggerInterface $logger
-    ) {}
-
-    /**
-     * 使用 PHP 8.4 的型別標註功能和回傳型別
-     */
-    abstract public function create(object $data): int|string;
-    abstract public function update(int|string $id, object $data): bool;
-    abstract public function delete(int|string $id): bool;
-    abstract public function find(int|string $id): ?object;
-}
-
-/**
- * 附件儲存庫實作
- */
-final class AttachmentRepository extends BaseRepository
-{
-    public function create(object $data): int|string
-    {
-        // 檢查附件數量限制
-        $currentCount = $this->getAttachmentCount($data->post_id);
-        $maxAttachments = $this->getMaxAttachments($data->post_id);
-        
-        if ($maxAttachments === 0) {
-            throw new AttachmentException('此文章不允許附件上傳');
-        }
-        
-        if ($currentCount >= $maxAttachments) {
-            throw new AttachmentException('已達附件數量上限');
-        }
-        
-        // 新增附件
-        $sql = 'INSERT INTO attachments (uuid, post_id, filename, filepath, filesize, filetype) 
-                VALUES (:uuid, :post_id, :filename, :filepath, :filesize, :filetype)';
-                
-        return $this->db->query($sql, (array) $data)->lastInsertId();
-    }
-
-    private function getMaxAttachments(int $postId): int
-    {
-        // 取得文章所屬單位的附件數量設定
-        $sql = 'SELECT u.max_attachments FROM posts p 
-                JOIN units u ON p.unit_id = u.id 
-                WHERE p.id = ?';
-                
-        $result = $this->db->query($sql, [$postId])->fetch();
-        return $result['max_attachments'] ?? 0;
-    }
-
-    private function getAttachmentCount(int $postId): int
-    {
-        $sql = 'SELECT COUNT(*) as count FROM attachments WHERE post_id = ?';
-        $result = $this->db->query($sql, [$postId])->fetch();
-        return (int) $result['count'];
-    }
-}
-```
-
-#### 8.11.3 單位附件設定服務
-```php
-final readonly class UnitAttachmentConfig
-{
-    public function __construct(
-        public int $maxAttachments = 0,
-        public int $maxFileSize = 0,
-        public array $allowedTypes = []
-    ) {}
-}
-
-final class UnitService
-{
-    public function __construct(
-        private readonly Database $db,
-        private readonly LoggerInterface $logger
-    ) {}
-
-    public function updateAttachmentConfig(
-        int $unitId, 
-        UnitAttachmentConfig $config
-    ): bool {
-        $sql = 'UPDATE units 
-                SET max_attachments = :max_attachments,
-                    max_file_size = :max_file_size,
-                    allowed_types = :allowed_types
-                WHERE id = :id';
-                
-        try {
-            $this->db->query($sql, [
-                'max_attachments' => $config->maxAttachments,
-                'max_file_size' => $config->maxFileSize,
-                'allowed_types' => json_encode($config->allowedTypes),
-                'id' => $unitId
-            ]);
-            
-            $this->logger->info('更新單位附件設定', [
-                'unit_id' => $unitId,
-                'config' => $config
-            ]);
-            
-            return true;
-        } catch (PDOException $e) {
-            $this->logger->error('更新單位附件設定失敗', [
-                'unit_id' => $unitId,
-                'error' => $e->getMessage()
-            ]);
-            return false;
-        }
-    }
-}
-```
-
-## 9. 系統備份與還原規劃
-
-### 9.1 備份策略
-
-#### 9.1.1 資料庫備份腳本
-```bash
-#!/bin/bash
-
-# 備份目錄
-BACKUP_DIR="/backup/alleynote/db"
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-
-# 建立備份
-sqlite3 /var/www/alleynote/database.sqlite ".backup '$BACKUP_DIR/db_$TIMESTAMP.sqlite'"
-
-# 壓縮備份
-gzip "$BACKUP_DIR/db_$TIMESTAMP.sqlite"
-
-# 刪除超過30天的備份
-find $BACKUP_DIR -name "db_*.sqlite.gz" -mtime +30 -delete
-```
-
-#### 9.1.2 檔案系統備份設定
-```yaml
-backup:
-  frequency: daily
-  retention: 30
-  paths:
-    - /var/www/alleynote/uploads
-    - /var/www/alleynote/storage
-    - /etc/alleynote
-  exclude:
-    - "*.tmp"
-    - "*.log"
-  compression: gzip
-  encryption: AES-256
-```
-
-## 10. 部署自動化腳本
-
-### 10.1 部署腳本
-```bash
-#!/bin/bash
-
-# 環境變數
-ENV_FILE=".env"
-DEPLOY_DIR="/var/www/alleynote"
-
-# 更新程式碼
-git pull origin main
-
-# 安裝相依套件
-composer install --no-dev
-
-# 執行資料庫遷移
-php artisan migrate --force
-
-# 重建快取
-php artisan cache:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-# 更新檔案權限
-chown -R www-data:www-data $DEPLOY_DIR
-chmod -R 755 $DEPLOY_DIR/storage
-
-# 重啟服務
-systemctl restart php8.4-fpm
-systemctl restart nginx
-```
-
-## 11. 除錯與監控工具
-
-### 11.1 除錯工具設定
-```php
-class Debugger
-{
-    private const MAX_TRACE_DEPTH = 10;
-    private const SENSITIVE_FIELDS = ['password', 'token', 'secret'];
-
-    public static function dump($var, bool $sanitize = true): string
-    {
-        if ($sanitize) {
-            $var = self::sanitizeData($var);
-        }
-
-        ob_start();
-        var_dump($var);
-        return ob_get_clean();
-    }
-
-    private static function sanitizeData($data)
-    {
-        if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                if (in_array($key, self::SENSITIVE_FIELDS)) {
-                    $data[$key] = '******';
-                } else if (is_array($value)) {
-                    $data[$key] = self::sanitizeData($value);
-                }
-            }
-        }
-        return $data;
-    }
-}
-```
-
-## 12. DevContainer 開發環境配置
-
-### 12.1 基礎配置檔案結構
-
-專案根目錄需包含以下 DevContainer 相關檔案：
-
-```plaintext
-.devcontainer/
-├── devcontainer.json
-├── docker-compose.yml
-├── Dockerfile
-└── config/
-    ├── php.ini
-    ├── xdebug.ini
-    └── nginx.conf
-```
-
-### 12.2 DevContainer 配置檔案
-
-#### 12.2.1 devcontainer.json
-```json
-{
-  "name": "AlleyNote Development",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "app",
-  "workspaceFolder": "/workspace",
-  
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "xdebug.php-debug",
-        "bmewburn.vscode-intelephense-client",
-        "editorconfig.editorconfig",
-        "esbenp.prettier-vscode",
-        "mikestead.dotenv",
-        "calebporzio.better-phpunit",
-        "ms-azuretools.vscode-docker"
-      ],
-      "settings": {
-        "php.validate.executablePath": "/usr/local/bin/php",
-        "php.suggest.basic": false,
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-      }
-    }
-  },
-  
-  "forwardPorts": [80, 9003],
-  
-  "postCreateCommand": "composer install && php artisan key:generate"
-}
-```
-
-#### 12.2.2 docker-compose.yml
-```yaml
-version: '3.8'
-
-services:
-  app:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ..:/workspace:cached
-      - ./config/php.ini:/usr/local/etc/php/php.ini
-      - ./config/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
-    command: sleep infinity
     
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ..:/workspace:cached
-      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
-```
-
-#### 12.2.3 Dockerfile
-```dockerfile
-FROM php:8.4.5-fpm
-
-# 安裝必要套件
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    zip \
-    unzip \
-    sqlite3 \
-    libsqlite3-dev \
-    libicu-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libzip-dev \
-    && docker-php-ext-install pdo pdo_sqlite zip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd
-
-# 安裝並配置 Xdebug
-RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug
-
-# 安裝 Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# 設定工作目錄
-WORKDIR /workspace
-
-# 設定使用者權限
-RUN useradd -m vscode && \
-    chown -R vscode:vscode /workspace
-USER vscode
-```
-
-### 12.3 開發工具配置檔案
-
-#### 12.3.1 PHP 配置 (php.ini)
-```ini
-[PHP]
-memory_limit = 512M
-post_max_size = 50M
-upload_max_filesize = 50M
-max_execution_time = 300
-error_reporting = E_ALL
-display_errors = On
-display_startup_errors = On
-log_errors = On
-error_log = /dev/stderr
-date.timezone = "Asia/Taipei"
-
-[opcache]
-opcache.enable = 1
-opcache.enable_cli = 1
-opcache.memory_consumption = 128
-opcache.max_accelerated_files = 10000
-```
-
-#### 12.3.2 Xdebug 配置 (xdebug.ini)
-```ini
-[xdebug]
-xdebug.mode = debug,develop
-xdebug.start_with_request = yes
-xdebug.client_host = host.docker.internal
-xdebug.client_port = 9003
-xdebug.idekey = VSCODE
-xdebug.max_nesting_level = 500
-xdebug.log = /tmp/xdebug.log
-```
-
-#### 12.3.3 Nginx 配置 (nginx.conf)
-```nginx
-server {
-    listen 80;
-    server_name localhost;
-    root /workspace/public;
-    index index.php;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass app:9000;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include fastcgi_params;
+    private function insertTestPosts(): void
+    {
+        // 插入測試標籤
+        $this->db->exec("INSERT INTO tags (id, name) VALUES (1, '測試標籤')");
+        
+        // 插入多筆測試文章
+        for ($i = 1; $i <= 5; $i++) {
+            $this->insertTestPost([
+                'uuid' => "test-uuid-$i",
+                'title' => "測試文章 $i",
+                'content' => "測試內容 $i"
+            ]);
+            
+            // 關聯標籤
+            $postId = $this->db->lastInsertId();
+            $this->db->exec("INSERT INTO post_tags (post_id, tag_id) 
+                            VALUES ($postId, 1)");
+        }
     }
 }
 ```
 
-### 12.4 開發環境使用說明
+#### 2.4.5 資料驗證與例外處理
 
-1. **環境建置步驟**
-   - 安裝 Visual Studio Code
-   - 安裝 Remote - Containers 擴充功能
-   - 使用 VS Code 開啟專案資料夾
-   - 選擇 "Reopen in Container" 啟動開發環境
+##### 驗證器介面
+```php
+namespace App\Validation;
 
-2. **開發工作流程**
-   - 程式碼在本機編輯，自動同步至容器
-   - 使用整合式終端機執行指令
-   - Xdebug 除錯功能已預先配置完成
-   - 資料庫操作可使用 VS Code SQLite 擴充功能
+interface ValidatorInterface
+{
+    public function validate(array $data): array;
+    public function getErrors(): array;
+    public function isValid(): bool;
+}
+```
 
-3. **程式碼品質工具**
-   ```bash
-   # 執行程式碼風格檢查
-   ./vendor/bin/phpcs
+##### 文章驗證器實作
+```php
+namespace App\Validation;
 
-   # 執行靜態程式碼分析
-   ./vendor/bin/phpstan analyse
+class PostValidator implements ValidatorInterface
+{
+    private array $errors = [];
+    private array $rules = [
+        'title' => [
+            'required' => true,
+            'min_length' => 3,
+            'max_length' => 255
+        ],
+        'content' => [
+            'required' => true,
+            'min_length' => 10
+        ],
+        'user_id' => [
+            'required' => true,
+            'numeric' => true
+        ],
+        'tags' => [
+            'array' => true,
+            'min_count' => 1,
+            'max_count' => 5
+        ]
+    ];
 
-   # 執行單元測試
-   ./vendor/bin/phpunit
-   ```
+    public function validate(array $data): array
+    {
+        $this->errors = [];
 
-4. **常用指令**
-   ```bash
-   # 檢視環境資訊
-   php -v
-   composer -V
+        foreach ($this->rules as $field => $rules) {
+            foreach ($rules as $rule => $parameter) {
+                $method = "validate" . ucfirst($rule);
+                if (method_exists($this, $method)) {
+                    $this->$method($field, $data[$field] ?? null, $parameter);
+                }
+            }
+        }
 
-   # 安裝相依套件
-   composer install
+        return $this->errors;
+    }
 
-   # 建立新的 migration
-   php artisan make:migration
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
 
-   # 執行資料庫遷移
-   php artisan migrate
-   ```
+    public function isValid(): bool
+    {
+        return empty($this->errors);
+    }
 
-### 12.5 開發環境維護
+    private function validateRequired(string $field, $value, bool $required): void
+    {
+        if ($required && empty($value)) {
+            $this->errors[$field][] = "$field 不能為空";
+        }
+    }
 
-1. **容器映像檔更新**
-   - 定期更新基礎映像檔
-   - 依需求增加新的系統套件
-   - 更新 PHP 擴充功能
+    private function validateMinLength(string $field, $value, int $min): void
+    {
+        if (!empty($value) && mb_strlen($value) < $min) {
+            $this->errors[$field][] = "$field 長度不能小於 $min 個字元";
+        }
+    }
 
-2. **開發工具更新**
-   - VS Code 擴充功能更新
-   - Composer 相依套件更新
-   - 開發工具配置優化
+    private function validateMaxLength(string $field, $value, int $max): void
+    {
+        if (!empty($value) && mb_strlen($value) > $max) {
+            $this->errors[$field][] = "$field 長度不能大於 $max 個字元";
+        }
+    }
 
-3. **效能最佳化**
-   - 容器資源使用監控
-   - 開發環境效能調校
-   - 快取機制最佳化
+    private function validateNumeric(string $field, $value, bool $numeric): void
+    {
+        if ($numeric && !is_numeric($value)) {
+            $this->errors[$field][] = "$field 必須是數字";
+        }
+    }
 
-## 13. 系統效能與維護規劃
+    private function validateArray(string $field, $value, bool $isArray): void
+    {
+        if ($isArray && !is_array($value)) {
+            $this->errors[$field][] = "$field 必須是陣列";
+        }
+    }
 
-### 13.1 效能指標與目標
+    private function validateMinCount(string $field, $value, int $min): void
+    {
+        if (is_array($value) && count($value) < $min) {
+            $this->errors[$field][] = "$field 至少要有 $min 個項目";
+        }
+    }
 
-#### 13.1.1 系統效能目標
-- 頁面載入時間：平均 < 2 秒
-- API 回應時間：平均 < 500ms
-- 並發使用者支援：至少 1000 位同時在線使用者
-- 資料庫查詢效能：95% 的查詢完成時間 < 100ms
+    private function validateMaxCount(string $field, $value, int $max): void
+    {
+        if (is_array($value) && count($value) > $max) {
+            $this->errors[$field][] = "$field 最多只能有 $max 個項目";
+        }
+    }
+}
+```
 
-#### 13.1.2 擴展臨界值
-- CPU 使用率 > 70% 持續 5 分鐘
-- 記憶體使用率 > 80% 持續 5 分鐘
-- 儲存空間使用率 > 85%
-- 每秒請求數 (RPS) > 100
+##### 例外處理基礎類別
+```php
+namespace App\Exceptions;
 
-### 13.2 系統維護政策
+abstract class BaseException extends \Exception
+{
+    protected array $errors = [];
 
-#### 13.2.1 定期維護時間
-- 每週三凌晨 2:00-4:00 為維護時間窗口
-- 重大更新提前一週公告
-- 緊急維護至少提前 2 小時通知
+    public function __construct(string $message = "", array $errors = [])
+    {
+        parent::__construct($message);
+        $this->errors = $errors;
+    }
 
-#### 13.2.2 系統更新流程
-1. 更新前置作業
-   - 建立完整資料庫備份
-   - 執行自動化測試套件
-   - 審查更新計畫與回滾計畫
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+}
 
-2. 更新執行
-   - 啟動維護模式頁面
-   - 執行資料庫遷移
-   - 部署新程式碼
-   - 清除快取
-   - 執行系統健康檢查
+class ValidationException extends BaseException {}
+class ResourceNotFoundException extends BaseException {}
+class DatabaseException extends BaseException {}
+```
 
-3. 更新後確認
-   - 驗證關鍵功能
-   - 確認資料庫連接
-   - 確認檔案權限
-   - 監控系統效能指標
+#### 2.4.6 效能最佳化策略
 
-### 13.3 備份與災難復原
+##### 查詢快取管理器
+```php
+namespace App\Cache;
 
-#### 13.3.1 備份策略
-1. 資料庫備份
-   - 每日完整備份：凌晨 1:00
-   - 每小時增量備份
-   - 保留政策：
-     - 每日備份保留 30 天
-     - 每週備份保留 3 個月
-     - 每月備份保留 1 年
+class QueryCache
+{
+    private static array $cache = [];
+    private static array $ttl = [];
 
-2. 檔案系統備份
-   - 每日檔案系統快照
-   - 上傳檔案即時異地備份
-   - 保留最近 7 天的每日快照
+    public static function remember(string $key, callable $callback, int $ttl = 3600)
+    {
+        if (self::has($key) && !self::isExpired($key)) {
+            return self::get($key);
+        }
 
-#### 13.3.2 災難復原程序
-1. 初始評估
-   - 確定故障範圍與影響
-   - 啟動災難復原小組
-   - 通知相關單位
+        $value = $callback();
+        self::put($key, $value, $ttl);
+        return $value;
+    }
 
-2. 系統復原步驟
-   - 準備備用伺服器環境
-   - 還原最新的資料備份
-   - 驗證資料完整性
-   - 更新 DNS 記錄（如需要）
+    public static function put(string $key, $value, int $ttl): void
+    {
+        self::$cache[$key] = $value;
+        self::$ttl[$key] = time() + $ttl;
+    }
 
-3. 復原後確認
-   - 執行系統健康檢查
-   - 驗證資料一致性
-   - 確認所有服務可用性
-   - 記錄事件過程與改善建議
+    public static function get(string $key)
+    {
+        return self::$cache[$key] ?? null;
+    }
 
-### 13.4 自動化測試規劃
+    public static function has(string $key): bool
+    {
+        return isset(self::$cache[$key]);
+    }
 
-#### 13.4.1 測試範圍
-1. 單元測試
-   - 所有模型類別
-   - 工具類別與輔助函式
-   - 驗證器與過濾器
-   - 目標測試覆蓋率 > 80%
+    public static function forget(string $key): void
+    {
+        unset(self::$cache[$key], self::$ttl[$key]);
+    }
 
-2. 整合測試
-   - API 端點測試
-   - 資料庫互動測試
-   - 快取機制測試
-   - 檔案操作測試
+    public static function isExpired(string $key): bool
+    {
+        return !isset(self::$ttl[$key]) || time() > self::$ttl[$key];
+    }
 
-3. 端對端測試
-   - 關鍵使用者流程
-   - 表單提交測試
-   - 檔案上傳測試
-   - 權限控制測試
+    public static function flush(): void
+    {
+        self::$cache = [];
+        self::$ttl = [];
+    }
+}
+```
 
-#### 13.4.2 效能測試計畫
-1. 負載測試
-   - 模擬 1000 位並發使用者
-   - 持續執行 30 分鐘
-   - 監控系統資源使用
-   - 記錄回應時間分佈
+##### 使用快取範例
+```php
+public function getPinnedPosts(): array
+{
+    $cacheKey = 'pinned_posts';
+    
+    return QueryCache::remember($cacheKey, function () {
+        $sql = "SELECT * FROM {$this->table} WHERE is_pinned = 1 
+                ORDER BY publish_date DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }, 300); // 5分鐘快取
+}
+```
 
-2. 壓力測試
-   - 逐步增加並發使用者
-   - 確定系統極限
-   - 監控錯誤率
-   - 評估資源使用效率
+##### 批次處理範例
+```php
+public function batchInsertTags(array $tags, int $batchSize = 100): void
+{
+    $chunks = array_chunk($tags, $batchSize);
+    
+    foreach ($chunks as $chunk) {
+        $placeholders = implode(',', array_fill(0, count($chunk), '(?)'));
+        $sql = "INSERT INTO tags (name) VALUES $placeholders";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(array_column($chunk, 'name'));
+    }
+}
+```
 
-3. 耐久測試
-   - 持續執行 24 小時
-   - 模擬實際使用模式
-   - 監控記憶體洩漏
-   - 評估長期穩定性
+##### 延遲載入關聯
+```php
+public function getPostWithTags(int $postId): array
+{
+    $post = $this->find($postId);
+    if (!$post) {
+        return [];
+    }
+    
+    // 只有真正需要標籤資料時才載入
+    $post['tags'] = function () use ($postId) {
+        $sql = "SELECT t.* FROM tags t
+                JOIN post_tags pt ON pt.tag_id = t.id
+                WHERE pt.post_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$postId]);
+        return $stmt->fetchAll();
+    };
+    
+    return $post;
+}
+```
 
-#### 13.4.3 系統監控警報
-1. 效能警報
-   - CPU 使用率 > 80% (警告)
-   - 記憶體使用率 > 85% (警告)
-   - 平均回應時間 > 1s (警告)
-   - 錯誤率 > 1% (緊急)
+### 2.5 業務邏輯層詳細實作規範
 
-2. 安全警報
-   - 異常登入嘗試
-   - 大量請求來自同一 IP
-   - 敏感檔案存取嘗試
-   - SSL 憑證即將過期
+#### 2.5.1 文章服務實作
+```php
+namespace App\Services;
 
-3. 儲存空間警報
-   - 磁碟使用率 > 80% (警告)
-   - 備份失敗通知
-   - 大量檔案刪除事件
-   - 異常的檔案成長率
+class PostService
+{
+    private PostRepository $repository;
+    private PostValidator $validator;
+    
+    public function __construct(PostRepository $repository, PostValidator $validator)
+    {
+        $this->repository = $repository;
+        $this->validator = $validator;
+    }
+    
+    public function createPost(array $data): array
+    {
+        // 驗證輸入資料
+        $this->validator->validate($data);
+        
+        // 產生 UUID
+        $data['uuid'] = Uuid::uuid4()->toString();
+        
+        // 設定發布狀態
+        $data['status'] = $data['publish_immediately'] ?? false 
+            ? PostStatus::PUBLISHED 
+            : PostStatus::DRAFT;
+            
+        // 設定 IP 位址
+        $data['user_ip'] = request()->ip();
+        
+        // 建立文章
+        return $this->repository->createPost($data);
+    }
+    
+    public function updatePost(string $uuid, array $data): array
+    {
+        // 取得現有文章
+        $post = $this->repository->findByUuid($uuid);
+        if (!$post) {
+            throw new PostNotFoundException();
+        }
+        
+        // 驗證更新資料
+        $this->validator->validateUpdate($data);
+        
+        // 更新文章
+        $this->repository->update($post['id'], $data);
+        
+        return $this->repository->findByUuid($uuid);
+    }
+    
+    public function searchPosts(array $criteria): array
+    {
+        // 處理搜尋條件
+        $criteria = $this->processSearchCriteria($criteria);
+        
+        // 執行搜尋
+        return $this->repository->searchPosts($criteria);
+    }
+    
+    private function processSearchCriteria(array $criteria): array
+    {
+        // 處理日期範圍
+        if (!empty($criteria['date_range'])) {
+            [$from, $to] = explode(',', $criteria['date_range']);
+            $criteria['date_from'] = $from;
+            $criteria['date_to'] = $to;
+            unset($criteria['date_range']);
+        }
+        
+        // 處理排序
+        if (!empty($criteria['sort'])) {
+            $criteria['order'] = $criteria['sort'][0] === '-' ? 'DESC' : 'ASC';
+            $criteria['sort'] = ltrim($criteria['sort'], '-');
+        }
+        
+        return $criteria;
+    }
+}
+```
+
+### 2.6 表現層詳細實作規範
+
+#### 2.6.1 API 控制器實作
+```php
+namespace App\Controllers;
+
+class PostController
+{
+    private PostService $service;
+    
+    public function __construct(PostService $service)
+    {
+        $this->service = $service;
+    }
+    
+    public function index(Request $request): Response
+    {
+        try {
+            $posts = $this->service->searchPosts($request->all());
+            return new JsonResponse(['data' => $posts]);
+        } catch (ValidationException $e) {
+            return new JsonResponse([
+                'error' => '無效的搜尋條件',
+                'details' => $e->getErrors()
+            ], 400);
+        }
+    }
+    
+    public function store(Request $request): Response
+    {
+        try {
+            $post = $this->service->createPost($request->all());
+            return new JsonResponse(['data' => $post], 201);
+        } catch (ValidationException $e) {
+            return new JsonResponse([
+                'error' => '無效的文章資料',
+                'details' => $e->getErrors()
+            ], 400);
+        }
+    }
+    
+    public function update(string $uuid, Request $request): Response
+    {
+        try {
+            $post = $this->service->updatePost($uuid, $request->all());
+            return new JsonResponse(['data' => $post]);
+        } catch (PostNotFoundException $e) {
+            return new JsonResponse([
+                'error' => '找不到指定的文章'
+            ], 404);
+        } catch (ValidationException $e) {
+            return new JsonResponse([
+                'error' => '無效的文章資料',
+                'details' => $e->getErrors()
+            ], 400);
+        }
+    }
+}
+```
+
+### 2.7 系統監控與效能最佳化
+
+#### 2.7.1 效能監控實作
+```php
+namespace App\Monitoring;
+
+class PerformanceMonitor
+{
+    private static array $queries = [];
+    private static array $timings = [];
+    
+    public static function logQuery(string $sql, float $time): void
+    {
+        self::$queries[] = [
+            'sql' => $sql,
+            'time' => $time,
+            'timestamp' => microtime(true)
+        ];
+    }
+    
+    public static function startTiming(string $key): void
+    {
+        self::$timings[$key] = [
+            'start' => microtime(true)
+        ];
+    }
+    
+    public static function endTiming(string $key): void
+    {
+        if (isset(self::$timings[$key])) {
+            self::$timings[$key]['end'] = microtime(true);
+            self::$timings[$key]['duration'] = 
+                self::$timings[$key]['end'] - self::$timings[$key]['start'];
+        }
+    }
+    
+    public static function getMetrics(): array
+    {
+        return [
+            'queries' => self::$queries,
+            'timings' => self::$timings,
+            'memory' => [
+                'current' => memory_get_usage(),
+                'peak' => memory_get_peak_usage()
+            ]
+        ];
+    }
+}
+```
+
+#### 2.7.2 快取策略實作
+```php
+namespace App\Cache;
+
+class PostCache
+{
+    private Cache $cache;
+    private int $ttl;
+    
+    public function __construct(Cache $cache, int $ttl = 3600)
+    {
+        $this->cache = $cache;
+        $this->ttl = $ttl;
+    }
+    
+    public function remember(string $key, callable $callback): mixed
+    {
+        if ($this->cache->has($key)) {
+            return $this->cache->get($key);
+        }
+        
+        $value = $callback();
+        $this->cache->put($key, $value, $this->ttl);
+        
+        return $value;
+    }
+    
+    public function invalidate(string $key): void
+    {
+        $this->cache->forget($key);
+    }
+    
+    public function invalidatePattern(string $pattern): void
+    {
+        $keys = $this->cache->getKeys($pattern);
+        foreach ($keys as $key) {
+            $this->invalidate($key);
+        }
+    }
+}
+```
+
+#### 2.7.3 系統監控配置
+```php
+return [
+    'monitoring' => [
+        'enabled' => true,
+        'metrics' => [
+            'response_time' => true,
+            'memory_usage' => true,
+            'sql_queries' => true,
+            'cache_hits' => true
+        ],
+        'thresholds' => [
+            'slow_query' => 1000, // 毫秒
+            'high_memory' => 64 * 1024 * 1024, // 64MB
+            'max_execution_time' => 5000 // 毫秒
+        ],
+        'alerting' => [
+            'enabled' => true,
+            'channels' => ['slack', 'email'],
+            'threshold_exceeded' => true,
+            'error_occurred' => true
+        ]
+    ]
+];
+```
