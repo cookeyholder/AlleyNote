@@ -1443,3 +1443,99 @@ return [
     ]
 ];
 ```
+
+### 2.8 系統設定服務實作
+
+#### 2.8.1 系統設定管理
+```php
+namespace App\Services;
+
+class SystemConfigService
+{
+    private ConfigRepository $repository;
+    
+    public function __construct(ConfigRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+    
+    /**
+     * 更新系統時區設定
+     */
+    public function updateTimezone(string $timezone): void
+    {
+        // 驗證時區是否有效
+        if (!in_array($timezone, \DateTimeZone::listIdentifiers())) {
+            throw new InvalidTimezoneException('無效的時區設定');
+        }
+        
+        // 更新時區設定
+        $this->repository->set('system.timezone', $timezone);
+        
+        // 更新 PHP 預設時區
+        date_default_timezone_set($timezone);
+    }
+    
+    /**
+     * 取得系統時區設定
+     */
+    public function getTimezone(): string
+    {
+        return $this->repository->get('system.timezone', 'Asia/Taipei');
+    }
+    
+    /**
+     * 根據系統時區轉換時間
+     */
+    public function formatDateTime(\DateTime $dateTime): string
+    {
+        $timezone = new \DateTimeZone($this->getTimezone());
+        $dateTime->setTimezone($timezone);
+        return $dateTime->format('Y-m-d H:i:s');
+    }
+}
+```
+
+#### 2.8.2 時區設定測試
+```php
+namespace Tests\Unit\Services;
+
+class SystemConfigServiceTest extends TestCase
+{
+    private SystemConfigService $service;
+    private ConfigRepository $repository;
+    
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->repository = $this->createMock(ConfigRepository::class);
+        $this->service = new SystemConfigService($this->repository);
+    }
+    
+    /** @test */
+    public function shouldUpdateValidTimezone(): void
+    {
+        // 安排
+        $timezone = 'Asia/Tokyo';
+        
+        // 執行
+        $this->service->updateTimezone($timezone);
+        
+        // 驗證
+        $this->assertEquals($timezone, date_default_timezone_get());
+    }
+    
+    /** @test */
+    public function shouldRejectInvalidTimezone(): void
+    {
+        // 安排
+        $invalidTimezone = 'Invalid/Timezone';
+        
+        // 驗證
+        $this->expectException(InvalidTimezoneException::class);
+        
+        // 執行
+        $this->service->updateTimezone($invalidTimezone);
+    }
+}
+```
