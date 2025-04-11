@@ -20,15 +20,14 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class PostServiceTest extends MockeryTestCase
 {
-    use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
     private PostRepositoryInterface $repository;
     private PostValidator $validator;
     private PostService $service;
+
     protected function setUp(): void
     {
         parent::setUp();
-        /** @var MockInterface|PostRepositoryInterface */
-        $this->repository = \Mockery::mock(PostRepositoryInterface::class);
+        $this->repository = Mockery::mock(PostRepositoryInterface::class)->makePartial();
         $this->validator = new PostValidator();
         $this->service = new PostService($this->repository, $this->validator);
     }

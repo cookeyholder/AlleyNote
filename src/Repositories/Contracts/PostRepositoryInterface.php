@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Repositories\Contracts;
 
 use App\Models\Post;
-use Mockery\MockInterface;
 
-interface PostRepositoryInterface extends RepositoryInterface, MockInterface
+interface PostRepositoryInterface extends RepositoryInterface
 {
     /**
      * 依流水號查詢文章

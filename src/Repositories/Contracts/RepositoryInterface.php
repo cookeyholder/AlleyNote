@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Contracts;
 
-use Mockery\MockInterface;
-
-interface RepositoryInterface extends MockInterface
+interface RepositoryInterface
 {
     /**
      * 依 ID 查詢
