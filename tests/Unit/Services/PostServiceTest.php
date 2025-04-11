@@ -10,10 +10,10 @@ use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use Tests\Factory\PostFactory;
+use Mockery\Adapter\Phpunit\MockeryTestCase;
 
-class PostServiceTest extends TestCase
+class PostServiceTest extends MockeryTestCase
 {
     private PostRepositoryInterface $repository;
     private PostService $service;
@@ -23,12 +23,6 @@ class PostServiceTest extends TestCase
         parent::setUp();
         $this->repository = Mockery::mock(PostRepositoryInterface::class);
         $this->service = new PostService($this->repository);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 
     public function testCreatePostWithValidData(): void
@@ -61,6 +55,37 @@ class PostServiceTest extends TestCase
         // 執行測試並驗證異常
         $this->expectException(ValidationException::class);
         $this->service->createPost($data);
+    }
+
+    public function testCreatePostWithInvalidTitle(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('文章標題不可為空');
+
+        $this->service->createPost(['content' => '測試內容']);
+    }
+
+    public function testCreatePostWithTooLongTitle(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('文章標題不可超過 255 字元');
+
+        $this->service->createPost([
+            'title' => str_repeat('a', 256),
+            'content' => '測試內容'
+        ]);
+    }
+
+    public function testCreatePostWithInvalidDate(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('無效的發布日期格式');
+
+        $this->service->createPost([
+            'title' => '測試標題',
+            'content' => '測試內容',
+            'publish_date' => 'invalid-date'
+        ]);
     }
 
     public function testUpdatePostWithValidData(): void
@@ -126,22 +151,45 @@ class PostServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testRecordViewWithInvalidIp(): void
+    public function testSetPinnedWithInvalidId(): void
     {
-        // 準備測試資料
-        $id = 1;
-        $invalidIp = 'invalid-ip';
-        $post = new Post(PostFactory::make());
+        $this->expectException(NotFoundException::class);
+        $this->expectExceptionMessage('找不到指定的文章');
 
-        // 模擬 Repository
         $this->repository->shouldReceive('find')
             ->once()
-            ->with($id)
+            ->with(999)
+            ->andReturnNull();
+
+        $this->service->setPinned(999, true);
+    }
+
+    public function testSetTagsWithInvalidId(): void
+    {
+        $this->expectException(NotFoundException::class);
+        $this->expectExceptionMessage('找不到指定的文章');
+
+        $this->repository->shouldReceive('find')
+            ->once()
+            ->with(999)
+            ->andReturnNull();
+
+        $this->service->setTags(999, [1, 2, 3]);
+    }
+
+    public function testRecordViewWithInvalidIp(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('無效的 IP 位址');
+
+        $post = new Post(PostFactory::make());
+
+        $this->repository->shouldReceive('find')
+            ->once()
+            ->with(1)
             ->andReturn($post);
 
-        // 執行測試並驗證異常
-        $this->expectException(ValidationException::class);
-        $this->service->recordView($id, $invalidIp);
+        $this->service->recordView(1, 'invalid-ip');
     }
 
     public function testRecordViewWithValidData(): void

@@ -92,24 +92,20 @@ class PostService implements PostServiceInterface
      */
     private function validatePostData(array $data): void
     {
-        $errors = [];
-
         if (empty($data['title'])) {
-            $errors['title'] = '標題不能為空';
-        } elseif (mb_strlen($data['title']) > 255) {
-            $errors['title'] = '標題不能超過 255 個字元';
+            throw new ValidationException('文章標題不可為空');
         }
-
+        if (strlen($data['title']) > 255) {
+            throw new ValidationException('文章標題不可超過 255 字元');
+        }
         if (empty($data['content'])) {
-            $errors['content'] = '內容不能為空';
+            throw new ValidationException('文章內容不可為空');
         }
-
-        if (isset($data['user_ip']) && !is_valid_ip($data['user_ip'])) {
-            $errors['user_ip'] = '無效的 IP 位址';
+        if (isset($data['user_ip']) && !filter_var($data['user_ip'], FILTER_VALIDATE_IP)) {
+            throw new ValidationException('無效的 IP 位址格式');
         }
-
-        if (!empty($errors)) {
-            throw new ValidationException('文章資料驗證失敗', $errors);
+        if (isset($data['publish_date']) && !strtotime($data['publish_date'])) {
+            throw new ValidationException('無效的發布日期格式');
         }
     }
 }

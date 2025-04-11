@@ -6,21 +6,36 @@ namespace App\Models;
 
 class Post
 {
-    public function __construct(
-        private readonly int $id = 0,
-        private readonly string $uuid = '',
-        private readonly int $seq_number = 0,
-        private string $title = '',
-        private string $content = '',
-        private int $user_id = 0,
-        private string $user_ip = '',
-        private int $views = 0,
-        private bool $is_pinned = false,
-        private int $status = 1,
-        private string $publish_date = '',
-        private string $created_at = '',
-        private string $updated_at = ''
-    ) {}
+    private int $id;
+    private string $uuid;
+    private int $seqNumber;
+    private string $title;
+    private string $content;
+    private int $userId;
+    private ?string $userIp;
+    private bool $isPinned;
+    private string $status;
+    private string $publishDate;
+    private string $createdAt;
+    private string $updatedAt;
+    private int $viewCount;
+
+    public function __construct(array $attributes)
+    {
+        $this->id = $attributes['id'] ?? 0;
+        $this->uuid = $attributes['uuid'] ?? '';
+        $this->seqNumber = $attributes['seq_number'] ?? 0;
+        $this->title = $attributes['title'] ?? '';
+        $this->content = $attributes['content'] ?? '';
+        $this->userId = $attributes['user_id'] ?? 0;
+        $this->userIp = $attributes['user_ip'] ?? null;
+        $this->isPinned = $attributes['is_pinned'] ?? false;
+        $this->status = $attributes['status'] ?? 'draft';
+        $this->publishDate = $attributes['publish_date'] ?? date('Y-m-d H:i:s');
+        $this->createdAt = $attributes['created_at'] ?? date('Y-m-d H:i:s');
+        $this->updatedAt = $attributes['updated_at'] ?? date('Y-m-d H:i:s');
+        $this->viewCount = $attributes['view_count'] ?? 0;
+    }
 
     public function getId(): int
     {
@@ -34,7 +49,7 @@ class Post
 
     public function getSeqNumber(): int
     {
-        return $this->seq_number;
+        return $this->seqNumber;
     }
 
     public function getTitle(): string
@@ -42,97 +57,49 @@ class Post
         return $this->title;
     }
 
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-        return $this;
-    }
-
     public function getContent(): string
     {
         return $this->content;
     }
 
-    public function setContent(string $content): self
-    {
-        $this->content = $content;
-        return $this;
-    }
-
     public function getUserId(): int
     {
-        return $this->user_id;
+        return $this->userId;
     }
 
-    public function setUserId(int $user_id): self
+    public function getUserIp(): ?string
     {
-        $this->user_id = $user_id;
-        return $this;
-    }
-
-    public function getUserIp(): string
-    {
-        return $this->user_ip;
-    }
-
-    public function setUserIp(string $user_ip): self
-    {
-        $this->user_ip = $user_ip;
-        return $this;
-    }
-
-    public function getViews(): int
-    {
-        return $this->views;
-    }
-
-    public function incrementViews(): self
-    {
-        $this->views++;
-        return $this;
+        return $this->userIp;
     }
 
     public function isPinned(): bool
     {
-        return $this->is_pinned;
+        return $this->isPinned;
     }
 
-    public function setIsPinned(bool $is_pinned): self
-    {
-        $this->is_pinned = $is_pinned;
-        return $this;
-    }
-
-    public function getStatus(): int
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function setStatus(int $status): self
-    {
-        $this->status = $status;
-        return $this;
-    }
-
     public function getPublishDate(): string
     {
-        return $this->publish_date;
-    }
-
-    public function setPublishDate(string $publish_date): self
-    {
-        $this->publish_date = $publish_date;
-        return $this;
+        return $this->publishDate;
     }
 
     public function getCreatedAt(): string
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
     public function getUpdatedAt(): string
     {
-        return $this->updated_at;
+        return $this->updatedAt;
+    }
+
+    public function getViewCount(): int
+    {
+        return $this->viewCount;
     }
 
     public function toArray(): array
@@ -140,36 +107,17 @@ class Post
         return [
             'id' => $this->id,
             'uuid' => $this->uuid,
-            'seq_number' => $this->seq_number,
+            'seq_number' => $this->seqNumber,
             'title' => $this->title,
             'content' => $this->content,
-            'user_id' => $this->user_id,
-            'user_ip' => $this->user_ip,
-            'views' => $this->views,
-            'is_pinned' => $this->is_pinned,
+            'user_id' => $this->userId,
+            'user_ip' => $this->userIp,
+            'is_pinned' => $this->isPinned,
             'status' => $this->status,
-            'publish_date' => $this->publish_date,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'publish_date' => $this->publishDate,
+            'created_at' => $this->createdAt,
+            'updated_at' => $this->updatedAt,
+            'view_count' => $this->viewCount
         ];
-    }
-
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            id: $data['id'] ?? 0,
-            uuid: $data['uuid'] ?? '',
-            seq_number: $data['seq_number'] ?? 0,
-            title: $data['title'] ?? '',
-            content: $data['content'] ?? '',
-            user_id: $data['user_id'] ?? 0,
-            user_ip: $data['user_ip'] ?? '',
-            views: $data['views'] ?? 0,
-            is_pinned: (bool)($data['is_pinned'] ?? false),
-            status: $data['status'] ?? 1,
-            publish_date: $data['publish_date'] ?? '',
-            created_at: $data['created_at'] ?? '',
-            updated_at: $data['updated_at'] ?? ''
-        );
     }
 }
