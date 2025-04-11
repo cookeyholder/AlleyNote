@@ -115,7 +115,7 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
 
         $endTime = microtime(true);
         $duration = ($endTime - $startTime) * 1000; // 轉換為毫秒
-        
+
         $this->assertLess($duration / $count, 100, '每筆新增時間應小於 100ms');
     }
 
