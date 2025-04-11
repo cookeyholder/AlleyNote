@@ -43,6 +43,11 @@ class PostRepository implements PostRepositoryInterface
 
     public function create(array $data): Post
     {
+        // 驗證必要欄位
+        if (empty($data['title']) || empty($data['content']) || empty($data['user_id'])) {
+            throw new \InvalidArgumentException('標題、內容和使用者 ID 為必填欄位');
+        }
+
         // 產生 UUID
         $data['uuid'] = $data['uuid'] ?? generate_uuid();
 
@@ -58,6 +63,7 @@ class PostRepository implements PostRepositoryInterface
         // 設定發布時間
         $data['publish_date'] = $data['publish_date'] ?? $now;
 
+        // 準備 SQL 及參數
         $sql = "INSERT INTO posts (
             uuid, seq_number, title, content, user_id, user_ip,
             views, is_pinned, status, publish_date, created_at, updated_at
@@ -66,6 +72,7 @@ class PostRepository implements PostRepositoryInterface
             :views, :is_pinned, :status, :publish_date, :created_at, :updated_at
         )";
 
+        // 執行新增
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'uuid' => $data['uuid'],
@@ -73,7 +80,7 @@ class PostRepository implements PostRepositoryInterface
             'title' => $data['title'],
             'content' => $data['content'],
             'user_id' => $data['user_id'],
-            'user_ip' => $data['user_ip'],
+            'user_ip' => $data['user_ip'] ?? '127.0.0.1',
             'views' => $data['views'] ?? 0,
             'is_pinned' => $data['is_pinned'] ?? false,
             'status' => $data['status'] ?? 1,
