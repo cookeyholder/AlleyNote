@@ -7,9 +7,7 @@ use InvalidArgumentException;
 
 class AuthService
 {
-    public function __construct(private UserRepository $userRepository)
-    {
-    }
+    public function __construct(private UserRepository $userRepository) {}
 
     public function register(array $data): array
     {
@@ -45,7 +43,7 @@ class AuthService
         $this->userRepository->updateLastLogin($user['id']);
 
         unset($user['password']); // 移除敏感資訊
-        
+
         return [
             'success' => true,
             'message' => '登入成功',
