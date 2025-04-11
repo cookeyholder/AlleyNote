@@ -54,7 +54,7 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
                 user_ip VARCHAR(45),
                 is_pinned BOOLEAN DEFAULT 0,
                 status VARCHAR(20) DEFAULT "draft",
-                views INTEGER DEFAULT 0,
+                view_count INTEGER DEFAULT 0,
                 publish_date DATETIME,
                 created_at DATETIME,
                 updated_at DATETIME

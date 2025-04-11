@@ -55,7 +55,7 @@ class PostRepositoryTest extends MockeryTestCase
                 user_ip VARCHAR(45),
                 is_pinned BOOLEAN DEFAULT 0,
                 status VARCHAR(20) DEFAULT "draft",
-                views INTEGER DEFAULT 0,
+                view_count INTEGER DEFAULT 0,
                 publish_date DATETIME,
                 created_at DATETIME,
                 updated_at DATETIME
@@ -133,13 +133,17 @@ class PostRepositoryTest extends MockeryTestCase
     {
         $post = $this->repository->create(PostFactory::make());
 
-        $updated = $this->repository->update($post->getId(), [
-            'title' => '更新的標題',
-            'content' => '更新的內容'
-        ]);
+        $updateData = [
+            'title' => '更新後的標題',
+            'content' => '更新後的內容',
+            'user_id' => 1
+        ];
 
-        $this->assertEquals('更新的標題', $updated->getTitle());
-        $this->assertEquals('更新的內容', $updated->getContent());
+        $updatedPost = $this->repository->update($post->getId(), $updateData);
+
+        $this->assertInstanceOf(Post::class, $updatedPost);
+        $this->assertEquals('更新後的標題', $updatedPost->getTitle());
+        $this->assertEquals('更新後的內容', $updatedPost->getContent());
     }
 
     public function testCanDeletePost(): void

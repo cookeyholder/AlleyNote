@@ -151,18 +151,16 @@ class PostService implements PostServiceInterface
 
     public function recordView(int $id, string $userIp, ?int $userId = null): bool
     {
-        $post = $this->repository->find($id);
-        if (!$post) {
-            throw new NotFoundException('找不到指定的文章');
-        }
+        $post = $this->getPost($id);
 
-        // 只有已發布的文章可以計算瀏覽次數
-        if (PostStatus::from($post->getStatus()) !== PostStatus::PUBLISHED) {
-            return false;
-        }
-
+        // 檢查 IP 格式
         if (!filter_var($userIp, FILTER_VALIDATE_IP)) {
             throw new ValidationException('無效的 IP 位址');
+        }
+
+        // 只有已發布的文章才能計算瀏覽次數
+        if ($post->getStatus() !== PostStatus::PUBLISHED->value) {
+            return false;
         }
 
         return $this->repository->incrementViews($id, $userIp, $userId);

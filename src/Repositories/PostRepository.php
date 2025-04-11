@@ -455,7 +455,10 @@ class PostRepository implements PostRepositoryInterface
 
         try {
             // 檢查文章是否存在
-            $post = $this->find($id);
+            $stmt = $this->db->prepare('SELECT * FROM posts WHERE id = ?');
+            $stmt->execute([$id]);
+            $post = $stmt->fetch(PDO::FETCH_ASSOC);
+
             if (!$post) {
                 throw new \InvalidArgumentException('找不到指定的文章');
             }
@@ -474,20 +477,21 @@ class PostRepository implements PostRepositoryInterface
             }
 
             // 更新文章觀看次數
-            $stmt = $this->db->prepare('UPDATE posts SET views = views + 1 WHERE id = ?');
+            $stmt = $this->db->prepare('UPDATE posts SET view_count = view_count + 1 WHERE id = ?');
             $stmt->execute([$id]);
 
             // 記錄觀看記錄
-            $sql = 'INSERT INTO post_views (uuid, post_id, user_id, user_ip, view_date) 
-                VALUES (:uuid, :post_id, :user_id, :user_ip, :view_date)';
+            $stmt = $this->db->prepare('
+                INSERT INTO post_views (uuid, post_id, user_id, user_ip, view_date) 
+                VALUES (:uuid, :post_id, :user_id, :user_ip, :view_date)
+            ');
 
-            $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'uuid' => generate_uuid(),
                 'post_id' => $id,
                 'user_id' => $userId,
                 'user_ip' => $userIp,
-                'view_date' => format_datetime()
+                'view_date' => date('Y-m-d H:i:s')
             ]);
 
             $this->db->commit();
@@ -519,6 +523,18 @@ class PostRepository implements PostRepositoryInterface
         $this->db->beginTransaction();
 
         try {
+            // 驗證標籤是否存在
+            if (!empty($tagIds)) {
+                $placeholders = str_repeat('?,', count($tagIds) - 1) . '?';
+                $sql = "SELECT COUNT(*) FROM tags WHERE id IN ({$placeholders})";
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute($tagIds);
+
+                if ((int) $stmt->fetchColumn() !== count($tagIds)) {
+                    throw new \PDOException('部分標籤不存在');
+                }
+            }
+
             // 移除現有標籤
             $stmt = $this->db->prepare('DELETE FROM post_tags WHERE post_id = ?');
             $stmt->execute([$id]);
@@ -535,10 +551,7 @@ class PostRepository implements PostRepositoryInterface
             }
 
             $this->db->commit();
-
-            // 清除快取
             $this->invalidateCache($id);
-
             return true;
         } catch (\Exception $e) {
             $this->db->rollBack();

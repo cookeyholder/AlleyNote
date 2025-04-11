@@ -108,13 +108,14 @@ class PostServiceTest extends MockeryTestCase
 
     public function testCreatePostWithFutureDate(): void
     {
-        $futureDate = date('Y-m-d', strtotime('+1 year'));
+        $futureDate = date('Y-m-d H:i:s', strtotime('+1 year'));
 
         $data = [
             'title' => '測試標題',
             'content' => '測試內容',
             'publish_date' => $futureDate,
-            'status' => PostStatus::DRAFT->value
+            'status' => PostStatus::DRAFT->value,
+            'is_pinned' => false
         ];
 
         $this->repository->shouldReceive('create')
@@ -291,7 +292,7 @@ class PostServiceTest extends MockeryTestCase
     public function testSetPinnedStatus(): void
     {
         $id = 1;
-        $post = new Post(PostFactory::make());
+        $post = new Post(PostFactory::make(['status' => PostStatus::PUBLISHED->value]));
 
         $this->repository->shouldReceive('find')
             ->once()
@@ -384,7 +385,9 @@ class PostServiceTest extends MockeryTestCase
         $id = 1;
         $ip = '127.0.0.1';
         $userId = 1;
-        $post = new Post(PostFactory::make());
+        $post = new Post(PostFactory::make([
+            'status' => 'published'
+        ]));
 
         $this->repository->shouldReceive('find')
             ->once()
