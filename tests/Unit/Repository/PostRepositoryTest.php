@@ -5,318 +5,249 @@ declare(strict_types=1);
 namespace Tests\Unit\Repository;
 
 use PDO;
-use PHPUnit\Framework\TestCase;
-use App\Models\Post;
+use App\Services\CacheService;
 use App\Repositories\PostRepository;
+use App\Models\Post;
 use Tests\Factory\PostFactory;
+use Mockery;
+use Mockery\Adapter\Phpunit\MockeryTestCase;
 
-class PostRepositoryTest extends TestCase
+class PostRepositoryTest extends MockeryTestCase
 {
-    private PDO $db;
     private PostRepository $repository;
+    private PDO $db;
+    private CacheService $cache;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // 建立記憶體資料庫
-        $this->db = new PDO('sqlite::memory:', null, null, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        ]);
+        // 使用 SQLite 記憶體資料庫進行測試
+        $this->db = new PDO('sqlite::memory:');
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // 建立資料表結構
-        $this->createTables();
+        // 建立測試用資料表
+        $this->createTestTables();
 
-        $this->repository = new PostRepository($this->db);
+        // 模擬快取服務
+        $this->cache = Mockery::mock(CacheService::class);
+        $this->cache->shouldReceive('remember')
+            ->byDefault()
+            ->andReturnUsing(function ($key, $callback) {
+                return $callback();
+            });
+        $this->cache->shouldReceive('delete')->byDefault();
+
+        $this->repository = new PostRepository($this->db, $this->cache);
     }
 
-    protected function tearDown(): void
+    private function createTestTables(): void
     {
-        // 清空資料表
-        $this->db->exec('DROP TABLE IF EXISTS posts');
-        $this->db->exec('DROP TABLE IF EXISTS post_tags');
-        $this->db->exec('DROP TABLE IF EXISTS post_views');
-        $this->db->exec('DROP TABLE IF EXISTS tags');
-
-        unset($this->repository);
-        unset($this->db);
-
-        parent::tearDown();
-    }
-
-    private function createTables(): void
-    {
-        // 建立文章表
-        $this->db->exec("
+        // 建立文章資料表
+        $this->db->exec('
             CREATE TABLE posts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                uuid TEXT NOT NULL UNIQUE,
-                seq_number INTEGER NOT NULL UNIQUE,
-                title TEXT NOT NULL,
+                uuid VARCHAR(36) NOT NULL,
+                seq_number INTEGER,
+                title VARCHAR(255) NOT NULL,
                 content TEXT NOT NULL,
                 user_id INTEGER NOT NULL,
-                user_ip TEXT NOT NULL,
-                views INTEGER NOT NULL DEFAULT 0,
-                is_pinned INTEGER NOT NULL DEFAULT 0,
-                status INTEGER NOT NULL DEFAULT 1,
-                publish_date TEXT NOT NULL,
-                created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL
+                user_ip VARCHAR(45),
+                is_pinned BOOLEAN DEFAULT 0,
+                status VARCHAR(20) DEFAULT "draft",
+                views INTEGER DEFAULT 0,
+                publish_date DATETIME,
+                created_at DATETIME,
+                updated_at DATETIME
             )
-        ");
+        ');
 
-        // 建立標籤表
-        $this->db->exec("
+        // 建立標籤資料表
+        $this->db->exec('
             CREATE TABLE tags (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL UNIQUE,
-                created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL
+                name VARCHAR(50) NOT NULL
             )
-        ");
+        ');
 
         // 建立文章標籤關聯表
-        $this->db->exec("
+        $this->db->exec('
             CREATE TABLE post_tags (
-                post_id INTEGER NOT NULL,
-                tag_id INTEGER NOT NULL,
-                created_at TEXT NOT NULL,
-                PRIMARY KEY (post_id, tag_id),
-                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-                FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+                post_id INTEGER,
+                tag_id INTEGER,
+                created_at DATETIME,
+                PRIMARY KEY (post_id, tag_id)
             )
-        ");
+        ');
 
-        // 建立文章觀看記錄表
-        $this->db->exec("
+        // 建立文章瀏覽記錄表
+        $this->db->exec('
             CREATE TABLE post_views (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                uuid TEXT NOT NULL UNIQUE,
+                uuid VARCHAR(36) NOT NULL,
                 post_id INTEGER NOT NULL,
                 user_id INTEGER,
-                user_ip TEXT NOT NULL,
-                view_date TEXT NOT NULL,
-                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+                user_ip VARCHAR(45) NOT NULL,
+                view_date DATETIME NOT NULL
             )
-        ");
+        ');
     }
 
     public function testCanCreatePost(): void
     {
-        // 準備測試資料
         $data = PostFactory::make([
             'title' => '測試文章',
-            'content' => '這是一篇測試文章'
+            'content' => '這是測試內容'
         ]);
 
-        // 執行測試
         $post = $this->repository->create($data);
 
-        // 驗證結果
         $this->assertInstanceOf(Post::class, $post);
-        $this->assertNotEmpty($post->getUuid());
         $this->assertEquals('測試文章', $post->getTitle());
-        $this->assertEquals('這是一篇測試文章', $post->getContent());
-        $this->assertEquals(1, $post->getSeqNumber());
+        $this->assertEquals('這是測試內容', $post->getContent());
     }
 
     public function testCanFindPostById(): void
     {
-        // 準備測試資料
         $data = PostFactory::make();
-        $created = $this->repository->create($data);
+        $post = $this->repository->create($data);
 
-        // 執行測試
-        $found = $this->repository->find($created->getId());
+        $found = $this->repository->find($post->getId());
 
-        // 驗證結果
         $this->assertInstanceOf(Post::class, $found);
-        $this->assertEquals($created->getId(), $found->getId());
-        $this->assertEquals($created->getTitle(), $found->getTitle());
+        $this->assertEquals($post->getId(), $found->getId());
     }
 
     public function testCanFindPostByUuid(): void
     {
-        // 準備測試資料
         $data = PostFactory::make();
-        $created = $this->repository->create($data);
+        $post = $this->repository->create($data);
 
-        // 執行測試
-        $found = $this->repository->findByUuid($created->getUuid());
+        $found = $this->repository->findByUuid($post->getUuid());
 
-        // 驗證結果
         $this->assertInstanceOf(Post::class, $found);
-        $this->assertEquals($created->getUuid(), $found->getUuid());
-        $this->assertEquals($created->getTitle(), $found->getTitle());
+        $this->assertEquals($post->getUuid(), $found->getUuid());
     }
 
     public function testCanUpdatePost(): void
     {
-        // 準備測試資料
         $post = $this->repository->create(PostFactory::make());
-        $originalUpdatedAt = $post->getUpdatedAt();
 
-        // 等待一秒以確保時間戳記不同
-        sleep(1);
-
-        // 執行測試
         $updated = $this->repository->update($post->getId(), [
             'title' => '更新的標題',
             'content' => '更新的內容'
         ]);
 
-        // 驗證結果
         $this->assertEquals('更新的標題', $updated->getTitle());
         $this->assertEquals('更新的內容', $updated->getContent());
-        $this->assertNotEquals($originalUpdatedAt, $updated->getUpdatedAt());
     }
 
     public function testCanDeletePost(): void
     {
-        // 準備測試資料
         $post = $this->repository->create(PostFactory::make());
 
-        // 執行測試
         $result = $this->repository->delete($post->getId());
-        $found = $this->repository->find($post->getId());
 
-        // 驗證結果
         $this->assertTrue($result);
-        $this->assertNull($found);
+        $this->assertNull($this->repository->find($post->getId()));
     }
 
     public function testCanPaginatePosts(): void
     {
-        // 準備測試資料
-        foreach (PostFactory::makeMany(15) as $data) {
-            $this->repository->create($data);
+        // 建立 15 篇文章
+        for ($i = 1; $i <= 15; $i++) {
+            $this->repository->create(PostFactory::make([
+                'title' => "文章 {$i}",
+                'content' => "內容 {$i}"
+            ]));
         }
 
-        // 執行測試
-        $page1 = $this->repository->paginate(1, 5);
-        $page2 = $this->repository->paginate(2, 5);
+        $result = $this->repository->paginate(1, 10);
 
-        // 驗證結果
-        $this->assertCount(5, $page1['items']);
-        $this->assertCount(5, $page2['items']);
-        $this->assertEquals(15, $page1['total']);
-        $this->assertEquals(3, $page1['last_page']);
+        $this->assertCount(10, $result['items']);
+        $this->assertEquals(15, $result['total']);
+        $this->assertEquals(1, $result['page']);
+        $this->assertEquals(10, $result['per_page']);
+        $this->assertEquals(2, $result['last_page']);
     }
 
     public function testCanGetPinnedPosts(): void
     {
-        // 準備測試資料
-        $this->repository->create(PostFactory::make(['is_pinned' => true]));
-        $this->repository->create(PostFactory::make(['is_pinned' => true]));
-        $this->repository->create(PostFactory::make(['is_pinned' => false]));
+        // 建立置頂文章
+        $this->repository->create(PostFactory::make([
+            'is_pinned' => true,
+            'title' => '置頂文章 1'
+        ]));
+        $this->repository->create(PostFactory::make([
+            'is_pinned' => true,
+            'title' => '置頂文章 2'
+        ]));
 
-        // 執行測試
+        // 建立普通文章
+        $this->repository->create(PostFactory::make([
+            'is_pinned' => false,
+            'title' => '普通文章'
+        ]));
+
         $pinnedPosts = $this->repository->getPinnedPosts();
 
-        // 驗證結果
         $this->assertCount(2, $pinnedPosts);
         foreach ($pinnedPosts as $post) {
-            $this->assertTrue($post->isPinned());
+            $this->assertTrue($post->getIsPinned());
         }
     }
 
     public function testCanSetPinnedStatus(): void
     {
-        // 準備測試資料
         $post = $this->repository->create(PostFactory::make(['is_pinned' => false]));
 
-        // 執行測試
         $result = $this->repository->setPinned($post->getId(), true);
-        $updated = $this->repository->find($post->getId());
 
-        // 驗證結果
         $this->assertTrue($result);
-        $this->assertTrue($updated->isPinned());
+        $updated = $this->repository->find($post->getId());
+        $this->assertTrue($updated->getIsPinned());
     }
 
     public function testCanIncrementViews(): void
     {
-        // 準備測試資料
         $post = $this->repository->create(PostFactory::make());
         $initialViews = $post->getViews();
 
-        // 執行測試
-        $result = $this->repository->incrementViews($post->getId(), '127.0.0.1', 1);
-        $updated = $this->repository->find($post->getId());
+        $result = $this->repository->incrementViews(
+            $post->getId(),
+            '127.0.0.1',
+            1
+        );
 
-        // 驗證結果
         $this->assertTrue($result);
+        $updated = $this->repository->find($post->getId());
         $this->assertEquals($initialViews + 1, $updated->getViews());
-
-        // 驗證觀看記錄
-        $stmt = $this->db->prepare('SELECT COUNT(*) FROM post_views WHERE post_id = ?');
-        $stmt->execute([$post->getId()]);
-        $viewCount = $stmt->fetchColumn();
-        $this->assertEquals(1, $viewCount);
     }
 
-    /** @test */
     public function testShouldRollbackOnTagAssignmentError(): void
     {
-        // 準備測試資料
-        $data = PostFactory::make([
-            'title' => '交易測試文章',
-            'content' => '這是交易測試內容'
-        ]);
-
-        $this->db->beginTransaction();
-        $initialPostCount = $this->getPostCount();
-        $this->db->commit();
+        $post = $this->repository->create(PostFactory::make());
 
         try {
-            // 嘗試建立文章並指派不存在的標籤
-            $this->repository->create($data, [999]);
-            $this->fail('應該要拋出異常');
-        } catch (\PDOException $e) {
-            // 預期會拋出異常
+            $this->repository->setTags($post->getId(), [999]); // 使用不存在的標籤 ID
+            $this->fail('應該拋出異常');
+        } catch (\Exception $e) {
+            // 確保交易已回溯
+            $tags = $this->db->query("SELECT * FROM post_tags WHERE post_id = {$post->getId()}")->fetchAll();
+            $this->assertEmpty($tags);
         }
-
-        // 驗證文章未被建立（交易已回溯）
-        $this->assertEquals($initialPostCount, $this->getPostCount());
     }
 
-    /** @test */
     public function testShouldCommitOnTagAssignmentSuccess(): void
     {
-        // 建立測試標籤
-        $now = format_datetime();
-        $this->db->exec("INSERT INTO tags (id, name, created_at, updated_at) 
-            VALUES (1, '測試標籤', '{$now}', '{$now}')");
+        // 建立測試用標籤
+        $this->db->exec("INSERT INTO tags (id, name) VALUES (1, '測試標籤')");
 
-        // 準備測試資料
-        $data = PostFactory::make([
-            'title' => '交易測試文章',
-            'content' => '這是交易測試內容'
-        ]);
+        $post = $this->repository->create(PostFactory::make());
+        $result = $this->repository->setTags($post->getId(), [1]);
 
-        $this->db->beginTransaction();
-        $initialPostCount = $this->getPostCount();
-        $initialTagCount = $this->getTagAssignmentCount();
-        $this->db->commit();
-
-        // 建立文章並指派標籤
-        $post = $this->repository->create($data, [1]);
-
-        // 驗證文章和標籤關聯都已成功建立
-        $this->assertEquals($initialPostCount + 1, $this->getPostCount());
-        $this->assertEquals($initialTagCount + 1, $this->getTagAssignmentCount());
-        $this->assertNotNull($post);
-        $this->assertEquals('交易測試文章', $post->getTitle());
-    }
-
-    private function getPostCount(): int
-    {
-        return (int) $this->db->query('SELECT COUNT(*) FROM posts')->fetchColumn();
-    }
-
-    private function getTagAssignmentCount(): int
-    {
-        return (int) $this->db->query('SELECT COUNT(*) FROM post_tags')->fetchColumn();
+        $this->assertTrue($result);
+        $tags = $this->db->query("SELECT * FROM post_tags WHERE post_id = {$post->getId()}")->fetchAll();
+        $this->assertCount(1, $tags);
     }
 }

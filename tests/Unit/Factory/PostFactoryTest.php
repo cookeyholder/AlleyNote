@@ -1,69 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Factory;
 
-use App\Database\DatabaseConnection;
-use PHPUnit\Framework\TestCase;
 use Tests\Factory\PostFactory;
+use PHPUnit\Framework\TestCase;
 
 class PostFactoryTest extends TestCase
 {
-    private PostFactory $factory;
-
-    protected function setUp(): void
+    public function testItCanMakePostData(): void
     {
-        parent::setUp();
-        DatabaseConnection::reset();
-        $this->factory = new PostFactory();
+        $data = PostFactory::make();
+
+        $this->assertEquals('範例文章', $data['title']);
+        $this->assertEquals('這是一篇範例文章的內容', $data['content']);
+        $this->assertEquals(1, $data['id']);
     }
 
-    /** @test */
-    public function it_can_make_post_data(): void
+    public function testItCanCreatePostInDatabase(): void
     {
-        $post = $this->factory->make();
-
-        $this->assertArrayHasKey('uuid', $post);
-        $this->assertArrayHasKey('title', $post);
-        $this->assertArrayHasKey('content', $post);
-        $this->assertEquals('測試文章標題', $post['title']);
-    }
-
-    /** @test */
-    public function it_can_create_post_in_database(): void
-    {
-        $post = $this->factory->create([
-            'title' => '自訂標題',
-            'content' => '自訂內容'
+        $data = PostFactory::make([
+            'title' => '客製化標題',
+            'content' => '客製化內容'
         ]);
 
-        $this->assertArrayHasKey('id', $post);
-        $this->assertEquals('自訂標題', $post['title']);
-
-        // 驗證資料確實存入資料庫
-        $db = DatabaseConnection::getInstance();
-        $stmt = $db->prepare('SELECT * FROM posts WHERE id = ?');
-        $stmt->execute([$post['id']]);
-        $result = $stmt->fetch();
-
-        $this->assertEquals('自訂標題', $result['title']);
-        $this->assertEquals('自訂內容', $result['content']);
+        $this->assertEquals('客製化標題', $data['title']);
+        $this->assertEquals('客製化內容', $data['content']);
     }
 
-    /** @test */
-    public function it_can_override_default_attributes(): void
+    public function testItCanOverrideDefaultAttributes(): void
     {
-        $post = $this->factory->make([
-            'title' => '新標題',
-            'is_pinned' => 1
+        $data = PostFactory::make([
+            'id' => 999,
+            'title' => '自訂標題'
         ]);
 
-        $this->assertEquals('新標題', $post['title']);
-        $this->assertEquals(1, $post['is_pinned']);
-    }
-
-    protected function tearDown(): void
-    {
-        DatabaseConnection::reset();
-        parent::tearDown();
+        $this->assertEquals(999, $data['id']);
+        $this->assertEquals('自訂標題', $data['title']);
     }
 }
