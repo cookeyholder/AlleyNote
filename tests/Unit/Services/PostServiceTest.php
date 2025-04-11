@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+use Mockery;
 use Mockery\MockInterface;
-
 use App\Models\Post;
 use App\Services\PostService;
 use App\Services\Validators\PostValidator;
@@ -14,20 +14,19 @@ use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\StateTransitionException;
-use Mockery;
 use Tests\Factory\PostFactory;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class PostServiceTest extends MockeryTestCase
 {
-    private PostRepositoryInterface $repository;
+    private PostRepositoryInterface|MockInterface $repository;
     private PostValidator $validator;
     private PostService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->repository = Mockery::mock(PostRepositoryInterface::class)->makePartial();
+        $this->repository = Mockery::mock(PostRepositoryInterface::class);
         $this->validator = new PostValidator();
         $this->service = new PostService($this->repository, $this->validator);
     }

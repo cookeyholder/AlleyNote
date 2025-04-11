@@ -6,10 +6,11 @@ use App\Controllers\AuthController;
 use App\Services\AuthService;
 use PHPUnit\Framework\TestCase;
 use Mockery;
+use Mockery\MockInterface;
 
 class AuthControllerTest extends TestCase
 {
-    private $authService;
+    private AuthService|MockInterface $authService;
     private $request;
     private $response;
 
@@ -94,8 +95,9 @@ class AuthControllerTest extends TestCase
         $this->request->withParsedBody($userData);
 
         // 設定模擬行為
-        $this->authService->expects()
-            ->register($userData)
+        $this->authService->shouldReceive('register')
+            ->once()
+            ->with($userData)
             ->andReturn([
                 'id' => '1',
                 'username' => 'testuser',
@@ -128,8 +130,9 @@ class AuthControllerTest extends TestCase
         $this->request->withParsedBody($invalidData);
 
         // 設定模擬行為
-        $this->authService->expects()
-            ->register($invalidData)
+        $this->authService->shouldReceive('register')
+            ->once()
+            ->with($invalidData)
             ->andThrow(new \InvalidArgumentException('無效的註冊資料'));
 
         // 建立控制器並執行
@@ -155,8 +158,9 @@ class AuthControllerTest extends TestCase
         $this->request->withParsedBody($credentials);
 
         // 設定模擬行為
-        $this->authService->expects()
-            ->login($credentials)
+        $this->authService->shouldReceive('login')
+            ->once()
+            ->with($credentials)
             ->andReturn([
                 'success' => true,
                 'message' => '登入成功',
@@ -191,8 +195,9 @@ class AuthControllerTest extends TestCase
         $this->request->withParsedBody($credentials);
 
         // 設定模擬行為
-        $this->authService->expects()
-            ->login($credentials)
+        $this->authService->shouldReceive('login')
+            ->once()
+            ->with($credentials)
             ->andReturn([
                 'success' => false,
                 'message' => '無效的認證資訊'

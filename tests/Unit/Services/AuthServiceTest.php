@@ -37,8 +37,9 @@ class AuthServiceTest extends TestCase
         ];
 
         // 設定 mock 預期行為
-        $this->userRepository->expects()
-            ->create($userData)
+        $this->userRepository->shouldReceive('create')
+            ->once()
+            ->with($userData)
             ->andReturn([
                 'id' => '1',
                 'uuid' => 'test-uuid',
@@ -82,8 +83,9 @@ class AuthServiceTest extends TestCase
 
         // 模擬資料庫中的使用者資料（已雜湊的密碼）
         $hashedPassword = password_hash('password123', PASSWORD_ARGON2ID);
-        $this->userRepository->expects()
-            ->findByEmail('test@example.com')
+        $this->userRepository->shouldReceive('findByEmail')
+            ->once()
+            ->with('test@example.com')
             ->andReturn([
                 'id' => '1',
                 'uuid' => 'test-uuid',
@@ -92,8 +94,9 @@ class AuthServiceTest extends TestCase
                 'status' => 1
             ]);
 
-        $this->userRepository->expects()
-            ->updateLastLogin('1')
+        $this->userRepository->shouldReceive('updateLastLogin')
+            ->once()
+            ->with('1')
             ->andReturn(true);
 
         // 執行測試
@@ -115,8 +118,9 @@ class AuthServiceTest extends TestCase
 
         // 模擬資料庫中的使用者資料
         $hashedPassword = password_hash('password123', PASSWORD_ARGON2ID);
-        $this->userRepository->expects()
-            ->findByEmail('test@example.com')
+        $this->userRepository->shouldReceive('findByEmail')
+            ->once()
+            ->with('test@example.com')
             ->andReturn([
                 'id' => '1',
                 'uuid' => 'test-uuid',
@@ -144,8 +148,9 @@ class AuthServiceTest extends TestCase
 
         // 模擬停用的使用者資料
         $hashedPassword = password_hash('password123', PASSWORD_ARGON2ID);
-        $this->userRepository->expects()
-            ->findByEmail('inactive@example.com')
+        $this->userRepository->shouldReceive('findByEmail')
+            ->once()
+            ->with('inactive@example.com')
             ->andReturn([
                 'id' => '1',
                 'uuid' => 'test-uuid',

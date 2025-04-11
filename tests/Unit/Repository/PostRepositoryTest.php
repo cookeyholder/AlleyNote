@@ -10,13 +10,14 @@ use App\Repositories\PostRepository;
 use App\Models\Post;
 use Tests\Factory\PostFactory;
 use Mockery;
+use Mockery\MockInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class PostRepositoryTest extends MockeryTestCase
 {
     private PostRepository $repository;
     private PDO $db;
-    private CacheService $cache;
+    private CacheService|MockInterface $cache;
 
     protected function setUp(): void
     {
