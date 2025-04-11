@@ -88,6 +88,55 @@ class PostServiceTest extends MockeryTestCase
         ]);
     }
 
+    public function testCreatePostWithEmptyContent(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('文章內容不可為空');
+
+        $this->service->createPost([
+            'title' => '測試標題',
+            'content' => ''
+        ]);
+    }
+
+    public function testCreatePostWithFutureDate(): void
+    {
+        $futureDate = date('Y-m-d', strtotime('+1 year'));
+
+        $data = [
+            'title' => '測試標題',
+            'content' => '測試內容',
+            'publish_date' => $futureDate
+        ];
+
+        $post = new Post($data);
+
+        $this->repository->shouldReceive('create')
+            ->once()
+            ->with($data)
+            ->andReturn($post);
+
+        $result = $this->service->createPost($data);
+
+        $this->assertInstanceOf(Post::class, $result);
+        $this->assertEquals($futureDate, $result->getPublishDate());
+    }
+
+    public function testCreatePostWithInvalidStatus(): void
+    {
+        $data = [
+            'title' => '測試標題',
+            'content' => '測試內容',
+            'status' => 'invalid_status'
+        ];
+
+        // 不需要模擬 repository，因為驗證會在呼叫 create 之前就失敗
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('無效的文章狀態');
+
+        $this->service->createPost($data);
+    }
+
     public function testUpdatePostWithValidData(): void
     {
         // 準備測試資料
@@ -125,6 +174,57 @@ class PostServiceTest extends MockeryTestCase
         // 執行測試並驗證異常
         $this->expectException(NotFoundException::class);
         $this->service->updatePost(999, ['title' => '測試']);
+    }
+
+    public function testUpdatePostWithInvalidUserIp(): void
+    {
+        $id = 1;
+        $post = new Post(PostFactory::make());
+
+        $this->repository->shouldReceive('find')
+            ->once()
+            ->with($id)
+            ->andReturn($post);
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('無效的 IP 位址格式');
+
+        $this->service->updatePost($id, [
+            'title' => '測試標題',
+            'content' => '測試內容',
+            'user_ip' => '999.999.999.999'
+        ]);
+    }
+
+    public function testUpdatePostWithAllValidationRules(): void
+    {
+        $id = 1;
+        $post = new Post(PostFactory::make());
+
+        $this->repository->shouldReceive('find')
+            ->once()
+            ->with($id)
+            ->andReturn($post);
+
+        $validData = [
+            'title' => '有效的標題',
+            'content' => '有效的內容',
+            'publish_date' => '2025-12-31',
+            'status' => 'published',
+            'user_ip' => '192.168.1.1'
+        ];
+
+        $this->repository->shouldReceive('update')
+            ->once()
+            ->with($id, $validData)
+            ->andReturn(new Post(array_merge($post->toArray(), $validData)));
+
+        $result = $this->service->updatePost($id, $validData);
+
+        $this->assertInstanceOf(Post::class, $result);
+        $this->assertEquals('有效的標題', $result->getTitle());
+        $this->assertEquals('有效的內容', $result->getContent());
+        $this->assertEquals('2025-12-31', $result->getPublishDate());
     }
 
     public function testSetPinnedStatus(): void
