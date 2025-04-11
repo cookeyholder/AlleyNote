@@ -1,21 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Factory\Abstracts;
 
-abstract class AbstractFactory implements Factory
+abstract class AbstractFactory
 {
-    protected array $defaultAttributes = [];
+    protected static array $sequence = [];
 
-    public function make(array $attributes = []): array
+    /**
+     * 產生一筆資料
+     * @param array $attributes 自訂屬性
+     * @return array
+     */
+    abstract public static function make(array $attributes = []): array;
+
+    /**
+     * 產生多筆資料
+     * @param int $count 數量
+     * @param array $attributes 自訂屬性
+     * @return array
+     */
+    public static function makeMany(int $count, array $attributes = []): array
     {
-        return array_merge($this->defaultAttributes, $attributes);
+        return array_map(
+            fn() => static::make($attributes),
+            range(1, $count)
+        );
     }
 
-    public function create(array $attributes = []): array
+    /**
+     * 取得序列值
+     * @param string $key 序列鍵值
+     * @return int
+     */
+    protected static function sequence(string $key): int
     {
-        $data = $this->make($attributes);
-        return $this->persist($data);
+        if (!isset(static::$sequence[$key])) {
+            static::$sequence[$key] = 0;
+        }
+        return ++static::$sequence[$key];
     }
-
-    abstract protected function persist(array $data): array;
 }

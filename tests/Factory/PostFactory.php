@@ -1,60 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Factory;
 
-use App\Database\DatabaseConnection;
-use PDO;
+use App\Models\Post;
 use Tests\Factory\Abstracts\AbstractFactory;
 
 class PostFactory extends AbstractFactory
 {
-    private PDO $db;
-
-    public function __construct()
+    public static function make(array $attributes = []): array
     {
-        $this->db = DatabaseConnection::getInstance();
-        $this->defaultAttributes = [
-            'uuid' => uniqid('post_'),
-            'title' => '測試文章標題',
-            'content' => '測試文章內容',
+        $sequence = static::sequence('post');
+        $now = format_datetime();
+
+        $defaults = [
+            'id' => $sequence,
+            'uuid' => generate_uuid(),
+            'seq_number' => $sequence,
+            'title' => "測試文章 #{$sequence}",
+            'content' => "這是測試文章內容 #{$sequence}",
             'user_id' => 1,
-            'status' => 1,
+            'user_ip' => '127.0.0.1',
             'views' => 0,
-            'is_pinned' => 0,
-            'created_at' => date('Y-m-d H:i:s')
+            'is_pinned' => false,
+            'status' => 1,
+            'publish_date' => $now,
+            'created_at' => $now,
+            'updated_at' => $now
         ];
 
-        // 確保資料表存在
-        $this->createTable();
+        return array_merge($defaults, $attributes);
     }
 
-    protected function persist(array $data): array
+    public static function createPost(array $attributes = []): Post
     {
-        $columns = implode(', ', array_keys($data));
-        $values = implode(', ', array_fill(0, count($data), '?'));
-
-        $sql = "INSERT INTO posts ($columns) VALUES ($values)";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(array_values($data));
-
-        $data['id'] = $this->db->lastInsertId();
-        return $data;
+        return Post::fromArray(static::make($attributes));
     }
 
-    private function createTable(): void
+    public static function createPosts(int $count, array $attributes = []): array
     {
-        $this->db->exec('
-            CREATE TABLE IF NOT EXISTS posts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                uuid TEXT NOT NULL,
-                title TEXT NOT NULL,
-                content TEXT NOT NULL,
-                user_id INTEGER NOT NULL,
-                status INTEGER NOT NULL DEFAULT 1,
-                views INTEGER NOT NULL DEFAULT 0,
-                is_pinned INTEGER NOT NULL DEFAULT 0,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        ');
+        return array_map(
+            fn(array $data) => Post::fromArray($data),
+            static::makeMany($count, $attributes)
+        );
     }
 }
