@@ -4,55 +4,63 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+use Mockery\MockInterface;
+
 use App\Models\Post;
 use App\Services\PostService;
+use App\Services\Validators\PostValidator;
+use App\Services\Enums\PostStatus;
 use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
+use App\Exceptions\StateTransitionException;
 use Mockery;
 use Tests\Factory\PostFactory;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class PostServiceTest extends MockeryTestCase
 {
+    use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
     private PostRepositoryInterface $repository;
+    private PostValidator $validator;
     private PostService $service;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->repository = Mockery::mock(PostRepositoryInterface::class);
-        $this->service = new PostService($this->repository);
+        /** @var MockInterface|PostRepositoryInterface */
+        $this->repository = \Mockery::mock(PostRepositoryInterface::class);
+        $this->validator = new PostValidator();
+        $this->service = new PostService($this->repository, $this->validator);
     }
 
     public function testCreatePostWithValidData(): void
     {
-        // 準備測試資料
         $data = PostFactory::make([
             'title' => '測試文章',
-            'content' => '這是測試內容'
+            'content' => '這是測試內容',
+            'status' => PostStatus::DRAFT->value
         ]);
 
-        // 模擬 Repository
         $this->repository->shouldReceive('create')
             ->once()
-            ->with($data)
+            ->with(Mockery::on(function ($arg) use ($data) {
+                return $arg['title'] === $data['title']
+                    && $arg['content'] === $data['content']
+                    && $arg['status'] === $data['status']
+                    && isset($arg['created_at']);
+            }))
             ->andReturn(new Post($data));
 
-        // 執行測試
         $post = $this->service->createPost($data);
 
-        // 驗證結果
         $this->assertInstanceOf(Post::class, $post);
         $this->assertEquals('測試文章', $post->getTitle());
     }
 
     public function testCreatePostWithInvalidData(): void
     {
-        // 準備測試資料
         $data = ['title' => '', 'content' => ''];
 
-        // 執行測試並驗證異常
         $this->expectException(ValidationException::class);
         $this->service->createPost($data);
     }
@@ -106,15 +114,20 @@ class PostServiceTest extends MockeryTestCase
         $data = [
             'title' => '測試標題',
             'content' => '測試內容',
-            'publish_date' => $futureDate
+            'publish_date' => $futureDate,
+            'status' => PostStatus::DRAFT->value
         ];
-
-        $post = new Post($data);
 
         $this->repository->shouldReceive('create')
             ->once()
-            ->with($data)
-            ->andReturn($post);
+            ->with(Mockery::on(function ($arg) use ($data) {
+                return $arg['title'] === $data['title']
+                    && $arg['content'] === $data['content']
+                    && $arg['publish_date'] === $data['publish_date']
+                    && $arg['status'] === $data['status']
+                    && isset($arg['created_at']);
+            }))
+            ->andReturn(new Post($data));
 
         $result = $this->service->createPost($data);
 
@@ -130,7 +143,6 @@ class PostServiceTest extends MockeryTestCase
             'status' => 'invalid_status'
         ];
 
-        // 不需要模擬 repository，因為驗證會在呼叫 create 之前就失敗
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('無效的文章狀態');
 
@@ -139,12 +151,15 @@ class PostServiceTest extends MockeryTestCase
 
     public function testUpdatePostWithValidData(): void
     {
-        // 準備測試資料
         $id = 1;
-        $data = ['title' => '更新的標題', 'content' => '更新的內容'];
-        $post = new Post(PostFactory::make());
+        $initialData = PostFactory::make(['status' => PostStatus::DRAFT->value]);
+        $updateData = [
+            'title' => '更新的標題',
+            'content' => '更新的內容'
+        ];
 
-        // 模擬 Repository
+        $post = new Post($initialData);
+
         $this->repository->shouldReceive('find')
             ->once()
             ->with($id)
@@ -152,26 +167,48 @@ class PostServiceTest extends MockeryTestCase
 
         $this->repository->shouldReceive('update')
             ->once()
-            ->with($id, $data)
-            ->andReturn(new Post(array_merge($post->toArray(), $data)));
+            ->with(Mockery::on(function ($actualId) use ($id) {
+                return $actualId === $id;
+            }), Mockery::on(function ($data) use ($updateData) {
+                return $data['title'] === $updateData['title']
+                    && $data['content'] === $updateData['content']
+                    && isset($data['updated_at']);
+            }))
+            ->andReturn(new Post(array_merge($initialData, $updateData)));
 
-        // 執行測試
-        $updated = $this->service->updatePost($id, $data);
+        $updated = $this->service->updatePost($id, $updateData);
 
-        // 驗證結果
         $this->assertEquals('更新的標題', $updated->getTitle());
         $this->assertEquals('更新的內容', $updated->getContent());
     }
 
+    public function testUpdatePostWithInvalidStatusTransition(): void
+    {
+        $id = 1;
+        $post = new Post(PostFactory::make(['status' => PostStatus::PUBLISHED->value]));
+
+        $this->repository->shouldReceive('find')
+            ->once()
+            ->with($id)
+            ->andReturn($post);
+
+        $this->expectException(StateTransitionException::class);
+        $this->expectExceptionMessage('無法將文章從「已發布」狀態變更為「草稿」');
+
+        $this->service->updatePost($id, [
+            'title' => '更新的標題',
+            'content' => '更新的內容',
+            'status' => PostStatus::DRAFT->value
+        ]);
+    }
+
     public function testUpdateNonExistentPost(): void
     {
-        // 模擬 Repository
         $this->repository->shouldReceive('find')
             ->once()
             ->with(999)
             ->andReturnNull();
 
-        // 執行測試並驗證異常
         $this->expectException(NotFoundException::class);
         $this->service->updatePost(999, ['title' => '測試']);
     }
@@ -227,13 +264,27 @@ class PostServiceTest extends MockeryTestCase
         $this->assertEquals('2025-12-31', $result->getPublishDate());
     }
 
+    public function testDeletePublishedPost(): void
+    {
+        $id = 1;
+        $post = new Post(PostFactory::make(['status' => PostStatus::PUBLISHED->value]));
+
+        $this->repository->shouldReceive('find')
+            ->once()
+            ->with($id)
+            ->andReturn($post);
+
+        $this->expectException(StateTransitionException::class);
+        $this->expectExceptionMessage('已發布的文章不能刪除，請改為封存');
+
+        $this->service->deletePost($id);
+    }
+
     public function testSetPinnedStatus(): void
     {
-        // 準備測試資料
         $id = 1;
         $post = new Post(PostFactory::make());
 
-        // 模擬 Repository
         $this->repository->shouldReceive('find')
             ->once()
             ->with($id)
@@ -244,11 +295,25 @@ class PostServiceTest extends MockeryTestCase
             ->with($id, true)
             ->andReturn(true);
 
-        // 執行測試
         $result = $this->service->setPinned($id, true);
 
-        // 驗證結果
         $this->assertTrue($result);
+    }
+
+    public function testSetPinnedForNonPublishedPost(): void
+    {
+        $id = 1;
+        $post = new Post(PostFactory::make(['status' => PostStatus::DRAFT->value]));
+
+        $this->repository->shouldReceive('find')
+            ->once()
+            ->with($id)
+            ->andReturn($post);
+
+        $this->expectException(StateTransitionException::class);
+        $this->expectExceptionMessage('只有已發布的文章可以置頂');
+
+        $this->service->setPinned($id, true);
     }
 
     public function testSetPinnedWithInvalidId(): void
@@ -292,15 +357,27 @@ class PostServiceTest extends MockeryTestCase
         $this->service->recordView(1, 'invalid-ip');
     }
 
+    public function testRecordViewForNonPublishedPost(): void
+    {
+        $id = 1;
+        $post = new Post(PostFactory::make(['status' => PostStatus::DRAFT->value]));
+
+        $this->repository->shouldReceive('find')
+            ->once()
+            ->with($id)
+            ->andReturn($post);
+
+        $result = $this->service->recordView($id, '127.0.0.1');
+        $this->assertFalse($result);
+    }
+
     public function testRecordViewWithValidData(): void
     {
-        // 準備測試資料
         $id = 1;
         $ip = '127.0.0.1';
         $userId = 1;
         $post = new Post(PostFactory::make());
 
-        // 模擬 Repository
         $this->repository->shouldReceive('find')
             ->once()
             ->with($id)
@@ -311,10 +388,8 @@ class PostServiceTest extends MockeryTestCase
             ->with($id, $ip, $userId)
             ->andReturn(true);
 
-        // 執行測試
         $result = $this->service->recordView($id, $ip, $userId);
 
-        // 驗證結果
         $this->assertTrue($result);
     }
 }

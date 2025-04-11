@@ -7,64 +7,139 @@ namespace App\Services;
 use App\Models\Post;
 use App\Services\Contracts\PostServiceInterface;
 use App\Repositories\Contracts\PostRepositoryInterface;
+use App\Services\Validators\PostValidator;
+use App\Services\Enums\PostStatus;
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
+use App\Exceptions\StateTransitionException;
+use DateTimeImmutable;
 
 class PostService implements PostServiceInterface
 {
-    private const VALID_STATUSES = ['draft', 'published', 'archived'];
-
     public function __construct(
-        private readonly PostRepositoryInterface $repository
+        private readonly PostRepositoryInterface $repository,
+        private readonly PostValidator $validator
     ) {}
 
     public function createPost(array $data): Post
     {
-        $this->validatePostData($data);
+        $this->validator->validate($data);
+
+        // 如果沒有指定狀態，預設為草稿
+        if (!isset($data['status'])) {
+            $data['status'] = PostStatus::DRAFT->value;
+        }
+
+        // 設定建立時間
+        $data['created_at'] = (new DateTimeImmutable())->format('Y-m-d H:i:s');
+
         return $this->repository->create($data);
     }
 
     public function updatePost(int $id, array $data): Post
     {
-        if (!$this->repository->find($id)) {
+        $post = $this->repository->find($id);
+        if (!$post) {
             throw new NotFoundException('找不到指定的文章');
         }
 
-        $this->validatePostData($data);
+        $this->validator->validate($data);
+
+        // 處理狀態轉換
+        if (isset($data['status'])) {
+            $currentStatus = PostStatus::from($post->getStatus());
+            $targetStatus = PostStatus::from($data['status']);
+
+            if (!$currentStatus->canTransitionTo($targetStatus)) {
+                throw new StateTransitionException(
+                    sprintf(
+                        '無法將文章從「%s」狀態變更為「%s」',
+                        $currentStatus->getLabel(),
+                        $targetStatus->getLabel()
+                    )
+                );
+            }
+        }
+
+        // 設定更新時間
+        $data['updated_at'] = (new DateTimeImmutable())->format('Y-m-d H:i:s');
+
         return $this->repository->update($id, $data);
     }
 
     public function deletePost(int $id): bool
     {
-        if (!$this->repository->find($id)) {
+        $post = $this->repository->find($id);
+        if (!$post) {
             throw new NotFoundException('找不到指定的文章');
+        }
+
+        // 已發布的文章不能刪除，只能封存
+        if (PostStatus::from($post->getStatus()) === PostStatus::PUBLISHED) {
+            throw new StateTransitionException('已發布的文章不能刪除，請改為封存');
         }
 
         return $this->repository->delete($id);
     }
 
+    public function getPost(int $id): Post
+    {
+        $post = $this->repository->find($id);
+        if (!$post) {
+            throw new NotFoundException('找不到指定的文章');
+        }
+
+        return $post;
+    }
+
+    /**
+     * 取得文章列表
+     * @param int $page 頁碼
+     * @param int $perPage 每頁筆數
+     * @param array $filters 篩選條件
+     * @return array{items: Post[], total: int, page: int, perPage: int}
+     */
     public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {
         return $this->repository->paginate($page, $perPage, $filters);
     }
 
+    /**
+     * 取得置頂文章列表
+     * @param int $limit 取得筆數
+     * @return Post[]
+     */
     public function getPinnedPosts(int $limit = 5): array
     {
-        return $this->repository->getPinnedPosts($limit);
+        // 只取得已發布的置頂文章
+        $filters = ['status' => PostStatus::PUBLISHED->value, 'is_pinned' => true];
+        return $this->repository->getPinnedPosts($limit, $filters);
     }
 
     public function setPinned(int $id, bool $isPinned): bool
     {
-        if (!$this->repository->find($id)) {
+        $post = $this->repository->find($id);
+        if (!$post) {
             throw new NotFoundException('找不到指定的文章');
+        }
+
+        // 只有已發布的文章可以置頂
+        if ($isPinned && PostStatus::from($post->getStatus()) !== PostStatus::PUBLISHED) {
+            throw new StateTransitionException('只有已發布的文章可以置頂');
         }
 
         return $this->repository->setPinned($id, $isPinned);
     }
 
+    /**
+     * 設定文章標籤
+     * @param int $id 文章 ID
+     * @param array<int> $tagIds 標籤 ID 陣列
+     */
     public function setTags(int $id, array $tagIds): bool
     {
-        if (!$this->repository->find($id)) {
+        $post = $this->repository->find($id);
+        if (!$post) {
             throw new NotFoundException('找不到指定的文章');
         }
 
@@ -76,41 +151,20 @@ class PostService implements PostServiceInterface
 
     public function recordView(int $id, string $userIp, ?int $userId = null): bool
     {
-        if (!$this->repository->find($id)) {
+        $post = $this->repository->find($id);
+        if (!$post) {
             throw new NotFoundException('找不到指定的文章');
         }
 
-        if (!is_valid_ip($userIp)) {
+        // 只有已發布的文章可以計算瀏覽次數
+        if (PostStatus::from($post->getStatus()) !== PostStatus::PUBLISHED) {
+            return false;
+        }
+
+        if (!filter_var($userIp, FILTER_VALIDATE_IP)) {
             throw new ValidationException('無效的 IP 位址');
         }
 
         return $this->repository->incrementViews($id, $userIp, $userId);
-    }
-
-    /**
-     * 驗證文章資料
-     * @param array $data 文章資料
-     * @throws ValidationException
-     */
-    private function validatePostData(array $data): void
-    {
-        if (empty($data['title'])) {
-            throw new ValidationException('文章標題不可為空');
-        }
-        if (strlen($data['title']) > 255) {
-            throw new ValidationException('文章標題不可超過 255 字元');
-        }
-        if (empty($data['content'])) {
-            throw new ValidationException('文章內容不可為空');
-        }
-        if (isset($data['user_ip']) && !filter_var($data['user_ip'], FILTER_VALIDATE_IP)) {
-            throw new ValidationException('無效的 IP 位址格式');
-        }
-        if (isset($data['publish_date']) && !strtotime($data['publish_date'])) {
-            throw new ValidationException('無效的發布日期格式');
-        }
-        if (isset($data['status']) && !in_array($data['status'], self::VALID_STATUSES, true)) {
-            throw new ValidationException('無效的文章狀態');
-        }
     }
 }
