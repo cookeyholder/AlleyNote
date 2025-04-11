@@ -62,6 +62,13 @@ class PostRepositoryTest extends TestCase
             )
         ");
 
+        $this->db->exec("
+            CREATE TABLE tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE
+            )
+        ");
+
         $this->repository = new PostRepository($this->db);
     }
 
@@ -213,5 +220,73 @@ class PostRepositoryTest extends TestCase
         $stmt->execute([$post->getId()]);
         $viewCount = $stmt->fetchColumn();
         $this->assertEquals(1, $viewCount);
+    }
+
+    /** @test */
+    public function testShouldRollbackOnTagAssignmentError(): void
+    {
+        // 準備測試資料
+        $data = PostFactory::make([
+            'title' => '交易測試文章',
+            'content' => '這是交易測試內容'
+        ]);
+
+        $this->db->beginTransaction();
+        $initialPostCount = $this->getPostCount();
+        $this->db->commit();
+
+        try {
+            // 嘗試建立文章並指派不存在的標籤
+            $this->repository->create($data, [999]);
+            $this->fail('應該要拋出異常');
+        } catch (\PDOException $e) {
+            // 預期會拋出異常
+        }
+
+        // 驗證文章未被建立（交易已回溯）
+        $this->assertEquals($initialPostCount, $this->getPostCount());
+    }
+
+    /** @test */
+    public function testShouldCommitOnTagAssignmentSuccess(): void
+    {
+        // 建立測試標籤
+        $this->db->exec("INSERT INTO tags (id, name) VALUES (1, '測試標籤')");
+
+        // 準備測試資料
+        $data = PostFactory::make([
+            'title' => '交易測試文章',
+            'content' => '這是交易測試內容'
+        ]);
+
+        $this->db->beginTransaction();
+        $initialPostCount = $this->getPostCount();
+        $initialTagCount = $this->getTagAssignmentCount();
+        $this->db->commit();
+
+        // 建立文章並指派標籤
+        $post = $this->repository->create($data, [1]);
+
+        // 驗證文章和標籤關聯都已成功建立
+        $this->assertEquals($initialPostCount + 1, $this->getPostCount());
+        $this->assertEquals($initialTagCount + 1, $this->getTagAssignmentCount());
+        $this->assertNotNull($post);
+        $this->assertEquals('交易測試文章', $post->getTitle());
+    }
+
+    private function getPostCount(): int
+    {
+        return (int) $this->db->query('SELECT COUNT(*) FROM posts')->fetchColumn();
+    }
+
+    private function getTagAssignmentCount(): int
+    {
+        return (int) $this->db->query('SELECT COUNT(*) FROM post_tags')->fetchColumn();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->db = null;
+        parent::tearDown();
     }
 }
