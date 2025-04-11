@@ -79,23 +79,6 @@ if (!function_exists('is_valid_ip')) {
      */
     function is_valid_ip(string $ip): bool
     {
-        // 檢查是否為 CIDR 格式
-        if (str_contains($ip, '/')) {
-            list($address, $netmask) = explode('/', $ip, 2);
-            if (!filter_var($address, FILTER_VALIDATE_IP)) {
-                return false;
-            }
-            // 驗證網路遮罩
-            if (
-                !is_numeric($netmask) ||
-                $netmask < 0 ||
-                ($address && str_contains($address, ':') ? $netmask > 128 : $netmask > 32)
-            ) {
-                return false;
-            }
-            return true;
-        }
-
         return filter_var($ip, FILTER_VALIDATE_IP) !== false;
     }
 }

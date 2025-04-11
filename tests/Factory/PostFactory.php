@@ -4,45 +4,26 @@ declare(strict_types=1);
 
 namespace Tests\Factory;
 
-use App\Models\Post;
-use Tests\Factory\Abstracts\AbstractFactory;
-
-class PostFactory extends AbstractFactory
+class PostFactory
 {
     public static function make(array $attributes = []): array
     {
-        $sequence = static::sequence('post');
-        $now = format_datetime();
-
         $defaults = [
-            'id' => $sequence,
-            'uuid' => generate_uuid(),
-            'seq_number' => $sequence,
-            'title' => "測試文章 #{$sequence}",
-            'content' => "這是測試文章內容 #{$sequence}",
+            'id' => 1,
+            'uuid' => '550e8400-e29b-41d4-a716-446655440000',
+            'seq_number' => 1,
+            'title' => '範例文章',
+            'content' => '這是一篇範例文章的內容',
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
-            'views' => 0,
             'is_pinned' => false,
-            'status' => 1,
-            'publish_date' => $now,
-            'created_at' => $now,
-            'updated_at' => $now
+            'status' => 'published',
+            'publish_date' => '2025-04-11 12:00:00',
+            'created_at' => '2025-04-11 12:00:00',
+            'updated_at' => '2025-04-11 12:00:00',
+            'view_count' => 0
         ];
 
         return array_merge($defaults, $attributes);
-    }
-
-    public static function createPost(array $attributes = []): Post
-    {
-        return Post::fromArray(static::make($attributes));
-    }
-
-    public static function createPosts(int $count, array $attributes = []): array
-    {
-        return array_map(
-            fn(array $data) => Post::fromArray($data),
-            static::makeMany($count, $attributes)
-        );
     }
 }
