@@ -71,7 +71,7 @@ class UserRepositoryTest extends TestCase
         $this->repository->create($userData);
 
         $this->expectException(PDOException::class);
-        
+
         $userData['email'] = 'test2@example.com';
         $this->repository->create($userData);
     }
@@ -88,7 +88,7 @@ class UserRepositoryTest extends TestCase
         $this->repository->create($userData);
 
         $this->expectException(PDOException::class);
-        
+
         $userData['username'] = 'testuser2';
         $this->repository->create($userData);
     }

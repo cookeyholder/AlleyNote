@@ -1,21 +1,24 @@
-FROM php:8.4.5-fpm
+FROM php:8.2-fpm
 
 # 安裝相依套件
 RUN apt-get update && apt-get install -y \
-    git \
+    libzip-dev \
     zip \
     unzip \
-    libzip-dev \
-    libsqlite3-dev
+    git \
+    curl \
+    libicu-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    sqlite3 \
+    libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # 安裝 PHP 擴充功能
-RUN docker-php-ext-install pdo pdo_sqlite zip
-
-# 安裝 Xdebug
-RUN pecl install xdebug && docker-php-ext-enable xdebug
-
-# 配置 Xdebug
-RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN docker-php-ext-install pdo pdo_sqlite zip exif pcntl
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-install gd
 
 # 安裝 Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
