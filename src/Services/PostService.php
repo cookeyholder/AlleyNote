@@ -12,6 +12,8 @@ use App\Exceptions\NotFoundException;
 
 class PostService implements PostServiceInterface
 {
+    private const VALID_STATUSES = ['draft', 'published', 'archived'];
+
     public function __construct(
         private readonly PostRepositoryInterface $repository
     ) {}
@@ -106,6 +108,9 @@ class PostService implements PostServiceInterface
         }
         if (isset($data['publish_date']) && !strtotime($data['publish_date'])) {
             throw new ValidationException('無效的發布日期格式');
+        }
+        if (isset($data['status']) && !in_array($data['status'], self::VALID_STATUSES, true)) {
+            throw new ValidationException('無效的文章狀態');
         }
     }
 }
