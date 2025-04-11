@@ -95,19 +95,40 @@ class PostRepository implements PostRepositoryInterface
 
     public function update(int $id, array $data): Post
     {
+        // 檢查文章是否存在
+        if (!$this->find($id)) {
+            throw new \InvalidArgumentException('找不到指定的文章');
+        }
+
+        // 防止修改關鍵欄位
+        $protectedFields = ['id', 'uuid', 'seq_number', 'created_at', 'views'];
+        foreach ($protectedFields as $field) {
+            unset($data[$field]);
+        }
+
+        // 驗證必要欄位格式
+        if (isset($data['title']) && empty($data['title'])) {
+            throw new \InvalidArgumentException('標題不能為空');
+        }
+
+        if (isset($data['content']) && empty($data['content'])) {
+            throw new \InvalidArgumentException('內容不能為空');
+        }
+
         // 更新時間戳記
         $data['updated_at'] = format_datetime();
 
+        // 準備更新欄位
         $sets = [];
         $params = ['id' => $id];
 
-        // 動態建立更新欄位
         foreach ($data as $key => $value) {
-            if (in_array($key, ['id', 'uuid', 'seq_number', 'created_at'])) {
-                continue;
-            }
             $sets[] = "{$key} = :{$key}";
             $params[$key] = $value;
+        }
+
+        if (empty($sets)) {
+            return $this->find($id);
         }
 
         $sql = "UPDATE posts SET " . implode(', ', $sets) . " WHERE id = :id";
