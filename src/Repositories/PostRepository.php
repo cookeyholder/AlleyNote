@@ -41,56 +41,74 @@ class PostRepository implements PostRepositoryInterface
         return $result ? Post::fromArray($result) : null;
     }
 
-    public function create(array $data): Post
+    public function create(array $data, array $tagIds = []): Post
     {
-        // 驗證必要欄位
-        if (empty($data['title']) || empty($data['content']) || empty($data['user_id'])) {
-            throw new \InvalidArgumentException('標題、內容和使用者 ID 為必填欄位');
+        $this->db->beginTransaction();
+
+        try {
+            // 驗證必要欄位
+            if (empty($data['title']) || empty($data['content']) || empty($data['user_id'])) {
+                throw new \InvalidArgumentException('標題、內容和使用者 ID 為必填欄位');
+            }
+
+            // 產生 UUID 和其他必要資料
+            $data['uuid'] = $data['uuid'] ?? generate_uuid();
+            $data['seq_number'] = (int) $this->db->query('SELECT COALESCE(MAX(seq_number), 0) + 1 FROM posts')->fetchColumn();
+
+            $now = format_datetime();
+            $data['created_at'] = $now;
+            $data['updated_at'] = $now;
+            $data['publish_date'] = $data['publish_date'] ?? $now;
+
+            // 設定預設值
+            $data['views'] = $data['views'] ?? 0;
+            $data['is_pinned'] = $data['is_pinned'] ?? false;
+            $data['status'] = $data['status'] ?? 1;
+            $data['user_ip'] = $data['user_ip'] ?? '127.0.0.1';
+
+            // 執行新增
+            $sql = "INSERT INTO posts (
+                uuid, seq_number, title, content, user_id, user_ip,
+                views, is_pinned, status, publish_date, created_at, updated_at
+            ) VALUES (
+                :uuid, :seq_number, :title, :content, :user_id, :user_ip,
+                :views, :is_pinned, :status, :publish_date, :created_at, :updated_at
+            )";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                'uuid' => $data['uuid'],
+                'seq_number' => $data['seq_number'],
+                'title' => $data['title'],
+                'content' => $data['content'],
+                'user_id' => $data['user_id'],
+                'user_ip' => $data['user_ip'],
+                'views' => $data['views'],
+                'is_pinned' => $data['is_pinned'],
+                'status' => $data['status'],
+                'publish_date' => $data['publish_date'],
+                'created_at' => $data['created_at'],
+                'updated_at' => $data['updated_at']
+            ]);
+
+            $postId = (int) $this->db->lastInsertId();
+
+            // 新增標籤關聯
+            if (!empty($tagIds)) {
+                $sql = 'INSERT INTO post_tags (post_id, tag_id, created_at) VALUES (?, ?, ?)';
+                $stmt = $this->db->prepare($sql);
+
+                foreach ($tagIds as $tagId) {
+                    $stmt->execute([$postId, $tagId, $now]);
+                }
+            }
+
+            $this->db->commit();
+            return $this->find($postId);
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw $e;
         }
-
-        // 產生 UUID
-        $data['uuid'] = $data['uuid'] ?? generate_uuid();
-
-        // 取得下一個流水號
-        $stmt = $this->db->query('SELECT COALESCE(MAX(seq_number), 0) + 1 FROM posts');
-        $data['seq_number'] = $stmt->fetchColumn();
-
-        // 設定時間戳記
-        $now = format_datetime();
-        $data['created_at'] = $now;
-        $data['updated_at'] = $now;
-
-        // 設定發布時間
-        $data['publish_date'] = $data['publish_date'] ?? $now;
-
-        // 準備 SQL 及參數
-        $sql = "INSERT INTO posts (
-            uuid, seq_number, title, content, user_id, user_ip,
-            views, is_pinned, status, publish_date, created_at, updated_at
-        ) VALUES (
-            :uuid, :seq_number, :title, :content, :user_id, :user_ip,
-            :views, :is_pinned, :status, :publish_date, :created_at, :updated_at
-        )";
-
-        // 執行新增
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            'uuid' => $data['uuid'],
-            'seq_number' => $data['seq_number'],
-            'title' => $data['title'],
-            'content' => $data['content'],
-            'user_id' => $data['user_id'],
-            'user_ip' => $data['user_ip'] ?? '127.0.0.1',
-            'views' => $data['views'] ?? 0,
-            'is_pinned' => $data['is_pinned'] ?? false,
-            'status' => $data['status'] ?? 1,
-            'publish_date' => $data['publish_date'],
-            'created_at' => $data['created_at'],
-            'updated_at' => $data['updated_at']
-        ]);
-
-        $data['id'] = (int) $this->db->lastInsertId();
-        return Post::fromArray($data);
     }
 
     public function update(int $id, array $data): Post
