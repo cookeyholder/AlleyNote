@@ -109,14 +109,15 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         for ($i = 0; $i < $count; $i++) {
             $this->repository->create(PostFactory::make([
                 'title' => "文章 {$i}",
-                'content' => "內容 {$i}"
+                'content' => "內容 {$i}",
+                'user_id' => 1
             ]));
         }
 
         $endTime = microtime(true);
         $duration = ($endTime - $startTime) * 1000; // 轉換為毫秒
 
-        $this->assertLess($duration / $count, 100, '每筆新增時間應小於 100ms');
+        $this->assertLessThan(100, $duration / $count, '每筆新增時間應小於 100ms');
     }
 
     public function testPaginationPerformance(): void
@@ -125,7 +126,8 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         for ($i = 0; $i < 1000; $i++) {
             $this->repository->create(PostFactory::make([
                 'title' => "文章 {$i}",
-                'content' => "內容 {$i}"
+                'content' => "內容 {$i}",
+                'user_id' => 1
             ]));
         }
 
@@ -134,7 +136,7 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         $endTime = microtime(true);
         $duration = ($endTime - $startTime) * 1000;
 
-        $this->assertLess($duration, 50, '分頁查詢時間應小於 50ms');
+        $this->assertLessThan(50, $duration, '分頁查詢時間應小於 50ms');
         $this->assertCount(10, $result['items']);
     }
 
@@ -144,7 +146,9 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         for ($i = 0; $i < 1000; $i++) {
             $this->repository->create(PostFactory::make([
                 'title' => "文章 {$i}",
-                'content' => "內容 {$i}"
+                'content' => "內容 {$i}",
+                'user_id' => 1,
+                'status' => 'published'
             ]));
         }
 
@@ -153,7 +157,7 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         $endTime = microtime(true);
         $duration = ($endTime - $startTime) * 1000;
 
-        $this->assertLess($duration, 100, '搜尋時間應小於 100ms');
+        $this->assertLessThan(100, $duration, '搜尋時間應小於 100ms');
     }
 
     public function testMultipleTagAssignmentPerformance(): void
@@ -163,7 +167,7 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
             $this->db->exec("INSERT INTO tags (id, name) VALUES ({$i}, '標籤 {$i}')");
         }
 
-        $post = $this->repository->create(PostFactory::make());
+        $post = $this->repository->create(PostFactory::make(['user_id' => 1]));
         $tagIds = range(1, 10);
 
         $startTime = microtime(true);
@@ -172,12 +176,12 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         $duration = ($endTime - $startTime) * 1000;
 
         $this->assertTrue($result);
-        $this->assertLess($duration, 100, '標籤指派時間應小於 100ms');
+        $this->assertLessThan(100, $duration, '標籤指派時間應小於 100ms');
     }
 
     public function testConcurrentViewsIncrementPerformance(): void
     {
-        $post = $this->repository->create(PostFactory::make());
+        $post = $this->repository->create(PostFactory::make(['user_id' => 1]));
         $concurrentCount = 10;
         $startTime = microtime(true);
 
@@ -193,9 +197,9 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         $duration = ($endTime - $startTime) * 1000;
         $averageDuration = $duration / $concurrentCount;
 
-        $this->assertLess($averageDuration, 50, '平均每次瀏覽次數更新時間應小於 50ms');
+        $this->assertLessThan(50, $averageDuration, '平均每次瀏覽次數更新時間應小於 50ms');
 
         $updatedPost = $this->repository->find($post->getId());
-        $this->assertEquals($concurrentCount, $updatedPost->getViews());
+        $this->assertEquals($concurrentCount, $updatedPost->getViewCount());
     }
 }

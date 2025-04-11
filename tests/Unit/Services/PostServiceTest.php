@@ -235,24 +235,32 @@ class PostServiceTest extends MockeryTestCase
     public function testUpdatePostWithAllValidationRules(): void
     {
         $id = 1;
-        $post = new Post(PostFactory::make());
+        $post = new Post(PostFactory::make(['status' => PostStatus::PUBLISHED->value]));
+        $validData = [
+            'title' => '有效的標題',
+            'content' => '有效的內容',
+            'publish_date' => '2025-12-31',
+            'status' => PostStatus::PUBLISHED->value,
+            'user_ip' => '192.168.1.1'
+        ];
 
         $this->repository->shouldReceive('find')
             ->once()
             ->with($id)
             ->andReturn($post);
 
-        $validData = [
-            'title' => '有效的標題',
-            'content' => '有效的內容',
-            'publish_date' => '2025-12-31',
-            'status' => 'published',
-            'user_ip' => '192.168.1.1'
-        ];
+        $expectedData = array_merge($validData, ['updated_at' => Mockery::any()]);
 
         $this->repository->shouldReceive('update')
             ->once()
-            ->with($id, $validData)
+            ->with($id, Mockery::on(function ($data) use ($expectedData) {
+                return $data['title'] === $expectedData['title']
+                    && $data['content'] === $expectedData['content']
+                    && $data['publish_date'] === $expectedData['publish_date']
+                    && $data['status'] === $expectedData['status']
+                    && $data['user_ip'] === $expectedData['user_ip']
+                    && isset($data['updated_at']);
+            }))
             ->andReturn(new Post(array_merge($post->toArray(), $validData)));
 
         $result = $this->service->updatePost($id, $validData);
@@ -261,6 +269,7 @@ class PostServiceTest extends MockeryTestCase
         $this->assertEquals('有效的標題', $result->getTitle());
         $this->assertEquals('有效的內容', $result->getContent());
         $this->assertEquals('2025-12-31', $result->getPublishDate());
+        $this->assertEquals(PostStatus::PUBLISHED->value, $result->getStatus());
     }
 
     public function testDeletePublishedPost(): void

@@ -128,8 +128,10 @@ class PostRepository implements PostRepositoryInterface
         if (isset($data['is_pinned']) && !is_bool($data['is_pinned'])) {
             $errors[] = '置頂標記必須是布林值';
         }
-        if (isset($data['status']) && !in_array($data['status'], [0, 1, 2], true)) {
-            $errors[] = '狀態值必須是 0、1 或 2';
+
+        // 檢查狀態值
+        if (isset($data['status']) && !in_array($data['status'], ['draft', 'published', 'archived'], true)) {
+            $errors[] = '狀態值必須是 draft、published 或 archived';
         }
 
         // 檢查日期格式
@@ -223,7 +225,7 @@ class PostRepository implements PostRepositoryInterface
             'user_id' => $data['user_id'],
             'user_ip' => $data['user_ip'] ?? null,
             'is_pinned' => $data['is_pinned'] ?? false,
-            'status' => $data['status'] ?? 1,
+            'status' => $data['status'] ?? 'draft',
             'publish_date' => $data['publish_date'] ?? $now,
             'created_at' => $now,
             'updated_at' => $now

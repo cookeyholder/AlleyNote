@@ -29,12 +29,24 @@ class Post
         $this->content = $attributes['content'] ?? '';
         $this->userId = $attributes['user_id'] ?? 0;
         $this->userIp = $attributes['user_ip'] ?? null;
-        $this->isPinned = $attributes['is_pinned'] ?? false;
+        $this->isPinned = is_bool($attributes['is_pinned'] ?? false)
+            ? $attributes['is_pinned']
+            : (bool) $attributes['is_pinned'];
         $this->status = $attributes['status'] ?? 'draft';
         $this->publishDate = $attributes['publish_date'] ?? date('Y-m-d H:i:s');
         $this->createdAt = $attributes['created_at'] ?? date('Y-m-d H:i:s');
         $this->updatedAt = $attributes['updated_at'] ?? date('Y-m-d H:i:s');
         $this->viewCount = $attributes['view_count'] ?? 0;
+    }
+
+    /**
+     * 從陣列建立文章物件
+     * @param array $data 文章資料陣列
+     * @return self
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self($data);
     }
 
     public function getId(): int
@@ -72,6 +84,11 @@ class Post
         return $this->userIp;
     }
 
+    public function getIsPinned(): bool
+    {
+        return $this->isPinned;
+    }
+
     public function isPinned(): bool
     {
         return $this->isPinned;
@@ -98,6 +115,11 @@ class Post
     }
 
     public function getViewCount(): int
+    {
+        return $this->viewCount;
+    }
+
+    public function getViews(): int
     {
         return $this->viewCount;
     }
