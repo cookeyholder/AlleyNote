@@ -60,6 +60,95 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
+    public function it_should_update_user_successfully(): void
+    {
+        // 先建立使用者
+        $user = $this->repository->create([
+            'username' => 'testuser',
+            'email' => 'test@example.com',
+            'password' => 'password123'
+        ]);
+
+        // 更新使用者資料
+        $updateData = [
+            'email' => 'updated@example.com',
+            'status' => 0
+        ];
+
+        $updated = $this->repository->update($user['id'], $updateData);
+
+        $this->assertEquals($updateData['email'], $updated['email']);
+        $this->assertEquals($updateData['status'], $updated['status']);
+        $this->assertEquals($user['username'], $updated['username']);
+    }
+
+    /** @test */
+    public function it_should_delete_user_successfully(): void
+    {
+        // 先建立使用者
+        $user = $this->repository->create([
+            'username' => 'testuser',
+            'email' => 'test@example.com',
+            'password' => 'password123'
+        ]);
+
+        $result = $this->repository->delete($user['id']);
+        $this->assertTrue($result);
+
+        $found = $this->repository->findById($user['id']);
+        $this->assertNull($found);
+    }
+
+    /** @test */
+    public function it_should_find_user_by_uuid(): void
+    {
+        $userData = [
+            'username' => 'testuser',
+            'email' => 'test@example.com',
+            'password' => 'password123'
+        ];
+
+        $created = $this->repository->create($userData);
+        $found = $this->repository->findByUuid($created['uuid']);
+
+        $this->assertEquals($created['uuid'], $found['uuid']);
+        $this->assertEquals($created['username'], $found['username']);
+        $this->assertEquals($created['email'], $found['email']);
+    }
+
+    /** @test */
+    public function it_should_find_user_by_username(): void
+    {
+        $userData = [
+            'username' => 'testuser',
+            'email' => 'test@example.com',
+            'password' => 'password123'
+        ];
+
+        $created = $this->repository->create($userData);
+        $found = $this->repository->findByUsername($userData['username']);
+
+        $this->assertEquals($created['username'], $found['username']);
+        $this->assertEquals($created['email'], $found['email']);
+    }
+
+    /** @test */
+    public function it_should_find_user_by_email(): void
+    {
+        $userData = [
+            'username' => 'testuser',
+            'email' => 'test@example.com',
+            'password' => 'password123'
+        ];
+
+        $created = $this->repository->create($userData);
+        $found = $this->repository->findByEmail($userData['email']);
+
+        $this->assertEquals($created['email'], $found['email']);
+        $this->assertEquals($created['username'], $found['username']);
+    }
+
+    /** @test */
     public function it_should_prevent_duplicate_username(): void
     {
         $userData = [
@@ -115,5 +204,25 @@ class UserRepositoryTest extends TestCase
     {
         $result = $this->repository->findById('999');
         $this->assertNull($result);
+    }
+
+    /** @test */
+    public function it_should_update_last_login_time(): void
+    {
+        $user = $this->repository->create([
+            'username' => 'testuser',
+            'email' => 'test@example.com',
+            'password' => 'password123'
+        ]);
+
+        $before = new \DateTime();
+        sleep(1); // 等待 1 秒確保時間差
+
+        $this->repository->updateLastLogin($user['id']);
+
+        $updated = $this->repository->findById($user['id']);
+        $lastLogin = new \DateTime($updated['last_login']);
+
+        $this->assertTrue($lastLogin > $before);
     }
 }
