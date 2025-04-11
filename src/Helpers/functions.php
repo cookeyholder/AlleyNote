@@ -7,29 +7,34 @@ use Ramsey\Uuid\Uuid;
 if (!function_exists('generate_uuid')) {
     /**
      * 產生 UUID v4
+     * @return string
      */
     function generate_uuid(): string
     {
-        return Uuid::uuid4()->toString();
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0x0fff) | 0x4000,
+            mt_rand(0, 0x3fff) | 0x8000,
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff)
+        );
     }
 }
 
 if (!function_exists('format_datetime')) {
     /**
-     * 格式化日期時間為 RFC 3339 格式
-     * @param DateTime|string|null $datetime
-     * @param string $timezone 預設為 Asia/Taipei
+     * 格式化日期時間
+     * @param string|null $datetime 要格式化的日期時間，若為空則使用當前時間
+     * @return string 格式化後的日期時間字串
      */
-    function format_datetime($datetime = null, string $timezone = 'Asia/Taipei'): string
+    function format_datetime(?string $datetime = null): string
     {
-        if (is_null($datetime)) {
-            $datetime = new DateTime();
-        } elseif (is_string($datetime)) {
-            $datetime = new DateTime($datetime);
-        }
-
-        $datetime->setTimezone(new DateTimeZone($timezone));
-        return $datetime->format(DateTime::RFC3339);
+        $dt = $datetime ? new DateTime($datetime) : new DateTime();
+        return $dt->format('Y-m-d H:i:s');
     }
 }
 
