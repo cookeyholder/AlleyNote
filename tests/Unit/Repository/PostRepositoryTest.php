@@ -20,10 +20,34 @@ class PostRepositoryTest extends TestCase
         parent::setUp();
 
         // 建立記憶體資料庫
-        $this->db = new PDO('sqlite::memory:');
-        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->db = new PDO('sqlite::memory:', null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
 
-        // 建立資料表
+        // 建立資料表結構
+        $this->createTables();
+
+        $this->repository = new PostRepository($this->db);
+    }
+
+    protected function tearDown(): void
+    {
+        // 清空資料表
+        $this->db->exec('DROP TABLE IF EXISTS posts');
+        $this->db->exec('DROP TABLE IF EXISTS post_tags');
+        $this->db->exec('DROP TABLE IF EXISTS post_views');
+        $this->db->exec('DROP TABLE IF EXISTS tags');
+
+        unset($this->repository);
+        unset($this->db);
+
+        parent::tearDown();
+    }
+
+    private function createTables(): void
+    {
+        // 建立文章表
         $this->db->exec("
             CREATE TABLE posts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,15 +66,29 @@ class PostRepositoryTest extends TestCase
             )
         ");
 
+        // 建立標籤表
+        $this->db->exec("
+            CREATE TABLE tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+        ");
+
+        // 建立文章標籤關聯表
         $this->db->exec("
             CREATE TABLE post_tags (
                 post_id INTEGER NOT NULL,
                 tag_id INTEGER NOT NULL,
                 created_at TEXT NOT NULL,
-                PRIMARY KEY (post_id, tag_id)
+                PRIMARY KEY (post_id, tag_id),
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
             )
         ");
 
+        // 建立文章觀看記錄表
         $this->db->exec("
             CREATE TABLE post_views (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,18 +96,10 @@ class PostRepositoryTest extends TestCase
                 post_id INTEGER NOT NULL,
                 user_id INTEGER,
                 user_ip TEXT NOT NULL,
-                view_date TEXT NOT NULL
+                view_date TEXT NOT NULL,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
             )
         ");
-
-        $this->db->exec("
-            CREATE TABLE tags (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL UNIQUE
-            )
-        ");
-
-        $this->repository = new PostRepository($this->db);
     }
 
     public function testCanCreatePost(): void
@@ -125,6 +155,10 @@ class PostRepositoryTest extends TestCase
     {
         // 準備測試資料
         $post = $this->repository->create(PostFactory::make());
+        $originalUpdatedAt = $post->getUpdatedAt();
+
+        // 等待一秒以確保時間戳記不同
+        sleep(1);
 
         // 執行測試
         $updated = $this->repository->update($post->getId(), [
@@ -135,7 +169,7 @@ class PostRepositoryTest extends TestCase
         // 驗證結果
         $this->assertEquals('更新的標題', $updated->getTitle());
         $this->assertEquals('更新的內容', $updated->getContent());
-        $this->assertNotEquals($post->getUpdatedAt(), $updated->getUpdatedAt());
+        $this->assertNotEquals($originalUpdatedAt, $updated->getUpdatedAt());
     }
 
     public function testCanDeletePost(): void
@@ -251,7 +285,9 @@ class PostRepositoryTest extends TestCase
     public function testShouldCommitOnTagAssignmentSuccess(): void
     {
         // 建立測試標籤
-        $this->db->exec("INSERT INTO tags (id, name) VALUES (1, '測試標籤')");
+        $now = format_datetime();
+        $this->db->exec("INSERT INTO tags (id, name, created_at, updated_at) 
+            VALUES (1, '測試標籤', '{$now}', '{$now}')");
 
         // 準備測試資料
         $data = PostFactory::make([
@@ -282,11 +318,5 @@ class PostRepositoryTest extends TestCase
     private function getTagAssignmentCount(): int
     {
         return (int) $this->db->query('SELECT COUNT(*) FROM post_tags')->fetchColumn();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->db = null;
-        parent::tearDown();
     }
 }
