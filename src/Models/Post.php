@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-class Post
+use JsonSerializable;
+
+class Post implements JsonSerializable
 {
     private int $id;
     private string $uuid;
@@ -141,5 +143,10 @@ class Post
             'updated_at' => $this->updatedAt,
             'view_count' => $this->viewCount
         ];
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }
