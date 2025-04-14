@@ -6,21 +6,38 @@ namespace Tests\Integration;
 
 use App\Services\CacheService;
 use Tests\TestCase;
-use Redis;
 
+/**
+ * @requires extension redis
+ */
 class RedisIntegrationTest extends TestCase
 {
     private CacheService $cacheService;
-    private Redis $redis;
+    
+    /**
+     * @var \Redis
+     */
+    private $redis;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->redis = new Redis();
-        $this->redis->connect(
-            getenv('REDIS_HOST') ?: 'redis',
-            (int) (getenv('REDIS_PORT') ?: 6379)
-        );
+        
+        // 確保 Redis 擴充模組已安裝
+        if (!extension_loaded('redis')) {
+            $this->markTestSkipped('Redis 擴充模組未安裝');
+        }
+
+        $this->redis = new \Redis();
+        try {
+            $this->redis->connect(
+                getenv('REDIS_HOST') ?: 'redis',
+                (int) (getenv('REDIS_PORT') ?: 6379)
+            );
+        } catch (\RedisException $e) {
+            $this->markTestSkipped('無法連線到 Redis 伺服器');
+        }
+        
         $this->cacheService = new CacheService();
     }
 
@@ -152,8 +169,10 @@ class RedisIntegrationTest extends TestCase
     protected function tearDown(): void
     {
         // 清理測試資料
-        $this->redis->flushDB();
-        $this->redis->close();
+        if (isset($this->redis)) {
+            $this->redis->flushDB();
+            $this->redis->close();
+        }
         parent::tearDown();
     }
 }
