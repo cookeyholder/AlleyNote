@@ -13,11 +13,11 @@ mkdir -p "$BACKUP_DIR"
 echo "開始檔案備份..."
 
 # 要備份的目錄
-STORAGE_DIR="/var/www/alleynote/storage/files"
-UPLOAD_DIR="/var/www/alleynote/public/uploads"
+STORAGE_DIR="/var/www/alleynote/storage/app"
+PUBLIC_DIR="/var/www/alleynote/storage/app/public"
 
 # 確保來源目錄存在
-if [ ! -d "$STORAGE_DIR" ] || [ ! -d "$UPLOAD_DIR" ]; then
+if [ ! -d "$STORAGE_DIR" ] || [ ! -d "$PUBLIC_DIR" ]; then
     echo "錯誤：來源目錄不存在"
     exit 1
 fi
@@ -25,8 +25,7 @@ fi
 # 建立備份
 echo "建立檔案備份..."
 tar -czf "$BACKUP_DIR/files_$DATE.tar.gz" \
-    -C "$(dirname "$STORAGE_DIR")" "$(basename "$STORAGE_DIR")" \
-    -C "$(dirname "$UPLOAD_DIR")" "$(basename "$UPLOAD_DIR")"
+    -C "$(dirname "$STORAGE_DIR")" "$(basename "$STORAGE_DIR")"
 
 # 保留最近 30 天的備份
 echo "清理舊備份檔案..."

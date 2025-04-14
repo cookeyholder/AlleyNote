@@ -20,11 +20,11 @@ git checkout HEAD^
 
 # 安裝相依套件
 echo "安裝相依套件..."
-docker-compose run --rm composer install --no-dev --optimize-autoloader
+docker-compose run --rm php composer install --no-dev --optimize-autoloader
 
 # 清除快取
 echo "清除系統快取..."
-docker-compose run --rm php php artisan cache:clear
+docker-compose exec redis redis-cli FLUSHALL
 
 # 重啟服務
 echo "重新啟動服務..."

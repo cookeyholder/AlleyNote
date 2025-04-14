@@ -20,7 +20,7 @@ git pull origin main
 
 # 安裝相依套件
 echo "安裝相依套件..."
-docker-compose run --rm composer install --no-dev --optimize-autoloader
+docker-compose run --rm php composer install --no-dev --optimize-autoloader
 
 # 更新資料庫
 echo "執行資料庫遷移..."
@@ -28,7 +28,7 @@ docker-compose run --rm php php /var/www/html/vendor/bin/phinx migrate
 
 # 清除快取
 echo "清除系統快取..."
-docker-compose run --rm php php artisan cache:clear
+docker-compose exec redis redis-cli FLUSHALL
 
 # 重啟服務
 echo "重新啟動服務..."
