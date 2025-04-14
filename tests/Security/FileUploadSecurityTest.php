@@ -13,6 +13,7 @@ use App\Models\Post;
 use Tests\TestCase;
 use Mockery;
 use Psr\Http\Message\UploadedFileInterface;
+use Psr\Http\Message\StreamInterface;
 
 class FileUploadSecurityTest extends TestCase
 {
@@ -51,7 +52,8 @@ class FileUploadSecurityTest extends TestCase
             'malicious.exe',
             'application/x-msdownload',
             1024,
-            UPLOAD_ERR_OK
+            UPLOAD_ERR_OK,
+            '<?php echo "malicious"; ?>'
         );
 
         // 模擬文章存在
@@ -87,7 +89,8 @@ class FileUploadSecurityTest extends TestCase
             'image.jpg.php',
             'image/jpeg',
             1024,
-            UPLOAD_ERR_OK
+            UPLOAD_ERR_OK,
+            '<?php echo "malicious"; ?>'
         );
 
         // 模擬文章存在
@@ -127,7 +130,8 @@ class FileUploadSecurityTest extends TestCase
             'large.jpg',
             'image/jpeg',
             21 * 1024 * 1024, // 21MB
-            UPLOAD_ERR_OK
+            UPLOAD_ERR_OK,
+            str_repeat('a', 1024) // 模擬檔案內容
         );
 
         // 模擬文章存在
@@ -148,7 +152,7 @@ class FileUploadSecurityTest extends TestCase
 
         // 預期會拋出例外
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('檔案大小不可超過 20MB');
+        $this->expectExceptionMessage('檔案大小超過限制（10MB）');
 
         // 執行測試
         $this->service->upload($postId, $file);
@@ -163,7 +167,8 @@ class FileUploadSecurityTest extends TestCase
             'fake.jpg',
             'application/x-httpd-php',
             1024,
-            UPLOAD_ERR_OK
+            UPLOAD_ERR_OK,
+            '<?php echo "malicious"; ?>'
         );
 
         // 模擬文章存在
@@ -199,7 +204,8 @@ class FileUploadSecurityTest extends TestCase
             '../../../etc/passwd',
             'text/plain',
             1024,
-            UPLOAD_ERR_OK
+            UPLOAD_ERR_OK,
+            'root:x:0:0:root:/root:/bin/bash'
         );
 
         // 模擬文章存在
@@ -234,7 +240,8 @@ class FileUploadSecurityTest extends TestCase
         string $filename,
         string $mimeType,
         int $size,
-        int $error
+        int $error,
+        string $content
     ): UploadedFileInterface {
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn($filename);
@@ -244,6 +251,13 @@ class FileUploadSecurityTest extends TestCase
         $file->shouldReceive('moveTo')->andReturnUsing(function ($path) {
             return true;
         });
+
+        // 模擬檔案串流
+        $stream = Mockery::mock(StreamInterface::class);
+        $stream->shouldReceive('getContents')->andReturn($content);
+        $stream->shouldReceive('rewind')->andReturnNull();
+        $file->shouldReceive('getStream')->andReturn($stream);
+
         return $file;
     }
 
