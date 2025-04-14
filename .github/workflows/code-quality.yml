@@ -1,0 +1,58 @@
+name: 程式碼品質
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  quality:
+    name: 程式碼品質檢查
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 檢出程式碼
+      uses: actions/checkout@v4
+
+    - name: 設定 PHP 環境
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        tools: composer:v2, phpcs, phpmd, phpcpd
+
+    - name: 安裝相依套件
+      run: composer install --prefer-dist --no-progress
+
+    - name: 檢查程式碼風格
+      run: phpcs --standard=PSR12 src tests
+
+    - name: 執行靜態分析
+      run: |
+        composer require --dev phpstan/phpstan
+        ./vendor/bin/phpstan analyse src tests --level=max
+
+    - name: 檢查程式碼複雜度
+      run: |
+        composer require --dev phpmd/phpmd
+        ./vendor/bin/phpmd src,tests text cleancode,codesize,controversial,design,naming,unusedcode
+
+    - name: 檢查重複程式碼
+      run: phpcpd src tests
+
+    - name: 檢查相依套件安全性
+      run: composer audit
+
+    - name: SonarCloud 掃描
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=alleynote
+          -Dsonar.organization=your-org
+          -Dsonar.sources=src
+          -Dsonar.tests=tests
+          -Dsonar.php.coverage.reportPaths=coverage.xml
+          -Dsonar.php.tests.reportPath=test-report.xml

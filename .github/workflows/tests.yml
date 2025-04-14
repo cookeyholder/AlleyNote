@@ -1,20 +1,21 @@
-name: Tests
+name: 測試
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
   test:
-    name: Run Test Suite
+    name: 執行測試套件
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: 檢出程式碼
+      uses: actions/checkout@v4
 
-    - name: Setup PHP
+    - name: 設定 PHP 環境
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.4'
@@ -22,17 +23,28 @@ jobs:
         coverage: xdebug
         tools: composer:v2
 
-    - name: Install dependencies
+    - name: 安裝相依套件
       run: composer install --prefer-dist --no-progress
 
-    - name: Check code style
+    - name: 檢查程式碼風格
       run: ./vendor/bin/phpcs --standard=PSR12 src tests
 
-    - name: Run test suite
+    - name: 執行靜態分析
+      run: ./vendor/bin/phpstan analyse src tests --level=max
+
+    - name: 執行測試
       run: ./vendor/bin/phpunit --coverage-clover coverage.xml
 
-    - name: Upload coverage to Codecov
+    - name: 上傳測試覆蓋率報告
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml
         fail_ci_if_error: true
+
+    - name: 檢查測試覆蓋率門檻
+      run: |
+        COVERAGE=$(./vendor/bin/phpunit --coverage-text | grep -oP '(?<=Lines:)[^%]*' | tr -d ' ')
+        if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+          echo "測試覆蓋率 $COVERAGE% 低於要求的 80%"
+          exit 1
+        fi

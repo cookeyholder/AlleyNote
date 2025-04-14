@@ -1,6 +1,8 @@
 # AlleyNote 公布欄網站
 
-[![Build Status](https://github.com/your-org/alleynote/workflows/Tests/badge.svg)](https://github.com/your-org/alleynote/actions)
+[![測試](https://github.com/your-org/alleynote/workflows/測試/badge.svg)](https://github.com/your-org/alleynote/actions)
+[![程式碼品質](https://github.com/your-org/alleynote/workflows/程式碼品質/badge.svg)](https://github.com/your-org/alleynote/actions)
+[![部署](https://github.com/your-org/alleynote/workflows/部署/badge.svg)](https://github.com/your-org/alleynote/actions)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.5-blue.svg)](https://www.php.net)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -100,6 +102,45 @@ alleynote/
 ├── tests/                # 測試程式碼
 └── vendor/               # Composer 套件
 ```
+
+## 持續整合與部署
+
+本專案使用 GitHub Actions 進行持續整合與部署，包含三個主要工作流程：
+
+### 1. 測試工作流程
+- 執行單元測試與整合測試
+- 產生測試覆蓋率報告
+- 檢查程式碼風格
+- 執行靜態分析
+
+### 2. 程式碼品質檢查
+- 檢查程式碼風格 (PSR-12)
+- 執行靜態分析 (PHPStan)
+- 檢查程式碼複雜度 (PHPMD)
+- 檢查重複程式碼 (PHPCPD)
+- 檢查相依套件安全性
+- SonarCloud 程式碼掃描
+
+### 3. 自動部署流程
+- 自動部署到生產環境
+- 版本發布管理
+- Slack 通知整合
+- 自動備份機制
+
+### GitHub Actions 設定
+- `.github/workflows/tests.yml`: 測試工作流程
+- `.github/workflows/code-quality.yml`: 程式碼品質檢查
+- `.github/workflows/deploy.yml`: 部署工作流程
+
+### 必要的 Secrets 設定
+- `ENV_PRODUCTION`: 生產環境的 .env 檔案內容
+- `SSH_PRIVATE_KEY`: 部署用 SSH 私鑰
+- `SSH_KNOWN_HOSTS`: 部署主機的公鑰
+- `DEPLOY_PATH`: 部署目標路徑
+- `DEPLOY_USER`: 部署用使用者
+- `DEPLOY_HOST`: 部署主機位址
+- `SLACK_WEBHOOK_URL`: Slack 通知 Webhook
+- `SONAR_TOKEN`: SonarCloud 存取令牌
 
 ## 測試
 
