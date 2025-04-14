@@ -19,11 +19,11 @@ class IpList implements JsonSerializable
 
     public function __construct(array $attributes)
     {
-        $this->id = $attributes['id'] ?? 0;
+        $this->id = isset($attributes['id']) ? (int) $attributes['id'] : 0;
         $this->uuid = $attributes['uuid'] ?? '';
         $this->ipAddress = $attributes['ip_address'] ?? '';
-        $this->type = $attributes['type'] ?? 0;
-        $this->unitId = $attributes['unit_id'] ?? null;
+        $this->type = isset($attributes['type']) ? (int) $attributes['type'] : 0;
+        $this->unitId = isset($attributes['unit_id']) ? (int) $attributes['unit_id'] : null;
         $this->description = $attributes['description'] ?? null;
         $this->createdAt = $attributes['created_at'] ?? date('Y-m-d H:i:s');
         $this->updatedAt = $attributes['updated_at'] ?? date('Y-m-d H:i:s');

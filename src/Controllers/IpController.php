@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Services\IpService;
+use App\Models\IpList;
 
 class IpController
 {
@@ -16,10 +17,10 @@ class IpController
     {
         try {
             $ipList = $this->service->createIpRule($request);
-            
+
             return [
                 'status' => 201,
-                'data' => $ipList->toArray()
+                'data' => $ipList instanceof IpList ? $ipList->toArray() : []
             ];
         } catch (\InvalidArgumentException $e) {
             return [
@@ -45,7 +46,10 @@ class IpController
 
             return [
                 'status' => 200,
-                'data' => array_map(fn($rule) => $rule->toArray(), $rules)
+                'data' => array_map(
+                    fn(IpList $rule) => $rule->toArray(),
+                    array_filter($rules, fn($rule) => $rule instanceof IpList)
+                )
             ];
         } catch (\InvalidArgumentException $e) {
             return [

@@ -25,17 +25,21 @@ class IpService
             throw new \InvalidArgumentException('無效的名單類型，必須是 0（黑名單）或 1（白名單）');
         }
 
-        return $this->repository->create($data);
+        $result = $this->repository->create($data);
+        if (!$result instanceof IpList) {
+            throw new \RuntimeException('建立 IP 規則失敗');
+        }
+
+        return $result;
     }
 
     public function isIpAllowed(string $ip): bool
     {
-        // 檢查 IP 格式
-        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+        if (!$this->isValidIpOrCidr($ip)) {
             throw new \InvalidArgumentException('無效的 IP 位址格式');
         }
 
-        // 優先檢查白名單
+        // 檢查是否在白名單中
         if ($this->repository->isWhitelisted($ip)) {
             return true;
         }
@@ -45,34 +49,32 @@ class IpService
             return false;
         }
 
-        // 預設允許（不在任何名單中）
+        // 預設允許存取
         return true;
+    }
+
+    private function isValidIpOrCidr(string $ip): bool
+    {
+        // 驗證一般 IP 位址
+        if (filter_var($ip, FILTER_VALIDATE_IP)) {
+            return true;
+        }
+
+        // 驗證 CIDR 格式
+        if (preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}\/([0-9]|[1-2][0-9]|3[0-2])$/', $ip)) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getRulesByType(int $type): array
     {
-        // 驗證類型值
         if (!in_array($type, [0, 1], true)) {
-            throw new \InvalidArgumentException('無效的名單類型');
+            throw new \InvalidArgumentException('無效的名單類型，必須是 0（黑名單）或 1（白名單）');
         }
 
-        return $this->repository->getByType($type);
-    }
-
-    private function isValidIpOrCidr(string $ipAddress): bool
-    {
-        // 檢查是否為有效的 IP 位址
-        if (filter_var($ipAddress, FILTER_VALIDATE_IP)) {
-            return true;
-        }
-
-        // 檢查是否為有效的 CIDR 格式
-        if (preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}\/([0-9]|[1-2][0-9]|3[0-2])$/', $ipAddress)) {
-            // 進一步驗證 IP 部分是否有效
-            $ip = explode('/', $ipAddress)[0];
-            return filter_var($ip, FILTER_VALIDATE_IP) !== false;
-        }
-
-        return false;
+        $rules = $this->repository->getByType($type);
+        return array_filter($rules, fn($rule) => $rule instanceof IpList);
     }
 }
