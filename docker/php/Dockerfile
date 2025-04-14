@@ -23,6 +23,13 @@ RUN docker-php-ext-install gd
 # 安裝 Redis 擴充功能
 RUN pecl install redis && docker-php-ext-enable redis
 
+# 安裝 Xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+
+# 設定 Xdebug
+RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
 # 安裝 Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

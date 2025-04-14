@@ -558,4 +558,38 @@ class PostRepository implements PostRepositoryInterface
             return false;
         }
     }
+
+    public function searchByTitle(string $title): array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM posts WHERE title LIKE :title AND deleted_at IS NULL');
+        $title = '%' . $title . '%';
+        $stmt->bindValue(':title', $title, PDO::PARAM_STR);
+        $stmt->execute();
+
+        return array_map(fn($row) => Post::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    public function findByUserId(int $userId): ?Post
+    {
+        $stmt = $this->db->prepare('SELECT * FROM posts WHERE user_id = :userId LIMIT 1');
+        $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$result) {
+            return null;
+        }
+
+        return Post::fromArray($result);
+    }
+
+    public function search(string $keyword): array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM posts WHERE title LIKE :keyword OR content LIKE :keyword');
+        $keyword = '%' . $keyword . '%';
+        $stmt->bindValue(':keyword', $keyword, PDO::PARAM_STR);
+        $stmt->execute();
+
+        return array_map(fn($row) => Post::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
 }

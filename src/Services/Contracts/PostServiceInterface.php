@@ -35,6 +35,14 @@ interface PostServiceInterface
     public function deletePost(int $id): bool;
 
     /**
+     * 根據 ID 查詢文章
+     * @param int $id 文章 ID
+     * @return Post
+     * @throws NotFoundException
+     */
+    public function findById(int $id): Post;
+
+    /**
      * 取得文章列表（含分頁）
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數

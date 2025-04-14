@@ -11,7 +11,7 @@ class PostFactory
         return array_merge([
             'id' => 1,
             'uuid' => '550e8400-e29b-41d4-a716-446655440000',
-            'seq_number' => 1,
+            'seq_number' => '202504001',  // 改為字串型別
             'title' => '範例文章',
             'content' => '這是一篇範例文章的內容',
             'user_id' => 1,

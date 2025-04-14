@@ -112,4 +112,26 @@ class UserRepository
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$now, $id]);
     }
+
+    public function updatePassword(int $id, string $newPassword): bool
+    {
+        // 檢查使用者是否存在
+        $user = $this->findById($id);
+        if (!$user) {
+            throw new \InvalidArgumentException('找不到指定的使用者');
+        }
+
+        // 檢查新密碼是否與目前密碼相同
+        if (password_verify($newPassword, $user['password'])) {
+            throw new \InvalidArgumentException('新密碼不能與目前的密碼相同');
+        }
+
+        // 更新密碼
+        $sql = "UPDATE users SET password = :password, updated_at = CURRENT_TIMESTAMP WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'id' => $id,
+            'password' => password_hash($newPassword, PASSWORD_ARGON2ID)
+        ]);
+    }
 }

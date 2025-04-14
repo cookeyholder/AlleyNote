@@ -343,22 +343,15 @@ class PostControllerTest extends TestCase
         return $stream;
     }
 
-    private function createResponseMock()
+    protected function createResponseMock(): ResponseInterface
     {
         $response = Mockery::mock(ResponseInterface::class);
-        $response->shouldReceive('withJson')
-            ->andReturnUsing(function ($data) use ($response) {
-                $this->currentResponseData = $data;
-                return $response;
-            });
-        $response->shouldReceive('withStatus')
-            ->andReturnUsing(function ($code) use ($response) {
-                $response->shouldReceive('getStatusCode')
-                    ->andReturn($code);
-                return $response;
-            });
-        $response->shouldReceive('getBody')
-            ->andReturn($this->stream);
+        $response->shouldReceive('withHeader')->andReturnSelf();
+        $response->shouldReceive('withStatus')->andReturnSelf();
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody')->andReturnSelf();
+        $response->shouldReceive('write')->andReturnSelf();
+        $response->shouldReceive('getContents')->andReturn('');
         return $response;
     }
 

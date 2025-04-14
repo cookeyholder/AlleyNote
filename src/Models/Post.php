@@ -10,45 +10,33 @@ class Post implements JsonSerializable
 {
     private int $id;
     private string $uuid;
-    private int $seqNumber;
+    private ?string $seqNumber;  // 改為 nullable string
     private string $title;
     private string $content;
     private int $userId;
     private ?string $userIp;
     private bool $isPinned;
     private string $status;
-    private string $publishDate;
+    private ?string $publishDate;
+    private int $viewCount;
     private string $createdAt;
     private string $updatedAt;
-    private int $viewCount;
 
-    public function __construct(array $attributes)
+    public function __construct(array $data)
     {
-        $this->id = $attributes['id'] ?? 0;
-        $this->uuid = $attributes['uuid'] ?? '';
-        $this->seqNumber = $attributes['seq_number'] ?? 0;
-        $this->title = $attributes['title'] ?? '';
-        $this->content = $attributes['content'] ?? '';
-        $this->userId = $attributes['user_id'] ?? 0;
-        $this->userIp = $attributes['user_ip'] ?? null;
-        $this->isPinned = is_bool($attributes['is_pinned'] ?? false)
-            ? $attributes['is_pinned']
-            : (bool) $attributes['is_pinned'];
-        $this->status = $attributes['status'] ?? 'draft';
-        $this->publishDate = $attributes['publish_date'] ?? date('Y-m-d H:i:s');
-        $this->createdAt = $attributes['created_at'] ?? date('Y-m-d H:i:s');
-        $this->updatedAt = $attributes['updated_at'] ?? date('Y-m-d H:i:s');
-        $this->viewCount = $attributes['view_count'] ?? 0;
-    }
-
-    /**
-     * 從陣列建立文章物件
-     * @param array $data 文章資料陣列
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self($data);
+        $this->id = isset($data['id']) ? (int)$data['id'] : 0;  // 修改這行，當未提供 id 時預設為 0
+        $this->uuid = $data['uuid'] ?? bin2hex(random_bytes(16));  // 如果沒有提供 uuid，則產生一個新的
+        $this->seqNumber = isset($data['seq_number']) ? (string)$data['seq_number'] : null;  // 確保型別轉換
+        $this->title = htmlspecialchars($data['title'], ENT_QUOTES, 'UTF-8');
+        $this->content = htmlspecialchars($data['content'], ENT_QUOTES, 'UTF-8');
+        $this->userId = (int)$data['user_id'];
+        $this->userIp = $data['user_ip'] ?? null;
+        $this->isPinned = filter_var($data['is_pinned'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->status = $data['status'] ?? 'draft';
+        $this->publishDate = $data['publish_date'] ?? null;
+        $this->viewCount = (int)($data['view_count'] ?? 0);
+        $this->createdAt = $data['created_at'] ?? date('Y-m-d H:i:s');
+        $this->updatedAt = $data['updated_at'] ?? date('Y-m-d H:i:s');
     }
 
     public function getId(): int
@@ -61,7 +49,7 @@ class Post implements JsonSerializable
         return $this->uuid;
     }
 
-    public function getSeqNumber(): int
+    public function getSeqNumber(): ?string
     {
         return $this->seqNumber;
     }
@@ -86,11 +74,6 @@ class Post implements JsonSerializable
         return $this->userIp;
     }
 
-    public function getIsPinned(): bool
-    {
-        return $this->isPinned;
-    }
-
     public function isPinned(): bool
     {
         return $this->isPinned;
@@ -101,9 +84,14 @@ class Post implements JsonSerializable
         return $this->status;
     }
 
-    public function getPublishDate(): string
+    public function getPublishDate(): ?string
     {
         return $this->publishDate;
+    }
+
+    public function getViewCount(): int
+    {
+        return $this->viewCount;
     }
 
     public function getCreatedAt(): string
@@ -114,16 +102,6 @@ class Post implements JsonSerializable
     public function getUpdatedAt(): string
     {
         return $this->updatedAt;
-    }
-
-    public function getViewCount(): int
-    {
-        return $this->viewCount;
-    }
-
-    public function getViews(): int
-    {
-        return $this->viewCount;
     }
 
     public function toArray(): array
@@ -139,14 +117,19 @@ class Post implements JsonSerializable
             'is_pinned' => $this->isPinned,
             'status' => $this->status,
             'publish_date' => $this->publishDate,
+            'view_count' => $this->viewCount,
             'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt,
-            'view_count' => $this->viewCount
+            'updated_at' => $this->updatedAt
         ];
     }
 
     public function jsonSerialize(): array
     {
         return $this->toArray();
+    }
+
+    public static function fromArray(array $data): self
+    {
+        return new self($data);
     }
 }

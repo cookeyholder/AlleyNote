@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Services\Contracts\AttachmentServiceInterface;
 use App\Repositories\AttachmentRepository;
 use App\Repositories\PostRepository;
 use App\Services\CacheService;
@@ -14,8 +15,20 @@ use App\Models\Attachment;
 use Psr\Http\Message\UploadedFileInterface;
 use Ramsey\Uuid\Uuid;
 
-class AttachmentService
+class AttachmentService implements AttachmentServiceInterface
 {
+    private const ALLOWED_MIME_TYPES = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain'
+    ];
+
+    private const MAX_FILE_SIZE = 10485760; // 10MB
+
     public function __construct(
         private AttachmentRepository $attachmentRepo,
         private PostRepository $postRepo,
@@ -23,65 +36,87 @@ class AttachmentService
         private string $uploadDir
     ) {}
 
-    public function upload(int $postId, UploadedFileInterface $file): Attachment
+    private function validateFile(array $file): void
+    {
+        if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+            throw new ValidationException('無效的檔案上傳');
+        }
+
+        // 檢查檔案大小
+        if ($file['size'] > self::MAX_FILE_SIZE) {
+            throw new ValidationException('檔案大小超過限制（10MB）');
+        }
+
+        // 驗證 MIME 類型
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($mimeType, self::ALLOWED_MIME_TYPES, true)) {
+            throw new ValidationException('不支援的檔案類型');
+        }
+
+        // 掃描檔案內容是否含有潛在的惡意程式碼
+        $content = file_get_contents($file['tmp_name']);
+        if ($this->containsMaliciousContent($content)) {
+            throw new ValidationException('檔案內容不安全');
+        }
+    }
+
+    private function containsMaliciousContent(string $content): bool
+    {
+        $maliciousPatterns = [
+            '/<script/i',
+            '/javascript:/i',
+            '/vbscript:/i',
+            '/data:/i',
+            '/base64/i',
+            '/%3Cscript/i',
+            '/eval\(/i',
+            '/onload=/i',
+            '/onclick=/i',
+            '/onmouseover=/i',
+        ];
+
+        foreach ($maliciousPatterns as $pattern) {
+            if (preg_match($pattern, $content)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function upload(int $postId, array $file): Attachment
     {
         // 檢查文章是否存在
         if (!$this->postRepo->find($postId)) {
             throw new NotFoundException('找不到指定的文章');
         }
 
-        // 驗證檔案
         $this->validateFile($file);
 
-        // 準備儲存資訊
-        $originalName = $file->getClientFilename();
-        $mimeType = $file->getClientMediaType();
-        $size = $file->getSize();
-        $extension = FileRules::MIME_EXTENSIONS[$mimeType] ?? 'bin';
+        // 安全的檔案名稱產生
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $newFilename = bin2hex(random_bytes(16)) . '.' . $extension;
+        $storagePath = "{$this->uploadDir}/attachments/" . $newFilename;
 
-        // 生成檔案名稱與儲存路徑
-        $yearMonth = date('Y/m');
-        $filename = Uuid::uuid4()->toString() . '.' . $extension;
-        $relativePath = "{$yearMonth}/{$filename}";
-        $absolutePath = "{$this->uploadDir}/{$relativePath}";
-
-        // 確保目錄存在
-        $dir = dirname($absolutePath);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-
-        // 移動上傳的檔案
-        $file->moveTo($absolutePath);
-
-        // 建立附件記錄
-        return $this->attachmentRepo->create([
-            'post_id' => $postId,
-            'filename' => $relativePath,
-            'original_name' => $originalName,
-            'mime_type' => $mimeType,
-            'file_size' => $size,
-            'storage_path' => $relativePath
-        ]);
-    }
-
-    private function validateFile(UploadedFileInterface $file): void
-    {
-        // 檢查檔案是否成功上傳
-        if ($file->getError() !== UPLOAD_ERR_OK) {
+        // 安全地移動檔案
+        if (!move_uploaded_file($file['tmp_name'], $storagePath)) {
             throw new ValidationException('檔案上傳失敗');
         }
 
-        // 檢查檔案類型
-        $mimeType = $file->getClientMediaType();
-        if (!in_array($mimeType, FileRules::ALLOWED_MIME_TYPES)) {
-            throw new ValidationException('不支援的檔案類型');
-        }
+        // 設定正確的檔案權限
+        chmod($storagePath, 0644);
 
-        // 檢查檔案大小
-        if ($file->getSize() > FileRules::MAX_FILE_SIZE) {
-            throw new ValidationException('檔案大小不可超過 20MB');
-        }
+        return $this->attachmentRepo->create([
+            'post_id' => $postId,
+            'filename' => $newFilename,
+            'original_name' => $file['name'],
+            'mime_type' => $file['type'],
+            'file_size' => $file['size'],
+            'storage_path' => $storagePath
+        ]);
     }
 
     public function getByPostId(int $postId): array

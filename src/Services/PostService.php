@@ -92,6 +92,15 @@ class PostService implements PostServiceInterface
         return $post;
     }
 
+    public function findById(int $id): Post
+    {
+        $post = $this->repository->find($id);
+        if (!$post) {
+            throw new NotFoundException('找不到指定的文章');
+        }
+        return $post;
+    }
+
     /**
      * 取得文章列表
      * @param int $page 頁碼
