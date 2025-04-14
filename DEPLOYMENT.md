@@ -11,6 +11,7 @@
 - Debian Linux 12
 - PHP 8.4.5
 - SQLite3
+- Redis 7.0+
 - NGINX
 - Docker 24.0.0 以上
 - Docker Compose 2.20.0 以上
@@ -49,7 +50,12 @@ git clone https://github.com/your-org/alleynote.git .
 
 # 設定環境變數
 cp .env.example .env
-# 編輯 .env 檔案，設定必要的環境變數
+# 編輯 .env 檔案，設定必要的環境變數：
+# - 管理員帳號密碼
+# - 資料庫設定
+# - Redis 連線設定
+# - 檔案上傳設定
+# - Telegram 通知設定
 
 # 啟動容器
 docker-compose up -d
@@ -117,7 +123,22 @@ max_execution_time = 300
 date.timezone = Asia/Taipei
 ```
 
-### 3.3 資料庫設定
+### 3.3 Redis 設定
+```yaml
+# docker-compose.yml Redis 服務設定
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - app-network
+```
+
+### 3.4 資料庫設定
 ```sql
 -- 建立資料庫目錄
 mkdir -p /var/www/alleynote/database
@@ -150,8 +171,8 @@ docker-compose run --rm composer install --no-dev --optimize-autoloader
 # 更新資料庫
 docker-compose run --rm php php /var/www/html/vendor/bin/phinx migrate
 
-# 清除快取
-docker-compose run --rm php php artisan cache:clear
+# 清除 Redis 快取
+docker-compose exec redis redis-cli FLUSHALL
 
 # 重啟服務
 docker-compose up -d
@@ -175,97 +196,43 @@ docker-compose down
 # 切換到上一個版本
 git checkout HEAD^
 
+# 清除 Redis 快取
+docker-compose exec redis redis-cli FLUSHALL
+
 # 重啟服務
 docker-compose up -d
 ```
 
-## 5. 監控設定
+## 5. 維護指南
 
-### 5.1 系統監控
-```yaml
-# docker-compose.yml 監控設定
-services:
-  prometheus:
-    image: prom/prometheus
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-
-  grafana:
-    image: grafana/grafana
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=your-secure-password
-```
-
-### 5.2 日誌管理
-```yaml
-# docker-compose.yml 日誌設定
-services:
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:8.0.0
-    volumes:
-      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
-      - /var/log:/var/log:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-```
-
-### 5.3 效能監控
-```yaml
-# prometheus.yml
-scrape_configs:
-  - job_name: 'nginx'
-    static_configs:
-      - targets: ['nginx-exporter:9113']
-  
-  - job_name: 'php-fpm'
-    static_configs:
-      - targets: ['php-fpm-exporter:9253']
-```
-
-### 5.4 警報設定
-```yaml
-# alertmanager.yml
-route:
-  group_by: ['alertname']
-  receiver: 'email-notifications'
-  
-receivers:
-- name: 'email-notifications'
-  email_configs:
-  - to: 'admin@your-domain.com'
-    from: 'alertmanager@your-domain.com'
-    smarthost: 'smtp.your-domain.com:587'
-```
-
-## 6. 維護指南
-
-### 6.1 定期維護工作
+### 5.1 定期維護工作
 1. 資料庫備份 (每日)
 2. 檔案系統備份 (每週)
 3. 系統更新 (每月)
 4. 安全性掃描 (每月)
 5. SSL 憑證更新 (每 90 天)
+6. Redis 快取清理 (視需要)
 
-### 6.2 效能調校
+### 5.2 效能調校
 1. NGINX 工作程序數量
 2. PHP-FPM 工作程序數量
 3. SQLite 快取大小
-4. 檔案系統快取設定
-5. 網路緩衝區大小
+4. Redis 記憶體設定
+5. 檔案系統快取設定
+6. 網路緩衝區大小
 
-### 6.3 故障排除
+### 5.3 故障排除
 1. 檢查系統日誌
 2. 檢查應用程式日誌
 3. 檢查資料庫狀態
-4. 檢查網路連線
-5. 檢查硬碟空間
+4. 檢查 Redis 狀態
+5. 檢查網路連線
+6. 檢查硬碟空間
 
-### 6.4 安全性維護
+### 5.4 安全性維護
 1. 定期更新系統套件
 2. 檢查安全性更新
 3. 掃描漏洞
 4. 檢查存取日誌
 5. 更新防火牆規則
+6. 監控 Redis 連線
