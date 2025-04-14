@@ -5,48 +5,79 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Controllers\PostController;
-use App\Services\PostService;
+use App\Services\Contracts\PostServiceInterface;
+use App\Services\Security\Contracts\XssProtectionServiceInterface;
+use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Exceptions\CsrfTokenException;
 use Tests\TestCase;
 use Mockery;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class CsrfProtectionTest extends TestCase
 {
-    private PostService $postService;
+    private PostServiceInterface $postService;
+    private XssProtectionServiceInterface $xssProtection;
+    private CsrfProtectionServiceInterface $csrfProtection;
     private ServerRequestInterface $request;
     private ResponseInterface $response;
     private PostController $controller;
-    private array $responseData;
-    private int $responseStatus;
+    private StreamInterface $stream;
+    private string $lastWrittenContent = '';
+    private int $lastStatusCode = 0;
+    private array $headers = [];
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->postService = Mockery::mock(PostService::class);
+        // 使用介面來建立 mock 物件
+        $this->postService = Mockery::mock(PostServiceInterface::class);
+        $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
+        $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
         $this->request = Mockery::mock(ServerRequestInterface::class);
         $this->response = Mockery::mock(ResponseInterface::class);
-        $this->controller = new PostController($this->postService);
-        $this->responseData = [];
-        $this->responseStatus = 0;
+        $this->stream = Mockery::mock(StreamInterface::class);
+
+        $this->controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
 
         // 設定預設回應行為
-        $this->response->shouldReceive('withJson')
-            ->andReturnUsing(function ($data) {
-                $this->responseData = $data;
-                return $this->response;
+        $this->response->shouldReceive('getBody')
+            ->andReturn($this->stream);
+        $this->stream->shouldReceive('write')
+            ->andReturnUsing(function ($content) {
+                $this->lastWrittenContent = $content;
+                return strlen($content);
             });
-
         $this->response->shouldReceive('withStatus')
             ->andReturnUsing(function ($status) {
-                $this->responseStatus = $status;
+                $this->lastStatusCode = $status;
                 return $this->response;
             });
-
         $this->response->shouldReceive('withHeader')
-            ->andReturnSelf();
+            ->andReturnUsing(function ($name, $value) {
+                $this->headers[$name] = $value;
+                return $this->response;
+            });
+        $this->response->shouldReceive('getStatusCode')
+            ->andReturnUsing(function () {
+                return $this->lastStatusCode;
+            });
+        $this->response->shouldReceive('getHeaderLine')
+            ->andReturnUsing(function ($name) {
+                return $this->headers[$name] ?? '';
+            });
+
+        // 設定 XSS 防護預設行為
+        $this->xssProtection->shouldReceive('cleanArray')
+            ->andReturnUsing(function ($data) {
+                return $data;
+            });
     }
 
     /** @test */
@@ -57,6 +88,11 @@ class CsrfProtectionTest extends TestCase
             ->with('X-CSRF-TOKEN')
             ->andReturn('');
 
+        // 設定 CSRF 驗證失敗
+        $this->csrfProtection->shouldReceive('validateToken')
+            ->with('')
+            ->andThrow(new CsrfTokenException('CSRF token 驗證失敗'));
+
         // 準備測試資料
         $postData = [
             'title' => '測試文章',
@@ -68,21 +104,24 @@ class CsrfProtectionTest extends TestCase
         // 執行測試
         $response = $this->controller->store($this->request, $this->response);
 
-        // 斷言檢查
-        $this->assertEquals(403, $this->responseStatus);
-        $this->assertEquals(['error' => 'CSRF token 驗證失敗'], $this->responseData);
+        // 驗證回應內容
+        $responseData = json_decode($this->lastWrittenContent, true);
+        $this->assertEquals('CSRF token 驗證失敗', $responseData['error']);
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     /** @test */
     public function shouldRejectRequestWithInvalidCsrfToken(): void
     {
-        // 設定 Session 中的 token
-        $_SESSION['csrf_token'] = 'valid-token';
-
         // 設定請求帶有無效的 token
         $this->request->shouldReceive('getHeaderLine')
             ->with('X-CSRF-TOKEN')
             ->andReturn('invalid-token');
+
+        // 設定 CSRF 驗證失敗
+        $this->csrfProtection->shouldReceive('validateToken')
+            ->with('invalid-token')
+            ->andThrow(new CsrfTokenException('CSRF token 驗證失敗'));
 
         // 準備測試資料
         $postData = [
@@ -95,21 +134,28 @@ class CsrfProtectionTest extends TestCase
         // 執行測試
         $response = $this->controller->store($this->request, $this->response);
 
-        // 斷言檢查
-        $this->assertEquals(403, $this->responseStatus);
-        $this->assertEquals(['error' => 'CSRF token 驗證失敗'], $this->responseData);
+        // 驗證回應內容
+        $responseData = json_decode($this->lastWrittenContent, true);
+        $this->assertEquals('CSRF token 驗證失敗', $responseData['error']);
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     /** @test */
     public function shouldAcceptRequestWithValidCsrfToken(): void
     {
-        // 設定初始 token
-        $_SESSION['csrf_token'] = 'valid-token';
-
         // 設定請求帶有有效的 token
         $this->request->shouldReceive('getHeaderLine')
             ->with('X-CSRF-TOKEN')
             ->andReturn('valid-token');
+
+        // 設定 CSRF 驗證成功
+        $this->csrfProtection->shouldReceive('validateToken')
+            ->with('valid-token')
+            ->andReturnNull();
+
+        // 設定產生新的 CSRF token
+        $this->csrfProtection->shouldReceive('generateToken')
+            ->andReturn('new-token');
 
         // 準備測試資料
         $postData = [
@@ -134,19 +180,16 @@ class CsrfProtectionTest extends TestCase
         // 執行測試
         $response = $this->controller->store($this->request, $this->response);
 
-        // 斷言檢查
-        $this->assertEquals(201, $this->responseStatus);
-        $this->assertArrayHasKey('data', $this->responseData);
-
-        // 驗證 CSRF token 是否已更新
-        $this->assertNotEquals('valid-token', $_SESSION['csrf_token'] ?? null);
-        $this->assertNotEmpty($_SESSION['csrf_token'] ?? null);
+        // 驗證回應內容
+        $responseData = json_decode($this->lastWrittenContent, true);
+        $this->assertEquals($postData + ['id' => 1], $responseData['data']);
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals('new-token', $this->headers['X-CSRF-TOKEN']);
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
         Mockery::close();
-        unset($_SESSION['csrf_token']);
     }
 }
