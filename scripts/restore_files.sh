@@ -5,8 +5,8 @@ set -e
 
 # 設定備份目錄
 BACKUP_DIR="/var/www/alleynote/storage/backups/files"
-STORAGE_DIR="/var/www/alleynote/storage/files"
-UPLOAD_DIR="/var/www/alleynote/public/uploads"
+STORAGE_DIR="/var/www/alleynote/storage/app"
+PUBLIC_DIR="/var/www/alleynote/storage/app/public"
 
 echo "開始還原檔案..."
 
@@ -31,23 +31,20 @@ mkdir -p "$TEMP_BACKUP_DIR"
 if [ -d "$STORAGE_DIR" ]; then
     cp -r "$STORAGE_DIR" "$TEMP_BACKUP_DIR/"
 fi
-if [ -d "$UPLOAD_DIR" ]; then
-    cp -r "$UPLOAD_DIR" "$TEMP_BACKUP_DIR/"
-fi
 
 # 清空目標目錄
 echo "清空目標目錄..."
-rm -rf "$STORAGE_DIR" "$UPLOAD_DIR"
-mkdir -p "$STORAGE_DIR" "$UPLOAD_DIR"
+rm -rf "$STORAGE_DIR"
+mkdir -p "$STORAGE_DIR" "$PUBLIC_DIR"
 
 # 解壓縮並還原備份
 echo "還原檔案..."
-tar -xzf "$LATEST_BACKUP" -C /var/www/alleynote
+tar -xzf "$LATEST_BACKUP" -C /var/www/alleynote/storage
 
 # 設定適當的權限
 echo "設定檔案權限..."
-chown -R www-data:www-data "$STORAGE_DIR" "$UPLOAD_DIR"
-chmod -R 755 "$STORAGE_DIR" "$UPLOAD_DIR"
+chown -R www-data:www-data "$STORAGE_DIR"
+chmod -R 755 "$STORAGE_DIR"
 
 echo "檔案還原完成！"
 
