@@ -7,18 +7,23 @@ namespace Tests\Unit\Services;
 use App\Services\CacheService;
 use Tests\TestCase;
 use Mockery;
-use \Redis;
-use \RedisException;
 
+/**
+ * @requires extension redis
+ */
 class CacheServiceTest extends TestCase
 {
     private CacheService $cacheService;
+    
+    /**
+     * @var \Redis|\Mockery\MockInterface
+     */
     private $redis;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->redis = Mockery::mock(Redis::class);
+        $this->redis = Mockery::mock(\Redis::class);
         $this->cacheService = new CacheService();
     }
 
@@ -61,7 +66,7 @@ class CacheServiceTest extends TestCase
         // 設定 Redis mock 期望行為
         $this->redis->shouldReceive('connect')
             ->times(3)  // 重試 3 次
-            ->andThrow(new RedisException('Connection failed'));
+            ->andThrow(new \RedisException('Connection failed'));
 
         // 準備測試資料
         $key = 'test_key';
@@ -86,7 +91,7 @@ class CacheServiceTest extends TestCase
 
         $this->redis->shouldReceive('setex')
             ->once()
-            ->andThrow(new RedisException('Redis error'));
+            ->andThrow(new \RedisException('Redis error'));
 
         // 準備測試資料
         $key = 'test_key';
