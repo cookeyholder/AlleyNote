@@ -76,10 +76,17 @@ jobs:
 
     - name: 發送部署通知
       if: always()
-      uses: 8398a7/action-slack@v3
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      uses: appleboy/telegram-action@master
       with:
-        status: ${{ job.status }}
-        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-        text: 部署 ${{ env.version || 'latest' }} 版本${{ job.status == 'success' && ' 成功' || ' 失敗' }}
+        to: ${{ secrets.TELEGRAM_CHAT_ID }}
+        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        format: markdown
+        message: |
+          🚀 *部署通知*
+          
+          專案: AlleyNote
+          版本: ${{ env.version || 'latest' }}
+          狀態: ${{ job.status == 'success' && '✅ 成功' || '❌ 失敗' }}
+          
+          提交者: ${{ github.actor }}
+          提交訊息: ${{ github.event.head_commit.message }}

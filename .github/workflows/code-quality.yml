@@ -15,33 +15,30 @@ jobs:
     - name: 檢出程式碼
       uses: actions/checkout@v4
 
-    - name: 設定 PHP 環境
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.4'
-        tools: composer:v2, phpcs, phpmd, phpcpd
+    - name: 設定 Docker Compose
+      run: |
+        docker-compose build
+        docker-compose up -d
 
     - name: 安裝相依套件
-      run: composer install --prefer-dist --no-progress
+      run: |
+        docker-compose exec -T php composer install
+        docker-compose exec -T php composer require --dev phpstan/phpstan phpmd/phpmd sebastian/phpcpd
 
     - name: 檢查程式碼風格
-      run: phpcs --standard=PSR12 src tests
+      run: docker-compose exec -T php ./vendor/bin/phpcs --standard=PSR12 src tests
 
     - name: 執行靜態分析
-      run: |
-        composer require --dev phpstan/phpstan
-        ./vendor/bin/phpstan analyse src tests --level=max
+      run: docker-compose exec -T php ./vendor/bin/phpstan analyse src tests --level=max
 
     - name: 檢查程式碼複雜度
-      run: |
-        composer require --dev phpmd/phpmd
-        ./vendor/bin/phpmd src,tests text cleancode,codesize,controversial,design,naming,unusedcode
+      run: docker-compose exec -T php ./vendor/bin/phpmd src,tests text cleancode,codesize,controversial,design,naming,unusedcode
 
     - name: 檢查重複程式碼
-      run: phpcpd src tests
+      run: docker-compose exec -T php ./vendor/bin/phpcpd src tests
 
     - name: 檢查相依套件安全性
-      run: composer audit
+      run: docker-compose exec -T php composer audit
 
     - name: SonarCloud 掃描
       uses: SonarSource/sonarcloud-github-action@master
@@ -56,3 +53,20 @@ jobs:
           -Dsonar.tests=tests
           -Dsonar.php.coverage.reportPaths=coverage.xml
           -Dsonar.php.tests.reportPath=test-report.xml
+
+    - name: 發送品質檢查結果通知
+      if: always()
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_CHAT_ID }}
+        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        format: markdown
+        message: |
+          🔍 *程式碼品質檢查結果*
+          
+          專案: AlleyNote
+          分支: ${{ github.ref_name }}
+          狀態: ${{ job.status == 'success' && '✅ 通過' || '❌ 失敗' }}
+          
+          提交者: ${{ github.actor }}
+          提交訊息: ${{ github.event.head_commit.message }}
