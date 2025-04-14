@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Services\Contracts\PostServiceInterface;
-use App\Services\Security\XssProtectionService;
-use App\Services\Security\CsrfProtectionService;
+use App\Services\Security\Contracts\XssProtectionServiceInterface;
+use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\StateTransitionException;
@@ -20,8 +20,8 @@ class PostController
 
     public function __construct(
         private PostServiceInterface $service,
-        private XssProtectionService $xssProtection,
-        private CsrfProtectionService $csrfProtection
+        private XssProtectionServiceInterface $xssProtection,
+        private CsrfProtectionServiceInterface $csrfProtection
     ) {}
 
     private function validateCsrfToken(Request $request): void
