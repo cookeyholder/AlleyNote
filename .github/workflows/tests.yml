@@ -15,25 +15,32 @@ jobs:
     - name: 檢出程式碼
       uses: actions/checkout@v4
 
-    - name: 設定 PHP 環境
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.4'
-        extensions: pdo_sqlite, sqlite3, zip, xdebug
-        coverage: xdebug
-        tools: composer:v2
+    - name: 設定 Docker Compose
+      run: |
+        docker-compose build
+        docker-compose up -d
 
     - name: 安裝相依套件
-      run: composer install --prefer-dist --no-progress
+      run: docker-compose exec -T php composer install
 
     - name: 檢查程式碼風格
-      run: ./vendor/bin/phpcs --standard=PSR12 src tests
+      run: docker-compose exec -T php ./vendor/bin/phpcs --standard=PSR12 src tests
 
     - name: 執行靜態分析
-      run: ./vendor/bin/phpstan analyse src tests --level=max
+      run: docker-compose exec -T php ./vendor/bin/phpstan analyse src tests --level=max
 
     - name: 執行測試
-      run: ./vendor/bin/phpunit --coverage-clover coverage.xml
+      run: |
+        docker-compose exec -T php ./vendor/bin/phpunit --coverage-clover coverage.xml
+        docker cp $(docker-compose ps -q php):/var/www/html/coverage.xml ./coverage.xml
+
+    - name: 檢查測試覆蓋率門檻
+      run: |
+        COVERAGE=$(docker-compose exec -T php ./vendor/bin/phpunit --coverage-text | grep -oP '(?<=Lines:)[^%]*' | tr -d ' ')
+        if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+          echo "測試覆蓋率 $COVERAGE% 低於要求的 80%"
+          exit 1
+        fi
 
     - name: 上傳測試覆蓋率報告
       uses: codecov/codecov-action@v3
@@ -41,10 +48,19 @@ jobs:
         file: ./coverage.xml
         fail_ci_if_error: true
 
-    - name: 檢查測試覆蓋率門檻
-      run: |
-        COVERAGE=$(./vendor/bin/phpunit --coverage-text | grep -oP '(?<=Lines:)[^%]*' | tr -d ' ')
-        if (( $(echo "$COVERAGE < 80" | bc -l) )); then
-          echo "測試覆蓋率 $COVERAGE% 低於要求的 80%"
-          exit 1
-        fi
+    - name: 發送測試結果通知
+      if: always()
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_CHAT_ID }}
+        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        format: markdown
+        message: |
+          🧪 *測試結果通知*
+          
+          專案: AlleyNote
+          分支: ${{ github.ref_name }}
+          狀態: ${{ job.status == 'success' && '✅ 通過' || '❌ 失敗' }}
+          
+          提交者: ${{ github.actor }}
+          提交訊息: ${{ github.event.head_commit.message }}

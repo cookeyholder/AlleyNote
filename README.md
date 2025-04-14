@@ -47,7 +47,11 @@ cd alleynote
 2. 設定環境變數
 ```bash
 cp .env.example .env
-# 編輯 .env 檔案，設定必要的環境變數
+# 編輯 .env 檔案，設定必要的環境變數：
+# - 管理員帳號密碼
+# - 資料庫設定
+# - 檔案上傳設定
+# - Telegram 通知設定
 ```
 
 3. 啟動服務
@@ -65,7 +69,7 @@ docker-compose exec php php /var/www/html/vendor/bin/phinx migrate
 1. 開啟瀏覽器訪問 `http://localhost`
 2. 使用預設管理員帳號登入：
    - 帳號：admin@example.com
-   - 密碼：請查看 .env.example 檔案
+   - 密碼：請查看 .env.example 檔案中的 ADMIN_PASSWORD
 
 ## 開發指南
 
@@ -73,12 +77,19 @@ docker-compose exec php php /var/www/html/vendor/bin/phinx migrate
 
 1. 安裝開發相依套件
 ```bash
-composer install
+docker-compose exec php composer install
 ```
 
 2. 執行測試
 ```bash
-./vendor/bin/phpunit
+# 在 Docker 容器中執行所有測試
+docker-compose exec php ./vendor/bin/phpunit
+
+# 執行特定測試類別
+docker-compose exec php ./vendor/bin/phpunit tests/Unit/PostTest.php
+
+# 產生測試覆蓋率報告
+docker-compose exec php ./vendor/bin/phpunit --coverage-html coverage/
 ```
 
 ### 程式碼規範
@@ -92,15 +103,29 @@ composer install
 
 ```
 alleynote/
-├── app/                    # 應用程式核心程式碼
-├── config/                 # 設定檔案
-├── database/              # 資料庫相關
-├── public/               # 公開存取目錄
-├── resources/            # 前端資源
-├── routes/               # 路由設定
-├── storage/              # 儲存空間
-├── tests/                # 測試程式碼
-└── vendor/               # Composer 套件
+├── database/              # 資料庫遷移檔案
+│   └── migrations/       # 資料庫遷移腳本
+├── docker/               # Docker 相關設定
+│   ├── nginx/           # Nginx 設定
+│   └── php/            # PHP 設定
+├── public/              # 公開存取目錄
+├── scripts/             # 部署與維護腳本
+├── src/                 # 應用程式源碼
+│   ├── Controllers/    # 控制器
+│   ├── Database/      # 資料庫連線
+│   ├── Exceptions/    # 例外處理
+│   ├── Helpers/       # 輔助函式
+│   ├── Middleware/    # 中介層
+│   ├── Models/        # 資料模型
+│   ├── Repositories/  # 資料存取層
+│   └── Services/      # 業務邏輯層
+├── storage/             # 儲存空間
+│   └── app/           # 應用程式檔案
+└── tests/              # 測試程式碼
+    ├── Integration/   # 整合測試
+    ├── Security/     # 安全性測試
+    ├── UI/          # 使用者介面測試
+    └── Unit/        # 單元測試
 ```
 
 ## 持續整合與部署
@@ -108,7 +133,7 @@ alleynote/
 本專案使用 GitHub Actions 進行持續整合與部署，包含三個主要工作流程：
 
 ### 1. 測試工作流程
-- 執行單元測試與整合測試
+- 在 Docker 容器中執行單元測試與整合測試
 - 產生測試覆蓋率報告
 - 檢查程式碼風格
 - 執行靜態分析
@@ -124,7 +149,7 @@ alleynote/
 ### 3. 自動部署流程
 - 自動部署到生產環境
 - 版本發布管理
-- Slack 通知整合
+- Telegram 通知整合
 - 自動備份機制
 
 ### GitHub Actions 設定
@@ -139,22 +164,14 @@ alleynote/
 - `DEPLOY_PATH`: 部署目標路徑
 - `DEPLOY_USER`: 部署用使用者
 - `DEPLOY_HOST`: 部署主機位址
-- `SLACK_WEBHOOK_URL`: Slack 通知 Webhook
+- `TELEGRAM_BOT_TOKEN`: Telegram Bot Token
+- `TELEGRAM_CHAT_ID`: Telegram 通知頻道 ID
 - `SONAR_TOKEN`: SonarCloud 存取令牌
 
 ## 測試
 
-### 執行測試
-```bash
-# 執行所有測試
-./vendor/bin/phpunit
-
-# 執行特定測試類別
-./vendor/bin/phpunit tests/Unit/PostTest.php
-
-# 產生測試覆蓋率報告
-./vendor/bin/phpunit --coverage-html coverage/
-```
+### 測試環境
+所有測試都在 Docker 容器中執行，確保測試環境的一致性。
 
 ### 測試覆蓋率要求
 - Repository 層：90%
@@ -191,7 +208,7 @@ alleynote/
 ## 技術支援
 
 - 問題回報：請使用 GitHub Issues
-- 技術討論：請加入 Slack 頻道
+- 技術討論：請加入 Telegram 群組
 - 電子郵件：support@example.com
 
 ## 貢獻者
