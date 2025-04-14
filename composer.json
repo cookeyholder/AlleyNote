@@ -1,40 +1,27 @@
 {
-    "name": "alleynote/bulletin-board",
-    "description": "AlleyNote 公布欄網站 - 現代化的 PHP 公布欄系統",
+    "name": "alleynote/alleynote",
     "type": "project",
-    "license": "proprietary",
+    "description": "A modern bulletin board system",
+    "keywords": [
+        "bulletin-board",
+        "php"
+    ],
+    "license": "MIT",
     "require": {
-        "php": "^8.2",
-        "ext-fileinfo": "*",
-        "ext-json": "*",
+        "php": "^8.1",
         "ext-pdo": "*",
-        "ext-pdo_sqlite": "*",
-        "ext-redis": "*",
-        "firebase/php-jwt": "^6.10",
-        "guzzlehttp/guzzle": "^7.8",
-        "intervention/image": "^3.3",
-        "monolog/monolog": "^3.5",
-        "ramsey/uuid": "^4.7",
-        "respect/validation": "^2.3",
-        "symfony/process": "^7.2",
-        "vlucas/phpdotenv": "^5.6"
+        "ext-json": "*",
+        "monolog/monolog": "^2.0",
+        "vlucas/phpdotenv": "^5.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.0",
-        "mockery/mockery": "^1.6",
-        "phpstan/phpstan": "^1.10",
-        "squizlabs/php_codesniffer": "^3.7",
-        "phpmd/phpmd": "^2.15",
-        "fakerphp/faker": "^1.23",
-        "symfony/var-dumper": "^7.0"
+        "phpunit/phpunit": "^9.5",
+        "mockery/mockery": "^1.4"
     },
     "autoload": {
         "psr-4": {
             "App\\": "src/"
-        },
-        "files": [
-            "src/Helpers/functions.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -42,41 +29,7 @@
         }
     },
     "scripts": {
-        "test": [
-            "docker-compose -f docker-compose.test.yml up -d",
-            "sleep 5",
-            "docker-compose -f docker-compose.test.yml exec -T php ./vendor/bin/phpunit",
-            "docker-compose -f docker-compose.test.yml down"
-        ],
-        "test:coverage": [
-            "docker-compose -f docker-compose.test.yml up -d",
-            "sleep 5",
-            "docker-compose -f docker-compose.test.yml exec -T php ./vendor/bin/phpunit --coverage-html coverage",
-            "docker-compose -f docker-compose.test.yml down"
-        ],
-        "test:integration": [
-            "docker-compose -f docker-compose.test.yml up -d",
-            "sleep 5",
-            "docker-compose -f docker-compose.test.yml exec -T php ./vendor/bin/phpunit --testsuite Integration",
-            "docker-compose -f docker-compose.test.yml down"
-        ],
-        "analyse": "phpstan analyse -l max src tests",
-        "check-style": "phpcs --standard=PSR12 src tests",
-        "fix-style": "phpcbf --standard=PSR12 src tests",
-        "check-all": [
-            "@test",
-            "@analyse",
-            "@check-style"
-        ]
+        "test": "phpunit"
     },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true,
-        "platform": {
-            "php": "8.2"
-        }
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    "minimum-stability": "stable"
 }

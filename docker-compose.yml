@@ -1,21 +1,6 @@
 version: '3.8'
 
 services:
-    nginx:
-        image: nginx:latest
-        ports:
-            - '80:80'
-            - '443:443'
-        volumes:
-            - ./docker/nginx/conf.d:/etc/nginx/conf.d
-            - ./docker/nginx/ssl:/etc/nginx/ssl
-            - ./public:/var/www/html/public
-            - ./storage/app/public:/var/www/html/public/storage
-        depends_on:
-            - php
-        networks:
-            - app-network
-
     php:
         build:
             context: ./docker/php
@@ -24,17 +9,9 @@ services:
             - .:/var/www/html
             - ./docker/php/php.ini:/usr/local/etc/php/php.ini
         environment:
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
-        depends_on:
-            - redis
-        networks:
-            - app-network
-
-    redis:
-        image: redis:alpine
-        ports:
-            - '6379:6379'
+            APP_ENV: production
+            DB_CONNECTION: sqlite
+            DB_DATABASE: /var/www/html/database/database.sqlite
         networks:
             - app-network
 

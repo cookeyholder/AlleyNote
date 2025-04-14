@@ -1,40 +1,26 @@
-FROM php:8.2-fpm
+FROM php:8.1-fpm
 
-# 安裝相依套件
+# 安裝基礎套件
 RUN apt-get update && apt-get install -y \
-    libzip-dev \
+    git \
     zip \
     unzip \
-    git \
-    curl \
-    libicu-dev \
     libpng-dev \
     libjpeg-dev \
-    libfreetype6-dev \
-    sqlite3 \
-    libsqlite3-dev \
-    && rm -rf /var/lib/apt/lists/*
+    libfreetype6-dev
 
-# 安裝 PHP 擴充功能
-RUN docker-php-ext-install pdo pdo_sqlite zip exif pcntl
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-install gd
-
-# 安裝 Redis 擴充功能
-RUN pecl install redis && docker-php-ext-enable redis
-
-# 安裝 Xdebug
-RUN pecl install xdebug && docker-php-ext-enable xdebug
-
-# 設定 Xdebug
-RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+# 設定 GD 擴充功能
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql
 
 # 安裝 Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # 設定工作目錄
 WORKDIR /var/www/html
+
+# 複製專案檔案
+COPY . .
 
 # 設定權限
 RUN chown -R www-data:www-data /var/www/html

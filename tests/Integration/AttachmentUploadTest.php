@@ -5,74 +5,27 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Services\AttachmentService;
-use App\Services\CacheService;
 use App\Repositories\AttachmentRepository;
 use App\Repositories\PostRepository;
-use App\Models\Attachment;
-use App\Exceptions\ValidationException;
 use Tests\TestCase;
 use Mockery;
-use PDO;
-use Psr\Http\Message\UploadedFileInterface;
 
 class AttachmentUploadTest extends TestCase
 {
-    private AttachmentService $attachmentService;
-    private string $testFilesDir;
-    private string $uploadDir;
-    private AttachmentRepository $attachmentRepo;
-    private PostRepository $postRepo;
-    private CacheService $cache;
-    private PDO $db;
+    protected AttachmentService $attachmentService;
+    protected string $uploadDir;
+    protected AttachmentRepository $attachmentRepo;
+    protected PostRepository $postRepo;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         // 建立測試用目錄
-        $this->testFilesDir = sys_get_temp_dir() . '/alleynote_test_' . uniqid();
-        $this->uploadDir = $this->testFilesDir . '/uploads';
-        mkdir($this->testFilesDir);
+        $this->uploadDir = sys_get_temp_dir() . '/alleynote_test_' . uniqid();
         mkdir($this->uploadDir);
 
-        // 建立測試用資料庫連線
-        $this->db = new PDO('sqlite::memory:');
-        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        // 建立測試用資料表
-        $this->db->exec('
-            CREATE TABLE attachments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                uuid VARCHAR(36) NOT NULL,
-                post_id INTEGER NOT NULL,
-                filename VARCHAR(255) NOT NULL,
-                original_name VARCHAR(255) NOT NULL,
-                mime_type VARCHAR(255) NOT NULL,
-                file_size INTEGER NOT NULL,
-                storage_path VARCHAR(255) NOT NULL,
-                created_at DATETIME,
-                updated_at DATETIME
-            )
-        ');
-
-        $this->db->exec('
-            CREATE TABLE posts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title VARCHAR(255) NOT NULL,
-                content TEXT NOT NULL,
-                created_at DATETIME,
-                updated_at DATETIME
-            )
-        ');
-
-        // 建立測試用文章
-        $this->db->exec('
-            INSERT INTO posts (id, title, content, created_at, updated_at)
-            VALUES (1, "測試文章", "測試內容", datetime("now"), datetime("now"))
-        ');
-
-        // 初始化相依物件
-        $this->cache = new CacheService();
+        // 初始化測試依賴
         $this->attachmentRepo = new AttachmentRepository($this->db, $this->cache);
         $this->postRepo = new PostRepository($this->db, $this->cache);
 
@@ -83,6 +36,8 @@ class AttachmentUploadTest extends TestCase
             $this->cache,
             $this->uploadDir
         );
+
+        $this->createTestTables();
     }
 
     /** @test */
@@ -94,9 +49,9 @@ class AttachmentUploadTest extends TestCase
 
         // 建立多個測試檔案
         for ($i = 0; $i < $uploadCount; $i++) {
-            $filePath = $this->testFilesDir . "/test{$i}.jpg";
+            $filePath = $this->uploadDir . "/test{$i}.jpg";
             file_put_contents($filePath, str_repeat('x', 1024)); // 1KB 檔案
-            
+
             $file = Mockery::mock(UploadedFileInterface::class);
             $file->shouldReceive('getClientFilename')
                 ->andReturn("test{$i}.jpg");
@@ -109,7 +64,7 @@ class AttachmentUploadTest extends TestCase
                     copy($filePath, $path);
                     return true;
                 });
-            
+
             $uploads[] = $file;
         }
 
@@ -141,7 +96,7 @@ class AttachmentUploadTest extends TestCase
     public function should_handle_large_file_upload(): void
     {
         $postId = 1;
-        $filePath = $this->testFilesDir . '/large_file.bin';
+        $filePath = $this->uploadDir . '/large_file.bin';
         $fileSize = 10 * 1024 * 1024; // 10MB
 
         // 建立大檔案
@@ -181,7 +136,7 @@ class AttachmentUploadTest extends TestCase
         ];
 
         foreach ($invalidTypes as $mimeType => $filename) {
-            $filePath = $this->testFilesDir . '/' . $filename;
+            $filePath = $this->uploadDir . '/' . $filename;
             file_put_contents($filePath, 'test content');
 
             $file = Mockery::mock(UploadedFileInterface::class);
@@ -205,7 +160,7 @@ class AttachmentUploadTest extends TestCase
     public function should_handle_disk_full_error(): void
     {
         $postId = 1;
-        $filePath = $this->testFilesDir . '/test.jpg';
+        $filePath = $this->uploadDir . '/test.jpg';
         file_put_contents($filePath, str_repeat('x', 1024));
 
         $file = Mockery::mock(UploadedFileInterface::class);
@@ -228,7 +183,7 @@ class AttachmentUploadTest extends TestCase
     public function should_handle_permission_error(): void
     {
         $postId = 1;
-        $filePath = $this->testFilesDir . '/test.jpg';
+        $filePath = $this->uploadDir . '/test.jpg';
         file_put_contents($filePath, str_repeat('x', 1024));
         chmod($this->uploadDir, 0444); // 設定為唯讀
 
@@ -251,23 +206,48 @@ class AttachmentUploadTest extends TestCase
     protected function tearDown(): void
     {
         // 清理測試檔案
-        if (is_dir($this->testFilesDir)) {
+        if (is_dir($this->uploadDir)) {
             chmod($this->uploadDir, 0755); // 恢復權限以便刪除
-            $files = glob($this->testFilesDir . '/*');
+            $files = glob($this->uploadDir . '/*');
             foreach ($files as $file) {
-                if (is_dir($file)) {
-                    $subFiles = glob($file . '/*');
-                    foreach ($subFiles as $subFile) {
-                        unlink($subFile);
-                    }
-                    rmdir($file);
-                } else {
-                    unlink($file);
-                }
+                unlink($file);
             }
-            rmdir($this->testFilesDir);
+            rmdir($this->uploadDir);
         }
         parent::tearDown();
         Mockery::close();
+    }
+
+    private function createTestTables(): void
+    {
+        $this->db->exec('
+            CREATE TABLE attachments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid VARCHAR(36) NOT NULL,
+                post_id INTEGER NOT NULL,
+                filename VARCHAR(255) NOT NULL,
+                original_name VARCHAR(255) NOT NULL,
+                mime_type VARCHAR(255) NOT NULL,
+                file_size INTEGER NOT NULL,
+                storage_path VARCHAR(255) NOT NULL,
+                created_at DATETIME,
+                updated_at DATETIME
+            )
+        ');
+
+        $this->db->exec('
+            CREATE TABLE posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title VARCHAR(255) NOT NULL,
+                content TEXT NOT NULL,
+                created_at DATETIME,
+                updated_at DATETIME
+            )
+        ');
+
+        $this->db->exec('
+            INSERT INTO posts (id, title, content, created_at, updated_at)
+            VALUES (1, "測試文章", "測試內容", datetime("now"), datetime("now"))
+        ');
     }
 }

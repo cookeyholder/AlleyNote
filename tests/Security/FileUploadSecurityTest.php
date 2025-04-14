@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Services\AttachmentService;
-use App\Services\CacheService;
 use App\Repositories\AttachmentRepository;
 use App\Repositories\PostRepository;
 use App\Exceptions\ValidationException;
@@ -17,18 +16,16 @@ use Psr\Http\Message\StreamInterface;
 
 class FileUploadSecurityTest extends TestCase
 {
-    private AttachmentService $service;
-    private AttachmentRepository $attachmentRepo;
-    private PostRepository $postRepo;
-    private CacheService $cache;
-    private string $uploadDir;
+    protected AttachmentService $service;
+    protected AttachmentRepository $attachmentRepo;
+    protected PostRepository $postRepo;
+    protected string $uploadDir;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->attachmentRepo = Mockery::mock(AttachmentRepository::class);
         $this->postRepo = Mockery::mock(PostRepository::class);
-        $this->cache = Mockery::mock(CacheService::class);
         $this->uploadDir = '/tmp/test-uploads';
 
         if (!is_dir($this->uploadDir)) {
