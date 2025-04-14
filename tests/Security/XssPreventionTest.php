@@ -5,49 +5,74 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Controllers\PostController;
-use App\Services\PostService;
+use App\Services\Contracts\PostServiceInterface;
+use App\Services\Security\Contracts\XssProtectionServiceInterface;
+use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Models\Post;
 use Tests\TestCase;
 use Mockery;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class XssPreventionTest extends TestCase
 {
-    private PostService $postService;
+    private PostServiceInterface $postService;
+    private XssProtectionServiceInterface $xssProtection;
+    private CsrfProtectionServiceInterface $csrfProtection;
     private ServerRequestInterface $request;
     private ResponseInterface $response;
     private PostController $controller;
-    private array $responseData;
+    private StreamInterface $stream;
+    private string $lastWrittenContent = '';
+    private int $lastStatusCode = 0;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->postService = Mockery::mock(PostService::class);
+        $this->postService = Mockery::mock(PostServiceInterface::class);
+        $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
+        $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
         $this->request = Mockery::mock(ServerRequestInterface::class);
         $this->response = Mockery::mock(ResponseInterface::class);
-        $this->controller = new PostController($this->postService);
-        $this->responseData = [];
+        $this->stream = Mockery::mock(StreamInterface::class);
+
+        $this->controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
 
         // 設定預設回應行為
-        $this->response->shouldReceive('withJson')
-            ->andReturnUsing(function ($data) {
-                $this->responseData = $data;
+        $this->response->shouldReceive('getBody')
+            ->andReturn($this->stream);
+        $this->stream->shouldReceive('write')
+            ->andReturnUsing(function ($content) {
+                $this->lastWrittenContent = $content;
+                return strlen($content);
+            });
+        $this->response->shouldReceive('withStatus')
+            ->andReturnUsing(function ($status) {
+                $this->lastStatusCode = $status;
                 return $this->response;
             });
-
-        $this->response->shouldReceive('withStatus')
-            ->andReturnSelf();
-
         $this->response->shouldReceive('withHeader')
             ->andReturnSelf();
+        $this->response->shouldReceive('getStatusCode')
+            ->andReturnUsing(function () {
+                return $this->lastStatusCode;
+            });
 
-        // 設定 CSRF token
-        $_SESSION['csrf_token'] = 'valid-token';
+        // 設定 CSRF token 驗證
         $this->request->shouldReceive('getHeaderLine')
             ->with('X-CSRF-TOKEN')
             ->andReturn('valid-token');
+        $this->csrfProtection->shouldReceive('validateToken')
+            ->with('valid-token')
+            ->andReturnNull();
+        $this->csrfProtection->shouldReceive('generateToken')
+            ->andReturn('new-token');
     }
 
     /** @test */
@@ -65,16 +90,27 @@ class XssPreventionTest extends TestCase
         $this->request->shouldReceive('getParsedBody')
             ->andReturn($postData);
 
+        // 設定 XSS 清理行為
+        $this->xssProtection->shouldReceive('cleanArray')
+            ->with($postData, ['title', 'content'])
+            ->andReturn([
+                'title' => htmlspecialchars($maliciousTitle, ENT_QUOTES, 'UTF-8'),
+                'content' => '正常內容',
+                'user_id' => 1
+            ]);
+
         // 模擬處理後的安全資料
-        $safePost = new Post([
-            'id' => 1,
-            'uuid' => 'test-uuid',
-            'title' => htmlspecialchars($maliciousTitle, ENT_QUOTES, 'UTF-8'),
-            'content' => '正常內容',
-            'user_id' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
-        ]);
+        $safePost = Mockery::mock(Post::class);
+        $safePost->shouldReceive('toArray')
+            ->andReturn([
+                'id' => 1,
+                'uuid' => 'test-uuid',
+                'title' => htmlspecialchars($maliciousTitle, ENT_QUOTES, 'UTF-8'),
+                'content' => '正常內容',
+                'user_id' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
 
         // 設定服務層期望行為
         $this->postService->shouldReceive('createPost')
@@ -82,14 +118,15 @@ class XssPreventionTest extends TestCase
             ->andReturn($safePost);
 
         // 執行測試
-        $this->controller->store($this->request, $this->response);
+        $response = $this->controller->store($this->request, $this->response);
 
-        // 驗證回應中的標題已被跳脫
-        $this->assertArrayHasKey('data', $this->responseData);
+        // 驗證回應內容
+        $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertEquals(
             htmlspecialchars($maliciousTitle, ENT_QUOTES, 'UTF-8'),
-            $this->responseData['data']['title']
+            $responseData['data']['title']
         );
+        $this->assertEquals(201, $response->getStatusCode());
     }
 
     /** @test */
@@ -107,16 +144,27 @@ class XssPreventionTest extends TestCase
         $this->request->shouldReceive('getParsedBody')
             ->andReturn($postData);
 
+        // 設定 XSS 清理行為
+        $this->xssProtection->shouldReceive('cleanArray')
+            ->with($postData, ['title', 'content'])
+            ->andReturn([
+                'title' => '正常標題',
+                'content' => htmlspecialchars($maliciousContent, ENT_QUOTES, 'UTF-8'),
+                'user_id' => 1
+            ]);
+
         // 模擬處理後的安全資料
-        $safePost = new Post([
-            'id' => 1,
-            'uuid' => 'test-uuid',
-            'title' => '正常標題',
-            'content' => htmlspecialchars($maliciousContent, ENT_QUOTES, 'UTF-8'),
-            'user_id' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
-        ]);
+        $safePost = Mockery::mock(Post::class);
+        $safePost->shouldReceive('toArray')
+            ->andReturn([
+                'id' => 1,
+                'uuid' => 'test-uuid',
+                'title' => '正常標題',
+                'content' => htmlspecialchars($maliciousContent, ENT_QUOTES, 'UTF-8'),
+                'user_id' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
 
         // 設定服務層期望行為
         $this->postService->shouldReceive('createPost')
@@ -124,14 +172,15 @@ class XssPreventionTest extends TestCase
             ->andReturn($safePost);
 
         // 執行測試
-        $this->controller->store($this->request, $this->response);
+        $response = $this->controller->store($this->request, $this->response);
 
-        // 驗證回應中的內容已被跳脫
-        $this->assertArrayHasKey('data', $this->responseData);
+        // 驗證回應內容
+        $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertEquals(
             htmlspecialchars($maliciousContent, ENT_QUOTES, 'UTF-8'),
-            $this->responseData['data']['content']
+            $responseData['data']['content']
         );
+        $this->assertEquals(201, $response->getStatusCode());
     }
 
     /** @test */
@@ -149,16 +198,27 @@ class XssPreventionTest extends TestCase
         $this->request->shouldReceive('getParsedBody')
             ->andReturn($postData);
 
+        // 設定 XSS 清理行為
+        $this->xssProtection->shouldReceive('cleanArray')
+            ->with($postData, ['title', 'content'])
+            ->andReturn([
+                'title' => '正常標題',
+                'content' => htmlspecialchars(urldecode($encodedScript), ENT_QUOTES, 'UTF-8'),
+                'user_id' => 1
+            ]);
+
         // 模擬處理後的安全資料
-        $safePost = new Post([
-            'id' => 1,
-            'uuid' => 'test-uuid',
-            'title' => '正常標題',
-            'content' => htmlspecialchars(urldecode($encodedScript), ENT_QUOTES, 'UTF-8'),
-            'user_id' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
-        ]);
+        $safePost = Mockery::mock(Post::class);
+        $safePost->shouldReceive('toArray')
+            ->andReturn([
+                'id' => 1,
+                'uuid' => 'test-uuid',
+                'title' => '正常標題',
+                'content' => htmlspecialchars(urldecode($encodedScript), ENT_QUOTES, 'UTF-8'),
+                'user_id' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
 
         // 設定服務層期望行為
         $this->postService->shouldReceive('createPost')
@@ -166,20 +226,20 @@ class XssPreventionTest extends TestCase
             ->andReturn($safePost);
 
         // 執行測試
-        $this->controller->store($this->request, $this->response);
+        $response = $this->controller->store($this->request, $this->response);
 
-        // 驗證回應中的內容已被跳脫
-        $this->assertArrayHasKey('data', $this->responseData);
+        // 驗證回應內容
+        $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertEquals(
             htmlspecialchars(urldecode($encodedScript), ENT_QUOTES, 'UTF-8'),
-            $this->responseData['data']['content']
+            $responseData['data']['content']
         );
+        $this->assertEquals(201, $response->getStatusCode());
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
         Mockery::close();
-        unset($_SESSION['csrf_token']);
     }
 }
