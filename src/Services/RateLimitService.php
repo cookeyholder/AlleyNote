@@ -1,56 +1,46 @@
 <?php
 
-namespace App\Services;
+declare(strict_types=1);
 
-use App\Services\CacheService;
+namespace App\Services;
 
 class RateLimitService
 {
-    private $cacheService;
-    private $maxAttempts;
-    private $decayMinutes;
+    public function __construct(
+        private readonly CacheService $cache
+    ) {}
 
-    public function __construct(CacheService $cacheService, int $maxAttempts = 60, int $decayMinutes = 1)
+    public function checkLimit(string $ip, int $maxRequests, int $timeWindow): array
     {
-        $this->cacheService = $cacheService;
-        $this->maxAttempts = $maxAttempts;
-        $this->decayMinutes = $decayMinutes;
-    }
+        $key = "rate_limit:{$ip}";
 
-    public function tooManyAttempts(string $key): bool
-    {
-        return $this->attempts($key) >= $this->maxAttempts;
-    }
+        try {
+            $data = $this->cache->get($key) ?: ['count' => 0, 'reset' => time() + $timeWindow];
 
-    public function hit(string $key): int
-    {
-        $attempts = $this->attempts($key) + 1;
-        $this->cacheService->put($key, $attempts, $this->decayMinutes * 60);
-        return $attempts;
-    }
+            // 檢查是否需要重置計數器
+            if (time() > $data['reset']) {
+                $data = ['count' => 0, 'reset' => time() + $timeWindow];
+            }
 
-    public function attempts(string $key): int
-    {
-        return (int) $this->cacheService->get($key, 0);
-    }
+            // 增加請求計數
+            $data['count']++;
 
-    public function resetAttempts(string $key): bool
-    {
-        return $this->cacheService->delete($key);
-    }
+            // 更新快取
+            $this->cache->set($key, $data, $timeWindow);
 
-    public function remainingAttempts(string $key): int
-    {
-        return $this->maxAttempts - $this->attempts($key);
-    }
-
-    public function isAllowed(string $key): bool
-    {
-        if ($this->tooManyAttempts($key)) {
-            return false;
+            return [
+                'allowed' => $data['count'] <= $maxRequests,
+                'remaining' => max(0, $maxRequests - $data['count']),
+                'reset' => $data['reset']
+            ];
+        } catch (\Exception $e) {
+            // 如果快取服務不可用，預設允許請求
+            error_log("速率限制檢查失敗: " . $e->getMessage());
+            return [
+                'allowed' => true,
+                'remaining' => $maxRequests,
+                'reset' => time() + $timeWindow
+            ];
         }
-
-        $this->hit($key);
-        return true;
     }
 }

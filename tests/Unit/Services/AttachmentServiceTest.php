@@ -18,23 +18,20 @@ use Psr\Http\Message\UploadedFileInterface;
 
 class AttachmentServiceTest extends TestCase
 {
-    private AttachmentService $service;
-    private AttachmentRepository|MockInterface $attachmentRepo;
-    private PostRepository|MockInterface $postRepo;
-    private CacheService|MockInterface $cache;
-    private string $uploadDir;
+    protected AttachmentService $service;
+    protected string $uploadDir;
+    protected AttachmentRepository|MockInterface $attachmentRepo;
+    protected PostRepository|MockInterface $postRepo;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->uploadDir = sys_get_temp_dir() . '/alleynote_test_' . uniqid();
+        mkdir($this->uploadDir);
+
         $this->attachmentRepo = Mockery::mock(AttachmentRepository::class);
         $this->postRepo = Mockery::mock(PostRepository::class);
-        $this->cache = Mockery::mock(CacheService::class);
-        $this->uploadDir = '/tmp/test-uploads';
-
-        if (!is_dir($this->uploadDir)) {
-            mkdir($this->uploadDir, 0777, true);
-        }
 
         $this->service = new AttachmentService(
             $this->attachmentRepo,

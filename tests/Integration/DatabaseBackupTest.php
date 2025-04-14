@@ -9,9 +9,9 @@ use PDO;
 
 class DatabaseBackupTest extends TestCase
 {
-    private string $backupDir;
-    private PDO $db;
-    private string $dbPath;
+    protected string $backupDir;
+    protected PDO $db;
+    protected string $dbPath;
 
     protected function setUp(): void
     {
@@ -76,7 +76,7 @@ class DatabaseBackupTest extends TestCase
         $backupFile = $this->backupDir . '/backup.sqlite';
         $output = [];
         $returnVar = 0;
-        
+
         exec(sprintf(
             '/bin/bash %s/scripts/backup_db.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
@@ -112,7 +112,7 @@ class DatabaseBackupTest extends TestCase
         // 執行還原腳本
         $output = [];
         $returnVar = 0;
-        
+
         exec(sprintf(
             '/bin/bash %s/scripts/restore_db.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
@@ -137,10 +137,10 @@ class DatabaseBackupTest extends TestCase
         // 使用不存在的來源資料庫
         $nonExistentDb = $this->backupDir . '/nonexistent.db';
         $backupFile = $this->backupDir . '/backup.sqlite';
-        
+
         $output = [];
         $returnVar = 0;
-        
+
         exec(sprintf(
             '/bin/bash %s/scripts/backup_db.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
@@ -158,10 +158,10 @@ class DatabaseBackupTest extends TestCase
     {
         // 使用不存在的備份檔案
         $nonExistentBackup = $this->backupDir . '/nonexistent_backup.sqlite';
-        
+
         $output = [];
         $returnVar = 0;
-        
+
         exec(sprintf(
             '/bin/bash %s/scripts/restore_db.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),

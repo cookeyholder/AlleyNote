@@ -5,40 +5,19 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Repositories\PostRepository;
-use App\Services\CacheService;
-use PDO;
 use Tests\TestCase;
 use Mockery;
 
 class SqlInjectionTest extends TestCase
 {
-    private PDO $db;
-    private CacheService $cache;
-    private PostRepository $repository;
+    protected PostRepository $repository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // 使用 SQLite 記憶體資料庫進行測試
-        $this->db = new PDO('sqlite::memory:');
-        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        // 建立測試資料表
-        $this->createTestTables();
-
-        // 模擬快取服務
-        $this->cache = Mockery::mock(CacheService::class);
-        $this->cache->shouldReceive('remember')
-            ->byDefault()
-            ->andReturnUsing(function ($key, $callback) {
-                return $callback();
-            });
-        $this->cache->shouldReceive('delete')
-            ->byDefault()
-            ->andReturn(true);
-
         $this->repository = new PostRepository($this->db, $this->cache);
+        $this->createTestTables();
     }
 
     private function createTestTables(): void

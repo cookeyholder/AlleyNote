@@ -12,9 +12,9 @@ use PDO;
 
 class PasswordHashingTest extends TestCase
 {
-    private AuthService $authService;
-    private UserRepository $userRepository;
-    private PDO $db;
+    protected AuthService $authService;
+    protected UserRepository $userRepository;
+    protected PDO $db;
 
     protected function setUp(): void
     {

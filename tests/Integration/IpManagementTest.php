@@ -15,11 +15,9 @@ use Mockery;
 
 class IpManagementTest extends TestCase
 {
-    private ?PDO $db = null;
-    private CacheService $cache;
-    private IpRepository $repository;
-    private IpService $service;
-    private IpController $controller;
+    protected IpService $service;
+    protected IpRepository $repository;
+    protected IpController $controller;
 
     protected function setUp(): void
     {
@@ -31,16 +29,13 @@ class IpManagementTest extends TestCase
         ]);
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // 建立資料表
-        $this->createTestTables();
-
-        // 初始化快取服務
-        $this->cache = new CacheService();
-
-        // 初始化各層元件
+        // 初始化測試依賴
+        $this->cache = $this->createMock(CacheService::class);
         $this->repository = new IpRepository($this->db, $this->cache);
         $this->service = new IpService($this->repository);
         $this->controller = new IpController($this->service);
+
+        $this->createTestTables();
     }
 
     private function createTestTables(): void

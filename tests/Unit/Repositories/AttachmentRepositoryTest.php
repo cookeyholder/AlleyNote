@@ -9,13 +9,12 @@ use App\Services\CacheService;
 use App\Repositories\AttachmentRepository;
 use Tests\TestCase;
 use Mockery;
-use Mockery\MockInterface;
 
 class AttachmentRepositoryTest extends TestCase
 {
-    private AttachmentRepository $repository;
-    private PDO $db;
-    private CacheService|MockInterface $cache;
+    protected AttachmentRepository $repository;
+    protected PDO $db;
+    protected CacheService $cache;
 
     protected function setUp(): void
     {
