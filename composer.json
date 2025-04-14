@@ -9,6 +9,7 @@
         "ext-json": "*",
         "ext-pdo": "*",
         "ext-pdo_sqlite": "*",
+        "ext-redis": "*",
         "firebase/php-jwt": "^6.10",
         "guzzlehttp/guzzle": "^7.8",
         "intervention/image": "^3.3",
@@ -41,8 +42,24 @@
         }
     },
     "scripts": {
-        "test": "phpunit",
-        "test:coverage": "phpunit --coverage-html coverage",
+        "test": [
+            "docker-compose -f docker-compose.test.yml up -d",
+            "sleep 5",
+            "docker-compose -f docker-compose.test.yml exec -T php ./vendor/bin/phpunit",
+            "docker-compose -f docker-compose.test.yml down"
+        ],
+        "test:coverage": [
+            "docker-compose -f docker-compose.test.yml up -d",
+            "sleep 5",
+            "docker-compose -f docker-compose.test.yml exec -T php ./vendor/bin/phpunit --coverage-html coverage",
+            "docker-compose -f docker-compose.test.yml down"
+        ],
+        "test:integration": [
+            "docker-compose -f docker-compose.test.yml up -d",
+            "sleep 5",
+            "docker-compose -f docker-compose.test.yml exec -T php ./vendor/bin/phpunit --testsuite Integration",
+            "docker-compose -f docker-compose.test.yml down"
+        ],
         "analyse": "phpstan analyse -l max src tests",
         "check-style": "phpcs --standard=PSR12 src tests",
         "fix-style": "phpcbf --standard=PSR12 src tests",

@@ -14,6 +14,9 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
+        <testsuite name="Security">
+            <directory>tests/Security</directory>
+        </testsuite>
     </testsuites>
     <coverage>
         <report>
@@ -31,5 +34,9 @@
         <env name="APP_ENV" value="testing"/>
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
+        <env name="REDIS_HOST" value="redis"/>
+        <env name="REDIS_PORT" value="6379"/>
+        <env name="REDIS_PASSWORD" value="null"/>
+        <env name="REDIS_CACHE_TTL" value="3600"/>
     </php>
 </phpunit>
