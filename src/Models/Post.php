@@ -18,7 +18,7 @@ class Post implements JsonSerializable
     private bool $isPinned;
     private string $status;
     private ?string $publishDate;
-    private int $viewCount;
+    private int $views;
     private string $createdAt;
     private string $updatedAt;
 
@@ -34,7 +34,7 @@ class Post implements JsonSerializable
         $this->isPinned = filter_var($data['is_pinned'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->status = $data['status'] ?? 'draft';
         $this->publishDate = $data['publish_date'] ?? null;
-        $this->viewCount = (int)($data['views'] ?? 0);
+        $this->views = (int)($data['views'] ?? 0);
         $this->createdAt = $data['created_at'] ?? format_datetime();
         $this->updatedAt = $data['updated_at'] ?? format_datetime();
     }
@@ -97,17 +97,18 @@ class Post implements JsonSerializable
         return $this->publishDate;
     }
 
-    public function getViewCount(): int
+    public function getViews(): int
     {
-        return $this->viewCount;
+        return $this->views;
     }
 
     /**
-     * 相容性方法：提供 getViews 作為 getViewCount 的別名
+     * 相容性方法：提供 getViewCount 作為 getViews 的別名
+     * @deprecated 使用 getViews() 替代
      */
-    public function getViews(): int
+    public function getViewCount(): int
     {
-        return $this->getViewCount();
+        return $this->getViews();
     }
 
     public function getCreatedAt(): string
@@ -133,7 +134,7 @@ class Post implements JsonSerializable
             'is_pinned' => $this->isPinned,
             'status' => $this->status,
             'publish_date' => $this->publishDate,
-            'view_count' => $this->viewCount,
+            'views' => $this->views,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt
         ];

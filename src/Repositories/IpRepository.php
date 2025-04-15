@@ -228,15 +228,16 @@ class IpRepository implements IpRepositoryInterface
     {
         $cacheKey = 'ip_lists:type:' . $type;
 
-        return $this->cache->remember($cacheKey, function () use ($type) {
+        $results = $this->cache->remember($cacheKey, function () use ($type) {
             $stmt = $this->db->prepare('SELECT * FROM ip_lists WHERE type = ? ORDER BY created_at DESC');
             $stmt->execute([$type]);
-
-            return array_map(
-                fn($row) => $this->createIpListFromData($row),
-                $stmt->fetchAll(PDO::FETCH_ASSOC)
-            );
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }, self::CACHE_TTL);
+
+        return empty($results) ? [] : array_map(
+            fn($row) => $this->createIpListFromData($row),
+            $results
+        );
     }
 
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array

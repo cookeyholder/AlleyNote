@@ -18,7 +18,7 @@ class PostFactory
             'user_ip' => '127.0.0.1',
             'is_pinned' => false,
             'status' => 'draft',
-            'view_count' => 0,
+            'views' => 0,
             'publish_date' => date('Y-m-d H:i:s'),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')

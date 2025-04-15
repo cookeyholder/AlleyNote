@@ -6,6 +6,8 @@ namespace Tests\Integration;
 
 use App\Controllers\PostController;
 use App\Services\Contracts\PostServiceInterface;
+use App\Services\Security\Contracts\XssProtectionServiceInterface;
+use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Models\Post;
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
@@ -19,17 +21,40 @@ use Psr\Http\Message\ServerRequestInterface;
 class PostControllerTest extends TestCase
 {
     private PostServiceInterface $postService;
+    private XssProtectionServiceInterface $xssProtection;
+    private CsrfProtectionServiceInterface $csrfProtection;
     private $request;
     private $response;
     private $stream;
+    private $responseStatus;
+    private $currentResponseData;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->postService = Mockery::mock(PostServiceInterface::class);
+        $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
+        $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
+
+        // 設定預設行為
+        $this->xssProtection->shouldReceive('cleanArray')
+            ->byDefault()
+            ->andReturnUsing(function ($data, $fields) {
+                return $data;
+            });
+        $this->csrfProtection->shouldReceive('validateToken')
+            ->byDefault()
+            ->andReturn(true);
+        $this->csrfProtection->shouldReceive('generateToken')
+            ->byDefault()
+            ->andReturn('new-token');
+
+        // 先建立 stream
         $this->stream = $this->createStreamMock();
-        $this->request = $this->createRequestMock();
+        // 再建立 response
         $this->response = $this->createResponseMock();
+        // 最後建立 request
+        $this->request = $this->createRequestMock();
     }
 
     /** @test */
@@ -57,7 +82,11 @@ class PostControllerTest extends TestCase
             ->andReturn($expectedResult);
 
         // 執行測試
-        $controller = new PostController($this->postService);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
         $response = $controller->index($this->request, $this->response);
 
         // 驗證結果
@@ -87,7 +116,7 @@ class PostControllerTest extends TestCase
             ->andReturn(1);
 
         // 設定服務層期望行為
-        $this->postService->shouldReceive('getPost')
+        $this->postService->shouldReceive('findById')
             ->once()
             ->with($postId)
             ->andReturn($post);
@@ -97,7 +126,11 @@ class PostControllerTest extends TestCase
             ->andReturn(true);
 
         // 執行測試
-        $controller = new PostController($this->postService);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
         $response = $controller->show($this->request, $this->response, ['id' => $postId]);
 
         // 驗證結果
@@ -128,7 +161,11 @@ class PostControllerTest extends TestCase
             ->andReturn($createdPost);
 
         // 執行測試
-        $controller = new PostController($this->postService);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
         $response = $controller->store($this->request, $this->response);
 
         // 驗證結果
@@ -155,7 +192,11 @@ class PostControllerTest extends TestCase
             ->andThrow($validationException);
 
         // 執行測試
-        $controller = new PostController($this->postService);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
         $response = $controller->store($this->request, $this->response);
 
         // 驗證結果
@@ -190,7 +231,11 @@ class PostControllerTest extends TestCase
             ->andReturn($updatedPost);
 
         // 執行測試
-        $controller = new PostController($this->postService);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
         // 驗證結果
@@ -221,7 +266,11 @@ class PostControllerTest extends TestCase
             ->andReturn(404);
 
         // 執行測試
-        $controller = new PostController($this->postService);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
         // 驗證結果
@@ -249,7 +298,11 @@ class PostControllerTest extends TestCase
             ->andReturn(204);
 
         // 執行測試
-        $controller = new PostController($this->postService);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
         $response = $controller->destroy($this->request, $this->response, ['id' => $postId]);
 
         // 驗證結果
@@ -279,7 +332,11 @@ class PostControllerTest extends TestCase
             ->andReturn(204);
 
         // 執行測試
-        $controller = new PostController($this->postService);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
         $response = $controller->updatePinStatus($this->request, $this->response, ['id' => $postId]);
 
         // 驗證結果
@@ -309,7 +366,11 @@ class PostControllerTest extends TestCase
             ->andReturn(422);
 
         // 執行測試
-        $controller = new PostController($this->postService);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection
+        );
         $response = $controller->updatePinStatus($this->request, $this->response, ['id' => $postId]);
 
         // 驗證結果
@@ -328,14 +389,23 @@ class PostControllerTest extends TestCase
 
     private function createRequestMock()
     {
-        return Mockery::mock(ServerRequestInterface::class);
+        $request = Mockery::mock(ServerRequestInterface::class);
+        $request->shouldReceive('getHeaderLine')
+            ->with('X-CSRF-TOKEN')
+            ->andReturn('valid-token')
+            ->byDefault();
+        return $request;
     }
 
     private function createStreamMock()
     {
         $stream = Mockery::mock(StreamInterface::class);
+        $this->currentResponseData = null;
         $stream->shouldReceive('write')
-            ->andReturnSelf();
+            ->andReturnUsing(function ($content) use ($stream) {
+                $this->currentResponseData = json_decode($content, true);
+                return $stream;
+            });
         $stream->shouldReceive('getContents')
             ->andReturnUsing(function () {
                 return json_encode($this->currentResponseData);
@@ -346,14 +416,19 @@ class PostControllerTest extends TestCase
     protected function createResponseMock(): ResponseInterface
     {
         $response = Mockery::mock(ResponseInterface::class);
-        $response->shouldReceive('withHeader')->andReturnSelf();
-        $response->shouldReceive('withStatus')->andReturnSelf();
-        $response->shouldReceive('getStatusCode')->andReturn(200);
-        $response->shouldReceive('getBody')->andReturnSelf();
-        $response->shouldReceive('write')->andReturnSelf();
-        $response->shouldReceive('getContents')->andReturn('');
+        $response->shouldReceive('withHeader')
+            ->andReturnSelf();
+        $response->shouldReceive('withStatus')
+            ->andReturnUsing(function ($status) use ($response) {
+                $this->responseStatus = $status;
+                return $response;
+            });
+        $response->shouldReceive('getStatusCode')
+            ->andReturnUsing(function () {
+                return $this->responseStatus ?? 200;
+            });
+        $response->shouldReceive('getBody')
+            ->andReturn($this->stream);
         return $response;
     }
-
-    private $currentResponseData;
 }

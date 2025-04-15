@@ -25,18 +25,18 @@ class RateLimitServiceTest extends TestCase
     public function should_allow_first_request(): void
     {
         $ip = '127.0.0.1';
+        $timeNow = time();
+        
         $this->cacheMock->shouldReceive('get')
             ->once()
             ->with("rate_limit:{$ip}")
             ->andReturn(null);
 
-        $this->cacheMock->shouldReceive('increment')
+        $this->cacheMock->shouldReceive('set')
             ->once()
-            ->with("rate_limit:{$ip}");
-
-        $this->cacheMock->shouldReceive('expire')
-            ->once()
-            ->with("rate_limit:{$ip}", 60);
+            ->with("rate_limit:{$ip}", Mockery::on(function ($data) use ($timeNow) {
+                return $data['count'] === 1 && $data['reset'] >= $timeNow;
+            }), 60);
 
         $result = $this->rateLimitService->isAllowed($ip);
         $this->assertTrue($result);
@@ -46,11 +46,13 @@ class RateLimitServiceTest extends TestCase
     public function should_reject_when_limit_exceeded(): void
     {
         $ip = '127.0.0.1';
+        $timeNow = time();
         $this->cacheMock->shouldReceive('get')
             ->once()
             ->with("rate_limit:{$ip}")
-            ->andReturn(['count' => 60, 'reset' => time() + 60]);
+            ->andReturn(['count' => 60, 'reset' => $timeNow + 60]);
 
+        // 當超過限制時，不應該再呼叫 set
         $result = $this->rateLimitService->isAllowed($ip);
         $this->assertFalse($result);
     }
@@ -64,9 +66,10 @@ class RateLimitServiceTest extends TestCase
             ->with("rate_limit:{$ip}")
             ->andThrow(new \RuntimeException('快取錯誤'));
 
-        // 快取失敗時應該允許請求
+        // 不需要設定 set 的預期，因為在異常情況下不會呼叫 set
         $result = $this->rateLimitService->isAllowed($ip);
         $this->assertTrue($result);
+        $this->assertTrue($result, '當快取服務失敗時應該允許請求');
     }
 
     /** @test */
@@ -90,41 +93,24 @@ class RateLimitServiceTest extends TestCase
     }
 
     /** @test */
-    public function should_handle_increment_failure(): void
+    public function should_handle_set_failure(): void
     {
         $ip = '127.0.0.1';
+        $timeNow = time();
         $this->cacheMock->shouldReceive('get')
             ->once()
             ->with("rate_limit:{$ip}")
-            ->andReturn(['count' => 5, 'reset' => time() + 60]);
+            ->andReturn(['count' => 5, 'reset' => $timeNow + 60]);
 
         $this->cacheMock->shouldReceive('set')
             ->once()
             ->with("rate_limit:{$ip}", Mockery::any(), 60)
-            ->andThrow(new \RuntimeException('增量更新失敗'));
+            ->andThrow(new \RuntimeException('快取更新失敗'));
 
-        // 增加計數失敗時應該允許請求
+        // 快取更新失敗時應該允許請求
         $result = $this->rateLimitService->isAllowed($ip);
         $this->assertTrue($result);
-    }
-
-    /** @test */
-    public function should_handle_expire_failure(): void
-    {
-        $ip = '127.0.0.1';
-        $this->cacheMock->shouldReceive('get')
-            ->once()
-            ->with("rate_limit:{$ip}")
-            ->andReturn(['count' => 5, 'reset' => time() + 60]);
-
-        $this->cacheMock->shouldReceive('set')
-            ->once()
-            ->with("rate_limit:{$ip}", Mockery::any(), 60)
-            ->andThrow(new \RuntimeException('設定過期時間失敗'));
-
-        // 設定過期時間失敗時應該允許請求
-        $result = $this->rateLimitService->isAllowed($ip);
-        $this->assertTrue($result);
+        $this->assertTrue($result, '當快取更新失敗時應該允許請求');
     }
 
     protected function tearDown(): void

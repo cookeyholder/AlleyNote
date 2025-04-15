@@ -23,22 +23,36 @@ class IpManagementTest extends TestCase
     {
         parent::setUp();
 
-        // 建立測試資料庫連線
-        $this->db = new PDO('sqlite::memory:', null, null, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-        ]);
-        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
         // 初始化測試依賴
-        $this->cache = $this->createMock(CacheService::class);
+
         $this->repository = new IpRepository($this->db, $this->cache);
         $this->service = new IpService($this->repository);
         $this->controller = new IpController($this->service);
 
         $this->createTestTables();
+        $this->seedTestData();
     }
 
-    private function createTestTables(): void
+    protected function seedTestData(): void
+    {
+        // 插入一些初始測試資料
+        $stmt = $this->db->prepare('
+            INSERT INTO ip_lists (uuid, ip_address, type, description, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ');
+
+        $now = date('Y-m-d H:i:s');
+        $stmt->execute([
+            generate_uuid(),
+            '192.168.0.1',
+            1,
+            '初始白名單',
+            $now,
+            $now
+        ]);
+    }
+
+    protected function createTestTables(): void
     {
         // 建立 IP 黑白名單資料表
         $this->db->exec('DROP TABLE IF EXISTS ip_lists');
@@ -218,7 +232,6 @@ class IpManagementTest extends TestCase
         if ($this->db !== null) {
             // 清除資料表
             $this->db->exec('DROP TABLE IF EXISTS ip_lists');
-            $this->db = null;
         }
 
         // 清理快取

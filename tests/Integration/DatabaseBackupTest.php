@@ -31,7 +31,7 @@ class DatabaseBackupTest extends TestCase
         $this->insertTestData();
     }
 
-    private function createTestTables(): void
+    protected function createTestTables(): void
     {
         $this->db->exec('
             CREATE TABLE posts (
