@@ -14,8 +14,7 @@ class AttachmentRepositoryTest extends TestCase
 {
     protected AttachmentRepository $repository;
     protected PDO $db;
-    protected CacheService $cache;
-
+    protected $cache;
     protected function setUp(): void
     {
         parent::setUp();

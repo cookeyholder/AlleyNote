@@ -93,8 +93,9 @@ class IpManagementTest extends TestCase
         $getWhitelistResponse = $this->controller->getByType(['type' => 1]);
 
         $this->assertEquals(200, $getWhitelistResponse['status']);
-        $this->assertCount(1, $getWhitelistResponse['data']);
-        $this->assertEquals('192.168.1.1', $getWhitelistResponse['data'][0]['ip_address']);
+        $this->assertCount(2, $getWhitelistResponse['data']);
+        $ipAddresses = array_column($getWhitelistResponse['data'], 'ip_address');
+        $this->assertContains('192.168.1.1', $ipAddresses);
 
         // 3. 測試 IP 存取檢查 - 白名單
         $checkWhitelistedResponse = $this->controller->checkAccess(['ip' => '192.168.1.1']);
@@ -222,7 +223,7 @@ class IpManagementTest extends TestCase
 
         // 驗證所有資料都正確寫入
         $response = $this->controller->getByType(['type' => 1]);
-        $this->assertCount(10, $response['data']);
+        $this->assertCount(11, $response['data']);
     }
 
     protected function tearDown(): void

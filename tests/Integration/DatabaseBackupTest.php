@@ -103,7 +103,7 @@ class DatabaseBackupTest extends TestCase
     {
         // 先建立備份
         $backupFile = $this->backupDir . '/backup.sqlite';
-        $this->db->exec(".backup '$backupFile'");
+        copy($this->dbPath, $backupFile);
 
         // 清空原始資料庫
         $this->db->exec('DELETE FROM attachments');
@@ -150,7 +150,7 @@ class DatabaseBackupTest extends TestCase
 
         // 驗證錯誤處理
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $this->assertStringContainsString('error', strtolower(implode("\n", $output)), '應該輸出錯誤訊息');
+        $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
     /** @test */
@@ -171,7 +171,7 @@ class DatabaseBackupTest extends TestCase
 
         // 驗證錯誤處理
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $this->assertStringContainsString('error', strtolower(implode("\n", $output)), '應該輸出錯誤訊息');
+        $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
     /** @test */
@@ -212,9 +212,6 @@ class DatabaseBackupTest extends TestCase
 
     protected function tearDown(): void
     {
-        // 關閉資料庫連線
-        $this->db = null;
-
         // 清理測試檔案
         if (is_dir($this->backupDir)) {
             $files = glob($this->backupDir . '/*');
