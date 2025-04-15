@@ -21,9 +21,7 @@ jobs:
         docker-compose up -d
 
     - name: 安裝相依套件
-      run: |
-        docker-compose exec -T php composer install
-        docker-compose exec -T php composer require --dev phpstan/phpstan phpmd/phpmd sebastian/phpcpd
+      run: echo "已由 Dockerfile 安裝相依套件，跳過此步驟"
 
     - name: 檢查程式碼風格
       run: docker-compose exec -T php ./vendor/bin/phpcs --standard=PSR12 src tests
@@ -54,19 +52,19 @@ jobs:
           -Dsonar.php.coverage.reportPaths=coverage.xml
           -Dsonar.php.tests.reportPath=test-report.xml
 
-    - name: 發送品質檢查結果通知
-      if: always()
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_CHAT_ID }}
-        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        format: markdown
-        message: |
-          🔍 *程式碼品質檢查結果*
-          
-          專案: AlleyNote
-          分支: ${{ github.ref_name }}
-          狀態: ${{ job.status == 'success' && '✅ 通過' || '❌ 失敗' }}
-          
-          提交者: ${{ github.actor }}
-          提交訊息: ${{ github.event.head_commit.message }}
+#    - name: 發送品質檢查結果通知
+#      if: always()
+#      uses: appleboy/telegram-action@master
+#      with:
+#        to: ${{ secrets.TELEGRAM_CHAT_ID }}
+#        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+#        format: markdown
+#        message: |
+#          🔍 *程式碼品質檢查結果*
+#          
+#          專案: AlleyNote
+#          分支: ${{ github.ref_name }}
+#          狀態: ${{ job.status == 'success' && '✅ 通過' || '❌ 失敗' }}
+#          
+#          提交者: ${{ github.actor }}
+#          提交訊息: ${{ github.event.head_commit.message }}
