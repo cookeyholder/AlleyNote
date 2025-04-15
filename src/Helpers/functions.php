@@ -24,7 +24,7 @@ if (!function_exists('format_datetime')) {
     function format_datetime(?string $datetime = null): string
     {
         $dt = $datetime ? new DateTime($datetime) : new DateTime();
-        return $dt->format('Y-m-d H:i:s');
+        return $dt->format(DateTime::RFC3339);
     }
 }
 

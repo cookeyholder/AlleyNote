@@ -190,9 +190,9 @@ class PostRepository implements PostRepositoryInterface
 
         // 檢查日期格式
         if (isset($data['publish_date'])) {
-            $date = \DateTime::createFromFormat('Y-m-d H:i:s', $data['publish_date']);
-            if (!$date || $date->format('Y-m-d H:i:s') !== $data['publish_date']) {
-                $errors[] = '發布日期格式必須是 Y-m-d H:i:s';
+            $date = \DateTime::createFromFormat(\DateTime::RFC3339, $data['publish_date']);
+            if (!$date || $date->format(\DateTime::RFC3339) !== $data['publish_date']) {
+                $errors[] = '發布日期格式必須是 RFC 3339';
             }
         }
 

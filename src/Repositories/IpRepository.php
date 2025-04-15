@@ -76,7 +76,7 @@ class IpRepository implements IpRepositoryInterface
     {
         $this->validateIpAddress($data['ip_address']);
 
-        $now = date('Y-m-d H:i:s');
+        $now = (new \DateTime())->format(\DateTime::RFC3339);
         $uuid = generate_uuid();
 
         $sql = "INSERT INTO ip_lists (uuid, ip_address, type, unit_id, description, created_at, updated_at) 
@@ -177,7 +177,7 @@ class IpRepository implements IpRepositoryInterface
             $this->validateIpAddress($data['ip_address']);
         }
 
-        $data['updated_at'] = date('Y-m-d H:i:s');
+        $data['updated_at'] = (new \DateTime())->format(\DateTime::RFC3339);
 
         $sets = [];
         $params = ['id' => $id];
