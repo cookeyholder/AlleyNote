@@ -7,7 +7,10 @@ use InvalidArgumentException;
 
 class AuthService
 {
-    public function __construct(private UserRepository $userRepository) {}
+    public function __construct(
+        private UserRepository $userRepository
+    ) {
+    }
 
     public function register(array $data): array
     {

@@ -18,7 +18,7 @@ interface XssProtectionServiceInterface
 
     /**
      * 清理陣列中指定欄位的 XSS 內容
-     * 
+     *
      * @param array $input 要清理的陣列
      * @param array $fields 要清理的欄位名稱列表
      * @return array 清理後的陣列

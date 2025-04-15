@@ -76,7 +76,7 @@ class AttachmentUploadTest extends TestCase
             ->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')
             ->andReturn(true);
-        
+
         $file->shouldReceive('getStream')
             ->andReturn($stream);
         $file->shouldReceive('moveTo')
@@ -180,12 +180,12 @@ class AttachmentUploadTest extends TestCase
         $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
-        
+
         $stream = Mockery::mock(\Psr\Http\Message\StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')->andReturn(true);
         $file->shouldReceive('getStream')->andReturn($stream);
-        
+
         $file->shouldReceive('moveTo')
             ->once()
             ->andThrow(new \RuntimeException('No space left on device'));
@@ -204,12 +204,12 @@ class AttachmentUploadTest extends TestCase
         $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
-        
+
         $stream = Mockery::mock(\Psr\Http\Message\StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')->andReturn(true);
         $file->shouldReceive('getStream')->andReturn($stream);
-        
+
         $file->shouldReceive('moveTo')
             ->once()
             ->andThrow(new \RuntimeException('Permission denied'));

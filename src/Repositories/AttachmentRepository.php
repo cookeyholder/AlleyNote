@@ -14,7 +14,8 @@ class AttachmentRepository
     public function __construct(
         private PDO $db,
         private CacheService $cache
-    ) {}
+    ) {
+    }
 
     public function create(array $data): Attachment
     {
