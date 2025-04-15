@@ -20,7 +20,7 @@ if [ ! -f "$BACKUP_FILE" ]; then
 fi
 
 # 檢查目標目錄是否可寫入
-if [ ! -w "$(dirname "$TARGET_DIR")" ]; then
+if [ ! -w "$TARGET_DIR" ]; then
     echo "錯誤：目標目錄無寫入權限"
     exit 1
 fi
