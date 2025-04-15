@@ -75,10 +75,20 @@ class AttachmentController
     public function delete(Request $request, Response $response): Response
     {
         try {
-            $id = (int)$request->getAttribute('id');
-            $this->attachmentService->delete($id);
+            $uuid = $request->getAttribute('id');
+            if (!$uuid || !is_string($uuid)) {
+                throw new ValidationException('無效的附件識別碼');
+            }
+            $this->attachmentService->delete($uuid);
 
             return $response->withStatus(204);
+        } catch (ValidationException $e) {
+            $response->getBody()->write(json_encode([
+                'error' => $e->getMessage()
+            ]));
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
             $response->getBody()->write(json_encode([
                 'error' => $e->getMessage()

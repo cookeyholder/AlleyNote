@@ -170,17 +170,17 @@ class AttachmentControllerTest extends TestCase
     public function delete_should_remove_attachment(): void
     {
         // 準備測試資料
-        $attachmentId = 1;
+        $uuid = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
 
         // 設定請求
         $this->request->shouldReceive('getAttribute')
             ->with('id')
-            ->andReturn($attachmentId);
+            ->andReturn($uuid);
 
         // 設定服務層期望行為
         $this->attachmentService->shouldReceive('delete')
             ->once()
-            ->with($attachmentId)
+            ->with($uuid)
             ->andReturn(true);
 
         // 設定回應期望
@@ -199,17 +199,17 @@ class AttachmentControllerTest extends TestCase
     public function delete_should_return_404_for_nonexistent_attachment(): void
     {
         // 準備測試資料
-        $attachmentId = 999;
+        $uuid = 'f47ac10b-58cc-4372-a567-0e02b2c3d480';
 
         // 設定請求
         $this->request->shouldReceive('getAttribute')
             ->with('id')
-            ->andReturn($attachmentId);
+            ->andReturn($uuid);
 
         // 設定服務層期望行為
         $this->attachmentService->shouldReceive('delete')
             ->once()
-            ->with($attachmentId)
+            ->with($uuid)
             ->andThrow(new NotFoundException('找不到指定的附件'));
 
         // 設定回應期望
@@ -222,6 +222,29 @@ class AttachmentControllerTest extends TestCase
 
         // 驗證結果
         $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    /** @test */
+    public function delete_should_return_400_for_invalid_uuid(): void
+    {
+        // 準備測試資料
+        $invalidUuid = 123;
+
+        // 設定請求
+        $this->request->shouldReceive('getAttribute')
+            ->with('id')
+            ->andReturn($invalidUuid);
+
+        // 設定回應期望
+        $this->response->shouldReceive('getStatusCode')
+            ->andReturn(400);
+
+        // 執行測試
+        $controller = new AttachmentController($this->attachmentService);
+        $response = $controller->delete($this->request, $this->response);
+
+        // 驗證結果
+        $this->assertEquals(400, $response->getStatusCode());
     }
 
     protected function tearDown(): void
