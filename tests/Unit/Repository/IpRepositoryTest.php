@@ -29,6 +29,15 @@ class IpRepositoryTest extends TestCase
                 return $callback();
             });
         $this->cache->shouldReceive('delete')->byDefault();
+        $this->cache->shouldReceive('set')
+            ->byDefault()
+            ->andReturn(true);
+        $this->cache->shouldReceive('get')
+            ->byDefault()
+            ->andReturn(null);
+        $this->cache->shouldReceive('has')
+            ->byDefault()
+            ->andReturn(false);
 
         $this->repository = new IpRepository($this->db, $this->cache);
     }

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use PDO;
 
-return [
-    'up' => function (PDO $db): void {
+class CreateIpListsTable
+{
+    public function up(PDO $db): void
+    {
         // 建立 IP 黑白名單資料表
         $db->exec("
             CREATE TABLE ip_lists (
@@ -28,9 +30,10 @@ return [
             CREATE INDEX idx_ip_lists_unit_id ON ip_lists(unit_id);
             CREATE INDEX idx_ip_lists_created_at ON ip_lists(created_at);
         ");
-    },
+    }
 
-    'down' => function (PDO $db): void {
+    public function down(PDO $db): void
+    {
         $db->exec('DROP TABLE IF EXISTS ip_lists');
     }
-];
+}

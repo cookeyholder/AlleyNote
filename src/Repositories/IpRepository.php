@@ -16,7 +16,11 @@ class IpRepository implements IpRepositoryInterface
     public function __construct(
         private PDO $db,
         private CacheService $cache
-    ) {}
+    ) {
+        // 設定事務隔離級別
+        $this->db->exec('PRAGMA foreign_keys = ON');
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
 
     private function getCacheKey(string $type, mixed $identifier): string
     {
@@ -73,50 +77,51 @@ class IpRepository implements IpRepositoryInterface
         $this->validateIpAddress($data['ip_address']);
 
         $now = date('Y-m-d H:i:s');
-        $data['uuid'] = generate_uuid();
-        $data['created_at'] = $now;
-        $data['updated_at'] = $now;
+        $uuid = generate_uuid();
 
         $sql = "INSERT INTO ip_lists (uuid, ip_address, type, unit_id, description, created_at, updated_at) 
                 VALUES (:uuid, :ip_address, :type, :unit_id, :description, :created_at, :updated_at)";
 
-        $this->db->beginTransaction();
         try {
+            $this->db->beginTransaction();
+
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
-                'uuid' => $data['uuid'],
+                'uuid' => $uuid,
                 'ip_address' => $data['ip_address'],
                 'type' => $data['type'] ?? 0,
                 'unit_id' => $data['unit_id'] ?? null,
                 'description' => $data['description'] ?? null,
-                'created_at' => $data['created_at'],
-                'updated_at' => $data['updated_at']
+                'created_at' => $now,
+                'updated_at' => $now
             ]);
 
             $id = (int) $this->db->lastInsertId();
 
-            // 直接從已知資料建立物件，避免額外的資料庫查詢
+            // 直接從已知資料建立物件
             $ipList = new IpList([
                 'id' => $id,
-                'uuid' => $data['uuid'],
+                'uuid' => $uuid,
                 'ip_address' => $data['ip_address'],
                 'type' => $data['type'] ?? 0,
                 'unit_id' => $data['unit_id'] ?? null,
                 'description' => $data['description'] ?? null,
-                'created_at' => $data['created_at'],
-                'updated_at' => $data['updated_at']
+                'created_at' => $now,
+                'updated_at' => $now
             ]);
 
             $this->db->commit();
 
             // 儲存到快取
             $this->cache->set($this->getCacheKey('id', $id), $ipList);
-            $this->cache->set($this->getCacheKey('uuid', $data['uuid']), $ipList);
+            $this->cache->set($this->getCacheKey('uuid', $uuid), $ipList);
             $this->cache->set($this->getCacheKey('ip', $data['ip_address']), $ipList);
 
             return $ipList;
         } catch (\Exception $e) {
-            $this->db->rollBack();
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
             throw $e;
         }
     }

@@ -3,50 +3,38 @@
 # 設定錯誤時終止腳本
 set -e
 
-# 設定備份目錄
-BACKUP_DIR="/var/www/alleynote/storage/backups/files"
-STORAGE_DIR="/var/www/alleynote/storage/app"
-PUBLIC_DIR="/var/www/alleynote/storage/app/public"
+# 檢查參數
+if [ "$#" -ne 2 ]; then
+    echo "錯誤：需要提供備份檔案路徑和目標目錄"
+    echo "用法：$0 <備份檔案路徑> <目標目錄>"
+    exit 1
+fi
 
-echo "開始還原檔案..."
+BACKUP_FILE="$1"
+TARGET_DIR="$2"
 
-# 檢查是否有備份檔案
-LATEST_BACKUP=$(ls -t $BACKUP_DIR/files_*.tar.gz 2>/dev/null | head -n1)
-
-if [ -z "$LATEST_BACKUP" ]; then
+# 檢查備份檔案是否存在
+if [ ! -f "$BACKUP_FILE" ]; then
     echo "錯誤：找不到備份檔案"
     exit 1
 fi
 
-echo "使用最新的備份檔案: $LATEST_BACKUP"
-
-# 停止應用程式服務
-echo "停止應用程式服務..."
-docker-compose down
-
-# 備份當前檔案（以防還原失敗）
-echo "備份當前檔案..."
-TEMP_BACKUP_DIR="/tmp/files_backup_$(date +%Y%m%d_%H%M%S)"
-mkdir -p "$TEMP_BACKUP_DIR"
-if [ -d "$STORAGE_DIR" ]; then
-    cp -r "$STORAGE_DIR" "$TEMP_BACKUP_DIR/"
+# 檢查目標目錄是否可寫入
+if [ ! -w "$(dirname "$TARGET_DIR")" ]; then
+    echo "錯誤：目標目錄無寫入權限"
+    exit 1
 fi
 
-# 清空目標目錄
-echo "清空目標目錄..."
-rm -rf "$STORAGE_DIR"
-mkdir -p "$STORAGE_DIR" "$PUBLIC_DIR"
+echo "開始還原檔案..."
+
+# 確保目標目錄存在
+mkdir -p "$TARGET_DIR"
 
 # 解壓縮並還原備份
-echo "還原檔案..."
-tar -xzf "$LATEST_BACKUP" -C /var/www/alleynote/storage
-
-# 設定適當的權限
-echo "設定檔案權限..."
-chown -R www-data:www-data "$STORAGE_DIR"
-chmod -R 755 "$STORAGE_DIR"
-
-echo "檔案還原完成！"
-
-# 如果需要，可以刪除臨時備份
-# rm -rf "$TEMP_BACKUP_DIR"
+if tar -xzf "$BACKUP_FILE" -C "$TARGET_DIR" 2>/dev/null; then
+    echo "檔案還原完成！"
+    exit 0
+else
+    echo "錯誤：還原失敗"
+    exit 1
+fi

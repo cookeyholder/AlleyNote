@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use PDO;
+use \PDO;
 
 class CreatePostsTables
 {

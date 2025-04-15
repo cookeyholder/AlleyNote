@@ -63,30 +63,81 @@ class PostRepository implements PostRepositoryInterface
         }
     }
 
+    /**
+     * 準備資料庫查詢結果為 Post 物件的資料
+     */
+    private function preparePostData(array $result): array
+    {
+        return [
+            'id' => (int)$result['id'],
+            'uuid' => $result['uuid'],
+            'seq_number' => (int)$result['seq_number'],
+            'title' => $result['title'],
+            'content' => $result['content'],
+            'user_id' => (int)$result['user_id'],
+            'user_ip' => $result['user_ip'],
+            'views' => (int)$result['views'],
+            'is_pinned' => (bool)$result['is_pinned'],
+            'status' => $result['status'],
+            'publish_date' => $result['publish_date'],
+            'created_at' => $result['created_at'],
+            'updated_at' => $result['updated_at']
+        ];
+    }
+
+    /**
+     * 準備新文章的資料
+     */
+    private function prepareNewPostData(array $data): array
+    {
+        $now = format_datetime();
+        return [
+            'uuid' => $data['uuid'] ?? generate_uuid(),
+            'seq_number' => $data['seq_number'] ?? null,
+            'title' => $data['title'],
+            'content' => $data['content'],
+            'user_id' => $data['user_id'],
+            'user_ip' => $data['user_ip'] ?? null,
+            'is_pinned' => $data['is_pinned'] ?? false,
+            'status' => $data['status'] ?? 'draft',
+            'publish_date' => $data['publish_date'] ?? $now,
+            'created_at' => $now,
+            'updated_at' => $now
+        ];
+    }
+
     public function find(int $id): ?Post
     {
         $cacheKey = $this->getCacheKey('id', $id);
 
-        return $this->cache->remember($cacheKey, function () use ($id) {
+        $data = $this->cache->remember($cacheKey, function () use ($id) {
             $stmt = $this->db->prepare('SELECT * FROM posts WHERE id = ?');
             $stmt->execute([$id]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            return $result ? Post::fromArray($result) : null;
+            if (!$result) {
+                return null;
+            }
+            return $this->preparePostData($result);
         }, self::CACHE_TTL);
+
+        return $data ? Post::fromArray($data) : null;
     }
 
     public function findByUuid(string $uuid): ?Post
     {
         $cacheKey = $this->getCacheKey('uuid', $uuid);
 
-        return $this->cache->remember($cacheKey, function () use ($uuid) {
+        $data = $this->cache->remember($cacheKey, function () use ($uuid) {
             $stmt = $this->db->prepare('SELECT * FROM posts WHERE uuid = ?');
             $stmt->execute([$uuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            return $result ? Post::fromArray($result) : null;
+            if (!$result) {
+                return null;
+            }
+            return $this->preparePostData($result);
         }, self::CACHE_TTL);
+
+        return $data ? Post::fromArray($data) : null;
     }
 
     public function findBySeqNumber(int $seqNumber): ?Post
@@ -94,8 +145,11 @@ class PostRepository implements PostRepositoryInterface
         $stmt = $this->db->prepare('SELECT * FROM posts WHERE seq_number = ?');
         $stmt->execute([$seqNumber]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$result) {
+            return null;
+        }
 
-        return $result ? Post::fromArray($result) : null;
+        return Post::fromArray($this->preparePostData($result));
     }
 
     private function validateRequiredFields(array $data): void
@@ -186,7 +240,7 @@ class PostRepository implements PostRepositoryInterface
             $this->validateTagAssignment($tagIds);
 
             // 準備資料
-            $data = $this->preparePostData($data);
+            $data = $this->prepareNewPostData($data);
 
             // 新增文章
             $stmt = $this->db->prepare(self::SQL_INSERT_POST);
@@ -209,27 +263,6 @@ class PostRepository implements PostRepositoryInterface
             }
             return $post;
         });
-    }
-
-    /**
-     * 準備文章資料
-     */
-    private function preparePostData(array $data): array
-    {
-        $now = format_datetime();
-        return [
-            'uuid' => $data['uuid'] ?? generate_uuid(),
-            'seq_number' => $data['seq_number'] ?? null,
-            'title' => $data['title'],
-            'content' => $data['content'],
-            'user_id' => $data['user_id'],
-            'user_ip' => $data['user_ip'] ?? null,
-            'is_pinned' => $data['is_pinned'] ?? false,
-            'status' => $data['status'] ?? 'draft',
-            'publish_date' => $data['publish_date'] ?? $now,
-            'created_at' => $now,
-            'updated_at' => $now
-        ];
     }
 
     /**
@@ -366,7 +399,7 @@ class PostRepository implements PostRepositoryInterface
 
             $stmt->execute();
             $items = array_map(
-                fn($row) => Post::fromArray($row),
+                fn($row) => Post::fromArray($this->preparePostData($row)),
                 $stmt->fetchAll(PDO::FETCH_ASSOC)
             );
 
@@ -393,7 +426,7 @@ class PostRepository implements PostRepositoryInterface
             $stmt->execute();
 
             return array_map(
-                fn($row) => Post::fromArray($row),
+                fn($row) => Post::fromArray($this->preparePostData($row)),
                 $stmt->fetchAll(PDO::FETCH_ASSOC)
             );
         }, self::CACHE_TTL);
@@ -426,7 +459,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
 
         $items = array_map(
-            fn($row) => Post::fromArray($row),
+            fn($row) => Post::fromArray($this->preparePostData($row)),
             $stmt->fetchAll(PDO::FETCH_ASSOC)
         );
 
@@ -463,21 +496,8 @@ class PostRepository implements PostRepositoryInterface
                 throw new \InvalidArgumentException('找不到指定的文章');
             }
 
-            // 檢查是否已經在 24 小時內觀看過
-            $stmt = $this->db->prepare('
-                SELECT COUNT(*) FROM post_views 
-                WHERE post_id = ? AND user_ip = ? 
-                AND view_date > datetime("now", "-1 day")
-            ');
-            $stmt->execute([$id, $userIp]);
-
-            if ((int) $stmt->fetchColumn() > 0) {
-                $this->db->rollBack();
-                return false;
-            }
-
             // 更新文章觀看次數
-            $stmt = $this->db->prepare('UPDATE posts SET view_count = view_count + 1 WHERE id = ?');
+            $stmt = $this->db->prepare('UPDATE posts SET views = views + 1 WHERE id = ?');
             $stmt->execute([$id]);
 
             // 記錄觀看記錄
@@ -491,7 +511,7 @@ class PostRepository implements PostRepositoryInterface
                 'post_id' => $id,
                 'user_id' => $userId,
                 'user_ip' => $userIp,
-                'view_date' => date('Y-m-d H:i:s')
+                'view_date' => format_datetime()
             ]);
 
             $this->db->commit();
@@ -566,7 +586,10 @@ class PostRepository implements PostRepositoryInterface
         $stmt->bindValue(':title', $title, PDO::PARAM_STR);
         $stmt->execute();
 
-        return array_map(fn($row) => Post::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
+        return array_map(
+            fn($row) => Post::fromArray($this->preparePostData($row)),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
     }
 
     public function findByUserId(int $userId): ?Post
@@ -580,7 +603,7 @@ class PostRepository implements PostRepositoryInterface
             return null;
         }
 
-        return Post::fromArray($result);
+        return Post::fromArray($this->preparePostData($result));
     }
 
     public function search(string $keyword): array
@@ -590,6 +613,9 @@ class PostRepository implements PostRepositoryInterface
         $stmt->bindValue(':keyword', $keyword, PDO::PARAM_STR);
         $stmt->execute();
 
-        return array_map(fn($row) => Post::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
+        return array_map(
+            fn($row) => Post::fromArray($this->preparePostData($row)),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
     }
 }
