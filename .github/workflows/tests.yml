@@ -49,19 +49,19 @@ jobs:
         file: ./coverage.xml
         fail_ci_if_error: true
 
-    - name: 發送測試結果通知
-      if: always()
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_CHAT_ID }}
-        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        format: markdown
-        message: |
-          🧪 *測試結果通知*
+    # - name: 發送測試結果通知
+    #   if: always()
+    #   uses: appleboy/telegram-action@master
+    #   with:
+    #     to: ${{ secrets.TELEGRAM_CHAT_ID }}
+    #     token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+    #     format: markdown
+    #     message: |
+    #       🧪 *測試結果通知*
           
-          專案: AlleyNote
-          分支: ${{ github.ref_name }}
-          狀態: ${{ github.job.status == 'success' && '✅ 通過' || '❌ 失敗' }}
+    #       專案: AlleyNote
+    #       分支: ${{ github.ref_name }}
+    #       狀態: ${{ github.job.status == 'success' && '✅ 通過' || '❌ 失敗' }}
           
-          提交者: ${{ github.actor }}
-          提交訊息: ${{ github.event.head_commit.message }}
+    #       提交者: ${{ github.actor }}
+    #       提交訊息: ${{ github.event.head_commit.message }}

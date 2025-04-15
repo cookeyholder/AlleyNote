@@ -74,19 +74,19 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: 發送部署通知
-      if: always()
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_CHAT_ID }}
-        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        format: markdown
-        message: |
-          🚀 *部署通知*
+    # - name: 發送部署通知
+    #   if: always()
+    #   uses: appleboy/telegram-action@master
+    #   with:
+    #     to: ${{ secrets.TELEGRAM_CHAT_ID }}
+    #     token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+    #     format: markdown
+    #     message: |
+    #       🚀 *部署通知*
           
-          專案: AlleyNote
-          版本: ${{ env.version || 'latest' }}
-          狀態: ${{ job.status == 'success' && '✅ 成功' || '❌ 失敗' }}
+    #       專案: AlleyNote
+    #       版本: ${{ env.version || 'latest' }}
+    #       狀態: ${{ job.status == 'success' && '✅ 成功' || '❌ 失敗' }}
           
-          提交者: ${{ github.actor }}
-          提交訊息: ${{ github.event.head_commit.message }}
+    #       提交者: ${{ github.actor }}
+    #       提交訊息: ${{ github.event.head_commit.message }}
