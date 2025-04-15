@@ -22,6 +22,9 @@ WORKDIR /var/www/html
 # 複製專案檔案
 COPY . .
 
+# 執行 git config 加入 safe.directory，解決 git ownership 問題
+RUN git config --global --add safe.directory /var/www/html
+
 # 執行 composer install 安裝相依套件
 RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
 
