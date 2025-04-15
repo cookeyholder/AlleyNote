@@ -25,5 +25,8 @@ COPY . .
 # 執行 composer install 安裝相依套件
 RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
 
+# 列出 /var/www/html 目錄內容，方便排查
+RUN ls -la /var/www/html
+
 # 設定權限
 RUN chown -R www-data:www-data /var/www/html
