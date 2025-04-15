@@ -14,7 +14,8 @@ class AttachmentController
 {
     public function __construct(
         private AttachmentService $attachmentService
-    ) {}
+    ) {
+    }
 
     public function upload(Request $request, Response $response): Response
     {

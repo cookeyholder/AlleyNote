@@ -12,7 +12,8 @@ class RateLimitMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private RateLimitService $rateLimitService
-    ) {}
+    ) {
+    }
 
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {

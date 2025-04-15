@@ -22,7 +22,8 @@ class PostController
         private PostServiceInterface $service,
         private XssProtectionServiceInterface $xssProtection,
         private CsrfProtectionServiceInterface $csrfProtection
-    ) {}
+    ) {
+    }
 
     private function validateCsrfToken(Request $request): void
     {

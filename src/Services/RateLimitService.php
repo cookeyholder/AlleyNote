@@ -8,7 +8,8 @@ class RateLimitService
 {
     public function __construct(
         private readonly CacheService $cache
-    ) {}
+    ) {
+    }
 
     public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
     {

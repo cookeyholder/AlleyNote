@@ -7,7 +7,10 @@ use DateTime;
 
 class UserRepository
 {
-    public function __construct(private PDO $db) {}
+    public function __construct(
+        private PDO $db
+    ) {
+    }
 
     public function create(array $data): array
     {

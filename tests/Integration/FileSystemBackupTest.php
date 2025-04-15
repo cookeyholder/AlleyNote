@@ -55,7 +55,7 @@ class FileSystemBackupTest extends TestCase
         // 執行備份腳本
         $output = [];
         $returnVar = 0;
-        
+
         exec(sprintf(
             '/bin/bash %s/scripts/backup_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
@@ -65,7 +65,7 @@ class FileSystemBackupTest extends TestCase
 
         // 驗證備份是否成功
         $this->assertEquals(0, $returnVar, '備份腳本執行失敗: ' . implode("\n", $output));
-        
+
         // 取得最新的備份檔案
         $backupFiles = glob($this->backupDir . '/files_*.tar.gz');
         rsort($backupFiles);
@@ -110,7 +110,7 @@ class FileSystemBackupTest extends TestCase
         // 執行還原腳本
         $output = [];
         $returnVar = 0;
-        
+
         exec(sprintf(
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
@@ -143,10 +143,10 @@ class FileSystemBackupTest extends TestCase
     {
         // 使用不存在的來源目錄
         $nonExistentDir = $this->testDir . '/nonexistent';
-        
+
         $output = [];
         $returnVar = 0;
-        
+
         exec(sprintf(
             '/bin/bash %s/scripts/backup_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
@@ -164,10 +164,10 @@ class FileSystemBackupTest extends TestCase
     {
         // 使用不存在的備份檔案
         $nonExistentBackup = $this->backupDir . '/nonexistent_backup.tar.gz';
-        
+
         $output = [];
         $returnVar = 0;
-        
+
         exec(sprintf(
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
@@ -200,7 +200,7 @@ class FileSystemBackupTest extends TestCase
 
         $output = [];
         $returnVar = 0;
-        
+
         exec(sprintf(
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),

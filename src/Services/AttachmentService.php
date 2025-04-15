@@ -52,7 +52,9 @@ class AttachmentService implements AttachmentServiceInterface
         private PostRepository $postRepo,
         private CacheService $cache,
         private string $uploadDir
-    ) {}
+    ) {
+    }
+
 
     public function validateFile(UploadedFileInterface $file): void
     {

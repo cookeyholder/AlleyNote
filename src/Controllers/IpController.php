@@ -11,7 +11,8 @@ class IpController
 {
     public function __construct(
         private IpService $service
-    ) {}
+    ) {
+    }
 
     public function create(array $request): array
     {

@@ -11,7 +11,8 @@ class IpService
 {
     public function __construct(
         private IpRepositoryInterface $repository
-    ) {}
+    ) {
+    }
 
     public function createIpRule(array $data): IpList
     {

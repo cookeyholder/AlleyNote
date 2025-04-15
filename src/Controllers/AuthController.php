@@ -6,7 +6,9 @@ use App\Services\AuthService;
 
 class AuthController
 {
-    public function __construct(private AuthService $authService) {}
+    public function __construct(private AuthService $authService)
+    {
+    }
 
     public function register($request, $response): object
     {

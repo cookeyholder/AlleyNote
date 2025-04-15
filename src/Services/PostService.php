@@ -19,7 +19,8 @@ class PostService implements PostServiceInterface
     public function __construct(
         private readonly PostRepositoryInterface $repository,
         private readonly PostValidator $validator
-    ) {}
+    ) {
+    }
 
     public function createPost(array $data): Post
     {

@@ -26,7 +26,7 @@ class RateLimitServiceTest extends TestCase
     {
         $ip = '127.0.0.1';
         $timeNow = time();
-        
+
         $this->cacheMock->shouldReceive('get')
             ->once()
             ->with("rate_limit:{$ip}")

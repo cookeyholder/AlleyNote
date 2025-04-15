@@ -38,7 +38,7 @@ abstract class UITestCase extends TestCase
         // 使用當前時間戳記作為檔名前綴
         $timestamp = date('Y-m-d_H-i-s');
         $filename = sprintf('%s/%s_%s.png', $screenshotDir, $timestamp, $name);
-        
+
         // 實際的截圖操作將由具體的測試類別實作
     }
 
