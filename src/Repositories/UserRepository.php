@@ -107,7 +107,7 @@ class UserRepository
 
     public function updateLastLogin(string $id): bool
     {
-        $now = date('Y-m-d H:i:s');
+        $now = (new \DateTime())->format(\DateTime::RFC3339);
         $sql = "UPDATE users SET last_login = ? WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$now, $id]);

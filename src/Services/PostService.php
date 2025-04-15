@@ -31,7 +31,7 @@ class PostService implements PostServiceInterface
         }
 
         // 設定建立時間
-        $data['created_at'] = (new DateTimeImmutable())->format('Y-m-d H:i:s');
+        $data['created_at'] = (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339);
 
         return $this->repository->create($data);
     }
@@ -62,7 +62,7 @@ class PostService implements PostServiceInterface
         }
 
         // 設定更新時間
-        $data['updated_at'] = (new DateTimeImmutable())->format('Y-m-d H:i:s');
+        $data['updated_at'] = (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339);
 
         return $this->repository->update($id, $data);
     }

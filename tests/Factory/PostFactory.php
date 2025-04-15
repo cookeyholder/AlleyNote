@@ -19,9 +19,9 @@ class PostFactory
             'is_pinned' => false,
             'status' => 'draft',
             'views' => 0,
-            'publish_date' => date('Y-m-d H:i:s'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
+            'publish_date' => (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339),
+            'created_at' => (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339),
+            'updated_at' => (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339)
         ], $attributes);
     }
 }

@@ -108,11 +108,15 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         $count = 100;
 
         for ($i = 0; $i < $count; $i++) {
-            $this->repository->create(PostFactory::make([
+            $data = PostFactory::make([
                 'title' => "文章 {$i}",
                 'content' => "內容 {$i}",
                 'user_id' => 1
-            ]));
+            ]);
+            $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $this->repository->create($data);
         }
 
         $endTime = microtime(true);
@@ -125,11 +129,15 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
     {
         // 建立 1000 筆測試資料
         for ($i = 0; $i < 1000; $i++) {
-            $this->repository->create(PostFactory::make([
+            $data = PostFactory::make([
                 'title' => "文章 {$i}",
                 'content' => "內容 {$i}",
                 'user_id' => 1
-            ]));
+            ]);
+            $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $this->repository->create($data);
         }
 
         $startTime = microtime(true);
@@ -145,12 +153,16 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
     {
         // 建立 1000 筆測試資料
         for ($i = 0; $i < 1000; $i++) {
-            $this->repository->create(PostFactory::make([
+            $data = PostFactory::make([
                 'title' => "文章 {$i}",
                 'content' => "內容 {$i}",
                 'user_id' => 1,
                 'status' => 'published'
-            ]));
+            ]);
+            $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $this->repository->create($data);
         }
 
         $startTime = microtime(true);
@@ -168,7 +180,11 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
             $this->db->exec("INSERT INTO tags (id, name) VALUES ({$i}, '標籤 {$i}')");
         }
 
-        $post = $this->repository->create(PostFactory::make(['user_id' => 1]));
+        $data = PostFactory::make(['user_id' => 1]);
+        $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $post = $this->repository->create($data);
         $tagIds = range(1, 10);
 
         $startTime = microtime(true);
@@ -182,7 +198,11 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
 
     public function testConcurrentViewsIncrementPerformance(): void
     {
-        $post = $this->repository->create(PostFactory::make(['user_id' => 1]));
+        $data = PostFactory::make(['user_id' => 1]);
+        $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $post = $this->repository->create($data);
         $concurrentCount = 10;
         $startTime = microtime(true);
 
