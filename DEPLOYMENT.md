@@ -129,7 +129,7 @@ date.timezone = Asia/Taipei
 # deploy.sh
 
 # 停止服務
-docker-compose down
+docker compose -f docker-compose.yml down
 
 # 備份資料
 ./scripts/backup_db.sh
@@ -139,16 +139,16 @@ docker-compose down
 git pull origin main
 
 # 安裝相依套件
-docker-compose run --rm composer install --no-dev --optimize-autoloader
+docker compose -f docker-compose.yml run --rm php composer install --no-dev --optimize-autoloader
 
 # 更新資料庫
-docker-compose run --rm php php /var/www/html/vendor/bin/phinx migrate
+docker compose -f docker-compose.yml run --rm php php /var/www/html/vendor/bin/phinx migrate
 
 # 重啟服務
-docker-compose up -d
+docker compose -f docker-compose.yml up -d
 
 # 檢查服務狀態
-docker-compose ps
+docker compose -f docker-compose.yml ps
 ```
 
 ### 4.2 回滾程序
@@ -157,7 +157,7 @@ docker-compose ps
 # rollback.sh
 
 # 停止服務
-docker-compose down
+docker compose -f docker-compose.yml down
 
 # 還原備份
 ./scripts/restore_db.sh
@@ -167,7 +167,7 @@ docker-compose down
 git checkout HEAD^
 
 # 重啟服務
-docker-compose up -d
+docker compose -f docker-compose.yml up -d
 ```
 
 ## 5. 維護指南
