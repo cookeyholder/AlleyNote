@@ -19,14 +19,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # 設定工作目錄
 WORKDIR /var/www/html
 
-# 複製專案檔案
+# 複製所有專案檔案
 COPY . .
-
-# 設定 git 安全目錄
-RUN git config --global --add safe.directory /var/www/html
 
 # 安裝相依套件
 RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
+
+# 設定 git 安全目錄
+RUN git config --global --add safe.directory /var/www/html
 
 # 設定正確的權限
 RUN chown -R www-data:www-data /var/www/html \
