@@ -54,9 +54,9 @@ class PostRepositoryTest extends MockeryTestCase
                 content TEXT NOT NULL,
                 user_id INTEGER NOT NULL,
                 user_ip VARCHAR(45),
+                views INTEGER DEFAULT 0,
                 is_pinned BOOLEAN DEFAULT 0,
                 status VARCHAR(20) DEFAULT "draft",
-                view_count INTEGER DEFAULT 0,
                 publish_date DATETIME,
                 created_at DATETIME,
                 updated_at DATETIME

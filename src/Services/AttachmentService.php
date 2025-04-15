@@ -30,9 +30,21 @@ class AttachmentService implements AttachmentServiceInterface
     private const MAX_FILE_SIZE = 10485760; // 10MB
 
     private const FORBIDDEN_EXTENSIONS = [
-        'php', 'php3', 'php4', 'php5', 'phtml',
-        'exe', 'bat', 'cmd', 'sh', 'cgi',
-        'pl', 'py', 'asp', 'aspx', 'jsp'
+        'php',
+        'php3',
+        'php4',
+        'php5',
+        'phtml',
+        'exe',
+        'bat',
+        'cmd',
+        'sh',
+        'cgi',
+        'pl',
+        'py',
+        'asp',
+        'aspx',
+        'jsp'
     ];
 
     public function __construct(
@@ -75,7 +87,7 @@ class AttachmentService implements AttachmentServiceInterface
         $stream = $file->getStream();
         $content = $stream->getContents();
         $stream->rewind(); // 重置串流位置
-        
+
         if ($this->containsMaliciousContent($content)) {
             throw new ValidationException('檔案內容不安全');
         }
@@ -132,20 +144,25 @@ class AttachmentService implements AttachmentServiceInterface
         $extension = pathinfo($originalFilename, PATHINFO_EXTENSION);
         $safeExtension = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $extension));
         $newFilename = bin2hex(random_bytes(16)) . '.' . $safeExtension;
-        
+
         // 確保上傳目錄存在且具有正確的權限
         $uploadPath = "{$this->uploadDir}/attachments";
         if (!is_dir($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
-        
+
         $storagePath = $uploadPath . '/' . $newFilename;
 
         try {
-            // 使用 PSR-7 的 moveTo 方法安全地移動檔案
-            $file->moveTo($storagePath);
-            
-            // 設定正確的檔案權限
+            // 先建立臨時檔案
+            $tempPath = tempnam(sys_get_temp_dir(), 'upload_');
+            $file->moveTo($tempPath);
+
+            // 將檔案移動到目標位置並設定權限
+            if (!rename($tempPath, $storagePath)) {
+                throw new \RuntimeException('無法移動檔案到目標位置');
+            }
+
             chmod($storagePath, 0644);
 
             return $this->attachmentRepo->create([
@@ -158,7 +175,11 @@ class AttachmentService implements AttachmentServiceInterface
                 'storage_path' => "attachments/{$newFilename}"
             ]);
         } catch (\Throwable $e) {
-            // 如果上傳失敗，清理任何可能已建立的檔案
+            // 清理臨時檔案
+            if (isset($tempPath) && file_exists($tempPath)) {
+                unlink($tempPath);
+            }
+            // 清理目標檔案
             if (file_exists($storagePath)) {
                 unlink($storagePath);
             }
@@ -174,11 +195,11 @@ class AttachmentService implements AttachmentServiceInterface
         }
 
         $filePath = "{$this->uploadDir}/{$attachment->getStoragePath()}";
-        
+
         // 確保檔案在允許的目錄中
         $realPath = realpath($filePath);
         $uploadDirReal = realpath($this->uploadDir);
-        
+
         if ($realPath === false || strpos($realPath, $uploadDirReal) !== 0) {
             throw new ValidationException('無效的檔案路徑');
         }
@@ -208,11 +229,11 @@ class AttachmentService implements AttachmentServiceInterface
             // 確保檔案在允許的目錄中
             $realPath = realpath($path);
             $uploadDirReal = realpath($this->uploadDir);
-            
+
             if ($realPath === false || strpos($realPath, $uploadDirReal) !== 0) {
                 throw new ValidationException('無效的檔案路徑');
             }
-            
+
             unlink($path);
         }
 

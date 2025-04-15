@@ -39,7 +39,7 @@ class AttachmentRepositoryTest extends TestCase
         $this->repository = new AttachmentRepository($this->db, $this->cache);
     }
 
-    private function createTestTables(): void
+    protected function createTestTables(): void
     {
         // 建立附件資料表
         $this->db->exec('

@@ -24,19 +24,19 @@ class Post implements JsonSerializable
 
     public function __construct(array $data)
     {
-        $this->id = isset($data['id']) ? (int)$data['id'] : 0;  // 修改這行，當未提供 id 時預設為 0
-        $this->uuid = $data['uuid'] ?? bin2hex(random_bytes(16));  // 如果沒有提供 uuid，則產生一個新的
-        $this->seqNumber = isset($data['seq_number']) ? (string)$data['seq_number'] : null;  // 確保型別轉換
-        $this->title = htmlspecialchars($data['title'], ENT_QUOTES, 'UTF-8');
-        $this->content = htmlspecialchars($data['content'], ENT_QUOTES, 'UTF-8');
-        $this->userId = (int)$data['user_id'];
+        $this->id = isset($data['id']) ? (int)$data['id'] : 0;
+        $this->uuid = $data['uuid'] ?? generate_uuid();
+        $this->seqNumber = isset($data['seq_number']) ? (string)$data['seq_number'] : null;
+        $this->title = htmlspecialchars($data['title'] ?? '', ENT_QUOTES, 'UTF-8');
+        $this->content = htmlspecialchars($data['content'] ?? '', ENT_QUOTES, 'UTF-8');
+        $this->userId = (int)($data['user_id'] ?? 0);
         $this->userIp = $data['user_ip'] ?? null;
         $this->isPinned = filter_var($data['is_pinned'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->status = $data['status'] ?? 'draft';
         $this->publishDate = $data['publish_date'] ?? null;
-        $this->viewCount = (int)($data['view_count'] ?? 0);
-        $this->createdAt = $data['created_at'] ?? date('Y-m-d H:i:s');
-        $this->updatedAt = $data['updated_at'] ?? date('Y-m-d H:i:s');
+        $this->viewCount = (int)($data['views'] ?? 0);
+        $this->createdAt = $data['created_at'] ?? format_datetime();
+        $this->updatedAt = $data['updated_at'] ?? format_datetime();
     }
 
     public function getId(): int
@@ -79,6 +79,14 @@ class Post implements JsonSerializable
         return $this->isPinned;
     }
 
+    /**
+     * 相容性方法：提供 getIsPinned 作為 isPinned 的別名
+     */
+    public function getIsPinned(): bool
+    {
+        return $this->isPinned();
+    }
+
     public function getStatus(): string
     {
         return $this->status;
@@ -92,6 +100,14 @@ class Post implements JsonSerializable
     public function getViewCount(): int
     {
         return $this->viewCount;
+    }
+
+    /**
+     * 相容性方法：提供 getViews 作為 getViewCount 的別名
+     */
+    public function getViews(): int
+    {
+        return $this->getViewCount();
     }
 
     public function getCreatedAt(): string

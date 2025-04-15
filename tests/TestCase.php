@@ -12,7 +12,8 @@ use Psr\Http\Message\ResponseInterface;
 abstract class TestCase extends BaseTestCase
 {
     protected PDO $db;
-    protected CacheService $cache;
+    /** @var CacheService&\Mockery\MockInterface */
+    protected $cache;
 
     /**
      * 初始化測試環境
@@ -27,29 +28,163 @@ abstract class TestCase extends BaseTestCase
         putenv('DB_DATABASE=:memory:');
 
         // 建立記憶體資料庫連線
-        $this->db = new PDO('sqlite::memory:', null, null, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        ]);
+        try {
+            $this->db = new PDO('sqlite::memory:', null, null, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+            ]);
 
-        // 啟用外鍵約束
-        $this->db->exec('PRAGMA foreign_keys = ON');
+            // 啟用外鍵約束
+            $this->db->exec('PRAGMA foreign_keys = ON');
 
-        // 設定全域資料庫連線實例
-        DatabaseConnection::setInstance($this->db);
+            // 建立測試用資料表
+            $this->createTestTables();
+
+            // 設定全域資料庫連線實例
+            DatabaseConnection::setInstance($this->db);
+        } catch (\PDOException $e) {
+            throw new \RuntimeException('無法建立測試資料庫連線：' . $e->getMessage());
+        }
+
+        // 用於儲存快取資料的靜態變數
+        static $storage = [];
+
+        // 清除舊的快取資料
+        $storage = [];
 
         // 模擬快取服務
         $this->cache = Mockery::mock(CacheService::class);
-        $this->cache->shouldReceive('get')->andReturn(null)->byDefault();
-        $this->cache->shouldReceive('put')->andReturn(true)->byDefault();
-        $this->cache->shouldReceive('has')->andReturn(false)->byDefault();
-        $this->cache->shouldReceive('forget')->andReturn(true)->byDefault();
+        $this->cache->shouldReceive('get')
+            ->andReturnUsing(function ($key) use (&$storage) {
+                return $storage[$key] ?? null;
+            });
+        $this->cache->shouldReceive('set')
+            ->andReturnUsing(function ($key, $value, $ttl = null) use (&$storage) {
+                $storage[$key] = $value;
+                return true;
+            });
+        $this->cache->shouldReceive('put')
+            ->andReturnUsing(function ($key, $value, $ttl = null) use (&$storage) {
+                $storage[$key] = $value;
+                return true;
+            });
+        $this->cache->shouldReceive('has')
+            ->andReturnUsing(function ($key) use (&$storage) {
+                return isset($storage[$key]);
+            });
+        $this->cache->shouldReceive('forget')
+            ->andReturnUsing(function ($key) use (&$storage) {
+                unset($storage[$key]);
+                return true;
+            });
+        $this->cache->shouldReceive('clear')
+            ->andReturnUsing(function () use (&$storage) {
+                $storage = [];
+                return true;
+            });
+        $this->cache->shouldReceive('delete')
+            ->andReturnUsing(function ($key) use (&$storage) {
+                unset($storage[$key]);
+                return true;
+            });
+        $this->cache->shouldReceive('tags')
+            ->andReturn($this->cache);
         $this->cache->shouldReceive('remember')
-            ->andReturnUsing(function ($key, $ttl, $callback) {
-                return $callback();
-            })
-            ->byDefault();
-        $this->cache->shouldReceive('tags')->andReturn($this->cache)->byDefault();
+            ->andReturnUsing(function ($key, $callback) use (&$storage) {
+                if (!isset($storage[$key])) {
+                    $storage[$key] = $callback();
+                }
+                return $storage[$key];
+            });
+    }
+
+    /**
+     * 建立測試用資料表
+     */
+    protected function createTestTables(): void
+    {
+        // 建立基本資料表
+        $this->db->exec("
+            CREATE TABLE IF NOT EXISTS posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT NOT NULL UNIQUE,
+                seq_number INTEGER NOT NULL UNIQUE,
+                title TEXT NOT NULL,
+                content TEXT NOT NULL,
+                user_id INTEGER NOT NULL,
+                user_ip TEXT,
+                views INTEGER NOT NULL DEFAULT 0,
+                is_pinned INTEGER NOT NULL DEFAULT 0,
+                status INTEGER NOT NULL DEFAULT 1,
+                publish_date TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+        ");
+
+        // 建立 IP 黑白名單資料表
+        $this->db->exec("
+            CREATE TABLE IF NOT EXISTS ip_lists (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT NOT NULL UNIQUE,
+                ip_address TEXT NOT NULL,
+                type INTEGER NOT NULL DEFAULT 0,
+                unit_id INTEGER,
+                description TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+        ");
+
+        // 建立附件資料表
+        $this->db->exec("
+            CREATE TABLE IF NOT EXISTS attachments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT NOT NULL UNIQUE,
+                post_id INTEGER NOT NULL,
+                filename TEXT NOT NULL,
+                original_name TEXT NOT NULL,
+                mime_type TEXT NOT NULL,
+                file_size INTEGER NOT NULL,
+                storage_path TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                deleted_at TEXT,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+            )
+        ");
+
+        // 建立所需的索引
+        $this->createIndices();
+    }
+
+    /**
+     * 建立資料表索引
+     */
+    private function createIndices(): void
+    {
+        // Posts 索引
+        $this->db->exec("
+            CREATE INDEX IF NOT EXISTS idx_posts_uuid ON posts(uuid);
+            CREATE INDEX IF NOT EXISTS idx_posts_title ON posts(title);
+            CREATE INDEX IF NOT EXISTS idx_posts_publish_date ON posts(publish_date);
+            CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
+            CREATE INDEX IF NOT EXISTS idx_posts_views ON posts(views)
+        ");
+
+        // IP Lists 索引
+        $this->db->exec("
+            CREATE INDEX IF NOT EXISTS idx_ip_lists_uuid ON ip_lists(uuid);
+            CREATE INDEX IF NOT EXISTS idx_ip_lists_ip_address ON ip_lists(ip_address);
+            CREATE INDEX IF NOT EXISTS idx_ip_lists_type ON ip_lists(type)
+        ");
+
+        // Attachments 索引
+        $this->db->exec("
+            CREATE INDEX IF NOT EXISTS idx_attachments_uuid ON attachments(uuid);
+            CREATE INDEX IF NOT EXISTS idx_attachments_post_id ON attachments(post_id);
+            CREATE INDEX IF NOT EXISTS idx_attachments_created_at ON attachments(created_at)
+        ");
     }
 
     /**
@@ -75,12 +210,15 @@ abstract class TestCase extends BaseTestCase
     protected function tearDown(): void
     {
         // 清理資料庫連線
-        DatabaseConnection::reset();
-        $this->db = null;
+        if ($this->db instanceof PDO) {
+            DatabaseConnection::reset();
+            $this->db = new PDO('sqlite::memory:');
+        }
 
-        parent::tearDown();
         if ($container = Mockery::getContainer()) {
             $container->mockery_close();
         }
+
+        parent::tearDown();
     }
 }
