@@ -22,5 +22,8 @@ WORKDIR /var/www/html
 # 複製專案檔案
 COPY . .
 
+# 執行 composer install 安裝相依套件
+RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
+
 # 設定權限
 RUN chown -R www-data:www-data /var/www/html
