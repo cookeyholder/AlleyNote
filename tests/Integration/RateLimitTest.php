@@ -19,7 +19,7 @@ class RateLimitTest extends TestCase
     }
 
     /** @test */
-    public function should_limit_rate_successfully(): void
+    public function shouldLimitRateSuccessfully(): void
     {
         $ip = '192.168.1.1';
         $maxRequests = 5;
@@ -39,7 +39,7 @@ class RateLimitTest extends TestCase
     }
 
     /** @test */
-    public function should_reset_limit_after_time_window(): void
+    public function shouldResetLimitAfterTimeWindow(): void
     {
         $ip = '192.168.1.2';
         $maxRequests = 2;
@@ -64,7 +64,7 @@ class RateLimitTest extends TestCase
     }
 
     /** @test */
-    public function should_handle_different_ips_independently(): void
+    public function shouldHandleDifferentIpsIndependently(): void
     {
         $maxRequests = 2;
         $timeWindow = 1;
@@ -84,7 +84,7 @@ class RateLimitTest extends TestCase
     }
 
     /** @test */
-    public function should_handle_service_unavailability(): void
+    public function shouldHandleServiceUnavailability(): void
     {
         $ip = '192.168.1.5';
         $maxRequests = 5;
@@ -102,5 +102,4 @@ class RateLimitTest extends TestCase
         // 但如果 fallback 時已經有部分請求，remaining 可能會不同
         // 這裡只驗證 allowed 為 true
     }
-
 }

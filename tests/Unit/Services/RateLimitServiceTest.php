@@ -22,7 +22,7 @@ class RateLimitServiceTest extends TestCase
     }
 
     /** @test */
-    public function should_allow_first_request(): void
+    public function shouldAllowFirstRequest(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();
@@ -43,7 +43,7 @@ class RateLimitServiceTest extends TestCase
     }
 
     /** @test */
-    public function should_reject_when_limit_exceeded(): void
+    public function shouldRejectWhenLimitExceeded(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();
@@ -58,7 +58,7 @@ class RateLimitServiceTest extends TestCase
     }
 
     /** @test */
-    public function should_handle_cache_failure_gracefully(): void
+    public function shouldHandleCacheFailureGracefully(): void
     {
         $ip = '127.0.0.1';
         $this->cacheMock->shouldReceive('get')
@@ -73,7 +73,7 @@ class RateLimitServiceTest extends TestCase
     }
 
     /** @test */
-    public function should_increment_request_count(): void
+    public function shouldIncrementRequestCount(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();
@@ -93,7 +93,7 @@ class RateLimitServiceTest extends TestCase
     }
 
     /** @test */
-    public function should_handle_set_failure(): void
+    public function shouldHandleSetFailure(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();
