@@ -11,7 +11,7 @@ use Tests\Factory\PostFactory;
 class PostTest extends TestCase
 {
     /** @test */
-    public function it_correctly_initializes_with_valid_data(): void
+    public function correctlyInitializesWithValidData(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
@@ -33,7 +33,7 @@ class PostTest extends TestCase
     }
 
     /** @test */
-    public function it_handles_nullable_fields_correctly(): void
+    public function handlesNullableFieldsCorrectly(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
@@ -50,7 +50,7 @@ class PostTest extends TestCase
     }
 
     /** @test */
-    public function it_sets_default_values_correctly(): void
+    public function setsDefaultValuesCorrectly(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
@@ -73,7 +73,7 @@ class PostTest extends TestCase
     }
 
     /** @test */
-    public function it_properly_escapes_html_in_title_and_content(): void
+    public function properlyEscapesHtmlInTitleAndContent(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',

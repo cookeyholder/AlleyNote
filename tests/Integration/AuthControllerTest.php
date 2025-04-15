@@ -82,7 +82,7 @@ class AuthControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_register_user_successfully(): void
+    public function registerUserSuccessfully(): void
     {
         // 準備測試資料
         $userData = [
@@ -117,7 +117,7 @@ class AuthControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_return_validation_errors_for_invalid_registration_data(): void
+    public function returnValidationErrorsForInvalidRegistrationData(): void
     {
         // 準備無效的測試資料
         $invalidData = [
@@ -146,7 +146,7 @@ class AuthControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_login_user_successfully(): void
+    public function loginUserSuccessfully(): void
     {
         // 準備測試資料
         $credentials = [
@@ -183,7 +183,7 @@ class AuthControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_return_error_for_invalid_login(): void
+    public function returnErrorForInvalidLogin(): void
     {
         // 準備測試資料
         $credentials = [
@@ -215,7 +215,7 @@ class AuthControllerTest extends TestCase
     }
 
     /** @test */
-    public function should_logout_user_successfully(): void
+    public function logoutUserSuccessfully(): void
     {
         // 設定請求標頭（模擬已登入的使用者）
         $this->request->withHeader('Authorization', 'Bearer test-token');

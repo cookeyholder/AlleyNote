@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.1-fpm AS base
 
 # 安裝基礎套件
 RUN apt-get update && apt-get install -y \
@@ -22,14 +22,29 @@ WORKDIR /var/www/html
 # 複製專案檔案
 COPY . .
 
-# 執行 git config 加入 safe.directory，解決 git ownership 問題
+# 設定 git 安全目錄
 RUN git config --global --add safe.directory /var/www/html
 
-# 執行 composer install 安裝相依套件
+# 安裝相依套件
 RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
 
-# 列出 /var/www/html 目錄內容，方便排查
-RUN ls -la /var/www/html
+# 設定正確的權限
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage
 
-# 設定權限
-RUN chown -R www-data:www-data /var/www/html
+# 建立測試環境的映像檔
+FROM base AS test
+
+# 安裝 Xdebug 和 PCNTL
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && docker-php-ext-install pcntl
+
+# 複製 Xdebug 設定
+COPY docker/php/conf.d/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
+# 建立必要的目錄
+RUN mkdir -p /var/www/html/storage/coverage \
+    && mkdir -p /var/www/html/storage/logs \
+    && mkdir -p /var/www/html/storage/cache \
+    && chown -R www-data:www-data /var/www/html/storage

@@ -15,7 +15,7 @@ class DatabaseConnectionTest extends TestCase
     }
 
     /** @test */
-    public function it_should_create_singleton_pdo_instance(): void
+    public function createsSingletonPdoInstance(): void
     {
         $connection1 = DatabaseConnection::getInstance();
         $connection2 = DatabaseConnection::getInstance();
@@ -25,7 +25,7 @@ class DatabaseConnectionTest extends TestCase
     }
 
     /** @test */
-    public function it_should_successfully_execute_query(): void
+    public function executesQuerySuccessfully(): void
     {
         $pdo = DatabaseConnection::getInstance();
 
@@ -38,13 +38,12 @@ class DatabaseConnectionTest extends TestCase
         ');
 
         // 插入測試資料
-        $pdo->exec("INSERT INTO test_table (name) VALUES ('測試資料')");
+        $stmt = $pdo->prepare('INSERT INTO test_table (name) VALUES (?)');
+        $stmt->execute(['test']);
 
-        // 查詢資料
-        $stmt = $pdo->query('SELECT * FROM test_table');
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $this->assertEquals('測試資料', $result['name']);
+        // 驗證資料
+        $result = $pdo->query('SELECT * FROM test_table')->fetch(PDO::FETCH_ASSOC);
+        $this->assertEquals('test', $result['name']);
     }
 
     protected function tearDown(): void

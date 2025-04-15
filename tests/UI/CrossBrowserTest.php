@@ -25,7 +25,7 @@ class CrossBrowserTest extends UITestCase
     ];
 
     /** @test */
-    public function shouldWorkInAllBrowsers(): void
+    public function browserAction(): void
     {
         foreach ($this->browsers as $browser) {
             // 使用特定瀏覽器的 User Agent 啟動測試
@@ -36,7 +36,7 @@ class CrossBrowserTest extends UITestCase
     private function testBrowserCompatibility(array $browser): void
     {
         // 啟動瀏覽器並設定 User Agent
-        $this->browser_action('launch', 'http://localhost:8080/posts');
+        $this->browserAction('launch', 'http://localhost:8080/posts');
 
         // 測試基本功能
         $this->testBasicFunctionality();
@@ -54,7 +54,7 @@ class CrossBrowserTest extends UITestCase
         $this->captureScreenshot("compatibility-{$browser['name']}");
 
         // 關閉瀏覽器
-        $this->browser_action('close');
+        $this->browserAction('close');
     }
 
     private function testBasicFunctionality(): void
@@ -67,7 +67,7 @@ class CrossBrowserTest extends UITestCase
 
         // 檢查導航功能
         $this->assertElementVisible('nav');
-        $this->browser_action('click', '#menu-toggle');
+        $this->browserAction('click', '#menu-toggle');
         $this->assertElementVisible('#main-menu');
     }
 
@@ -89,17 +89,17 @@ class CrossBrowserTest extends UITestCase
     private function testJavaScriptFeatures(): void
     {
         // 測試互動功能
-        $this->browser_action('click', '#dark-mode-toggle');
+        $this->browserAction('click', '#dark-mode-toggle');
         $this->assertElementVisible('body.dark-mode');
 
         // 測試表單驗證
-        $this->browser_action('click', '#search-input');
-        $this->browser_action('type', 'test');
-        $this->browser_action('click', '#search-button');
+        $this->browserAction('click', '#search-input');
+        $this->browserAction('type', 'test');
+        $this->browserAction('click', '#search-button');
         $this->assertElementVisible('.search-results');
 
         // 測試 AJAX 載入
-        $this->browser_action('click', '#load-more');
+        $this->browserAction('click', '#load-more');
         $this->assertElementVisible('.loading-indicator');
     }
 
@@ -118,7 +118,7 @@ class CrossBrowserTest extends UITestCase
         $this->assertElementVisible('.hamburger-menu');
     }
 
-    private function browser_action(string $action, string $value = ''): void
+    private function browserAction(string $action, string $value = ''): void
     {
         // 這個方法將在實際執行時實作，用於包裝 browser_action 工具的呼叫
     }
