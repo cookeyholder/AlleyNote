@@ -58,7 +58,7 @@ class PostControllerTest extends TestCase
     }
 
     /** @test */
-    public function index_should_return_paginated_posts(): void
+    public function indexShouldReturnPaginatedPosts(): void
     {
         // 準備測試資料
         $filters = ['status' => 'published'];
@@ -95,7 +95,7 @@ class PostControllerTest extends TestCase
     }
 
     /** @test */
-    public function show_should_return_post_details(): void
+    public function showShouldReturnPostDetails(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -139,7 +139,7 @@ class PostControllerTest extends TestCase
     }
 
     /** @test */
-    public function store_should_create_new_post(): void
+    public function storeShouldCreateNewPost(): void
     {
         // 準備測試資料
         $postData = [
@@ -174,7 +174,7 @@ class PostControllerTest extends TestCase
     }
 
     /** @test */
-    public function store_should_return_400_when_validation_fails(): void
+    public function storeShouldReturn400WhenValidationFails(): void
     {
         // 準備測試資料
         $invalidData = ['title' => ''];
@@ -208,7 +208,7 @@ class PostControllerTest extends TestCase
     }
 
     /** @test */
-    public function update_should_modify_existing_post(): void
+    public function updateShouldModifyExistingPost(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -244,7 +244,7 @@ class PostControllerTest extends TestCase
     }
 
     /** @test */
-    public function update_should_return_404_when_post_not_found(): void
+    public function updateShouldReturn404WhenPostNotFound(): void
     {
         // 準備測試資料
         $postId = 999;
@@ -282,7 +282,7 @@ class PostControllerTest extends TestCase
     }
 
     /** @test */
-    public function destroy_should_delete_post(): void
+    public function destroyShouldDeletePost(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -310,7 +310,7 @@ class PostControllerTest extends TestCase
     }
 
     /** @test */
-    public function updatePinStatus_should_update_pin_status(): void
+    public function updatePinStatusShouldUpdatePinStatus(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -344,7 +344,7 @@ class PostControllerTest extends TestCase
     }
 
     /** @test */
-    public function updatePinStatus_should_return_422_when_invalid_state_transition(): void
+    public function updatePinStatusShouldReturn422WhenInvalidStateTransition(): void
     {
         // 準備測試資料
         $postId = 1;

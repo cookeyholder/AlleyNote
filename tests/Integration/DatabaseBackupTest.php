@@ -70,7 +70,7 @@ class DatabaseBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_backup_database_successfully(): void
+    public function backupDatabaseSuccessfully(): void
     {
         // 執行備份腳本
         $backupFile = $this->backupDir . '/backup.sqlite';
@@ -99,7 +99,7 @@ class DatabaseBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_restore_database_successfully(): void
+    public function restoreDatabaseSuccessfully(): void
     {
         // 先建立備份
         $backupFile = $this->backupDir . '/backup.sqlite';
@@ -132,7 +132,7 @@ class DatabaseBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_handle_backup_errors_gracefully(): void
+    public function handleBackupErrorsGracefully(): void
     {
         // 使用不存在的來源資料庫
         $nonExistentDb = $this->backupDir . '/nonexistent.db';
@@ -154,7 +154,7 @@ class DatabaseBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_handle_restore_errors_gracefully(): void
+    public function handleRestoreErrorsGracefully(): void
     {
         // 使用不存在的備份檔案
         $nonExistentBackup = $this->backupDir . '/nonexistent_backup.sqlite';
@@ -175,7 +175,7 @@ class DatabaseBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_maintain_data_integrity_during_backup_restore(): void
+    public function maintainDataIntegrityDuringBackupRestore(): void
     {
         // 記錄原始資料
         $originalPosts = $this->db->query('SELECT * FROM posts ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);

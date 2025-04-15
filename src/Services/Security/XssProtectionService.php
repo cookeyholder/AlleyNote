@@ -12,7 +12,7 @@ class XssProtectionService
             return null;
         }
 
-        return htmlspecialchars($input, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
     }
 
     public function cleanArray(array $input, array $keys): array

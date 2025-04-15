@@ -41,7 +41,7 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_should_successfully_create_user(): void
+    public function createUserSuccessfully(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -60,16 +60,14 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_should_update_user_successfully(): void
+    public function updateUserSuccessfully(): void
     {
-        // 先建立使用者
         $user = $this->repository->create([
             'username' => 'testuser',
             'email' => 'test@example.com',
             'password' => 'password123'
         ]);
 
-        // 更新使用者資料
         $updateData = [
             'email' => 'updated@example.com',
             'status' => 0
@@ -83,9 +81,8 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_should_delete_user_successfully(): void
+    public function deleteUserSuccessfully(): void
     {
-        // 先建立使用者
         $user = $this->repository->create([
             'username' => 'testuser',
             'email' => 'test@example.com',
@@ -100,7 +97,7 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_should_find_user_by_uuid(): void
+    public function findUserByUuid(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -117,7 +114,7 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_should_find_user_by_username(): void
+    public function findUserByUsername(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -133,7 +130,7 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_should_find_user_by_email(): void
+    public function findUserByEmail(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -149,7 +146,7 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_should_prevent_duplicate_username(): void
+    public function preventDuplicateUsername(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -166,7 +163,7 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_should_prevent_duplicate_email(): void
+    public function preventDuplicateEmail(): void
     {
         $userData = [
             'username' => 'testuser1',
@@ -183,7 +180,7 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_should_find_user_by_id(): void
+    public function findUserById(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -200,14 +197,14 @@ class UserRepositoryTest extends TestCase
     }
 
     /** @test */
-    public function it_should_return_null_when_user_not_found(): void
+    public function returnNullWhenUserNotFound(): void
     {
         $result = $this->repository->findById('999');
         $this->assertNull($result);
     }
 
     /** @test */
-    public function it_should_update_last_login_time(): void
+    public function updateLastLoginTime(): void
     {
         $user = $this->repository->create([
             'username' => 'testuser',

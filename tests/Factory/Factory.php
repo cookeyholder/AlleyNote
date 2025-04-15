@@ -2,11 +2,7 @@
 
 namespace Tests\Factory;
 
-interface Factory
-{
-    public function make(array $attributes = []): array;
-    public function create(array $attributes = []): array;
-}
+use Tests\Factory\Abstracts\Factory;
 
 abstract class AbstractFactory implements Factory
 {

@@ -50,7 +50,7 @@ class FileSystemBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_backup_files_successfully(): void
+    public function backupFilesSuccessfully(): void
     {
         // 執行備份腳本
         $output = [];
@@ -96,7 +96,7 @@ class FileSystemBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_restore_files_successfully(): void
+    public function restoreFilesSuccessfully(): void
     {
         // 先建立備份
         $backupFile = $this->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
@@ -139,7 +139,7 @@ class FileSystemBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_handle_backup_errors_gracefully(): void
+    public function handleBackupErrorsGracefully(): void
     {
         // 使用不存在的來源目錄
         $nonExistentDir = $this->testDir . '/nonexistent';
@@ -160,7 +160,7 @@ class FileSystemBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_handle_restore_errors_gracefully(): void
+    public function handleRestoreErrorsGracefully(): void
     {
         // 使用不存在的備份檔案
         $nonExistentBackup = $this->backupDir . '/nonexistent_backup.tar.gz';
@@ -181,7 +181,7 @@ class FileSystemBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_handle_permission_errors(): void
+    public function handlePermissionErrors(): void
     {
         // 設定目標目錄為唯讀
         chmod($this->testDir, 0444);
@@ -217,7 +217,7 @@ class FileSystemBackupTest extends TestCase
     }
 
     /** @test */
-    public function should_maintain_file_metadata_during_backup_restore(): void
+    public function maintainFileMetadataDuringBackupRestore(): void
     {
         // 記錄原始檔案的中繼資料
         $originalMetadata = [];

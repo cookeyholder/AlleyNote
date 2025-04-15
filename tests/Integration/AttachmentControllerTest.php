@@ -43,7 +43,7 @@ class AttachmentControllerTest extends TestCase
     }
 
     /** @test */
-    public function upload_should_store_file_successfully(): void
+    public function uploadShouldStoreFileSuccessfully(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -85,7 +85,7 @@ class AttachmentControllerTest extends TestCase
     }
 
     /** @test */
-    public function upload_should_return_400_for_invalid_file(): void
+    public function uploadShouldReturn400ForInvalidFile(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -118,7 +118,7 @@ class AttachmentControllerTest extends TestCase
     }
 
     /** @test */
-    public function list_should_return_attachments(): void
+    public function listShouldReturnAttachments(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -167,7 +167,7 @@ class AttachmentControllerTest extends TestCase
     }
 
     /** @test */
-    public function delete_should_remove_attachment(): void
+    public function deleteShouldRemoveAttachment(): void
     {
         // 準備測試資料
         $uuid = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
@@ -196,7 +196,7 @@ class AttachmentControllerTest extends TestCase
     }
 
     /** @test */
-    public function delete_should_return_404_for_nonexistent_attachment(): void
+    public function deleteShouldReturn404ForNonexistentAttachment(): void
     {
         // 準備測試資料
         $uuid = 'f47ac10b-58cc-4372-a567-0e02b2c3d480';
@@ -225,7 +225,7 @@ class AttachmentControllerTest extends TestCase
     }
 
     /** @test */
-    public function delete_should_return_400_for_invalid_uuid(): void
+    public function deleteShouldReturn400ForInvalidUuid(): void
     {
         // 準備測試資料
         $invalidUuid = 123;

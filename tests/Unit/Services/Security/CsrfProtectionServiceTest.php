@@ -24,7 +24,7 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_generates_valid_token(): void
+    public function generatesValidToken(): void
     {
         $token = $this->service->generateToken();
 
@@ -35,7 +35,7 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_validates_correct_token(): void
+    public function validatesCorrectToken(): void
     {
         $token = $this->service->generateToken();
 
@@ -44,7 +44,7 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_throws_exception_for_empty_token(): void
+    public function throwsExceptionForEmptyToken(): void
     {
         $this->expectException(CsrfTokenException::class);
         $this->expectExceptionMessage('缺少 CSRF token');
@@ -53,7 +53,7 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_throws_exception_for_invalid_token(): void
+    public function throwsExceptionForInvalidToken(): void
     {
         $this->service->generateToken();
 
@@ -64,7 +64,7 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_throws_exception_for_expired_token(): void
+    public function throwsExceptionForExpiredToken(): void
     {
         $token = $this->service->generateToken();
         $_SESSION['csrf_token_time'] = time() - 3601; // Set time to more than 1 hour ago
@@ -76,7 +76,7 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_updates_token_after_successful_validation(): void
+    public function updatesTokenAfterSuccessfulValidation(): void
     {
         $token = $this->service->generateToken();
         $oldToken = $_SESSION['csrf_token'];
