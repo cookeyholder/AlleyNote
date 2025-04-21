@@ -226,6 +226,6 @@ A: 於 .env 設定 `TELEGRAM_BOT_TOKEN` 與 `TELEGRAM_CHAT_ID`。
 
 ## 聯絡方式
 
-- Maintainer: [cookeyholder](cookeyholder@gmail.com)
-- Telegram: [AlleyNote](https://t.me/alleynote)
+- Maintainer: [cookeyholder]
+- Telegram: [AlleyNote]
 - Issues: [GitHub Issues](https://github.com/cookeyholder/alleynote/issues)
