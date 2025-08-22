@@ -15,7 +15,9 @@
         "vlucas/phpdotenv": "^5.3",
         "ramsey/uuid": "^4.7",
         "psr/http-message": "^1.0",
-        "psr/http-server-handler": "^1.0"
+        "psr/http-server-handler": "^1.0",
+        "ezyang/htmlpurifier": "^4.16",
+        "guzzlehttp/guzzle": "^7.5"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
@@ -39,7 +41,9 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "audit": "composer audit --format=json",
+        "audit-report": "composer audit --format=json > security-audit-report.json || true"
     },
     "minimum-stability": "stable"
 }

@@ -14,12 +14,26 @@ class AttachmentController
 {
     public function __construct(
         private AttachmentService $attachmentService
-    ) {
+    ) {}
+
+    /**
+     * 取得當前登入使用者 ID
+     * TODO: 實作真正的使用者認證邏輯
+     */
+    private function getCurrentUserId(Request $request): int
+    {
+        // 從 request attributes 或 session 中取得使用者 ID
+        $userId = $request->getAttribute('user_id');
+        if ($userId === null) {
+            throw new ValidationException('使用者未登入');
+        }
+        return (int) $userId;
     }
 
     public function upload(Request $request, Response $response): Response
     {
         try {
+            $currentUserId = $this->getCurrentUserId($request);
             $postId = (int)$request->getAttribute('post_id');
             $files = $request->getUploadedFiles();
 
@@ -32,7 +46,7 @@ class AttachmentController
                     ->withHeader('Content-Type', 'application/json');
             }
 
-            $attachment = $this->attachmentService->upload($postId, $files['file']);
+            $attachment = $this->attachmentService->upload($postId, $files['file'], $currentUserId);
 
             $response->getBody()->write(json_encode([
                 'data' => $attachment->toArray()
@@ -76,11 +90,12 @@ class AttachmentController
     public function delete(Request $request, Response $response): Response
     {
         try {
+            $currentUserId = $this->getCurrentUserId($request);
             $uuid = $request->getAttribute('id');
             if (!$uuid || !is_string($uuid)) {
                 throw new ValidationException('無效的附件識別碼');
             }
-            $this->attachmentService->delete($uuid);
+            $this->attachmentService->delete($uuid, $currentUserId);
 
             return $response->withStatus(204);
         } catch (ValidationException $e) {

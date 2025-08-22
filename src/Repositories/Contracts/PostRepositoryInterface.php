@@ -16,6 +16,23 @@ interface PostRepositoryInterface extends RepositoryInterface
     public function findBySeqNumber(int $seqNumber): ?Post;
 
     /**
+     * 使用悲觀鎖查找文章（用於防止競爭條件）
+     * @param int $id
+     * @return Post|null
+     */
+    public function findWithLock(int $id): ?Post;
+
+    /**
+     * 安全刪除文章（使用悲觀鎖防止競爭條件）
+     */
+    public function safeDelete(int $id): bool;
+
+    /**
+     * 安全設定置頂狀態（使用悲觀鎖防止競爭條件）
+     */
+    public function safeSetPinned(int $id, bool $isPinned): bool;
+
+    /**
      * 取得置頂文章列表
      * @param int $limit
      * @return Post[]

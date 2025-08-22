@@ -6,56 +6,149 @@ namespace App\Services\Validators;
 
 use App\Exceptions\ValidationException;
 use App\Services\Enums\PostStatus;
+use PDO;
 
 class PostValidator
 {
+    private PDO $db;
+
+    public function __construct(PDO $db)
+    {
+        $this->db = $db;
+    }
+
     /**
-     * 驗證文章資料
+     * 驗證新建文章的完整資料
      * @param array $data 文章資料
      * @throws ValidationException
      */
-    public function validate(array $data): void
+    public function validateForCreation(array $data): void
     {
-        $this->validateTitle($data);
-        $this->validateContent($data);
-        $this->validatePublishDate($data);
+        $this->validateRequiredFields($data);
+        $this->validateDataTypes($data);
+        $this->validateFieldLengths($data);
         $this->validateStatus($data);
         $this->validateUserIp($data);
+        $this->validatePublishDate($data);
     }
 
     /**
-     * 驗證文章標題
+     * 驗證更新文章的資料（部分欄位）
+     * @param array $data 文章資料
      * @throws ValidationException
      */
-    private function validateTitle(array $data): void
+    public function validateForUpdate(array $data): void
     {
+        // 只驗證有提供的欄位
+        $validationData = array_intersect_key($data, [
+            'title' => true,
+            'content' => true,
+            'user_id' => true,
+            'user_ip' => true,
+            'is_pinned' => true,
+            'status' => true,
+            'publish_date' => true
+        ]);
+
+        if (!empty($validationData)) {
+            $this->validateDataTypes($validationData);
+            $this->validateFieldLengths($validationData);
+            if (isset($validationData['status'])) {
+                $this->validateStatus($validationData);
+            }
+            if (isset($validationData['user_ip'])) {
+                $this->validateUserIp($validationData);
+            }
+            if (isset($validationData['publish_date'])) {
+                $this->validatePublishDate($validationData);
+            }
+        }
+    }
+
+    /**
+     * 驗證標籤指派
+     * @param array $tagIds 標籤 ID 陣列
+     * @throws ValidationException
+     */
+    public function validateTagAssignment(array $tagIds): void
+    {
+        if (empty($tagIds)) {
+            return;
+        }
+
+        // 檢查標籤 ID 是否都是正整數
+        foreach ($tagIds as $tagId) {
+            if (!is_int($tagId) || $tagId <= 0) {
+                throw new ValidationException('標籤 ID 必須是正整數');
+            }
+        }
+
+        // 檢查標籤是否存在
+        if (!$this->tagsExist($tagIds)) {
+            throw new ValidationException('某些標籤不存在');
+        }
+    }
+
+    /**
+     * 驗證必要欄位
+     */
+    private function validateRequiredFields(array $data): void
+    {
+        $errors = [];
+
+        // 檢查必要欄位
         if (empty($data['title'])) {
-            throw new ValidationException('文章標題不可為空');
+            $errors[] = '標題不能為空';
         }
-        if (strlen($data['title']) > 255) {
-            throw new ValidationException('文章標題不可超過 255 字元');
-        }
-    }
-
-    /**
-     * 驗證文章內容
-     * @throws ValidationException
-     */
-    private function validateContent(array $data): void
-    {
         if (empty($data['content'])) {
-            throw new ValidationException('文章內容不可為空');
+            $errors[] = '內容不能為空';
+        }
+        if (empty($data['user_id'])) {
+            $errors[] = '使用者 ID 不能為空';
+        }
+
+        if (!empty($errors)) {
+            throw new ValidationException(implode(', ', $errors));
         }
     }
 
     /**
-     * 驗證發布日期格式
-     * @throws ValidationException
+     * 驗證欄位長度
      */
-    private function validatePublishDate(array $data): void
+    private function validateFieldLengths(array $data): void
     {
-        if (isset($data['publish_date']) && !strtotime($data['publish_date'])) {
-            throw new ValidationException('無效的發布日期格式');
+        $errors = [];
+
+        // 檢查欄位長度
+        if (isset($data['title']) && mb_strlen($data['title']) > 100) {
+            $errors[] = '標題長度不能超過 100 個字';
+        }
+        if (isset($data['content']) && mb_strlen($data['content']) > 10000) {
+            $errors[] = '內容長度不能超過 10000 個字';
+        }
+
+        if (!empty($errors)) {
+            throw new ValidationException(implode(', ', $errors));
+        }
+    }
+
+    /**
+     * 驗證資料型別
+     */
+    private function validateDataTypes(array $data): void
+    {
+        $errors = [];
+
+        // 檢查資料型別
+        if (isset($data['user_id']) && !is_numeric($data['user_id'])) {
+            $errors[] = '使用者 ID 必須是數字';
+        }
+        if (isset($data['is_pinned']) && !is_bool($data['is_pinned'])) {
+            $errors[] = '置頂標記必須是布林值';
+        }
+
+        if (!empty($errors)) {
+            throw new ValidationException(implode(', ', $errors));
         }
     }
 
@@ -65,11 +158,21 @@ class PostValidator
      */
     private function validateStatus(array $data): void
     {
-        if (isset($data['status'])) {
-            try {
-                PostStatus::from($data['status']);
-            } catch (\ValueError $e) {
-                throw new ValidationException('無效的文章狀態');
+        if (isset($data['status']) && !in_array($data['status'], ['draft', 'published', 'archived'], true)) {
+            throw new ValidationException('狀態值必須是 draft、published 或 archived');
+        }
+    }
+
+    /**
+     * 驗證發布日期格式
+     * @throws ValidationException
+     */
+    private function validatePublishDate(array $data): void
+    {
+        if (isset($data['publish_date'])) {
+            $date = \DateTime::createFromFormat(\DateTime::RFC3339, $data['publish_date']);
+            if (!$date || $date->format(\DateTime::RFC3339) !== $data['publish_date']) {
+                throw new ValidationException('發布日期格式必須是 RFC 3339');
             }
         }
     }
@@ -81,7 +184,25 @@ class PostValidator
     private function validateUserIp(array $data): void
     {
         if (isset($data['user_ip']) && !filter_var($data['user_ip'], FILTER_VALIDATE_IP)) {
-            throw new ValidationException('無效的 IP 位址格式');
+            throw new ValidationException('IP 位址格式無效');
         }
+    }
+
+    /**
+     * 檢查標籤是否存在
+     */
+    private function tagsExist(array $tagIds): bool
+    {
+        if (empty($tagIds)) {
+            return true;
+        }
+
+        $placeholders = str_repeat('?,', count($tagIds) - 1) . '?';
+        $sql = "SELECT COUNT(*) FROM tags WHERE id IN ({$placeholders})";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($tagIds);
+
+        $count = (int) $stmt->fetchColumn();
+        return $count === count($tagIds);
     }
 }

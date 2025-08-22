@@ -8,6 +8,7 @@ use App\Services\Contracts\AttachmentServiceInterface;
 use App\Repositories\AttachmentRepository;
 use App\Repositories\PostRepository;
 use App\Services\CacheService;
+use App\Services\Security\AuthorizationService;
 use App\Services\Enums\FileRules;
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
@@ -51,9 +52,9 @@ class AttachmentService implements AttachmentServiceInterface
         private AttachmentRepository $attachmentRepo,
         private PostRepository $postRepo,
         private CacheService $cache,
+        private AuthorizationService $authService,
         private string $uploadDir
-    ) {
-    }
+    ) {}
 
 
     public function validateFile(UploadedFileInterface $file): void
@@ -132,60 +133,267 @@ class AttachmentService implements AttachmentServiceInterface
         return false;
     }
 
-    public function upload(int $postId, UploadedFileInterface $file): Attachment
+    /**
+     * 重新渲染圖片檔案以移除潛在的惡意程式碼
+     */
+    private function sanitizeImage(string $filePath, string $mimeType): bool
     {
-        // 檢查文章是否存在
-        if (!$this->postRepo->find($postId)) {
-            throw new NotFoundException('找不到指定的文章');
+        if (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif'], true)) {
+            return true; // 非圖片檔案不需要處理
         }
 
-        $this->validateFile($file);
+        try {
+            // 檢查 GD 擴充是否可用
+            if (!extension_loaded('gd')) {
+                error_log('GD extension not available for image sanitization');
+                return true; // 如果沒有 GD，跳過圖片處理
+            }
 
-        // 安全的檔案名稱產生
+            $image = null;
+
+            // 根據 MIME 類型載入圖片
+            switch ($mimeType) {
+                case 'image/jpeg':
+                    $image = imagecreatefromjpeg($filePath);
+                    break;
+                case 'image/png':
+                    $image = imagecreatefrompng($filePath);
+                    break;
+                case 'image/gif':
+                    $image = imagecreatefromgif($filePath);
+                    break;
+            }
+
+            if ($image === false) {
+                throw new ValidationException('無法處理圖片檔案');
+            }
+
+            // 取得圖片尺寸
+            $width = imagesx($image);
+            $height = imagesy($image);
+
+            // 檢查圖片尺寸是否合理（防止記憶體攻擊）
+            if ($width > 4096 || $height > 4096) {
+                imagedestroy($image);
+                throw new ValidationException('圖片尺寸過大');
+            }
+
+            // 建立新的乾淨畫布
+            $cleanImage = imagecreatetruecolor($width, $height);
+
+            // 處理透明度（PNG 和 GIF）
+            if ($mimeType === 'image/png' || $mimeType === 'image/gif') {
+                imagealphablending($cleanImage, false);
+                imagesavealpha($cleanImage, true);
+                $transparent = imagecolorallocatealpha($cleanImage, 255, 255, 255, 127);
+                imagefill($cleanImage, 0, 0, $transparent);
+                imagealphablending($cleanImage, true);
+            }
+
+            // 複製圖片到新畫布
+            imagecopyresampled($cleanImage, $image, 0, 0, 0, 0, $width, $height, $width, $height);
+
+            // 儲存乾淨的圖片（覆蓋原檔案）
+            $result = false;
+            switch ($mimeType) {
+                case 'image/jpeg':
+                    $result = imagejpeg($cleanImage, $filePath, 90);
+                    break;
+                case 'image/png':
+                    $result = imagepng($cleanImage, $filePath, 6);
+                    break;
+                case 'image/gif':
+                    $result = imagegif($cleanImage, $filePath);
+                    break;
+            }
+
+            // 清理記憶體
+            imagedestroy($image);
+            imagedestroy($cleanImage);
+
+            return $result;
+        } catch (\Exception $e) {
+            error_log("Image sanitization failed: " . $e->getMessage());
+            throw new ValidationException('圖片處理失敗：' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 病毒掃描（如果可用）
+     */
+    private function scanForVirus(string $filePath): bool
+    {
+        // 檢查是否有 ClamAV 可用
+        $clamavPath = shell_exec('which clamscan');
+        if (empty($clamavPath)) {
+            // ClamAV 不可用，跳過掃描
+            return true;
+        }
+
+        // 執行病毒掃描
+        $command = escapeshellcmd(trim($clamavPath)) . ' --no-summary --infected ' . escapeshellarg($filePath);
+        $output = shell_exec($command . ' 2>&1');
+        $exitCode = shell_exec('echo $?');
+
+        // ClamAV 回傳碼：0=乾淨, 1=感染, 2=錯誤
+        if (intval($exitCode) === 1) {
+            error_log("Virus detected in file: {$filePath}");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 改善的檔案驗證流程（減緩 TOCTOU 風險）
+     */
+    private function secureFileValidation(UploadedFileInterface $file): array
+    {
         $originalFilename = $file->getClientFilename();
         $extension = pathinfo($originalFilename, PATHINFO_EXTENSION);
         $safeExtension = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $extension));
         $newFilename = bin2hex(random_bytes(16)) . '.' . $safeExtension;
 
-        // 確保上傳目錄存在且具有正確的權限
-        $uploadPath = "{$this->uploadDir}/attachments";
-        if (!is_dir($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
+        // 建立安全的臨時目錄
+        $tempDir = sys_get_temp_dir() . '/alleynote_upload_' . bin2hex(random_bytes(8));
+        if (!mkdir($tempDir, 0700, true)) {
+            throw new ValidationException('無法建立臨時目錄');
         }
 
-        $storagePath = $uploadPath . '/' . $newFilename;
+        $tempPath = $tempDir . '/' . $newFilename;
 
         try {
-            // 先建立臨時檔案
-            $tempPath = tempnam(sys_get_temp_dir(), 'upload_');
+            // 移動上傳檔案到安全的臨時位置
             $file->moveTo($tempPath);
 
-            // 將檔案移動到目標位置並設定權限
-            if (!rename($tempPath, $storagePath)) {
-                throw new \RuntimeException('無法移動檔案到目標位置');
+            // 在臨時位置進行所有驗證
+            $this->validateFile($file);
+
+            // 重新驗證檔案類型（基於實際內容）
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $actualMimeType = finfo_file($finfo, $tempPath);
+            finfo_close($finfo);
+
+            if (!in_array($actualMimeType, self::ALLOWED_MIME_TYPES, true)) {
+                throw new ValidationException('檔案類型不符合預期');
             }
 
-            chmod($storagePath, 0644);
+            // 圖片重新渲染
+            $this->sanitizeImage($tempPath, $actualMimeType);
 
-            return $this->attachmentRepo->create([
-                'uuid' => Uuid::uuid4()->toString(),
-                'post_id' => $postId,
+            // 病毒掃描
+            if (!$this->scanForVirus($tempPath)) {
+                throw new ValidationException('檔案包含惡意程式碼');
+            }
+
+            return [
+                'temp_path' => $tempPath,
+                'temp_dir' => $tempDir,
                 'filename' => $newFilename,
                 'original_name' => $originalFilename,
-                'mime_type' => $file->getClientMediaType(),
-                'file_size' => $file->getSize(),
-                'storage_path' => "attachments/{$newFilename}"
-            ]);
-        } catch (\Throwable $e) {
+                'mime_type' => $actualMimeType,
+                'file_size' => filesize($tempPath)
+            ];
+        } catch (\Exception $e) {
             // 清理臨時檔案
-            if (isset($tempPath) && file_exists($tempPath)) {
+            if (file_exists($tempPath)) {
                 unlink($tempPath);
             }
-            // 清理目標檔案
-            if (file_exists($storagePath)) {
-                unlink($storagePath);
+            if (is_dir($tempDir)) {
+                rmdir($tempDir);
             }
-            throw new ValidationException('檔案上傳失敗：' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * 檢查使用者是否有權限操作指定文章
+     */
+    private function canAccessPost(int $userId, int $postId): bool
+    {
+        // 檢查是否為管理員
+        if ($this->authService->isSuperAdmin($userId)) {
+            return true;
+        }
+
+        // 檢查文章是否存在並且是否為文章的擁有者
+        $post = $this->postRepo->find($postId);
+        if (!$post) {
+            return false;
+        }
+
+        return $post->getUserId() === $userId;
+    }
+
+    /**
+     * 檢查使用者是否有權限操作指定附件
+     */
+    private function canAccessAttachment(int $userId, string $attachmentUuid): bool
+    {
+        // 檢查是否為管理員
+        if ($this->authService->isSuperAdmin($userId)) {
+            return true;
+        }
+
+        // 找到附件並檢查關聯的文章
+        $attachment = $this->attachmentRepo->findByUuid($attachmentUuid);
+        if (!$attachment) {
+            return false;
+        }
+
+        // 透過附件找到文章，檢查是否為文章的擁有者
+        return $this->canAccessPost($userId, $attachment->getPostId());
+    }
+
+    public function upload(int $postId, UploadedFileInterface $file, int $currentUserId): Attachment
+    {
+        if (!$this->canAccessPost($postId, $currentUserId)) {
+            throw new ValidationException('無權限上傳附件到此公告');
+        }
+
+        // 使用改善的檔案驗證流程
+        $fileInfo = $this->secureFileValidation($file);
+
+        try {
+            // 確保上傳目錄存在
+            if (!is_dir($this->uploadDir)) {
+                mkdir($this->uploadDir, 0755, true);
+            }
+
+            // 移動檔案到最終位置
+            $finalPath = $this->uploadDir . '/' . $fileInfo['filename'];
+            if (!rename($fileInfo['temp_path'], $finalPath)) {
+                throw new ValidationException('檔案移動失敗');
+            }
+
+            // 清理臨時目錄
+            rmdir($fileInfo['temp_dir']);
+
+            // 儲存到資料庫
+            $attachmentData = [
+                'post_id' => $postId,
+                'filename' => $fileInfo['filename'],
+                'original_name' => $fileInfo['original_name'],
+                'file_size' => $fileInfo['file_size'],
+                'mime_type' => $fileInfo['mime_type'],
+                'storage_path' => $finalPath
+            ];
+
+            $attachment = $this->attachmentRepo->create($attachmentData);
+
+            return $attachment;
+        } catch (\Exception $e) {
+            // 清理失敗時的檔案
+            if (file_exists($fileInfo['temp_path'])) {
+                unlink($fileInfo['temp_path']);
+            }
+            if (is_dir($fileInfo['temp_dir'])) {
+                rmdir($fileInfo['temp_dir']);
+            }
+            if (isset($finalPath) && file_exists($finalPath)) {
+                unlink($finalPath);
+            }
+            throw $e;
         }
     }
 
@@ -218,8 +426,13 @@ class AttachmentService implements AttachmentServiceInterface
         ];
     }
 
-    public function delete(string $uuid): void
+    public function delete(string $uuid, int $currentUserId): void
     {
+        // 檢查使用者是否有權限操作此附件
+        if (!$this->canAccessAttachment($currentUserId, $uuid)) {
+            throw new ValidationException('您沒有權限刪除此附件');
+        }
+
         $attachment = $this->attachmentRepo->findByUuid($uuid);
         if (!$attachment) {
             throw new NotFoundException('找不到指定的附件');

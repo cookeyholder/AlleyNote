@@ -7,29 +7,24 @@ namespace App\Services;
 use App\Models\Post;
 use App\Services\Contracts\PostServiceInterface;
 use App\Repositories\Contracts\PostRepositoryInterface;
-use App\Services\Validators\PostValidator;
 use App\Services\Enums\PostStatus;
-use App\Exceptions\ValidationException;
+use App\DTOs\Post\CreatePostDTO;
+use App\DTOs\Post\UpdatePostDTO;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\StateTransitionException;
+use App\Exceptions\ValidationException;
 use DateTimeImmutable;
 
 class PostService implements PostServiceInterface
 {
     public function __construct(
-        private readonly PostRepositoryInterface $repository,
-        private readonly PostValidator $validator
-    ) {
-    }
+        private readonly PostRepositoryInterface $repository
+    ) {}
 
-    public function createPost(array $data): Post
+    public function createPost(CreatePostDTO $dto): Post
     {
-        $this->validator->validate($data);
-
-        // 如果沒有指定狀態，預設為草稿
-        if (!isset($data['status'])) {
-            $data['status'] = PostStatus::DRAFT->value;
-        }
+        // DTO 已經在建構時驗證過資料，這裡直接轉換為陣列
+        $data = $dto->toArray();
 
         // 設定建立時間
         $data['created_at'] = (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339);
@@ -37,19 +32,25 @@ class PostService implements PostServiceInterface
         return $this->repository->create($data);
     }
 
-    public function updatePost(int $id, array $data): Post
+    public function updatePost(int $id, UpdatePostDTO $dto): Post
     {
         $post = $this->repository->find($id);
         if (!$post) {
             throw new NotFoundException('找不到指定的文章');
         }
 
-        $this->validator->validate($data);
+        // 檢查是否有資料要更新
+        if (!$dto->hasChanges()) {
+            return $post;
+        }
 
-        // 處理狀態轉換
-        if (isset($data['status'])) {
+        // DTO 已經在建構時驗證過資料，這裡直接轉換為陣列
+        $data = $dto->toArray();
+
+        // 處理狀態轉換（如果有提供狀態）
+        if ($dto->status !== null) {
             $currentStatus = PostStatus::from($post->getStatus());
-            $targetStatus = PostStatus::from($data['status']);
+            $targetStatus = $dto->status;
 
             if (!$currentStatus->canTransitionTo($targetStatus)) {
                 throw new StateTransitionException(
@@ -70,27 +71,14 @@ class PostService implements PostServiceInterface
 
     public function deletePost(int $id): bool
     {
-        $post = $this->repository->find($id);
-        if (!$post) {
-            throw new NotFoundException('找不到指定的文章');
+        try {
+            return $this->repository->safeDelete($id);
+        } catch (\InvalidArgumentException $e) {
+            throw new StateTransitionException($e->getMessage());
+        } catch (\Exception $e) {
+            error_log("刪除文章失敗 (ID: $id): " . $e->getMessage());
+            throw new \RuntimeException('刪除文章時發生錯誤');
         }
-
-        // 已發布的文章不能刪除，只能封存
-        if (PostStatus::from($post->getStatus()) === PostStatus::PUBLISHED) {
-            throw new StateTransitionException('已發布的文章不能刪除，請改為封存');
-        }
-
-        return $this->repository->delete($id);
-    }
-
-    public function getPost(int $id): Post
-    {
-        $post = $this->repository->find($id);
-        if (!$post) {
-            throw new NotFoundException('找不到指定的文章');
-        }
-
-        return $post;
     }
 
     public function findById(int $id): Post
@@ -128,17 +116,14 @@ class PostService implements PostServiceInterface
 
     public function setPinned(int $id, bool $isPinned): bool
     {
-        $post = $this->repository->find($id);
-        if (!$post) {
-            throw new NotFoundException('找不到指定的文章');
+        try {
+            return $this->repository->safeSetPinned($id, $isPinned);
+        } catch (\InvalidArgumentException $e) {
+            throw new StateTransitionException($e->getMessage());
+        } catch (\Exception $e) {
+            error_log("設定置頂狀態失敗 (ID: $id): " . $e->getMessage());
+            throw new \RuntimeException('設定置頂狀態時發生錯誤');
         }
-
-        // 只有已發布的文章可以置頂
-        if ($isPinned && PostStatus::from($post->getStatus()) !== PostStatus::PUBLISHED) {
-            throw new StateTransitionException('只有已發布的文章可以置頂');
-        }
-
-        return $this->repository->setPinned($id, $isPinned);
     }
 
     /**
@@ -161,7 +146,7 @@ class PostService implements PostServiceInterface
 
     public function recordView(int $id, string $userIp, ?int $userId = null): bool
     {
-        $post = $this->getPost($id);
+        $post = $this->findById($id);
 
         // 檢查 IP 格式
         if (!filter_var($userIp, FILTER_VALIDATE_IP)) {

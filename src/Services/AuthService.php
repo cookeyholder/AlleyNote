@@ -3,18 +3,26 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
+use App\DTOs\Auth\RegisterUserDTO;
+use App\Services\Security\Contracts\PasswordSecurityServiceInterface;
 use InvalidArgumentException;
 
 class AuthService
 {
     public function __construct(
-        private UserRepository $userRepository
-    ) {
-    }
+        private UserRepository $userRepository,
+        private PasswordSecurityServiceInterface $passwordService
+    ) {}
 
-    public function register(array $data): array
+    public function register(RegisterUserDTO $dto): array
     {
-        $this->validateRegistrationData($data);
+        // DTO 已經在建構時進行基本驗證，這裡進行密碼安全性檢查
+        $this->passwordService->validatePassword($dto->password);
+
+        // 轉換為陣列並雜湊密碼
+        $data = $dto->toArray();
+        $data['password'] = $this->passwordService->hashPassword($data['password']);
+
         return $this->userRepository->create($data);
     }
 
@@ -52,20 +60,5 @@ class AuthService
             'message' => '登入成功',
             'user' => $user
         ];
-    }
-
-    private function validateRegistrationData(array $data): void
-    {
-        if (empty($data['username'])) {
-            throw new InvalidArgumentException('使用者名稱不能為空');
-        }
-
-        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException('無效的電子郵件格式');
-        }
-
-        if (strlen($data['password']) < 8) {
-            throw new InvalidArgumentException('密碼長度必須至少為 8 個字元');
-        }
     }
 }
