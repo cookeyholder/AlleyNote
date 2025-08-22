@@ -7,12 +7,14 @@ namespace App\Repositories;
 use PDO;
 use App\Models\Post;
 use App\Services\CacheService;
+use App\Services\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Repositories\Contracts\PostRepositoryInterface;
 
 class PostRepository implements PostRepositoryInterface
 {
     private PDO $db;
     private CacheService $cache;
+    private LoggingSecurityServiceInterface $logger;
     private const CACHE_TTL = 3600;
 
     // SQL 查詢常數
@@ -20,10 +22,38 @@ class PostRepository implements PostRepositoryInterface
     private const SQL_INSERT_POST = 'INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, created_at, updated_at) VALUES (:uuid, :seq_number, :title, :content, :user_id, :user_ip, :is_pinned, :status, :publish_date, :created_at, :updated_at)';
     private const SQL_INSERT_TAG = 'INSERT INTO post_tags (post_id, tag_id, created_at) VALUES (?, ?, ?)';
 
-    public function __construct(PDO $db, CacheService $cache)
-    {
+    // 允許的欄位白名單
+    private const ALLOWED_UPDATE_FIELDS = [
+        'title',
+        'content',
+        'user_ip',
+        'is_pinned',
+        'status',
+        'publish_date',
+        'updated_at'
+    ];
+
+    private const ALLOWED_CONDITION_FIELDS = [
+        'id',
+        'uuid',
+        'seq_number',
+        'title',
+        'user_id',
+        'is_pinned',
+        'status',
+        'publish_date',
+        'created_at',
+        'updated_at'
+    ];
+
+    public function __construct(
+        PDO $db,
+        CacheService $cache,
+        LoggingSecurityServiceInterface $logger
+    ) {
         $this->db = $db;
         $this->cache = $cache;
+        $this->logger = $logger;
     }
 
     /**
@@ -123,6 +153,22 @@ class PostRepository implements PostRepositoryInterface
         return $data ? Post::fromArray($data) : null;
     }
 
+    /**
+     * 使用悲觀鎖查找文章（用於防止競爭條件）
+     */
+    public function findWithLock(int $id): ?Post
+    {
+        $stmt = $this->db->prepare('SELECT * FROM posts WHERE id = ? FOR UPDATE');
+        $stmt->execute([$id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$result) {
+            return null;
+        }
+
+        return Post::fromArray($this->preparePostData($result));
+    }
+
     public function findByUuid(string $uuid): ?Post
     {
         $cacheKey = $this->getCacheKey('uuid', $uuid);
@@ -152,92 +198,73 @@ class PostRepository implements PostRepositoryInterface
         return Post::fromArray($this->preparePostData($result));
     }
 
-    private function validateRequiredFields(array $data): void
+    /**
+     * 安全刪除文章（使用悲觀鎖防止競爭條件）
+     */
+    public function safeDelete(int $id): bool
     {
-        $errors = [];
-
-        // 檢查必要欄位
-        if (empty($data['title'])) {
-            $errors[] = '標題不能為空';
-        }
-        if (empty($data['content'])) {
-            $errors[] = '內容不能為空';
-        }
-        if (empty($data['user_id'])) {
-            $errors[] = '使用者 ID 不能為空';
-        }
-
-        // 檢查欄位長度
-        if (isset($data['title']) && mb_strlen($data['title']) > 100) {
-            $errors[] = '標題長度不能超過 100 個字';
-        }
-        if (isset($data['content']) && mb_strlen($data['content']) > 10000) {
-            $errors[] = '內容長度不能超過 10000 個字';
-        }
-
-        // 檢查資料型別
-        if (isset($data['user_id']) && !is_numeric($data['user_id'])) {
-            $errors[] = '使用者 ID 必須是數字';
-        }
-        if (isset($data['is_pinned']) && !is_bool($data['is_pinned'])) {
-            $errors[] = '置頂標記必須是布林值';
-        }
-
-        // 檢查狀態值
-        if (isset($data['status']) && !in_array($data['status'], ['draft', 'published', 'archived'], true)) {
-            $errors[] = '狀態值必須是 draft、published 或 archived';
-        }
-
-        // 檢查日期格式
-        if (isset($data['publish_date'])) {
-            $date = \DateTime::createFromFormat(\DateTime::RFC3339, $data['publish_date']);
-            if (!$date || $date->format(\DateTime::RFC3339) !== $data['publish_date']) {
-                $errors[] = '發布日期格式必須是 RFC 3339';
+        return $this->executeInTransaction(function () use ($id) {
+            $post = $this->findWithLock($id);
+            if (!$post) {
+                return false;
             }
-        }
 
-        // 檢查 IP 格式
-        if (isset($data['user_ip']) && !filter_var($data['user_ip'], FILTER_VALIDATE_IP)) {
-            $errors[] = 'IP 位址格式無效';
-        }
+            // 檢查是否可以刪除（業務邏輯檢查在這裡進行，因為有鎖定保護）
+            if ($post->getStatus() === 'published') {
+                throw new \InvalidArgumentException('已發布的文章不能刪除，請改為封存');
+            }
 
-        // 如果有任何錯誤，拋出異常
-        if (!empty($errors)) {
-            throw new \InvalidArgumentException(implode(', ', $errors));
-        }
+            return $this->delete($id);
+        });
     }
 
-    private function validateTagAssignment(array $tagIds): void
+    /**
+     * 安全設定置頂狀態（使用悲觀鎖防止競爭條件）
+     */
+    public function safeSetPinned(int $id, bool $isPinned): bool
+    {
+        return $this->executeInTransaction(function () use ($id, $isPinned) {
+            $post = $this->findWithLock($id);
+            if (!$post) {
+                return false;
+            }
+
+            // 檢查業務邏輯：只有已發布的文章可以置頂
+            if ($isPinned && $post->getStatus() !== 'published') {
+                throw new \InvalidArgumentException('只有已發布的文章可以置頂');
+            }
+
+            return $this->setPinned($id, $isPinned);
+        });
+    }
+
+    /**
+     * 檢查標籤是否存在
+     */
+    private function tagsExist(array $tagIds): bool
     {
         if (empty($tagIds)) {
-            return;
+            return true;
         }
 
-        // 檢查標籤 ID 是否都是正整數
-        foreach ($tagIds as $tagId) {
-            if (!is_int($tagId) || $tagId <= 0) {
-                throw new \InvalidArgumentException('標籤 ID 必須是正整數');
-            }
-        }
-
-        // 檢查標籤是否存在
         $placeholders = str_repeat('?,', count($tagIds) - 1) . '?';
         $sql = "SELECT COUNT(*) FROM tags WHERE id IN ({$placeholders})";
         $stmt = $this->db->prepare($sql);
         $stmt->execute($tagIds);
 
         $count = (int) $stmt->fetchColumn();
-        if ($count !== count($tagIds)) {
-            throw new \InvalidArgumentException('某些標籤不存在');
-        }
+        return $count === count($tagIds);
     }
+
+    /**
+     * 指派標籤到文章
+     * @throws \PDOException 當標籤不存在時拋出異常
+     */
 
     public function create(array $data, array $tagIds = []): Post
     {
         return $this->executeInTransaction(function () use ($data, $tagIds) {
-            // 驗證輸入資料
-            $this->validateRequiredFields($data);
-            $this->validateTagAssignment($tagIds);
+            // 資料已在 DTO 層級完成驗證，這裡直接處理
 
             // 準備資料
             $data = $this->prepareNewPostData($data);
@@ -271,14 +298,8 @@ class PostRepository implements PostRepositoryInterface
      */
     private function assignTags(int $postId, array $tagIds): void
     {
-        // 先驗證所有標籤是否存在
-        $placeholders = str_repeat('?,', count($tagIds) - 1) . '?';
-        $sql = "SELECT COUNT(*) FROM tags WHERE id IN ({$placeholders})";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($tagIds);
-
-        $count = (int) $stmt->fetchColumn();
-        if ($count !== count($tagIds)) {
+        // 驗證標籤是否存在
+        if (!$this->tagsExist($tagIds)) {
             throw new \PDOException('指定的標籤不存在');
         }
 
@@ -304,31 +325,28 @@ class PostRepository implements PostRepositoryInterface
             unset($data[$field]);
         }
 
-        // 只驗證有提供的欄位
-        $validationData = array_intersect_key($data, [
-            'title' => true,
-            'content' => true,
-            'user_id' => true,
-            'user_ip' => true,
-            'is_pinned' => true,
-            'status' => true,
-            'publish_date' => true
-        ]);
-
-        if (!empty($validationData)) {
-            $this->validateRequiredFields($validationData);
-        }
+        // 資料已在 DTO 層級完成驗證，這裡直接處理
 
         // 更新時間戳記
         $data['updated_at'] = format_datetime();
 
-        // 準備更新欄位
+        // 準備更新欄位 - 只允許安全的欄位
         $sets = [];
         $params = ['id' => $id];
 
         foreach ($data as $key => $value) {
-            $sets[] = "{$key} = :{$key}";
-            $params[$key] = $value;
+            // 檢查欄位是否在允許的白名單中
+            if (in_array($key, self::ALLOWED_UPDATE_FIELDS, true)) {
+                $sets[] = "{$key} = :{$key}";
+                $params[$key] = $value;
+            } else {
+                // 記錄嘗試更新不允許欄位的行為
+                $this->logger->logSecurityEvent('Attempt to update disallowed field', [
+                    'field' => $key,
+                    'post_id' => $id,
+                    'action' => 'update_post'
+                ]);
+            }
         }
 
         if (empty($sets)) {
@@ -366,14 +384,24 @@ class PostRepository implements PostRepositoryInterface
         return $this->cache->remember($cacheKey, function () use ($page, $perPage, $conditions) {
             $offset = ($page - 1) * $perPage;
 
-            // 建立查詢條件
+            // 建立查詢條件 - 只允許安全的欄位
             $where = [];
             $params = [];
 
             if (!empty($conditions)) {
                 foreach ($conditions as $key => $value) {
-                    $where[] = "{$key} = :{$key}";
-                    $params[$key] = $value;
+                    // 檢查欄位是否在允許的白名單中
+                    if (in_array($key, self::ALLOWED_CONDITION_FIELDS, true)) {
+                        $where[] = "{$key} = :{$key}";
+                        $params[$key] = $value;
+                    } else {
+                        // 記錄嘗試查詢不允許欄位的行為
+                        $this->logger->logSecurityEvent('Attempt to query with disallowed field', [
+                            'field' => $key,
+                            'action' => 'get_paginated',
+                            'conditions' => array_keys($conditions)
+                        ]);
+                    }
                 }
             }
 
@@ -544,15 +572,8 @@ class PostRepository implements PostRepositoryInterface
 
         try {
             // 驗證標籤是否存在
-            if (!empty($tagIds)) {
-                $placeholders = str_repeat('?,', count($tagIds) - 1) . '?';
-                $sql = "SELECT COUNT(*) FROM tags WHERE id IN ({$placeholders})";
-                $stmt = $this->db->prepare($sql);
-                $stmt->execute($tagIds);
-
-                if ((int) $stmt->fetchColumn() !== count($tagIds)) {
-                    throw new \PDOException('部分標籤不存在');
-                }
+            if (!empty($tagIds) && !$this->tagsExist($tagIds)) {
+                throw new \PDOException('部分標籤不存在');
             }
 
             // 移除現有標籤

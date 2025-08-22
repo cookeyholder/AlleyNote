@@ -5,26 +5,28 @@ declare(strict_types=1);
 namespace App\Services\Contracts;
 
 use App\Models\Post;
+use App\DTOs\Post\CreatePostDTO;
+use App\DTOs\Post\UpdatePostDTO;
 
 interface PostServiceInterface
 {
     /**
      * 建立新文章
-     * @param array $data 文章資料
+     * @param CreatePostDTO $dto 文章資料
      * @return Post
      * @throws ValidationException
      */
-    public function createPost(array $data): Post;
+    public function createPost(CreatePostDTO $dto): Post;
 
     /**
      * 更新文章
      * @param int $id 文章 ID
-     * @param array $data 更新資料
+     * @param UpdatePostDTO $dto 更新資料
      * @return Post
      * @throws ValidationException
      * @throws NotFoundException
      */
-    public function updatePost(int $id, array $data): Post;
+    public function updatePost(int $id, UpdatePostDTO $dto): Post;
 
     /**
      * 刪除文章

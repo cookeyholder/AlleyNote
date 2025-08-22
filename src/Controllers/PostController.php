@@ -7,6 +7,8 @@ namespace App\Controllers;
 use App\Services\Contracts\PostServiceInterface;
 use App\Services\Security\Contracts\XssProtectionServiceInterface;
 use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
+use App\DTOs\Post\CreatePostDTO;
+use App\DTOs\Post\UpdatePostDTO;
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\StateTransitionException;
@@ -22,8 +24,7 @@ class PostController
         private PostServiceInterface $service,
         private XssProtectionServiceInterface $xssProtection,
         private CsrfProtectionServiceInterface $csrfProtection
-    ) {
-    }
+    ) {}
 
     private function validateCsrfToken(Request $request): void
     {
@@ -81,7 +82,13 @@ class PostController
             $data = $request->getParsedBody();
             $data = $this->xssProtection->cleanArray($data, ['title', 'content']);
 
-            $post = $this->service->createPost($data);
+            // 添加使用者資訊
+            $data['user_id'] = $request->getAttribute('user_id', 1); // 預設使用者 ID
+            $data['user_ip'] = $request->getAttribute('ip_address', '127.0.0.1');
+
+            // 建立 DTO
+            $dto = new CreatePostDTO($data);
+            $post = $this->service->createPost($dto);
 
             return $this->jsonResponse($response, ['data' => $post->toArray()], 201)
                 ->withHeader(self::CSRF_HEADER, $this->csrfProtection->generateToken());
@@ -91,6 +98,11 @@ class PostController
             return $this->jsonResponse($response, [
                 'error' => $e->getMessage(),
                 'details' => $e->getErrors()
+            ], 400);
+        } catch (\InvalidArgumentException $e) {
+            return $this->jsonResponse($response, [
+                'error' => '資料驗證失敗',
+                'details' => ['validation' => [$e->getMessage()]]
             ], 400);
         }
     }
@@ -103,7 +115,9 @@ class PostController
             $data = $request->getParsedBody();
             $data = $this->xssProtection->cleanArray($data, ['title', 'content']);
 
-            $post = $this->service->updatePost((int) $args['id'], $data);
+            // 建立更新 DTO
+            $dto = new UpdatePostDTO($data);
+            $post = $this->service->updatePost((int) $args['id'], $dto);
 
             return $this->jsonResponse($response, ['data' => $post->toArray()]);
         } catch (NotFoundException $e) {
@@ -112,6 +126,11 @@ class PostController
             return $this->jsonResponse($response, [
                 'error' => $e->getMessage(),
                 'details' => $e->getErrors()
+            ], 400);
+        } catch (\InvalidArgumentException $e) {
+            return $this->jsonResponse($response, [
+                'error' => '資料驗證失敗',
+                'details' => ['validation' => [$e->getMessage()]]
             ], 400);
         } catch (StateTransitionException $e) {
             return $this->jsonResponse($response, ['error' => $e->getMessage()], 422);

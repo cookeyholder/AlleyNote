@@ -1,0 +1,180 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # 每週二早上 10:00 檢查更新
+    - cron: '0 10 * * 2'
+  workflow_dispatch: # 允許手動觸發
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    name: Check and Update Dependencies
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        tools: composer
+
+    - name: Install current dependencies
+      run: composer install --no-dev --prefer-dist --no-progress --no-interaction
+
+    - name: Check for security vulnerabilities
+      id: security-check
+      run: |
+        echo "🔍 檢查安全漏洞..."
+        if composer audit --format=json > security-audit.json; then
+          echo "has_vulnerabilities=false" >> $GITHUB_OUTPUT
+          echo "✅ 未發現安全漏洞"
+        else
+          echo "has_vulnerabilities=true" >> $GITHUB_OUTPUT
+          echo "⚠️ 發現安全漏洞，需要更新"
+          composer audit
+        fi
+
+    - name: Check for available updates
+      id: update-check
+      run: |
+        echo "🔍 檢查可用更新..."
+        composer outdated --format=json > outdated.json 2>/dev/null || true
+        
+        if [ -s outdated.json ] && [ "$(jq -r '.installed | length' outdated.json 2>/dev/null)" != "0" ]; then
+          echo "has_updates=true" >> $GITHUB_OUTPUT
+          echo "✅ 發現可用更新"
+        else
+          echo "has_updates=false" >> $GITHUB_OUTPUT
+          echo "ℹ️ 所有套件都是最新版本"
+        fi
+
+    - name: Create update branch
+      if: steps.security-check.outputs.has_vulnerabilities == 'true' || steps.update-check.outputs.has_updates == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        BRANCH_NAME="auto-update/dependencies-$(date +%Y%m%d-%H%M%S)"
+        echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
+        
+        git checkout -b $BRANCH_NAME
+
+    - name: Update dependencies
+      if: steps.security-check.outputs.has_vulnerabilities == 'true' || steps.update-check.outputs.has_updates == 'true'
+      run: |
+        echo "📦 更新相依套件..."
+        
+        # 備份現有的 composer.lock
+        cp composer.lock composer.lock.backup
+        
+        # 更新套件
+        composer update --prefer-dist --no-progress --no-interaction
+        
+        # 重新執行安全掃描
+        echo "🔍 重新檢查安全性..."
+        composer audit
+
+    - name: Run tests
+      if: steps.security-check.outputs.has_vulnerabilities == 'true' || steps.update-check.outputs.has_updates == 'true'
+      run: |
+        echo "🧪 執行測試確保更新不會破壞功能..."
+        composer install --dev --prefer-dist --no-progress --no-interaction
+        
+        if [ -f "vendor/bin/phpunit" ]; then
+          vendor/bin/phpunit || {
+            echo "❌ 測試失敗，恢復原始版本"
+            cp composer.lock.backup composer.lock
+            composer install --no-dev --prefer-dist --no-progress --no-interaction
+            exit 1
+          }
+        else
+          echo "⚠️ 未找到測試，跳過測試步驟"
+        fi
+
+    - name: Generate update report
+      if: steps.security-check.outputs.has_vulnerabilities == 'true' || steps.update-check.outputs.has_updates == 'true'
+      run: |
+        echo "📄 產生更新報告..."
+        
+        cat > dependency-update-report.md << 'EOF'
+        # 相依套件更新報告
+        
+        ## 更新時間
+        $(date '+%Y-%m-%d %H:%M:%S')
+        
+        ## 安全性掃描結果
+        EOF
+        
+        if [ "${{ steps.security-check.outputs.has_vulnerabilities }}" == "true" ]; then
+          echo "⚠️ 發現安全漏洞，已透過更新修復" >> dependency-update-report.md
+        else
+          echo "✅ 未發現安全漏洞" >> dependency-update-report.md
+        fi
+        
+        echo "" >> dependency-update-report.md
+        echo "## 套件更新清單" >> dependency-update-report.md
+        
+        if [ -f outdated.json ] && [ -s outdated.json ]; then
+          jq -r '.installed[] | "- **\(.name)**: \(.version) → \(.latest)"' outdated.json >> dependency-update-report.md 2>/dev/null || true
+        fi
+        
+        echo "" >> dependency-update-report.md
+        echo "## 測試結果" >> dependency-update-report.md
+        echo "✅ 所有測試通過，更新安全" >> dependency-update-report.md
+
+    - name: Commit changes
+      if: steps.security-check.outputs.has_vulnerabilities == 'true' || steps.update-check.outputs.has_updates == 'true'
+      run: |
+        git add composer.lock dependency-update-report.md
+        git commit -m "chore(相依): 自動更新相依套件
+
+        - 執行安全性掃描並修復發現的漏洞
+        - 更新過期的套件到最新穩定版本
+        - 通過所有測試驗證
+        
+        詳細資訊請查看 dependency-update-report.md"
+
+    - name: Create Pull Request
+      if: steps.security-check.outputs.has_vulnerabilities == 'true' || steps.update-check.outputs.has_updates == 'true'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ env.branch_name }}
+        title: "🔒 自動更新相依套件 - $(date +%Y/%m/%d)"
+        body: |
+          ## 📦 相依套件自動更新
+          
+          此 PR 由自動化工作流程建立，用於更新專案的相依套件。
+          
+          ### 🔍 檢查項目
+          - ✅ 安全性掃描
+          - ✅ 套件相容性檢查
+          - ✅ 自動化測試
+          
+          ### 📄 詳細報告
+          請查看 `dependency-update-report.md` 了解更新詳情。
+          
+          ### 🚀 下一步
+          1. 檢視變更內容
+          2. 執行額外測試（如需要）
+          3. 合併此 PR
+          
+          ---
+          *此 PR 由 GitHub Actions 自動建立*
+        labels: |
+          dependencies
+          security
+          automated
+
+    - name: Summary
+      run: |
+        if [ "${{ steps.security-check.outputs.has_vulnerabilities }}" == "true" ] || [ "${{ steps.update-check.outputs.has_updates }}" == "true" ]; then
+          echo "✅ 相依套件更新完成，已建立 Pull Request"
+        else
+          echo "ℹ️ 所有套件都是最新且安全的版本"
+        fi

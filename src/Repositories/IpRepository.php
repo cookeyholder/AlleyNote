@@ -13,6 +13,18 @@ class IpRepository implements IpRepositoryInterface
 {
     private const CACHE_TTL = 3600; // 1小時
 
+    /**
+     * 允許的查詢條件欄位白名單
+     */
+    private const ALLOWED_CONDITION_FIELDS = [
+        'id',
+        'ip_address',
+        'type',
+        'reason',
+        'created_at',
+        'updated_at'
+    ];
+
     public function __construct(
         private PDO $db,
         private CacheService $cache
@@ -248,8 +260,14 @@ class IpRepository implements IpRepositoryInterface
 
         if (!empty($conditions)) {
             foreach ($conditions as $key => $value) {
-                $where[] = "{$key} = ?";
-                $params[] = $value;
+                // 檢查欄位是否在允許的白名單中
+                if (in_array($key, self::ALLOWED_CONDITION_FIELDS, true)) {
+                    $where[] = "{$key} = ?";
+                    $params[] = $value;
+                } else {
+                    // 記錄嘗試查詢不允許欄位的行為
+                    error_log("Attempt to query ip_lists with disallowed field: {$key}");
+                }
             }
         }
 

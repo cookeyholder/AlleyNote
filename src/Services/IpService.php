@@ -6,25 +6,22 @@ namespace App\Services;
 
 use App\Repositories\Contracts\IpRepositoryInterface;
 use App\Models\IpList;
+use App\DTOs\IpManagement\CreateIpRuleDTO;
 
 class IpService
 {
     public function __construct(
         private IpRepositoryInterface $repository
-    ) {
-    }
+    ) {}
 
-    public function createIpRule(array $data): IpList
+    public function createIpRule(CreateIpRuleDTO $dto): IpList
     {
-        // 驗證 IP 位址格式
-        if (!$this->isValidIpOrCidr($data['ip_address'])) {
-            throw new \InvalidArgumentException('無效的 IP 位址格式');
-        }
+        // DTO 已經在建構時驗證過資料，這裡直接轉換為陣列
+        $data = $dto->toArray();
 
-        // 驗證名單類型
-        if (!isset($data['type']) || !in_array($data['type'], [0, 1], true)) {
-            throw new \InvalidArgumentException('無效的名單類型，必須是 0（黑名單）或 1（白名單）');
-        }
+        // 轉換 action 為內部使用的 type 欄位
+        $data['type'] = $data['action'] === 'allow' ? 1 : 0; // 1=白名單，0=黑名單
+        unset($data['action']); // 移除 action 欄位
 
         $result = $this->repository->create($data);
         if (!$result instanceof IpList) {
@@ -36,7 +33,7 @@ class IpService
 
     public function isIpAllowed(string $ip): bool
     {
-        if (!$this->isValidIpOrCidr($ip)) {
+        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
             throw new \InvalidArgumentException('無效的 IP 位址格式');
         }
 
@@ -52,21 +49,6 @@ class IpService
 
         // 預設允許存取
         return true;
-    }
-
-    private function isValidIpOrCidr(string $ip): bool
-    {
-        // 驗證一般 IP 位址
-        if (filter_var($ip, FILTER_VALIDATE_IP)) {
-            return true;
-        }
-
-        // 驗證 CIDR 格式
-        if (preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}\/([0-9]|[1-2][0-9]|3[0-2])$/', $ip)) {
-            return true;
-        }
-
-        return false;
     }
 
     public function getRulesByType(int $type): array

@@ -4,13 +4,14 @@ namespace App\Repositories;
 
 use PDO;
 use DateTime;
+use App\Services\Security\Contracts\PasswordSecurityServiceInterface;
 
 class UserRepository
 {
     public function __construct(
-        private PDO $db
-    ) {
-    }
+        private PDO $db,
+        private ?PasswordSecurityServiceInterface $passwordService = null
+    ) {}
 
     public function create(array $data): array
     {
@@ -33,7 +34,7 @@ class UserRepository
             'uuid' => $uuid,
             'username' => $data['username'],
             'email' => $data['email'],
-            'password' => password_hash($data['password'], PASSWORD_ARGON2ID)
+            'password' => $data['password']  // 密碼已在 AuthService 中雜湊
         ]);
 
         return $this->findById($this->db->lastInsertId());
@@ -124,17 +125,27 @@ class UserRepository
             throw new \InvalidArgumentException('找不到指定的使用者');
         }
 
+        // 如果有密碼服務，進行密碼安全性驗證
+        if ($this->passwordService) {
+            $this->passwordService->validatePassword($newPassword);
+        }
+
         // 檢查新密碼是否與目前密碼相同
         if (password_verify($newPassword, $user['password'])) {
             throw new \InvalidArgumentException('新密碼不能與目前的密碼相同');
         }
+
+        // 使用密碼服務雜湊密碼，如果沒有則使用預設方法
+        $hashedPassword = $this->passwordService
+            ? $this->passwordService->hashPassword($newPassword)
+            : password_hash($newPassword, PASSWORD_ARGON2ID);
 
         // 更新密碼
         $sql = "UPDATE users SET password = :password, updated_at = CURRENT_TIMESTAMP WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             'id' => $id,
-            'password' => password_hash($newPassword, PASSWORD_ARGON2ID)
+            'password' => $hashedPassword
         ]);
     }
 }

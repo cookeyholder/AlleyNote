@@ -85,4 +85,122 @@ class CsrfProtectionServiceTest extends TestCase
 
         $this->assertNotEquals($oldToken, $_SESSION['csrf_token']);
     }
+
+    /** @test */
+    public function initializesTokenPool(): void
+    {
+        $this->service->initializeTokenPool();
+
+        $this->assertArrayHasKey('csrf_token_pool', $_SESSION);
+        $this->assertIsArray($_SESSION['csrf_token_pool']);
+        $this->assertGreaterThan(0, count($_SESSION['csrf_token_pool']));
+        $this->assertLessThanOrEqual(5, count($_SESSION['csrf_token_pool'])); // TOKEN_POOL_SIZE = 5
+    }
+
+    /** @test */
+    public function supportsMultipleValidTokensInPool(): void
+    {
+        $this->service->initializeTokenPool();
+
+        // 生成多個權杖
+        $token1 = $this->service->generateToken();
+        $token2 = $this->service->generateToken();
+        $token3 = $this->service->generateToken();
+
+        // 所有權杖都應該有效
+        $this->assertTrue($this->service->isTokenValid($token1));
+        $this->assertTrue($this->service->isTokenValid($token2));
+        $this->assertTrue($this->service->isTokenValid($token3));
+    }
+
+    /** @test */
+    public function validatesTokenFromPoolWithConstantTimeComparison(): void
+    {
+        $this->service->initializeTokenPool();
+        $token = $this->service->generateToken();
+
+        // 驗證應該成功，不拋出例外
+        $this->expectNotToPerformAssertions();
+        $this->service->validateToken($token);
+    }
+
+    /** @test */
+    public function removesTokenFromPoolAfterUse(): void
+    {
+        $this->service->initializeTokenPool();
+        $token = $this->service->generateToken();
+
+        $poolBefore = $_SESSION['csrf_token_pool'];
+        $this->assertArrayHasKey($token, $poolBefore);
+
+        $this->service->validateToken($token);
+
+        $poolAfter = $_SESSION['csrf_token_pool'];
+        $this->assertArrayNotHasKey($token, $poolAfter);
+    }
+
+    /** @test */
+    public function cleansExpiredTokensFromPool(): void
+    {
+        $this->service->initializeTokenPool();
+
+        // 手動添加過期權杖
+        $expiredToken = bin2hex(random_bytes(32));
+        $_SESSION['csrf_token_pool'][$expiredToken] = time() - 3601; // 超過1小時
+
+        $this->service->generateToken(); // 這會觸發清理
+
+        $this->assertArrayNotHasKey($expiredToken, $_SESSION['csrf_token_pool']);
+    }
+
+    /** @test */
+    public function limitsTokenPoolSize(): void
+    {
+        $this->service->initializeTokenPool();
+
+        // 生成超過池大小限制的權杖
+        for ($i = 0; $i < 10; $i++) {
+            $this->service->generateToken();
+        }
+
+        $this->assertLessThanOrEqual(5, count($_SESSION['csrf_token_pool']));
+    }
+
+    /** @test */
+    public function getTokenPoolStatusReturnsCorrectInfo(): void
+    {
+        $this->service->initializeTokenPool();
+
+        $status = $this->service->getTokenPoolStatus();
+
+        $this->assertArrayHasKey('enabled', $status);
+        $this->assertArrayHasKey('size', $status);
+        $this->assertArrayHasKey('max_size', $status);
+        $this->assertArrayHasKey('tokens', $status);
+
+        $this->assertTrue($status['enabled']);
+        $this->assertGreaterThan(0, $status['size']);
+        $this->assertEquals(5, $status['max_size']);
+        $this->assertIsArray($status['tokens']);
+    }
+
+    /** @test */
+    public function fallsBackToSingleTokenModeWhenPoolNotInitialized(): void
+    {
+        // 不初始化權杖池，使用舊的單一權杖模式
+        $token = $this->service->generateToken();
+
+        $this->expectNotToPerformAssertions();
+        $this->service->validateToken($token);
+    }
+
+    /** @test */
+    public function isTokenValidReturnsFalseForInvalidToken(): void
+    {
+        $this->service->generateToken();
+
+        $this->assertFalse($this->service->isTokenValid('invalid_token'));
+        $this->assertFalse($this->service->isTokenValid(null));
+        $this->assertFalse($this->service->isTokenValid(''));
+    }
 }
