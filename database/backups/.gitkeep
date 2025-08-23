@@ -1,0 +1,2 @@
+# 這個檔案用來保持 backups 目錄在 Git 中存在
+# 實際的備份檔案會被 .gitignore 忽略

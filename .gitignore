@@ -19,3 +19,9 @@ coverage/
 .vscode/
 *.sqlite
 *.sqlite-journal
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+/database/*.db
+/database/backups/*.db*
