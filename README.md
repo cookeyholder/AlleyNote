@@ -63,10 +63,12 @@ AlleyNote 是一個現代化的公布欄網站系統，專為學校、社區、�
 
 - **後端語言**：PHP 8.4.11
 - **Web 伺服器**：NGINX
-- **資料庫**：SQLite3
+- **資料庫**：SQLite3（零設定、檔案型資料庫）
+- **快取**：Redis
 - **容器化**：Docker, Docker Compose
 - **自動化測試**：PHPUnit, PHPStan, PHPCS
 - **CI/CD**：GitHub Actions
+- **SSL 憑證**：Let's Encrypt 自動續簽
 - **通知整合**：Telegram Bot
 - **作業系統**：Debian Linux 12
 
@@ -78,7 +80,7 @@ AlleyNote 是一個現代化的公布欄網站系統，專為學校、社區、�
 AlleyNote/
 ├── src/                # 核心程式碼（控制器、服務、模型、Repository、Middleware、Helper）
 ├── public/             # 公開靜態資源與入口 index.php
-├── database/           # 資料庫遷移檔
+├── database/           # SQLite 資料庫與遷移檔案
 ├── scripts/            # 備份、還原、部署、回滾等自動化腳本
 ├── tests/              # 測試（單元、整合、效能、安全、UI）
 ├── docker/             # Docker 與 NGINX、PHP 設定
@@ -138,10 +140,11 @@ docker compose -f docker-compose.yml up -d
 docker compose -f docker-compose.yml exec php composer install
 ```
 
-### 5. 執行資料庫遷移
+### 5. 初始化 SQLite 資料庫
 
 ```bash
-docker compose -f docker-compose.yml exec php php /var/www/html/vendor/bin/phinx migrate
+# 初始化 SQLite 資料庫並執行遷移
+docker compose exec web ./scripts/init-sqlite.sh
 ```
 
 ### 6. 預設管理員登入
@@ -189,6 +192,27 @@ docker compose -f docker-compose.test.yml exec php vendor/bin/phpunit
 ## 部署說明
 
 詳細部署流程請參考 [DEPLOYMENT.md](DEPLOYMENT.md)。
+
+### SSL 憑證設定
+
+本專案支援 Let's Encrypt 自動化 SSL 憑證管理：
+
+```bash
+# 快速 SSL 設定
+./scripts/ssl-setup.sh your-domain.com admin@your-domain.com
+
+# 或使用環境變數
+SSL_DOMAIN=your-domain.com SSL_EMAIL=admin@your-domain.com ./scripts/ssl-setup.sh
+```
+
+詳細說明請參考 [SSL_DEPLOYMENT_GUIDE.md](SSL_DEPLOYMENT_GUIDE.md)。
+
+**主要特色：**
+- ✅ Let's Encrypt 自動申請與續簽
+- ✅ Docker 容器化 SSL 管理
+- ✅ 強化安全設定（TLS 1.2/1.3、HSTS、CSP）
+- ✅ 開發/正式環境分離
+- ✅ 自動化 Cron 續簽
 
 ---
 

@@ -1,17 +1,19 @@
 FROM php:8.1-fpm AS base
 
-# 安裝基礎套件
+# 安裝基礎套件和 SQLite3 支援
 RUN apt-get update && apt-get install -y \
     git \
     zip \
     unzip \
     libpng-dev \
     libjpeg-dev \
-    libfreetype6-dev
+    libfreetype6-dev \
+    sqlite3 \
+    libsqlite3-dev
 
-# 設定 GD 擴充功能
+# 設定 GD 擴充功能和 SQLite
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_sqlite
 
 # 安裝 Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
