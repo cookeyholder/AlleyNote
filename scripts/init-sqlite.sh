@@ -34,8 +34,15 @@ for migration in "$MIGRATIONS_DIR"/*.php; do
         echo "執行遷移: $(basename "$migration")"
         php -r "
             require_once '$migration';
-            \$className = pathinfo('$migration', PATHINFO_FILENAME);
-            \$className = ucfirst(str_replace('_', '', \$className));
+            \$filename = pathinfo('$migration', PATHINFO_FILENAME);
+            
+            // 處理遷移檔案名稱，例如 001_create_posts_tables -> CreatePostsTables
+            \$parts = explode('_', \$filename);
+            array_shift(\$parts); // 移除前面的數字部分
+            \$className = '';
+            foreach (\$parts as \$part) {
+                \$className .= ucfirst(\$part);
+            }
             
             try {
                 \$pdo = new PDO('sqlite:$DB_FILE');
