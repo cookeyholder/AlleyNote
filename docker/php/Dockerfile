@@ -1,4 +1,4 @@
-FROM php:8.1-fpm AS base
+FROM php:8.4-fpm AS base
 
 # 安裝基礎套件和 SQLite3 支援
 RUN apt-get update && apt-get install -y \
@@ -24,15 +24,24 @@ WORKDIR /var/www/html
 # 複製所有專案檔案
 COPY . .
 
-# 安裝相依套件
-RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
-
 # 設定 git 安全目錄
 RUN git config --global --add safe.directory /var/www/html
 
+# 安裝相依套件
+RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
+
+# 初始化 SQLite 資料庫
+RUN chmod +x scripts/init-sqlite.sh && ./scripts/init-sqlite.sh
+
+# 建立必要的目錄
+RUN mkdir -p /var/www/html/storage/logs \
+    && mkdir -p /var/www/html/storage/cache \
+    && mkdir -p /var/www/html/storage/uploads
+
 # 設定正確的權限
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 664 /var/www/html/database/*.db
 
 # 建立測試環境的映像檔
 FROM base AS test
