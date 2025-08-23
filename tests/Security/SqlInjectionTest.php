@@ -20,7 +20,7 @@ class SqlInjectionTest extends TestCase
         $this->createTestTables();
     }
 
-    private function createTestTables(): void
+    protected function createTestTables(): void
     {
         $this->db->exec('
             CREATE TABLE posts (

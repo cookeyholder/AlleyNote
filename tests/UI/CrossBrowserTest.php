@@ -118,7 +118,7 @@ class CrossBrowserTest extends UITestCase
         $this->assertElementVisible('.hamburger-menu');
     }
 
-    private function browserAction(string $action, string $value = ''): void
+    private function performBrowserAction(string $action, string $value = ''): void
     {
         // 這個方法將在實際執行時實作，用於包裝 browser_action 工具的呼叫
     }

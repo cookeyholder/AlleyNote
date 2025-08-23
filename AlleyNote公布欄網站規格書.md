@@ -4,7 +4,7 @@
 
 ### 1.1 專案目標
 
-建立一個現代化的公布欄網站系統，採用 PHP 8.4.5 與 SQLite3 資料庫，透過 Docker 容器化技術在 Debian Linux 12 上執行，並使用 NGINX 作為網頁伺服器。此系統將提供完善的帳號管理、文章發布、權限控制與內容安全機制。
+建立一個現代化的公布欄網站系統，採用 PHP 8.4.11 與 SQLite3 資料庫，透過 Docker 容器化技術在 Debian Linux 12 上執行，並使用 NGINX 作為網頁伺服器。此系統將提供完善的帳號管理、文章發布、權限控制與內容安全機制。
 
 ### 1.2 專案範圍
 
@@ -20,7 +20,7 @@
 
 ### 2.1 技術堆疊
 
-- **後端框架**：PHP 8.4.5
+- **後端框架**：PHP 8.4.11
 - **資料庫**：SQLite3
 - **資料庫存取**：PDO (PHP Data Objects)
 - **網頁伺服器**：NGINX
@@ -36,7 +36,7 @@
 - 實作資料庫交易機制確保資料完整性
 
 #### 2.2.2 程式碼開發方針
-- 充分運用 PHP 8.4.5 新特性
+- 充分運用 PHP 8.4.11 新特性
   - 使用型別宣告（Type Declarations）
   - 採用屬性（Attributes）功能
   - 利用建構子屬性提升（Constructor Property Promotion）
@@ -82,7 +82,7 @@
 本專案採用 Visual Studio Code DevContainer 技術，確保開發環境的一致性與可攜性：
 
 1. **基礎環境**
-   - 基於 PHP 8.4.5 官方映像檔
+   - 基於 PHP 8.4.11 官方映像檔
    - Debian Linux 12 作業系統
    - Visual Studio Code 開發環境
 
@@ -869,7 +869,7 @@ networks:
 ### 7.2 Dockerfile 配置 (PHP)
 
 ```dockerfile
-FROM php:8.4.5-fpm
+FROM php:8.4.11-fpm
 
 # 安裝相依套件
 RUN apt-get update && apt-get install -y \

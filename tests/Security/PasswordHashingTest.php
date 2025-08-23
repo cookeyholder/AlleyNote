@@ -31,7 +31,7 @@ class PasswordHashingTest extends TestCase
         $this->authService = new AuthService($this->userRepository);
     }
 
-    private function createTestTables(): void
+    protected function createTestTables(): void
     {
         $this->db->exec('
             CREATE TABLE users (
