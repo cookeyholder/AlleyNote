@@ -3,7 +3,7 @@
 [![測試](https://github.com/your-org/alleynote/workflows/測試/badge.svg)](https://github.com/your-org/alleynote/actions)
 [![程式碼品質](https://github.com/your-org/alleynote/workflows/程式碼品質/badge.svg)](https://github.com/your-org/alleynote/actions)
 [![部署](https://github.com/your-org/alleynote/workflows/部署/badge.svg)](https://github.com/your-org/alleynote/actions)
-[![PHP Version](https://img.shields.io/badge/PHP-8.4.5-blue.svg)](https://www.php.net)
+[![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.svg)](https://www.php.net)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
@@ -40,7 +40,7 @@
 ## 專案簡介
 
 AlleyNote 是一個現代化的公布欄網站系統，專為學校、社區、企業等單位設計，支援多用戶、權限控管、IP 黑白名單、附件上傳、資料自動備份等功能。  
-本專案以 PHP 8.4.5 開發，採用 SQLite 資料庫，並以 Docker 容器化部署，具備完善的自動化測試與 CI/CD 流程。
+本專案以 PHP 8.4.11 開發，採用 SQLite 資料庫，並以 Docker 容器化部署，具備完善的自動化測試與 CI/CD 流程。
 
 ---
 
@@ -61,7 +61,7 @@ AlleyNote 是一個現代化的公布欄網站系統，專為學校、社區、�
 
 ## 技術架構
 
-- **後端語言**：PHP 8.4.5
+- **後端語言**：PHP 8.4.11
 - **Web 伺服器**：NGINX
 - **資料庫**：SQLite3
 - **容器化**：Docker, Docker Compose
@@ -104,7 +104,7 @@ AlleyNote/
 - Debian Linux 12
 - Docker 24.0.0+
 - Docker Compose 2.20.0+
-- PHP 8.4.5
+- PHP 8.4.11
 - SQLite3
 - NGINX
 

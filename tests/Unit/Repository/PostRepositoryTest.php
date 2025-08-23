@@ -42,7 +42,7 @@ class PostRepositoryTest extends MockeryTestCase
         $this->repository = new PostRepository($this->db, $this->cache);
     }
 
-    private function createTestTables(): void
+    protected function createTestTables(): void
     {
         // 建立文章資料表
         $this->db->exec('

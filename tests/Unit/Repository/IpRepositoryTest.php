@@ -42,7 +42,7 @@ class IpRepositoryTest extends TestCase
         $this->repository = new IpRepository($this->db, $this->cache);
     }
 
-    private function createTestTables(): void
+    protected function createTestTables(): void
     {
         // 建立 IP 黑白名單資料表
         $this->db->exec('

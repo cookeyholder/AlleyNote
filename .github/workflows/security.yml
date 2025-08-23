@@ -1,68 +1,68 @@
 name: Security Audit
 
 on:
-  push:
-    branches: [ main, develop, feature/* ]
-  pull_request:
-    branches: [ main, develop ]
-  schedule:
-    # 每週一早上 9:00 執行
-    - cron: '0 9 * * 1'
+    push:
+        branches: [main, develop, feature/*]
+    pull_request:
+        branches: [main, develop]
+    schedule:
+        # 每週一早上 9:00 執行
+        - cron: "0 9 * * 1"
 
 jobs:
-  security-audit:
-    runs-on: ubuntu-latest
-    name: Security Vulnerability Scan
+    security-audit:
+        runs-on: ubuntu-latest
+        name: Security Vulnerability Scan
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.1'
-        extensions: pdo, sqlite3, json
-        tools: composer
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.4"
+                  extensions: pdo, sqlite3, json
+                  tools: composer
 
-    - name: Cache Composer packages
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+            - name: Cache Composer packages
+              uses: actions/cache@v3
+              with:
+                  path: vendor
+                  key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-php-
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-interaction
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-progress --no-interaction
 
-    - name: Run Composer Security Audit
-      run: composer audit --format=json --no-dev
+            - name: Run Composer Security Audit
+              run: composer audit --format=json --no-dev
 
-    - name: Check for known security vulnerabilities
-      run: |
-        echo "=== Composer Security Audit Results ==="
-        composer audit || {
-          echo "❌ 發現安全漏洞！請檢查相依套件並更新至安全版本。"
-          echo "執行 'composer audit' 查看詳細資訊"
-          exit 1
-        }
-        echo "✅ 未發現已知的安全漏洞"
+            - name: Check for known security vulnerabilities
+              run: |
+                  echo "=== Composer Security Audit Results ==="
+                  composer audit || {
+                    echo "❌ 發現安全漏洞！請檢查相依套件並更新至安全版本。"
+                    echo "執行 'composer audit' 查看詳細資訊"
+                    exit 1
+                  }
+                  echo "✅ 未發現已知的安全漏洞"
 
-    - name: Create security report
-      if: failure()
-      run: |
-        echo "# 安全掃描報告" > security-report.md
-        echo "" >> security-report.md
-        echo "## 掃描時間" >> security-report.md
-        echo "$(date '+%Y-%m-%d %H:%M:%S')" >> security-report.md
-        echo "" >> security-report.md
-        echo "## 發現的漏洞" >> security-report.md
-        composer audit --format=json | jq -r '.advisories[] | "- **\(.packageName)** (\(.affectedVersions)): \(.title)"' >> security-report.md || true
+            - name: Create security report
+              if: failure()
+              run: |
+                  echo "# 安全掃描報告" > security-report.md
+                  echo "" >> security-report.md
+                  echo "## 掃描時間" >> security-report.md
+                  echo "$(date '+%Y-%m-%d %H:%M:%S')" >> security-report.md
+                  echo "" >> security-report.md
+                  echo "## 發現的漏洞" >> security-report.md
+                  composer audit --format=json | jq -r '.advisories[] | "- **\(.packageName)** (\(.affectedVersions)): \(.title)"' >> security-report.md || true
 
-    - name: Upload security report
-      if: failure()
-      uses: actions/upload-artifact@v3
-      with:
-        name: security-report
-        path: security-report.md
+            - name: Upload security report
+              if: failure()
+              uses: actions/upload-artifact@v3
+              with:
+                  name: security-report
+                  path: security-report.md

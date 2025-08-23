@@ -9,7 +9,7 @@
 
 ### 1.2 軟體需求
 - Debian Linux 12
-- PHP 8.4.5
+- PHP 8.4.11
 - SQLite3
 - NGINX
 - Docker 24.0.0 以上
