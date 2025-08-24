@@ -55,7 +55,7 @@ class RateLimitTest extends TestCase
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue($result, '正常請求應該被允許');
+        $this->assertTrue($result['allowed'], '正常請求應該被允許');
     }
 
     /** @test */
@@ -70,7 +70,7 @@ class RateLimitTest extends TestCase
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertFalse($result, '超過限制的請求應該被拒絕');
+        $this->assertFalse($result['allowed'], '超過限制的請求應該被拒絕');
 
         // 模擬時間窗口重置
         $this->cacheService->shouldReceive('get')
@@ -114,8 +114,8 @@ class RateLimitTest extends TestCase
 
         $result2 = $this->rateLimitService->checkLimit($ip2);
 
-        $this->assertTrue($result1, 'IP1 應該被允許');
-        $this->assertTrue($result2, 'IP2 應該被允許');
+        $this->assertTrue($result1['allowed'], 'IP1 應該被允許');
+        $this->assertTrue($result2['allowed'], 'IP2 應該被允許');
     }
 
     /** @test */
@@ -131,7 +131,7 @@ class RateLimitTest extends TestCase
         // 當快取服務不可用時，應該允許請求以確保服務可用性
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue($result, '快取服務錯誤時應該允許請求');
+        $this->assertTrue($result['allowed'], '快取服務錯誤時應該允許請求');
     }
 
     /** @test */
@@ -161,7 +161,7 @@ class RateLimitTest extends TestCase
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue($result, '計數器應該正確遞增');
+        $this->assertTrue($result['allowed'], '計數器應該正確遞增');
     }
 
     /** @test */
@@ -181,7 +181,7 @@ class RateLimitTest extends TestCase
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertFalse($result, '達到最大嘗試次數時應該被拒絕');
+        $this->assertFalse($result['allowed'], '達到最大嘗試次數時應該被拒絕');
     }
 
     protected function tearDown(): void

@@ -6,9 +6,9 @@ namespace Tests\Security;
 
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Models\Post;
-use App\Services\Contracts\PostServiceInterface;
-use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
-use App\Services\Security\Contracts\XssProtectionServiceInterface;
+use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
+use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Exceptions\CsrfTokenException;
 use Mockery;
 use Psr\Http\Message\ResponseInterface;

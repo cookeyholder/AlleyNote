@@ -83,7 +83,7 @@ class FileUploadSecurityTest extends TestCase
         $this->expectExceptionMessage('不支援的檔案類型');
 
         // 執行測試
-        $this->service->upload($postId, $file);
+        $this->service->upload($postId, $file, 1);
     }
 
     /** @test */
@@ -124,7 +124,7 @@ class FileUploadSecurityTest extends TestCase
         $this->expectExceptionMessage('不支援的檔案類型');
 
         // 執行測試
-        $this->service->upload($postId, $file);
+        $this->service->upload($postId, $file, 1);
     }
 
     /** @test */
@@ -161,7 +161,7 @@ class FileUploadSecurityTest extends TestCase
         $this->expectExceptionMessage('檔案大小超過限制（10MB）');
 
         // 執行測試
-        $this->service->upload($postId, $file);
+        $this->service->upload($postId, $file, 1);
     }
 
     /** @test */
@@ -198,7 +198,7 @@ class FileUploadSecurityTest extends TestCase
         $this->expectExceptionMessage('不支援的檔案類型');
 
         // 執行測試
-        $this->service->upload($postId, $file);
+        $this->service->upload($postId, $file, 1);
     }
 
     /** @test */
@@ -239,7 +239,7 @@ class FileUploadSecurityTest extends TestCase
         $this->expectExceptionMessage('不支援的檔案類型');
 
         // 執行測試
-        $this->service->upload($postId, $file);
+        $this->service->upload($postId, $file, 1);
     }
 
     private function createUploadedFileMock(

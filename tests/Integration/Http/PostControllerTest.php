@@ -9,8 +9,8 @@ use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Models\Post;
-use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
-use App\Services\Security\Contracts\XssProtectionServiceInterface;
+use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
+use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Validation\ValidationException;
@@ -127,19 +127,18 @@ class PostControllerTest extends TestCase
 
         // 模擬分頁數據
         $paginatedData = [
-            'data' => [
+            'items' => [
                 ['id' => 1, 'title' => '測試文章1', 'content' => '內容1'],
                 ['id' => 2, 'title' => '測試文章2', 'content' => '內容2'],
             ],
-            'pagination' => [
-                'page' => 1,
-                'per_page' => 10,
-                'total' => 2,
-                'total_pages' => 1,
-            ],
+            'total' => 2,
+            'page' => 1,
+            'per_page' => 10,
+            'last_page' => 1,
         ];
 
         $this->postService->shouldReceive('listPosts')
+            ->with(1, 10, [])
             ->once()
             ->andReturn($paginatedData);
 
@@ -166,18 +165,16 @@ class PostControllerTest extends TestCase
             ]);
 
         $paginatedData = [
-            'data' => [],
-            'pagination' => [
-                'page' => 2,
-                'per_page' => 5,
-                'total' => 10,
-                'total_pages' => 2,
-            ],
+            'items' => [],
+            'total' => 10,
+            'page' => 2,
+            'per_page' => 5,
+            'last_page' => 2,
         ];
 
         $this->postService->shouldReceive('listPosts')
             ->once()
-            ->with(2, 5, null, null)
+            ->with(2, 5, [])
             ->andReturn($paginatedData);
 
         $response = $this->controller->index($this->request, $this->response);
@@ -201,20 +198,18 @@ class PostControllerTest extends TestCase
             ]);
 
         $paginatedData = [
-            'data' => [
-                ['id' => 1, 'title' => '測試文章', 'content' => '測試內容'],
+            'items' => [
+                ['id' => 1, 'title' => '測試文章', 'content' => '包含搜尋關鍵字的內容'],
             ],
-            'pagination' => [
-                'page' => 1,
-                'per_page' => 10,
-                'total' => 1,
-                'total_pages' => 1,
-            ],
+            'total' => 1,
+            'page' => 1,
+            'per_page' => 10,
+            'last_page' => 1,
         ];
 
         $this->postService->shouldReceive('listPosts')
+            ->with(1, 10, ['search' => '測試'])
             ->once()
-            ->with(1, 10, '測試', null)
             ->andReturn($paginatedData);
 
         $response = $this->controller->index($this->request, $this->response);
@@ -237,20 +232,18 @@ class PostControllerTest extends TestCase
             ]);
 
         $paginatedData = [
-            'data' => [
+            'items' => [
                 ['id' => 1, 'title' => '已發布文章', 'status' => 'published'],
             ],
-            'pagination' => [
-                'page' => 1,
-                'per_page' => 10,
-                'total' => 1,
-                'total_pages' => 1,
-            ],
+            'total' => 1,
+            'page' => 1,
+            'per_page' => 10,
+            'last_page' => 1,
         ];
 
         $this->postService->shouldReceive('listPosts')
+            ->with(1, 10, ['status' => 'published'])
             ->once()
-            ->with(1, 10, null, 'published')
             ->andReturn($paginatedData);
 
         $response = $this->controller->index($this->request, $this->response);
@@ -269,7 +262,7 @@ class PostControllerTest extends TestCase
                 'limit' => 'invalid',
             ]);
 
-        $validationResult = new ValidationResult([], ['limit' => ['limit 必須是數字']], ['limit' => ['required']]);
+        $validationResult = new ValidationResult(false, ['limit' => ['limit 必須是數字']], [], ['limit' => ['required']]);
         $this->validator->shouldReceive('validateOrFail')
             ->andThrow(new ValidationException($validationResult));
 
@@ -364,7 +357,7 @@ class PostControllerTest extends TestCase
         $this->stream->shouldReceive('getContents')
             ->andReturn(json_encode($postData));
 
-        $validationResult = new ValidationResult([], ['title' => ['title 為必填項目']], ['title' => ['required']]);
+        $validationResult = new ValidationResult(false, ['title' => ['title 為必填項目']], [], ['title' => ['required']]);
         $this->validator->shouldReceive('validateOrFail')
             ->andThrow(new ValidationException($validationResult));
 
@@ -515,7 +508,7 @@ class PostControllerTest extends TestCase
         $this->postService->shouldReceive('deletePost')
             ->once()
             ->with($postId)
-            ->andReturnNull();
+            ->andReturn(true);
 
         $response = $this->controller->delete($this->request, $this->response, ['id' => $postId]);
 
@@ -590,7 +583,7 @@ class PostControllerTest extends TestCase
             ->with('X-CSRF-TOKEN')
             ->andReturn('valid-token');
 
-        $validationResult = new ValidationResult([], ['pinned' => ['pinned 必須是布林值']], ['pinned' => ['boolean']]);
+        $validationResult = new ValidationResult(false, ['pinned' => ['pinned 必須是布林值']], [], ['pinned' => ['boolean']]);
         $this->validator->shouldReceive('validateOrFail')
             ->andThrow(new ValidationException($validationResult));
 
@@ -608,16 +601,15 @@ class PostControllerTest extends TestCase
             ->andReturn([]);
 
         $paginatedData = [
-            'data' => [],
-            'pagination' => [
-                'page' => 1,
-                'per_page' => 10,
-                'total' => 0,
-                'total_pages' => 0,
-            ],
+            'items' => [],
+            'total' => 0,
+            'page' => 1,
+            'per_page' => 10,
+            'last_page' => 0,
         ];
 
         $this->postService->shouldReceive('listPosts')
+            ->with(2, 5, [])
             ->once()
             ->andReturn($paginatedData);
 

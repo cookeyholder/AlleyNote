@@ -123,7 +123,7 @@ class PostController extends BaseController
 
             $response->getBody()->write($responseData);
 
-            return $response->withHeader('Content-Type', 'application/json');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (RequestValidationException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 422, $e->getErrors());
             $response->getBody()->write($errorResponse);
@@ -285,7 +285,7 @@ class PostController extends BaseController
             $successResponse = $this->successResponse($post->toSafeArray(), '成功取得貼文');
             $response->getBody()->write($successResponse);
 
-            return $response->withHeader('Content-Type', 'application/json');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (PostNotFoundException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
             $response->getBody()->write($errorResponse);
@@ -392,7 +392,7 @@ class PostController extends BaseController
             $successResponse = $this->successResponse($post->toSafeArray(), '貼文更新成功');
             $response->getBody()->write($successResponse);
 
-            return $response->withHeader('Content-Type', 'application/json');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (ValidationException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
             $response->getBody()->write($errorResponse);
@@ -620,7 +620,7 @@ class PostController extends BaseController
             $successResponse = $this->successResponse($post->toSafeArray(), $message);
             $response->getBody()->write($successResponse);
 
-            return $response->withHeader('Content-Type', 'application/json');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (PostNotFoundException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
             $response->getBody()->write($errorResponse);
