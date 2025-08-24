@@ -12,8 +12,9 @@ use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
-use App\Shared\Exceptions\NotFoundException;
-use App\Shared\Validation\ValidationException;
+use App\Domains\Post\Exceptions\PostNotFoundException;
+use App\Shared\Exceptions\ValidationException;
+use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
 use Mockery\MockInterface;
@@ -448,6 +449,10 @@ class PostControllerTest extends TestCase
             ->with($postId)
             ->andReturn($post);
 
+        $this->postService->shouldReceive('recordView')
+            ->once()
+            ->with($postId, '127.0.0.1');
+
         $response = $this->controller->show($this->request, $this->response, ['id' => $postId]);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -464,7 +469,10 @@ class PostControllerTest extends TestCase
         $this->postService->shouldReceive('findById')
             ->once()
             ->with($postId)
-            ->andThrow(new NotFoundException('文章不存在'));
+            ->andThrow(new PostNotFoundException('文章不存在'));
+
+        $this->postService->shouldReceive('recordView')
+            ->never();
 
         $response = $this->controller->show($this->request, $this->response, ['id' => $postId]);
 
@@ -562,7 +570,7 @@ class PostControllerTest extends TestCase
         $this->postService->shouldReceive('updatePost')
             ->once()
             ->with($postId, Mockery::type(UpdatePostDTO::class))
-            ->andThrow(new NotFoundException('文章不存在'));
+            ->andThrow(new PostNotFoundException('文章不存在'));
 
         $response = $this->controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -605,7 +613,7 @@ class PostControllerTest extends TestCase
         $this->postService->shouldReceive('deletePost')
             ->once()
             ->with($postId)
-            ->andThrow(new NotFoundException('文章不存在'));
+            ->andThrow(new PostNotFoundException('文章不存在'));
 
         $response = $this->controller->delete($this->request, $this->response, ['id' => $postId]);
 
@@ -678,9 +686,8 @@ class PostControllerTest extends TestCase
         $this->request->shouldReceive('getServerParams')
             ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
-        $validationResult = new ValidationResult(false, ['pinned' => ['pinned 必須是布林值']], [], ['pinned' => ['boolean']]);
         $this->validator->shouldReceive('validateOrFail')
-            ->andThrow(new ValidationException($validationResult));
+            ->andThrow(new StateTransitionException('pinned 必須是布林值'));
 
         $response = $this->controller->togglePin($this->request, $this->response, ['id' => $postId]);
 
