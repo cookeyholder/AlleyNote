@@ -79,11 +79,3 @@ jobs:
           else
             echo "⚠️  PHPUnit 未安裝，跳過測試"
           fi
-
-      - name: Upload coverage to Codecov
-        if: matrix.php-versions == '8.4'
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
