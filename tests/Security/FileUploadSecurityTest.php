@@ -55,6 +55,7 @@ class FileUploadSecurityTest extends TestCase
         // 設定預設的mock行為
         $this->authService->shouldReceive('canUploadAttachment')->byDefault()->andReturn(true);
         $this->authService->shouldReceive('canDeleteAttachment')->byDefault()->andReturn(true);
+        $this->authService->shouldReceive('isSuperAdmin')->byDefault()->andReturn(false);
 
         if (!is_dir($this->uploadDir)) {
             mkdir($this->uploadDir, 0o777, true);

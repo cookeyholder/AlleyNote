@@ -384,9 +384,9 @@ class PostControllerTest extends TestCase
 
         $body = json_decode($this->lastWrittenContent, true);
         $this->assertFalse($body['success']);
-        $this->assertNotNull($body['error']);
-        $this->assertIsString($body['error']);
-        $this->assertStringContainsString('JSON', $body['error']);
+        $this->assertNotNull($body['message']);
+        $this->assertIsString($body['message']);
+        $this->assertStringContainsString('JSON', $body['message']);
     }
 
     public function testCreatePostWithMissingRequiredFields(): void
@@ -429,8 +429,8 @@ class PostControllerTest extends TestCase
 
         $body = json_decode($this->lastWrittenContent, true);
         $this->assertFalse($body['success']);
-        $this->assertNotNull($body['error']);
-        $this->assertStringContainsString('title', $body['error']);
+        $this->assertNotNull($body['message']);
+        $this->assertStringContainsString('title', $body['message']);
     }
 
     public function testGetPostByIdReturnsSuccess(): void

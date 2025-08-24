@@ -58,6 +58,12 @@ class PasswordHashingTest extends TestCase
                 return $data; // 返回原始資料作為驗證過的資料
             })
             ->byDefault();
+
+        $this->validator->shouldReceive('validateOrFail')
+            ->andReturnUsing(function ($data) {
+                return $data; // 返回原始資料作為驗證過的資料
+            })
+            ->byDefault();
     }
 
     protected function createTestTables(): void
