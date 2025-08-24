@@ -10,7 +10,6 @@ use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Exceptions\PostStatusException;
-use App\Domains\Post\Exceptions\PostValidationException;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\Validation\RequestValidationException;
@@ -215,7 +214,6 @@ class PostController extends BaseController
             $response->getBody()->write($errorResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
-
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
             $response->getBody()->write($errorResponse);
@@ -399,7 +397,6 @@ class PostController extends BaseController
             $response->getBody()->write($errorResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
             $response->getBody()->write($errorResponse);
@@ -618,7 +615,6 @@ class PostController extends BaseController
             $response->getBody()->write($errorResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
-
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
             $response->getBody()->write($errorResponse);

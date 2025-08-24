@@ -31,18 +31,18 @@ use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Post\Services\PostService;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\IpRepositoryInterface;
-use App\Services\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Security\Repositories\IpRepository;
 use App\Domains\Security\Services\Core\CsrfProtectionService;
 use App\Domains\Security\Services\Core\XssProtectionService;
 use App\Domains\Security\Services\Headers\SecurityHeaderService;
-// Validation Services
 use App\Domains\Security\Services\IpService;
-use App\Services\Security\LoggingSecurityService;
+// Validation Services
 use App\Infrastructure\Database\DatabaseConnection;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
+use App\Services\Security\Contracts\LoggingSecurityServiceInterface;
+use App\Services\Security\LoggingSecurityService;
 use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Validation\Factory\ValidatorFactory;

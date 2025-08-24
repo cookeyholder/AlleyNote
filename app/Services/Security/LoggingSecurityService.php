@@ -11,6 +11,7 @@ use Exception;
 class LoggingSecurityService implements LoggingSecurityServiceInterface
 {
     private string $logPath;
+
     private string $securityLogPath;
 
     public function __construct()
@@ -23,12 +24,12 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄一般安全事件
+     * 記錄一般安全事件.
      */
     public function logSecurityEvent(string $eventType, array $data = []): void
     {
         $logEntry = [
-            'timestamp' => (new DateTime())->format('Y-m-d H:i:s'),
+            'timestamp' => new DateTime()->format('Y-m-d H:i:s'),
             'event_type' => $eventType,
             'level' => 'info',
             'data' => $data,
@@ -40,12 +41,12 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄關鍵安全事件
+     * 記錄關鍵安全事件.
      */
     public function logCriticalSecurityEvent(string $eventType, array $data = []): void
     {
         $logEntry = [
-            'timestamp' => (new DateTime())->format('Y-m-d H:i:s'),
+            'timestamp' => new DateTime()->format('Y-m-d H:i:s'),
             'event_type' => $eventType,
             'level' => 'critical',
             'data' => $data,
@@ -61,7 +62,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄錯誤訊息
+     * 記錄錯誤訊息.
      */
     public function error(string $message, array $context = []): void
     {
@@ -69,7 +70,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄警告訊息
+     * 記錄警告訊息.
      */
     public function warning(string $message, array $context = []): void
     {
@@ -77,7 +78,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄資訊訊息
+     * 記錄資訊訊息.
      */
     public function info(string $message, array $context = []): void
     {
@@ -85,7 +86,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄除錯訊息
+     * 記錄除錯訊息.
      */
     public function debug(string $message, array $context = []): void
     {
@@ -93,12 +94,12 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 寫入日誌記錄
+     * 寫入日誌記錄.
      */
     private function writeLog(string $level, string $message, array $context = []): void
     {
         $logEntry = [
-            'timestamp' => (new DateTime())->format('Y-m-d H:i:s'),
+            'timestamp' => new DateTime()->format('Y-m-d H:i:s'),
             'level' => $level,
             'message' => $message,
             'context' => $context,
@@ -109,7 +110,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 寫入檔案
+     * 寫入檔案.
      */
     private function writeToFile(string $filePath, array $logEntry): void
     {
@@ -118,31 +119,32 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             file_put_contents($filePath, $logLine, FILE_APPEND | LOCK_EX);
         } catch (Exception $e) {
             // 如果無法寫入檔案，至少記錄到系統錯誤日誌
-            error_log("Failed to write security log: " . $e->getMessage());
-            error_log("Original log entry: " . json_encode($logEntry));
+            error_log('Failed to write security log: ' . $e->getMessage());
+            error_log('Original log entry: ' . json_encode($logEntry));
         }
     }
 
     /**
-     * 取得日誌檔案路徑
+     * 取得日誌檔案路徑.
      */
     private function getLogPath(string $filename): string
     {
         $baseLogPath = $_ENV['LOG_PATH'] ?? dirname(__DIR__, 3) . '/storage/logs';
+
         return rtrim($baseLogPath, '/') . '/' . $filename;
     }
 
     /**
-     * 確保日誌目錄存在
+     * 確保日誌目錄存在.
      */
     private function ensureLogDirectoryExists(): void
     {
         $logDir = dirname($this->logPath);
         if (!is_dir($logDir)) {
             try {
-                mkdir($logDir, 0755, true);
+                mkdir($logDir, 0o755, true);
             } catch (Exception $e) {
-                error_log("Failed to create log directory: " . $e->getMessage());
+                error_log('Failed to create log directory: ' . $e->getMessage());
             }
         }
     }
