@@ -417,6 +417,7 @@ class PostControllerTest extends TestCase
         // 設定 validator 將會拋出驗證異常
         $validationResult = new ValidationResult(false, ['title' => ['標題不能為空']], [], ['title' => ['required']]);
         $this->validator->shouldReceive('validateOrFail')
+            ->once()
             ->with($invalidData)
             ->andThrow(new ValidationException($validationResult));
 
@@ -444,6 +445,9 @@ class PostControllerTest extends TestCase
             'status' => 'published',
         ]);
 
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
+
         $this->postService->shouldReceive('findById')
             ->once()
             ->with($postId)
@@ -466,10 +470,13 @@ class PostControllerTest extends TestCase
     {
         $postId = 99999;
 
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
+
         $this->postService->shouldReceive('findById')
             ->once()
             ->with($postId)
-            ->andThrow(new PostNotFoundException('文章不存在'));
+            ->andThrow(new PostNotFoundException($postId));
 
         $this->postService->shouldReceive('recordView')
             ->never();
@@ -570,7 +577,7 @@ class PostControllerTest extends TestCase
         $this->postService->shouldReceive('updatePost')
             ->once()
             ->with($postId, Mockery::type(UpdatePostDTO::class))
-            ->andThrow(new PostNotFoundException('文章不存在'));
+            ->andThrow(new PostNotFoundException($postId));
 
         $response = $this->controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -613,7 +620,7 @@ class PostControllerTest extends TestCase
         $this->postService->shouldReceive('deletePost')
             ->once()
             ->with($postId)
-            ->andThrow(new PostNotFoundException('文章不存在'));
+            ->andThrow(new PostNotFoundException($postId));
 
         $response = $this->controller->delete($this->request, $this->response, ['id' => $postId]);
 
@@ -687,6 +694,12 @@ class PostControllerTest extends TestCase
             ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
         $this->validator->shouldReceive('validateOrFail')
+            ->with($invalidData)
+            ->andReturn($invalidData);
+
+        // 模擬 setPinned 會拋出 StateTransitionException
+        $this->postService->shouldReceive('setPinned')
+            ->with($postId, 'invalid')
             ->andThrow(new StateTransitionException('pinned 必須是布林值'));
 
         $response = $this->controller->togglePin($this->request, $this->response, ['id' => $postId]);

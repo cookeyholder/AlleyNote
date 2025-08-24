@@ -91,8 +91,8 @@ class PasswordHashingTest extends TestCase
             'username' => 'testuser',
             'email' => 'test@example.com',
             'password' => 'password123',
-            'confirmPassword' => 'password123',
-            'userIp' => '127.0.0.1',
+            'confirm_password' => 'password123',
+            'user_ip' => '127.0.0.1',
         ];
 
         // 建立 DTO
@@ -121,8 +121,8 @@ class PasswordHashingTest extends TestCase
             'username' => 'testuser2',
             'email' => 'test2@example.com',
             'password' => 'securepassword456',
-            'confirmPassword' => 'securepassword456',
-            'userIp' => '127.0.0.1',
+            'confirm_password' => 'securepassword456',
+            'user_ip' => '127.0.0.1',
         ];
 
         // 建立 DTO
@@ -154,8 +154,8 @@ class PasswordHashingTest extends TestCase
             'username' => 'testuser3',
             'email' => 'test3@example.com',
             'password' => '123', // 太短的密碼
-            'confirmPassword' => '123',
-            'userIp' => '127.0.0.1',
+            'confirm_password' => '123',
+            'user_ip' => '127.0.0.1',
         ];
 
         // 建立 DTO
@@ -177,8 +177,8 @@ class PasswordHashingTest extends TestCase
             'username' => 'testuser4',
             'email' => 'test4@example.com',
             'password' => 'password123',
-            'confirmPassword' => 'password123',
-            'userIp' => '127.0.0.1',
+            'confirm_password' => 'password123',
+            'user_ip' => '127.0.0.1',
         ];
 
         // 建立 DTO

@@ -72,10 +72,10 @@ class RateLimitTest extends TestCase
 
         $this->assertFalse($result['allowed'], '超過限制的請求應該被拒絕');
 
-        // 模擬時間窗口重置
+        // 模擬時間窗口重置 - 返回過期的資料，讓服務重置計數器
         $this->cacheService->shouldReceive('get')
             ->with("rate_limit:{$ip}")
-            ->andReturn(null);
+            ->andReturn(['count' => 61, 'reset' => time() - 10]); // 已過期
 
         $this->cacheService->shouldReceive('set')
             ->with("rate_limit:{$ip}", Mockery::any(), 60)
