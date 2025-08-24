@@ -367,12 +367,25 @@ class PostControllerTest extends TestCase
         $this->stream->shouldReceive('getContents')
             ->andReturn('{invalid json}');
 
+        $this->request->shouldReceive('getHeaderLine')
+            ->with('X-CSRF-TOKEN')
+            ->andReturn('valid-token');
+
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
+
+        // 確保 createPost 不會被調用（JSON 錯誤）
+        $this->postService->shouldReceive('createPost')
+            ->never();
+
         $response = $this->controller->store($this->request, $this->response);
 
         $this->assertEquals(400, $response->getStatusCode());
 
         $body = json_decode($this->lastWrittenContent, true);
         $this->assertFalse($body['success']);
+        $this->assertNotNull($body['error']);
+        $this->assertIsString($body['error']);
         $this->assertStringContainsString('JSON', $body['error']);
     }
 
@@ -400,12 +413,22 @@ class PostControllerTest extends TestCase
         $this->request->shouldReceive('getServerParams')
             ->andReturn(['REMOTE_ADDR' => '8.8.8.8']);
 
+        // 設定 validator 將會拋出驗證異常
+        $this->validator->shouldReceive('validateOrFail')
+            ->with($invalidData)
+            ->andThrow(new ValidationException(['title' => ['標題不能為空']]));
+
+        // 確保 createPost 不會被調用
+        $this->postService->shouldReceive('createPost')
+            ->never();
+
         $response = $this->controller->store($this->request, $this->response);
 
         $this->assertEquals(400, $response->getStatusCode());
 
         $body = json_decode($this->lastWrittenContent, true);
         $this->assertFalse($body['success']);
+        $this->assertNotNull($body['error']);
         $this->assertStringContainsString('title', $body['error']);
     }
 
@@ -471,12 +494,18 @@ class PostControllerTest extends TestCase
             'content' => '更新後的內容，這裡有足夠的文字來通過驗證。',
         ];
 
-        $this->request->shouldReceive('getParsedBody')
-            ->andReturn($updateData);
+        $this->request->shouldReceive('getBody')
+            ->andReturn($this->stream);
+
+        $this->stream->shouldReceive('getContents')
+            ->andReturn(json_encode($updateData));
 
         $this->request->shouldReceive('getHeaderLine')
             ->with('X-CSRF-TOKEN')
             ->andReturn('valid-token');
+
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
         $this->validator->shouldReceive('validateOrFail')
             ->once()
@@ -512,12 +541,18 @@ class PostControllerTest extends TestCase
             'content' => '更新內容',
         ];
 
-        $this->request->shouldReceive('getParsedBody')
-            ->andReturn($updateData);
+        $this->request->shouldReceive('getBody')
+            ->andReturn($this->stream);
+
+        $this->stream->shouldReceive('getContents')
+            ->andReturn(json_encode($updateData));
 
         $this->request->shouldReceive('getHeaderLine')
             ->with('X-CSRF-TOKEN')
             ->andReturn('valid-token');
+
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
         $this->validator->shouldReceive('validateOrFail')
             ->once()
@@ -563,6 +598,9 @@ class PostControllerTest extends TestCase
             ->with('X-CSRF-TOKEN')
             ->andReturn('valid-token');
 
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
+
         $this->postService->shouldReceive('deletePost')
             ->once()
             ->with($postId)
@@ -578,12 +616,18 @@ class PostControllerTest extends TestCase
         $postId = 1;
         $pinData = ['pinned' => true];
 
-        $this->request->shouldReceive('getParsedBody')
-            ->andReturn($pinData);
+        $this->request->shouldReceive('getBody')
+            ->andReturn($this->stream);
+
+        $this->stream->shouldReceive('getContents')
+            ->andReturn(json_encode($pinData));
 
         $this->request->shouldReceive('getHeaderLine')
             ->with('X-CSRF-TOKEN')
             ->andReturn('valid-token');
+
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
         $this->validator->shouldReceive('validateOrFail')
             ->once()
@@ -615,12 +659,18 @@ class PostControllerTest extends TestCase
         $postId = 1;
         $invalidData = ['pinned' => 'invalid'];
 
-        $this->request->shouldReceive('getParsedBody')
-            ->andReturn($invalidData);
+        $this->request->shouldReceive('getBody')
+            ->andReturn($this->stream);
+
+        $this->stream->shouldReceive('getContents')
+            ->andReturn(json_encode($invalidData));
 
         $this->request->shouldReceive('getHeaderLine')
             ->with('X-CSRF-TOKEN')
             ->andReturn('valid-token');
+
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
         $validationResult = new ValidationResult(false, ['pinned' => ['pinned 必須是布林值']], [], ['pinned' => ['boolean']]);
         $this->validator->shouldReceive('validateOrFail')
@@ -648,7 +698,7 @@ class PostControllerTest extends TestCase
         ];
 
         $this->postService->shouldReceive('listPosts')
-            ->with(2, 5, [])
+            ->with(1, 10, [])
             ->once()
             ->andReturn($paginatedData);
 

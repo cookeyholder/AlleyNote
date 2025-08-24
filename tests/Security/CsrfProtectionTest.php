@@ -9,6 +9,7 @@ use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
+use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\CsrfTokenException;
 use Mockery;
 use Psr\Http\Message\ResponseInterface;
@@ -19,6 +20,8 @@ use Tests\TestCase;
 class CsrfProtectionTest extends TestCase
 {
     private PostServiceInterface $postService;
+
+    private ValidatorInterface $validator;
 
     private XssProtectionServiceInterface $xssProtection;
 
@@ -44,6 +47,7 @@ class CsrfProtectionTest extends TestCase
 
         // 使用介面來建立 mock 物件
         $this->postService = Mockery::mock(PostServiceInterface::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
         $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
         $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
         $this->request = Mockery::mock(ServerRequestInterface::class);
@@ -52,8 +56,7 @@ class CsrfProtectionTest extends TestCase
 
         $this->controller = new PostController(
             $this->postService,
-            $this->xssProtection,
-            $this->csrfProtection,
+            $this->validator,
         );
 
         // 設定預設回應行為
@@ -64,12 +67,13 @@ class CsrfProtectionTest extends TestCase
                 $this->lastWrittenContent = $content;
 
                 return strlen($content);
-                // 設定預設的 user_id 屬性
-                $this->request->shouldReceive('getAttribute')
-                    ->with('user_id')
-                    ->andReturn(1)
-                    ->byDefault();
             });
+
+        // 設定預設的 user_id 屬性
+        $this->request->shouldReceive('getAttribute')
+            ->with('user_id')
+            ->andReturn(1)
+            ->byDefault();
         $this->response->shouldReceive('withStatus')
             ->andReturnUsing(function ($status) {
                 $this->lastStatusCode = $status;
@@ -96,6 +100,29 @@ class CsrfProtectionTest extends TestCase
             ->andReturnUsing(function ($data) {
                 return $data;
             });
+
+        // 設定 validator 的預設期望值
+        $this->validator->shouldReceive('addRule')
+            ->withAnyArgs()
+            ->andReturnSelf()
+            ->byDefault();
+
+        $this->validator->shouldReceive('addMessage')
+            ->withAnyArgs()
+            ->andReturnSelf()
+            ->byDefault();
+
+        $this->validator->shouldReceive('stopOnFirstFailure')
+            ->withAnyArgs()
+            ->andReturnSelf()
+            ->byDefault();
+
+        $this->validator->shouldReceive('validateOrFail')
+            ->withAnyArgs()
+            ->andReturnUsing(function ($data) {
+                return $data; // 返回原始資料作為驗證過的資料
+            })
+            ->byDefault();
     }
 
     /** @test */

@@ -83,7 +83,7 @@ class RateLimitTest extends TestCase
 
         $resetResult = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue($resetResult, '重置後的請求應該被允許');
+        $this->assertTrue($resetResult['allowed'], '重置後的請求應該被允許');
     }
 
     /** @test */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
+use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
 use InvalidArgumentException;
@@ -17,6 +18,8 @@ class PasswordHashingTest extends TestCase
 
     protected UserRepository $userRepository;
 
+    protected PasswordSecurityServiceInterface $passwordService;
+
     protected PDO $db;
 
     protected function setUp(): void
@@ -24,9 +27,7 @@ class PasswordHashingTest extends TestCase
         parent::setUp();
 
         // 初始化mock對象
-        $this->authService = Mockery::mock(AuthService::class);
-        $this->userRepository = Mockery::mock(UserRepository::class);
-        $this->db = Mockery::mock(PDO::class);
+        $this->passwordService = Mockery::mock(PasswordSecurityServiceInterface::class);
 
         // 使用 SQLite 記憶體資料庫進行測試
         $this->db = new PDO('sqlite::memory:');
@@ -36,7 +37,7 @@ class PasswordHashingTest extends TestCase
         $this->createTestTables();
 
         $this->userRepository = new UserRepository($this->db);
-        $this->authService = new AuthService($this->userRepository);
+        $this->authService = new AuthService($this->userRepository, $this->passwordService);
     }
 
     protected function createTestTables(): void
