@@ -7,7 +7,7 @@
 ## 📋 前置需求檢查
 
 ### 系統需求
-- **作業系統**：Linux (推薦 Debian 12+ 或 Ubuntu 22.04+)
+- **作業系統**：Debian 12
 - **硬體需求**：
   - CPU: 2 核心以上
   - RAM: 4GB 以上
@@ -280,10 +280,6 @@ docker compose exec nginx nginx -t
 
 # 檢查防火牆
 ufw status
-firewall-cmd --list-all
-
-# 檢查 SELinux（CentOS/RHEL）
-getenforce
 ```
 
 ### 日誌檢查位置

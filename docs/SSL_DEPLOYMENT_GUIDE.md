@@ -222,14 +222,9 @@ docker-compose exec nginx nginx -s reload
 
 確保防火牆正確設定：
 ```bash
-# Ubuntu/Debian
+# Debian 12
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
-
-# CentOS/RHEL
-sudo firewall-cmd --permanent --add-service=http
-sudo firewall-cmd --permanent --add-service=https
-sudo firewall-cmd --reload
 ```
 
 ## 監控和維護

@@ -31,8 +31,7 @@
 
 ### 作業系統
 #### 支援的 Linux 發行版
-- **Ubuntu 22.04 LTS** （推薦）
-- **Debian 12**
+**Debian 12**
 
 ### 必要軟體
 ```bash
@@ -96,37 +95,7 @@ echo "=== 檢查完成 ==="
 | 6379 | TCP | Redis 快取 | 內部使用 |
 
 ### 防火牆設定
-#### Ubuntu/Debian (UFW)
-```bash
-# 允許 SSH
-ufw allow 22
-
-# 允許 HTTP
-ufw allow 80
-
-# 允許 HTTPS
-ufw allow 443
-
-# 啟用防火牆
-ufw enable
-
-# 檢查狀態
-ufw status
-```
-
-#### CentOS/Rocky Linux (firewalld)
-```bash
-# 允許 HTTP 和 HTTPS
-firewall-cmd --permanent --add-service=http
-firewall-cmd --permanent --add-service=https
-firewall-cmd --permanent --add-service=ssh
-
-# 重新載入設定
-firewall-cmd --reload
-
-# 檢查狀態
-firewall-cmd --list-all
-```
+（請依照 Debian 12 官方 UFW 指南設定防火牆，僅保留必要端口 22、80、443）
 
 ### 網路連線測試
 ```bash
@@ -149,7 +118,7 @@ netstat -tulpn | grep :443
 ## 🏗️ 環境準備
 
 ### 1. 系統更新
-#### Ubuntu/Debian
+#### Debian 12
 ```bash
 # 更新套件列表
 sudo apt update
@@ -161,46 +130,18 @@ sudo apt upgrade -y
 sudo apt install -y curl wget git unzip software-properties-common
 ```
 
-#### CentOS/Rocky Linux
-```bash
-# 更新系統
-sudo yum update -y
-
-# 安裝必要工具
-sudo yum install -y curl wget git unzip yum-utils
-```
-
 ### 2. Docker 安裝
-#### Ubuntu/Debian
+#### Debian 12
 ```bash
 # 安裝 Docker 官方 GPG 金鑰
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
 # 新增 Docker 官方 APT 源
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # 更新套件列表並安裝 Docker
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io
-
-# 安裝 Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-
-# 將使用者加入 docker 群組
-sudo usermod -aG docker $USER
-
-# 啟用並啟動 Docker 服務
-sudo systemctl enable docker
-sudo systemctl start docker
-```
-
-#### CentOS/Rocky Linux
-```bash
-# 安裝 Docker
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install -y docker-ce docker-ce-cli containerd.io
 
 # 安裝 Docker Compose
 sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -265,20 +206,8 @@ systemctl status docker
 
 ## 🔒 安全考量
 
-### SELinux 設定（CentOS/Rocky Linux）
-```bash
-# 檢查 SELinux 狀態
-getenforce
-
-# 臨時停用 SELinux（測試用）
-sudo setenforce 0
-
-# 永久停用 SELinux（編輯 /etc/selinux/config）
-sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
-
-# 或設定為 permissive 模式
-sudo sed -i 's/SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config
-```
+### SELinux 設定
+（Debian 12 預設不啟用 SELinux，無需額外設定）
 
 ### 檔案權限設定
 ```bash
