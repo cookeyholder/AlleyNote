@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Health;
 
+use App\Application\Controllers\BaseController;
 use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;

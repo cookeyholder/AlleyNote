@@ -10,7 +10,6 @@ use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Exceptions\PostStatusException;
-use App\Domains\Post\Exceptions\PostValidationException;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\Validation\RequestValidationException;
@@ -201,7 +200,7 @@ class PostController extends BaseController
 
             // 添加必需的欄位
             $data['user_id'] = $request->getAttribute('user_id') ?? 1; // 從認證中間件取得
-            $data['user_ip'] = $this->getUserIp($request) ?? '127.0.0.1';
+            $data['user_ip'] = $this->getUserIp($request);
 
             $dto = new CreatePostDTO($this->validator, $data);
             $post = $this->postService->createPost($dto);
@@ -215,11 +214,6 @@ class PostController extends BaseController
             $response->getBody()->write($errorResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
-        } catch (PostValidationException $e) {
-            $errorResponse = $this->errorResponse($e->getMessage(), 422, $e->getErrors());
-            $response->getBody()->write($errorResponse);
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
             $response->getBody()->write($errorResponse);
@@ -403,16 +397,6 @@ class PostController extends BaseController
             $response->getBody()->write($errorResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (PostValidationException $e) {
-            $errorResponse = $this->errorResponse($e->getMessage(), 422, $e->getErrors());
-            $response->getBody()->write($errorResponse);
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
-        } catch (PostStatusException $e) {
-            $errorResponse = $this->errorResponse($e->getMessage(), 400);
-            $response->getBody()->write($errorResponse);
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
             $response->getBody()->write($errorResponse);
@@ -631,11 +615,6 @@ class PostController extends BaseController
             $response->getBody()->write($errorResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
-        } catch (PostStatusException $e) {
-            $errorResponse = $this->errorResponse($e->getMessage(), 400);
-            $response->getBody()->write($errorResponse);
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
             $response->getBody()->write($errorResponse);
@@ -647,7 +626,7 @@ class PostController extends BaseController
     /**
      * 取得使用者 IP 位址
      */
-    private function getUserIp(Request $request): ?string
+    private function getUserIp(Request $request): string
     {
         $serverParams = $request->getServerParams();
 
