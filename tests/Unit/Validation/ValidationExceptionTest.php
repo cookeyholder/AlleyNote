@@ -277,7 +277,7 @@ class ValidationExceptionTest extends TestCase
             'name' => ['required', 'min_length'],
             'email' => ['email'],
         ];
-        $exception = ValidationException::fromErrors($errors);
+        $exception = ValidationException::fromErrors($errors, $failedRules);
 
         // Act & Assert
         $this->assertEquals($failedRules, $exception->getValidationResult()->getFailedRules());
@@ -364,7 +364,7 @@ class ValidationExceptionTest extends TestCase
             'name' => ['required', 'min_length'],
             'email' => ['email'],
         ];
-        $exception = ValidationException::fromErrors($errors);
+        $exception = ValidationException::fromErrors($errors, $failedRules);
 
         // Act & Assert
         $this->assertTrue($exception->getValidationResult()->hasFailedRule('required'));
@@ -385,7 +385,7 @@ class ValidationExceptionTest extends TestCase
             'name' => ['required', 'min_length'],
             'email' => ['email'],
         ];
-        $exception = ValidationException::fromErrors($errors);
+        $exception = ValidationException::fromErrors($errors, $failedRules);
 
         // Act & Assert
         $this->assertTrue($exception->getValidationResult()->hasFieldFailedRule('name', 'required'));
@@ -422,7 +422,7 @@ class ValidationExceptionTest extends TestCase
         // Arrange
         $errors = ['name' => ['名稱為必填項目']];
         $failedRules = ['name' => ['required']];
-        $exception = ValidationException::fromErrors($errors);
+        $exception = ValidationException::fromErrors($errors, $failedRules);
 
         // Act
         $apiResponse = $exception->toApiResponse();

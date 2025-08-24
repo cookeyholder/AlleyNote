@@ -55,7 +55,7 @@ class RateLimitTest extends TestCase
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue($result, '正常請求應該被允許');
+        $this->assertTrue($result['allowed'], '正常請求應該被允許');
     }
 
     /** @test */
@@ -63,27 +63,34 @@ class RateLimitTest extends TestCase
     {
         $ip = '192.168.1.2';
 
-        // 模擬達到限制
+        // 第一次請求 - 模擬達到限制
         $this->cacheService->shouldReceive('get')
             ->with("rate_limit:{$ip}")
-            ->andReturn(61); // 超過限制
+            ->once()
+            ->andReturn(['count' => 60, 'reset' => time() + 60]);
+
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip}", Mockery::any(), 60)
+            ->once()
+            ->andReturn(true);
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertFalse($result, '超過限制的請求應該被拒絕');
+        $this->assertFalse($result['allowed'], '超過限制的請求應該被拒絕');
 
-        // 模擬時間窗口重置
+        // 第二次請求 - 模擬時間窗口重置
         $this->cacheService->shouldReceive('get')
             ->with("rate_limit:{$ip}")
-            ->andReturn(null);
+            ->once()
+            ->andReturn(['count' => 60, 'reset' => time() - 10]); // 已過期
 
-        $this->cacheService->shouldReceive('increment')
-            ->with("rate_limit:{$ip}")
-            ->andReturn(1);
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip}", Mockery::any(), 60)
+            ->andReturn(true);
 
         $resetResult = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue($resetResult, '重置後的請求應該被允許');
+        $this->assertTrue($resetResult['allowed'], '重置後的請求應該被允許');
     }
 
     /** @test */
@@ -95,27 +102,27 @@ class RateLimitTest extends TestCase
         // IP1 正常
         $this->cacheService->shouldReceive('get')
             ->with("rate_limit:{$ip1}")
-            ->andReturn(30);
+            ->andReturn(['count' => 30, 'reset' => time() + 60]);
 
-        $this->cacheService->shouldReceive('increment')
-            ->with("rate_limit:{$ip1}")
-            ->andReturn(31);
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip1}", Mockery::any(), 60)
+            ->andReturn(true);
 
         $result1 = $this->rateLimitService->checkLimit($ip1);
 
         // IP2 正常
         $this->cacheService->shouldReceive('get')
             ->with("rate_limit:{$ip2}")
-            ->andReturn(10);
+            ->andReturn(['count' => 10, 'reset' => time() + 60]);
 
-        $this->cacheService->shouldReceive('increment')
-            ->with("rate_limit:{$ip2}")
-            ->andReturn(11);
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip2}", Mockery::any(), 60)
+            ->andReturn(true);
 
         $result2 = $this->rateLimitService->checkLimit($ip2);
 
-        $this->assertTrue($result1, 'IP1 應該被允許');
-        $this->assertTrue($result2, 'IP2 應該被允許');
+        $this->assertTrue($result1['allowed'], 'IP1 應該被允許');
+        $this->assertTrue($result2['allowed'], 'IP2 應該被允許');
     }
 
     /** @test */
@@ -131,7 +138,7 @@ class RateLimitTest extends TestCase
         // 當快取服務不可用時，應該允許請求以確保服務可用性
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue($result, '快取服務錯誤時應該允許請求');
+        $this->assertTrue($result['allowed'], '快取服務錯誤時應該允許請求');
     }
 
     /** @test */
@@ -144,24 +151,24 @@ class RateLimitTest extends TestCase
             ->with("rate_limit:{$ip}")
             ->andReturn(null);
 
-        $this->cacheService->shouldReceive('increment')
-            ->with("rate_limit:{$ip}")
-            ->andReturn(1);
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip}", Mockery::any(), 60)
+            ->andReturn(true);
 
         $this->rateLimitService->checkLimit($ip);
 
         // 第二次請求
         $this->cacheService->shouldReceive('get')
             ->with("rate_limit:{$ip}")
-            ->andReturn(1);
+            ->andReturn(['count' => 1, 'reset' => time() + 60]);
 
-        $this->cacheService->shouldReceive('increment')
-            ->with("rate_limit:{$ip}")
-            ->andReturn(2);
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip}", Mockery::any(), 60)
+            ->andReturn(true);
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue($result, '計數器應該正確遞增');
+        $this->assertTrue($result['allowed'], '計數器應該正確遞增');
     }
 
     /** @test */
@@ -173,15 +180,11 @@ class RateLimitTest extends TestCase
         // 模擬達到最大嘗試次數
         $this->cacheService->shouldReceive('get')
             ->with("rate_limit:{$ip}")
-            ->andReturn($maxAttempts);
-
-        $this->cacheService->shouldReceive('increment')
-            ->with("rate_limit:{$ip}")
-            ->andReturn($maxAttempts + 1);
+            ->andReturn(['count' => $maxAttempts, 'reset' => time() + 60]);
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertFalse($result, '達到最大嘗試次數時應該被拒絕');
+        $this->assertFalse($result['allowed'], '達到最大嘗試次數時應該被拒絕');
     }
 
     protected function tearDown(): void
