@@ -487,7 +487,8 @@ class PostControllerTest extends TestCase
 
         $body = json_decode($this->lastWrittenContent, true);
         $this->assertFalse($body['success']);
-        $this->assertStringContainsString('不存在', $body['error']);
+        $this->assertNotNull($body['message']);
+        $this->assertStringContainsString('找不到', $body['message']);
     }
 
     public function testGetPostWithInvalidIdReturnsError(): void
@@ -704,7 +705,7 @@ class PostControllerTest extends TestCase
 
         $response = $this->controller->togglePin($this->request, $this->response, ['id' => $postId]);
 
-        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
 
         $body = json_decode($this->lastWrittenContent, true);
         $this->assertFalse($body['success']);

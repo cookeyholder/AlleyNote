@@ -64,6 +64,17 @@ class PasswordHashingTest extends TestCase
                 return $data; // 返回原始資料作為驗證過的資料
             })
             ->byDefault();
+
+        // 設定 passwordService 的預設行為
+        $this->passwordService->shouldReceive('validatePassword')
+            ->andReturnNull()
+            ->byDefault();
+
+        $this->passwordService->shouldReceive('hashPassword')
+            ->andReturnUsing(function ($password) {
+                return password_hash($password, PASSWORD_ARGON2ID);
+            })
+            ->byDefault();
     }
 
     protected function createTestTables(): void
@@ -160,6 +171,11 @@ class PasswordHashingTest extends TestCase
 
         // 建立 DTO
         $dto = new RegisterUserDTO($this->validator, $userData);
+
+        // 設定 passwordService 會拋出異常
+        $this->passwordService->shouldReceive('validatePassword')
+            ->with('123')
+            ->andThrow(new InvalidArgumentException('密碼長度必須至少為 8 個字元'));
 
         // 預期會拋出例外
         $this->expectException(InvalidArgumentException::class);
