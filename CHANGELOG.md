@@ -8,7 +8,9 @@
 - 全系統日期時間格式統一為 RFC 3339
 - 修正 GitHub Actions CI/CD 設定，全面採用新版 docker compose 指令
 - 測試流程與覆蓋率門檻自動化
-- 文件（README.md、DEPLOYMENT.md）全面更新，與實際專案狀態同步
+- 文件（README.md、DEPLOYMENT.md、docs/*.md）全面更新，與實際專案狀態同步
+- 所有文件 Docker Compose 指令統一為 docker compose 標準語法
+- 文件全面移除非 Debian 12 相關作業系統段落，環境說明統一
 
 ## [1.0.0] - 2025-04-14
 

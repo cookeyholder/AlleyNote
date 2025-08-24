@@ -322,32 +322,29 @@ A: 詳見 [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)。
 
 ## 文件資源
 
+
 ### 👨‍💼 管理員文件
-- **[ADMIN_QUICK_START.md](docs/ADMIN_QUICK_START.md)**: 30分鐘快速入門指南 ⭐
-- **[SYSTEM_REQUIREMENTS.md](docs/SYSTEM_REQUIREMENTS.md)**: 系統需求和環境準備
-- **[ADMIN_MANUAL.md](docs/ADMIN_MANUAL.md)**: 完整管理員操作手冊
-- **[TROUBLESHOOTING_GUIDE.md](docs/TROUBLESHOOTING_GUIDE.md)**: 故障排除和維護指南
+- [管理員快速入門指南](docs/ADMIN_QUICK_START.md)
+- [系統需求與環境準備](docs/SYSTEM_REQUIREMENTS.md)
+- [管理員操作手冊](docs/ADMIN_MANUAL.md)
+- [故障排除與維護指南](docs/TROUBLESHOOTING_GUIDE.md)
 
 ### 📖 開發者文件
-- **[DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)**: 完整開發者指南
-- **[DI_CONTAINER_GUIDE.md](docs/DI_CONTAINER_GUIDE.md)**: DI 容器使用手冊  
-- **[VALIDATOR_GUIDE.md](docs/VALIDATOR_GUIDE.md)**: 驗證器詳細指南
-- **[API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)**: API 文件
+- [開發者指南](docs/DEVELOPER_GUIDE.md)
+- [DI 容器使用手冊](docs/DI_CONTAINER_GUIDE.md)
+- [驗證器詳細指南](docs/VALIDATOR_GUIDE.md)
+- [API 文件](docs/API_DOCUMENTATION.md)
 
 ### 📋 專案文件
-- **[ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)**: 架構審查報告
-- **[TEST_SUITE_IMPROVEMENTS.md](docs/TEST_SUITE_IMPROVEMENTS.md)**: 測試改善報告
-- **[DEPLOYMENT.md](docs/DEPLOYMENT.md)**: 詳細部署說明
-- **[SSL_DEPLOYMENT_GUIDE.md](docs/SSL_DEPLOYMENT_GUIDE.md)**: SSL 設定指南
-- **[CHANGELOG.md](CHANGELOG.md)**: 版本更新日誌
+- [架構審查報告](docs/ARCHITECTURE_AUDIT.md)
+- [測試改善報告](docs/TEST_SUITE_IMPROVEMENTS.md)
+- [部署說明](docs/DEPLOYMENT.md)
+- [SSL 設定指南](docs/SSL_DEPLOYMENT_GUIDE.md)
+- [版本更新日誌](CHANGELOG.md)
 
 ### 📊 規劃文件
-- **[AlleyNote公布欄網站規格書.md](AlleyNote公布欄網站規格書.md)**: 系統規格
-- **[PROJECT_PLANNING.md](docs/PROJECT_PLANNING.md)**: 實作規劃
-- **[PROJECT_PROGRESS.md](docs/PROJECT_PROGRESS.md)**: 進度追蹤
-- **[IMPROVEMENT_CHECKLIST.md](docs/IMPROVEMENT_CHECKLIST.md)**: 改進檢查清單
-- **[NEXT_PHASE_TODO.md](docs/NEXT_PHASE_TODO.md)**: 下階段待辦
-- **[QUICK_IMPROVEMENT_GUIDE.md](docs/QUICK_IMPROVEMENT_GUIDE.md)**: 快速改進指南
+- [系統規格書](AlleyNote公布欄網站規格書.md)
+
 
 ---
 
