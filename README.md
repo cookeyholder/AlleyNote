@@ -85,7 +85,6 @@ AlleyNote 是一個現代化的公布欄網站系統，專為學校、社區、�
 
 ### 🔒 安全與維運
 - **SSL 憑證**: Let's Encrypt 自動續簽
-- **通知整合**: Telegram Bot
 - **備份策略**: 自動備份與災難復原
 - **作業系統**: Debian Linux 12
 
@@ -150,7 +149,7 @@ cd alleynote
 
 ```bash
 cp .env.example .env
-# 編輯 .env 檔案，設定管理員帳號、資料庫、檔案上傳、Telegram 通知等
+# 編輯 .env 檔案，設定管理員帳號、資料庫、檔案上傳等
 ```
 
 ### 3. 啟動服務
