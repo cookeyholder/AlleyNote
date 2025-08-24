@@ -754,7 +754,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/CsrfProtectionTest.php' => 
     array (
-      0 => 'd0c5dc177aef4aeb548a4c973fe3d2a970f4c538',
+      0 => '7025d602de6a57b84bb2da36e9a978d7a12d76ef',
       1 => 
       array (
         0 => 'tests\\security\\csrfprotectiontest',
@@ -773,7 +773,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/SqlInjectionTest.php' => 
     array (
-      0 => '9403d18423246f4411926674c033519c8e5c894e',
+      0 => 'd7be013afe0d9155cccc0c14a080785c230179c3',
       1 => 
       array (
         0 => 'tests\\security\\sqlinjectiontest',
@@ -785,7 +785,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         2 => 'tests\\security\\shouldpreventsqlinjectionintitlesearch',
         3 => 'tests\\security\\shouldhandlespecialcharactersincontent',
         4 => 'tests\\security\\shouldpreventsqlinjectioninuseridfilter',
-        5 => 'tests\\security\\teardown',
+        5 => 'tests\\security\\shouldsanitizesearchinput',
+        6 => 'tests\\security\\teardown',
       ),
       3 => 
       array (
@@ -793,7 +794,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/XssPreventionTest.php' => 
     array (
-      0 => '91d4a8551595e9a0b5effe2b693a123916526510',
+      0 => '075c58420224b3324bb1edf72421730b6bfde4c1',
       1 => 
       array (
         0 => 'tests\\security\\xsspreventiontest',
@@ -812,7 +813,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/FileUploadSecurityTest.php' => 
     array (
-      0 => 'bcc89d40e5facfb83879dcb8433736f59b96fae0',
+      0 => '2e985e15fbd0ef614294144c3d1c3b773d5ce636',
       1 => 
       array (
         0 => 'tests\\security\\fileuploadsecuritytest',
@@ -825,8 +826,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         3 => 'tests\\security\\shouldrejectoversizedfiles',
         4 => 'tests\\security\\shouldrejectmaliciousmimetypes',
         5 => 'tests\\security\\shouldpreventpathtraversal',
-        6 => 'tests\\security\\createuploadedfilemock',
-        7 => 'tests\\security\\teardown',
+        6 => 'tests\\security\\shouldacceptvalidfiles',
+        7 => 'tests\\security\\createuploadedfilemock',
+        8 => 'tests\\security\\teardown',
+        9 => 'tests\\security\\removedirectory',
       ),
       3 => 
       array (
@@ -834,7 +837,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/PasswordHashingTest.php' => 
     array (
-      0 => 'b88ce839fa47be105a6f0cdb491f0c20368079ae',
+      0 => 'f09fb63cd1955bdf8f62bdff23a859a55d9ff971',
       1 => 
       array (
         0 => 'tests\\security\\passwordhashingtest',
@@ -855,7 +858,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/RateLimitTest.php' => 
     array (
-      0 => '57a333f57820b9bcf82d2452a7bcf323a862d2be',
+      0 => 'd252b0abc6f01a3398d8293b81e0ec4e27165c5d',
       1 => 
       array (
         0 => 'tests\\integration\\ratelimittest',
@@ -983,7 +986,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/Http/PostControllerTest.php' => 
     array (
-      0 => 'b7bcb346abfe7b2583703233e079ef9842379bf2',
+      0 => 'd3d8e44a8b31888e6e72a3a2819b28463868bcce',
       1 => 
       array (
         0 => 'tests\\integration\\http\\postcontrollertest',
@@ -996,7 +999,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         3 => 'tests\\integration\\http\\testgetpostswithpaginationparameters',
         4 => 'tests\\integration\\http\\testgetpostswithsearchfilter',
         5 => 'tests\\integration\\http\\testgetpostswithstatusfilter',
-        6 => 'tests\\integration\\http\\testgetpostswithinvalidlimitreturnsvalidationerror',
+        6 => 'tests\\integration\\http\\testgetpostswithinvalidlimitreturnsposts',
         7 => 'tests\\integration\\http\\testcreatepostwithvaliddata',
         8 => 'tests\\integration\\http\\testcreatepostwithinvalidjsonreturnserror',
         9 => 'tests\\integration\\http\\testcreatepostwithmissingrequiredfields',
@@ -1019,7 +1022,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/FileSystemBackupTest.php' => 
     array (
-      0 => '5c0a65a8bace54c1f80403eabf1bef96cae89b85',
+      0 => '819d46a7f08233d9a464c5c36cca8d9b682297c3',
       1 => 
       array (
         0 => 'tests\\integration\\filesystembackuptest',
@@ -1223,7 +1226,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Validation/ValidationExceptionTest.php' => 
     array (
-      0 => '5ecbf31060b9e7fd2c2c0b465a00f66e0e94bf0f',
+      0 => 'e89074aecb0fade5f43ad04b1c4547f5297c48f7',
       1 => 
       array (
         0 => 'tests\\unit\\validation\\validationexceptiontest',
@@ -1410,7 +1413,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/DIValidationIntegrationTest.php' => 
     array (
-      0 => '5187a12913a7ee7b96abf9e64d12bc6ed5345ffb',
+      0 => 'dd04baca1324ddeab62f27030bc8860c9dfcafeb',
       1 => 
       array (
         0 => 'tests\\integration\\divalidationintegrationtest',
