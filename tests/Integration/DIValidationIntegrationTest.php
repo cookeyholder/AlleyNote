@@ -159,20 +159,30 @@ class DIValidationIntegrationTest extends TestCase
         // Arrange
         $validator = $this->container->get(ValidatorInterface::class);
 
-        // Act & Assert - 測試密碼確認規則
-        $data = [
+        // Act & Assert - 測試密碼確認規則驗證成功
+        $validData = [
             'password' => 'MyPassword123',
             'password_confirmation' => 'MyPassword123',
         ];
 
-        // 修改 ValidatorFactory 中的 password_confirmed 規則呼叫方式
-        // 因為規則需要存取完整的資料陣列，我們需要確保它能正確運作
-        $result = $validator->validate($data, [
+        // 驗證相符的密碼確認
+        $result = $validator->validate($validData, [
             'password_confirmation' => 'password_confirmed',
         ]);
 
-        // 應該驗證失敗，因為密碼確認不匹配
+        $this->assertTrue($result->isValid());
+
+        // 測試密碼確認不匹配的情況
         $this->expectException(ValidationException::class);
+
+        $invalidData = [
+            'password' => 'MyPassword123',
+            'password_confirmation' => 'DifferentPassword456',
+        ];
+
+        $validator->validateOrFail($invalidData, [
+            'password_confirmation' => 'password_confirmed',
+        ]);
     }
 
     /**

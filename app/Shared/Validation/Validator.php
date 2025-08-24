@@ -99,6 +99,11 @@ class Validator implements ValidatorInterface
             } else {
                 $errors[$field] = $fieldErrors;
                 $failedRules[$field] = $fieldFailedRules;
+
+                // 如果設定為第一個錯誤時停止，且已有錯誤，則跳出整個驗證循環
+                if ($this->stopOnFirstFailure) {
+                    break;
+                }
             }
         }
 
@@ -122,7 +127,7 @@ class Validator implements ValidatorInterface
     {
         // 檢查自訂規則
         if (isset($this->customRules[$rule])) {
-            return call_user_func($this->customRules[$rule], $value, $parameters);
+            return call_user_func($this->customRules[$rule], $value, $parameters, $allData);
         }
 
         // 內建規則
