@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
+use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
 use InvalidArgumentException;
@@ -67,8 +68,11 @@ class PasswordHashingTest extends TestCase
             'password' => 'password123',
         ];
 
+        // 建立 DTO
+        $dto = new RegisterUserDTO($userData);
+
         // 註冊使用者
-        $user = $this->authService->register($userData);
+        $user = $this->authService->register($dto);
 
         // 從資料庫取得雜湊後的密碼
         $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
@@ -87,13 +91,16 @@ class PasswordHashingTest extends TestCase
     {
         // 準備測試資料
         $userData = [
-            'username' => 'testuser',
-            'email' => 'test@example.com',
-            'password' => 'password123',
+            'username' => 'testuser2',
+            'email' => 'test2@example.com',
+            'password' => 'securepassword456',
         ];
 
+        // 建立 DTO
+        $dto = new RegisterUserDTO($userData);
+
         // 註冊使用者
-        $user = $this->authService->register($userData);
+        $user = $this->authService->register($dto);
 
         // 從資料庫取得雜湊後的密碼
         $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
@@ -115,17 +122,20 @@ class PasswordHashingTest extends TestCase
     {
         // 準備測試資料（弱密碼）
         $userData = [
-            'username' => 'testuser',
-            'email' => 'test@example.com',
+            'username' => 'testuser3',
+            'email' => 'test3@example.com',
             'password' => '123', // 太短的密碼
         ];
+
+        // 建立 DTO
+        $dto = new RegisterUserDTO($userData);
 
         // 預期會拋出例外
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('密碼長度必須至少為 8 個字元');
 
         // 執行測試
-        $this->authService->register($userData);
+        $this->authService->register($dto);
     }
 
     /** @test */
@@ -133,13 +143,16 @@ class PasswordHashingTest extends TestCase
     {
         // 準備測試資料
         $userData = [
-            'username' => 'testuser',
-            'email' => 'test@example.com',
+            'username' => 'testuser4',
+            'email' => 'test4@example.com',
             'password' => 'password123',
         ];
 
+        // 建立 DTO
+        $dto = new RegisterUserDTO($userData);
+
         // 註冊使用者
-        $user = $this->authService->register($userData);
+        $user = $this->authService->register($dto);
 
         // 模擬使用者嘗試更新密碼為相同的密碼
         $this->expectException(InvalidArgumentException::class);

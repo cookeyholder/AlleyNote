@@ -414,9 +414,10 @@ class PostControllerTest extends TestCase
             ->andReturn(['REMOTE_ADDR' => '8.8.8.8']);
 
         // 設定 validator 將會拋出驗證異常
+        $validationResult = new ValidationResult(false, ['title' => ['標題不能為空']], [], ['title' => ['required']]);
         $this->validator->shouldReceive('validateOrFail')
             ->with($invalidData)
-            ->andThrow(new ValidationException(['title' => ['標題不能為空']]));
+            ->andThrow(new ValidationException($validationResult));
 
         // 確保 createPost 不會被調用
         $this->postService->shouldReceive('createPost')
@@ -640,9 +641,14 @@ class PostControllerTest extends TestCase
             'pinned' => true,
         ]);
 
-        $this->postService->shouldReceive('updatePost')
+        $this->postService->shouldReceive('setPinned')
             ->once()
-            ->with($postId, Mockery::type(UpdatePostDTO::class))
+            ->with($postId, true)
+            ->andReturnNull();
+
+        $this->postService->shouldReceive('findById')
+            ->once()
+            ->with($postId)
             ->andReturn($updatedPost);
 
         $response = $this->controller->togglePin($this->request, $this->response, ['id' => $postId]);

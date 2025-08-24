@@ -9,6 +9,7 @@ use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Models\Post;
 use App\Domains\Post\Repositories\PostRepository;
+use App\Infrastructure\Services\CacheService;
 use App\Shared\Validation\ValidationException;
 use Mockery;
 use Mockery\MockInterface;
@@ -26,6 +27,8 @@ class FileUploadSecurityTest extends TestCase
 
     protected PostRepository|MockInterface $postRepo;
 
+    protected CacheService|MockInterface $cacheService;
+
     protected string $uploadDir;
 
     protected function setUp(): void
@@ -36,12 +39,15 @@ class FileUploadSecurityTest extends TestCase
         $this->authService = Mockery::mock(AuthorizationService::class);
         $this->attachmentRepo = Mockery::mock(AttachmentRepository::class);
         $this->postRepo = Mockery::mock(PostRepository::class);
+        $this->cacheService = Mockery::mock(CacheService::class);
 
         // 建立真實的 AttachmentService 實例
         $this->service = new AttachmentService(
             $this->attachmentRepo,
             $this->postRepo,
+            $this->cacheService,
             $this->authService,
+            $this->uploadDir,
         );
 
         $this->uploadDir = '/tmp/test-uploads';
