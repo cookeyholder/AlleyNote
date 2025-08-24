@@ -133,7 +133,7 @@ case "${1:-help}" in
         
         # 初始化資料庫
         echo "初始化資料庫..."
-    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web ./scripts/init-sqlite.sh
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec -T web ./scripts/init-sqlite.sh
         
         echo "專案初始化完成！"
         echo "網站: http://localhost"
@@ -141,12 +141,12 @@ case "${1:-help}" in
         
     "init-db")
         echo "初始化 SQLite 資料庫..."
-    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web ./scripts/init-sqlite.sh
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec -T web ./scripts/init-sqlite.sh
         ;;
         
     "backup-db")
         echo "備份 SQLite 資料庫..."
-    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web ./scripts/backup_sqlite.sh
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec -T web ./scripts/backup_sqlite.sh
         ;;
         
     "restore-db")
@@ -156,7 +156,7 @@ case "${1:-help}" in
             exit 1
         fi
         echo "還原 SQLite 資料庫..."
-    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web ./scripts/restore_sqlite.sh "$2"
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec -T web ./scripts/restore_sqlite.sh "$2"
         ;;
         
     "ssl-setup")
@@ -171,14 +171,14 @@ case "${1:-help}" in
         
     "ssl-renew")
         echo "手動續簽 SSL 憑證..."
-    $COMPOSE_CMD -f "$COMPOSE_FILE" exec certbot certbot renew
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec -T certbot certbot renew
     $COMPOSE_CMD -f "$COMPOSE_FILE" restart nginx
         echo "SSL 憑證續簽完成"
         ;;
         
     "test")
         echo "執行測試套件..."
-    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web ./vendor/bin/phpunit
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec -T web ./vendor/bin/phpunit
         ;;
         
     "clean")

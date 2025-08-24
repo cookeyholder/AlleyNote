@@ -175,7 +175,7 @@ echo "$(date): 開始檢查 SSL 憑證續簽..."
 if $COMPOSE_CMD run --rm certbot renew --quiet; then
     echo "$(date): 憑證續簽檢查完成"
     # 重新載入 Nginx 設定
-    $COMPOSE_CMD exec nginx nginx -s reload
+    $COMPOSE_CMD exec -T nginx nginx -s reload
     echo "$(date): Nginx 設定重新載入完成"
 else
     echo "$(date): 憑證續簽失敗！"
