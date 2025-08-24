@@ -6,7 +6,7 @@ namespace Tests\Unit\Services\Security;
 
 use App\Domains\Security\Services\Logging\LoggingSecurityService;
 use PHPUnit\Framework\TestCase;
-
+use ReflectionClass;
 
 class LoggingSecurityServiceTest extends TestCase
 {
@@ -18,7 +18,7 @@ class LoggingSecurityServiceTest extends TestCase
     {
         // 建立臨時日誌目錄
         $this->tempLogsDir = sys_get_temp_dir() . '/alleynote_test_logs_' . uniqid();
-        mkdir($this->tempLogsDir, 0750, true);
+        mkdir($this->tempLogsDir, 0o750, true);
 
         // 模擬 storage_path 函式
         if (!function_exists('storage_path')) {
@@ -85,7 +85,7 @@ class LoggingSecurityServiceTest extends TestCase
         ];
 
         // 使用反射呼叫私有方法進行測試
-        $reflection = new \ReflectionClass($this->service);
+        $reflection = new ReflectionClass($this->service);
         $method = $reflection->getMethod('sanitizeContext');
         $method->setAccessible(true);
 
@@ -111,7 +111,7 @@ class LoggingSecurityServiceTest extends TestCase
             'status_code' => 200,
         ];
 
-        $reflection = new \ReflectionClass($this->service);
+        $reflection = new ReflectionClass($this->service);
         $method = $reflection->getMethod('applyRequestWhitelist');
         $method->setAccessible(true);
 
@@ -131,7 +131,7 @@ class LoggingSecurityServiceTest extends TestCase
         $longString = str_repeat('A', 1500);
         $data = ['long_field' => $longString];
 
-        $reflection = new \ReflectionClass($this->service);
+        $reflection = new ReflectionClass($this->service);
         $method = $reflection->getMethod('sanitizeContext');
         $method->setAccessible(true);
 
@@ -149,7 +149,7 @@ class LoggingSecurityServiceTest extends TestCase
 
         $context = ['event' => 'test_event'];
 
-        $reflection = new \ReflectionClass($this->service);
+        $reflection = new ReflectionClass($this->service);
         $method = $reflection->getMethod('enrichSecurityContext');
         $method->setAccessible(true);
 
@@ -168,7 +168,7 @@ class LoggingSecurityServiceTest extends TestCase
 
         $context = ['method' => 'GET'];
 
-        $reflection = new \ReflectionClass($this->service);
+        $reflection = new ReflectionClass($this->service);
         $method = $reflection->getMethod('enrichRequestContext');
         $method->setAccessible(true);
 
@@ -179,7 +179,7 @@ class LoggingSecurityServiceTest extends TestCase
         $this->assertEquals('GET', $result['method']);
         $this->assertEquals(
             hash('sha256', 'Mozilla/5.0 Test Browser'),
-            $result['user_agent_hash']
+            $result['user_agent_hash'],
         );
     }
 
@@ -221,7 +221,7 @@ class LoggingSecurityServiceTest extends TestCase
             'safe_field' => 'public',
         ];
 
-        $reflection = new \ReflectionClass($this->service);
+        $reflection = new ReflectionClass($this->service);
         $method = $reflection->getMethod('sanitizeContext');
         $method->setAccessible(true);
 
@@ -245,7 +245,7 @@ class LoggingSecurityServiceTest extends TestCase
             'password' => '',  // 敏感欄位即使為空也要遮罩
         ];
 
-        $reflection = new \ReflectionClass($this->service);
+        $reflection = new ReflectionClass($this->service);
         $method = $reflection->getMethod('sanitizeContext');
         $method->setAccessible(true);
 

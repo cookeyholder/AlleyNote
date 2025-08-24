@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Shared\Contracts\ValidatorInterface;
-
 use App\Shared\Validation\Factory\ValidatorFactory;
-
+use App\Shared\Validation\ValidationException;
 use DI\Container;
 use DI\ContainerBuilder;
 use Tests\TestCase;
 
 /**
- * DI 容器驗證服務整合測試
+ * DI 容器驗證服務整合測試.
  *
  * 測試 DI 容器中的驗證服務是否正確配置和注入
  */
@@ -26,14 +25,14 @@ class DIValidationIntegrationTest extends TestCase
         parent::setUp();
 
         // 載入 DI 容器配置
-        $containerBuilder = new \DI\ContainerBuilder();
+        $containerBuilder = new ContainerBuilder();
         $definitions = require __DIR__ . '/../../app/Infrastructure/Config/container.php';
         $containerBuilder->addDefinitions($definitions);
         $this->container = $containerBuilder->build();
     }
 
     /**
-     * 測試從容器中取得 ValidatorInterface 實例
+     * 測試從容器中取得 ValidatorInterface 實例.
      */
     public function test_can_resolve_validator_interface_from_container(): void
     {
@@ -46,7 +45,7 @@ class DIValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試從容器中取得 ValidatorFactory 實例
+     * 測試從容器中取得 ValidatorFactory 實例.
      */
     public function test_can_resolve_validator_factory_from_container(): void
     {
@@ -59,7 +58,7 @@ class DIValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試透過 ValidatorFactory 建立的驗證器包含繁體中文錯誤訊息
+     * 測試透過 ValidatorFactory 建立的驗證器包含繁體中文錯誤訊息.
      */
     public function test_validator_from_factory_has_chinese_messages(): void
     {
@@ -81,7 +80,7 @@ class DIValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 DI 容器注入的驗證器具有自訂驗證規則
+     * 測試 DI 容器注入的驗證器具有自訂驗證規則.
      */
     public function test_container_validator_has_custom_rules(): void
     {
@@ -118,7 +117,7 @@ class DIValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試驗證器工廠的不同建立方法
+     * 測試驗證器工廠的不同建立方法.
      */
     public function test_validator_factory_create_methods(): void
     {
@@ -130,11 +129,11 @@ class DIValidationIntegrationTest extends TestCase
         $dtoValidator = $factory->createForDTO();
         $customValidator = $factory->createWithConfig([
             'messages' => [
-                'required' => '自訂必填錯誤訊息 :field'
+                'required' => '自訂必填錯誤訊息 :field',
             ],
             'rules' => [
-                'custom_test' => fn($value) => $value === 'test'
-            ]
+                'custom_test' => fn($value) => $value === 'test',
+            ],
         ]);
 
         // Assert
@@ -153,7 +152,7 @@ class DIValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 DTO 專用驗證器包含密碼確認規則
+     * 測試 DTO 專用驗證器包含密碼確認規則.
      */
     public function test_dto_validator_has_password_confirmation_rule(): void
     {
@@ -163,21 +162,21 @@ class DIValidationIntegrationTest extends TestCase
         // Act & Assert - 測試密碼確認規則
         $data = [
             'password' => 'MyPassword123',
-            'password_confirmation' => 'MyPassword123'
+            'password_confirmation' => 'MyPassword123',
         ];
 
         // 修改 ValidatorFactory 中的 password_confirmed 規則呼叫方式
         // 因為規則需要存取完整的資料陣列，我們需要確保它能正確運作
         $result = $validator->validate($data, [
-            'password_confirmation' => 'password_confirmed'
+            'password_confirmation' => 'password_confirmed',
         ]);
 
         // 應該驗證失敗，因為密碼確認不匹配
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
     }
 
     /**
-     * 測試容器解析的一致性 - 每次取得的應該是同一個實例
+     * 測試容器解析的一致性 - 每次取得的應該是同一個實例.
      */
     public function test_container_validator_consistency(): void
     {
@@ -196,7 +195,7 @@ class DIValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試驗證器的錯誤訊息本地化
+     * 測試驗證器的錯誤訊息本地化.
      */
     public function test_validator_error_message_localization(): void
     {
@@ -218,7 +217,7 @@ class DIValidationIntegrationTest extends TestCase
             // Assert
             $this->assertFalse(
                 $result->isValid(),
-                "測試案例失敗: " . json_encode($testCase, JSON_UNESCAPED_UNICODE)
+                '測試案例失敗: ' . json_encode($testCase, JSON_UNESCAPED_UNICODE),
             );
 
             $errors = $result->getErrors();
@@ -227,13 +226,13 @@ class DIValidationIntegrationTest extends TestCase
             $this->assertStringContainsString(
                 $testCase['expected'],
                 $errors[$field][0],
-                "錯誤訊息不包含預期的中文內容: " . $errors[$field][0]
+                '錯誤訊息不包含預期的中文內容: ' . $errors[$field][0],
             );
         }
     }
 
     /**
-     * 測試驗證器效能和記憶體使用
+     * 測試驗證器效能和記憶體使用.
      */
     public function test_validator_performance_and_memory(): void
     {
@@ -267,12 +266,12 @@ class DIValidationIntegrationTest extends TestCase
         $this->assertLessThan(
             1024 * 1024,
             $memoryIncrease,
-            "記憶體使用量增加過多: " . number_format($memoryIncrease / 1024, 2) . " KB"
+            '記憶體使用量增加過多: ' . number_format($memoryIncrease / 1024, 2) . ' KB',
         );
     }
 
     /**
-     * 測試簡化的驗證場景（不使用巢狀驗證）
+     * 測試簡化的驗證場景（不使用巢狀驗證）.
      */
     public function test_simplified_validation_scenarios(): void
     {
@@ -315,19 +314,19 @@ class DIValidationIntegrationTest extends TestCase
         $userResult = $validator->validate($userData, $userRules);
         $this->assertTrue(
             $userResult->isValid(),
-            "使用者資料驗證失敗: " . json_encode($userResult->getErrors(), JSON_UNESCAPED_UNICODE)
+            '使用者資料驗證失敗: ' . json_encode($userResult->getErrors(), JSON_UNESCAPED_UNICODE),
         );
 
         $profileResult = $validator->validate($profileData, $profileRules);
         $this->assertTrue(
             $profileResult->isValid(),
-            "個人檔案驗證失敗: " . json_encode($profileResult->getErrors(), JSON_UNESCAPED_UNICODE)
+            '個人檔案驗證失敗: ' . json_encode($profileResult->getErrors(), JSON_UNESCAPED_UNICODE),
         );
 
         $settingsResult = $validator->validate($settingsData, $settingsRules);
         $this->assertTrue(
             $settingsResult->isValid(),
-            "設定驗證失敗: " . json_encode($settingsResult->getErrors(), JSON_UNESCAPED_UNICODE)
+            '設定驗證失敗: ' . json_encode($settingsResult->getErrors(), JSON_UNESCAPED_UNICODE),
         );
     }
 }

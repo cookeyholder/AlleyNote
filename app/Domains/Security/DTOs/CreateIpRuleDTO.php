@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\DTOs;
 
-use App\Shared\DTOs\BaseDTO;
 use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\DTOs\BaseDTO;
 
 /**
  * 建立 IP 規則的資料傳輸物件.
@@ -45,7 +45,7 @@ class CreateIpRuleDTO extends BaseDTO
     }
 
     /**
-     * 添加 IP 規則專用驗證規則
+     * 添加 IP 規則專用驗證規則.
      */
     private function addIpRuleValidationRules(): void
     {
@@ -146,9 +146,7 @@ class CreateIpRuleDTO extends BaseDTO
     }
 
     /**
-     * 取得驗證規則
-     *
-     * @return array
+     * 取得驗證規則.
      */
     protected function getValidationRules(): array
     {
@@ -162,8 +160,6 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
-     *
-     * @return array
      */
     public function toArray(): array
     {
@@ -176,9 +172,7 @@ class CreateIpRuleDTO extends BaseDTO
     }
 
     /**
-     * 檢查是否為 CIDR 格式
-     *
-     * @return bool
+     * 檢查是否為 CIDR 格式.
      */
     public function isCidrFormat(): bool
     {
@@ -186,9 +180,7 @@ class CreateIpRuleDTO extends BaseDTO
     }
 
     /**
-     * 取得 IP 部分（去除 CIDR 後綴）
-     *
-     * @return string
+     * 取得 IP 部分（去除 CIDR 後綴）.
      */
     public function getIpPart(): string
     {
@@ -200,9 +192,7 @@ class CreateIpRuleDTO extends BaseDTO
     }
 
     /**
-     * 取得 CIDR 後綴（如果有的話）
-     *
-     * @return int|null
+     * 取得 CIDR 後綴（如果有的話）.
      */
     public function getCidrSuffix(): ?int
     {
@@ -215,41 +205,36 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * 檢查是否為 IPv4 地址
-     *
-     * @return bool
      */
     public function isIpv4(): bool
     {
         $ip = $this->getIpPart();
+
         return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false;
     }
 
     /**
      * 檢查是否為 IPv6 地址
-     *
-     * @return bool
      */
     public function isIpv6(): bool
     {
         $ip = $this->getIpPart();
+
         return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
     }
 
     /**
      * 檢查是否為私有 IP 地址
-     *
-     * @return bool
      */
     public function isPrivateIp(): bool
     {
         $ip = $this->getIpPart();
+
         return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) === false;
     }
 
     /**
      * 檢查是否為本地回環地址
-     *
-     * @return bool
      */
     public function isLoopback(): bool
     {
@@ -265,9 +250,7 @@ class CreateIpRuleDTO extends BaseDTO
     }
 
     /**
-     * 取得 IP 規則的描述性名稱
-     *
-     * @return string
+     * 取得 IP 規則的描述性名稱.
      */
     public function getDisplayName(): string
     {
@@ -279,9 +262,7 @@ class CreateIpRuleDTO extends BaseDTO
     }
 
     /**
-     * 取得 IP 規則的詳細資訊
-     *
-     * @return array
+     * 取得 IP 規則的詳細資訊.
      */
     public function getDetailedInfo(): array
     {

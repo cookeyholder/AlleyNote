@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\DTOs;
 
-use App\Shared\DTOs\BaseDTO;
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\DTOs\BaseDTO;
+use DateTime;
 
 /**
  * 更新文章的資料傳輸物件.
@@ -58,6 +59,7 @@ class UpdatePostDTO extends BaseDTO
             $this->isPinned = null;
             $this->status = null;
             $this->publishDate = null;
+
             return;
         }
 
@@ -86,7 +88,7 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 添加文章專用驗證規則
+     * 添加文章專用驗證規則.
      */
     private function addPostValidationRules(): void
     {
@@ -156,6 +158,7 @@ class UpdatePostDTO extends BaseDTO
             }
 
             $validStatuses = array_map(fn($status) => $status->value, PostStatus::cases());
+
             return in_array($value, $validStatuses, true);
         });
 
@@ -171,14 +174,14 @@ class UpdatePostDTO extends BaseDTO
 
             // 支援多種 RFC3339 格式
             $formats = [
-                \DateTime::RFC3339,
-                \DateTime::RFC3339_EXTENDED,
+                DateTime::RFC3339,
+                DateTime::RFC3339_EXTENDED,
                 'Y-m-d\TH:i:s\Z',
-                'Y-m-d\TH:i:sP'
+                'Y-m-d\TH:i:sP',
             ];
 
             foreach ($formats as $format) {
-                $date = \DateTime::createFromFormat($format, $value);
+                $date = DateTime::createFromFormat($format, $value);
                 if ($date && $date->format($format) === $value) {
                     return true;
                 }
@@ -195,9 +198,7 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）
-     *
-     * @return array
+     * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）.
      */
     protected function getValidationRules(): array
     {
@@ -212,7 +213,7 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 動態驗證資料（只驗證提供的欄位）
+     * 動態驗證資料（只驗證提供的欄位）.
      *
      * @param array $data 要驗證的資料
      * @return array 驗證通過的資料
@@ -241,8 +242,6 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Repository 使用）
      * 只包含有值的欄位.
-     *
-     * @return array
      */
     public function toArray(): array
     {
@@ -273,8 +272,6 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * 檢查是否有任何資料需要更新.
-     *
-     * @return bool
      */
     public function hasChanges(): bool
     {
@@ -282,9 +279,7 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 取得更新的欄位名稱列表
-     *
-     * @return array
+     * 取得更新的欄位名稱列表.
      */
     public function getUpdatedFields(): array
     {
@@ -292,10 +287,9 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 檢查是否更新了特定欄位
+     * 檢查是否更新了特定欄位.
      *
      * @param string $field 欄位名稱
-     * @return bool
      */
     public function hasUpdatedField(string $field): bool
     {
@@ -304,9 +298,6 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * 正確轉換布林值
-     *
-     * @param mixed $value
-     * @return bool
      */
     private function convertToBoolean(mixed $value): bool
     {
@@ -316,6 +307,7 @@ class UpdatePostDTO extends BaseDTO
 
         if (is_string($value)) {
             $value = strtolower(trim($value));
+
             return in_array($value, ['1', 'true', 'on', 'yes'], true);
         }
 

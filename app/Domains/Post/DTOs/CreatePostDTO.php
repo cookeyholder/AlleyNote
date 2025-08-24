@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\DTOs;
 
-use App\Shared\DTOs\BaseDTO;
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\DTOs\BaseDTO;
+use DateTime;
 
 /**
  * 建立文章的資料傳輸物件.
@@ -68,7 +69,7 @@ class CreatePostDTO extends BaseDTO
     }
 
     /**
-     * 添加文章專用驗證規則
+     * 添加文章專用驗證規則.
      */
     private function addPostValidationRules(): void
     {
@@ -136,6 +137,7 @@ class CreatePostDTO extends BaseDTO
             }
 
             $validStatuses = array_map(fn($status) => $status->value, PostStatus::cases());
+
             return in_array($value, $validStatuses, true);
         });
 
@@ -151,14 +153,14 @@ class CreatePostDTO extends BaseDTO
 
             // 支援多種 RFC3339 格式
             $formats = [
-                \DateTime::RFC3339,
-                \DateTime::RFC3339_EXTENDED,
+                DateTime::RFC3339,
+                DateTime::RFC3339_EXTENDED,
                 'Y-m-d\TH:i:s\Z',
-                'Y-m-d\TH:i:sP'
+                'Y-m-d\TH:i:sP',
             ];
 
             foreach ($formats as $format) {
-                $date = \DateTime::createFromFormat($format, $value);
+                $date = DateTime::createFromFormat($format, $value);
                 if ($date && $date->format($format) === $value) {
                     return true;
                 }
@@ -177,9 +179,7 @@ class CreatePostDTO extends BaseDTO
     }
 
     /**
-     * 取得驗證規則
-     *
-     * @return array
+     * 取得驗證規則.
      */
     protected function getValidationRules(): array
     {
@@ -196,8 +196,6 @@ class CreatePostDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
-     *
-     * @return array
      */
     public function toArray(): array
     {

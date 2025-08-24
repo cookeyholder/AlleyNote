@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Advanced;
 
-use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
-use App\Domains\Security\Contracts\ErrorHandlerServiceInterface;
 use App\Domains\Attachment\Contracts\FileSecurityServiceInterface;
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
+use App\Domains\Auth\Contracts\SessionSecurityServiceInterface;
+use App\Domains\Security\Contracts\ErrorHandlerServiceInterface;
 use App\Domains\Security\Contracts\SecretsManagerInterface;
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
 use App\Domains\Security\Contracts\SecurityTestInterface;
-use App\Domains\Auth\Contracts\SessionSecurityServiceInterface;
+use Exception;
 
 class SecurityTestService implements SecurityTestInterface
 {
@@ -38,7 +39,7 @@ class SecurityTestService implements SecurityTestInterface
         SecurityHeaderServiceInterface $headerService,
         ErrorHandlerServiceInterface $errorService,
         PasswordSecurityServiceInterface $passwordService,
-        SecretsManagerInterface $secretsManager
+        SecretsManagerInterface $secretsManager,
     ) {
         $this->sessionService = $sessionService;
         $this->authService = $authService;
@@ -84,7 +85,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => 'Session 成功初始化',
             ];
             $results['passed']++;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => 'Session 安全初始化',
                 'status' => 'FAIL',
@@ -114,7 +115,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => 'Session ID 重新產生',
                 'status' => 'FAIL',
@@ -146,7 +147,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '權限檢查功能正常',
             ];
             $results['passed']++;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '權限檢查',
                 'status' => 'FAIL',
@@ -164,7 +165,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '角色權限檢查功能正常',
             ];
             $results['passed']++;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '角色權限檢查',
                 'status' => 'FAIL',
@@ -199,7 +200,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '檔案驗證功能需要真實檔案進行測試',
             ];
             $results['passed']++;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '檔案上傳驗證',
                 'status' => 'FAIL',
@@ -226,7 +227,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '檔名清理',
                 'status' => 'FAIL',
@@ -289,7 +290,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '安全標頭設定',
                 'status' => 'FAIL',
@@ -314,7 +315,7 @@ class SecurityTestService implements SecurityTestInterface
 
         // 測試錯誤處理
         try {
-            $exception = new \Exception('Test exception');
+            $exception = new Exception('Test exception');
             $response = $this->errorService->handleException($exception, false);
 
             if (is_array($response) && isset($response['error'])) {
@@ -332,7 +333,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '錯誤處理',
                 'status' => 'FAIL',
@@ -375,7 +376,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '密碼雜湊',
                 'status' => 'FAIL',
@@ -407,7 +408,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '密碼強度檢查',
                 'status' => 'FAIL',
@@ -439,7 +440,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '秘密設定載入成功',
             ];
             $results['passed']++;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '秘密設定載入',
                 'status' => 'FAIL',
@@ -462,7 +463,7 @@ class SecurityTestService implements SecurityTestInterface
             } else {
                 $results['failed']++;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '.env 檔案驗證',
                 'status' => 'FAIL',
@@ -511,8 +512,8 @@ class SecurityTestService implements SecurityTestInterface
 
         foreach ($directories as $name => $path) {
             if (is_dir($path)) {
-                $perms = fileperms($path) & 0777;
-                if ($perms <= 0755) {
+                $perms = fileperms($path) & 0o777;
+                if ($perms <= 0o755) {
                     $results['tests'][] = [
                         'name' => "{$name} 目錄權限檢查",
                         'status' => 'PASS',
@@ -586,7 +587,7 @@ class SecurityTestService implements SecurityTestInterface
     private function createMockUploadedFile()
     {
         // 建立簡單的模擬檔案物件
-        return new class () {
+        return new class {
             public function getClientFilename()
             {
                 return 'test.txt';

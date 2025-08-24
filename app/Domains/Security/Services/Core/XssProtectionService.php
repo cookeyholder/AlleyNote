@@ -218,7 +218,7 @@ class XssProtectionService
         if (!is_dir($cachePath)) {
             // @ 符號抑制錯誤，以處理多執行緒環境下的競爭條件
             // 權限設為 0750，只有擁有者和同群組使用者可以存取
-            @mkdir($cachePath, 0750, true);
+            @mkdir($cachePath, 0o750, true);
         }
 
         return $cachePath;

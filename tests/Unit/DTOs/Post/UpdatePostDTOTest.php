@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\DTOs\Post;
 
 use App\Domains\Post\DTOs\UpdatePostDTO;
-use App\Shared\Validation\ValidationException;
-use App\Domains\Post\Models\Post;
 use App\Domains\Post\Enums\PostStatus;
-
-
+use App\Shared\Validation\ValidationException;
 use App\Shared\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 
@@ -179,7 +176,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForInvalidTitle(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => str_repeat('a', 256), // 太長的標題
@@ -190,7 +187,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForEmptyTitleContent(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '   ', // 只有空白的標題
@@ -201,7 +198,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForEmptyContentContent(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'content' => '   ', // 只有空白的內容
@@ -212,7 +209,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForInvalidStatus(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'status' => 'invalid_status',
@@ -223,7 +220,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForInvalidPublishDate(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'publish_date' => 'invalid-date-format',
@@ -234,7 +231,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForInvalidBooleanValue(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'is_pinned' => 'maybe', // 無效的布林值
@@ -278,7 +275,7 @@ class UpdatePostDTOTest extends TestCase
             ];
 
             $dto = new UpdatePostDTO($this->validator, $data);
-            $this->assertEquals($expected, $dto->isPinned, "Failed for input: " . var_export($input, true));
+            $this->assertEquals($expected, $dto->isPinned, 'Failed for input: ' . var_export($input, true));
         }
     }
 

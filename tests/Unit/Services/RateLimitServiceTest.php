@@ -7,8 +7,8 @@ namespace Tests\Unit\Services;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
 use Mockery;
+use RuntimeException;
 use Tests\TestCase;
-
 
 class RateLimitServiceTest extends TestCase
 {
@@ -19,7 +19,7 @@ class RateLimitServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->cacheMock = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
+        $this->cacheMock = Mockery::mock(CacheService::class);
         $this->rateLimitService = new RateLimitService($this->cacheMock);
     }
 
@@ -66,7 +66,7 @@ class RateLimitServiceTest extends TestCase
         $this->cacheMock->shouldReceive('get')
             ->once()
             ->with("rate_limit:{$ip}")
-            ->andThrow(new \RuntimeException('快取錯誤'));
+            ->andThrow(new RuntimeException('快取錯誤'));
 
         // 不需要設定 set 的預期，因為在異常情況下不會呼叫 set
         $result = $this->rateLimitService->isAllowed($ip);
@@ -107,7 +107,7 @@ class RateLimitServiceTest extends TestCase
         $this->cacheMock->shouldReceive('set')
             ->once()
             ->with("rate_limit:{$ip}", Mockery::any(), 60)
-            ->andThrow(new \RuntimeException('快取更新失敗'));
+            ->andThrow(new RuntimeException('快取更新失敗'));
 
         // 快取更新失敗時應該允許請求
         $result = $this->rateLimitService->isAllowed($ip);

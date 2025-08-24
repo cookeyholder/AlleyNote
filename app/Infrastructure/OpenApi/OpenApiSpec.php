@@ -14,93 +14,93 @@ use OpenApi\Attributes as OA;
     contact: new OA\Contact(
         name: 'AlleyNote 開發團隊',
         email: 'dev@alleynote.example.com',
-        url: 'https://github.com/alleynote/alleynote'
+        url: 'https://github.com/alleynote/alleynote',
     ),
     license: new OA\License(
         name: 'MIT',
-        url: 'https://opensource.org/licenses/MIT'
-    )
+        url: 'https://opensource.org/licenses/MIT',
+    ),
 )]
 #[OA\Server(
     url: 'http://localhost/api/v1',
-    description: '開發環境 API 伺服器 (v1.0)'
+    description: '開發環境 API 伺服器 (v1.0)',
 )]
 #[OA\Server(
     url: 'https://api.alleynote.example.com/v1',
-    description: '正式環境 API 伺服器 (v1.0)'
+    description: '正式環境 API 伺服器 (v1.0)',
 )]
 #[OA\Server(
     url: 'http://localhost/api',
-    description: '開發環境 API 伺服器 (最新版本)'
+    description: '開發環境 API 伺服器 (最新版本)',
 )]
 #[OA\Server(
     url: 'https://api.alleynote.example.com',
-    description: '正式環境 API 伺服器 (最新版本)'
+    description: '正式環境 API 伺服器 (最新版本)',
 )]
 #[OA\SecurityScheme(
     securityScheme: 'bearerAuth',
     type: 'http',
     scheme: 'bearer',
     bearerFormat: 'JWT',
-    description: '使用 JWT Token 進行 Bearer 認證'
+    description: '使用 JWT Token 進行 Bearer 認證',
 )]
 #[OA\SecurityScheme(
     securityScheme: 'sessionAuth',
     type: 'apiKey',
     in: 'cookie',
     name: 'PHPSESSID',
-    description: '使用 Session Cookie 進行認證'
+    description: '使用 Session Cookie 進行認證',
 )]
 #[OA\SecurityScheme(
     securityScheme: 'csrfToken',
     type: 'apiKey',
     in: 'header',
     name: 'X-CSRF-TOKEN',
-    description: 'CSRF 保護令牌，用於防止跨站請求偽造攻擊'
+    description: 'CSRF 保護令牌，用於防止跨站請求偽造攻擊',
 )]
 #[OA\Tag(
     name: 'posts',
     description: "文章管理相關 API - 建立、讀取、更新、刪除文章\n\n支援的功能：\n- 分頁查詢和搜尋\n- 分類和優先級管理\n- 置頂和過期設定\n- 標籤系統",
     externalDocs: new OA\ExternalDocumentation(
         description: '了解更多文章管理功能',
-        url: 'https://docs.alleynote.example.com/v1/posts'
-    )
+        url: 'https://docs.alleynote.example.com/v1/posts',
+    ),
 )]
 #[OA\Tag(
     name: 'auth',
     description: "身份驗證相關 API - 登入、登出、註冊、密碼重設\n\n支援的認證方式：\n- JWT Bearer Token\n- Session Cookie\n- API Key (管理員功能)",
     externalDocs: new OA\ExternalDocumentation(
         description: '認證機制說明',
-        url: 'https://docs.alleynote.example.com/v1/auth'
-    )
+        url: 'https://docs.alleynote.example.com/v1/auth',
+    ),
 )]
 #[OA\Tag(
     name: 'ip',
     description: "IP 管理相關 API - IP 黑白名單管理\n\n功能包括：\n- IP 黑名單設定\n- IP 白名單管理\n- 存取記錄查詢",
     externalDocs: new OA\ExternalDocumentation(
         description: 'IP 管理說明',
-        url: 'https://docs.alleynote.example.com/v1/ip'
-    )
+        url: 'https://docs.alleynote.example.com/v1/ip',
+    ),
 )]
 #[OA\Tag(
     name: 'attachments',
     description: "附件管理相關 API - 檔案上傳、下載、刪除\n\n支援的檔案類型：\n- 圖片：PNG, JPG, GIF, WebP\n- 文件：PDF, DOC, DOCX, TXT\n- 壓縮檔：ZIP, RAR\n\n檔案大小限制：最大 10MB",
     externalDocs: new OA\ExternalDocumentation(
         description: '檔案管理說明',
-        url: 'https://docs.alleynote.example.com/v1/attachments'
-    )
+        url: 'https://docs.alleynote.example.com/v1/attachments',
+    ),
 )]
 #[OA\Tag(
     name: 'system',
     description: "系統管理相關 API - 系統狀態、配置管理\n\n管理功能：\n- 系統健康檢查\n- 效能監控\n- 配置參數管理\n- 日誌查詢",
     externalDocs: new OA\ExternalDocumentation(
         description: '系統管理說明',
-        url: 'https://docs.alleynote.example.com/v1/system'
-    )
+        url: 'https://docs.alleynote.example.com/v1/system',
+    ),
 )]
 #[OA\ExternalDocumentation(
     description: 'AlleyNote 完整文件',
-    url: 'https://docs.alleynote.example.com/v1'
+    url: 'https://docs.alleynote.example.com/v1',
 )]
 class OpenApiSpec
 {

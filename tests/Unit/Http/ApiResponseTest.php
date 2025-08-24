@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http;
 
-use App\Domains\Post\Models\Post;
 use App\Shared\Http\ApiResponse;
+use DateTimeImmutable;
+use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
-
 
 class ApiResponseTest extends TestCase
 {
@@ -99,11 +99,11 @@ class ApiResponseTest extends TestCase
         $timestamp = $response['timestamp'];
         $this->assertMatchesRegularExpression(
             '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/',
-            $timestamp
+            $timestamp,
         );
 
         // 驗證能夠解析為有效的 DateTime
-        $dateTime = \DateTimeImmutable::createFromFormat(\DateTimeInterface::RFC3339, $timestamp);
-        $this->assertInstanceOf(\DateTimeImmutable::class, $dateTime);
+        $dateTime = DateTimeImmutable::createFromFormat(DateTimeInterface::RFC3339, $timestamp);
+        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
     }
 }

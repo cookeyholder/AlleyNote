@@ -56,7 +56,7 @@
       "@analyse",
       "@test"
     ],
-    "audit": "composer audit --format=json",
+    "security-audit": "composer audit --format=json",
     "audit-report": "composer audit --format=json > security-audit-report.json || true"
   },
   "minimum-stability": "stable"

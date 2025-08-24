@@ -8,16 +8,14 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Validation\Validator;
 
 /**
- * 驗證器工廠類別
+ * 驗證器工廠類別.
  *
  * 負責建立和配置驗證器實例，提供統一的驗證器建立介面
  */
 class ValidatorFactory
 {
     /**
-     * 建立標準驗證器實例
-     *
-     * @return ValidatorInterface
+     * 建立標準驗證器實例.
      */
     public function create(): ValidatorInterface
     {
@@ -33,10 +31,9 @@ class ValidatorFactory
     }
 
     /**
-     * 建立具有自訂配置的驗證器實例
+     * 建立具有自訂配置的驗證器實例.
      *
      * @param array $config 自訂配置
-     * @return ValidatorInterface
      */
     public function createWithConfig(array $config): ValidatorInterface
     {
@@ -59,9 +56,7 @@ class ValidatorFactory
     }
 
     /**
-     * 設定繁體中文錯誤訊息
-     *
-     * @param ValidatorInterface $validator
+     * 設定繁體中文錯誤訊息.
      */
     private function configureChineseMessages(ValidatorInterface $validator): void
     {
@@ -102,9 +97,7 @@ class ValidatorFactory
     }
 
     /**
-     * 添加專案特定的自訂驗證規則
-     *
-     * @param ValidatorInterface $validator
+     * 添加專案特定的自訂驗證規則.
      */
     private function addCustomRules(ValidatorInterface $validator): void
     {
@@ -294,9 +287,7 @@ class ValidatorFactory
     }
 
     /**
-     * 建立用於 DTO 的驗證器實例
-     *
-     * @return ValidatorInterface
+     * 建立用於 DTO 的驗證器實例.
      */
     public function createForDTO(): ValidatorInterface
     {
@@ -309,9 +300,7 @@ class ValidatorFactory
     }
 
     /**
-     * 添加 DTO 專用的驗證規則
-     *
-     * @param ValidatorInterface $validator
+     * 添加 DTO 專用的驗證規則.
      */
     private function addDTOSpecificRules(ValidatorInterface $validator): void
     {

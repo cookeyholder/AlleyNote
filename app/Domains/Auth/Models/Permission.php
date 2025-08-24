@@ -27,7 +27,7 @@ class Permission
         string $action,
         ?string $description = null,
         string $createdAt = '',
-        string $updatedAt = ''
+        string $updatedAt = '',
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -95,7 +95,7 @@ class Permission
             $data['action'],
             $data['description'] ?? null,
             $data['created_at'] ?? '',
-            $data['updated_at'] ?? ''
+            $data['updated_at'] ?? '',
         );
     }
 }

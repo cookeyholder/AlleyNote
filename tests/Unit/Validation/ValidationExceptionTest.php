@@ -4,33 +4,31 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Validation;
 
-
-
-use App\Shared\Validation\ValidationResult;
 use App\Shared\Validation\ValidationException;
+use App\Shared\Validation\ValidationResult;
 use Exception;
 use Tests\TestCase;
 
 /**
- * ValidationException 單元測試
+ * ValidationException 單元測試.
  *
  * 測試驗證異常類的所有功能，包括建立、錯誤處理、API 回應格式等
  */
 class ValidationExceptionTest extends TestCase
 {
     /**
-     * 測試使用 ValidationResult 建立異常
+     * 測試使用 ValidationResult 建立異常.
      */
     public function test_create_from_validation_result(): void
     {
         // Arrange
         $errors = [
             'name' => ['名稱為必填項目'],
-            'email' => ['電子郵件格式不正確']
+            'email' => ['電子郵件格式不正確'],
         ];
         $failedRules = [
             'name' => ['required'],
-            'email' => ['email']
+            'email' => ['email'],
         ];
         $validationResult = ValidationResult::failure($errors, $failedRules);
 
@@ -47,7 +45,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試使用自訂訊息建立異常
+     * 測試使用自訂訊息建立異常.
      */
     public function test_create_with_custom_message(): void
     {
@@ -66,7 +64,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試空驗證結果的預設訊息
+     * 測試空驗證結果的預設訊息.
      */
     public function test_empty_validation_result_default_message(): void
     {
@@ -81,18 +79,18 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試從錯誤陣列建立異常
+     * 測試從錯誤陣列建立異常.
      */
     public function test_create_from_errors(): void
     {
         // Arrange
         $errors = [
             'username' => ['使用者名稱為必填項目', '使用者名稱長度不足'],
-            'password' => ['密碼強度不足']
+            'password' => ['密碼強度不足'],
         ];
         $failedRules = [
             'username' => ['required', 'min_length'],
-            'password' => ['password_strength']
+            'password' => ['password_strength'],
         ];
 
         // Act
@@ -106,7 +104,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試從錯誤陣列建立異常（含自訂訊息）
+     * 測試從錯誤陣列建立異常（含自訂訊息）.
      */
     public function test_create_from_errors_with_custom_message(): void
     {
@@ -122,7 +120,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試從單一錯誤建立異常
+     * 測試從單一錯誤建立異常.
      */
     public function test_create_from_single_error(): void
     {
@@ -142,7 +140,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試從單一錯誤建立異常（不含規則）
+     * 測試從單一錯誤建立異常（不含規則）.
      */
     public function test_create_from_single_error_without_rule(): void
     {
@@ -160,7 +158,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試取得特定欄位的錯誤訊息
+     * 測試取得特定欄位的錯誤訊息.
      */
     public function test_get_field_errors(): void
     {
@@ -168,7 +166,7 @@ class ValidationExceptionTest extends TestCase
         $errors = [
             'name' => ['名稱為必填項目', '名稱長度不足'],
             'email' => ['電子郵件格式錯誤'],
-            'age' => []
+            'age' => [],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -180,7 +178,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試檢查特定欄位是否有錯誤
+     * 測試檢查特定欄位是否有錯誤.
      */
     public function test_has_field_errors(): void
     {
@@ -188,7 +186,7 @@ class ValidationExceptionTest extends TestCase
         $errors = [
             'name' => ['錯誤'],
             'email' => ['錯誤'],
-            'valid_field' => []
+            'valid_field' => [],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -200,14 +198,14 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試取得第一個錯誤訊息
+     * 測試取得第一個錯誤訊息.
      */
     public function test_get_first_error(): void
     {
         // Arrange
         $errors = [
             'field1' => ['第一個錯誤', '第二個錯誤'],
-            'field2' => ['第三個錯誤']
+            'field2' => ['第三個錯誤'],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -218,7 +216,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試取得特定欄位的第一個錯誤訊息
+     * 測試取得特定欄位的第一個錯誤訊息.
      */
     public function test_get_first_field_error(): void
     {
@@ -226,7 +224,7 @@ class ValidationExceptionTest extends TestCase
         $errors = [
             'name' => ['第一個名稱錯誤', '第二個名稱錯誤'],
             'email' => ['電子郵件錯誤'],
-            'empty_field' => []
+            'empty_field' => [],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -238,7 +236,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試取得所有錯誤訊息的扁平陣列
+     * 測試取得所有錯誤訊息的扁平陣列.
      */
     public function test_get_all_errors(): void
     {
@@ -246,7 +244,7 @@ class ValidationExceptionTest extends TestCase
         $errors = [
             'name' => ['名稱錯誤1', '名稱錯誤2'],
             'email' => ['電子郵件錯誤'],
-            'age' => ['年齡錯誤1', '年齡錯誤2', '年齡錯誤3']
+            'age' => ['年齡錯誤1', '年齡錯誤2', '年齡錯誤3'],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -260,7 +258,7 @@ class ValidationExceptionTest extends TestCase
             '電子郵件錯誤',
             '年齡錯誤1',
             '年齡錯誤2',
-            '年齡錯誤3'
+            '年齡錯誤3',
         ];
         $this->assertCount(6, $allErrors);
         foreach ($expectedErrors as $expectedError) {
@@ -269,7 +267,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試取得失敗的規則
+     * 測試取得失敗的規則.
      */
     public function test_get_failed_rules(): void
     {
@@ -277,7 +275,7 @@ class ValidationExceptionTest extends TestCase
         $errors = ['name' => ['錯誤'], 'email' => ['錯誤']];
         $failedRules = [
             'name' => ['required', 'min_length'],
-            'email' => ['email']
+            'email' => ['email'],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -289,18 +287,18 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試 API 回應格式
+     * 測試 API 回應格式.
      */
     public function test_to_api_response(): void
     {
         // Arrange
         $errors = [
             'name' => ['名稱為必填項目'],
-            'email' => ['電子郵件格式不正確']
+            'email' => ['電子郵件格式不正確'],
         ];
         $failedRules = [
             'name' => ['required'],
-            'email' => ['email']
+            'email' => ['email'],
         ];
         $exception = ValidationException::fromErrors($errors, $failedRules, '驗證失敗');
 
@@ -316,7 +314,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試除錯資訊
+     * 測試除錯資訊.
      */
     public function test_to_debug_array(): void
     {
@@ -338,7 +336,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試錯誤統計功能
+     * 測試錯誤統計功能.
      */
     public function test_error_statistics(): void
     {
@@ -346,7 +344,7 @@ class ValidationExceptionTest extends TestCase
         $errors = [
             'name' => ['錯誤1', '錯誤2'],
             'email' => ['錯誤3'],
-            'age' => ['錯誤4', '錯誤5', '錯誤6']
+            'age' => ['錯誤4', '錯誤5', '錯誤6'],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -356,7 +354,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試檢查是否為特定規則的驗證失敗
+     * 測試檢查是否為特定規則的驗證失敗.
      */
     public function test_has_failed_rule(): void
     {
@@ -364,7 +362,7 @@ class ValidationExceptionTest extends TestCase
         $errors = ['name' => ['錯誤'], 'email' => ['錯誤']];
         $failedRules = [
             'name' => ['required', 'min_length'],
-            'email' => ['email']
+            'email' => ['email'],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -377,7 +375,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試檢查特定欄位是否因特定規則失敗
+     * 測試檢查特定欄位是否因特定規則失敗.
      */
     public function test_has_field_failed_rule(): void
     {
@@ -385,7 +383,7 @@ class ValidationExceptionTest extends TestCase
         $errors = ['name' => ['錯誤'], 'email' => ['錯誤']];
         $failedRules = [
             'name' => ['required', 'min_length'],
-            'email' => ['email']
+            'email' => ['email'],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -399,7 +397,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試異常鏈（前一個異常）
+     * 測試異常鏈（前一個異常）.
      */
     public function test_exception_chaining(): void
     {
@@ -417,7 +415,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試 JSON 序列化
+     * 測試 JSON 序列化.
      */
     public function test_json_serialization(): void
     {
@@ -440,7 +438,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試大量錯誤的效能
+     * 測試大量錯誤的效能.
      */
     public function test_performance_with_many_errors(): void
     {
@@ -480,14 +478,14 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試異常訊息國際化支援
+     * 測試異常訊息國際化支援.
      */
     public function test_internationalization_support(): void
     {
         // Arrange - 測試中文錯誤訊息
         $chineseErrors = [
             'name' => ['姓名為必填項目', '姓名長度必須至少2個字元'],
-            'email' => ['電子郵件地址格式不正確']
+            'email' => ['電子郵件地址格式不正確'],
         ];
         $chineseException = ValidationException::fromErrors($chineseErrors);
 
@@ -499,7 +497,7 @@ class ValidationExceptionTest extends TestCase
         // Arrange - 測試英文錯誤訊息
         $englishErrors = [
             'name' => ['Name is required', 'Name must be at least 2 characters'],
-            'email' => ['Email format is invalid']
+            'email' => ['Email format is invalid'],
         ];
         $englishException = ValidationException::fromErrors($englishErrors);
 
@@ -510,7 +508,7 @@ class ValidationExceptionTest extends TestCase
     }
 
     /**
-     * 測試空錯誤情況的邊界條件
+     * 測試空錯誤情況的邊界條件.
      */
     public function test_edge_cases_with_empty_errors(): void
     {

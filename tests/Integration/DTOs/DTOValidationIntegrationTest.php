@@ -5,25 +5,23 @@ declare(strict_types=1);
 namespace Tests\Integration\DTOs;
 
 use App\Domains\Attachment\DTOs\CreateAttachmentDTO;
-use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
-use App\Domains\Post\Models\Post;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
+use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Validation\ValidationException;
-
 use App\Shared\Validation\Validator;
 use Tests\TestCase;
 
 /**
- * DTO 驗證整合測試
+ * DTO 驗證整合測試.
  *
  * 測試 DTO 與驗證器的整合功能
  */
 class DTOValidationIntegrationTest extends TestCase
 {
-    private \App\Shared\Contracts\ValidatorInterface $validator;
+    private ValidatorInterface $validator;
 
     protected function setUp(): void
     {
@@ -32,7 +30,7 @@ class DTOValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 CreatePostDTO 驗證整合
+     * 測試 CreatePostDTO 驗證整合.
      */
     public function testCreatePostDTOValidationIntegration(): void
     {
@@ -50,16 +48,16 @@ class DTOValidationIntegrationTest extends TestCase
         $this->assertEquals('測試文章標題', $dto->toArray()['title']);
 
         // 測試無效資料 - 缺少必填欄位
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, []);
     }
 
     /**
-     * 測試 CreatePostDTO 標題過短驗證
+     * 測試 CreatePostDTO 標題過短驗證.
      */
     public function testCreatePostDTOTitleTooShort(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         new CreatePostDTO($this->validator, [
             'title' => '', // 空標題
@@ -71,11 +69,11 @@ class DTOValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 CreatePostDTO 內容過短驗證
+     * 測試 CreatePostDTO 內容過短驗證.
      */
     public function testCreatePostDTOContentTooShort(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         new CreatePostDTO($this->validator, [
             'title' => '測試標題',
@@ -87,7 +85,7 @@ class DTOValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 UpdatePostDTO 驗證整合
+     * 測試 UpdatePostDTO 驗證整合.
      */
     public function testUpdatePostDTOValidationIntegration(): void
     {
@@ -115,7 +113,7 @@ class DTOValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 CreateAttachmentDTO 驗證整合
+     * 測試 CreateAttachmentDTO 驗證整合.
      */
     public function testCreateAttachmentDTOValidationIntegration(): void
     {
@@ -134,7 +132,7 @@ class DTOValidationIntegrationTest extends TestCase
         $this->assertEquals('test-image.jpg', $dto->toArray()['filename']);
 
         // 測試檔案大小過大
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreateAttachmentDTO($this->validator, [
             'post_id' => 1,
             'filename' => 'large-file.jpg',
@@ -147,7 +145,7 @@ class DTOValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 RegisterUserDTO 驗證整合
+     * 測試 RegisterUserDTO 驗證整合.
      */
     public function testRegisterUserDTOValidationIntegration(): void
     {
@@ -164,7 +162,7 @@ class DTOValidationIntegrationTest extends TestCase
         $this->assertEquals('testuser', $dto->toArray()['username']);
 
         // 測試密碼過短
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, [
             'username' => 'testuser',
             'email' => 'test@example.com',
@@ -175,7 +173,7 @@ class DTOValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 CreateIpRuleDTO 驗證整合
+     * 測試 CreateIpRuleDTO 驗證整合.
      */
     public function testCreateIpRuleDTOValidationIntegration(): void
     {
@@ -191,7 +189,7 @@ class DTOValidationIntegrationTest extends TestCase
         $this->assertEquals('192.168.1.1', $dto->toArray()['ip_address']);
 
         // 測試無效 IP 位址
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreateIpRuleDTO($this->validator, [
             'ip_address' => 'invalid-ip',
             'action' => 'allow',
@@ -201,7 +199,7 @@ class DTOValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試驗證錯誤訊息的中文化
+     * 測試驗證錯誤訊息的中文化.
      */
     public function testValidationErrorMessagesInChinese(): void
     {
@@ -214,7 +212,7 @@ class DTOValidationIntegrationTest extends TestCase
                 'user_ip' => '192.168.1.1',
             ]);
             $this->fail('應該拋出 ValidationException');
-        } catch(\App\Shared\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             $message = $e->getMessage();
             $this->assertNotEmpty($message);
 
@@ -224,7 +222,7 @@ class DTOValidationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試多個欄位驗證錯誤
+     * 測試多個欄位驗證錯誤.
      */
     public function testMultipleFieldValidationErrors(): void
     {
@@ -237,14 +235,14 @@ class DTOValidationIntegrationTest extends TestCase
                 'user_ip' => '192.168.1.1',
             ]);
             $this->fail('應該拋出 ValidationException');
-        } catch(\App\Shared\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             $errors = $e->getErrors();
             $this->assertGreaterThanOrEqual(2, count($errors)); // 至少有兩個錯誤
         }
     }
 
     /**
-     * 測試 DTO 的 JSON 序列化
+     * 測試 DTO 的 JSON 序列化.
      */
     public function testDTOJsonSerialization(): void
     {

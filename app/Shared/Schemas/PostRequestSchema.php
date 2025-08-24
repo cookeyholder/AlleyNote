@@ -19,7 +19,7 @@ use OpenApi\Attributes as OA;
             description: '貼文標題，用於簡要描述貼文主題',
             minLength: 1,
             maxLength: 255,
-            example: '系統維護通知 - 2025年1月20日'
+            example: '系統維護通知 - 2025年1月20日',
         ),
         new OA\Property(
             property: 'content',
@@ -27,7 +27,7 @@ use OpenApi\Attributes as OA;
             description: '貼文內容，支援 Markdown 格式',
             minLength: 1,
             maxLength: 10000,
-            example: "親愛的使用者，\n\n系統將於 **2025年1月20日 02:00-04:00** 進行維護，期間服務可能暫時中斷。\n\n維護內容：\n- 資料庫效能優化\n- 安全性更新\n- 新功能部署\n\n造成不便敬請見諒。\n\n---\n技術團隊"
+            example: "親愛的使用者，\n\n系統將於 **2025年1月20日 02:00-04:00** 進行維護，期間服務可能暫時中斷。\n\n維護內容：\n- 資料庫效能優化\n- 安全性更新\n- 新功能部署\n\n造成不便敬請見諒。\n\n---\n技術團隊",
         ),
         new OA\Property(
             property: 'category',
@@ -35,7 +35,7 @@ use OpenApi\Attributes as OA;
             description: '貼文分類，用於組織和篩選貼文',
             enum: ['general', 'announcement', 'urgent', 'notice'],
             default: 'general',
-            example: 'announcement'
+            example: 'announcement',
         ),
         new OA\Property(
             property: 'priority',
@@ -43,7 +43,7 @@ use OpenApi\Attributes as OA;
             description: '優先級，影響貼文在列表中的排序和顯示樣式',
             enum: ['low', 'normal', 'high', 'urgent'],
             default: 'normal',
-            example: 'high'
+            example: 'high',
         ),
         new OA\Property(
             property: 'expires_at',
@@ -51,7 +51,7 @@ use OpenApi\Attributes as OA;
             format: 'date-time',
             description: '過期時間（ISO 8601 格式），過期後貼文將自動隱藏',
             nullable: true,
-            example: '2025-12-31T23:59:59+08:00'
+            example: '2025-12-31T23:59:59+08:00',
         ),
         new OA\Property(
             property: 'tags',
@@ -59,21 +59,21 @@ use OpenApi\Attributes as OA;
             description: '標籤列表，用於標記和搜尋',
             items: new OA\Items(type: 'string', maxLength: 50),
             maxItems: 10,
-            example: ['維護', '系統更新', '重要通知']
+            example: ['維護', '系統更新', '重要通知'],
         ),
         new OA\Property(
             property: 'is_pinned',
             type: 'boolean',
             description: '是否置頂顯示',
             default: false,
-            example: true
+            example: true,
         ),
         new OA\Property(
             property: 'allow_comments',
             type: 'boolean',
             description: '是否允許留言',
             default: true,
-            example: false
+            example: false,
         ),
     ],
     example: [
@@ -85,7 +85,7 @@ use OpenApi\Attributes as OA;
         'tags' => ['維護', '系統更新', '重要通知'],
         'is_pinned' => true,
         'allow_comments' => false,
-    ]
+    ],
 )]
 #[OA\Schema(
     schema: 'UpdatePostRequest',
@@ -99,7 +99,7 @@ use OpenApi\Attributes as OA;
             description: '更新貼文標題',
             minLength: 1,
             maxLength: 255,
-            example: '【更新】系統維護延期通知'
+            example: '【更新】系統維護延期通知',
         ),
         new OA\Property(
             property: 'content',
@@ -107,28 +107,28 @@ use OpenApi\Attributes as OA;
             description: '更新貼文內容',
             minLength: 1,
             maxLength: 10000,
-            example: "**重要更新**\n\n原定於 2025年1月20日 的系統維護將延期至 **2025年1月25日**。\n\n詳細資訊請參考最新公告。"
+            example: "**重要更新**\n\n原定於 2025年1月20日 的系統維護將延期至 **2025年1月25日**。\n\n詳細資訊請參考最新公告。",
         ),
         new OA\Property(
             property: 'category',
             type: 'string',
             description: '更新貼文分類',
             enum: ['general', 'announcement', 'urgent', 'notice'],
-            example: 'urgent'
+            example: 'urgent',
         ),
         new OA\Property(
             property: 'status',
             type: 'string',
             description: '更新貼文狀態',
             enum: ['draft', 'published', 'archived'],
-            example: 'published'
+            example: 'published',
         ),
         new OA\Property(
             property: 'priority',
             type: 'string',
             description: '更新優先級',
             enum: ['low', 'normal', 'high', 'urgent'],
-            example: 'urgent'
+            example: 'urgent',
         ),
         new OA\Property(
             property: 'expires_at',
@@ -136,7 +136,7 @@ use OpenApi\Attributes as OA;
             format: 'date-time',
             description: '更新過期時間',
             nullable: true,
-            example: '2025-02-28T23:59:59+08:00'
+            example: '2025-02-28T23:59:59+08:00',
         ),
         new OA\Property(
             property: 'tags',
@@ -144,19 +144,19 @@ use OpenApi\Attributes as OA;
             description: '更新標籤列表',
             items: new OA\Items(type: 'string', maxLength: 50),
             maxItems: 10,
-            example: ['維護延期', '重要更新', '緊急通知']
+            example: ['維護延期', '重要更新', '緊急通知'],
         ),
         new OA\Property(
             property: 'is_pinned',
             type: 'boolean',
             description: '更新置頂狀態',
-            example: true
+            example: true,
         ),
         new OA\Property(
             property: 'allow_comments',
             type: 'boolean',
             description: '更新留言允許狀態',
-            example: true
+            example: true,
         ),
     ],
     example: [
@@ -169,7 +169,7 @@ use OpenApi\Attributes as OA;
         'tags' => ['維護延期', '重要更新', '緊急通知'],
         'is_pinned' => true,
         'allow_comments' => true,
-    ]
+    ],
 )]
 #[OA\Schema(
     schema: 'ApiResponse',
@@ -182,13 +182,13 @@ use OpenApi\Attributes as OA;
             property: 'success',
             type: 'boolean',
             description: '操作是否成功',
-            example: true
+            example: true,
         ),
         new OA\Property(
             property: 'message',
             type: 'string',
             description: '操作結果訊息',
-            example: '貼文建立成功'
+            example: '貼文建立成功',
         ),
         new OA\Property(
             property: 'data',
@@ -197,7 +197,7 @@ use OpenApi\Attributes as OA;
                 new OA\Schema(ref: '#/components/schemas/Post'),
                 new OA\Schema(type: 'array', items: new OA\Items(ref: '#/components/schemas/Post')),
                 new OA\Schema(type: 'object', description: '其他類型的資料'),
-            ]
+            ],
         ),
         new OA\Property(
             property: 'meta',
@@ -207,7 +207,7 @@ use OpenApi\Attributes as OA;
                 new OA\Property(property: 'timestamp', type: 'string', format: 'date-time', example: '2025-01-15T10:30:00+08:00'),
                 new OA\Property(property: 'request_id', type: 'string', example: 'req_550e8400e29b41d4a716446655440000'),
                 new OA\Property(property: 'version', type: 'string', example: '1.0.0'),
-            ]
+            ],
         ),
     ],
     example: [
@@ -225,7 +225,7 @@ use OpenApi\Attributes as OA;
             'request_id' => 'req_550e8400e29b41d4a716446655440000',
             'version' => '1.0.0',
         ],
-    ]
+    ],
 )]
 #[OA\Schema(
     schema: 'PaginatedResponse',
@@ -238,13 +238,13 @@ use OpenApi\Attributes as OA;
             property: 'success',
             type: 'boolean',
             description: '請求是否成功',
-            example: true
+            example: true,
         ),
         new OA\Property(
             property: 'data',
             type: 'array',
             description: '當前頁的資料項目清單',
-            items: new OA\Items(ref: '#/components/schemas/Post')
+            items: new OA\Items(ref: '#/components/schemas/Post'),
         ),
         new OA\Property(
             property: 'pagination',
@@ -262,7 +262,7 @@ use OpenApi\Attributes as OA;
                 new OA\Property(property: 'last_page', type: 'integer', description: '最後一頁頁碼', example: 16),
                 new OA\Property(property: 'from', type: 'integer', description: '當前頁第一筆資料的序號', example: 11),
                 new OA\Property(property: 'to', type: 'integer', description: '當前頁最後一筆資料的序號', example: 20),
-            ]
+            ],
         ),
         new OA\Property(
             property: 'links',
@@ -274,7 +274,7 @@ use OpenApi\Attributes as OA;
                 new OA\Property(property: 'prev', type: 'string', nullable: true, example: '/api/posts?page=1&limit=10'),
                 new OA\Property(property: 'next', type: 'string', nullable: true, example: '/api/posts?page=3&limit=10'),
                 new OA\Property(property: 'self', type: 'string', example: '/api/posts?page=2&limit=10'),
-            ]
+            ],
         ),
     ],
     example: [
@@ -309,7 +309,7 @@ use OpenApi\Attributes as OA;
             'next' => '/api/posts?page=3&limit=10',
             'self' => '/api/posts?page=2&limit=10',
         ],
-    ]
+    ],
 )]
 #[OA\Schema(
     schema: 'PostRequest',
@@ -318,7 +318,7 @@ use OpenApi\Attributes as OA;
     description: '建立或更新貼文的通用請求資料',
     allOf: [
         new OA\Schema(ref: '#/components/schemas/CreatePostRequest'),
-    ]
+    ],
 )]
 #[OA\Schema(
     schema: 'ValidationError',
@@ -331,19 +331,19 @@ use OpenApi\Attributes as OA;
             property: 'success',
             type: 'boolean',
             description: '請求是否成功',
-            example: false
+            example: false,
         ),
         new OA\Property(
             property: 'error',
             type: 'string',
             description: '主要錯誤訊息',
-            example: '資料驗證失敗'
+            example: '資料驗證失敗',
         ),
         new OA\Property(
             property: 'message',
             type: 'string',
             description: '詳細錯誤描述',
-            example: '提交的資料包含驗證錯誤，請檢查以下欄位並重新提交'
+            example: '提交的資料包含驗證錯誤，請檢查以下欄位並重新提交',
         ),
         new OA\Property(
             property: 'errors',
@@ -352,7 +352,7 @@ use OpenApi\Attributes as OA;
             additionalProperties: new OA\AdditionalProperties(
                 type: 'array',
                 items: new OA\Items(type: 'string'),
-                description: '該欄位的所有錯誤訊息列表'
+                description: '該欄位的所有錯誤訊息列表',
             ),
             example: [
                 'title' => ['標題不能為空', '標題長度不能超過 255 字元'],
@@ -360,13 +360,13 @@ use OpenApi\Attributes as OA;
                 'email' => ['電子郵件格式不正確'],
                 'password' => ['密碼長度至少需要 8 字元', '密碼必須包含至少一個數字'],
                 'category' => ['分類必須是以下值之一：general, announcement, urgent, notice'],
-            ]
+            ],
         ),
         new OA\Property(
             property: 'code',
             type: 'integer',
             description: 'HTTP 狀態碼',
-            example: 400
+            example: 400,
         ),
         new OA\Property(
             property: 'meta',
@@ -376,7 +376,7 @@ use OpenApi\Attributes as OA;
                 new OA\Property(property: 'timestamp', type: 'string', format: 'date-time', example: '2025-01-15T10:30:00+08:00'),
                 new OA\Property(property: 'request_id', type: 'string', example: 'req_550e8400e29b41d4a716446655440000'),
                 new OA\Property(property: 'validation_rules', type: 'object', description: '驗證規則參考'),
-            ]
+            ],
         ),
     ],
     example: [
@@ -394,7 +394,7 @@ use OpenApi\Attributes as OA;
             'timestamp' => '2025-01-15T10:30:00+08:00',
             'request_id' => 'req_550e8400e29b41d4a716446655440000',
         ],
-    ]
+    ],
 )]
 class PostRequestSchema
 {

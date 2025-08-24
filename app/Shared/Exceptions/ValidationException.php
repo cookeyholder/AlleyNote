@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Shared\Exceptions;
 
+use App\Shared\Validation\ValidationResult;
 use Exception;
-use App\Shared\Validation\ValidationResult; // Import ValidationResult
+
+ // Import ValidationResult
 
 class ValidationException extends Exception
 {
@@ -30,6 +32,7 @@ class ValidationException extends Exception
     public static function fromErrors(array $errors, string $message = ''): self
     {
         $validationResult = ValidationResult::failure($errors);
+
         return new self($validationResult, $message);
     }
 
@@ -37,6 +40,7 @@ class ValidationException extends Exception
     public static function fromSingleError(string $field, string $error, string $message = ''): self
     {
         $validationResult = ValidationResult::failure([$field => [$error]]);
+
         return new self($validationResult, $message);
     }
 
@@ -47,9 +51,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * 轉換為 API 回應格式
-     *
-     * @return array
+     * 轉換為 API 回應格式.
      */
     public function toApiResponse(): array
     {
@@ -62,9 +64,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * 取得除錯資訊
-     *
-     * @return array
+     * 取得除錯資訊.
      */
     public function toDebugArray(): array
     {

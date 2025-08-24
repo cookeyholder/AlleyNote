@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
+use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Exceptions\PostStatusException;
 use App\Domains\Post\Exceptions\PostValidationException;
-use App\Shared\Exceptions\Validation\RequestValidationException;
-use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
+use App\Shared\Exceptions\Validation\RequestValidationException;
+use App\Shared\Exceptions\ValidationException;
 use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -23,9 +24,8 @@ class PostController extends BaseController
 {
     public function __construct(
         private readonly PostServiceInterface $postService,
-        private readonly ValidatorInterface $validator
-    ) {
-    }
+        private readonly ValidatorInterface $validator,
+    ) {}
 
     #[OA\Get(
         path: '/posts',
@@ -39,21 +39,21 @@ class PostController extends BaseController
                 in: 'query',
                 description: '頁碼',
                 required: false,
-                schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)
+                schema: new OA\Schema(type: 'integer', default: 1, minimum: 1),
             ),
             new OA\Parameter(
                 name: 'limit',
                 in: 'query',
                 description: '每頁筆數',
                 required: false,
-                schema: new OA\Schema(type: 'integer', default: 10, minimum: 1, maximum: 100)
+                schema: new OA\Schema(type: 'integer', default: 10, minimum: 1, maximum: 100),
             ),
             new OA\Parameter(
                 name: 'search',
                 in: 'query',
                 description: '搜尋關鍵字',
                 required: false,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'category',
@@ -62,8 +62,8 @@ class PostController extends BaseController
                 required: false,
                 schema: new OA\Schema(
                     type: 'string',
-                    enum: ['general', 'announcement', 'urgent', 'notice']
-                )
+                    enum: ['general', 'announcement', 'urgent', 'notice'],
+                ),
             ),
             new OA\Parameter(
                 name: 'status',
@@ -72,8 +72,8 @@ class PostController extends BaseController
                 required: false,
                 schema: new OA\Schema(
                     type: 'string',
-                    enum: ['draft', 'published', 'archived']
-                )
+                    enum: ['draft', 'published', 'archived'],
+                ),
             ),
         ],
         responses: [
@@ -81,17 +81,17 @@ class PostController extends BaseController
                 response: 200,
                 description: '成功取得貼文列表',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/PaginatedResponse'
-                )
+                    ref: '#/components/schemas/PaginatedResponse',
+                ),
             ),
             new OA\Response(
                 response: 400,
                 description: '請求參數錯誤',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError'
-                )
+                    ref: '#/components/schemas/ValidationError',
+                ),
             ),
-        ]
+        ],
     )]
     public function index(Request $request, Response $response): Response
     {
@@ -118,7 +118,7 @@ class PostController extends BaseController
                 $result['items'],
                 $result['total'],
                 $result['page'],
-                $result['per_page']
+                $result['per_page'],
             );
 
             $response->getBody()->write($responseData);
@@ -150,30 +150,30 @@ class PostController extends BaseController
             description: '貼文資料',
             required: true,
             content: new OA\JsonContent(
-                ref: '#/components/schemas/CreatePostRequest'
-            )
+                ref: '#/components/schemas/CreatePostRequest',
+            ),
         ),
         responses: [
             new OA\Response(
                 response: 201,
                 description: '貼文建立成功',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ApiResponse'
-                )
+                    ref: '#/components/schemas/ApiResponse',
+                ),
             ),
             new OA\Response(
                 response: 400,
                 description: '輸入資料驗證失敗',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError'
-                )
+                    ref: '#/components/schemas/ValidationError',
+                ),
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'
-                )
+                    ref: '#/components/responses/Unauthorized',
+                ),
             ),
             new OA\Response(
                 response: 403,
@@ -181,10 +181,10 @@ class PostController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: 'CSRF token verification failed'),
-                    ]
-                )
+                    ],
+                ),
             ),
-        ]
+        ],
     )]
     public function store(Request $request, Response $response): Response
     {
@@ -210,7 +210,7 @@ class PostController extends BaseController
             $response->getBody()->write($successResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
-        } catch (\App\Shared\Exceptions\ValidationException $e) {
+        } catch (ValidationException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
             $response->getBody()->write($errorResponse);
 
@@ -240,7 +240,7 @@ class PostController extends BaseController
                 in: 'path',
                 description: '貼文 ID',
                 required: true,
-                schema: new OA\Schema(type: 'integer', minimum: 1)
+                schema: new OA\Schema(type: 'integer', minimum: 1),
             ),
         ],
         responses: [
@@ -250,17 +250,17 @@ class PostController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'data', ref: '#/components/schemas/Post'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'
-                )
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
-        ]
+        ],
     )]
     public function show(Request $request, Response $response, array $args): Response
     {
@@ -314,37 +314,37 @@ class PostController extends BaseController
                 in: 'path',
                 description: '貼文 ID',
                 required: true,
-                schema: new OA\Schema(type: 'integer', minimum: 1)
+                schema: new OA\Schema(type: 'integer', minimum: 1),
             ),
         ],
         requestBody: new OA\RequestBody(
             description: '更新的貼文資料',
             required: true,
             content: new OA\JsonContent(
-                ref: '#/components/schemas/UpdatePostRequest'
-            )
+                ref: '#/components/schemas/UpdatePostRequest',
+            ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: '貼文更新成功',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ApiResponse'
-                )
+                    ref: '#/components/schemas/ApiResponse',
+                ),
             ),
             new OA\Response(
                 response: 400,
                 description: '輸入資料驗證失敗',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError'
-                )
+                    ref: '#/components/schemas/ValidationError',
+                ),
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'
-                )
+                    ref: '#/components/responses/Unauthorized',
+                ),
             ),
             new OA\Response(
                 response: 403,
@@ -352,17 +352,17 @@ class PostController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: 'CSRF token verification failed'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'
-                )
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
-        ]
+        ],
     )]
     public function update(Request $request, Response $response, array $args): Response
     {
@@ -393,7 +393,7 @@ class PostController extends BaseController
             $response->getBody()->write($successResponse);
 
             return $response->withHeader('Content-Type', 'application/json');
-        } catch (\App\Shared\Exceptions\ValidationException $e) {
+        } catch (ValidationException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
             $response->getBody()->write($errorResponse);
 
@@ -436,20 +436,20 @@ class PostController extends BaseController
                 in: 'path',
                 description: '貼文 ID',
                 required: true,
-                schema: new OA\Schema(type: 'integer', minimum: 1)
+                schema: new OA\Schema(type: 'integer', minimum: 1),
             ),
         ],
         responses: [
             new OA\Response(
                 response: 204,
-                description: '貼文刪除成功'
+                description: '貼文刪除成功',
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'
-                )
+                    ref: '#/components/responses/Unauthorized',
+                ),
             ),
             new OA\Response(
                 response: 403,
@@ -457,17 +457,17 @@ class PostController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: 'CSRF token verification failed'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'
-                )
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
-        ]
+        ],
     )]
     public function delete(Request $request, Response $response, array $args): Response
     {
@@ -485,7 +485,7 @@ class PostController extends BaseController
 
             // 刪除成功回傳 204 No Content
             return $response->withStatus(204);
-        } catch (\App\Shared\Exceptions\ValidationException $e) {
+        } catch (ValidationException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
             $response->getBody()->write($errorResponse);
 
@@ -523,7 +523,7 @@ class PostController extends BaseController
                 in: 'path',
                 description: '貼文 ID',
                 required: true,
-                schema: new OA\Schema(type: 'integer', minimum: 1)
+                schema: new OA\Schema(type: 'integer', minimum: 1),
             ),
         ],
         requestBody: new OA\RequestBody(
@@ -535,10 +535,10 @@ class PostController extends BaseController
                         property: 'pinned',
                         type: 'boolean',
                         description: '是否置頂',
-                        example: true
+                        example: true,
                     ),
-                ]
-            )
+                ],
+            ),
         ),
         responses: [
             new OA\Response(
@@ -549,22 +549,22 @@ class PostController extends BaseController
                         new OA\Property(property: 'success', type: 'boolean', example: true),
                         new OA\Property(property: 'message', type: 'string', example: '置頂狀態已更新'),
                         new OA\Property(property: 'data', ref: '#/components/schemas/Post'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 400,
                 description: '請求資料格式錯誤',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError'
-                )
+                    ref: '#/components/schemas/ValidationError',
+                ),
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'
-                )
+                    ref: '#/components/responses/Unauthorized',
+                ),
             ),
             new OA\Response(
                 response: 403,
@@ -572,17 +572,17 @@ class PostController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: 'CSRF token verification failed'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'
-                )
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
-        ]
+        ],
     )]
     public function togglePin(Request $request, Response $response, array $args): Response
     {

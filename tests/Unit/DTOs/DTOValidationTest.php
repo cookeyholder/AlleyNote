@@ -5,21 +5,17 @@ declare(strict_types=1);
 namespace Tests\Unit\DTOs;
 
 use App\Domains\Attachment\DTOs\CreateAttachmentDTO;
-use App\Shared\Validation\ValidationException;
-use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
-use App\Domains\Post\Models\Post;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Shared\Contracts\ValidatorInterface;
-
-
+use App\Shared\Validation\ValidationException;
 use App\Shared\Validation\Validator;
 use Tests\TestCase;
 
 /**
- * DTO 驗證單元測試
+ * DTO 驗證單元測試.
  *
  * 測試所有 DTO 類的驗證邏輯和邊界條件
  */
@@ -34,7 +30,7 @@ class DTOValidationTest extends TestCase
     }
 
     /**
-     * 測試 CreatePostDTO 所有驗證場景
+     * 測試 CreatePostDTO 所有驗證場景.
      */
     public function test_create_post_dto_validation_scenarios(): void
     {
@@ -45,7 +41,7 @@ class DTOValidationTest extends TestCase
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
             'is_anonymous' => false,
-            'category' => 'general'
+            'category' => 'general',
         ];
 
         $dto = new CreatePostDTO($this->validator, $validData);
@@ -55,12 +51,12 @@ class DTOValidationTest extends TestCase
         $missingTitleData = $validData;
         unset($missingTitleData['title']);
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $missingTitleData);
     }
 
     /**
-     * 測試 CreatePostDTO 標題驗證
+     * 測試 CreatePostDTO 標題驗證.
      */
     public function test_create_post_dto_title_validation(): void
     {
@@ -68,26 +64,26 @@ class DTOValidationTest extends TestCase
             'title' => '測試標題',
             'content' => '內容',
             'user_id' => 1,
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         // 測試空標題
         $emptyTitleData = $baseData;
         $emptyTitleData['title'] = '';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $emptyTitleData);
     }
 
     /**
-     * 測試 CreatePostDTO 標題長度限制
+     * 測試 CreatePostDTO 標題長度限制.
      */
     public function test_create_post_dto_title_length_limits(): void
     {
         $baseData = [
             'content' => '內容',
             'user_id' => 1,
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         // 測試有效的最小長度標題
@@ -100,26 +96,26 @@ class DTOValidationTest extends TestCase
         $tooLongTitleData = $baseData;
         $tooLongTitleData['title'] = str_repeat('很長的標題', 100); // 超過 255 字元
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $tooLongTitleData);
     }
 
     /**
-     * 測試 CreatePostDTO 內容驗證
+     * 測試 CreatePostDTO 內容驗證.
      */
     public function test_create_post_dto_content_validation(): void
     {
         $baseData = [
             'title' => '測試標題',
             'user_id' => 1,
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         // 測試內容為空
         $emptyContentData = $baseData;
         $emptyContentData['content'] = '';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $emptyContentData);
 
         // 測試內容長度限制
@@ -130,47 +126,47 @@ class DTOValidationTest extends TestCase
     }
 
     /**
-     * 測試 CreatePostDTO 使用者驗證
+     * 測試 CreatePostDTO 使用者驗證.
      */
     public function test_create_post_dto_user_validation(): void
     {
         $baseData = [
             'title' => '測試標題',
             'content' => '內容',
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         // 測試無效的 user_id
         $invalidUserIdData = $baseData;
         $invalidUserIdData['user_id'] = 'invalid';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $invalidUserIdData);
 
         // 測試負數 user_id
         $negativeUserIdData = $baseData;
         $negativeUserIdData['user_id'] = -1;
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $negativeUserIdData);
 
         // 測試零 user_id
         $zeroUserIdData = $baseData;
         $zeroUserIdData['user_id'] = 0;
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $zeroUserIdData);
     }
 
     /**
-     * 測試 CreatePostDTO IP 地址驗證
+     * 測試 CreatePostDTO IP 地址驗證.
      */
     public function test_create_post_dto_ip_validation(): void
     {
         $baseData = [
             'title' => '測試標題',
             'content' => '內容',
-            'user_id' => 1
+            'user_id' => 1,
         ];
 
         // 測試有效的 IPv4 地址
@@ -189,12 +185,12 @@ class DTOValidationTest extends TestCase
         $invalidIpData = $baseData;
         $invalidIpData['user_ip'] = 'not-an-ip';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $invalidIpData);
     }
 
     /**
-     * 測試 UpdatePostDTO 部分更新驗證
+     * 測試 UpdatePostDTO 部分更新驗證.
      */
     public function test_update_post_dto_partial_validation(): void
     {
@@ -211,7 +207,7 @@ class DTOValidationTest extends TestCase
         // 測試更新多個欄位
         $multipleFieldsData = [
             'title' => '新標題',
-            'content' => '新內容'
+            'content' => '新內容',
         ];
         $dto = new UpdatePostDTO($this->validator, $multipleFieldsData);
         $this->assertInstanceOf(UpdatePostDTO::class, $dto);
@@ -223,7 +219,7 @@ class DTOValidationTest extends TestCase
     }
 
     /**
-     * 測試 UpdatePostDTO 欄位驗證規則
+     * 測試 UpdatePostDTO 欄位驗證規則.
      */
     public function test_update_post_dto_field_validation(): void
     {
@@ -239,7 +235,7 @@ class DTOValidationTest extends TestCase
     }
 
     /**
-     * 測試 CreateAttachmentDTO 驗證
+     * 測試 CreateAttachmentDTO 驗證.
      */
     public function test_create_attachment_dto_validation(): void
     {
@@ -251,7 +247,7 @@ class DTOValidationTest extends TestCase
             'mime_type' => 'image/jpeg',
             'file_size' => 1024,
             'storage_path' => 'uploads/test-file.jpg',
-            'uploaded_by' => 1
+            'uploaded_by' => 1,
         ];
 
         $dto = new CreateAttachmentDTO($this->validator, $validData);
@@ -261,12 +257,12 @@ class DTOValidationTest extends TestCase
         $missingPostIdData = $validData;
         unset($missingPostIdData['post_id']);
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreateAttachmentDTO($this->validator, $missingPostIdData);
     }
 
     /**
-     * 測試 CreateAttachmentDTO 檔案驗證
+     * 測試 CreateAttachmentDTO 檔案驗證.
      */
     public function test_create_attachment_dto_file_validation(): void
     {
@@ -277,26 +273,26 @@ class DTOValidationTest extends TestCase
             'mime_type' => 'image/jpeg',
             'file_size' => 1024,
             'storage_path' => 'uploads/test.jpg',
-            'uploaded_by' => 1
+            'uploaded_by' => 1,
         ];
 
         // 測試無效的檔案大小
         $invalidSizeData = $baseData;
         $invalidSizeData['file_size'] = -1;
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreateAttachmentDTO($this->validator, $invalidSizeData);
 
         // 測試無效的檔案名稱
         $invalidFilenameData = $baseData;
         $invalidFilenameData['filename'] = 'file/with/slash.jpg';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreateAttachmentDTO($this->validator, $invalidFilenameData);
     }
 
     /**
-     * 測試 RegisterUserDTO 驗證
+     * 測試 RegisterUserDTO 驗證.
      */
     public function test_register_user_dto_validation(): void
     {
@@ -306,7 +302,7 @@ class DTOValidationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'SecurePass123',
             'confirm_password' => 'SecurePass123',
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         $dto = new RegisterUserDTO($this->validator, $validData);
@@ -316,12 +312,12 @@ class DTOValidationTest extends TestCase
         $missingUsernameData = $validData;
         unset($missingUsernameData['username']);
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $missingUsernameData);
     }
 
     /**
-     * 測試 RegisterUserDTO 使用者名稱驗證
+     * 測試 RegisterUserDTO 使用者名稱驗證.
      */
     public function test_register_user_dto_username_validation(): void
     {
@@ -330,33 +326,33 @@ class DTOValidationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'SecurePass123',
             'confirm_password' => 'SecurePass123',
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         // 測試使用者名稱太短
         $shortUsernameData = $baseData;
         $shortUsernameData['username'] = 'ab';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $shortUsernameData);
 
         // 測試使用者名稱包含無效字元
         $invalidCharsData = $baseData;
         $invalidCharsData['username'] = 'user@name';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $invalidCharsData);
 
         // 測試使用者名稱以數字開頭
         $numberStartData = $baseData;
         $numberStartData['username'] = '123user';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $numberStartData);
     }
 
     /**
-     * 測試 RegisterUserDTO 電子郵件驗證
+     * 測試 RegisterUserDTO 電子郵件驗證.
      */
     public function test_register_user_dto_email_validation(): void
     {
@@ -365,33 +361,33 @@ class DTOValidationTest extends TestCase
             'email' => 'valid@example.com',
             'password' => 'SecurePass123',
             'confirm_password' => 'SecurePass123',
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         // 測試無效的電子郵件格式
         $invalidEmailData = $baseData;
         $invalidEmailData['email'] = 'invalid-email';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $invalidEmailData);
 
         // 測試包含危險字元的電子郵件
         $dangerousEmailData = $baseData;
         $dangerousEmailData['email'] = 'user@<script>alert(1)</script>.com';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $dangerousEmailData);
     }
 
     /**
-     * 測試 RegisterUserDTO 密碼驗證
+     * 測試 RegisterUserDTO 密碼驗證.
      */
     public function test_register_user_dto_password_validation(): void
     {
         $baseData = [
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         // 測試密碼太短
@@ -399,7 +395,7 @@ class DTOValidationTest extends TestCase
         $shortPasswordData['password'] = '123';
         $shortPasswordData['confirm_password'] = '123';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $shortPasswordData);
 
         // 測試密碼缺乏複雜度
@@ -407,7 +403,7 @@ class DTOValidationTest extends TestCase
         $weakPasswordData['password'] = 'password';
         $weakPasswordData['confirm_password'] = 'password';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $weakPasswordData);
 
         // 測試密碼確認不符
@@ -415,12 +411,12 @@ class DTOValidationTest extends TestCase
         $mismatchPasswordData['password'] = 'SecurePass123';
         $mismatchPasswordData['confirm_password'] = 'DifferentPass123';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $mismatchPasswordData);
     }
 
     /**
-     * 測試 CreateIpRuleDTO 驗證
+     * 測試 CreateIpRuleDTO 驗證.
      */
     public function test_create_ip_rule_dto_validation(): void
     {
@@ -429,7 +425,7 @@ class DTOValidationTest extends TestCase
             'ip_address' => '192.168.1.1',
             'action' => 'block',
             'reason' => '惡意行為',
-            'created_by' => 1
+            'created_by' => 1,
         ];
 
         $dto = new CreateIpRuleDTO($this->validator, $validData);
@@ -439,12 +435,12 @@ class DTOValidationTest extends TestCase
         $missingIpData = $validData;
         unset($missingIpData['ip_address']);
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreateIpRuleDTO($this->validator, $missingIpData);
     }
 
     /**
-     * 測試 CreateIpRuleDTO IP 地址驗證
+     * 測試 CreateIpRuleDTO IP 地址驗證.
      */
     public function test_create_ip_rule_dto_ip_validation(): void
     {
@@ -452,7 +448,7 @@ class DTOValidationTest extends TestCase
             'ip_address' => '192.168.1.1',
             'action' => 'block',
             'reason' => '測試',
-            'created_by' => 1
+            'created_by' => 1,
         ];
 
         // 測試 CIDR 格式
@@ -465,19 +461,19 @@ class DTOValidationTest extends TestCase
         $invalidIpData = $baseData;
         $invalidIpData['ip_address'] = 'not-an-ip';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreateIpRuleDTO($this->validator, $invalidIpData);
 
         // 測試無效的 CIDR 格式
         $invalidCidrData = $baseData;
         $invalidCidrData['ip_address'] = '192.168.1.0/999';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreateIpRuleDTO($this->validator, $invalidCidrData);
     }
 
     /**
-     * 測試 CreateIpRuleDTO 規則類型驗證
+     * 測試 CreateIpRuleDTO 規則類型驗證.
      */
     public function test_create_ip_rule_dto_rule_type_validation(): void
     {
@@ -485,7 +481,7 @@ class DTOValidationTest extends TestCase
             'ip_address' => '192.168.1.1',
             'action' => 'block',
             'reason' => '測試',
-            'created_by' => 1
+            'created_by' => 1,
         ];
 
         // 測試有效的規則類型
@@ -501,11 +497,12 @@ class DTOValidationTest extends TestCase
         $invalidTypeData = $baseData;
         $invalidTypeData['action'] = 'invalid_type';
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreateIpRuleDTO($this->validator, $invalidTypeData);
     }
+
     /**
-     * 測試所有 DTO 的資料清理功能
+     * 測試所有 DTO 的資料清理功能.
      */
     public function test_dto_data_sanitization(): void
     {
@@ -514,7 +511,7 @@ class DTOValidationTest extends TestCase
             'title' => '  測試標題  ',
             'content' => '  內容  ',
             'user_id' => '1',
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         $postDto = new CreatePostDTO($this->validator, $dirtyPostData);
@@ -527,7 +524,7 @@ class DTOValidationTest extends TestCase
     }
 
     /**
-     * 測試 DTO 驗證效能基準
+     * 測試 DTO 驗證效能基準.
      */
     public function test_dto_validation_performance(): void
     {
@@ -541,7 +538,7 @@ class DTOValidationTest extends TestCase
                 'content' => "這是第 {$i} 篇測試文章的內容",
                 'user_id' => $i + 1,
                 'user_ip' => '192.168.1.' . ($i % 255 + 1),
-                'is_anonymous' => $i % 2 === 0
+                'is_anonymous' => $i % 2 === 0,
             ];
 
             $dto = new CreatePostDTO($this->validator, $postData);
@@ -557,7 +554,7 @@ class DTOValidationTest extends TestCase
     }
 
     /**
-     * 測試 DTO 序列化和反序列化
+     * 測試 DTO 序列化和反序列化.
      */
     public function test_dto_serialization(): void
     {
@@ -566,7 +563,7 @@ class DTOValidationTest extends TestCase
             'content' => '測試內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'is_anonymous' => false
+            'is_anonymous' => false,
         ];
 
         $dto = new CreatePostDTO($this->validator, $originalData);
@@ -586,7 +583,7 @@ class DTOValidationTest extends TestCase
     }
 
     /**
-     * 測試 DTO 邊界條件
+     * 測試 DTO 邊界條件.
      */
     public function test_dto_edge_cases(): void
     {
@@ -595,14 +592,14 @@ class DTOValidationTest extends TestCase
             'title' => str_repeat('測試', 100),
             'content' => str_repeat('內容', 1000),
             'user_id' => PHP_INT_MAX,
-            'user_ip' => '255.255.255.255'
+            'user_ip' => '255.255.255.255',
         ];
 
         // 某些極端值可能會觸發驗證錯誤，這是預期的
         try {
             $dto = new CreatePostDTO($this->validator, $extremeData);
             $this->assertInstanceOf(CreatePostDTO::class, $dto);
-        } catch(\App\Shared\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             // 如果驗證失敗，檢查錯誤是否合理
             $this->assertNotEmpty($e->getErrors());
         }
@@ -612,7 +609,7 @@ class DTOValidationTest extends TestCase
             'title' => str_repeat('A', 255), // 最大允許長度
             'content' => '最小內容',
             'user_id' => 1,
-            'user_ip' => '0.0.0.0'
+            'user_ip' => '0.0.0.0',
         ];
 
         $dto = new CreatePostDTO($this->validator, $boundaryData);

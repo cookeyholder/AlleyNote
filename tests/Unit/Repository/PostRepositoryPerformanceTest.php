@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
-use App\Domains\Post\Models\Post;
 use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Infrastructure\Services\CacheService;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PDO;
 use Tests\Factory\PostFactory;
-
 
 class PostRepositoryPerformanceTest extends MockeryTestCase
 {
@@ -37,7 +37,7 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         $this->createTestTables();
 
         // 模擬快取服務
-        $this->cache = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
+        $this->cache = Mockery::mock(CacheService::class);
         $this->cache->shouldReceive('remember')
             ->byDefault()
             ->andReturnUsing(function ($key, $callback) {
@@ -46,10 +46,10 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         $this->cache->shouldReceive('delete')->byDefault();
 
         // LoggingSecurityServiceInterface mock
-        $this->loggingSecurityService = Mockery::mock(\App\Domains\Security\Contracts\LoggingSecurityServiceInterface::class);
+        $this->loggingSecurityService = Mockery::mock(LoggingSecurityServiceInterface::class);
         $this->loggingSecurityService->shouldReceive('logSecurityEvent')->byDefault();
 
-        $this->repository = new \App\Domains\Post\Repositories\PostRepository($this->db, $this->cache, $this->loggingSecurityService);
+        $this->repository = new PostRepository($this->db, $this->cache, $this->loggingSecurityService);
     }
 
     protected function createTestTables(): void
@@ -125,9 +125,9 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
                 'content' => "內容 {$i}",
                 'user_id' => 1,
             ]);
-            $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-            $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-            $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
             $this->repository->create($data);
         }
 
@@ -146,9 +146,9 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
                 'content' => "內容 {$i}",
                 'user_id' => 1,
             ]);
-            $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-            $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-            $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
             $this->repository->create($data);
         }
 
@@ -171,9 +171,9 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
                 'user_id' => 1,
                 'status' => 'published',
             ]);
-            $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-            $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-            $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
             $this->repository->create($data);
         }
 
@@ -195,9 +195,9 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         }
 
         $data = PostFactory::make(['user_id' => 1]);
-        $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
         $tagIds = range(1, 10);
 
@@ -215,9 +215,9 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
         $this->markTestSkipped('暫時跳過：SQLite 事務狀態問題，待修復');
 
         $data = PostFactory::make(['user_id' => 1]);
-        $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
         $concurrentCount = 10;
         $startTime = microtime(true);
@@ -226,7 +226,7 @@ class PostRepositoryPerformanceTest extends MockeryTestCase
             $this->repository->incrementViews(
                 $post->getId(),
                 "192.168.1.{$i}",
-                $i + 1
+                $i + 1,
             );
         }
 

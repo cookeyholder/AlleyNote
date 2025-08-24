@@ -13,7 +13,6 @@ interface PostServiceInterface
     /**
      * 建立新文章.
      * @param CreatePostDTO $dto 文章資料
-     * @return Post
      * @throws ValidationException
      */
     public function createPost(CreatePostDTO $dto): Post;
@@ -22,7 +21,6 @@ interface PostServiceInterface
      * 更新文章.
      * @param int $id 文章 ID
      * @param UpdatePostDTO $dto 更新資料
-     * @return Post
      * @throws ValidationException
      * @throws NotFoundException
      */
@@ -31,7 +29,6 @@ interface PostServiceInterface
     /**
      * 刪除文章.
      * @param int $id 文章 ID
-     * @return bool
      * @throws NotFoundException
      */
     public function deletePost(int $id): bool;
@@ -39,7 +36,6 @@ interface PostServiceInterface
     /**
      * 根據 ID 查詢文章.
      * @param int $id 文章 ID
-     * @return Post
      * @throws NotFoundException
      */
     public function findById(int $id): Post;
@@ -70,7 +66,6 @@ interface PostServiceInterface
      * 設定文章置頂狀態.
      * @param int $id 文章 ID
      * @param bool $isPinned 是否置頂
-     * @return bool
      * @throws NotFoundException
      */
     public function setPinned(int $id, bool $isPinned): bool;
@@ -79,7 +74,6 @@ interface PostServiceInterface
      * 設定文章標籤.
      * @param int $id 文章 ID
      * @param array $tagIds 標籤 ID 陣列
-     * @return bool
      * @throws NotFoundException
      */
     public function setTags(int $id, array $tagIds): bool;
@@ -89,7 +83,6 @@ interface PostServiceInterface
      * @param int $id 文章 ID
      * @param string $userIp 使用者 IP
      * @param int|null $userId 使用者 ID（若已登入）
-     * @return bool
      * @throws NotFoundException
      */
     public function recordView(int $id, string $userIp, ?int $userId = null): bool;

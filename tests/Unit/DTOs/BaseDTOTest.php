@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\DTOs;
 
-use App\Domains\User\Entities\User;
-use App\Shared\Validation\ValidationException;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
-
+use App\Shared\Validation\ValidationException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
 /**
- * BaseDTO 測試類
+ * BaseDTO 測試類.
  */
 class BaseDTOTest extends TestCase
 {
@@ -22,7 +20,7 @@ class BaseDTOTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->validator = Mockery::mock(\App\Shared\Contracts\ValidatorInterface::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
     }
 
     protected function tearDown(): void
@@ -32,13 +30,15 @@ class BaseDTOTest extends TestCase
     }
 
     /**
-     * 測試用的具體 DTO 實作
+     * 測試用的具體 DTO 實作.
      */
     private function createTestDTO(): BaseDTO
     {
-        return new class($this->validator) extends BaseDTO {
+        return new class ($this->validator) extends BaseDTO {
             public string $name = '';
+
             public int $age = 0;
+
             public bool $active = false;
 
             protected function getValidationRules(): array
@@ -46,7 +46,7 @@ class BaseDTOTest extends TestCase
                 return [
                     'name' => 'required|string|min_length:2|max_length:50',
                     'age' => 'required|integer|min:0|max:120',
-                    'active' => 'boolean'
+                    'active' => 'boolean',
                 ];
             }
 
@@ -55,7 +55,7 @@ class BaseDTOTest extends TestCase
                 return [
                     'name' => $this->name,
                     'age' => $this->age,
-                    'active' => $this->active
+                    'active' => $this->active,
                 ];
             }
 
@@ -120,7 +120,7 @@ class BaseDTOTest extends TestCase
         $expected = [
             'name' => 'Test User',
             'age' => 25,
-            'active' => true
+            'active' => true,
         ];
 
         $this->assertEquals($expected, $dto->jsonSerialize());
@@ -134,7 +134,7 @@ class BaseDTOTest extends TestCase
         $expectedRules = [
             'name' => 'required|string|min_length:2|max_length:50',
             'age' => 'required|integer|min:0|max:120',
-            'active' => 'boolean'
+            'active' => 'boolean',
         ];
 
         $this->validator
@@ -152,14 +152,14 @@ class BaseDTOTest extends TestCase
         $dto = $this->createTestDTO();
         $data = ['name' => '', 'age' => -1];
 
-        $exception = Mockery::mock(\App\Shared\Validation\ValidationException::class);
+        $exception = Mockery::mock(ValidationException::class);
 
         $this->validator
             ->shouldReceive('validateOrFail')
             ->once()
             ->andThrow($exception);
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $dto->testValidate($data);
     }
 
@@ -170,7 +170,7 @@ class BaseDTOTest extends TestCase
             'name' => 'John Doe',
             'empty' => '',
             'spaces' => '  test  ',
-            'null_value' => null
+            'null_value' => null,
         ];
 
         $this->assertEquals('John Doe', $dto->testGetString($data, 'name'));
@@ -188,7 +188,7 @@ class BaseDTOTest extends TestCase
             'age' => 25,
             'string_number' => '30',
             'float_number' => 35.7,
-            'null_value' => null
+            'null_value' => null,
         ];
 
         $this->assertEquals(25, $dto->testGetInt($data, 'age'));
@@ -214,7 +214,7 @@ class BaseDTOTest extends TestCase
             'string_on' => 'on',
             'string_yes' => 'yes',
             'string_other' => 'other',
-            'null_value' => null
+            'null_value' => null,
         ];
 
         $this->assertTrue($dto->testGetBool($data, 'bool_true'));
@@ -240,7 +240,7 @@ class BaseDTOTest extends TestCase
             'string' => 'value',
             'number' => 42,
             'array' => [1, 2, 3],
-            'null_value' => null
+            'null_value' => null,
         ];
 
         $this->assertEquals('value', $dto->testGetValue($data, 'string'));

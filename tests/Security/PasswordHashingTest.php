@@ -6,15 +6,13 @@ namespace Tests\Security;
 
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
-use App\Domains\User\Entities\User;
+use InvalidArgumentException;
 use Mockery;
 use PDO;
 use Tests\TestCase;
 
-
 class PasswordHashingTest extends TestCase
 {
-
     protected AuthService $authService;
 
     protected UserRepository $userRepository;
@@ -26,9 +24,9 @@ class PasswordHashingTest extends TestCase
         parent::setUp();
 
         // 初始化mock對象
-        $this->authService = \Mockery::mock(AuthService::class);
-        $this->userRepository = \Mockery::mock(UserRepository::class);
-        $this->db = \Mockery::mock(PDO::class);
+        $this->authService = Mockery::mock(AuthService::class);
+        $this->userRepository = Mockery::mock(UserRepository::class);
+        $this->db = Mockery::mock(PDO::class);
 
         // 使用 SQLite 記憶體資料庫進行測試
         $this->db = new PDO('sqlite::memory:');
@@ -38,7 +36,7 @@ class PasswordHashingTest extends TestCase
         $this->createTestTables();
 
         $this->userRepository = new \App\Domains\User\Repositories\UserRepository($this->db);
-        $this->authService = new \App\Domains\Auth\Services\AuthService($this->userRepository);
+        $this->authService = new AuthService($this->userRepository);
     }
 
     protected function createTestTables(): void
@@ -122,7 +120,7 @@ class PasswordHashingTest extends TestCase
         ];
 
         // 預期會拋出例外
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('密碼長度必須至少為 8 個字元');
 
         // 執行測試
@@ -143,7 +141,7 @@ class PasswordHashingTest extends TestCase
         $user = $this->authService->register($userData);
 
         // 模擬使用者嘗試更新密碼為相同的密碼
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('新密碼不能與目前的密碼相同');
 
         $this->userRepository->updatePassword($user['id'], $userData['password']);

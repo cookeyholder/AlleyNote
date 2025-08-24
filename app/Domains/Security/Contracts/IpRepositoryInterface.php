@@ -11,8 +11,6 @@ interface IpRepositoryInterface extends RepositoryInterface
 {
     /**
      * 依 IP 位址查詢規則.
-     * @param string $ipAddress
-     * @return IpList|null
      */
     public function findByIpAddress(string $ipAddress): ?IpList;
 
@@ -25,15 +23,11 @@ interface IpRepositoryInterface extends RepositoryInterface
 
     /**
      * 驗證 IP 是否在黑名單中.
-     * @param string $ipAddress
-     * @return bool
      */
     public function isBlacklisted(string $ipAddress): bool;
 
     /**
      * 驗證 IP 是否在白名單中.
-     * @param string $ipAddress
-     * @return bool
      */
     public function isWhitelisted(string $ipAddress): bool;
 }

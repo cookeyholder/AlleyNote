@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Domains\Security\Services\Error;
 
 use App\Domains\Security\Contracts\ErrorHandlerServiceInterface;
+use ErrorException;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Processor\WebProcessor;
+use Throwable;
 
 class ErrorHandlerService implements ErrorHandlerServiceInterface
 {
@@ -22,7 +24,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     public function __construct(
         string $logPath = '',
         bool $isDevelopment = false,
-        array $sensitiveKeys = []
+        array $sensitiveKeys = [],
     ) {
         $this->isDevelopment = $isDevelopment;
         $this->sensitiveKeys = array_merge([
@@ -47,7 +49,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $this->registerErrorHandlers();
     }
 
-    public function handleException(\Throwable $e, bool $isPublicError = false): array
+    public function handleException(Throwable $e, bool $isPublicError = false): array
     {
         // 記錄完整錯誤到日誌
         $this->logException($e);
@@ -133,33 +135,33 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
         // 確保日誌目錄存在
         if (!is_dir($logPath)) {
-            mkdir($logPath, 0750, true);
+            mkdir($logPath, 0o750, true);
         }
 
         // 設定檔案權限
         if (is_dir($logPath)) {
-            chmod($logPath, 0750);
+            chmod($logPath, 0o750);
         }
 
         // 一般日誌 (INFO 級別以上)
         $infoHandler = new RotatingFileHandler(
             $logPath . '/app.log',
             0, // 保留所有檔案
-            Logger::INFO
+            Logger::INFO,
         );
 
         // 錯誤日誌 (ERROR 級別以上)
         $errorHandler = new RotatingFileHandler(
             $logPath . '/error.log',
             0,
-            Logger::ERROR
+            Logger::ERROR,
         );
 
         // 安全日誌 (WARNING 級別以上)
         $securityHandler = new RotatingFileHandler(
             $logPath . '/security.log',
             0,
-            Logger::WARNING
+            Logger::WARNING,
         );
 
         // 設定格式化器
@@ -167,7 +169,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
             'Y-m-d H:i:s',
             true,
-            true
+            true,
         );
 
         $infoHandler->setFormatter($formatter);
@@ -196,7 +198,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         register_shutdown_function([$this, 'shutdownHandler']);
     }
 
-    public function globalExceptionHandler(\Throwable $e): void
+    public function globalExceptionHandler(Throwable $e): void
     {
         $errorData = $this->handleException($e, true);
 
@@ -215,7 +217,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             return false;
         }
 
-        $exception = new \ErrorException($message, 0, $severity, $file, $line);
+        $exception = new ErrorException($message, 0, $severity, $file, $line);
         $this->logException($exception);
 
         if ($severity === E_ERROR || $severity === E_CORE_ERROR || $severity === E_COMPILE_ERROR) {
@@ -230,19 +232,19 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $error = error_get_last();
 
         if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE])) {
-            $exception = new \ErrorException(
+            $exception = new ErrorException(
                 $error['message'],
                 0,
                 $error['type'],
                 $error['file'],
-                $error['line']
+                $error['line'],
             );
 
             $this->globalExceptionHandler($exception);
         }
     }
 
-    private function logException(\Throwable $e): void
+    private function logException(Throwable $e): void
     {
         $context = [
             'exception' => get_class($e),
@@ -255,7 +257,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $this->logger->error($e->getMessage(), $this->sanitizeLogData($context));
     }
 
-    private function getPublicErrorMessage(\Throwable $e): string
+    private function getPublicErrorMessage(Throwable $e): string
     {
         return match (get_class($e)) {
             'App\\Exceptions\\ValidationException' => $e->getMessage(),
@@ -266,7 +268,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         };
     }
 
-    private function getErrorCode(\Throwable $e): string
+    private function getErrorCode(Throwable $e): string
     {
         return match (get_class($e)) {
             'App\\Exceptions\\ValidationException' => 'VALIDATION_ERROR',

@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace Tests\Unit\Controllers;
 
 use App\Application\Controllers\Api\V1\IpController;
-use App\Shared\Validation\ValidationException;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Domains\Security\Models\IpList;
 use App\Domains\Security\Services\IpService;
 use App\Shared\Contracts\ValidatorInterface;
-
+use App\Shared\Exceptions\ValidationException;
+use App\Shared\Validation\ValidationResult;
+use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
-
 class IpControllerTest extends TestCase
 {
-
     private App\Domains\Security\Services\IpService|MockInterface $service;
 
     private App\Shared\Contracts\ValidatorInterface|MockInterface $validator;
@@ -41,7 +40,7 @@ class IpControllerTest extends TestCase
             ->zeroOrMoreTimes()
             ->andReturnSelf();
 
-        $this->controller = new \App\Application\Controllers\Api\V1\IpController($this->service, $this->validator);
+        $this->controller = new IpController($this->service, $this->validator);
     }
 
     public function testCanCreateIpRule(): void
@@ -90,8 +89,8 @@ class IpControllerTest extends TestCase
         $this->validator->shouldReceive('validateOrFail')
             ->once()
             ->with(Mockery::any(), Mockery::any())
-            ->andThrow(new \App\Shared\Exceptions\ValidationException(
-                new \App\Shared\Validation\ValidationResult(false, ['ip_address' => ['無效的 IP 位址']], [], [])
+            ->andThrow(new ValidationException(
+                new ValidationResult(false, ['ip_address' => ['無效的 IP 位址']], [], []),
             ));
 
         $response = $this->controller->create($request);
@@ -152,7 +151,7 @@ class IpControllerTest extends TestCase
         $this->service->shouldReceive('isIpAllowed')
             ->once()
             ->with($ip)
-            ->andThrow(new \InvalidArgumentException('無效的 IP 位址格式'));
+            ->andThrow(new InvalidArgumentException('無效的 IP 位址格式'));
 
         $response = $this->controller->checkAccess(['ip' => $ip]);
 

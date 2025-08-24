@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Services;
 
+use Exception;
+
 class RateLimitService
 {
     public function __construct(
-        private readonly CacheService $cache
-    ) {
-    }
+        private readonly CacheService $cache,
+    ) {}
 
     public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
     {
@@ -46,7 +47,7 @@ class RateLimitService
                 'remaining' => max(0, $maxRequests - $data['count']),
                 'reset' => $data['reset'],
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 如果快取服務不可用，預設允許請求
             error_log('速率限制檢查失敗: ' . $e->getMessage());
 

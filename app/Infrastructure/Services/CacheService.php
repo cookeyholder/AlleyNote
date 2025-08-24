@@ -9,6 +9,7 @@ use App\Shared\Contracts\CacheServiceInterface;
 class CacheService implements CacheServiceInterface
 {
     private string $cachePath;
+
     private const TTL = 3600; // 預設快取時間 1 小時
 
     // 快取統計
@@ -24,7 +25,7 @@ class CacheService implements CacheServiceInterface
     {
         $this->cachePath = dirname(__DIR__, 2) . '/storage/cache';
         if (!is_dir($this->cachePath)) {
-            mkdir($this->cachePath, 0755, true);
+            mkdir($this->cachePath, 0o755, true);
         }
     }
 
@@ -33,28 +34,33 @@ class CacheService implements CacheServiceInterface
         $filename = $this->getCacheFilename($key);
         if (!file_exists($filename)) {
             $this->stats['misses']++;
+
             return null;
         }
 
         $data = file_get_contents($filename);
         if ($data === false) {
             $this->stats['misses']++;
+
             return null;
         }
 
         $cacheData = json_decode($data, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry']) || !isset($cacheData['data'])) {
             $this->stats['misses']++;
+
             return null;
         }
 
         if (time() > $cacheData['expiry']) {
             unlink($filename);
             $this->stats['misses']++;
+
             return null;
         }
 
         $this->stats['hits']++;
+
         return $cacheData['data'];
     }
 
@@ -71,6 +77,7 @@ class CacheService implements CacheServiceInterface
         if ($result) {
             $this->updateCacheSize();
         }
+
         return $result;
     }
 
@@ -86,6 +93,7 @@ class CacheService implements CacheServiceInterface
             $this->stats['deletes']++;
             $this->updateCacheSize();
         }
+
         return $result;
     }
 
@@ -150,6 +158,7 @@ class CacheService implements CacheServiceInterface
 
         if (time() > $cacheData['expiry']) {
             unlink($filename);
+
             return false;
         }
 
@@ -162,6 +171,7 @@ class CacheService implements CacheServiceInterface
         foreach ($keys as $key) {
             $result[$key] = $this->get($key);
         }
+
         return $result;
     }
 
@@ -173,6 +183,7 @@ class CacheService implements CacheServiceInterface
                 $success = false;
             }
         }
+
         return $success;
     }
 
@@ -184,10 +195,9 @@ class CacheService implements CacheServiceInterface
                 $success = false;
             }
         }
+
         return $success;
     }
-
-
 
     private function getCacheFilename(string $key): string
     {
@@ -195,7 +205,7 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-     * 更新快取大小統計
+     * 更新快取大小統計.
      */
     private function updateCacheSize(): void
     {
@@ -210,7 +220,7 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-     * 取得快取統計資訊
+     * 取得快取統計資訊.
      */
     public function getStats(): array
     {
@@ -232,7 +242,7 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-     * 清理過期的快取檔案
+     * 清理過期的快取檔案.
      */
     public function cleanExpired(): int
     {
@@ -255,11 +265,12 @@ class CacheService implements CacheServiceInterface
         }
 
         $this->updateCacheSize();
+
         return $cleaned;
     }
 
     /**
-     * 重設統計資訊
+     * 重設統計資訊.
      */
     public function resetStats(): void
     {

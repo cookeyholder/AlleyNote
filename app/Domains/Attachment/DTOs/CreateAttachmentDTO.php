@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Attachment\DTOs;
 
-use App\Shared\DTOs\BaseDTO;
 use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\DTOs\BaseDTO;
 
 /**
  * 建立附件的資料傳輸物件.
@@ -54,7 +54,7 @@ class CreateAttachmentDTO extends BaseDTO
     }
 
     /**
-     * 添加附件專用驗證規則
+     * 添加附件專用驗證規則.
      */
     private function addAttachmentValidationRules(): void
     {
@@ -135,7 +135,7 @@ class CreateAttachmentDTO extends BaseDTO
                 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
                 'application/zip',
                 'application/x-zip-compressed',
-                'application/octet-stream'
+                'application/octet-stream',
             ];
 
             return in_array($value, $allowedMimeTypes, true);
@@ -202,9 +202,7 @@ class CreateAttachmentDTO extends BaseDTO
     }
 
     /**
-     * 取得驗證規則
-     *
-     * @return array
+     * 取得驗證規則.
      */
     protected function getValidationRules(): array
     {
@@ -221,8 +219,6 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
-     *
-     * @return array
      */
     public function toArray(): array
     {
@@ -239,8 +235,6 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 檢查是否為圖片檔案.
-     *
-     * @return bool
      */
     public function isImage(): bool
     {
@@ -249,8 +243,6 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 檢查是否為文件檔案.
-     *
-     * @return bool
      */
     public function isDocument(): bool
     {
@@ -271,8 +263,6 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 檢查是否為壓縮檔案.
-     *
-     * @return bool
      */
     public function isArchive(): bool
     {
@@ -286,8 +276,6 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 取得檔案副檔名.
-     *
-     * @return string
      */
     public function getExtension(): string
     {
@@ -296,8 +284,6 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 取得人類可讀的檔案大小.
-     *
-     * @return string
      */
     public function getHumanReadableSize(): string
     {
@@ -315,8 +301,6 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 取得檔案類型類別.
-     *
-     * @return string
      */
     public function getFileCategory(): string
     {

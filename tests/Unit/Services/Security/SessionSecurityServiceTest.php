@@ -8,7 +8,6 @@ use App\Domains\Auth\Services\SessionSecurityService;
 use App\Domains\User\Entities\User;
 use PHPUnit\Framework\TestCase;
 
-
 class SessionSecurityServiceTest extends TestCase
 {
     private SessionSecurityService $service;

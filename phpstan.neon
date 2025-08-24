@@ -1,12 +1,13 @@
 parameters:
     level: 4
     paths:
-        - src
+        - app
         - tests
     excludePaths:
-        - src/OpenApi
+        - app/Infrastructure/OpenApi (?)
         - vendor
         - tests/Factory
+        - coverage-reports
     tmpDir: storage/phpstan
     ignoreErrors:
         # 忽略一些已知的第三方套件問題

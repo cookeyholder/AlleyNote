@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
-use App\Domains\Post\Models\Post;
 use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use Mockery;
+use Mockery\MockInterface;
 use Tests\TestCase;
-
+use TypeError;
 
 class SqlInjectionTest extends TestCase
 {
-
     protected PostRepository $repository;
 
     protected function setUp(): void
@@ -21,15 +20,15 @@ class SqlInjectionTest extends TestCase
         parent::setUp();
 
         // 初始化mock對象
-        $this->repository = \Mockery::mock(PostRepository::class);
-        $this->logger = \Mockery::mock(\App\Domains\Security\Contracts\LoggingSecurityServiceInterface::class);
+        $this->repository = Mockery::mock(PostRepository::class);
+        $this->logger = Mockery::mock(LoggingSecurityServiceInterface::class);
 
         // 設定預設的mock行為
         $this->logger->shouldReceive('logSecurityEvent')->byDefault();
         $this->logger->shouldReceive('enrichSecurityContext')->byDefault()->andReturn([]);
     }
 
-    protected \App\Domains\Security\Contracts\LoggingSecurityServiceInterface|\Mockery\MockInterface $logger;
+    protected \App\Domains\Security\Contracts\LoggingSecurityServiceInterface|MockInterface $logger;
 
     protected function createTestTables(): void
     {
@@ -95,7 +94,7 @@ class SqlInjectionTest extends TestCase
             // 執行測試
             $this->repository->findByUserId($maliciousUserId);
             $this->fail('應該要拋出型別錯誤例外');
-        } catch (\TypeError $e) {
+        } catch (TypeError $e) {
             // 預期會拋出型別錯誤，因為 user_id 必須是整數
             $this->assertTrue(true);
         }

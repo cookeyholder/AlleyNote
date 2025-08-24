@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Secrets;
 
-use App\Shared\Exceptions\ValidationException;
 use App\Domains\Security\Contracts\SecretsManagerInterface;
+use App\Shared\Exceptions\ValidationException;
 
 class SecretsManager implements SecretsManagerInterface
 {
@@ -103,7 +103,7 @@ class SecretsManager implements SecretsManagerInterface
 
         if (!empty($missing)) {
             throw new ValidationException(
-                '缺少必需的環境變數: ' . implode(', ', $missing)
+                '缺少必需的環境變數: ' . implode(', ', $missing),
             );
         }
     }
@@ -175,8 +175,8 @@ class SecretsManager implements SecretsManagerInterface
         }
 
         // 檢查檔案權限
-        $perms = fileperms($filePath) & 0777;
-        if ($perms !== 0600 && $perms !== 0644) {
+        $perms = fileperms($filePath) & 0o777;
+        if ($perms !== 0o600 && $perms !== 0o644) {
             $issues[] = sprintf('.env 檔案權限不安全 (%o)，建議設為 600', $perms);
         }
 
@@ -256,8 +256,8 @@ class SecretsManager implements SecretsManagerInterface
                 $value = trim($value);
 
                 // 移除引號
-                if ((str_starts_with($value, '"') && str_ends_with($value, '"')) ||
-                    (str_starts_with($value, "'") && str_ends_with($value, "'"))
+                if ((str_starts_with($value, '"') && str_ends_with($value, '"'))
+                    || (str_starts_with($value, "'") && str_ends_with($value, "'"))
                 ) {
                     $value = substr($value, 1, -1);
                 }

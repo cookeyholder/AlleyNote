@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Repositories;
 
-use App\Infrastructure\Cache\CacheKeys;
-use App\Domains\Post\Models\Post;
 use App\Domains\Post\Contracts\PostRepositoryInterface;
-use App\Infrastructure\Services\CacheService;
 use App\Domains\Post\Enums\PostStatus;
+use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
+use App\Infrastructure\Cache\CacheKeys;
+use App\Infrastructure\Services\CacheService;
+use Exception;
+use InvalidArgumentException;
 use PDO;
+use PDOException;
+use RuntimeException;
 
 class PostRepository implements PostRepositoryInterface
 {
@@ -19,11 +23,14 @@ class PostRepository implements PostRepositoryInterface
     private CacheService $cache;
 
     private LoggingSecurityServiceInterface $logger;
+
     private const CACHE_TTL = 3600;
 
     // SQL 查詢常數
     private const POST_SELECT_FIELDS = 'id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at';
+
     private const SQL_INSERT_POST = 'INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, created_at, updated_at) VALUES (:uuid, :seq_number, :title, :content, :user_id, :user_ip, :is_pinned, :status, :publish_date, :created_at, :updated_at)';
+
     private const SQL_INSERT_TAG = 'INSERT INTO post_tags (post_id, tag_id, created_at) VALUES (?, ?, ?)';
 
     // 允許的欄位白名單
@@ -53,7 +60,7 @@ class PostRepository implements PostRepositoryInterface
     public function __construct(
         PDO $db,
         CacheService $cache,
-        LoggingSecurityServiceInterface $logger
+        LoggingSecurityServiceInterface $logger,
     ) {
         $this->db = $db;
         $this->cache = $cache;
@@ -65,7 +72,7 @@ class PostRepository implements PostRepositoryInterface
      * @template T
      * @param callable(): T $callback 要在交易中執行的操作
      * @return T 操作的結果
-     * @throws \Exception 當操作失敗時拋出異常
+     * @throws Exception 當操作失敗時拋出異常
      */
     private function executeInTransaction(callable $callback): mixed
     {
@@ -76,7 +83,7 @@ class PostRepository implements PostRepositoryInterface
             $this->db->commit();
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->db->rollBack();
 
             throw $e;
@@ -126,13 +133,13 @@ class PostRepository implements PostRepositoryInterface
      */
     private function buildSelectQuery(string $additionalConditions = '', string $tableAlias = ''): string
     {
-        $fields = $tableAlias ?
-            str_replace(
+        $fields = $tableAlias
+            ? str_replace(
                 'id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at',
                 $tableAlias . '.id, ' . $tableAlias . '.uuid, ' . $tableAlias . '.seq_number, ' . $tableAlias . '.title, ' . $tableAlias . '.content, ' . $tableAlias . '.user_id, ' . $tableAlias . '.user_ip, ' . $tableAlias . '.is_pinned, ' . $tableAlias . '.status, ' . $tableAlias . '.publish_date, ' . $tableAlias . '.views, ' . $tableAlias . '.created_at, ' . $tableAlias . '.updated_at',
-                self::POST_SELECT_FIELDS
-            ) :
-            self::POST_SELECT_FIELDS;
+                self::POST_SELECT_FIELDS,
+            )
+            : self::POST_SELECT_FIELDS;
 
         $tableName = $tableAlias ? "posts {$tableAlias}" : 'posts';
         $sql = "SELECT {$fields} FROM {$tableName}";
@@ -273,7 +280,7 @@ class PostRepository implements PostRepositoryInterface
 
             // 檢查是否可以刪除（業務邏輯檢查在這裡進行，因為有鎖定保護）
             if ($post->getStatus() === PostStatus::PUBLISHED->value) {
-                throw new \InvalidArgumentException('已發布的文章不能刪除，請改為封存');
+                throw new InvalidArgumentException('已發布的文章不能刪除，請改為封存');
             }
 
             return $this->delete($id);
@@ -293,7 +300,7 @@ class PostRepository implements PostRepositoryInterface
 
             // 檢查業務邏輯：只有已發布的文章可以置頂
             if ($isPinned && $post->getStatus() !== PostStatus::PUBLISHED->value) {
-                throw new \InvalidArgumentException('只有已發布的文章可以置頂');
+                throw new InvalidArgumentException('只有已發布的文章可以置頂');
             }
 
             return $this->setPinned($id, $isPinned);
@@ -321,7 +328,7 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 指派標籤到文章.
-     * @throws \PDOException 當標籤不存在時拋出異常
+     * @throws PDOException 當標籤不存在時拋出異常
      */
     public function create(array $data, array $tagIds = []): Post
     {
@@ -348,7 +355,7 @@ class PostRepository implements PostRepositoryInterface
             // 回傳建立的物件
             $post = $this->find($postId);
             if (!$post) {
-                throw new \RuntimeException('無法建立文章');
+                throw new RuntimeException('無法建立文章');
             }
 
             return $post;
@@ -357,13 +364,13 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 指派標籤到文章.
-     * @throws \PDOException 當標籤不存在時拋出異常
+     * @throws PDOException 當標籤不存在時拋出異常
      */
     private function assignTags(int $postId, array $tagIds): void
     {
         // 驗證標籤是否存在
         if (!$this->tagsExist($tagIds)) {
-            throw new \PDOException('指定的標籤不存在');
+            throw new PDOException('指定的標籤不存在');
         }
 
         // 指派標籤
@@ -379,7 +386,7 @@ class PostRepository implements PostRepositoryInterface
         // 檢查文章是否存在
         $post = $this->find($id);
         if (!$post) {
-            throw new \InvalidArgumentException('找不到指定的文章');
+            throw new InvalidArgumentException('找不到指定的文章');
         }
 
         // 防止修改關鍵欄位
@@ -451,7 +458,7 @@ class PostRepository implements PostRepositoryInterface
                 'posts:page:%d:per:%d:%s',
                 $page,
                 $perPage,
-                md5(json_encode($conditions))
+                md5(json_encode($conditions)),
             );
         }
 
@@ -480,16 +487,16 @@ class PostRepository implements PostRepositoryInterface
             }
 
             // 計算總筆數
-            $countSql = 'SELECT COUNT(*) FROM posts' .
-                (empty($where) ? ' WHERE deleted_at IS NULL' : ' WHERE ' . implode(' AND ', $where) . ' AND deleted_at IS NULL');
+            $countSql = 'SELECT COUNT(*) FROM posts'
+                . (empty($where) ? ' WHERE deleted_at IS NULL' : ' WHERE ' . implode(' AND ', $where) . ' AND deleted_at IS NULL');
             $stmt = $this->db->prepare($countSql);
             $stmt->execute($params);
             $total = (int) $stmt->fetchColumn();
 
             // 取得分頁資料
-            $sql = 'SELECT ' . self::POST_SELECT_FIELDS . ' FROM posts' .
-                (empty($where) ? ' WHERE deleted_at IS NULL' : ' WHERE ' . implode(' AND ', $where) . ' AND deleted_at IS NULL') .
-                ' ORDER BY is_pinned DESC, publish_date DESC LIMIT :offset, :limit';
+            $sql = 'SELECT ' . self::POST_SELECT_FIELDS . ' FROM posts'
+                . (empty($where) ? ' WHERE deleted_at IS NULL' : ' WHERE ' . implode(' AND ', $where) . ' AND deleted_at IS NULL')
+                . ' ORDER BY is_pinned DESC, publish_date DESC LIMIT :offset, :limit';
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -501,8 +508,8 @@ class PostRepository implements PostRepositoryInterface
 
             $stmt->execute();
             $items = array_map(
-                fn ($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC)
+                fn($row) => Post::fromArray($this->preparePostData($row)),
+                $stmt->fetchAll(PDO::FETCH_ASSOC),
             );
 
             return [
@@ -520,16 +527,16 @@ class PostRepository implements PostRepositoryInterface
         $cacheKey = CacheKeys::pinnedPosts();
 
         return $this->cache->remember($cacheKey, function () use ($limit) {
-            $sql = $this->buildSelectQuery('is_pinned = 1') .
-                ' ORDER BY publish_date DESC LIMIT :limit';
+            $sql = $this->buildSelectQuery('is_pinned = 1')
+                . ' ORDER BY publish_date DESC LIMIT :limit';
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
             return array_map(
-                fn ($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC)
+                fn($row) => Post::fromArray($this->preparePostData($row)),
+                $stmt->fetchAll(PDO::FETCH_ASSOC),
             );
         }, self::CACHE_TTL);
     }
@@ -542,20 +549,20 @@ class PostRepository implements PostRepositoryInterface
             $offset = ($page - 1) * $perPage;
 
             // 計算總筆數
-            $countSql = 'SELECT COUNT(*) FROM posts p ' .
-                'INNER JOIN post_tags pt ON p.id = pt.post_id ' .
-                'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL';
+            $countSql = 'SELECT COUNT(*) FROM posts p '
+                . 'INNER JOIN post_tags pt ON p.id = pt.post_id '
+                . 'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL';
 
             $stmt = $this->db->prepare($countSql);
             $stmt->execute(['tag_id' => $tagId]);
             $total = (int) $stmt->fetchColumn();
 
             // 取得分頁資料
-            $sql = 'SELECT ' . str_replace('id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at', 'p.id, p.uuid, p.seq_number, p.title, p.content, p.user_id, p.user_ip, p.is_pinned, p.status, p.publish_date, p.views, p.created_at, p.updated_at', self::POST_SELECT_FIELDS) . ' FROM posts p ' .
-                'INNER JOIN post_tags pt ON p.id = pt.post_id ' .
-                'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL ' .
-                'ORDER BY p.is_pinned DESC, p.publish_date DESC ' .
-                'LIMIT :offset, :limit';
+            $sql = 'SELECT ' . str_replace('id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at', 'p.id, p.uuid, p.seq_number, p.title, p.content, p.user_id, p.user_ip, p.is_pinned, p.status, p.publish_date, p.views, p.created_at, p.updated_at', self::POST_SELECT_FIELDS) . ' FROM posts p '
+                . 'INNER JOIN post_tags pt ON p.id = pt.post_id '
+                . 'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL '
+                . 'ORDER BY p.is_pinned DESC, p.publish_date DESC '
+                . 'LIMIT :offset, :limit';
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':tag_id', $tagId, PDO::PARAM_INT);
@@ -564,8 +571,8 @@ class PostRepository implements PostRepositoryInterface
             $stmt->execute();
 
             $items = array_map(
-                fn ($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC)
+                fn($row) => Post::fromArray($this->preparePostData($row)),
+                $stmt->fetchAll(PDO::FETCH_ASSOC),
             );
 
             return [
@@ -582,12 +589,12 @@ class PostRepository implements PostRepositoryInterface
     {
         // 驗證 IP 位址格式
         if (!filter_var($userIp, FILTER_VALIDATE_IP)) {
-            throw new \InvalidArgumentException('無效的 IP 位址格式');
+            throw new InvalidArgumentException('無效的 IP 位址格式');
         }
 
         // 驗證使用者 ID（如果提供）
         if ($userId !== null && $userId <= 0) {
-            throw new \InvalidArgumentException('使用者 ID 必須是正整數');
+            throw new InvalidArgumentException('使用者 ID 必須是正整數');
         }
 
         $this->db->beginTransaction();
@@ -600,7 +607,7 @@ class PostRepository implements PostRepositoryInterface
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$post) {
-                throw new \InvalidArgumentException('找不到指定的文章');
+                throw new InvalidArgumentException('找不到指定的文章');
             }
 
             // 更新文章觀看次數
@@ -625,7 +632,7 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->db->rollBack();
 
             throw $e;
@@ -654,7 +661,7 @@ class PostRepository implements PostRepositoryInterface
         try {
             // 驗證標籤是否存在
             if (!empty($tagIds) && !$this->tagsExist($tagIds)) {
-                throw new \PDOException('部分標籤不存在');
+                throw new PDOException('部分標籤不存在');
             }
 
             // 移除現有標籤
@@ -676,7 +683,7 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->db->rollBack();
 
             return false;
@@ -692,8 +699,8 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
 
         return array_map(
-            fn ($row) => Post::fromArray($this->preparePostData($row)),
-            $stmt->fetchAll(PDO::FETCH_ASSOC)
+            fn($row) => Post::fromArray($this->preparePostData($row)),
+            $stmt->fetchAll(PDO::FETCH_ASSOC),
         );
     }
 
@@ -721,8 +728,8 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
 
         return array_map(
-            fn ($row) => Post::fromArray($this->preparePostData($row)),
-            $stmt->fetchAll(PDO::FETCH_ASSOC)
+            fn($row) => Post::fromArray($this->preparePostData($row)),
+            $stmt->fetchAll(PDO::FETCH_ASSOC),
         );
     }
 }

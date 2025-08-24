@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Models;
 
+use App\Infrastructure\Services\OutputSanitizer;
 use JsonSerializable;
 
 class Post implements JsonSerializable
@@ -160,8 +161,8 @@ class Post implements JsonSerializable
         $data = $this->toArray();
 
         // 清理可能包含 HTML 的欄位
-        $data['title'] = \App\Infrastructure\Services\OutputSanitizer::sanitizeHtml($data['title']);
-        $data['content'] = \App\Infrastructure\Services\OutputSanitizer::sanitizeHtml($data['content']);
+        $data['title'] = OutputSanitizer::sanitizeHtml($data['title']);
+        $data['content'] = OutputSanitizer::sanitizeHtml($data['content']);
 
         return $data;
     }

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
 
-use App\Infrastructure\Services\CacheService;
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
+use App\Infrastructure\Services\CacheService;
+use Exception;
 use PDO;
 
 class AuthorizationService implements AuthorizationServiceInterface
@@ -13,6 +14,7 @@ class AuthorizationService implements AuthorizationServiceInterface
     private PDO $db;
 
     private CacheService $cache;
+
     private const CACHE_TTL = 3600; // 1 hour
 
     public function __construct(PDO $db, CacheService $cache)
@@ -85,7 +87,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -106,7 +108,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -140,7 +142,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -161,7 +163,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -241,7 +243,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $post && (int) $post['user_id'] === $userId;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -259,7 +261,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result && (int) $result['user_id'] === $userId;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }

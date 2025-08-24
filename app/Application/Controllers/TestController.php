@@ -14,7 +14,7 @@ class HealthController
         path: '/health',
         summary: '健康檢查端點',
         tags: ['health'],
-        responses: [new OA\Response(response: 200, description: '系統正常運行')]
+        responses: [new OA\Response(response: 200, description: '系統正常運行')],
     )]
     public function check(Request $request, Response $response): Response
     {

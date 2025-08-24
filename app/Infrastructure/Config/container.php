@@ -2,51 +2,52 @@
 
 declare(strict_types=1);
 
-use DI\ContainerBuilder;
-use Psr\Container\ContainerInterface;
-
+use App\Application\Controllers\Api\V1\AttachmentController;
 // Database 相關
-use App\Infrastructure\Database\DatabaseConnection;
-
+use App\Application\Controllers\Api\V1\AuthController;
 // Repositories
-use App\Domains\Post\Contracts\PostRepositoryInterface;
-use App\Domains\Post\Repositories\PostRepository;
-use App\Domains\Auth\Contracts\UserRepositoryInterface;
-use App\Domains\Auth\Repositories\UserRepository;
+use App\Application\Controllers\Api\V1\IpController;
+use App\Application\Controllers\Api\V1\PostController;
+use App\Application\Controllers\Health\HealthController;
+use App\Application\Controllers\Security\CSPReportController;
+use App\Application\Controllers\Web\SwaggerController;
 use App\Domains\Attachment\Contracts\AttachmentRepositoryInterface;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
-use App\Domains\Security\Contracts\IpRepositoryInterface;
-use App\Domains\Security\Repositories\IpRepository;
-
-// Services
-use App\Domains\Post\Contracts\PostServiceInterface;
-use App\Domains\Post\Services\PostService;
-use App\Shared\Contracts\CacheServiceInterface;
-use App\Infrastructure\Services\CacheService;
 use App\Domains\Attachment\Services\AttachmentService;
-use App\Domains\Auth\Services\AuthService;
-use App\Domains\Security\Services\IpService;
-use App\Infrastructure\Services\RateLimitService;
-
-// Security Services
-use App\Domains\Security\Contracts\XssProtectionServiceInterface;
-use App\Domains\Security\Services\Core\XssProtectionService;
-use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
-use App\Domains\Auth\Services\PasswordSecurityService;
-use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
-use App\Domains\Security\Services\Core\CsrfProtectionService;
+// Services
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
-use App\Domains\Auth\Services\AuthorizationService;
-use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
-use App\Domains\Security\Services\Logging\LoggingSecurityService;
+use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\Contracts\SessionSecurityServiceInterface;
+use App\Domains\Auth\Contracts\UserRepositoryInterface;
+use App\Domains\Auth\Repositories\UserRepository;
+use App\Domains\Auth\Services\AuthorizationService;
+use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\Services\PasswordSecurityService;
+// Security Services
 use App\Domains\Auth\Services\SessionSecurityService;
+use App\Domains\Post\Contracts\PostRepositoryInterface;
+use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Post\Services\PostService;
+use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
+use App\Domains\Security\Contracts\IpRepositoryInterface;
+use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
+use App\Domains\Security\Contracts\XssProtectionServiceInterface;
+use App\Domains\Security\Repositories\IpRepository;
+use App\Domains\Security\Services\Core\CsrfProtectionService;
+use App\Domains\Security\Services\Core\XssProtectionService;
 use App\Domains\Security\Services\Headers\SecurityHeaderService;
-
 // Validation Services
+use App\Domains\Security\Services\IpService;
+use App\Domains\Security\Services\Logging\LoggingSecurityService;
+use App\Infrastructure\Database\DatabaseConnection;
+use App\Infrastructure\Services\CacheService;
+use App\Infrastructure\Services\RateLimitService;
+use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
-use App\Shared\Validation\Validator;
 use App\Shared\Validation\Factory\ValidatorFactory;
+use App\Shared\Validation\Validator;
+use Psr\Container\ContainerInterface;
 
 return [
     // Database
@@ -164,11 +165,11 @@ return [
     Validator::class => DI\autowire(Validator::class),
 
     // Controllers (使用 autowire 自動注入依賴)
-    App\Application\Controllers\Api\V1\PostController::class => DI\autowire(),
-    App\Application\Controllers\Api\V1\AttachmentController::class => DI\autowire(),
-    App\Application\Controllers\Api\V1\AuthController::class => DI\autowire(),
-    App\Application\Controllers\Api\V1\IpController::class => DI\autowire(),
-    App\Application\Controllers\Web\SwaggerController::class => DI\autowire(),
-    App\Application\Controllers\Health\HealthController::class => DI\autowire(),
-    App\Application\Controllers\Security\CSPReportController::class => DI\autowire(),
+    PostController::class => DI\autowire(),
+    AttachmentController::class => DI\autowire(),
+    AuthController::class => DI\autowire(),
+    IpController::class => DI\autowire(),
+    SwaggerController::class => DI\autowire(),
+    HealthController::class => DI\autowire(),
+    CSPReportController::class => DI\autowire(),
 ];

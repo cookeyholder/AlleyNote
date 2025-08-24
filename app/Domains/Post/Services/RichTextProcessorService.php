@@ -38,7 +38,7 @@ class RichTextProcessorService
         $basicConfig->set('HTML.Doctype', 'HTML 4.01 Transitional');
         $basicConfig->set(
             'HTML.Allowed',
-            'p,b,strong,i,em,u,br,ul,ol,li,a[href|title],blockquote,h3,h4,h5,h6'
+            'p,b,strong,i,em,u,br,ul,ol,li,a[href|title],blockquote,h3,h4,h5,h6',
         );
         $basicConfig->set('URI.AllowedSchemes', ['http' => true, 'https' => true]);
         $basicConfig->set('Attr.AllowedFrameTargets', ['_blank']);
@@ -53,9 +53,9 @@ class RichTextProcessorService
         $extendedConfig->set('HTML.Doctype', 'HTML 4.01 Transitional');
         $extendedConfig->set(
             'HTML.Allowed',
-            'p,b,strong,i,em,u,br,ul,ol,li,a[href|title],blockquote,h1,h2,h3,h4,h5,h6,' .
-                'table,tr,td,th,thead,tbody,img[src|alt|width|height|style],' .
-                'div[class|style],span[class|style],pre,code'
+            'p,b,strong,i,em,u,br,ul,ol,li,a[href|title],blockquote,h1,h2,h3,h4,h5,h6,'
+                . 'table,tr,td,th,thead,tbody,img[src|alt|width|height|style],'
+                . 'div[class|style],span[class|style],pre,code',
         );
         $extendedConfig->set('CSS.AllowedProperties', 'color,background-color,font-weight,text-align,width,height,margin,padding');
         $extendedConfig->set('URI.AllowedSchemes', ['http' => true, 'https' => true]);
@@ -71,15 +71,15 @@ class RichTextProcessorService
         $adminConfig->set('HTML.Doctype', 'HTML 4.01 Transitional');
         $adminConfig->set(
             'HTML.Allowed',
-            'p,b,strong,i,em,u,br,ul,ol,li,a[href|title|target],' .
-                'blockquote,h1,h2,h3,h4,h5,h6,table,tr,td,th,thead,tbody,' .
-                'img[src|alt|width|height|style|class],div[class|style|id],' .
-                'span[class|style],pre,code,hr,sub,sup,del,ins'
+            'p,b,strong,i,em,u,br,ul,ol,li,a[href|title|target],'
+                . 'blockquote,h1,h2,h3,h4,h5,h6,table,tr,td,th,thead,tbody,'
+                . 'img[src|alt|width|height|style|class],div[class|style|id],'
+                . 'span[class|style],pre,code,hr,sub,sup,del,ins',
         );
         $adminConfig->set(
             'CSS.AllowedProperties',
-            'color,background-color,font-weight,text-align,width,height,' .
-                'margin,padding,border,border-color,border-width,font-size,line-height'
+            'color,background-color,font-weight,text-align,width,height,'
+                . 'margin,padding,border,border-color,border-width,font-size,line-height',
         );
         $adminConfig->set('URI.AllowedSchemes', ['http' => true, 'https' => true]);
         $adminConfig->set('Attr.AllowedFrameTargets', ['_blank', '_self']);
@@ -273,7 +273,7 @@ class RichTextProcessorService
 
         if (!is_dir($cachePath)) {
             // @ 符號抑制錯誤，以處理多執行緒環境下的競爭條件
-            @mkdir($cachePath, 0750, true);
+            @mkdir($cachePath, 0o750, true);
         }
 
         return $cachePath;

@@ -17,61 +17,61 @@ use OpenApi\Attributes as OA;
             property: 'id',
             type: 'integer',
             description: '貼文ID',
-            example: 1
+            example: 1,
         ),
         new OA\Property(
             property: 'title',
             type: 'string',
             description: '貼文標題',
             maxLength: 255,
-            example: '重要公告'
+            example: '重要公告',
         ),
         new OA\Property(
             property: 'content',
             type: 'string',
             description: '貼文內容',
-            example: '這是一則重要公告內容'
+            example: '這是一則重要公告內容',
         ),
         new OA\Property(
             property: 'category',
             type: 'string',
             description: '貼文分類',
             enum: ['general', 'announcement', 'urgent', 'notice'],
-            example: 'announcement'
+            example: 'announcement',
         ),
         new OA\Property(
             property: 'status',
             type: 'string',
             description: '貼文狀態',
             enum: ['draft', 'published', 'archived'],
-            example: 'published'
+            example: 'published',
         ),
         new OA\Property(
             property: 'priority',
             type: 'string',
             description: '優先級',
             enum: ['low', 'normal', 'high', 'urgent'],
-            example: 'normal'
+            example: 'normal',
         ),
         new OA\Property(
             property: 'author_id',
             type: 'integer',
             description: '作者ID',
-            example: 1
+            example: 1,
         ),
         new OA\Property(
             property: 'created_at',
             type: 'string',
             format: 'date-time',
             description: '建立時間',
-            example: '2025-01-15T10:30:00Z'
+            example: '2025-01-15T10:30:00Z',
         ),
         new OA\Property(
             property: 'updated_at',
             type: 'string',
             format: 'date-time',
             description: '更新時間',
-            example: '2025-01-15T11:00:00Z'
+            example: '2025-01-15T11:00:00Z',
         ),
         new OA\Property(
             property: 'expires_at',
@@ -79,9 +79,9 @@ use OpenApi\Attributes as OA;
             format: 'date-time',
             description: '過期時間',
             nullable: true,
-            example: '2025-12-31T23:59:59Z'
+            example: '2025-12-31T23:59:59Z',
         ),
-    ]
+    ],
 )]
 class PostSchema
 {

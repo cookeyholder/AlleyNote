@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Tests\Integration\Http;
 
 use App\Application\Controllers\Api\V1\PostController;
-use App\Domains\Post\Models\Post;
-use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\DTOs\CreatePostDTO;
+use App\Domains\Post\DTOs\UpdatePostDTO;
+use App\Domains\Post\Models\Post;
 use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Services\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\Exceptions\NotFoundException;
+use App\Shared\Validation\ValidationException;
+use App\Shared\Validation\ValidationResult;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -18,20 +22,28 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
 
-
 class PostControllerTest extends TestCase
 {
     private PostServiceInterface|MockInterface $postService;
+
     private XssProtectionServiceInterface|MockInterface $xssProtection;
+
     private CsrfProtectionServiceInterface|MockInterface $csrfProtection;
+
     private ValidatorInterface|MockInterface $validator;
+
     private ServerRequestInterface|MockInterface $request;
+
     private ResponseInterface|MockInterface $response;
+
     private StreamInterface|MockInterface $stream;
+
     private PostController $controller;
 
     private string $lastWrittenContent = '';
+
     private int $lastStatusCode = 0;
+
     private array $headers = [];
 
     protected function setUp(): void
@@ -50,7 +62,7 @@ class PostControllerTest extends TestCase
         // 創建控制器實例
         $this->controller = new PostController(
             $this->postService,
-            $this->validator
+            $this->validator,
         );
 
         // 設定預設的response行為
@@ -83,18 +95,21 @@ class PostControllerTest extends TestCase
         $this->stream->shouldReceive('write')
             ->andReturnUsing(function ($content) {
                 $this->lastWrittenContent = $content;
+
                 return strlen($content);
             });
 
         $this->response->shouldReceive('withStatus')
             ->andReturnUsing(function ($status) {
                 $this->lastStatusCode = $status;
+
                 return $this->response;
             });
 
         $this->response->shouldReceive('withHeader')
             ->andReturnUsing(function ($name, $value) {
                 $this->headers[$name] = $value;
+
                 return $this->response;
             });
 
@@ -120,8 +135,8 @@ class PostControllerTest extends TestCase
                 'page' => 1,
                 'per_page' => 10,
                 'total' => 2,
-                'total_pages' => 1
-            ]
+                'total_pages' => 1,
+            ],
         ];
 
         $this->postService->shouldReceive('listPosts')
@@ -147,7 +162,7 @@ class PostControllerTest extends TestCase
         $this->request->shouldReceive('getQueryParams')
             ->andReturn([
                 'page' => '2',
-                'limit' => '5'
+                'limit' => '5',
             ]);
 
         $paginatedData = [
@@ -156,8 +171,8 @@ class PostControllerTest extends TestCase
                 'page' => 2,
                 'per_page' => 5,
                 'total' => 10,
-                'total_pages' => 2
-            ]
+                'total_pages' => 2,
+            ],
         ];
 
         $this->postService->shouldReceive('listPosts')
@@ -182,19 +197,19 @@ class PostControllerTest extends TestCase
             ->andReturn([
                 'search' => '測試',
                 'page' => '1',
-                'limit' => '10'
+                'limit' => '10',
             ]);
 
         $paginatedData = [
             'data' => [
-                ['id' => 1, 'title' => '測試文章', 'content' => '測試內容']
+                ['id' => 1, 'title' => '測試文章', 'content' => '測試內容'],
             ],
             'pagination' => [
                 'page' => 1,
                 'per_page' => 10,
                 'total' => 1,
-                'total_pages' => 1
-            ]
+                'total_pages' => 1,
+            ],
         ];
 
         $this->postService->shouldReceive('listPosts')
@@ -218,19 +233,19 @@ class PostControllerTest extends TestCase
             ->andReturn([
                 'status' => 'published',
                 'page' => '1',
-                'limit' => '10'
+                'limit' => '10',
             ]);
 
         $paginatedData = [
             'data' => [
-                ['id' => 1, 'title' => '已發布文章', 'status' => 'published']
+                ['id' => 1, 'title' => '已發布文章', 'status' => 'published'],
             ],
             'pagination' => [
                 'page' => 1,
                 'per_page' => 10,
                 'total' => 1,
-                'total_pages' => 1
-            ]
+                'total_pages' => 1,
+            ],
         ];
 
         $this->postService->shouldReceive('listPosts')
@@ -251,12 +266,12 @@ class PostControllerTest extends TestCase
     {
         $this->request->shouldReceive('getQueryParams')
             ->andReturn([
-                'limit' => 'invalid'
+                'limit' => 'invalid',
             ]);
 
-        $validationResult = new \App\Shared\Validation\ValidationResult([], ['limit' => ['limit 必須是數字']], ['limit' => ['required']]);
+        $validationResult = new ValidationResult([], ['limit' => ['limit 必須是數字']], ['limit' => ['required']]);
         $this->validator->shouldReceive('validateOrFail')
-            ->andThrow(new \App\Shared\Validation\ValidationException($validationResult));
+            ->andThrow(new ValidationException($validationResult));
 
         $response = $this->controller->index($this->request, $this->response);
 
@@ -272,7 +287,7 @@ class PostControllerTest extends TestCase
         $postData = [
             'title' => '測試文章標題',
             'content' => '這是測試文章的內容，應該足夠長來通過驗證規則。',
-            'status' => 'draft'
+            'status' => 'draft',
         ];
 
         $this->request->shouldReceive('getParsedBody')
@@ -291,12 +306,12 @@ class PostControllerTest extends TestCase
             'title' => $postData['title'],
             'content' => $postData['content'],
             'status' => $postData['status'],
-            'user_id' => 1
+            'user_id' => 1,
         ]);
 
         $this->postService->shouldReceive('createPost')
             ->once()
-            ->with(\Mockery::type(\App\Domains\Post\DTOs\CreatePostDTO::class))
+            ->with(Mockery::type(CreatePostDTO::class))
             ->andReturn($createdPost);
 
         $response = $this->controller->store($this->request, $this->response);
@@ -327,7 +342,7 @@ class PostControllerTest extends TestCase
     {
         $invalidData = [
             'title' => '', // 空標題
-            'content' => '' // 空內容
+            'content' => '', // 空內容
         ];
 
         $this->request->shouldReceive('getParsedBody')
@@ -349,9 +364,9 @@ class PostControllerTest extends TestCase
         $this->stream->shouldReceive('getContents')
             ->andReturn(json_encode($postData));
 
-        $validationResult = new \App\Shared\Validation\ValidationResult([], ['title' => ['title 為必填項目']], ['title' => ['required']]);
+        $validationResult = new ValidationResult([], ['title' => ['title 為必填項目']], ['title' => ['required']]);
         $this->validator->shouldReceive('validateOrFail')
-            ->andThrow(new \App\Shared\Validation\ValidationException($validationResult));
+            ->andThrow(new ValidationException($validationResult));
 
         $response = $this->controller->store($this->request, $this->response);
 
@@ -369,7 +384,7 @@ class PostControllerTest extends TestCase
             'id' => $postId,
             'title' => '測試取得文章',
             'content' => '這是測試內容',
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $this->postService->shouldReceive('findById')
@@ -393,7 +408,7 @@ class PostControllerTest extends TestCase
         $this->postService->shouldReceive('findById')
             ->once()
             ->with($postId)
-            ->andThrow(new \App\Shared\Exceptions\NotFoundException('文章不存在'));
+            ->andThrow(new NotFoundException('文章不存在'));
 
         $response = $this->controller->show($this->request, $this->response, ['id' => $postId]);
 
@@ -421,7 +436,7 @@ class PostControllerTest extends TestCase
         $postId = 1;
         $updateData = [
             'title' => '更新後的標題',
-            'content' => '更新後的內容，這裡有足夠的文字來通過驗證。'
+            'content' => '更新後的內容，這裡有足夠的文字來通過驗證。',
         ];
 
         $this->request->shouldReceive('getParsedBody')
@@ -439,12 +454,12 @@ class PostControllerTest extends TestCase
             'id' => $postId,
             'title' => $updateData['title'],
             'content' => $updateData['content'],
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $this->postService->shouldReceive('updatePost')
             ->once()
-            ->with($postId, \Mockery::type(\App\Domains\Post\DTOs\UpdatePostDTO::class))
+            ->with($postId, Mockery::type(UpdatePostDTO::class))
             ->andReturn($updatedPost);
 
         $response = $this->controller->update($this->request, $this->response, ['id' => $postId]);
@@ -462,7 +477,7 @@ class PostControllerTest extends TestCase
         $postId = 99999;
         $updateData = [
             'title' => '更新標題',
-            'content' => '更新內容'
+            'content' => '更新內容',
         ];
 
         $this->request->shouldReceive('getParsedBody')
@@ -478,8 +493,8 @@ class PostControllerTest extends TestCase
 
         $this->postService->shouldReceive('updatePost')
             ->once()
-            ->with($postId, \Mockery::type(\App\Domains\Post\DTOs\UpdatePostDTO::class))
-            ->andThrow(new \App\Shared\Exceptions\NotFoundException('文章不存在'));
+            ->with($postId, Mockery::type(UpdatePostDTO::class))
+            ->andThrow(new NotFoundException('文章不存在'));
 
         $response = $this->controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -519,7 +534,7 @@ class PostControllerTest extends TestCase
         $this->postService->shouldReceive('deletePost')
             ->once()
             ->with($postId)
-            ->andThrow(new \App\Shared\Exceptions\NotFoundException('文章不存在'));
+            ->andThrow(new NotFoundException('文章不存在'));
 
         $response = $this->controller->delete($this->request, $this->response, ['id' => $postId]);
 
@@ -546,12 +561,12 @@ class PostControllerTest extends TestCase
             'id' => $postId,
             'title' => '測試文章',
             'content' => '內容',
-            'pinned' => true
+            'pinned' => true,
         ]);
 
         $this->postService->shouldReceive('updatePost')
             ->once()
-            ->with($postId, \Mockery::type(\App\Domains\Post\DTOs\UpdatePostDTO::class))
+            ->with($postId, Mockery::type(UpdatePostDTO::class))
             ->andReturn($updatedPost);
 
         $response = $this->controller->togglePin($this->request, $this->response, ['id' => $postId]);
@@ -575,9 +590,9 @@ class PostControllerTest extends TestCase
             ->with('X-CSRF-TOKEN')
             ->andReturn('valid-token');
 
-        $validationResult = new \App\Shared\Validation\ValidationResult([], ['pinned' => ['pinned 必須是布林值']], ['pinned' => ['boolean']]);
+        $validationResult = new ValidationResult([], ['pinned' => ['pinned 必須是布林值']], ['pinned' => ['boolean']]);
         $this->validator->shouldReceive('validateOrFail')
-            ->andThrow(new \App\Shared\Validation\ValidationException($validationResult));
+            ->andThrow(new ValidationException($validationResult));
 
         $response = $this->controller->togglePin($this->request, $this->response, ['id' => $postId]);
 
@@ -598,8 +613,8 @@ class PostControllerTest extends TestCase
                 'page' => 1,
                 'per_page' => 10,
                 'total' => 0,
-                'total_pages' => 0
-            ]
+                'total_pages' => 0,
+            ],
         ];
 
         $this->postService->shouldReceive('listPosts')

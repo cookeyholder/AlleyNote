@@ -9,14 +9,23 @@ use DateTime;
 class Attachment
 {
     private ?int $id = null;
+
     private ?string $uuid = null;
+
     private ?int $post_id = null;
+
     private ?string $filename = null;
+
     private ?string $original_name = null;
+
     private ?int $file_size = null;
+
     private ?string $mime_type = null;
+
     private ?string $storage_path = null;
+
     private ?DateTime $created_at = null;
+
     private ?DateTime $updated_at = null;
 
     public function __construct(array $data = [])

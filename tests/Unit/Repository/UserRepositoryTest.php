@@ -4,16 +4,13 @@ namespace Tests\Unit\Repository;
 
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
-use App\Domains\User\Entities\User;
-use App\Infrastructure\Database\DatabaseConnection;
+use DateTime;
 use PDO;
 use PDOException;
 use PHPUnit\Framework\TestCase;
 
-
 class UserRepositoryTest extends TestCase
 {
-
     private PDO $db;
 
     private UserRepository $repository;
@@ -214,13 +211,13 @@ class UserRepositoryTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $before = new \DateTime();
+        $before = new DateTime();
         sleep(1); // 等待 1 秒確保時間差
 
         $this->repository->updateLastLogin($user['id']);
 
         $updated = $this->repository->findById($user['id']);
-        $lastLogin = new \DateTime($updated['last_login']);
+        $lastLogin = new DateTime($updated['last_login']);
 
         $this->assertTrue($lastLogin > $before);
     }

@@ -20,7 +20,7 @@ class ContentModerationService
     public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
-        array $config = []
+        array $config = [],
     ) {
         $this->xssProtection = $xssProtection;
         $this->richTextProcessor = $richTextProcessor;
@@ -238,9 +238,9 @@ class ContentModerationService
      */
     private function determineFinalStatus(array &$result): void
     {
-        $criticalIssues = array_filter($result['issues'], fn ($issue) => $issue['severity'] === 'critical');
-        $highIssues = array_filter($result['issues'], fn ($issue) => $issue['severity'] === 'high');
-        $mediumIssues = array_filter($result['issues'], fn ($issue) => $issue['severity'] === 'medium');
+        $criticalIssues = array_filter($result['issues'], fn($issue) => $issue['severity'] === 'critical');
+        $highIssues = array_filter($result['issues'], fn($issue) => $issue['severity'] === 'high');
+        $mediumIssues = array_filter($result['issues'], fn($issue) => $issue['severity'] === 'medium');
 
         if (!empty($criticalIssues)) {
             $result['status'] = 'rejected';
@@ -315,8 +315,8 @@ class ContentModerationService
     private function hasExcessiveRepetition(string $text): bool
     {
         // 檢查重複的字元模式
-        return preg_match('/(.)\1{4,}/', $text) || // 同一字元重複5次以上
-            preg_match('/(.{2,5})\1{3,}/', $text); // 短模式重複4次以上
+        return preg_match('/(.)\1{4,}/', $text) // 同一字元重複5次以上
+            || preg_match('/(.{2,5})\1{3,}/', $text); // 短模式重複4次以上
     }
 
     /**

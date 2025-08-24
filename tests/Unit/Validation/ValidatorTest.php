@@ -6,14 +6,12 @@ namespace Tests\Unit\Validation;
 
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Validation\ValidationException;
-
-
-use App\Shared\Validation\ValidationResult;
 use App\Shared\Validation\Validator;
+use stdClass;
 use Tests\TestCase;
 
 /**
- * Validator 單元測試
+ * Validator 單元測試.
  *
  * 測試驗證器的所有核心功能，包括內建規則、自訂規則、錯誤訊息等
  */
@@ -28,7 +26,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 required 規則
+     * 測試 required 規則.
      */
     public function test_required_rule(): void
     {
@@ -63,7 +61,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 string 規則
+     * 測試 string 規則.
      */
     public function test_string_rule(): void
     {
@@ -75,7 +73,7 @@ class ValidatorTest extends TestCase
         }
 
         // 測試無效值
-        $invalidValues = [123, 12.34, true, false, [], new \stdClass()];
+        $invalidValues = [123, 12.34, true, false, [], new stdClass()];
         foreach ($invalidValues as $value) {
             $result = $this->validator->validate(['text' => $value], ['text' => 'string']);
             $this->assertFalse($result->isValid(), "值 '" . gettype($value) . "' 不應該通過字串驗證");
@@ -83,7 +81,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 integer 規則
+     * 測試 integer 規則.
      */
     public function test_integer_rule(): void
     {
@@ -102,7 +100,7 @@ class ValidatorTest extends TestCase
         }
 
         // 測試無效值（注意：FILTER_VALIDATE_INT 可能會將 true 視為 1）
-        $invalidValues = [12.34, '12.34', 'abc', false, [], new \stdClass()];
+        $invalidValues = [12.34, '12.34', 'abc', false, [], new stdClass()];
         foreach ($invalidValues as $value) {
             $result = $this->validator->validate(['number' => $value], ['number' => 'integer']);
             $this->assertFalse($result->isValid(), "值 '" . print_r($value, true) . "' 不應該通過整數驗證");
@@ -110,11 +108,11 @@ class ValidatorTest extends TestCase
 
         // 特別測試布林值 true（在 PHP 中 filter_var(true, FILTER_VALIDATE_INT) 返回 1）
         $result = $this->validator->validate(['number' => true], ['number' => 'integer']);
-        $this->assertTrue($result->isValid(), "布林值 true 在 PHP 中會被 FILTER_VALIDATE_INT 視為 1");
+        $this->assertTrue($result->isValid(), '布林值 true 在 PHP 中會被 FILTER_VALIDATE_INT 視為 1');
     }
 
     /**
-     * 測試 numeric 規則
+     * 測試 numeric 規則.
      */
     public function test_numeric_rule(): void
     {
@@ -126,7 +124,7 @@ class ValidatorTest extends TestCase
         }
 
         // 測試無效值
-        $invalidValues = ['abc', '12abc', 'abc123', true, false, [], new \stdClass()];
+        $invalidValues = ['abc', '12abc', 'abc123', true, false, [], new stdClass()];
         foreach ($invalidValues as $value) {
             $result = $this->validator->validate(['value' => $value], ['value' => 'numeric']);
             $this->assertFalse($result->isValid(), "值 '" . print_r($value, true) . "' 不應該通過數字驗證");
@@ -134,7 +132,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 boolean 規則
+     * 測試 boolean 規則.
      */
     public function test_boolean_rule(): void
     {
@@ -146,7 +144,7 @@ class ValidatorTest extends TestCase
         }
 
         // 測試無效值（移除 Validator 實作中不支援的值）
-        $invalidValues = [2, -1, 'maybe', 'invalid', 'no', 'off', [], new \stdClass()];
+        $invalidValues = [2, -1, 'maybe', 'invalid', 'no', 'off', [], new stdClass()];
         foreach ($invalidValues as $value) {
             $result = $this->validator->validate(['flag' => $value], ['flag' => 'boolean']);
             $this->assertFalse($result->isValid(), "值 '" . print_r($value, true) . "' 不應該通過布林驗證");
@@ -154,7 +152,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 email 規則
+     * 測試 email 規則.
      */
     public function test_email_rule(): void
     {
@@ -164,7 +162,7 @@ class ValidatorTest extends TestCase
             'user.name@domain.co.uk',
             'test123@test-domain.com',
             'user+tag@example.org',
-            'test_email@sub.domain.com'
+            'test_email@sub.domain.com',
         ];
 
         foreach ($validEmails as $email) {
@@ -180,7 +178,7 @@ class ValidatorTest extends TestCase
             'user..name@domain.com',
             'user name@domain.com',
             'user@domain',
-            '.user@domain.com'
+            '.user@domain.com',
         ];
 
         foreach ($invalidEmails as $email) {
@@ -190,7 +188,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 url 規則
+     * 測試 url 規則.
      */
     public function test_url_rule(): void
     {
@@ -200,7 +198,7 @@ class ValidatorTest extends TestCase
             'http://test.org',
             'https://sub.domain.co.uk/path?query=value',
             'ftp://files.example.com',
-            'https://127.0.0.1:8080/app'
+            'https://127.0.0.1:8080/app',
         ];
 
         foreach ($validUrls as $url) {
@@ -214,7 +212,7 @@ class ValidatorTest extends TestCase
             'www.example.com',
             'example.com',
             'http://',
-            'https://'
+            'https://',
         ];
 
         foreach ($invalidUrls as $url) {
@@ -224,7 +222,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 ip 規則
+     * 測試 ip 規則.
      */
     public function test_ip_rule(): void
     {
@@ -235,7 +233,7 @@ class ValidatorTest extends TestCase
             '0.0.0.0',
             '255.255.255.255',
             '::1',
-            '2001:db8::1'
+            '2001:db8::1',
             // 移除 'fe80::1%lo0' 因為 PHP filter_var 可能不支援
         ];
 
@@ -251,7 +249,7 @@ class ValidatorTest extends TestCase
             '192.168.1.1.1',
             'not-an-ip',
             '192.168.1.256',
-            'fe80::1%lo0' // 帶有 zone identifier 的 IPv6 地址可能不被支援
+            'fe80::1%lo0', // 帶有 zone identifier 的 IPv6 地址可能不被支援
         ];
 
         foreach ($invalidIps as $ip) {
@@ -261,7 +259,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 min 規則
+     * 測試 min 規則.
      */
     public function test_min_rule(): void
     {
@@ -284,7 +282,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 max 規則
+     * 測試 max 規則.
      */
     public function test_max_rule(): void
     {
@@ -307,7 +305,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 between 規則
+     * 測試 between 規則.
      */
     public function test_between_rule(): void
     {
@@ -330,7 +328,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 in 規則
+     * 測試 in 規則.
      */
     public function test_in_rule(): void
     {
@@ -350,7 +348,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 not_in 規則
+     * 測試 not_in 規則.
      */
     public function test_not_in_rule(): void
     {
@@ -367,7 +365,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 min_length 規則
+     * 測試 min_length 規則.
      */
     public function test_min_length_rule(): void
     {
@@ -391,7 +389,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 max_length 規則
+     * 測試 max_length 規則.
      */
     public function test_max_length_rule(): void
     {
@@ -415,7 +413,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 length 規則
+     * 測試 length 規則.
      */
     public function test_length_rule(): void
     {
@@ -436,7 +434,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 regex 規則
+     * 測試 regex 規則.
      */
     public function test_regex_rule(): void
     {
@@ -458,7 +456,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 alpha 規則
+     * 測試 alpha 規則.
      */
     public function test_alpha_rule(): void
     {
@@ -481,7 +479,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 alpha_num 規則
+     * 測試 alpha_num 規則.
      */
     public function test_alpha_num_rule(): void
     {
@@ -507,7 +505,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 alpha_dash 規則
+     * 測試 alpha_dash 規則.
      */
     public function test_alpha_dash_rule(): void
     {
@@ -539,7 +537,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試多個規則組合
+     * 測試多個規則組合.
      */
     public function test_multiple_rules(): void
     {
@@ -547,14 +545,14 @@ class ValidatorTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'age' => 25,
-            'bio' => 'Software developer'
+            'bio' => 'Software developer',
         ];
 
         $rules = [
             'name' => 'required|string|min_length:2|max_length:50',
             'email' => 'required|email',
             'age' => 'required|integer|min:18|max:120',
-            'bio' => 'string|max_length:200'
+            'bio' => 'string|max_length:200',
         ];
 
         $result = $this->validator->validate($data, $rules);
@@ -570,7 +568,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試自訂規則添加
+     * 測試自訂規則添加.
      */
     public function test_add_custom_rule(): void
     {
@@ -591,7 +589,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試帶參數的自訂規則
+     * 測試帶參數的自訂規則.
      */
     public function test_custom_rule_with_parameters(): void
     {
@@ -602,6 +600,7 @@ class ValidatorTest extends TestCase
             }
 
             $divisor = (int) $parameters[0];
+
             return $divisor !== 0 && $value % $divisor === 0;
         });
 
@@ -617,7 +616,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試自訂錯誤訊息
+     * 測試自訂錯誤訊息.
      */
     public function test_custom_error_messages(): void
     {
@@ -638,7 +637,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 validateOrFail 方法
+     * 測試 validateOrFail 方法.
      */
     public function test_validate_or_fail(): void
     {
@@ -651,12 +650,12 @@ class ValidatorTest extends TestCase
 
         // 測試驗證失敗
         $invalidData = ['name' => '', 'email' => 'invalid'];
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->validator->validateOrFail($invalidData, $rules);
     }
 
     /**
-     * 測試 checkRule 方法
+     * 測試 checkRule 方法.
      */
     public function test_check_rule_method(): void
     {
@@ -674,7 +673,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試 stopOnFirstFailure 設定
+     * 測試 stopOnFirstFailure 設定.
      */
     public function test_stop_on_first_failure(): void
     {
@@ -683,7 +682,7 @@ class ValidatorTest extends TestCase
         $rules = [
             'name' => 'required',
             'email' => 'required|email',
-            'age' => 'required|integer'
+            'age' => 'required|integer',
         ];
 
         // 測試不停止在第一個錯誤
@@ -706,7 +705,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試驗證器效能
+     * 測試驗證器效能.
      */
     public function test_validator_performance(): void
     {
@@ -719,14 +718,14 @@ class ValidatorTest extends TestCase
                 'name' => "user_{$i}",
                 'email' => "user{$i}@example.com",
                 'age' => 20 + ($i % 50),
-                'bio' => str_repeat('a', 50 + ($i % 100))
+                'bio' => str_repeat('a', 50 + ($i % 100)),
             ];
 
             $rules = [
                 'name' => 'required|string|min_length:3|max_length:50',
                 'email' => 'required|email',
                 'age' => 'required|integer|min:18|max:120',
-                'bio' => 'string|max_length:200'
+                'bio' => 'string|max_length:200',
             ];
 
             $result = $this->validator->validate($data, $rules);
@@ -745,7 +744,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * 測試記憶體洩漏
+     * 測試記憶體洩漏.
      */
     public function test_memory_leak(): void
     {

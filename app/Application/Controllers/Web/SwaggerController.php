@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Web;
 
+use Exception;
 use OpenApi\Generator;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -34,7 +35,7 @@ class SwaggerController
                 ->withHeader('Access-Control-Allow-Origin', '*')
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
                 ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $error = [
                 'error' => 'OpenAPI 掃描失敗',
                 'message' => $e->getMessage(),

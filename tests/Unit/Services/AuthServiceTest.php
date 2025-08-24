@@ -3,22 +3,18 @@
 namespace Tests\Unit\Services;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
-use App\Shared\Validation\ValidationException;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
-use App\Domains\User\Entities\User;
 use App\Shared\Contracts\ValidatorInterface;
-
+use App\Shared\Exceptions\ValidationException;
+use App\Shared\Validation\ValidationResult;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
-
 class AuthServiceTest extends TestCase
 {
-
-
     private PasswordSecurityServiceInterface|MockInterface $passwordService;
 
     private App\Shared\Contracts\ValidatorInterface|MockInterface $validator;
@@ -28,11 +24,11 @@ class AuthServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->userRepository = Mockery::mock(\App\Domains\Auth\Repositories\UserRepository::class);
+        $this->userRepository = Mockery::mock(UserRepository::class);
         $this->passwordService = Mockery::mock(PasswordSecurityServiceInterface::class);
-        $this->validator = Mockery::mock(\App\Shared\Contracts\ValidatorInterface::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
 
-        $this->service = new \App\Domains\Auth\Services\AuthService($this->userRepository, $this->passwordService);
+        $this->service = new AuthService($this->userRepository, $this->passwordService);
     }
 
     protected function tearDown(): void
@@ -124,12 +120,12 @@ class AuthServiceTest extends TestCase
         $this->validator->shouldReceive('validateOrFail')
             ->once()
             ->with(Mockery::any(), Mockery::any())
-            ->andThrow(new \App\Shared\Exceptions\ValidationException(
-                new \App\Shared\Validation\ValidationResult(false, ['username' => ['使用者名稱不能為空']], [], [])
+            ->andThrow(new ValidationException(
+                new ValidationResult(false, ['username' => ['使用者名稱不能為空']], [], []),
             ));
 
         // 執行測試並預期會拋出例外
-        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $invalidData);
     }
 

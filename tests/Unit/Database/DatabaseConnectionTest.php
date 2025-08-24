@@ -6,7 +6,6 @@ use App\Infrastructure\Database\DatabaseConnection;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
-
 class DatabaseConnectionTest extends TestCase
 {
     protected function setUp(): void

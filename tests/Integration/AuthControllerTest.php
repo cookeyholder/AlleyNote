@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\AuthController;
-use App\Domains\Auth\Services\AuthService;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
+use App\Domains\Auth\Services\AuthService;
 use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\Exceptions\ValidationException;
+use App\Shared\Validation\ValidationResult;
+use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -21,16 +24,20 @@ use Tests\TestCase;
 class AuthControllerTest extends TestCase
 {
     private App\Domains\Auth\Services\AuthService|MockInterface $authService;
+
     private App\Shared\Contracts\ValidatorInterface|MockInterface $validator;
+
     private ServerRequestInterface|MockInterface $request;
+
     private ResponseInterface|MockInterface $response;
+
     private int $statusCode = 200;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->authService = Mockery::mock(\App\Domains\Auth\Services\AuthService::class);
-        $this->validator = Mockery::mock(\App\Shared\Contracts\ValidatorInterface::class);
+        $this->authService = Mockery::mock(AuthService::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
 
         // 設置 Request Mock
         $this->request = Mockery::mock(ServerRequestInterface::class);
@@ -39,8 +46,9 @@ class AuthControllerTest extends TestCase
         $this->response = Mockery::mock(ResponseInterface::class);
         $this->statusCode = 200;
 
-        $this->response->shouldReceive('withStatus')->andReturnUsing(function($code) {
+        $this->response->shouldReceive('withStatus')->andReturnUsing(function ($code) {
             $this->statusCode = $code;
+
             return $this->response;
         });
 
@@ -52,7 +60,7 @@ class AuthControllerTest extends TestCase
 
         // 設定 validator 預設行為
         $this->validator->shouldReceive('validateOrFail')
-            ->andReturnUsing(function($data, $rules) {
+            ->andReturnUsing(function ($data, $rules) {
                 return $data; // 返回原始數據作為驗證通過的數據
             })
             ->byDefault();
@@ -69,7 +77,7 @@ class AuthControllerTest extends TestCase
             ->andReturn($this->validator)
             ->byDefault();
 
-        $this->response->shouldReceive('getStatusCode')->andReturnUsing(function() {
+        $this->response->shouldReceive('getStatusCode')->andReturnUsing(function () {
             return $this->statusCode;
         });
 
@@ -77,11 +85,12 @@ class AuthControllerTest extends TestCase
 
         $stream = Mockery::mock(StreamInterface::class);
         $writtenContent = '';
-        $stream->shouldReceive('write')->andReturnUsing(function($content) use (&$writtenContent) {
+        $stream->shouldReceive('write')->andReturnUsing(function ($content) use (&$writtenContent) {
             $writtenContent .= $content;
+
             return strlen($content);
         });
-        $stream->shouldReceive('__toString')->andReturnUsing(function() use (&$writtenContent) {
+        $stream->shouldReceive('__toString')->andReturnUsing(function () use (&$writtenContent) {
             return $writtenContent;
         });
         $this->response->shouldReceive('getBody')->andReturn($stream);
@@ -101,7 +110,7 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password123',
             'confirm_password' => 'password123',
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         // 設定 Mock 期望和請求數據
@@ -109,7 +118,7 @@ class AuthControllerTest extends TestCase
 
         $this->authService->shouldReceive('register')
             ->once()
-            ->with(\Mockery::type(\App\Domains\Auth\DTOs\RegisterUserDTO::class))
+            ->with(Mockery::type(RegisterUserDTO::class))
             ->andReturn([
                 'id' => 1,
                 'username' => 'testuser',
@@ -118,7 +127,7 @@ class AuthControllerTest extends TestCase
             ]);
 
         // 建立控制器並執行
-        $controller = new \App\Application\Controllers\Api\V1\AuthController($this->authService, $this->validator);
+        $controller = new AuthController($this->authService, $this->validator);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -137,7 +146,7 @@ class AuthControllerTest extends TestCase
             'email' => 'invalid-email', // 無效email
             'password' => '123', // 密碼太短
             'confirm_password' => '123',
-            'user_ip' => '192.168.1.1'
+            'user_ip' => '192.168.1.1',
         ];
 
         // 設定 Mock 期望和請求數據
@@ -145,15 +154,15 @@ class AuthControllerTest extends TestCase
 
         // 驗證器應該拋出驗證異常
         $this->validator->shouldReceive('validateOrFail')
-            ->andThrow(new \App\Shared\Exceptions\ValidationException(
-                \App\Shared\Validation\ValidationResult::failure(['username' => ['使用者名稱不能為空']])
+            ->andThrow(new ValidationException(
+                ValidationResult::failure(['username' => ['使用者名稱不能為空']]),
             ));
 
         // AuthService 不應該被調用，因為驗證會先失敗
         $this->authService->shouldNotReceive('register');
 
         // 建立控制器並執行
-        $controller = new \App\Application\Controllers\Api\V1\AuthController($this->authService, $this->validator);
+        $controller = new AuthController($this->authService, $this->validator);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -165,7 +174,7 @@ class AuthControllerTest extends TestCase
     {
         $credentials = [
             'username' => 'testuser',
-            'password' => 'password123'
+            'password' => 'password123',
         ];
 
         // 設定 Mock 期望和請求數據
@@ -185,7 +194,7 @@ class AuthControllerTest extends TestCase
             ]);
 
         // 建立控制器並執行
-        $controller = new \App\Application\Controllers\Api\V1\AuthController($this->authService, $this->validator);
+        $controller = new AuthController($this->authService, $this->validator);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應
@@ -200,7 +209,7 @@ class AuthControllerTest extends TestCase
     {
         $invalidCredentials = [
             'username' => 'testuser',
-            'password' => 'wrongpassword'
+            'password' => 'wrongpassword',
         ];
 
         // 設定 Mock 期望和請求數據
@@ -209,10 +218,10 @@ class AuthControllerTest extends TestCase
         $this->authService->shouldReceive('login')
             ->once()
             ->with($invalidCredentials)
-            ->andThrow(new \InvalidArgumentException('無效的憑證'));
+            ->andThrow(new InvalidArgumentException('無效的憑證'));
 
         // 建立控制器並執行
-        $controller = new \App\Application\Controllers\Api\V1\AuthController($this->authService, $this->validator);
+        $controller = new AuthController($this->authService, $this->validator);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應 - 當 AuthService 拋出 InvalidArgumentException 時，控制器返回 400
@@ -225,7 +234,7 @@ class AuthControllerTest extends TestCase
         // logout 方法不需要調用 AuthService，直接返回成功響應
 
         // 建立控制器並執行
-        $controller = new \App\Application\Controllers\Api\V1\AuthController($this->authService, $this->validator);
+        $controller = new AuthController($this->authService, $this->validator);
         $response = $controller->logout($this->request, $this->response);
 
         // 驗證回應

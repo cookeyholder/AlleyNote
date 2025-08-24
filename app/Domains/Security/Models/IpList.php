@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Models;
 
+use App\Infrastructure\Services\OutputSanitizer;
 use JsonSerializable;
 
 class IpList implements JsonSerializable
@@ -114,7 +115,7 @@ class IpList implements JsonSerializable
 
         // 清理可能包含 HTML 的欄位
         if ($data['description'] !== null) {
-            $data['description'] = \App\Infrastructure\Services\OutputSanitizer::sanitizeHtml($data['description']);
+            $data['description'] = OutputSanitizer::sanitizeHtml($data['description']);
         }
 
         return $data;

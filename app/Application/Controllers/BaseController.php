@@ -26,7 +26,7 @@ abstract class BaseController
     {
         return $this->jsonResponse(
             ApiResponse::error($message, $httpCode, $errors),
-            $httpCode
+            $httpCode,
         );
     }
 
@@ -59,7 +59,6 @@ abstract class BaseController
                 return 400;
             case 'App\Exceptions\Post\PostValidationException':
                 return 422;
-
                 // 通用例外
             case 'App\Exceptions\NotFoundException':
                 return 404;
@@ -67,11 +66,9 @@ abstract class BaseController
                 return 400;
             case 'App\Exceptions\ValidationException':
                 return 422;
-
                 // 驗證相關例外
             case 'App\Exceptions\Validation\RequestValidationException':
                 return 422;
-
                 // 認證授權相關例外
             case 'App\Exceptions\Auth\UnauthorizedException':
                 return 401;
@@ -79,7 +76,6 @@ abstract class BaseController
                 return 403;
             case 'App\Exceptions\CsrfTokenException':
                 return 403;
-
             default:
                 return 500;
         }

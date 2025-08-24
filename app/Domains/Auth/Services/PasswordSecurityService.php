@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
 
-use App\Shared\Exceptions\ValidationException;
-use App\Shared\Validation\ValidationResult;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
+use App\Shared\Exceptions\ValidationException;
 
 class PasswordSecurityService implements PasswordSecurityServiceInterface
 {
@@ -18,9 +17,13 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
     // 密碼複雜度要求
     private const REQUIRE_UPPERCASE = true;
+
     private const REQUIRE_LOWERCASE = true;
+
     private const REQUIRE_NUMBERS = true;
+
     private const REQUIRE_SYMBOLS = true;
+
     private const MIN_UNIQUE_CHARS = 8;
 
     // 基本弱密碼清單（作為備選方案）
@@ -116,14 +119,14 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if (strlen($password) < self::MIN_PASSWORD_LENGTH) {
             throw ValidationException::fromSingleError(
                 'password',
-                sprintf('密碼長度必須至少為 %d 個字元', self::MIN_PASSWORD_LENGTH)
+                sprintf('密碼長度必須至少為 %d 個字元', self::MIN_PASSWORD_LENGTH),
             );
         }
 
         if (strlen($password) > self::MAX_PASSWORD_LENGTH) {
             throw ValidationException::fromSingleError(
                 'password',
-                sprintf('密碼長度不能超過 %d 個字元', self::MAX_PASSWORD_LENGTH)
+                sprintf('密碼長度不能超過 %d 個字元', self::MAX_PASSWORD_LENGTH),
             );
         }
 
@@ -305,7 +308,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
                     'is_common' => true,
                     'message' => sprintf(
                         '此密碼已在 %d 次資料外洩中被發現，請選擇一個更安全的密碼',
-                        $pwnedResult['count']
+                        $pwnedResult['count'],
                     ),
                     'source' => 'hibp_api',
                     'breach_count' => $pwnedResult['count'],

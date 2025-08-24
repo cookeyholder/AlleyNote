@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
-use App\Domains\Auth\Services\AuthService;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
+use App\Domains\Auth\Services\AuthService;
 use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\Exceptions\NotFoundException;
+use App\Shared\Exceptions\ValidationException;
+use Exception;
+use InvalidArgumentException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -16,9 +20,8 @@ class AuthController extends BaseController
 {
     public function __construct(
         private AuthService $authService,
-        private ValidatorInterface $validator
-    ) {
-    }
+        private ValidatorInterface $validator,
+    ) {}
 
     #[OA\Post(
         path: '/auth/register',
@@ -37,14 +40,14 @@ class AuthController extends BaseController
                         description: '使用者名稱',
                         minLength: 3,
                         maxLength: 50,
-                        example: 'johndoe'
+                        example: 'johndoe',
                     ),
                     new OA\Property(
                         property: 'email',
                         type: 'string',
                         format: 'email',
                         description: '電子郵件地址',
-                        example: 'john@example.com'
+                        example: 'john@example.com',
                     ),
                     new OA\Property(
                         property: 'password',
@@ -52,18 +55,18 @@ class AuthController extends BaseController
                         format: 'password',
                         description: '密碼，至少8個字元',
                         minLength: 8,
-                        example: 'password123'
+                        example: 'password123',
                     ),
                     new OA\Property(
                         property: 'password_confirmation',
                         type: 'string',
                         format: 'password',
                         description: '確認密碼，必須與密碼相同',
-                        example: 'password123'
+                        example: 'password123',
                     ),
                 ],
-                required: ['username', 'email', 'password', 'password_confirmation']
-            )
+                required: ['username', 'email', 'password', 'password_confirmation'],
+            ),
         ),
         responses: [
             new OA\Response(
@@ -81,10 +84,10 @@ class AuthController extends BaseController
                                 new OA\Property(property: 'email', type: 'string', example: 'john@example.com'),
                                 new OA\Property(property: 'role', type: 'string', example: 'user'),
                                 new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2025-01-15T10:30:00Z'),
-                            ]
+                            ],
                         ),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 400,
@@ -98,16 +101,16 @@ class AuthController extends BaseController
                             type: 'object',
                             additionalProperties: new OA\AdditionalProperties(
                                 type: 'array',
-                                items: new OA\Items(type: 'string')
+                                items: new OA\Items(type: 'string'),
                             ),
                             example: [
                                 'username' => ['使用者名稱已存在'],
                                 'email' => ['電子郵件格式不正確'],
                                 'password' => ['密碼長度不足8個字元'],
-                            ]
+                            ],
                         ),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 409,
@@ -116,8 +119,8 @@ class AuthController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
                         new OA\Property(property: 'error', type: 'string', example: '使用者名稱或電子郵件已存在'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 500,
@@ -126,10 +129,10 @@ class AuthController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
                         new OA\Property(property: 'error', type: 'string', example: '系統發生錯誤'),
-                    ]
-                )
+                    ],
+                ),
             ),
-        ]
+        ],
     )]
     public function register(Request $request, Response $response): Response
     {
@@ -149,7 +152,7 @@ class AuthController extends BaseController
             return $response
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $responseData = [
                 'success' => false,
                 'error' => $e->getMessage(),
@@ -160,26 +163,27 @@ class AuthController extends BaseController
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
-
-        } catch (\App\Shared\Exceptions\NotFoundException $e) {
+        } catch (NotFoundException $e) {
             $responseData = [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
             $response->getBody()->write(json_encode($responseData));
+
             return $response
                 ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');
-        } catch (\App\Shared\Exceptions\ValidationException $e) {
+        } catch (ValidationException $e) {
             $responseData = [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
             $response->getBody()->write(json_encode($responseData));
+
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $responseData = [
                 'success' => false,
                 'error' => '系統發生錯誤',
@@ -203,16 +207,16 @@ class AuthController extends BaseController
             description: '登入憑證',
             required: true,
             content: new OA\JsonContent(
-                ref: '#/components/schemas/LoginRequest'
-            )
+                ref: '#/components/schemas/LoginRequest',
+            ),
         ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: '登入成功',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/LoginResponse'
-                )
+                    ref: '#/components/schemas/LoginResponse',
+                ),
             ),
             new OA\Response(
                 response: 400,
@@ -221,8 +225,8 @@ class AuthController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
                         new OA\Property(property: 'error', type: 'string', example: '缺少必要的登入資料'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 401,
@@ -231,8 +235,8 @@ class AuthController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
                         new OA\Property(property: 'error', type: 'string', example: '使用者名稱或密碼錯誤'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 423,
@@ -242,8 +246,8 @@ class AuthController extends BaseController
                         new OA\Property(property: 'success', type: 'boolean', example: false),
                         new OA\Property(property: 'error', type: 'string', example: '帳號暫時被鎖定，請稍後再試'),
                         new OA\Property(property: 'retry_after', type: 'integer', description: '解鎖剩餘秒數', example: 300),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 500,
@@ -252,10 +256,10 @@ class AuthController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
                         new OA\Property(property: 'error', type: 'string', example: '系統發生錯誤'),
-                    ]
-                )
+                    ],
+                ),
             ),
-        ]
+        ],
     )]
     public function login(Request $request, Response $response): Response
     {
@@ -276,35 +280,37 @@ class AuthController extends BaseController
             return $response
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json');
-
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $responseData = [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
             $response->getBody()->write(json_encode($responseData));
+
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
-        } catch (\App\Shared\Exceptions\NotFoundException $e) {
+        } catch (NotFoundException $e) {
             $responseData = [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
             $response->getBody()->write(json_encode($responseData));
+
             return $response
                 ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');
-        } catch (\App\Shared\Exceptions\ValidationException $e) {
+        } catch (ValidationException $e) {
             $responseData = [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
             $response->getBody()->write(json_encode($responseData));
+
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $responseData = [
                 'success' => false,
                 'error' => '系統發生錯誤',
@@ -336,17 +342,17 @@ class AuthController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
                         new OA\Property(property: 'message', type: 'string', example: '登出成功'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取或 Token 無效',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'
-                )
+                    ref: '#/components/responses/Unauthorized',
+                ),
             ),
-        ]
+        ],
     )]
     public function logout(Request $request, Response $response): Response
     {
@@ -380,17 +386,17 @@ class AuthController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
                         new OA\Property(property: 'data', ref: '#/components/schemas/User'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取或 Token 無效',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'
-                )
+                    ref: '#/components/responses/Unauthorized',
+                ),
             ),
-        ]
+        ],
     )]
     public function me(Request $request, Response $response): Response
     {
@@ -428,11 +434,11 @@ class AuthController extends BaseController
                         property: 'refresh_token',
                         type: 'string',
                         description: '有效的 Refresh Token',
-                        example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
+                        example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...',
                     ),
                 ],
-                required: ['refresh_token']
-            )
+                required: ['refresh_token'],
+            ),
         ),
         responses: [
             new OA\Response(
@@ -446,8 +452,8 @@ class AuthController extends BaseController
                         new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
                         new OA\Property(property: 'expires_in', type: 'integer', description: 'Token 有效期（秒）', example: 3600),
                         new OA\Property(property: 'expires_at', type: 'string', format: 'date-time', example: '2025-01-15T11:30:00Z'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 400,
@@ -456,8 +462,8 @@ class AuthController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
                         new OA\Property(property: 'error', type: 'string', example: '無效的 refresh_token 格式'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 401,
@@ -466,10 +472,10 @@ class AuthController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
                         new OA\Property(property: 'error', type: 'string', example: 'Refresh token 無效或已過期'),
-                    ]
-                )
+                    ],
+                ),
             ),
-        ]
+        ],
     )]
     public function refresh(Request $request, Response $response): Response
     {
