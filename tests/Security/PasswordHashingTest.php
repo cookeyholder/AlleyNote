@@ -6,9 +6,9 @@ namespace Tests\Security;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
-use App\Shared\Contracts\ValidatorInterface;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
+use App\Shared\Contracts\ValidatorInterface;
 use InvalidArgumentException;
 use Mockery;
 use PDO;
