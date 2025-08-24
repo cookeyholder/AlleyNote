@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Models\Post;
+use App\Services\OutputSanitizer;
 use Ramsey\Uuid\Uuid;
 
 if (!function_exists('generate_uuid')) {
     /**
      * 產生 UUID v4.
-     * @return string
      */
     function generate_uuid(): string
     {
@@ -119,7 +120,7 @@ if (!function_exists('sanitize_post_array')) {
     function sanitize_post_array(array $posts): array
     {
         return array_map(function ($post) {
-            if ($post instanceof \App\Models\Post) {
+            if ($post instanceof Post) {
                 return $post->toSafeArray();
             }
 
@@ -127,10 +128,10 @@ if (!function_exists('sanitize_post_array')) {
             if (is_array($post)) {
                 $sanitized = $post;
                 if (isset($sanitized['title'])) {
-                    $sanitized['title'] = \App\Services\OutputSanitizer::sanitizeHtml($sanitized['title']);
+                    $sanitized['title'] = OutputSanitizer::sanitizeHtml($sanitized['title']);
                 }
                 if (isset($sanitized['content'])) {
-                    $sanitized['content'] = \App\Services\OutputSanitizer::sanitizeHtml($sanitized['content']);
+                    $sanitized['content'] = OutputSanitizer::sanitizeHtml($sanitized['content']);
                 }
 
                 return $sanitized;

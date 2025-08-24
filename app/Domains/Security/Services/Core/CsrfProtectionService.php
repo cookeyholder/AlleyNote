@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace App\Domains\Security\Services\Core;
 
 use App\Shared\Exceptions\CsrfTokenException;
+use Exception;
 
 class CsrfProtectionService
 {
     private const TOKEN_LENGTH = 32;
+
     private const TOKEN_EXPIRY = 3600; // 1 hour
+
     private const TOKEN_POOL_SIZE = 5; // 權杖池大小
+
     private const TOKEN_POOL_KEY = 'csrf_token_pool';
 
     public function generateToken(): string
@@ -170,13 +174,13 @@ class CsrfProtectionService
             } else {
                 // 降級到單一權杖模式
                 if (isset($_SESSION['csrf_token']) && isset($_SESSION['csrf_token_time'])) {
-                    return hash_equals($_SESSION['csrf_token'], $token) &&
-                        (time() - $_SESSION['csrf_token_time']) <= self::TOKEN_EXPIRY;
+                    return hash_equals($_SESSION['csrf_token'], $token)
+                        && (time() - $_SESSION['csrf_token_time']) <= self::TOKEN_EXPIRY;
                 }
             }
 
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }

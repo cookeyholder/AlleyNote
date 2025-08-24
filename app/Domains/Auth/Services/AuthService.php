@@ -2,17 +2,16 @@
 
 namespace App\Domains\Auth\Services;
 
+use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
-use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 
 class AuthService
 {
     public function __construct(
         private UserRepository $userRepository,
-        private PasswordSecurityServiceInterface $passwordService
-    ) {
-    }
+        private PasswordSecurityServiceInterface $passwordService,
+    ) {}
 
     public function register(RegisterUserDTO $dto): array
     {

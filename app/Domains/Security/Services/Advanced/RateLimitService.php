@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Security\Services\Advanced;
 
 use App\Infrastructure\Services\CacheService;
+use Exception;
 
 class AdvancedRateLimitService
 {
@@ -27,7 +28,7 @@ class AdvancedRateLimitService
     public function checkLimit(
         string $identifier,
         string $action = 'default',
-        ?int $userId = null
+        ?int $userId = null,
     ): array {
         // 取得此操作的限制設定
         $limits = $this->getLimitsForAction($action);
@@ -155,7 +156,7 @@ class AdvancedRateLimitService
                 'window' => $limits['window'],
                 'action' => $key,
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 如果快取服務不可用，記錄錯誤但允許請求
             error_log('Advanced rate limit check failed: ' . $e->getMessage());
 
@@ -209,8 +210,8 @@ class AdvancedRateLimitService
         [$subnet, $mask] = explode('/', $range);
 
         if (
-            !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ||
-            !filter_var($subnet, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)
+            !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)
+            || !filter_var($subnet, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)
         ) {
             return false;
         }

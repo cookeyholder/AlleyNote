@@ -8,14 +8,16 @@ use Exception;
 use Throwable;
 
 /**
- * 驗證異常類
+ * 驗證異常類.
  *
  * 當驗證失敗時拋出的異常，包含詳細的錯誤資訊
  */
 class ValidationException extends Exception
 {
     private ValidationResult $validationResult;
+
     private array $errors;
+
     private array $failedRules;
 
     /**
@@ -28,7 +30,7 @@ class ValidationException extends Exception
         ValidationResult $validationResult,
         string $message = '',
         int $code = 422,
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         $this->validationResult = $validationResult;
         $this->errors = $validationResult->getErrors();
@@ -43,41 +45,39 @@ class ValidationException extends Exception
     }
 
     /**
-     * 從錯誤陣列建立異常
+     * 從錯誤陣列建立異常.
      *
      * @param array $errors 錯誤陣列，格式為 ['field' => ['error1', 'error2']]
      * @param array $failedRules 失敗的規則
      * @param string $message 異常訊息
-     * @return self
      */
     public static function fromErrors(
         array $errors,
         array $failedRules = [],
-        string $message = ''
+        string $message = '',
     ): self {
         $validationResult = ValidationResult::failure($errors, $failedRules);
+
         return new self($validationResult, $message);
     }
 
     /**
-     * 從單一錯誤建立異常
+     * 從單一錯誤建立異常.
      *
      * @param string $field 欄位名稱
      * @param string $error 錯誤訊息
      * @param string $rule 失敗的規則
-     * @return self
      */
     public static function fromSingleError(string $field, string $error, string $rule = ''): self
     {
         $errors = [$field => [$error]];
         $failedRules = $rule ? [$field => [$rule]] : [];
+
         return self::fromErrors($errors, $failedRules, $error);
     }
 
     /**
-     * 取得驗證結果
-     *
-     * @return ValidationResult
+     * 取得驗證結果.
      */
     public function getValidationResult(): ValidationResult
     {
@@ -85,7 +85,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * 取得所有錯誤訊息
+     * 取得所有錯誤訊息.
      *
      * @return array 格式為 ['field' => ['error1', 'error2']]
      */
@@ -95,10 +95,9 @@ class ValidationException extends Exception
     }
 
     /**
-     * 取得特定欄位的錯誤訊息
+     * 取得特定欄位的錯誤訊息.
      *
      * @param string $field 欄位名稱
-     * @return array
      */
     public function getFieldErrors(string $field): array
     {
@@ -106,10 +105,9 @@ class ValidationException extends Exception
     }
 
     /**
-     * 檢查特定欄位是否有錯誤
+     * 檢查特定欄位是否有錯誤.
      *
      * @param string $field 欄位名稱
-     * @return bool
      */
     public function hasFieldErrors(string $field): bool
     {
@@ -117,9 +115,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * 取得所有錯誤訊息的扁平陣列
-     *
-     * @return array
+     * 取得所有錯誤訊息的扁平陣列.
      */
     public function getAllErrors(): array
     {
@@ -127,13 +123,12 @@ class ValidationException extends Exception
         foreach ($this->errors as $fieldErrors) {
             $allErrors = array_merge($allErrors, $fieldErrors);
         }
+
         return $allErrors;
     }
 
     /**
-     * 取得第一個錯誤訊息
-     *
-     * @return string|null
+     * 取得第一個錯誤訊息.
      */
     public function getFirstError(): ?string
     {
@@ -141,10 +136,9 @@ class ValidationException extends Exception
     }
 
     /**
-     * 取得特定欄位的第一個錯誤訊息
+     * 取得特定欄位的第一個錯誤訊息.
      *
      * @param string $field 欄位名稱
-     * @return string|null
      */
     public function getFirstFieldError(string $field): ?string
     {
@@ -152,7 +146,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * 取得失敗的規則
+     * 取得失敗的規則.
      *
      * @return array 格式為 ['field' => ['rule1', 'rule2']]
      */
@@ -162,10 +156,9 @@ class ValidationException extends Exception
     }
 
     /**
-     * 取得特定欄位失敗的規則
+     * 取得特定欄位失敗的規則.
      *
      * @param string $field 欄位名稱
-     * @return array
      */
     public function getFieldFailedRules(string $field): array
     {
@@ -173,9 +166,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * 轉換為適用於 API 回應的陣列格式
-     *
-     * @return array
+     * 轉換為適用於 API 回應的陣列格式.
      */
     public function toApiResponse(): array
     {
@@ -188,9 +179,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * 轉換為適用於除錯的陣列格式
-     *
-     * @return array
+     * 轉換為適用於除錯的陣列格式.
      */
     public function toDebugArray(): array
     {
@@ -205,9 +194,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * 取得錯誤數量
-     *
-     * @return int
+     * 取得錯誤數量.
      */
     public function getErrorCount(): int
     {
@@ -215,9 +202,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * 取得受影響的欄位數量
-     *
-     * @return int
+     * 取得受影響的欄位數量.
      */
     public function getAffectedFieldCount(): int
     {
@@ -225,10 +210,9 @@ class ValidationException extends Exception
     }
 
     /**
-     * 檢查是否為特定規則的驗證失敗
+     * 檢查是否為特定規則的驗證失敗.
      *
      * @param string $rule 規則名稱
-     * @return bool
      */
     public function hasFailedRule(string $rule): bool
     {
@@ -237,15 +221,15 @@ class ValidationException extends Exception
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * 檢查特定欄位是否因特定規則失敗
+     * 檢查特定欄位是否因特定規則失敗.
      *
      * @param string $field 欄位名稱
      * @param string $rule 規則名稱
-     * @return bool
      */
     public function hasFieldFailedRule(string $field, string $rule): bool
     {

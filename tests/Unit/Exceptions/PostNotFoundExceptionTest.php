@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Exceptions;
 
-use App\Domains\Post\Models\Post;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Shared\Exceptions\NotFoundException;
 use PHPUnit\Framework\TestCase;
-
 
 class PostNotFoundExceptionTest extends TestCase
 {
@@ -55,6 +53,6 @@ class PostNotFoundExceptionTest extends TestCase
     {
         $exception = new PostNotFoundException(1);
 
-        $this->assertInstanceOf(\App\Shared\Exceptions\NotFoundException::class, $exception);
+        $this->assertInstanceOf(NotFoundException::class, $exception);
     }
 }

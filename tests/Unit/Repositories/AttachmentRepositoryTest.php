@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repositories;
 
-use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Infrastructure\Services\CacheService;
 use Mockery;
+use Mockery\MockInterface;
 use PDO;
 use Tests\TestCase;
-
 
 class AttachmentRepositoryTest extends TestCase
 {
@@ -18,7 +17,7 @@ class AttachmentRepositoryTest extends TestCase
 
     protected PDO $db;
 
-    protected \App\Infrastructure\Services\CacheService|\Mockery\MockInterface $cache;
+    protected \App\Infrastructure\Services\CacheService|MockInterface $cache;
 
     protected function setUp(): void
     {
@@ -32,7 +31,7 @@ class AttachmentRepositoryTest extends TestCase
         $this->createTestTables();
 
         // 模擬快取服務
-        $this->cache = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
+        $this->cache = Mockery::mock(CacheService::class);
         $this->cache->shouldReceive('remember')
             ->byDefault()
             ->andReturnUsing(function ($key, $callback) {
@@ -40,7 +39,7 @@ class AttachmentRepositoryTest extends TestCase
             });
         $this->cache->shouldReceive('delete')->byDefault();
 
-        $this->repository = new \App\Domains\Attachment\Repositories\AttachmentRepository($this->db, $this->cache);
+        $this->repository = new AttachmentRepository($this->db, $this->cache);
     }
 
     protected function createTestTables(): void

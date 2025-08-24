@@ -8,7 +8,6 @@ use App\Domains\Security\Services\Core\CsrfProtectionService;
 use App\Shared\Exceptions\CsrfTokenException;
 use PHPUnit\Framework\TestCase;
 
-
 class CsrfProtectionServiceTest extends TestCase
 {
     private CsrfProtectionService $service;

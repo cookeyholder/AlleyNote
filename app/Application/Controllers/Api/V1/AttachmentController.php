@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
+use App\Domains\Attachment\Services\AttachmentService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
-use App\Domains\Attachment\Services\AttachmentService;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -14,9 +14,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class AttachmentController
 {
     public function __construct(
-        private AttachmentService $attachmentService
-    ) {
-    }
+        private AttachmentService $attachmentService,
+    ) {}
 
     /**
      * 取得當前登入使用者 ID
@@ -49,7 +48,7 @@ class AttachmentController
                 in: 'path',
                 description: '貼文 ID',
                 required: true,
-                schema: new OA\Schema(type: 'integer', minimum: 1)
+                schema: new OA\Schema(type: 'integer', minimum: 1),
             ),
         ],
         requestBody: new OA\RequestBody(
@@ -63,12 +62,12 @@ class AttachmentController
                             property: 'file',
                             type: 'string',
                             format: 'binary',
-                            description: '要上傳的檔案'
+                            description: '要上傳的檔案',
                         ),
                     ],
-                    required: ['file']
-                )
-            )
+                    required: ['file'],
+                ),
+            ),
         ),
         responses: [
             new OA\Response(
@@ -90,10 +89,10 @@ class AttachmentController
                                 new OA\Property(property: 'download_url', type: 'string', example: '/api/attachments/550e8400-e29b-41d4-a716-446655440000/download'),
                                 new OA\Property(property: 'uploaded_by', type: 'integer', example: 1),
                                 new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2025-01-15T10:30:00Z'),
-                            ]
+                            ],
                         ),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 400,
@@ -101,22 +100,22 @@ class AttachmentController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: '不支援的檔案格式'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'
-                )
+                    ref: '#/components/responses/Unauthorized',
+                ),
             ),
             new OA\Response(
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'
-                )
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
             new OA\Response(
                 response: 413,
@@ -124,10 +123,10 @@ class AttachmentController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: '檔案大小超過 10MB 限制'),
-                    ]
-                )
+                    ],
+                ),
             ),
-        ]
+        ],
     )]
     public function upload(Request $request, Response $response): Response
     {
@@ -186,7 +185,7 @@ class AttachmentController
                 in: 'path',
                 description: '附件 UUID',
                 required: true,
-                schema: new OA\Schema(type: 'string', format: 'uuid')
+                schema: new OA\Schema(type: 'string', format: 'uuid'),
             ),
         ],
         responses: [
@@ -198,34 +197,34 @@ class AttachmentController
                         mediaType: 'application/octet-stream',
                         schema: new OA\Schema(
                             type: 'string',
-                            format: 'binary'
-                        )
+                            format: 'binary',
+                        ),
                     ),
                     '*/*' => new OA\MediaType(
                         mediaType: '*/*',
                         schema: new OA\Schema(
                             type: 'string',
-                            format: 'binary'
-                        )
+                            format: 'binary',
+                        ),
                     ),
                 ],
                 headers: [
                     'Content-Disposition' => new OA\Header(
                         header: 'Content-Disposition',
                         description: '檔案下載標頭',
-                        schema: new OA\Schema(type: 'string', example: 'attachment; filename="document.pdf"')
+                        schema: new OA\Schema(type: 'string', example: 'attachment; filename="document.pdf"'),
                     ),
                     'Content-Type' => new OA\Header(
                         header: 'Content-Type',
                         description: '檔案 MIME 類型',
-                        schema: new OA\Schema(type: 'string', example: 'application/pdf')
+                        schema: new OA\Schema(type: 'string', example: 'application/pdf'),
                     ),
                     'Content-Length' => new OA\Header(
                         header: 'Content-Length',
                         description: '檔案大小',
-                        schema: new OA\Schema(type: 'integer', example: 1024000)
+                        schema: new OA\Schema(type: 'integer', example: 1024000),
                     ),
-                ]
+                ],
             ),
             new OA\Response(
                 response: 400,
@@ -233,15 +232,15 @@ class AttachmentController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: '無效的附件識別碼'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 404,
                 description: '附件不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'
-                )
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
             new OA\Response(
                 response: 410,
@@ -249,10 +248,10 @@ class AttachmentController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: '檔案已被刪除或移動'),
-                    ]
-                )
+                    ],
+                ),
             ),
-        ]
+        ],
     )]
     public function download(Request $request, Response $response, array $args): Response
     {
@@ -306,7 +305,7 @@ class AttachmentController
                 in: 'path',
                 description: '貼文 ID',
                 required: true,
-                schema: new OA\Schema(type: 'integer', minimum: 1)
+                schema: new OA\Schema(type: 'integer', minimum: 1),
             ),
         ],
         responses: [
@@ -329,20 +328,20 @@ class AttachmentController
                                     new OA\Property(property: 'download_url', type: 'string', example: '/api/attachments/550e8400-e29b-41d4-a716-446655440000/download'),
                                     new OA\Property(property: 'uploaded_by', type: 'integer', example: 1),
                                     new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2025-01-15T10:30:00Z'),
-                                ]
-                            )
+                                ],
+                            ),
                         ),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'
-                )
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
-        ]
+        ],
     )]
     public function list(Request $request, Response $response): Response
     {
@@ -351,8 +350,8 @@ class AttachmentController
 
         $response->getBody()->write(json_encode([
             'data' => array_map(
-                fn ($attachment) => $attachment->toArray(),
-                $attachments
+                fn($attachment) => $attachment->toArray(),
+                $attachments,
             ),
         ]));
 
@@ -377,13 +376,13 @@ class AttachmentController
                 in: 'path',
                 description: '附件 UUID',
                 required: true,
-                schema: new OA\Schema(type: 'string', format: 'uuid')
+                schema: new OA\Schema(type: 'string', format: 'uuid'),
             ),
         ],
         responses: [
             new OA\Response(
                 response: 204,
-                description: '附件刪除成功'
+                description: '附件刪除成功',
             ),
             new OA\Response(
                 response: 400,
@@ -391,15 +390,15 @@ class AttachmentController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: '無效的附件識別碼'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'
-                )
+                    ref: '#/components/responses/Unauthorized',
+                ),
             ),
             new OA\Response(
                 response: 403,
@@ -407,17 +406,17 @@ class AttachmentController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'error', type: 'string', example: '您沒有權限刪除此附件'),
-                    ]
-                )
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 404,
                 description: '附件不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'
-                )
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
-        ]
+        ],
     )]
     public function delete(Request $request, Response $response): Response
     {

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Contracts;
 
+use Throwable;
+
 interface ErrorHandlerServiceInterface
 {
     /**
      * 處理例外並返回適當的錯誤訊息.
      */
-    public function handleException(\Throwable $e, bool $isPublicError = false): array;
+    public function handleException(Throwable $e, bool $isPublicError = false): array;
 
     /**
      * 記錄安全事件.

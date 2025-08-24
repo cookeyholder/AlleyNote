@@ -8,12 +8,14 @@ use App\Domains\Post\Models\Post;
 use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Infrastructure\Services\CacheService;
+use DateTimeImmutable;
+use DateTimeInterface;
+use Exception;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PDO;
 use Tests\Factory\PostFactory;
-
 
 class PostRepositoryTest extends MockeryTestCase
 {
@@ -37,7 +39,7 @@ class PostRepositoryTest extends MockeryTestCase
         $this->createTestTables();
 
         // 模擬快取服務
-        $this->cache = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
+        $this->cache = Mockery::mock(CacheService::class);
         $this->cache->shouldReceive('remember')
             ->byDefault()
             ->andReturnUsing(function ($key, $callback) {
@@ -47,10 +49,10 @@ class PostRepositoryTest extends MockeryTestCase
         $this->cache->shouldReceive('deletePattern')->byDefault();
 
         // 模擬日誌安全服務
-        $this->logger = Mockery::mock(\App\Domains\Security\Contracts\LoggingSecurityServiceInterface::class);
+        $this->logger = Mockery::mock(LoggingSecurityServiceInterface::class);
         $this->logger->shouldReceive('logSecurityEvent')->byDefault();
 
-        $this->repository = new \App\Domains\Post\Repositories\PostRepository($this->db, $this->cache, $this->logger);
+        $this->repository = new PostRepository($this->db, $this->cache, $this->logger);
     }
 
     protected function createTestTables(): void
@@ -112,9 +114,9 @@ class PostRepositoryTest extends MockeryTestCase
             'title' => '測試文章',
             'content' => '這是測試內容',
         ]);
-        $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
 
         $post = $this->repository->create($data);
 
@@ -126,9 +128,9 @@ class PostRepositoryTest extends MockeryTestCase
     public function testCanFindPostById(): void
     {
         $data = PostFactory::make();
-        $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
 
         $found = $this->repository->find($post->getId());
@@ -140,9 +142,9 @@ class PostRepositoryTest extends MockeryTestCase
     public function testCanFindPostByUuid(): void
     {
         $data = PostFactory::make();
-        $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
 
         $found = $this->repository->findByUuid($post->getUuid());
@@ -154,9 +156,9 @@ class PostRepositoryTest extends MockeryTestCase
     public function testCanUpdatePost(): void
     {
         $data = PostFactory::make();
-        $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
 
         $updateData = [
@@ -175,9 +177,9 @@ class PostRepositoryTest extends MockeryTestCase
     public function testCanDeletePost(): void
     {
         $data = PostFactory::make();
-        $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
 
         $result = $this->repository->delete($post->getId());
@@ -250,16 +252,16 @@ class PostRepositoryTest extends MockeryTestCase
         }
 
         $data = PostFactory::make();
-        $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
-        $data['updated_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
         $initialViews = $post->getViews();
 
         $result = $this->repository->incrementViews(
             $post->getId(),
             '127.0.0.1',
-            1
+            1,
         );
 
         $this->assertTrue($result);
@@ -274,7 +276,7 @@ class PostRepositoryTest extends MockeryTestCase
         try {
             $this->repository->setTags($post->getId(), [999]); // 使用不存在的標籤 ID
             $this->fail('應該拋出異常');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 確保交易已回溯
             $tags = $this->db->query("SELECT * FROM post_tags WHERE post_id = {$post->getId()}")->fetchAll();
             $this->assertEmpty($tags);

@@ -6,7 +6,6 @@ namespace Tests\Integration;
 
 use Tests\TestCase;
 
-
 class FileSystemBackupTest extends TestCase
 {
     private string $testDir;
@@ -24,13 +23,13 @@ class FileSystemBackupTest extends TestCase
         $this->backupDir = sys_get_temp_dir() . '/alleynote_backup_' . uniqid();
 
         mkdir($this->testDir);
-        mkdir($this->testDir . '/uploads', 0755, true);
-        mkdir($this->testDir . '/storage', 0755, true);
-        mkdir($this->backupDir, 0755, true);
+        mkdir($this->testDir . '/uploads', 0o755, true);
+        mkdir($this->testDir . '/storage', 0o755, true);
+        mkdir($this->backupDir, 0o755, true);
 
         // 確保目錄權限正確
-        chmod($this->testDir, 0755);
-        chmod($this->backupDir, 0755);
+        chmod($this->testDir, 0o755);
+        chmod($this->backupDir, 0o755);
 
         // 建立測試檔案
         $this->createTestFiles();
@@ -48,7 +47,7 @@ class FileSystemBackupTest extends TestCase
         foreach ($this->testFiles as $path => $content) {
             $fullPath = $this->testDir . $path;
             file_put_contents($fullPath, $content);
-            chmod($fullPath, 0644);
+            chmod($fullPath, 0o644);
         }
     }
 
@@ -63,7 +62,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/backup_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($this->testDir),
-            escapeshellarg($this->backupDir)
+            escapeshellarg($this->backupDir),
         ), $output, $returnVar);
 
         // 驗證備份是否成功
@@ -93,7 +92,7 @@ class FileSystemBackupTest extends TestCase
             $this->assertEquals(
                 $content,
                 file_get_contents($backedUpFile),
-                "檔案 {$path} 的內容不符"
+                "檔案 {$path} 的內容不符",
             );
         }
     }
@@ -118,7 +117,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->testDir)
+            escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
         // 驗證還原是否成功
@@ -131,12 +130,12 @@ class FileSystemBackupTest extends TestCase
             $this->assertEquals(
                 $content,
                 file_get_contents($restoredFile),
-                "檔案 {$path} 的內容不符"
+                "檔案 {$path} 的內容不符",
             );
             $this->assertEquals(
-                0644,
+                0o644,
                 octdec(substr(sprintf('%o', fileperms($restoredFile)), -4)),
-                "檔案 {$path} 的權限不正確"
+                "檔案 {$path} 的權限不正確",
             );
         }
     }
@@ -154,7 +153,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/backup_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($nonExistentDir),
-            escapeshellarg($this->backupDir)
+            escapeshellarg($this->backupDir),
         ), $output, $returnVar);
 
         // 驗證錯誤處理
@@ -175,7 +174,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($nonExistentBackup),
-            escapeshellarg($this->testDir)
+            escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
         // 驗證錯誤處理
@@ -187,14 +186,14 @@ class FileSystemBackupTest extends TestCase
     public function handlePermissionErrors(): void
     {
         // 設定目標目錄為唯讀
-        chmod($this->testDir, 0444);
+        chmod($this->testDir, 0o444);
 
         // 測試目標目錄是否可寫入
         $testFile = $this->testDir . '/test.txt';
         $canWrite = @file_put_contents($testFile, 'test') !== false;
         if ($canWrite) {
             $this->markTestSkipped('此測試暫時跳過等待實現');
-            chmod($this->testDir, 0755);
+            chmod($this->testDir, 0o755);
 
             return;
         }
@@ -209,7 +208,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->testDir)
+            escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
         // 驗證錯誤處理
@@ -217,7 +216,7 @@ class FileSystemBackupTest extends TestCase
         $this->assertStringContainsString('權限', implode("\n", $output), '應該輸出權限錯誤訊息');
 
         // 恢復權限以便清理
-        chmod($this->testDir, 0755);
+        chmod($this->testDir, 0o755);
     }
 
     /** @test */
@@ -241,7 +240,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/backup_files.sh %s %s',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($this->testDir),
-            escapeshellarg($backupFile)
+            escapeshellarg($backupFile),
         ));
 
         // 清空原始目錄
@@ -254,7 +253,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/restore_files.sh %s %s',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->testDir)
+            escapeshellarg($this->testDir),
         ));
 
         // 驗證檔案中繼資料
@@ -267,17 +266,17 @@ class FileSystemBackupTest extends TestCase
             $this->assertEquals(
                 $originalMetadata[$path]['permissions'],
                 fileperms($file),
-                "檔案 {$path} 的權限不符"
+                "檔案 {$path} 的權限不符",
             );
             $this->assertEquals(
                 $originalMetadata[$path]['owner'],
                 fileowner($file),
-                "檔案 {$path} 的擁有者不符"
+                "檔案 {$path} 的擁有者不符",
             );
             $this->assertEquals(
                 $originalMetadata[$path]['group'],
                 filegroup($file),
-                "檔案 {$path} 的群組不符"
+                "檔案 {$path} 的群組不符",
             );
         }
     }

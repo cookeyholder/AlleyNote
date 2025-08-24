@@ -5,7 +5,6 @@ namespace Tests\Unit\Services;
 use App\Infrastructure\Services\CacheService;
 use Tests\TestCase;
 
-
 class CacheServiceTest extends TestCase
 {
     private CacheService $cacheService;

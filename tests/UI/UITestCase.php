@@ -5,7 +5,6 @@ namespace Tests\UI;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 
-
 abstract class UITestCase extends TestCase
 {
     protected static ?Process $serverProcess = null;
@@ -34,7 +33,7 @@ abstract class UITestCase extends TestCase
     {
         $screenshotDir = __DIR__ . '/screenshots';
         if (!file_exists($screenshotDir)) {
-            mkdir($screenshotDir, 0777, true);
+            mkdir($screenshotDir, 0o777, true);
         }
 
         // 使用當前時間戳記作為檔名前綴

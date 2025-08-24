@@ -7,7 +7,6 @@ namespace Tests\Integration;
 use PDO;
 use Tests\TestCase;
 
-
 class DatabaseBackupTest extends TestCase
 {
     protected string $backupDir;
@@ -84,7 +83,7 @@ class DatabaseBackupTest extends TestCase
             '/bin/bash %s/scripts/backup_db.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($this->dbPath),
-            escapeshellarg($backupFile)
+            escapeshellarg($backupFile),
         ), $output, $returnVar);
 
         // 驗證備份是否成功
@@ -120,7 +119,7 @@ class DatabaseBackupTest extends TestCase
             '/bin/bash %s/scripts/restore_db.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->dbPath)
+            escapeshellarg($this->dbPath),
         ), $output, $returnVar);
 
         // 驗證還原是否成功
@@ -148,7 +147,7 @@ class DatabaseBackupTest extends TestCase
             '/bin/bash %s/scripts/backup_db.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($nonExistentDb),
-            escapeshellarg($backupFile)
+            escapeshellarg($backupFile),
         ), $output, $returnVar);
 
         // 驗證錯誤處理
@@ -169,7 +168,7 @@ class DatabaseBackupTest extends TestCase
             '/bin/bash %s/scripts/restore_db.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($nonExistentBackup),
-            escapeshellarg($this->dbPath)
+            escapeshellarg($this->dbPath),
         ), $output, $returnVar);
 
         // 驗證錯誤處理
@@ -190,7 +189,7 @@ class DatabaseBackupTest extends TestCase
             '/bin/bash %s/scripts/backup_db.sh %s %s',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($this->dbPath),
-            escapeshellarg($backupFile)
+            escapeshellarg($backupFile),
         ));
 
         // 清空原始資料庫
@@ -202,7 +201,7 @@ class DatabaseBackupTest extends TestCase
             '/bin/bash %s/scripts/restore_db.sh %s %s',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->dbPath)
+            escapeshellarg($this->dbPath),
         ));
 
         // 比較還原後的資料

@@ -63,7 +63,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
                     $params['path'],
                     $params['domain'],
                     $params['secure'],
-                    $params['httponly']
+                    $params['httponly'],
                 );
             }
 
@@ -89,8 +89,8 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         // 檢查 Session 是否過期 (最大閒置時間 2 小時)
         $maxIdleTime = 7200; // 2 hours
         if (
-            isset($_SESSION['last_activity']) &&
-            (time() - $_SESSION['last_activity']) > $maxIdleTime
+            isset($_SESSION['last_activity'])
+            && (time() - $_SESSION['last_activity']) > $maxIdleTime
         ) {
             return false;
         }

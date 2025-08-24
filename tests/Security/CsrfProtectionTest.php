@@ -16,7 +16,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
 
-
 class CsrfProtectionTest extends TestCase
 {
     private PostServiceInterface $postService;
@@ -51,10 +50,10 @@ class CsrfProtectionTest extends TestCase
         $this->response = Mockery::mock(ResponseInterface::class);
         $this->stream = Mockery::mock(StreamInterface::class);
 
-        $this->controller = new \App\Application\Controllers\Api\V1\PostController(
+        $this->controller = new PostController(
             $this->postService,
             $this->xssProtection,
-            $this->csrfProtection
+            $this->csrfProtection,
         );
 
         // 設定預設回應行為
@@ -65,13 +64,12 @@ class CsrfProtectionTest extends TestCase
                 $this->lastWrittenContent = $content;
 
                 return strlen($content);
-            
-        // 設定預設的 user_id 屬性
-        $this->request->shouldReceive('getAttribute')
-            ->with('user_id')
-            ->andReturn(1)
-            ->byDefault();
-});
+                // 設定預設的 user_id 屬性
+                $this->request->shouldReceive('getAttribute')
+                    ->with('user_id')
+                    ->andReturn(1)
+                    ->byDefault();
+            });
         $this->response->shouldReceive('withStatus')
             ->andReturnUsing(function ($status) {
                 $this->lastStatusCode = $status;

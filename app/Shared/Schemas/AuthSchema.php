@@ -16,36 +16,36 @@ use OpenApi\Attributes as OA;
             property: 'id',
             type: 'integer',
             description: '使用者ID',
-            example: 1
+            example: 1,
         ),
         new OA\Property(
             property: 'username',
             type: 'string',
             description: '使用者名稱',
-            example: 'admin'
+            example: 'admin',
         ),
         new OA\Property(
             property: 'email',
             type: 'string',
             format: 'email',
             description: '電子郵件',
-            example: 'admin@example.com'
+            example: 'admin@example.com',
         ),
         new OA\Property(
             property: 'role',
             type: 'string',
             description: '使用者角色',
             enum: ['admin', 'moderator', 'user'],
-            example: 'admin'
+            example: 'admin',
         ),
         new OA\Property(
             property: 'created_at',
             type: 'string',
             format: 'date-time',
             description: '建立時間',
-            example: '2025-01-15T10:30:00Z'
+            example: '2025-01-15T10:30:00Z',
         ),
-    ]
+    ],
 )]
 #[OA\Schema(
     schema: 'LoginRequest',
@@ -58,23 +58,23 @@ use OpenApi\Attributes as OA;
             property: 'username',
             type: 'string',
             description: '使用者名稱',
-            example: 'admin'
+            example: 'admin',
         ),
         new OA\Property(
             property: 'password',
             type: 'string',
             format: 'password',
             description: '密碼',
-            example: 'password123'
+            example: 'password123',
         ),
         new OA\Property(
             property: 'remember_me',
             type: 'boolean',
             description: '記住我',
             default: false,
-            example: false
+            example: false,
         ),
-    ]
+    ],
 )]
 #[OA\Schema(
     schema: 'LoginResponse',
@@ -86,33 +86,33 @@ use OpenApi\Attributes as OA;
             property: 'success',
             type: 'boolean',
             description: '登入是否成功',
-            example: true
+            example: true,
         ),
         new OA\Property(
             property: 'message',
             type: 'string',
             description: '回應訊息',
-            example: '登入成功'
+            example: '登入成功',
         ),
         new OA\Property(
             property: 'token',
             type: 'string',
             description: 'JWT Token',
-            example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
+            example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...',
         ),
         new OA\Property(
             property: 'user',
             ref: '#/components/schemas/User',
-            description: '使用者資訊'
+            description: '使用者資訊',
         ),
         new OA\Property(
             property: 'expires_at',
             type: 'string',
             format: 'date-time',
             description: 'Token 過期時間',
-            example: '2025-01-16T10:30:00Z'
+            example: '2025-01-16T10:30:00Z',
         ),
-    ]
+    ],
 )]
 class AuthSchema
 {

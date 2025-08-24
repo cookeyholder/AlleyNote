@@ -5,17 +5,18 @@ namespace Tests;
 use App\Infrastructure\Database\DatabaseConnection;
 use App\Infrastructure\Services\CacheService;
 use Mockery;
+use Mockery\MockInterface;
 use PDO;
+use PDOException;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Psr\Http\Message\ResponseInterface;
-
+use RuntimeException;
 
 abstract class TestCase extends BaseTestCase
 {
     protected PDO $db;
 
-    /** @var CacheService&\Mockery\MockInterface */
-    protected \App\Infrastructure\Services\CacheService|\Mockery\MockInterface $cache;
+    protected \App\Infrastructure\Services\CacheService|MockInterface $cache;
 
     /**
      * 初始化測試環境.
@@ -44,8 +45,8 @@ abstract class TestCase extends BaseTestCase
 
             // 設定全域資料庫連線實例
             DatabaseConnection::setInstance($this->db);
-        } catch (\PDOException $e) {
-            throw new \RuntimeException('無法建立測試資料庫連線：' . $e->getMessage());
+        } catch (PDOException $e) {
+            throw new RuntimeException('無法建立測試資料庫連線：' . $e->getMessage());
         }
 
         // 用於儲存快取資料的靜態變數
@@ -55,7 +56,7 @@ abstract class TestCase extends BaseTestCase
         $storage = [];
 
         // 模擬快取服務
-        $this->cache = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
+        $this->cache = Mockery::mock(CacheService::class);
         $this->cache->shouldReceive('get')
             ->andReturnUsing(function ($key) use (&$storage) {
                 return $storage[$key] ?? null;

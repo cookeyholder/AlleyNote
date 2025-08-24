@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Post\Validation\Validators;
 
 use App\Shared\Exceptions\ValidationException;
-use App\Shared\Validation\ValidationResult;
+use DateTime;
 use PDO;
 
 class PostValidator
@@ -170,8 +170,8 @@ class PostValidator
     private function validatePublishDate(array $data): void
     {
         if (isset($data['publish_date'])) {
-            $date = \DateTime::createFromFormat(\DateTime::RFC3339, $data['publish_date']);
-            if (!$date || $date->format(\DateTime::RFC3339) !== $data['publish_date']) {
+            $date = DateTime::createFromFormat(DateTime::RFC3339, $data['publish_date']);
+            if (!$date || $date->format(DateTime::RFC3339) !== $data['publish_date']) {
                 throw ValidationException::fromSingleError('publish_date', '發布日期格式必須是 RFC 3339');
             }
         }

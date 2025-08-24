@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domains\Attachment\Services;
 
-use App\Shared\Exceptions\ValidationException;
 use App\Domains\Attachment\Contracts\FileSecurityServiceInterface;
+use App\Shared\Exceptions\ValidationException;
 use Psr\Http\Message\UploadedFileInterface;
+use RuntimeException;
 
 class FileSecurityService implements FileSecurityServiceInterface
 {
@@ -62,6 +63,7 @@ class FileSecurityService implements FileSecurityServiceInterface
     ];
 
     private const MAX_FILE_SIZE = 10485760; // 10MB
+
     private const MAX_FILENAME_LENGTH = 255;
 
     public function validateUpload(UploadedFileInterface $file): void
@@ -89,7 +91,7 @@ class FileSecurityService implements FileSecurityServiceInterface
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         if ($finfo === false) {
-            throw new \RuntimeException('無法初始化檔案資訊檢測器');
+            throw new RuntimeException('無法初始化檔案資訊檢測器');
         }
 
         $mimeType = finfo_file($finfo, $filePath);
@@ -157,9 +159,9 @@ class FileSecurityService implements FileSecurityServiceInterface
 
         // 檢查路徑遍歷攻擊
         if (
-            str_contains($fileName, '..') ||
-            str_contains($fileName, '/') ||
-            str_contains($fileName, '\\')
+            str_contains($fileName, '..')
+            || str_contains($fileName, '/')
+            || str_contains($fileName, '\\')
         ) {
             throw ValidationException::fromSingleError('filename', '檔案名稱包含不安全字元');
         }

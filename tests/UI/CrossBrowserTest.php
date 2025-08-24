@@ -6,8 +6,6 @@ class CrossBrowserTest extends UITestCase
 {
     /**
      * 測試瀏覽器清單.
-     *
-     * @var array
      */
     private array $browsers = [
         'chrome' => [

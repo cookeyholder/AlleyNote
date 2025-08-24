@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Config;
 
-use DI\Container;
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
 
 /**
- * DI 容器工廠類
+ * DI 容器工廠類.
  *
  * 負責建立和配置 DI 容器
  */
@@ -18,7 +17,7 @@ class ContainerFactory
     private static ?ContainerInterface $container = null;
 
     /**
-     * 建立 DI 容器
+     * 建立 DI 容器.
      */
     public static function create(): ContainerInterface
     {
@@ -34,10 +33,10 @@ class ContainerFactory
 
             // 確保快取目錄存在
             if (!is_dir($cacheDir)) {
-                mkdir($cacheDir, 0755, true);
+                mkdir($cacheDir, 0o755, true);
             }
             if (!is_dir($proxiesDir)) {
-                mkdir($proxiesDir, 0755, true);
+                mkdir($proxiesDir, 0o755, true);
             }
 
             $builder->enableCompilation($cacheDir);
@@ -61,7 +60,7 @@ class ContainerFactory
     }
 
     /**
-     * 重設容器（主要用於測試）
+     * 重設容器（主要用於測試）.
      */
     public static function reset(): void
     {
@@ -69,7 +68,7 @@ class ContainerFactory
     }
 
     /**
-     * 取得容器實例
+     * 取得容器實例.
      */
     public static function getInstance(): ContainerInterface
     {
@@ -77,7 +76,7 @@ class ContainerFactory
     }
 
     /**
-     * 檢查是否已初始化
+     * 檢查是否已初始化.
      */
     public static function isInitialized(): bool
     {

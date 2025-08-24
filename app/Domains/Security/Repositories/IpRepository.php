@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Repositories;
 
-use App\Domains\Security\Models\IpList;
 use App\Domains\Security\Contracts\IpRepositoryInterface;
+use App\Domains\Security\Models\IpList;
 use App\Infrastructure\Services\CacheService;
+use DateTime;
+use Exception;
+use InvalidArgumentException;
 use PDO;
 
 class IpRepository implements IpRepositoryInterface
@@ -30,7 +33,7 @@ class IpRepository implements IpRepositoryInterface
 
     public function __construct(
         private PDO $db,
-        private CacheService $cache
+        private CacheService $cache,
     ) {
         // 設定事務隔離級別
         $this->db->exec('PRAGMA foreign_keys = ON');
@@ -54,7 +57,7 @@ class IpRepository implements IpRepositoryInterface
             return;
         }
 
-        throw new \InvalidArgumentException('無效的 IP 位址格式');
+        throw new InvalidArgumentException('無效的 IP 位址格式');
     }
 
     private function ipInRange(string $ip, string $cidr): bool
@@ -91,7 +94,7 @@ class IpRepository implements IpRepositoryInterface
     {
         $this->validateIpAddress($data['ip_address']);
 
-        $now = (new \DateTime())->format(\DateTime::RFC3339);
+        $now = new DateTime()->format(DateTime::RFC3339);
         $uuid = generate_uuid();
 
         $sql = 'INSERT INTO ip_lists (uuid, ip_address, type, unit_id, description, created_at, updated_at)
@@ -133,7 +136,7 @@ class IpRepository implements IpRepositoryInterface
             $this->cache->set($this->getCacheKey('ip', $data['ip_address']), $ipList);
 
             return $ipList;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
@@ -193,7 +196,7 @@ class IpRepository implements IpRepositoryInterface
             $this->validateIpAddress($data['ip_address']);
         }
 
-        $data['updated_at'] = (new \DateTime())->format(\DateTime::RFC3339);
+        $data['updated_at'] = new DateTime()->format(DateTime::RFC3339);
 
         $sets = [];
         $params = ['id' => $id];
@@ -253,8 +256,8 @@ class IpRepository implements IpRepositoryInterface
         }, self::CACHE_TTL);
 
         return empty($results) ? [] : array_map(
-            fn ($row) => $this->createIpListFromData($row),
-            $results
+            fn($row) => $this->createIpListFromData($row),
+            $results,
         );
     }
 
@@ -278,16 +281,16 @@ class IpRepository implements IpRepositoryInterface
         }
 
         // 計算總筆數
-        $countSql = 'SELECT COUNT(*) FROM ip_lists' .
-            (empty($where) ? '' : ' WHERE ' . implode(' AND ', $where));
+        $countSql = 'SELECT COUNT(*) FROM ip_lists'
+            . (empty($where) ? '' : ' WHERE ' . implode(' AND ', $where));
         $stmt = $this->db->prepare($countSql);
         $stmt->execute($params);
         $total = (int) $stmt->fetchColumn();
 
         // 取得分頁資料
-        $sql = 'SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists' .
-            (empty($where) ? '' : ' WHERE ' . implode(' AND ', $where)) .
-            ' ORDER BY created_at DESC LIMIT ?, ?';
+        $sql = 'SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists'
+            . (empty($where) ? '' : ' WHERE ' . implode(' AND ', $where))
+            . ' ORDER BY created_at DESC LIMIT ?, ?';
 
         $stmt = $this->db->prepare($sql);
         $params[] = $offset;
@@ -295,8 +298,8 @@ class IpRepository implements IpRepositoryInterface
         $stmt->execute($params);
 
         $items = array_map(
-            fn ($row) => $this->createIpListFromData($row),
-            $stmt->fetchAll(PDO::FETCH_ASSOC)
+            fn($row) => $this->createIpListFromData($row),
+            $stmt->fetchAll(PDO::FETCH_ASSOC),
         );
 
         return [

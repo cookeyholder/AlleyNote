@@ -7,16 +7,15 @@ namespace Tests\Unit\Validation;
 use App\Shared\Validation\ValidationResult;
 use Tests\TestCase;
 
-
 /**
- * ValidationResult 單元測試
+ * ValidationResult 單元測試.
  *
  * 測試驗證結果類的所有功能，包括建立、查詢、合併和序列化
  */
 class ValidationResultTest extends TestCase
 {
     /**
-     * 測試建立成功的驗證結果
+     * 測試建立成功的驗證結果.
      */
     public function test_create_success_result(): void
     {
@@ -24,7 +23,7 @@ class ValidationResultTest extends TestCase
         $validatedData = [
             'name' => 'John Doe',
             'email' => 'john@example.com',
-            'age' => 25
+            'age' => 25,
         ];
 
         // Act
@@ -40,18 +39,18 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試建立失敗的驗證結果
+     * 測試建立失敗的驗證結果.
      */
     public function test_create_failure_result(): void
     {
         // Arrange
         $errors = [
             'name' => ['欄位 name 為必填項目'],
-            'email' => ['欄位 email 必須是有效的電子郵件地址']
+            'email' => ['欄位 email 必須是有效的電子郵件地址'],
         ];
         $failedRules = [
             'name' => ['required'],
-            'email' => ['email']
+            'email' => ['email'],
         ];
 
         // Act
@@ -66,7 +65,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試使用建構函式建立驗證結果
+     * 測試使用建構函式建立驗證結果.
      */
     public function test_constructor(): void
     {
@@ -88,7 +87,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試取得特定欄位的錯誤訊息
+     * 測試取得特定欄位的錯誤訊息.
      */
     public function test_get_field_errors(): void
     {
@@ -96,7 +95,7 @@ class ValidationResultTest extends TestCase
         $errors = [
             'name' => ['名稱為必填項目', '名稱長度至少需要2個字元'],
             'email' => ['電子郵件格式不正確'],
-            'age' => []
+            'age' => [],
         ];
         $result = ValidationResult::failure($errors);
 
@@ -108,7 +107,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試檢查特定欄位是否有錯誤
+     * 測試檢查特定欄位是否有錯誤.
      */
     public function test_has_field_errors(): void
     {
@@ -116,7 +115,7 @@ class ValidationResultTest extends TestCase
         $errors = [
             'name' => ['名稱為必填項目'],
             'email' => ['電子郵件格式不正確'],
-            'valid_field' => []
+            'valid_field' => [],
         ];
         $result = ValidationResult::failure($errors);
 
@@ -128,14 +127,14 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試取得第一個錯誤訊息
+     * 測試取得第一個錯誤訊息.
      */
     public function test_get_first_error(): void
     {
         // Arrange - 測試有錯誤的情況
         $errors = [
             'name' => ['名稱為必填項目', '名稱長度不足'],
-            'email' => ['電子郵件格式不正確']
+            'email' => ['電子郵件格式不正確'],
         ];
         $result = ValidationResult::failure($errors);
 
@@ -152,7 +151,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試取得特定欄位的第一個錯誤訊息
+     * 測試取得特定欄位的第一個錯誤訊息.
      */
     public function test_get_first_field_error(): void
     {
@@ -160,7 +159,7 @@ class ValidationResultTest extends TestCase
         $errors = [
             'name' => ['名稱為必填項目', '名稱長度不足'],
             'email' => ['電子郵件格式不正確'],
-            'empty_field' => []
+            'empty_field' => [],
         ];
         $result = ValidationResult::failure($errors);
 
@@ -172,7 +171,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試取得所有錯誤訊息的扁平陣列
+     * 測試取得所有錯誤訊息的扁平陣列.
      */
     public function test_get_all_errors(): void
     {
@@ -180,7 +179,7 @@ class ValidationResultTest extends TestCase
         $errors = [
             'name' => ['名稱為必填項目', '名稱長度不足'],
             'email' => ['電子郵件格式不正確'],
-            'age' => ['年齡必須是數字']
+            'age' => ['年齡必須是數字'],
         ];
         $result = ValidationResult::failure($errors);
 
@@ -192,7 +191,7 @@ class ValidationResultTest extends TestCase
             '名稱為必填項目',
             '名稱長度不足',
             '電子郵件格式不正確',
-            '年齡必須是數字'
+            '年齡必須是數字',
         ];
         $this->assertCount(4, $allErrors);
         foreach ($expectedErrors as $expectedError) {
@@ -201,7 +200,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試錯誤計數功能
+     * 測試錯誤計數功能.
      */
     public function test_error_count(): void
     {
@@ -209,7 +208,7 @@ class ValidationResultTest extends TestCase
         $errors = [
             'name' => ['錯誤1', '錯誤2'],
             'email' => ['錯誤3'],
-            'age' => ['錯誤4', '錯誤5', '錯誤6']
+            'age' => ['錯誤4', '錯誤5', '錯誤6'],
         ];
         $result = ValidationResult::failure($errors);
 
@@ -225,18 +224,18 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試取得失敗的規則
+     * 測試取得失敗的規則.
      */
     public function test_get_failed_rules(): void
     {
         // Arrange
         $errors = [
             'name' => ['名稱為必填項目'],
-            'email' => ['電子郵件格式不正確']
+            'email' => ['電子郵件格式不正確'],
         ];
         $failedRules = [
             'name' => ['required'],
-            'email' => ['email']
+            'email' => ['email'],
         ];
         $result = ValidationResult::failure($errors, $failedRules);
 
@@ -248,7 +247,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試添加錯誤功能
+     * 測試添加錯誤功能.
      */
     public function test_add_error(): void
     {
@@ -270,7 +269,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試添加失敗規則功能
+     * 測試添加失敗規則功能.
      */
     public function test_add_failed_rule(): void
     {
@@ -288,7 +287,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試驗證資料的取得功能
+     * 測試驗證資料的取得功能.
      */
     public function test_validated_data_access(): void
     {
@@ -305,7 +304,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試合併驗證結果功能
+     * 測試合併驗證結果功能.
      */
     public function test_merge_results(): void
     {
@@ -314,14 +313,14 @@ class ValidationResultTest extends TestCase
             false,
             ['name' => ['名稱錯誤']],
             ['age' => 25],
-            ['name' => ['required']]
+            ['name' => ['required']],
         );
 
         $result2 = new ValidationResult(
             false,
             ['email' => ['電子郵件錯誤'], 'name' => ['名稱長度錯誤']],
             ['city' => 'Taipei'],
-            ['email' => ['email'], 'name' => ['min_length']]
+            ['email' => ['email'], 'name' => ['min_length']],
         );
 
         // Act
@@ -334,14 +333,14 @@ class ValidationResultTest extends TestCase
         // 檢查錯誤合併
         $expectedErrors = [
             'name' => ['名稱錯誤', '名稱長度錯誤'],
-            'email' => ['電子郵件錯誤']
+            'email' => ['電子郵件錯誤'],
         ];
         $this->assertEquals($expectedErrors, $mergedResult->getErrors());
 
         // 檢查失敗規則合併
         $expectedFailedRules = [
             'name' => ['required', 'min_length'],
-            'email' => ['email']
+            'email' => ['email'],
         ];
         $this->assertEquals($expectedFailedRules, $mergedResult->getFailedRules());
 
@@ -351,7 +350,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試 toArray 功能
+     * 測試 toArray 功能.
      */
     public function test_to_array(): void
     {
@@ -371,13 +370,13 @@ class ValidationResultTest extends TestCase
             'is_valid' => false,
             'errors' => $errors,
             'validated_data' => $validatedData,
-            'failed_rules' => $failedRules
+            'failed_rules' => $failedRules,
         ];
         $this->assertEquals($expected, $array);
     }
 
     /**
-     * 測試 JSON 序列化功能
+     * 測試 JSON 序列化功能.
      */
     public function test_json_serialization(): void
     {
@@ -400,7 +399,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試 __toString 功能
+     * 測試 __toString 功能.
      */
     public function test_to_string(): void
     {
@@ -415,7 +414,7 @@ class ValidationResultTest extends TestCase
         // Arrange & Act - 失敗結果
         $errors = [
             'name' => ['名稱為必填項目'],
-            'email' => ['電子郵件格式不正確', '電子郵件為必填項目']
+            'email' => ['電子郵件格式不正確', '電子郵件為必填項目'],
         ];
         $failureResult = ValidationResult::failure($errors);
         $failureString = (string) $failureResult;
@@ -446,7 +445,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試大量資料的效能
+     * 測試大量資料的效能.
      */
     public function test_performance_with_large_data(): void
     {
@@ -489,7 +488,7 @@ class ValidationResultTest extends TestCase
     }
 
     /**
-     * 測試深層複製和物件獨立性
+     * 測試深層複製和物件獨立性.
      */
     public function test_object_independence(): void
     {

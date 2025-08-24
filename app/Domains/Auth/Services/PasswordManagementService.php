@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
 
-use App\Shared\Exceptions\ValidationException;
-use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
+use App\Domains\Auth\Repositories\UserRepository;
+use App\Shared\Exceptions\ValidationException;
+use InvalidArgumentException;
 
 /**
  * 密碼管理服務.
@@ -17,9 +18,8 @@ class PasswordManagementService
 {
     public function __construct(
         private UserRepository $userRepository,
-        private PasswordSecurityServiceInterface $passwordService
-    ) {
-    }
+        private PasswordSecurityServiceInterface $passwordService,
+    ) {}
 
     /**
      * 變更使用者密碼
@@ -28,19 +28,19 @@ class PasswordManagementService
      * @param string $currentPassword 目前密碼
      * @param string $newPassword 新密碼
      * @throws ValidationException 當密碼驗證失敗時
-     * @throws \InvalidArgumentException 當使用者不存在或目前密碼錯誤時
+     * @throws InvalidArgumentException 當使用者不存在或目前密碼錯誤時
      */
     public function changePassword(int $userId, string $currentPassword, string $newPassword): bool
     {
         // 驗證使用者身分
         $user = $this->userRepository->findById((string) $userId);
         if (!$user) {
-            throw new \InvalidArgumentException('找不到指定的使用者');
+            throw new InvalidArgumentException('找不到指定的使用者');
         }
 
         // 驗證目前密碼
         if (!$this->passwordService->verifyPassword($currentPassword, $user['password'])) {
-            throw new \InvalidArgumentException('目前密碼不正確');
+            throw new InvalidArgumentException('目前密碼不正確');
         }
 
         // 驗證新密碼的安全性（包含 HIBP 檢查）
@@ -115,8 +115,8 @@ class PasswordManagementService
 
         // 檢查密碼是否正確且需要升級
         if (
-            $this->passwordService->verifyPassword($plainPassword, $user['password']) &&
-            $this->passwordService->needsRehash($user['password'])
+            $this->passwordService->verifyPassword($plainPassword, $user['password'])
+            && $this->passwordService->needsRehash($user['password'])
         ) {
             // 重新雜湊密碼並透過 updatePassword 方法更新
             return $this->userRepository->updatePassword($userId, $plainPassword);

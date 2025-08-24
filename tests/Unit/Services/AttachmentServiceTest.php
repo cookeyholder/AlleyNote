@@ -5,19 +5,17 @@ declare(strict_types=1);
 namespace Tests\Unit\Services;
 
 use App\Domains\Attachment\Models\Attachment;
-use App\Shared\Exceptions\ValidationException;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
+use App\Domains\Post\Models\Post;
 use App\Domains\Post\Repositories\PostRepository;
 use App\Infrastructure\Services\CacheService;
-use App\Shared\Exceptions\NotFoundException;
-use DateTime;
+use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;
-
 
 class AttachmentServiceTest extends TestCase
 {
@@ -39,45 +37,45 @@ class AttachmentServiceTest extends TestCase
 
         $this->uploadDir = sys_get_temp_dir() . '/alleynote_test_' . uniqid();
         mkdir($this->uploadDir);
-        mkdir($this->uploadDir . '/attachments', 0755, true);
+        mkdir($this->uploadDir . '/attachments', 0o755, true);
 
-        $this->attachmentRepo = Mockery::mock(\App\Domains\Attachment\Repositories\AttachmentRepository::class);
-        $this->postRepo = Mockery::mock(\App\Domains\Post\Repositories\PostRepository::class);
-        $this->attachmentCache = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
+        $this->attachmentRepo = Mockery::mock(AttachmentRepository::class);
+        $this->postRepo = Mockery::mock(PostRepository::class);
+        $this->attachmentCache = Mockery::mock(CacheService::class);
         $this->authService = Mockery::mock(AuthorizationService::class);
 
-        $this->service = new \App\Domains\Attachment\Services\AttachmentService(
+        $this->service = new AttachmentService(
             $this->attachmentRepo,
             $this->postRepo,
             $this->attachmentCache,
             $this->authService,
-            $this->uploadDir
+            $this->uploadDir,
         );
 
         // 設置AttachmentRepository mock期望
-        $this->attachmentRepo->shouldReceive("create")
-            ->andReturn(new \App\Domains\Attachment\Models\Attachment([
-                "id" => 1,
-                "uuid" => "test-uuid",
-                "post_id" => 1,
-                "filename" => "test.jpg",
-                "original_name" => "test.jpg",
-                "file_size" => 1024,
-                "mime_type" => "image/jpeg",
-                "storage_path" => "/uploads/test.jpg",
-                "created_at" => date('Y-m-d H:i:s'),
-                "updated_at" => date('Y-m-d H:i:s')
+        $this->attachmentRepo->shouldReceive('create')
+            ->andReturn(new Attachment([
+                'id' => 1,
+                'uuid' => 'test-uuid',
+                'post_id' => 1,
+                'filename' => 'test.jpg',
+                'original_name' => 'test.jpg',
+                'file_size' => 1024,
+                'mime_type' => 'image/jpeg',
+                'storage_path' => '/uploads/test.jpg',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
             ]))
             ->byDefault();
 
-        $this->attachmentRepo->shouldReceive("findById")
+        $this->attachmentRepo->shouldReceive('findById')
             ->andReturn(null)
             ->byDefault();
 
-        $this->attachmentRepo->shouldReceive("delete")
+        $this->attachmentRepo->shouldReceive('delete')
             ->andReturn(true)
             ->byDefault();
-}
+    }
 
     /** @test */
     public function shouldUploadFileSuccessfully(): void
@@ -90,7 +88,7 @@ class AttachmentServiceTest extends TestCase
             'test.jpg',
             'image/jpeg',
             1024,
-            UPLOAD_ERR_OK
+            UPLOAD_ERR_OK,
         );
 
         // 模擬權限檢查 - 非管理員但是文章擁有者
@@ -100,7 +98,7 @@ class AttachmentServiceTest extends TestCase
             ->andReturn(false);
 
         // 模擬文章存在且用戶是文章擁有者
-        $post = Mockery::mock(\App\Domains\Post\Models\Post::class);
+        $post = Mockery::mock(Post::class);
         $post->shouldReceive('getId')->andReturn($postId);
         $post->shouldReceive('getUserId')->andReturn(1); // 文章擁有者是 userId = 1
 
@@ -114,7 +112,7 @@ class AttachmentServiceTest extends TestCase
             ->andReturnUsing(function ($path) {
                 // 實際建立檔案並設定權限
                 file_put_contents($path, 'test content');
-                chmod($path, 0644);
+                chmod($path, 0o644);
 
                 return null;
             });
@@ -148,7 +146,7 @@ class AttachmentServiceTest extends TestCase
             'test.exe',
             'application/x-msdownload',
             1024,
-            UPLOAD_ERR_OK
+            UPLOAD_ERR_OK,
         );
 
         // 模擬權限檢查 - 非管理員但是文章擁有者
@@ -158,7 +156,7 @@ class AttachmentServiceTest extends TestCase
             ->andReturn(false);
 
         // 模擬文章存在且用戶是文章擁有者
-        $post = Mockery::mock(\App\Domains\Post\Models\Post::class);
+        $post = Mockery::mock(Post::class);
         $post->shouldReceive('getId')->andReturn($postId);
         $post->shouldReceive('getUserId')->andReturn(1); // 文章擁有者是 userId = 1
 
@@ -168,7 +166,7 @@ class AttachmentServiceTest extends TestCase
             ->andReturn($post);
 
         // 預期會拋出例外
-        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('不支援的檔案類型');
 
         // 執行測試
@@ -184,7 +182,7 @@ class AttachmentServiceTest extends TestCase
             'test.jpg',
             'image/jpeg',
             11 * 1024 * 1024, // 11MB，超過 10MB 限制
-            UPLOAD_ERR_OK
+            UPLOAD_ERR_OK,
         );
 
         // 模擬權限檢查 - 非管理員但是文章擁有者
@@ -194,7 +192,7 @@ class AttachmentServiceTest extends TestCase
             ->andReturn(false);
 
         // 模擬文章存在且用戶是文章擁有者
-        $post = Mockery::mock(\App\Domains\Post\Models\Post::class);
+        $post = Mockery::mock(Post::class);
         $post->shouldReceive('getId')->andReturn($postId);
         $post->shouldReceive('getUserId')->andReturn(1); // 文章擁有者是 userId = 1
 
@@ -204,7 +202,7 @@ class AttachmentServiceTest extends TestCase
             ->andReturn($post);
 
         // 預期會拋出例外
-        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('檔案大小超過限制（10MB）');
 
         // 執行測試
@@ -220,7 +218,7 @@ class AttachmentServiceTest extends TestCase
             'test.jpg',
             'image/jpeg',
             1024,
-            UPLOAD_ERR_OK
+            UPLOAD_ERR_OK,
         );
 
         // 模擬權限檢查 - 先檢查是否為管理員
@@ -236,7 +234,7 @@ class AttachmentServiceTest extends TestCase
             ->andReturn(null);
 
         // 預期會拋出例外
-        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('無權限上傳附件到此公告');
 
         // 執行測試
@@ -247,7 +245,7 @@ class AttachmentServiceTest extends TestCase
         string $filename,
         string $mimeType,
         int $size,
-        int $error
+        int $error,
     ): UploadedFileInterface {
         $stream = Mockery::mock('Psr\Http\Message\StreamInterface');
         $stream->shouldReceive('getContents')->andReturn('test content');
@@ -268,7 +266,8 @@ class AttachmentServiceTest extends TestCase
                 // 對於其他類型，建立簡單的文字檔案
                 file_put_contents($path, 'test content');
             }
-            chmod($path, 0644);
+            chmod($path, 0o644);
+
             return null;
         });
         $file->shouldReceive('getStream')->andReturn($stream);

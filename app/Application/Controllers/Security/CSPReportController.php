@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Security;
 
 use App\Services\Security\Contracts\LoggingSecurityServiceInterface;
+use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -31,8 +32,8 @@ class CSPReportController
             // 檢查 Content-Type
             $contentType = $request->getHeaderLine('Content-Type');
             if (
-                strpos($contentType, 'application/csp-report') === false &&
-                strpos($contentType, 'application/json') === false
+                strpos($contentType, 'application/csp-report') === false
+                && strpos($contentType, 'application/json') === false
             ) {
                 return $response->withStatus(400);
             }
@@ -54,7 +55,7 @@ class CSPReportController
             $this->logViolation($report, $request);
 
             return $response->withStatus(204);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('CSP Report handling error', [
                 'error_message' => $e->getMessage(),
                 'error_file' => $e->getFile(),
@@ -161,9 +162,9 @@ class CSPReportController
         if (strpos($violatedDirective, 'script-src') !== false) {
             // 外部惡意腳本注入
             if (
-                strpos($blockedUri, 'eval') !== false ||
-                strpos($blockedUri, 'data:') !== false ||
-                preg_match('/[a-z0-9\-]+\.(tk|ml|ga|cf)/', $blockedUri)
+                strpos($blockedUri, 'eval') !== false
+                || strpos($blockedUri, 'data:') !== false
+                || preg_match('/[a-z0-9\-]+\.(tk|ml|ga|cf)/', $blockedUri)
             ) {
                 return 'high';
             }
@@ -171,8 +172,8 @@ class CSPReportController
 
         // 中風險情況
         if (
-            strpos($violatedDirective, 'frame-ancestors') !== false ||
-            strpos($violatedDirective, 'form-action') !== false
+            strpos($violatedDirective, 'frame-ancestors') !== false
+            || strpos($violatedDirective, 'form-action') !== false
         ) {
             return 'medium';
         }
@@ -245,7 +246,7 @@ class CSPReportController
             'CSP Alert: %d violations from IP %s in %s',
             $alertData['count'],
             $alertData['ip'],
-            $alertData['timeframe']
+            $alertData['timeframe'],
         );
 
         error_log('CSP ALERT: ' . json_encode($alertData));

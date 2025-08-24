@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
 
-use App\Shared\DTOs\BaseDTO;
 use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\DTOs\BaseDTO;
 
 /**
  * 使用者註冊的資料傳輸物件.
@@ -48,7 +48,7 @@ class RegisterUserDTO extends BaseDTO
     }
 
     /**
-     * 添加使用者註冊專用驗證規則
+     * 添加使用者註冊專用驗證規則.
      */
     private function addUserValidationRules(): void
     {
@@ -113,7 +113,7 @@ class RegisterUserDTO extends BaseDTO
             // 檢查不能是常見弱密碼
             $weakPasswords = [
                 'password', '12345678', 'qwerty123', 'abc12345',
-                '11111111', 'password123', '123456789', 'qwertyui'
+                '11111111', 'password123', '123456789', 'qwertyui',
             ];
 
             if (in_array(strtolower($password), $weakPasswords, true)) {
@@ -131,6 +131,7 @@ class RegisterUserDTO extends BaseDTO
 
             // 需要與 password 欄位比較
             $password = $allData['password'] ?? null;
+
             return $password === $value;
         });
 
@@ -187,7 +188,7 @@ class RegisterUserDTO extends BaseDTO
             // 檢查是否為常見的一次性郵箱域名
             $disposableEmailDomains = [
                 '10minutemail.com', 'tempmail.org', 'guerrillamail.com',
-                'mailinator.com', 'yopmail.com', 'throwaway.email'
+                'mailinator.com', 'yopmail.com', 'throwaway.email',
             ];
 
             $domain = substr(strrchr($email, '@'), 1);
@@ -207,9 +208,7 @@ class RegisterUserDTO extends BaseDTO
     }
 
     /**
-     * 取得驗證規則
-     *
-     * @return array
+     * 取得驗證規則.
      */
     protected function getValidationRules(): array
     {
@@ -223,7 +222,7 @@ class RegisterUserDTO extends BaseDTO
     }
 
     /**
-     * 覆寫驗證方法以支援跨欄位驗證
+     * 覆寫驗證方法以支援跨欄位驗證.
      *
      * @param array $data 輸入資料
      * @return array 驗證通過的資料
@@ -238,6 +237,7 @@ class RegisterUserDTO extends BaseDTO
             }
 
             $password = $data['password'] ?? null;
+
             return $password === $value;
         });
 
@@ -246,8 +246,6 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Service 使用）.
-     *
-     * @return array
      */
     public function toArray(): array
     {
@@ -261,8 +259,6 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 取得用於密碼雜湊的資料.
-     *
-     * @return array
      */
     public function getPasswordData(): array
     {
@@ -273,7 +269,7 @@ class RegisterUserDTO extends BaseDTO
     }
 
     /**
-     * 檢查密碼強度等級
+     * 檢查密碼強度等級.
      *
      * @return string 密碼強度等級：weak, medium, strong
      */
@@ -283,27 +279,44 @@ class RegisterUserDTO extends BaseDTO
         $score = 0;
 
         // 長度檢查
-        if (strlen($password) >= 8) $score++;
-        if (strlen($password) >= 12) $score++;
+        if (strlen($password) >= 8) {
+            $score++;
+        }
+        if (strlen($password) >= 12) {
+            $score++;
+        }
 
         // 字元類型檢查
-        if (preg_match('/[a-z]/', $password)) $score++;
-        if (preg_match('/[A-Z]/', $password)) $score++;
-        if (preg_match('/[0-9]/', $password)) $score++;
-        if (preg_match('/[^a-zA-Z0-9]/', $password)) $score++;
+        if (preg_match('/[a-z]/', $password)) {
+            $score++;
+        }
+        if (preg_match('/[A-Z]/', $password)) {
+            $score++;
+        }
+        if (preg_match('/[0-9]/', $password)) {
+            $score++;
+        }
+        if (preg_match('/[^a-zA-Z0-9]/', $password)) {
+            $score++;
+        }
 
         // 複雜度檢查
-        if (preg_match('/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/', $password)) $score++;
+        if (preg_match('/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/', $password)) {
+            $score++;
+        }
 
-        if ($score >= 6) return 'strong';
-        if ($score >= 4) return 'medium';
+        if ($score >= 6) {
+            return 'strong';
+        }
+        if ($score >= 4) {
+            return 'medium';
+        }
+
         return 'weak';
     }
 
     /**
-     * 取得清理後的使用者名稱（用於顯示）
-     *
-     * @return string
+     * 取得清理後的使用者名稱（用於顯示）.
      */
     public function getDisplayUsername(): string
     {
@@ -311,9 +324,7 @@ class RegisterUserDTO extends BaseDTO
     }
 
     /**
-     * 取得電子郵件的域名部分
-     *
-     * @return string
+     * 取得電子郵件的域名部分.
      */
     public function getEmailDomain(): string
     {
@@ -321,18 +332,17 @@ class RegisterUserDTO extends BaseDTO
     }
 
     /**
-     * 檢查是否為企業郵箱
-     *
-     * @return bool
+     * 檢查是否為企業郵箱.
      */
     public function isBusinessEmail(): bool
     {
         $businessDomains = [
             'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
-            'qq.com', '163.com', '126.com', 'sina.com'
+            'qq.com', '163.com', '126.com', 'sina.com',
         ];
 
         $domain = $this->getEmailDomain();
+
         return !in_array($domain, $businessDomains, true);
     }
 }

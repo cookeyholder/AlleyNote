@@ -29,7 +29,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/UI/UITestCase.php' => 
     array (
-      0 => '2573d08706569e0d14cdb68d1cf61e6e65839b3e',
+      0 => '4dbd983bf464b60bbb8db282922a3ce4ec5fb150',
       1 => 
       array (
         0 => 'tests\\ui\\uitestcase',
@@ -50,7 +50,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/UI/CrossBrowserTest.php' => 
     array (
-      0 => 'dd5650df293d0ad1b75f89e54ca3a16dcbda4379',
+      0 => '0bd4920423b10b1043f49cea34f1991ef0e9f918',
       1 => 
       array (
         0 => 'tests\\ui\\crossbrowsertest',
@@ -99,7 +99,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Database/DatabaseConnectionTest.php' => 
     array (
-      0 => '936ac7e58e06ad43e2c0f0b5757641b043ffe53c',
+      0 => 'e4b9c399594011e4959747d54bf103212a07fba5',
       1 => 
       array (
         0 => 'tests\\unit\\database\\databaseconnectiontest',
@@ -117,7 +117,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/PostRepositoryPerformanceTest.php' => 
     array (
-      0 => '8fe0d71fe7919705262a755e4f052bb0fc2b504c',
+      0 => '7aa3e4a7458ef45c29f055dc12f54fe913f728c5',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\postrepositoryperformancetest',
@@ -138,7 +138,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/PostRepositoryTest.php' => 
     array (
-      0 => '7340c9e6fb22641f9be458e64732e04f2c31aa3c',
+      0 => '5fa833e1686278a987caad522268c1bc5893d372',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\postrepositorytest',
@@ -165,7 +165,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/UserRepositoryTest.php' => 
     array (
-      0 => '6b9047c7ec8328e3573dfa32cc72b7083076fbc3',
+      0 => '9a583ae431abee438e77269285a0a0d668115332',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\userrepositorytest',
@@ -192,7 +192,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/IpRepositoryTest.php' => 
     array (
-      0 => 'fd3dd236e9e82a53c31b7fa5d87a958b4013bda9',
+      0 => 'fb0d66f89a70cd9e00659e2109a359fcf973e0d8',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\iprepositorytest',
@@ -214,7 +214,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Cache/CacheManagerTest.php' => 
     array (
-      0 => 'dabf36be367cb7238ed9b36cffb76031c93fed77',
+      0 => '6fd964f4a52319e8a836b8ab285e3b42366fa916',
       1 => 
       array (
         0 => 'tests\\unit\\cache\\cachemanagertest',
@@ -247,7 +247,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Cache/CacheKeysTest.php' => 
     array (
-      0 => 'd55788f3fece547132f6ac796f4eb14d64bbde4d',
+      0 => '79d9c96e603d95ff0b1be7971d844bb5951c5004',
       1 => 
       array (
         0 => 'tests\\unit\\cache\\cachekeystest',
@@ -307,7 +307,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repositories/AttachmentRepositoryTest.php' => 
     array (
-      0 => '4e307c5c29772ac2a26021f10eaadfeb439addb8',
+      0 => 'e7dd819c0dc7fc13b1176b022cba16372aa8df8f',
       1 => 
       array (
         0 => 'tests\\unit\\repositories\\attachmentrepositorytest',
@@ -331,7 +331,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Models/PostTest.php' => 
     array (
-      0 => 'de13afbcf0be19af4cf14ca3599f2e4d4f178eed',
+      0 => '99ea4b54f03e99e1d007d800c5183c3c5fa70dcc',
       1 => 
       array (
         0 => 'tests\\unit\\models\\posttest',
@@ -341,7 +341,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         0 => 'tests\\unit\\models\\correctlyinitializeswithvaliddata',
         1 => 'tests\\unit\\models\\handlesnullablefieldscorrectly',
         2 => 'tests\\unit\\models\\setsdefaultvaluescorrectly',
-        3 => 'tests\\unit\\models\\properlyescapeshtmlintitleandcontent',
+        3 => 'tests\\unit\\models\\storesrawhtmlintitleandcontent',
       ),
       3 => 
       array (
@@ -349,7 +349,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Exceptions/PostNotFoundExceptionTest.php' => 
     array (
-      0 => 'dbe5bf4875dcd273f2305c2419f2c52875224583',
+      0 => 'e391d3f06b4208cc29fedf05c603945a49ba0379',
       1 => 
       array (
         0 => 'tests\\unit\\exceptions\\postnotfoundexceptiontest',
@@ -368,18 +368,40 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/DTOs/Post/CreatePostDTOTest.php' => 
     array (
-      0 => 'b99fb8f3447153781cedcde2f3b4cc4328f82cc6',
+      0 => 'f2ba9cc1b146c247d379c2fdaddcefc8e9e5a6e8',
       1 => 
       array (
         0 => 'tests\\unit\\dtos\\post\\createpostdtotest',
       ),
       2 => 
       array (
-        0 => 'tests\\unit\\dtos\\post\\testcancreatedtowithvaliddata',
-        1 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionformissingrequiredfield',
-        2 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforinvalidip',
-        3 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionfortitletoolong',
-        4 => 'tests\\unit\\dtos\\post\\testtoarrayreturnscorrectformat',
+        0 => 'tests\\unit\\dtos\\post\\setup',
+        1 => 'tests\\unit\\dtos\\post\\testcancreatedtowithvaliddata',
+        2 => 'tests\\unit\\dtos\\post\\testcancreatedtowithminimaldata',
+        3 => 'tests\\unit\\dtos\\post\\testcancreatedtowithpublishdate',
+        4 => 'tests\\unit\\dtos\\post\\testcancreatedtowithpinnedpost',
+        5 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionformissingtitle',
+        6 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforemptytitle',
+        7 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionfortitletoolong',
+        8 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionfortitlewithonlywhitespace',
+        9 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionformissingcontent',
+        10 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforemptycontent',
+        11 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforcontentwithonlywhitespace',
+        12 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforinvaliduserid',
+        13 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionformissinguserid',
+        14 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforinvalidip',
+        15 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionformissingip',
+        16 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforinvalidstatus',
+        17 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforinvalidpublishdate',
+        18 => 'tests\\unit\\dtos\\post\\testacceptsvalidipv6address',
+        19 => 'tests\\unit\\dtos\\post\\testacceptsallvalidpoststatuses',
+        20 => 'tests\\unit\\dtos\\post\\testhandlesbooleanvalues',
+        21 => 'tests\\unit\\dtos\\post\\testtoarrayreturnscorrectformat',
+        22 => 'tests\\unit\\dtos\\post\\testjsonserializationworks',
+        23 => 'tests\\unit\\dtos\\post\\testacceptsrfc3339datetimeformats',
+        24 => 'tests\\unit\\dtos\\post\\testtrimstitleandcontent',
+        25 => 'tests\\unit\\dtos\\post\\testhandlesemptypublishdate',
+        26 => 'tests\\unit\\dtos\\post\\testvalidatesunicodecontent',
       ),
       3 => 
       array (
@@ -387,7 +409,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Http/ApiResponseTest.php' => 
     array (
-      0 => '84720ddca590cce10fe1b9b8ed9c9819ce250d70',
+      0 => '934be51b4dcc614bbf594b8625c54f48261c6266',
       1 => 
       array (
         0 => 'tests\\unit\\http\\apiresponsetest',
@@ -407,7 +429,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Controllers/IpControllerTest.php' => 
     array (
-      0 => '98cb658ba06251a25838e8674642b0ac8236171c',
+      0 => '0d93398d9c794f23a4ca0d2cb234f0123af02524',
       1 => 
       array (
         0 => 'tests\\unit\\controllers\\ipcontrollertest',
@@ -445,7 +467,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/XssProtectionServiceTest.php' => 
     array (
-      0 => '9c2fbc437dd89694abe33877261ab2f1ac3546f4',
+      0 => 'f0916640cacf0cee017aa2911fa6f37fe85b045c',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\xssprotectionservicetest',
@@ -464,7 +486,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/SessionSecurityServiceTest.php' => 
     array (
-      0 => 'eea9e5fbbfed803205c5da8e6499ec531085be1f',
+      0 => 'bb6d39fcd4cfc0e85403033fdce873c55bb2c025',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\sessionsecurityservicetest',
@@ -495,7 +517,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/LoggingSecurityServiceTest.php' => 
     array (
-      0 => 'c048082d1e338695157f4c636c743d8ac509e12e',
+      0 => '3872d457bf7a2a91e5a04eb6dda45e443721161b',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\loggingsecurityservicetest',
@@ -523,7 +545,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/PwnedPasswordServiceTest.php' => 
     array (
-      0 => 'b302b9af85b8b13a49505812d4dea806aff65e20',
+      0 => 'fc4d59dbfa61ea6330fdf1bd885ec3a0d9fca2c1',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\pwnedpasswordservicetest',
@@ -545,7 +567,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/CsrfProtectionServiceTest.php' => 
     array (
-      0 => '28035ed4407d303591bebebb880ef8c1334f39cf',
+      0 => 'b54edfdd3c1213c751f79e0f4e97305de2e903e8',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\csrfprotectionservicetest',
@@ -576,7 +598,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/PostServiceTest.php' => 
     array (
-      0 => '2e3b4828f3aca53e806dc3c02e43a15ca7246dc5',
+      0 => '64d058af3930735a0e272314e744221b994e77cb',
       1 => 
       array (
         0 => 'tests\\unit\\services\\postservicetest',
@@ -611,7 +633,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Enums/PostStatusTest.php' => 
     array (
-      0 => '3e5cad6b4803b21bb64ad6f5953b01ce83b22864',
+      0 => 'db1240b19a345ebb2e5a92128f9d1d0a251564eb',
       1 => 
       array (
         0 => 'tests\\unit\\services\\enums\\poststatustest',
@@ -627,7 +649,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/CacheServiceTest.php' => 
     array (
-      0 => '078a0e9c58a89137d45c690d3448e72e9eccc116',
+      0 => 'f8544f77cb87d0645cd35026ff9eb18e8c18263b',
       1 => 
       array (
         0 => 'tests\\unit\\services\\cacheservicetest',
@@ -647,7 +669,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/AuthServiceTest.php' => 
     array (
-      0 => '328ccbb4f493073d3f4ed0da129ab3be3ffc6917',
+      0 => '26572e04437f21985157e84de8ad57ba8f6ddb21',
       1 => 
       array (
         0 => 'tests\\unit\\services\\authservicetest',
@@ -668,7 +690,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/AttachmentServiceTest.php' => 
     array (
-      0 => 'e9e8ec1fce544331b6e703d2c485b0b827332b0b',
+      0 => 'fb5e60465fa26324a773e24430102b4f44feb76d',
       1 => 
       array (
         0 => 'tests\\unit\\services\\attachmentservicetest',
@@ -689,7 +711,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/IpServiceTest.php' => 
     array (
-      0 => '676ff4e7a01b8a19a4318dba4ba4e3ac4cfbc737',
+      0 => '6b9c1119410f076276d8d6a9b8a7c5bb00bd021f',
       1 => 
       array (
         0 => 'tests\\unit\\services\\ipservicetest',
@@ -711,7 +733,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/RateLimitServiceTest.php' => 
     array (
-      0 => '3eede69db6bf387cdeb332f953dd5869bb137fbc',
+      0 => 'c3c1820cf82ed45b0f83ce5f8b38d5b05852f436',
       1 => 
       array (
         0 => 'tests\\unit\\services\\ratelimitservicetest',
@@ -732,7 +754,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/CsrfProtectionTest.php' => 
     array (
-      0 => '192f419c050532078889c83e838ab91cec58750d',
+      0 => 'd0c5dc177aef4aeb548a4c973fe3d2a970f4c538',
       1 => 
       array (
         0 => 'tests\\security\\csrfprotectiontest',
@@ -751,7 +773,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/SqlInjectionTest.php' => 
     array (
-      0 => 'e5bf03931b5e358a034cd8d2d1450ec7dbea8757',
+      0 => '9403d18423246f4411926674c033519c8e5c894e',
       1 => 
       array (
         0 => 'tests\\security\\sqlinjectiontest',
@@ -771,7 +793,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/XssPreventionTest.php' => 
     array (
-      0 => '7016e7a6e12c5f598527dc97ad83313898930147',
+      0 => '91d4a8551595e9a0b5effe2b693a123916526510',
       1 => 
       array (
         0 => 'tests\\security\\xsspreventiontest',
@@ -790,7 +812,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/FileUploadSecurityTest.php' => 
     array (
-      0 => '8492c36d1204b2c852b1f6016345d084b1807c13',
+      0 => 'bcc89d40e5facfb83879dcb8433736f59b96fae0',
       1 => 
       array (
         0 => 'tests\\security\\fileuploadsecuritytest',
@@ -812,7 +834,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/PasswordHashingTest.php' => 
     array (
-      0 => '6481beb847957b668d5392858ce6bff9e9441b8e',
+      0 => 'b88ce839fa47be105a6f0cdb491f0c20368079ae',
       1 => 
       array (
         0 => 'tests\\security\\passwordhashingtest',
@@ -831,28 +853,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
       ),
     ),
-    '/var/www/html/tests/security_test_runner.php' => 
-    array (
-      0 => '0b4e5b375d3b87f5396cca84eb6cecc0986f1a6f',
-      1 => 
-      array (
-      ),
-      2 => 
-      array (
-        0 => 'showhelp',
-        1 => 'runcategorytest',
-        2 => 'outputtext',
-        3 => 'outputjson',
-        4 => 'outputxml',
-        5 => 'arraytoxml',
-      ),
-      3 => 
-      array (
-      ),
-    ),
     '/var/www/html/tests/Integration/RateLimitTest.php' => 
     array (
-      0 => 'd6be4f9822ca03c4e550a057b1eb3ceea97bc5dc',
+      0 => '57a333f57820b9bcf82d2452a7bcf323a862d2be',
       1 => 
       array (
         0 => 'tests\\integration\\ratelimittest',
@@ -864,6 +867,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         2 => 'tests\\integration\\shouldresetlimitaftertimewindow',
         3 => 'tests\\integration\\shouldhandledifferentipsindependently',
         4 => 'tests\\integration\\shouldhandleserviceunavailability',
+        5 => 'tests\\integration\\shouldincrementcountercorrectly',
+        6 => 'tests\\integration\\shouldhandlemaxattemptsreached',
+        7 => 'tests\\integration\\teardown',
       ),
       3 => 
       array (
@@ -871,7 +877,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AuthControllerTest.php' => 
     array (
-      0 => '005a86b4689965ec2b647a86d0be32b1352a9bed',
+      0 => '65b88b7285ecc4eda9bcf04a2cf1985389a130b2',
       1 => 
       array (
         0 => 'tests\\integration\\authcontrollertest',
@@ -879,20 +885,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\integration\\setup',
-        1 => 'tests\\integration\\getparsedbody',
-        2 => 'tests\\integration\\withparsedbody',
-        3 => 'tests\\integration\\getheader',
-        4 => 'tests\\integration\\withheader',
-        5 => 'tests\\integration\\withstatus',
-        6 => 'tests\\integration\\getstatuscode',
-        7 => 'tests\\integration\\withjson',
-        8 => 'tests\\integration\\getbody',
-        9 => 'tests\\integration\\teardown',
-        10 => 'tests\\integration\\registerusersuccessfully',
-        11 => 'tests\\integration\\returnvalidationerrorsforinvalidregistrationdata',
-        12 => 'tests\\integration\\loginusersuccessfully',
-        13 => 'tests\\integration\\returnerrorforinvalidlogin',
-        14 => 'tests\\integration\\logoutusersuccessfully',
+        1 => 'tests\\integration\\teardown',
+        2 => 'tests\\integration\\registerusersuccessfully',
+        3 => 'tests\\integration\\returnvalidationerrorsforinvalidregistrationdata',
+        4 => 'tests\\integration\\loginusersuccessfully',
+        5 => 'tests\\integration\\returnerrorforinvalidlogin',
+        6 => 'tests\\integration\\logoutusersuccessfully',
       ),
       3 => 
       array (
@@ -900,7 +898,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/Repositories/PostRepositoryTest.php' => 
     array (
-      0 => '5064adbdc8c24afa01b8bfa8e32babba5350ff12',
+      0 => 'e0e2ace5a8c4aeb8da68f26ee0ea455aeb6c73d6',
       1 => 
       array (
         0 => 'tests\\integration\\repositories\\postrepositorytest',
@@ -935,7 +933,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AttachmentControllerTest.php' => 
     array (
-      0 => '13f63b8f6a0e24826a367007411abf9176f7bf37',
+      0 => '75f4dab6fc8e34c1389e5bbb3146347e3c883ded',
       1 => 
       array (
         0 => 'tests\\integration\\attachmentcontrollertest',
@@ -957,7 +955,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/PostControllerTest.php' => 
     array (
-      0 => '7562aecefffc2714c3d04e6ddb9df7b0bd943f14',
+      0 => '167cbee941d723d07f54587af20b08c2e794cf6e',
       1 => 
       array (
         0 => 'tests\\integration\\postcontrollertest',
@@ -985,7 +983,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/Http/PostControllerTest.php' => 
     array (
-      0 => '4c40b89c0ae58f2d6fb1c80a8a5973728e2de842',
+      0 => 'b7bcb346abfe7b2583703233e079ef9842379bf2',
       1 => 
       array (
         0 => 'tests\\integration\\http\\postcontrollertest',
@@ -993,48 +991,27 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\integration\\http\\setup',
-        1 => 'tests\\integration\\http\\testgetpostsreturnssuccessresponse',
-        2 => 'tests\\integration\\http\\testgetpostswithpaginationparameters',
-        3 => 'tests\\integration\\http\\testgetpostswithsearchfilter',
-        4 => 'tests\\integration\\http\\testgetpostswithstatusfilter',
-        5 => 'tests\\integration\\http\\testgetpostswithinvalidlimitreturnsvalidationerror',
-        6 => 'tests\\integration\\http\\testcreatepostwithvaliddata',
-        7 => 'tests\\integration\\http\\testcreatepostwithinvalidjsonreturnserror',
-        8 => 'tests\\integration\\http\\testcreatepostwithmissingrequiredfields',
-        9 => 'tests\\integration\\http\\testgetpostbyidreturnssuccess',
-        10 => 'tests\\integration\\http\\testgetnonexistentpostreturnsnotfound',
-        11 => 'tests\\integration\\http\\testgetpostwithinvalididreturnserror',
-        12 => 'tests\\integration\\http\\testupdatepostwithvaliddata',
-        13 => 'tests\\integration\\http\\testupdatenonexistentpostreturnsnotfound',
-        14 => 'tests\\integration\\http\\testdeletepost',
-        15 => 'tests\\integration\\http\\testdeletenonexistentpostreturnsnotfound',
-        16 => 'tests\\integration\\http\\testtogglepostpin',
-        17 => 'tests\\integration\\http\\testtogglepostpinwithinvaliddata',
-        18 => 'tests\\integration\\http\\testapiresponsestructureconsistency',
-        19 => 'tests\\integration\\http\\testhealthendpoint',
-        20 => 'tests\\integration\\http\\teardown',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/Integration/IpManagementTest.php' => 
-    array (
-      0 => '6036ce9cebe98ed4743f3b60ffb641beb13e5ce5',
-      1 => 
-      array (
-        0 => 'tests\\integration\\ipmanagementtest',
-      ),
-      2 => 
-      array (
-        0 => 'tests\\integration\\setup',
-        1 => 'tests\\integration\\seedtestdata',
-        2 => 'tests\\integration\\createtesttables',
-        3 => 'tests\\integration\\testcompleteipmanagementflow',
-        4 => 'tests\\integration\\testerrorhandling',
-        5 => 'tests\\integration\\testcacheintegration',
-        6 => 'tests\\integration\\testconcurrentoperations',
-        7 => 'tests\\integration\\teardown',
+        1 => 'tests\\integration\\http\\setupresponsemocks',
+        2 => 'tests\\integration\\http\\testgetpostsreturnssuccessresponse',
+        3 => 'tests\\integration\\http\\testgetpostswithpaginationparameters',
+        4 => 'tests\\integration\\http\\testgetpostswithsearchfilter',
+        5 => 'tests\\integration\\http\\testgetpostswithstatusfilter',
+        6 => 'tests\\integration\\http\\testgetpostswithinvalidlimitreturnsvalidationerror',
+        7 => 'tests\\integration\\http\\testcreatepostwithvaliddata',
+        8 => 'tests\\integration\\http\\testcreatepostwithinvalidjsonreturnserror',
+        9 => 'tests\\integration\\http\\testcreatepostwithmissingrequiredfields',
+        10 => 'tests\\integration\\http\\testgetpostbyidreturnssuccess',
+        11 => 'tests\\integration\\http\\testgetnonexistentpostreturnsnotfound',
+        12 => 'tests\\integration\\http\\testgetpostwithinvalididreturnserror',
+        13 => 'tests\\integration\\http\\testupdatepostwithvaliddata',
+        14 => 'tests\\integration\\http\\testupdatenonexistentpostreturnsnotfound',
+        15 => 'tests\\integration\\http\\testdeletepost',
+        16 => 'tests\\integration\\http\\testdeletenonexistentpostreturnsnotfound',
+        17 => 'tests\\integration\\http\\testtogglepostpin',
+        18 => 'tests\\integration\\http\\testtogglepostpinwithinvaliddata',
+        19 => 'tests\\integration\\http\\testapiresponsestructureconsistency',
+        20 => 'tests\\integration\\http\\testhealthendpoint',
+        21 => 'tests\\integration\\http\\teardown',
       ),
       3 => 
       array (
@@ -1042,7 +1019,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/FileSystemBackupTest.php' => 
     array (
-      0 => '68c52d5e77e6fb17df69ec6e5d7951c9b95c0ba9',
+      0 => '5c0a65a8bace54c1f80403eabf1bef96cae89b85',
       1 => 
       array (
         0 => 'tests\\integration\\filesystembackuptest',
@@ -1065,7 +1042,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/DatabaseBackupTest.php' => 
     array (
-      0 => 'bbd96b89e6c0df5ddb08369ea2dfe9c3b593b606',
+      0 => 'f6f7684823a6ed3c654a3f2da9eb934170389305',
       1 => 
       array (
         0 => 'tests\\integration\\databasebackuptest',
@@ -1088,7 +1065,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AttachmentUploadTest.php' => 
     array (
-      0 => '29fac80e3ed438db41fb53a0a91062204f9dea20',
+      0 => '2c8cd306d5641a8691184fd69209c83d474d06c3',
       1 => 
       array (
         0 => 'tests\\integration\\attachmentuploadtest',
@@ -1111,7 +1088,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/TestCase.php' => 
     array (
-      0 => '46b32cb453138ca5175f2d8983f37ceac575e1d7',
+      0 => '9f64e6176eaa977a5c9ee64042f31f0209fbd5ed',
       1 => 
       array (
         0 => 'tests\\testcase',
@@ -1123,6 +1100,334 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         2 => 'tests\\createindices',
         3 => 'tests\\createresponsemock',
         4 => 'tests\\teardown',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/DTOs/Post/UpdatePostDTOTest.php' => 
+    array (
+      0 => 'bdf3b8da4d0c3a045870b476fe9936e790177b28',
+      1 => 
+      array (
+        0 => 'tests\\unit\\dtos\\post\\updatepostdtotest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\dtos\\post\\setup',
+        1 => 'tests\\unit\\dtos\\post\\testcancreatedtowithfullupdate',
+        2 => 'tests\\unit\\dtos\\post\\testcancreatedtowithpartialupdate',
+        3 => 'tests\\unit\\dtos\\post\\testcancreatedtowithcontentonlyupdate',
+        4 => 'tests\\unit\\dtos\\post\\testcancreatedtowithstatusonlyupdate',
+        5 => 'tests\\unit\\dtos\\post\\testcancreatedtowithpinnedonlyupdate',
+        6 => 'tests\\unit\\dtos\\post\\testcancreatedtowithpublishdateonlyupdate',
+        7 => 'tests\\unit\\dtos\\post\\testcancreateemptydtowithnodata',
+        8 => 'tests\\unit\\dtos\\post\\testcancreateemptydtowithonlynullvalues',
+        9 => 'tests\\unit\\dtos\\post\\testcancreateemptydtowithonlyemptystrings',
+        10 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforinvalidtitle',
+        11 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforemptytitlecontent',
+        12 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforemptycontentcontent',
+        13 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforinvalidstatus',
+        14 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforinvalidpublishdate',
+        15 => 'tests\\unit\\dtos\\post\\testshouldthrowexceptionforinvalidbooleanvalue',
+        16 => 'tests\\unit\\dtos\\post\\testacceptsallvalidpoststatuses',
+        17 => 'tests\\unit\\dtos\\post\\testhandlesbooleanvalues',
+        18 => 'tests\\unit\\dtos\\post\\testtoarrayreturnsonlychangedfields',
+        19 => 'tests\\unit\\dtos\\post\\testtoarrayreturnsemptyarraywhennochanges',
+        20 => 'tests\\unit\\dtos\\post\\testtoarraywithallfields',
+        21 => 'tests\\unit\\dtos\\post\\testhaschangesreturnstruewhendataexists',
+        22 => 'tests\\unit\\dtos\\post\\testhaschangesreturnsfalsewhennodata',
+        23 => 'tests\\unit\\dtos\\post\\testjsonserializationworks',
+        24 => 'tests\\unit\\dtos\\post\\testjsonserializationwithemptydto',
+        25 => 'tests\\unit\\dtos\\post\\testacceptsvalidrfc3339dateformats',
+        26 => 'tests\\unit\\dtos\\post\\testhandleswhitespaceinstringfields',
+        27 => 'tests\\unit\\dtos\\post\\testgetupdatedfields',
+        28 => 'tests\\unit\\dtos\\post\\testhasupdatedfield',
+        29 => 'tests\\unit\\dtos\\post\\testhandlesemptypublishdate',
+        30 => 'tests\\unit\\dtos\\post\\testvalidatesunicodecontent',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/DTOs/BaseDTOTest.php' => 
+    array (
+      0 => '27423beb10b61f05141bd43b9b2b0f6f12f44e59',
+      1 => 
+      array (
+        0 => 'tests\\unit\\dtos\\basedtotest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\dtos\\setup',
+        1 => 'tests\\unit\\dtos\\teardown',
+        2 => 'tests\\unit\\dtos\\createtestdto',
+        3 => 'tests\\unit\\dtos\\getvalidationrules',
+        4 => 'tests\\unit\\dtos\\toarray',
+        5 => 'tests\\unit\\dtos\\testvalidate',
+        6 => 'tests\\unit\\dtos\\testgetstring',
+        7 => 'tests\\unit\\dtos\\testgetint',
+        8 => 'tests\\unit\\dtos\\testgetbool',
+        9 => 'tests\\unit\\dtos\\testgetvalue',
+        10 => 'tests\\unit\\dtos\\testgetvalidationrules',
+        11 => 'tests\\unit\\dtos\\testconstructoracceptsvalidator',
+        12 => 'tests\\unit\\dtos\\testtoarrayisimplemented',
+        13 => 'tests\\unit\\dtos\\testjsonserializeusestoarray',
+        14 => 'tests\\unit\\dtos\\testvalidatecallsvalidatorwithcorrectdata',
+        15 => 'tests\\unit\\dtos\\testvalidatethrowsexceptiononvalidationfailure',
+        16 => 'tests\\unit\\dtos\\testgetstringreturnscorrectvalue',
+        17 => 'tests\\unit\\dtos\\testgetintreturnscorrectvalue',
+        18 => 'tests\\unit\\dtos\\testgetboolreturnscorrectvalue',
+        19 => 'tests\\unit\\dtos\\testgetvaluereturnscorrectvalue',
+        20 => 'tests\\unit\\dtos\\testvalidationrulesareabstract',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/DTOs/DTOValidationTest.php' => 
+    array (
+      0 => '3998b6a2504b71e75fec44acc1297f978dbec40c',
+      1 => 
+      array (
+        0 => 'tests\\unit\\dtos\\dtovalidationtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\dtos\\setup',
+        1 => 'tests\\unit\\dtos\\test_create_post_dto_validation_scenarios',
+        2 => 'tests\\unit\\dtos\\test_create_post_dto_title_validation',
+        3 => 'tests\\unit\\dtos\\test_create_post_dto_title_length_limits',
+        4 => 'tests\\unit\\dtos\\test_create_post_dto_content_validation',
+        5 => 'tests\\unit\\dtos\\test_create_post_dto_user_validation',
+        6 => 'tests\\unit\\dtos\\test_create_post_dto_ip_validation',
+        7 => 'tests\\unit\\dtos\\test_update_post_dto_partial_validation',
+        8 => 'tests\\unit\\dtos\\test_update_post_dto_field_validation',
+        9 => 'tests\\unit\\dtos\\test_create_attachment_dto_validation',
+        10 => 'tests\\unit\\dtos\\test_create_attachment_dto_file_validation',
+        11 => 'tests\\unit\\dtos\\test_register_user_dto_validation',
+        12 => 'tests\\unit\\dtos\\test_register_user_dto_username_validation',
+        13 => 'tests\\unit\\dtos\\test_register_user_dto_email_validation',
+        14 => 'tests\\unit\\dtos\\test_register_user_dto_password_validation',
+        15 => 'tests\\unit\\dtos\\test_create_ip_rule_dto_validation',
+        16 => 'tests\\unit\\dtos\\test_create_ip_rule_dto_ip_validation',
+        17 => 'tests\\unit\\dtos\\test_create_ip_rule_dto_rule_type_validation',
+        18 => 'tests\\unit\\dtos\\test_dto_data_sanitization',
+        19 => 'tests\\unit\\dtos\\test_dto_validation_performance',
+        20 => 'tests\\unit\\dtos\\test_dto_serialization',
+        21 => 'tests\\unit\\dtos\\test_dto_edge_cases',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Validation/ValidationExceptionTest.php' => 
+    array (
+      0 => '5ecbf31060b9e7fd2c2c0b465a00f66e0e94bf0f',
+      1 => 
+      array (
+        0 => 'tests\\unit\\validation\\validationexceptiontest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\validation\\test_create_from_validation_result',
+        1 => 'tests\\unit\\validation\\test_create_with_custom_message',
+        2 => 'tests\\unit\\validation\\test_empty_validation_result_default_message',
+        3 => 'tests\\unit\\validation\\test_create_from_errors',
+        4 => 'tests\\unit\\validation\\test_create_from_errors_with_custom_message',
+        5 => 'tests\\unit\\validation\\test_create_from_single_error',
+        6 => 'tests\\unit\\validation\\test_create_from_single_error_without_rule',
+        7 => 'tests\\unit\\validation\\test_get_field_errors',
+        8 => 'tests\\unit\\validation\\test_has_field_errors',
+        9 => 'tests\\unit\\validation\\test_get_first_error',
+        10 => 'tests\\unit\\validation\\test_get_first_field_error',
+        11 => 'tests\\unit\\validation\\test_get_all_errors',
+        12 => 'tests\\unit\\validation\\test_get_failed_rules',
+        13 => 'tests\\unit\\validation\\test_to_api_response',
+        14 => 'tests\\unit\\validation\\test_to_debug_array',
+        15 => 'tests\\unit\\validation\\test_error_statistics',
+        16 => 'tests\\unit\\validation\\test_has_failed_rule',
+        17 => 'tests\\unit\\validation\\test_has_field_failed_rule',
+        18 => 'tests\\unit\\validation\\test_exception_chaining',
+        19 => 'tests\\unit\\validation\\test_json_serialization',
+        20 => 'tests\\unit\\validation\\test_performance_with_many_errors',
+        21 => 'tests\\unit\\validation\\test_internationalization_support',
+        22 => 'tests\\unit\\validation\\test_edge_cases_with_empty_errors',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Validation/ValidatorTest.php' => 
+    array (
+      0 => '027fcb3854883a7a072bcbf19281155268e6d73c',
+      1 => 
+      array (
+        0 => 'tests\\unit\\validation\\validatortest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\validation\\setup',
+        1 => 'tests\\unit\\validation\\test_required_rule',
+        2 => 'tests\\unit\\validation\\test_string_rule',
+        3 => 'tests\\unit\\validation\\test_integer_rule',
+        4 => 'tests\\unit\\validation\\test_numeric_rule',
+        5 => 'tests\\unit\\validation\\test_boolean_rule',
+        6 => 'tests\\unit\\validation\\test_email_rule',
+        7 => 'tests\\unit\\validation\\test_url_rule',
+        8 => 'tests\\unit\\validation\\test_ip_rule',
+        9 => 'tests\\unit\\validation\\test_min_rule',
+        10 => 'tests\\unit\\validation\\test_max_rule',
+        11 => 'tests\\unit\\validation\\test_between_rule',
+        12 => 'tests\\unit\\validation\\test_in_rule',
+        13 => 'tests\\unit\\validation\\test_not_in_rule',
+        14 => 'tests\\unit\\validation\\test_min_length_rule',
+        15 => 'tests\\unit\\validation\\test_max_length_rule',
+        16 => 'tests\\unit\\validation\\test_length_rule',
+        17 => 'tests\\unit\\validation\\test_regex_rule',
+        18 => 'tests\\unit\\validation\\test_alpha_rule',
+        19 => 'tests\\unit\\validation\\test_alpha_num_rule',
+        20 => 'tests\\unit\\validation\\test_alpha_dash_rule',
+        21 => 'tests\\unit\\validation\\test_multiple_rules',
+        22 => 'tests\\unit\\validation\\test_add_custom_rule',
+        23 => 'tests\\unit\\validation\\test_custom_rule_with_parameters',
+        24 => 'tests\\unit\\validation\\test_custom_error_messages',
+        25 => 'tests\\unit\\validation\\test_validate_or_fail',
+        26 => 'tests\\unit\\validation\\test_check_rule_method',
+        27 => 'tests\\unit\\validation\\test_stop_on_first_failure',
+        28 => 'tests\\unit\\validation\\test_validator_performance',
+        29 => 'tests\\unit\\validation\\test_memory_leak',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Validation/ValidationResultTest.php' => 
+    array (
+      0 => '3d74aa59e5aabd8b7ea18f30fcb29347b67b0530',
+      1 => 
+      array (
+        0 => 'tests\\unit\\validation\\validationresulttest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\validation\\test_create_success_result',
+        1 => 'tests\\unit\\validation\\test_create_failure_result',
+        2 => 'tests\\unit\\validation\\test_constructor',
+        3 => 'tests\\unit\\validation\\test_get_field_errors',
+        4 => 'tests\\unit\\validation\\test_has_field_errors',
+        5 => 'tests\\unit\\validation\\test_get_first_error',
+        6 => 'tests\\unit\\validation\\test_get_first_field_error',
+        7 => 'tests\\unit\\validation\\test_get_all_errors',
+        8 => 'tests\\unit\\validation\\test_error_count',
+        9 => 'tests\\unit\\validation\\test_get_failed_rules',
+        10 => 'tests\\unit\\validation\\test_add_error',
+        11 => 'tests\\unit\\validation\\test_add_failed_rule',
+        12 => 'tests\\unit\\validation\\test_validated_data_access',
+        13 => 'tests\\unit\\validation\\test_merge_results',
+        14 => 'tests\\unit\\validation\\test_to_array',
+        15 => 'tests\\unit\\validation\\test_json_serialization',
+        16 => 'tests\\unit\\validation\\test_to_string',
+        17 => 'tests\\unit\\validation\\test_empty_results',
+        18 => 'tests\\unit\\validation\\test_performance_with_large_data',
+        19 => 'tests\\unit\\validation\\test_object_independence',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Integration/PostControllerTest_new.php' => 
+    array (
+      0 => '0479b4156139402066695c883f2c0f5be601d86a',
+      1 => 
+      array (
+        0 => 'tests\\integration\\postcontrollertest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\integration\\setup',
+        1 => 'tests\\integration\\teardown',
+        2 => 'tests\\integration\\indexshouldreturnpaginatedposts',
+        3 => 'tests\\integration\\showshouldreturnpostdetails',
+        4 => 'tests\\integration\\storeshouldcreatenewpost',
+        5 => 'tests\\integration\\storeshouldreturn400whenvalidationfails',
+        6 => 'tests\\integration\\updateshouldmodifyexistingpost',
+        7 => 'tests\\integration\\updateshouldreturn404whenpostnotfound',
+        8 => 'tests\\integration\\destroyshoulddeletepost',
+        9 => 'tests\\integration\\destroyshouldreturn404whenpostnotfound',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Integration/DTOs/DTOControllerIntegrationTest.php' => 
+    array (
+      0 => '734d6ede025c366bcfb7c5c7c3be59802795b687',
+      1 => 
+      array (
+        0 => 'tests\\integration\\dtos\\dtocontrollerintegrationtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\integration\\dtos\\setup',
+        1 => 'tests\\integration\\dtos\\testpostcontrollercreatewithvaliddto',
+        2 => 'tests\\integration\\dtos\\testpostcontrollerupdatewithvaliddto',
+        3 => 'tests\\integration\\dtos\\testcontrollerhandlesvalidationerrors',
+        4 => 'tests\\integration\\dtos\\testdtodatasanitization',
+        5 => 'tests\\integration\\dtos\\testdtotypeconversion',
+        6 => 'tests\\integration\\dtos\\testdtoinbatchoperations',
+        7 => 'tests\\integration\\dtos\\testdtomemoryefficiency',
+        8 => 'tests\\integration\\dtos\\testdtoserialization',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Integration/DTOs/DTOValidationIntegrationTest.php' => 
+    array (
+      0 => '12eeaaddff5cfda964591f3f346b65fe021d83a2',
+      1 => 
+      array (
+        0 => 'tests\\integration\\dtos\\dtovalidationintegrationtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\integration\\dtos\\setup',
+        1 => 'tests\\integration\\dtos\\testcreatepostdtovalidationintegration',
+        2 => 'tests\\integration\\dtos\\testcreatepostdtotitletooshort',
+        3 => 'tests\\integration\\dtos\\testcreatepostdtocontenttooshort',
+        4 => 'tests\\integration\\dtos\\testupdatepostdtovalidationintegration',
+        5 => 'tests\\integration\\dtos\\testcreateattachmentdtovalidationintegration',
+        6 => 'tests\\integration\\dtos\\testregisteruserdtovalidationintegration',
+        7 => 'tests\\integration\\dtos\\testcreateipruledtovalidationintegration',
+        8 => 'tests\\integration\\dtos\\testvalidationerrormessagesinchinese',
+        9 => 'tests\\integration\\dtos\\testmultiplefieldvalidationerrors',
+        10 => 'tests\\integration\\dtos\\testdtojsonserialization',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Integration/DIValidationIntegrationTest.php' => 
+    array (
+      0 => '5187a12913a7ee7b96abf9e64d12bc6ed5345ffb',
+      1 => 
+      array (
+        0 => 'tests\\integration\\divalidationintegrationtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\integration\\setup',
+        1 => 'tests\\integration\\test_can_resolve_validator_interface_from_container',
+        2 => 'tests\\integration\\test_can_resolve_validator_factory_from_container',
+        3 => 'tests\\integration\\test_validator_from_factory_has_chinese_messages',
+        4 => 'tests\\integration\\test_container_validator_has_custom_rules',
+        5 => 'tests\\integration\\test_validator_factory_create_methods',
+        6 => 'tests\\integration\\test_dto_validator_has_password_confirmation_rule',
+        7 => 'tests\\integration\\test_container_validator_consistency',
+        8 => 'tests\\integration\\test_validator_error_message_localization',
+        9 => 'tests\\integration\\test_validator_performance_and_memory',
+        10 => 'tests\\integration\\test_simplified_validation_scenarios',
       ),
       3 => 
       array (

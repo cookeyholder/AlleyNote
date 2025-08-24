@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Services;
 
+use App\Domains\Security\Contracts\IpRepositoryInterface;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Domains\Security\Models\IpList;
-use App\Domains\Security\Contracts\IpRepositoryInterface;
+use InvalidArgumentException;
+use RuntimeException;
 
 class IpService
 {
     public function __construct(
-        private IpRepositoryInterface $repository
-    ) {
-    }
+        private IpRepositoryInterface $repository,
+    ) {}
 
     public function createIpRule(CreateIpRuleDTO $dto): IpList
     {
@@ -26,7 +27,7 @@ class IpService
 
         $result = $this->repository->create($data);
         if (!$result instanceof IpList) {
-            throw new \RuntimeException('建立 IP 規則失敗');
+            throw new RuntimeException('建立 IP 規則失敗');
         }
 
         return $result;
@@ -35,7 +36,7 @@ class IpService
     public function isIpAllowed(string $ip): bool
     {
         if (!filter_var($ip, FILTER_VALIDATE_IP)) {
-            throw new \InvalidArgumentException('無效的 IP 位址格式');
+            throw new InvalidArgumentException('無效的 IP 位址格式');
         }
 
         // 檢查是否在白名單中
@@ -55,7 +56,7 @@ class IpService
     public function getRulesByType(int $type): array
     {
         if (!in_array($type, [0, 1], true)) {
-            throw new \InvalidArgumentException('無效的名單類型，必須是 0（黑名單）或 1（白名單）');
+            throw new InvalidArgumentException('無效的名單類型，必須是 0（黑名單）或 1（白名單）');
         }
 
         return $this->repository->getByType($type);

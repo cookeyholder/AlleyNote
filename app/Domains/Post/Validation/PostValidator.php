@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Domains\Post\Validation;
 
 use App\Services\Enums\PostStatus;
-use App\Shared\Contracts\ValidatorInterface;
+use DateTime;
 
 /**
- * Post 專用驗證器
+ * Post 專用驗證器.
  *
  * 擴展基本驗證器，添加 Post 相關的自訂驗證規則
  */
@@ -21,7 +21,7 @@ class PostValidator extends Validator
     }
 
     /**
-     * 添加 Post 相關的自訂驗證規則
+     * 添加 Post 相關的自訂驗證規則.
      */
     private function addPostSpecificRules(): void
     {
@@ -50,8 +50,8 @@ class PostValidator extends Validator
 
             // 支援多種 RFC3339 格式
             $formats = [
-                \DateTime::RFC3339,
-                \DateTime::RFC3339_EXTENDED,
+                DateTime::RFC3339,
+                DateTime::RFC3339_EXTENDED,
                 'Y-m-d\TH:i:s\Z',
                 'Y-m-d\TH:i:s.u\Z',
                 'Y-m-d\TH:i:sP',
@@ -59,7 +59,7 @@ class PostValidator extends Validator
             ];
 
             foreach ($formats as $format) {
-                $date = \DateTime::createFromFormat($format, $value);
+                $date = DateTime::createFromFormat($format, $value);
                 if ($date && $date->format($format) === $value) {
                     return true;
                 }
@@ -85,6 +85,7 @@ class PostValidator extends Validator
             $maxLength = isset($parameters[1]) ? (int) $parameters[1] : 255;
 
             $length = mb_strlen($cleanTitle);
+
             return $length >= $minLength && $length <= $maxLength;
         });
 
@@ -128,6 +129,7 @@ class PostValidator extends Validator
             }
 
             $userId = (int) $value;
+
             return $userId > 0;
         });
 
@@ -166,7 +168,7 @@ class PostValidator extends Validator
             }
 
             // 首先檢查是否為有效的日期格式
-            $date = \DateTime::createFromFormat(\DateTime::RFC3339, $value);
+            $date = DateTime::createFromFormat(DateTime::RFC3339, $value);
             if (!$date) {
                 return false;
             }
@@ -178,13 +180,14 @@ class PostValidator extends Validator
             }
 
             // 對於非草稿狀態，發布日期不能早於當前時間
-            $now = new \DateTime();
+            $now = new DateTime();
+
             return $date >= $now;
         });
     }
 
     /**
-     * 添加 Post 相關的自訂錯誤訊息
+     * 添加 Post 相關的自訂錯誤訊息.
      */
     private function addPostSpecificMessages(): void
     {
@@ -198,9 +201,7 @@ class PostValidator extends Validator
     }
 
     /**
-     * 建立 Post 建立時的驗證規則
-     *
-     * @return array
+     * 建立 Post 建立時的驗證規則.
      */
     public static function getCreatePostRules(): array
     {
@@ -216,9 +217,7 @@ class PostValidator extends Validator
     }
 
     /**
-     * 建立 Post 更新時的驗證規則
-     *
-     * @return array
+     * 建立 Post 更新時的驗證規則.
      */
     public static function getUpdatePostRules(): array
     {
@@ -232,10 +231,9 @@ class PostValidator extends Validator
     }
 
     /**
-     * 建立動態的更新驗證規則（只驗證提供的欄位）
+     * 建立動態的更新驗證規則（只驗證提供的欄位）.
      *
      * @param array $data 要驗證的資料
-     * @return array
      */
     public static function getDynamicUpdateRules(array $data): array
     {
@@ -252,11 +250,10 @@ class PostValidator extends Validator
     }
 
     /**
-     * 驗證 Post 資料的特殊邏輯
+     * 驗證 Post 資料的特殊邏輯.
      *
      * @param array $data 要驗證的資料
      * @param bool $isUpdate 是否為更新操作
-     * @return ValidationResult
      */
     public function validatePostData(array $data, bool $isUpdate = false): ValidationResult
     {

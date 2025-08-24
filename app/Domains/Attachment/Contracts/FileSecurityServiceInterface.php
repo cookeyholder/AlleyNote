@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Attachment\Contracts;
 
+use App\Exceptions\ValidationException;
 use Psr\Http\Message\UploadedFileInterface;
 
 interface FileSecurityServiceInterface
@@ -11,7 +12,7 @@ interface FileSecurityServiceInterface
     /**
      * 驗證上傳的檔案是否安全.
      *
-     * @throws \App\Exceptions\ValidationException
+     * @throws ValidationException
      */
     public function validateUpload(UploadedFileInterface $file): void;
 

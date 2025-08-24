@@ -7,7 +7,6 @@ namespace Tests\Unit\Services\Security;
 use App\Domains\Security\Services\Core\XssProtectionService;
 use PHPUnit\Framework\TestCase;
 
-
 class XssProtectionServiceTest extends TestCase
 {
     private XssProtectionService $service;
@@ -58,11 +57,11 @@ class XssProtectionServiceTest extends TestCase
 
         $this->assertEquals(
             '&lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;',
-            $result['title']
+            $result['title'],
         );
         $this->assertEquals(
             '&lt;img src=&quot;x&quot; onerror=&quot;alert(&#039;XSS&#039;)&quot; /&gt;',
-            $result['content']
+            $result['content'],
         );
     }
 }

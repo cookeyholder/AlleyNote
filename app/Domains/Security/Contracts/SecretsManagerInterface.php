@@ -32,7 +32,6 @@ interface SecretsManagerInterface
      * 檢查設定是否存在.
      *
      * @param string $key 設定鍵名
-     * @return bool
      */
     public function has(string $key): bool;
 
@@ -40,7 +39,6 @@ interface SecretsManagerInterface
      * 取得必需的設定值
      *
      * @param string $key 設定鍵名
-     * @return string
      * @throws ValidationException 如果設定不存在
      */
     public function getRequired(string $key): string;
@@ -55,22 +53,16 @@ interface SecretsManagerInterface
 
     /**
      * 檢查是否為正式環境.
-     *
-     * @return bool
      */
     public function isProduction(): bool;
 
     /**
      * 檢查是否為開發環境.
-     *
-     * @return bool
      */
     public function isDevelopment(): bool;
 
     /**
      * 取得秘密設定摘要（敏感資料會被遮蔽）.
-     *
-     * @return array
      */
     public function getSecretsSummary(): array;
 
@@ -78,7 +70,6 @@ interface SecretsManagerInterface
      * 產生安全的隨機秘密.
      *
      * @param int $length 長度
-     * @return string
      */
     public function generateSecret(int $length = 32): string;
 

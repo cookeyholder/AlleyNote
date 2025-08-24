@@ -5,33 +5,36 @@ declare(strict_types=1);
 namespace Tests\Unit\Services;
 
 use App\Domains\Post\Contracts\PostRepositoryInterface;
-use App\Shared\Exceptions\ValidationException;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
-use App\Domains\Post\Models\Post;
 use App\Domains\Post\Enums\PostStatus;
+use App\Domains\Post\Models\Post;
 use App\Domains\Post\Services\PostService;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\StateTransitionException;
-
+use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Exception;
+use InvalidArgumentException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
-
+use RuntimeException;
 
 class PostServiceTest extends MockeryTestCase
 {
     private PostRepositoryInterface|MockInterface $repository;
+
     private App\Shared\Contracts\ValidatorInterface|MockInterface $validator;
+
     private PostService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->repository = Mockery::mock(PostRepositoryInterface::class);
-        $this->validator = Mockery::mock(\App\Shared\Contracts\ValidatorInterface::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
 
         // 設定 Validator Mock 的通用預期
         $this->validator->shouldReceive('addRule')
@@ -41,7 +44,7 @@ class PostServiceTest extends MockeryTestCase
             ->zeroOrMoreTimes()
             ->andReturnSelf();
 
-        $this->service = new \App\Domains\Post\Services\PostService($this->repository);
+        $this->service = new PostService($this->repository);
     }
 
     public function testCreatePostWithValidDTO(): void
@@ -61,7 +64,7 @@ class PostServiceTest extends MockeryTestCase
 
         $dto = new CreatePostDTO($this->validator, $dtoData);
 
-        $expectedPost = new \App\Domains\Post\Models\Post([
+        $expectedPost = new Post([
             'id' => 1,
             'uuid' => 'test-uuid',
             'title' => '測試文章',
@@ -69,7 +72,7 @@ class PostServiceTest extends MockeryTestCase
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
             'status' => PostStatus::DRAFT->value,
-            'created_at' => (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339),
+            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
             'updated_at' => null,
         ]);
 
@@ -95,7 +98,7 @@ class PostServiceTest extends MockeryTestCase
     public function testUpdatePostWithValidDTO(): void
     {
         $id = 1;
-        $initialPost = new \App\Domains\Post\Models\Post([
+        $initialPost = new Post([
             'id' => $id,
             'uuid' => 'test-uuid',
             'title' => '原始標題',
@@ -103,7 +106,7 @@ class PostServiceTest extends MockeryTestCase
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
             'status' => PostStatus::DRAFT->value,
-            'created_at' => (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339),
+            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
             'updated_at' => null,
         ]);
 
@@ -119,7 +122,7 @@ class PostServiceTest extends MockeryTestCase
 
         $dto = new UpdatePostDTO($this->validator, $updateData);
 
-        $updatedPost = new \App\Domains\Post\Models\Post([
+        $updatedPost = new Post([
             'id' => $id,
             'uuid' => 'test-uuid',
             'title' => '更新的標題',
@@ -128,7 +131,7 @@ class PostServiceTest extends MockeryTestCase
             'user_ip' => '192.168.1.1',
             'status' => PostStatus::DRAFT->value,
             'created_at' => $initialPost->getCreatedAt(),
-            'updated_at' => (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339),
+            'updated_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
         ]);
 
         $this->repository->shouldReceive('find')
@@ -155,7 +158,7 @@ class PostServiceTest extends MockeryTestCase
     public function testUpdatePostWithInvalidStatusTransition(): void
     {
         $id = 1;
-        $publishedPost = new \App\Domains\Post\Models\Post([
+        $publishedPost = new Post([
             'id' => $id,
             'uuid' => 'test-uuid',
             'title' => '已發布文章',
@@ -163,7 +166,7 @@ class PostServiceTest extends MockeryTestCase
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
             'status' => PostStatus::PUBLISHED->value,
-            'created_at' => (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339),
+            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
             'updated_at' => null,
         ]);
 
@@ -213,7 +216,7 @@ class PostServiceTest extends MockeryTestCase
     public function testUpdatePostWithNoChanges(): void
     {
         $id = 1;
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $id,
             'uuid' => 'test-uuid',
             'title' => '測試標題',
@@ -221,7 +224,7 @@ class PostServiceTest extends MockeryTestCase
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
             'status' => PostStatus::DRAFT->value,
-            'created_at' => (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339),
+            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
             'updated_at' => null,
         ]);
 
@@ -261,7 +264,7 @@ class PostServiceTest extends MockeryTestCase
         $this->repository->shouldReceive('safeDelete')
             ->once()
             ->with($id)
-            ->andThrow(new \InvalidArgumentException('測試錯誤'));
+            ->andThrow(new InvalidArgumentException('測試錯誤'));
 
         $this->expectException(StateTransitionException::class);
         $this->expectExceptionMessage('測試錯誤');
@@ -276,9 +279,9 @@ class PostServiceTest extends MockeryTestCase
         $this->repository->shouldReceive('safeDelete')
             ->once()
             ->with($id)
-            ->andThrow(new \Exception('一般錯誤'));
+            ->andThrow(new Exception('一般錯誤'));
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('刪除文章時發生錯誤');
 
         $this->service->deletePost($id);
@@ -287,7 +290,7 @@ class PostServiceTest extends MockeryTestCase
     public function testFindById(): void
     {
         $id = 1;
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $id,
             'uuid' => 'test-uuid',
             'title' => '測試文章',
@@ -295,7 +298,7 @@ class PostServiceTest extends MockeryTestCase
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
             'status' => PostStatus::PUBLISHED->value,
-            'created_at' => (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339),
+            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
             'updated_at' => null,
         ]);
 
@@ -334,7 +337,7 @@ class PostServiceTest extends MockeryTestCase
 
         $expectedResult = [
             'items' => [
-                new \App\Domains\Post\Models\Post([
+                new Post([
                     'id' => 1,
                     'title' => '文章1',
                     'content' => '內容1',
@@ -342,7 +345,7 @@ class PostServiceTest extends MockeryTestCase
                     'user_ip' => '192.168.1.1',
                     'status' => PostStatus::PUBLISHED->value,
                 ]),
-                new \App\Domains\Post\Models\Post([
+                new Post([
                     'id' => 2,
                     'title' => '文章2',
                     'content' => '內容2',
@@ -375,7 +378,7 @@ class PostServiceTest extends MockeryTestCase
         $limit = 5;
 
         $expectedPosts = [
-            new \App\Domains\Post\Models\Post([
+            new Post([
                 'id' => 1,
                 'title' => '置頂文章1',
                 'content' => '置頂內容1',
@@ -422,7 +425,7 @@ class PostServiceTest extends MockeryTestCase
         $this->repository->shouldReceive('safeSetPinned')
             ->once()
             ->with($id, $isPinned)
-            ->andThrow(new \InvalidArgumentException('置頂操作失敗'));
+            ->andThrow(new InvalidArgumentException('置頂操作失敗'));
 
         $this->expectException(StateTransitionException::class);
         $this->expectExceptionMessage('置頂操作失敗');
@@ -438,9 +441,9 @@ class PostServiceTest extends MockeryTestCase
         $this->repository->shouldReceive('safeSetPinned')
             ->once()
             ->with($id, $isPinned)
-            ->andThrow(new \Exception('一般錯誤'));
+            ->andThrow(new Exception('一般錯誤'));
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('設定置頂狀態時發生錯誤');
 
         $this->service->setPinned($id, $isPinned);
@@ -450,7 +453,7 @@ class PostServiceTest extends MockeryTestCase
     {
         $id = 1;
         $tagIds = [1, 2, 3];
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $id,
             'title' => '測試文章',
             'content' => '測試內容',
@@ -496,7 +499,7 @@ class PostServiceTest extends MockeryTestCase
         $userIp = '192.168.1.1';
         $userId = 1;
 
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $id,
             'title' => '測試文章',
             'content' => '測試內容',
@@ -525,7 +528,7 @@ class PostServiceTest extends MockeryTestCase
         $id = 1;
         $invalidIp = 'invalid-ip';
 
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $id,
             'title' => '測試文章',
             'content' => '測試內容',
@@ -539,7 +542,7 @@ class PostServiceTest extends MockeryTestCase
             ->with($id)
             ->andReturn($post);
 
-        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('無效的 IP 位址');
 
         $this->service->recordView($id, $invalidIp);
@@ -550,7 +553,7 @@ class PostServiceTest extends MockeryTestCase
         $id = 1;
         $userIp = '192.168.1.1';
 
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $id,
             'title' => '草稿文章',
             'content' => '草稿內容',

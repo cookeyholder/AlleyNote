@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\DTOs\Post;
 
 use App\Domains\Post\DTOs\CreatePostDTO;
-use App\Shared\Validation\ValidationException;
-use App\Domains\Post\Models\Post;
 use App\Domains\Post\Enums\PostStatus;
-
-
+use App\Shared\Validation\ValidationException;
 use App\Shared\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 
@@ -102,7 +99,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForMissingTitle(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'content' => '內容',
@@ -115,7 +112,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForEmptyTitle(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '',
@@ -129,7 +126,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForTitleTooLong(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => str_repeat('a', 256),
@@ -143,7 +140,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForTitleWithOnlyWhitespace(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '   　　　   ', // 包含中英文空白
@@ -157,7 +154,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForMissingContent(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '標題',
@@ -170,7 +167,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForEmptyContent(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '標題',
@@ -184,7 +181,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForContentWithOnlyWhitespace(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '標題',
@@ -198,7 +195,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForInvalidUserId(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '標題',
@@ -212,7 +209,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForMissingUserId(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '標題',
@@ -225,7 +222,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForInvalidIP(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '標題',
@@ -239,7 +236,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForMissingIP(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '標題',
@@ -252,7 +249,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForInvalidStatus(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '標題',
@@ -267,7 +264,7 @@ class CreatePostDTOTest extends TestCase
 
     public function testShouldThrowExceptionForInvalidPublishDate(): void
     {
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $data = [
             'title' => '標題',
@@ -336,7 +333,7 @@ class CreatePostDTOTest extends TestCase
             ];
 
             $dto = new CreatePostDTO($this->validator, $data);
-            $this->assertEquals($expected, $dto->isPinned, "Failed for input: " . var_export($input, true));
+            $this->assertEquals($expected, $dto->isPinned, 'Failed for input: ' . var_export($input, true));
         }
     }
 

@@ -3,15 +3,16 @@
 namespace App\Domains\Auth\Repositories;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
+use DateTime;
+use InvalidArgumentException;
 use PDO;
 
 class UserRepository
 {
     public function __construct(
         private PDO $db,
-        private ?PasswordSecurityServiceInterface $passwordService = null
-    ) {
-    }
+        private ?PasswordSecurityServiceInterface $passwordService = null,
+    ) {}
 
     public function create(array $data): array
     {
@@ -27,7 +28,7 @@ class UserRepository
             mt_rand(0, 0x3fff) | 0x8000,
             mt_rand(0, 0xffff),
             mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff)
+            mt_rand(0, 0xffff),
         );
 
         $stmt->execute([
@@ -48,8 +49,8 @@ class UserRepository
         foreach ($data as $key => $value) {
             if (in_array($key, ['username', 'email', 'status', 'password'])) {
                 $fields[] = "{$key} = :{$key}";
-                $params[$key] = $key === 'password' ?
-                    password_hash($value, PASSWORD_ARGON2ID) : $value;
+                $params[$key] = $key === 'password'
+                    ? password_hash($value, PASSWORD_ARGON2ID) : $value;
             }
         }
 
@@ -116,7 +117,7 @@ class UserRepository
 
     public function updateLastLogin(string $id): bool
     {
-        $now = (new \DateTime())->format(\DateTime::RFC3339);
+        $now = new DateTime()->format(DateTime::RFC3339);
         $sql = 'UPDATE users SET last_login = ? WHERE id = ?';
         $stmt = $this->db->prepare($sql);
 
@@ -128,7 +129,7 @@ class UserRepository
         // 檢查使用者是否存在
         $user = $this->findById($id);
         if (!$user) {
-            throw new \InvalidArgumentException('找不到指定的使用者');
+            throw new InvalidArgumentException('找不到指定的使用者');
         }
 
         // 如果有密碼服務，進行密碼安全性驗證
@@ -138,7 +139,7 @@ class UserRepository
 
         // 檢查新密碼是否與目前密碼相同
         if (password_verify($newPassword, $user['password'])) {
-            throw new \InvalidArgumentException('新密碼不能與目前的密碼相同');
+            throw new InvalidArgumentException('新密碼不能與目前的密碼相同');
         }
 
         // 使用密碼服務雜湊密碼，如果沒有則使用預設方法

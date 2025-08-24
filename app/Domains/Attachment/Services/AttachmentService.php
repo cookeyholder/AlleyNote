@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\Domains\Attachment\Services;
 
-use App\Shared\Exceptions\NotFoundException;
-use App\Shared\Exceptions\ValidationException;
-use App\Shared\Validation\ValidationResult;
+use App\Domains\Attachment\Contracts\AttachmentServiceInterface;
 use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
-use App\Domains\Post\Repositories\PostRepository;
-use App\Domains\Attachment\Contracts\AttachmentServiceInterface;
 use App\Domains\Auth\Services\AuthorizationService;
+use App\Domains\Post\Repositories\PostRepository;
 use App\Infrastructure\Services\CacheService;
+use App\Shared\Exceptions\NotFoundException;
+use App\Shared\Exceptions\ValidationException;
+use Exception;
 use Psr\Http\Message\UploadedFileInterface;
+use RuntimeException;
 
 class AttachmentService implements AttachmentServiceInterface
 {
@@ -52,9 +53,8 @@ class AttachmentService implements AttachmentServiceInterface
         private PostRepository $postRepo,
         private CacheService $cache, // TODO: 實作附件快取功能
         private AuthorizationService $authService,
-        private string $uploadDir
-    ) {
-    }
+        private string $uploadDir,
+    ) {}
 
     public function validateFile(UploadedFileInterface $file): void
     {
@@ -213,7 +213,7 @@ class AttachmentService implements AttachmentServiceInterface
             imagedestroy($cleanImage);
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log('Image sanitization failed: ' . $e->getMessage());
 
             throw ValidationException::fromSingleError('file', '圖片處理失敗：' . $e->getMessage());
@@ -221,7 +221,7 @@ class AttachmentService implements AttachmentServiceInterface
     }
 
     /**
-     * 病毒掃描（如果可用）. 
+     * 病毒掃描（如果可用）.
      */
     private function scanForVirus(string $filePath): bool
     {
@@ -248,7 +248,7 @@ class AttachmentService implements AttachmentServiceInterface
     }
 
     /**
-     * 改善的檔案驗證流程（減緩 TOCTOU 風險）. 
+     * 改善的檔案驗證流程（減緩 TOCTOU 風險）.
      */
     private function secureFileValidation(UploadedFileInterface $file): array
     {
@@ -259,7 +259,7 @@ class AttachmentService implements AttachmentServiceInterface
 
         // 建立安全的臨時目錄
         $tempDir = sys_get_temp_dir() . '/alleynote_upload_' . bin2hex(random_bytes(8));
-        if (!mkdir($tempDir, 0700, true)) {
+        if (!mkdir($tempDir, 0o700, true)) {
             throw ValidationException::fromSingleError('directory', '無法建立臨時目錄');
         }
 
@@ -297,7 +297,7 @@ class AttachmentService implements AttachmentServiceInterface
                 'mime_type' => $actualMimeType,
                 'file_size' => filesize($tempPath),
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 清理臨時檔案
             if (file_exists($tempPath)) {
                 unlink($tempPath);
@@ -307,7 +307,7 @@ class AttachmentService implements AttachmentServiceInterface
             }
 
             // 將 RuntimeException 轉換為 ValidationException
-            if ($e instanceof \RuntimeException) {
+            if ($e instanceof RuntimeException) {
                 throw ValidationException::fromSingleError('file', '檔案上傳失敗');
             }
 
@@ -366,7 +366,7 @@ class AttachmentService implements AttachmentServiceInterface
         try {
             // 確保上傳目錄存在
             if (!is_dir($this->uploadDir)) {
-                mkdir($this->uploadDir, 0755, true);
+                mkdir($this->uploadDir, 0o755, true);
             }
 
             // 移動檔案到最終位置
@@ -391,7 +391,7 @@ class AttachmentService implements AttachmentServiceInterface
             $attachment = $this->attachmentRepo->create($attachmentData);
 
             return $attachment;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 清理失敗時的檔案
             if (file_exists($fileInfo['temp_path'])) {
                 unlink($fileInfo['temp_path']);

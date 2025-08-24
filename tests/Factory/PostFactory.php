@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Factory;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+
 class PostFactory
 {
     public static function make(array $attributes = []): array
@@ -19,9 +22,9 @@ class PostFactory
             'is_pinned' => false,
             'status' => 'draft',
             'views' => 0,
-            'publish_date' => (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339),
-            'created_at' => (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339),
-            'updated_at' => (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339),
+            'publish_date' => new DateTimeImmutable()->format(DateTimeInterface::RFC3339),
+            'created_at' => new DateTimeImmutable()->format(DateTimeInterface::RFC3339),
+            'updated_at' => new DateTimeImmutable()->format(DateTimeInterface::RFC3339),
         ], $attributes);
     }
 }

@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Repositories;
 
-use App\Domains\Post\Models\Post;
-
 use App\Domains\Post\Enums\PostStatus;
+use App\Domains\Post\Models\Post;
 use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use Mockery;
 use PDO;
 use PHPUnit\Framework\TestCase;
-
 
 class PostRepositoryTest extends TestCase
 {
@@ -37,41 +35,38 @@ class PostRepositoryTest extends TestCase
         $this->createTestTables();
 
         // Mock 依賴項目
-        $this->cacheService = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
-        $this->logger = Mockery::mock(\App\Domains\Security\Contracts\LoggingSecurityServiceInterface::class);
+        $this->cacheService = Mockery::mock(CacheService::class);
+        $this->logger = Mockery::mock(LoggingSecurityServiceInterface::class);
 
         // 設定快取預設行為
         $this->cacheService->shouldReceive('remember')
             ->andReturnUsing(function ($key, $callback, $ttl = null) {
                 return $callback();
+                // 設置寬鬆的LoggingSecurityService Mock期望
+                $this->logger->shouldReceive('logSecurityEvent')
+                    ->andReturn(true)
+                    ->zeroOrMoreTimes();
 
-        // 設置寬鬆的LoggingSecurityService Mock期望
-        $this->logger->shouldReceive("logSecurityEvent")
-            ->andReturn(true)
-            ->zeroOrMoreTimes();
+                $this->logger->shouldReceive('logFailedLogin')
+                    ->andReturn(true)
+                    ->zeroOrMoreTimes();
 
-        $this->logger->shouldReceive("logFailedLogin")
-            ->andReturn(true)
-            ->zeroOrMoreTimes();
+                $this->logger->shouldReceive('logSuspiciousActivity')
+                    ->andReturn(true)
+                    ->zeroOrMoreTimes();
+            });
 
-        $this->logger->shouldReceive("logSuspiciousActivity")
-            ->andReturn(true)
-            ->zeroOrMoreTimes();
-});
-
-
-
-        $this->logger->shouldReceive("logFailedLogin")
+        $this->logger->shouldReceive('logFailedLogin')
             ->andReturn(true)
             ->byDefault();
 
-        $this->logger->shouldReceive("logSuspiciousActivity")
+        $this->logger->shouldReceive('logSuspiciousActivity')
             ->andReturn(true)
             ->byDefault();
 
         // 設置LoggingSecurityService Mock期望
-        $this->logger->shouldReceive("logSecurityEvent")
-            ->with("Attempt to query with disallowed field", Mockery::any())
+        $this->logger->shouldReceive('logSecurityEvent')
+            ->with('Attempt to query with disallowed field', Mockery::any())
             ->zeroOrMoreTimes()
             ->andReturn(true);
         $this->cacheService->shouldReceive('delete')->andReturn(true);
@@ -80,7 +75,7 @@ class PostRepositoryTest extends TestCase
         // 設定日誌預設行為
         $this->logger->shouldReceive('logSecurityEvent')->andReturn(true);
 
-        $this->repository = new \App\Domains\Post\Repositories\PostRepository($this->pdo, $this->cacheService, $this->logger);
+        $this->repository = new PostRepository($this->pdo, $this->cacheService, $this->logger);
     }
 
     protected function tearDown(): void
@@ -192,7 +187,7 @@ class PostRepositoryTest extends TestCase
 
         $post = $this->repository->create($data);
 
-        $this->assertInstanceOf(\App\Domains\Post\Models\Post::class, $post);
+        $this->assertInstanceOf(Post::class, $post);
         $this->assertIsInt($post->getId());
         $this->assertEquals('新建文章', $post->getTitle());
         $this->assertEquals('新建文章內容', $post->getContent());
@@ -209,7 +204,7 @@ class PostRepositoryTest extends TestCase
         // 測試查找
         $foundPost = $this->repository->find($id);
 
-        $this->assertInstanceOf(\App\Domains\Post\Models\Post::class, $foundPost);
+        $this->assertInstanceOf(Post::class, $foundPost);
         $this->assertEquals($id, $foundPost->getId());
         $this->assertEquals($data['title'], $foundPost->getTitle());
         $this->assertEquals($data['content'], $foundPost->getContent());
@@ -229,7 +224,7 @@ class PostRepositoryTest extends TestCase
 
         $foundPost = $this->repository->findByUuid($uuid);
 
-        $this->assertInstanceOf(\App\Domains\Post\Models\Post::class, $foundPost);
+        $this->assertInstanceOf(Post::class, $foundPost);
         $this->assertEquals($uuid, $foundPost->getUuid());
     }
 
@@ -241,7 +236,7 @@ class PostRepositoryTest extends TestCase
 
         $foundPost = $this->repository->findBySeqNumber($seqNumber);
 
-        $this->assertInstanceOf(\App\Domains\Post\Models\Post::class, $foundPost);
+        $this->assertInstanceOf(Post::class, $foundPost);
         $this->assertEquals($seqNumber, $foundPost->getSeqNumber());
     }
 
@@ -261,7 +256,7 @@ class PostRepositoryTest extends TestCase
 
         $updatedPost = $this->repository->update($id, $updateData);
 
-        $this->assertInstanceOf(\App\Domains\Post\Models\Post::class, $updatedPost);
+        $this->assertInstanceOf(Post::class, $updatedPost);
         $this->assertEquals('更新後的標題', $updatedPost->getTitle());
         $this->assertEquals('更新後的內容', $updatedPost->getContent());
         $this->assertEquals(PostStatus::PUBLISHED->value, $updatedPost->getStatus());
@@ -316,7 +311,7 @@ class PostRepositoryTest extends TestCase
 
         // 驗證每個項目都是 Post 實例
         foreach ($result['items'] as $post) {
-            $this->assertInstanceOf(\App\Domains\Post\Models\Post::class, $post);
+            $this->assertInstanceOf(Post::class, $post);
         }
     }
 
@@ -342,7 +337,7 @@ class PostRepositoryTest extends TestCase
 
         $this->assertIsArray($pinnedPosts);
         $this->assertCount(1, $pinnedPosts);
-        $this->assertInstanceOf(\App\Domains\Post\Models\Post::class, $pinnedPosts[0]);
+        $this->assertInstanceOf(Post::class, $pinnedPosts[0]);
         $this->assertEquals('置頂文章', $pinnedPosts[0]->getTitle());
         $this->assertTrue($pinnedPosts[0]->getIsPinned());
     }
@@ -453,7 +448,7 @@ class PostRepositoryTest extends TestCase
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(1, $result['total']);
         $this->assertCount(1, $result['items']);
-        $this->assertInstanceOf(\App\Domains\Post\Models\Post::class, $result['items'][0]);
+        $this->assertInstanceOf(Post::class, $result['items'][0]);
     }
 
     public function testSecurityValidationForDisallowedFields(): void

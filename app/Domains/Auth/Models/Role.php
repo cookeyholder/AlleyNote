@@ -21,7 +21,7 @@ class Role
         string $name,
         ?string $description = null,
         string $createdAt = '',
-        string $updatedAt = ''
+        string $updatedAt = '',
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -73,7 +73,7 @@ class Role
             $data['name'],
             $data['description'] ?? null,
             $data['created_at'] ?? '',
-            $data['updated_at'] ?? ''
+            $data['updated_at'] ?? '',
         );
     }
 }

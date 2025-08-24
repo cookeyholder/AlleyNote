@@ -5,20 +5,15 @@ declare(strict_types=1);
 namespace Tests\Integration\DTOs;
 
 use App\Application\Controllers\Api\V1\PostController;
-use App\Shared\Validation\ValidationException;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
-use App\Domains\Post\Models\Post;
-use App\Domains\Post\Services\PostService;
-use App\Services\Contracts\PostServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
-
-
+use App\Shared\Validation\ValidationException;
 use App\Shared\Validation\Validator;
 use Tests\TestCase;
 
 /**
- * DTO 與 Controller 整合測試
+ * DTO 與 Controller 整合測試.
  *
  * 測試 DTO 在 Controller 中的使用是否正常
  */
@@ -34,7 +29,7 @@ class DTOControllerIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 PostController 建立文章時的 DTO 整合
+     * 測試 PostController 建立文章時的 DTO 整合.
      */
     public function testPostControllerCreateWithValidDTO(): void
     {
@@ -57,7 +52,7 @@ class DTOControllerIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 PostController 更新文章時的 DTO 整合
+     * 測試 PostController 更新文章時的 DTO 整合.
      */
     public function testPostControllerUpdateWithValidDTO(): void
     {
@@ -74,7 +69,7 @@ class DTOControllerIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 Controller 處理 DTO 驗證錯誤
+     * 測試 Controller 處理 DTO 驗證錯誤.
      */
     public function testControllerHandlesValidationErrors(): void
     {
@@ -87,12 +82,12 @@ class DTOControllerIntegrationTest extends TestCase
             'user_ip' => '192.168.1.1',
         ];
 
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $invalidData);
     }
 
     /**
-     * 測試 DTO 資料清理功能
+     * 測試 DTO 資料清理功能.
      */
     public function testDTODataSanitization(): void
     {
@@ -114,7 +109,7 @@ class DTOControllerIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 DTO 型別轉換
+     * 測試 DTO 型別轉換.
      */
     public function testDTOTypeConversion(): void
     {
@@ -128,7 +123,7 @@ class DTOControllerIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 DTO 在批次操作中的使用
+     * 測試 DTO 在批次操作中的使用.
      */
     public function testDTOInBatchOperations(): void
     {
@@ -160,7 +155,7 @@ class DTOControllerIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 DTO 的記憶體使用效率
+     * 測試 DTO 的記憶體使用效率.
      */
     public function testDTOMemoryEfficiency(): void
     {
@@ -187,7 +182,7 @@ class DTOControllerIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 DTO 的序列化和反序列化
+     * 測試 DTO 的序列化和反序列化.
      */
     public function testDTOSerialization(): void
     {

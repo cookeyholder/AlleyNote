@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Services\Advanced;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
 class PwnedPasswordService
 {
     private const HIBP_API_URL = 'https://api.pwnedpasswords.com/range/';
+
     private const REQUEST_TIMEOUT = 5; // 5 秒超時
+
     private const CACHE_TTL = 86400; // 24 小時快取
 
     private Client $httpClient;
@@ -72,7 +75,7 @@ class PwnedPasswordService
                 'error' => null,
                 'api_available' => true,
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 記錄錯誤但不阻止使用者操作
             error_log('PwnedPasswordService error: ' . $e->getMessage());
 
@@ -128,8 +131,8 @@ class PwnedPasswordService
      */
     private function isInCache(string $key): bool
     {
-        return isset($this->cache[$key]) &&
-            time() - $this->cache[$key]['timestamp'] < self::CACHE_TTL;
+        return isset($this->cache[$key])
+            && time() - $this->cache[$key]['timestamp'] < self::CACHE_TTL;
     }
 
     private function getFromCache(string $key): ?string
@@ -165,7 +168,7 @@ class PwnedPasswordService
                 'available' => $response->getStatusCode() === 200,
                 'response_time' => null, // 可以實作回應時間測量
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [
                 'available' => false,
                 'error' => $e->getMessage(),

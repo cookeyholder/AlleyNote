@@ -8,7 +8,6 @@ use App\Domains\Post\Models\Post;
 use Tests\Factory\PostFactory;
 use Tests\TestCase;
 
-
 class PostTest extends TestCase
 {
     /** @test */
@@ -23,7 +22,7 @@ class PostTest extends TestCase
             'user_ip' => '127.0.0.1',
         ]);
 
-        $post = new \App\Domains\Post\Models\Post($data);
+        $post = new Post($data);
 
         $this->assertEquals($data['uuid'], $post->getUuid());
         $this->assertEquals($data['seq_number'], $post->getSeqNumber());
@@ -43,7 +42,7 @@ class PostTest extends TestCase
             'publish_date' => null,
         ]);
 
-        $post = new \App\Domains\Post\Models\Post($data);
+        $post = new Post($data);
 
         $this->assertNull($post->getSeqNumber());
         $this->assertNull($post->getUserIp());
@@ -63,7 +62,7 @@ class PostTest extends TestCase
         // 移除 id，這樣才能測試預設值
         unset($data['id']);
 
-        $post = new \App\Domains\Post\Models\Post($data);
+        $post = new Post($data);
 
         $this->assertEquals(0, $post->getId());
         $this->assertEquals(0, $post->getViewCount());
@@ -83,16 +82,16 @@ class PostTest extends TestCase
             'user_id' => 1,
         ]);
 
-        $post = new \App\Domains\Post\Models\Post($data);
+        $post = new Post($data);
 
         // Model 應該存儲原始資料，HTML 轉義在視圖層處理
         $this->assertEquals(
             '<script>alert("XSS")</script>',
-            $post->getTitle()
+            $post->getTitle(),
         );
         $this->assertEquals(
             '<p onclick="alert(\'XSS\')">Test</p>',
-            $post->getContent()
+            $post->getContent(),
         );
     }
 }

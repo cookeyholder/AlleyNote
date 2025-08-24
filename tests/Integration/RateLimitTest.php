@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use App\Infrastructure\Services\RateLimitService;
 use App\Infrastructure\Services\CacheService;
-use Tests\TestCase;
+use App\Infrastructure\Services\RateLimitService;
+use Exception;
 use Mockery;
+use Tests\TestCase;
 
 class RateLimitTest extends TestCase
 {
     private RateLimitService $rateLimitService;
+
     private CacheService $cacheService;
 
     protected function setUp(): void
@@ -124,7 +126,7 @@ class RateLimitTest extends TestCase
         // 模擬快取服務錯誤
         $this->cacheService->shouldReceive('get')
             ->with("rate_limit:{$ip}")
-            ->andThrow(new \Exception('快取錯誤'));
+            ->andThrow(new Exception('快取錯誤'));
 
         // 當快取服務不可用時，應該允許請求以確保服務可用性
         $result = $this->rateLimitService->checkLimit($ip);

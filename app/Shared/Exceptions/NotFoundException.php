@@ -6,6 +6,4 @@ namespace App\Shared\Exceptions;
 
 use Exception;
 
-class NotFoundException extends Exception
-{
-}
+class NotFoundException extends Exception {}

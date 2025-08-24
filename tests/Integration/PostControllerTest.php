@@ -5,21 +5,22 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\PostController;
-use App\Domains\Post\Exceptions\PostNotFoundException;
-use App\Shared\Exceptions\StateTransitionException;
-use App\Shared\Exceptions\ValidationException;
-use App\Domains\Post\Models\Post;
-use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Contracts\Services\Security\CsrfProtectionServiceInterface;
 use App\Contracts\Services\Security\XssProtectionServiceInterface;
+use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\DTOs\CreatePostDTO;
+use App\Domains\Post\DTOs\UpdatePostDTO;
+use App\Domains\Post\Exceptions\PostNotFoundException;
+use App\Domains\Post\Models\Post;
+use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\Exceptions\StateTransitionException;
+use App\Shared\Exceptions\ValidationException;
+use App\Shared\Validation\ValidationResult;
 use Mockery;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
-use App\Shared\Contracts\ValidatorInterface;
-use App\Domains\Post\DTOs\CreatePostDTO;
-use App\Domains\Post\DTOs\UpdatePostDTO;
 
 class PostControllerTest extends TestCase
 {
@@ -64,7 +65,7 @@ class PostControllerTest extends TestCase
 
         // 設定 validator 預設行為
         $this->validator->shouldReceive('validateOrFail')
-            ->andReturnUsing(function($data, $rules) {
+            ->andReturnUsing(function ($data, $rules) {
                 return $data;
             })
             ->byDefault();
@@ -116,7 +117,7 @@ class PostControllerTest extends TestCase
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->validator
+            $this->validator,
         );
         $response = $controller->index($this->request, $this->response);
 
@@ -162,7 +163,7 @@ class PostControllerTest extends TestCase
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->validator
+            $this->validator,
         );
         $response = $controller->show($this->request, $this->response, ['id' => $postId]);
 
@@ -194,13 +195,13 @@ class PostControllerTest extends TestCase
         // 設定服務層期望行為
         $this->postService->shouldReceive('createPost')
             ->once()
-            ->with(\Mockery::type(\App\Domains\Post\DTOs\CreatePostDTO::class))
+            ->with(Mockery::type(CreatePostDTO::class))
             ->andReturn($createdPost);
 
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->validator
+            $this->validator,
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -226,8 +227,8 @@ class PostControllerTest extends TestCase
 
         // 設定驗證器拋出異常（DTO 建立時就會失敗）
         $this->validator->shouldReceive('validateOrFail')
-            ->andThrow(new \App\Shared\Exceptions\ValidationException(
-                \App\Shared\Validation\ValidationResult::failure(['title' => ['標題不能為空']])
+            ->andThrow(new ValidationException(
+                ValidationResult::failure(['title' => ['標題不能為空']]),
             ));
 
         // PostService 不應該被調用，因為 DTO 建立會先失敗
@@ -236,7 +237,7 @@ class PostControllerTest extends TestCase
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->validator
+            $this->validator,
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -270,13 +271,13 @@ class PostControllerTest extends TestCase
         // 設定服務層期望行為
         $this->postService->shouldReceive('updatePost')
             ->once()
-            ->with($postId, \Mockery::type(\App\Domains\Post\DTOs\UpdatePostDTO::class))
+            ->with($postId, Mockery::type(UpdatePostDTO::class))
             ->andReturn($updatedPost);
 
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->validator
+            $this->validator,
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -304,7 +305,7 @@ class PostControllerTest extends TestCase
         // 設定服務層期望行為
         $this->postService->shouldReceive('updatePost')
             ->once()
-            ->with($postId, \Mockery::type(\App\Domains\Post\DTOs\UpdatePostDTO::class))
+            ->with($postId, Mockery::type(UpdatePostDTO::class))
             ->andThrow(new PostNotFoundException($postId));
 
         // 預期的回應設定
@@ -314,7 +315,7 @@ class PostControllerTest extends TestCase
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->validator
+            $this->validator,
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -345,7 +346,7 @@ class PostControllerTest extends TestCase
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->validator
+            $this->validator,
         );
         $response = $controller->delete($this->request, $this->response, ['id' => '1']);
 
@@ -380,7 +381,7 @@ class PostControllerTest extends TestCase
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->validator
+            $this->validator,
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 
@@ -412,7 +413,7 @@ class PostControllerTest extends TestCase
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->validator
+            $this->validator,
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 

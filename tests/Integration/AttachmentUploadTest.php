@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Domains\Attachment\Models\Attachment;
-use App\Shared\Validation\ValidationException;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Attachment\Services\AttachmentService;
-use App\Domains\Post\Models\Post;
+use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
-
+use App\Shared\Exceptions\ValidationException;
+use Exception;
 use Mockery;
+use Mockery\MockInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UploadedFileInterface;
+use RuntimeException;
 use Tests\TestCase;
-
 
 /**
  * @group failing
@@ -22,8 +25,10 @@ use Tests\TestCase;
 class AttachmentUploadTest extends TestCase
 {
     protected AttachmentService $attachmentService;
-    protected \App\Domains\Auth\Services\AuthorizationService|\Mockery\MockInterface $authService;
-    protected \App\Domains\Security\Contracts\LoggingSecurityServiceInterface|\Mockery\MockInterface $logger;
+
+    protected \App\Domains\Auth\Services\AuthorizationService|MockInterface $authService;
+
+    protected \App\Domains\Security\Contracts\LoggingSecurityServiceInterface|MockInterface $logger;
 
     protected string $uploadDir;
 
@@ -35,27 +40,26 @@ class AttachmentUploadTest extends TestCase
     {
         parent::setUp();
         // Mock authService
-        $this->authService = Mockery::mock(\App\Domains\Auth\Services\AuthorizationService::class);
+        $this->authService = Mockery::mock(AuthorizationService::class);
         $this->authService->shouldReceive('canUploadAttachment')->byDefault()->andReturn(true);
         $this->authService->shouldReceive('canDeleteAttachment')->byDefault()->andReturn(true);
         $this->authService->shouldReceive('isSuperAdmin')->byDefault()->andReturn(false);
 
         // Mock logger
-        $this->logger = Mockery::mock(\App\Domains\Security\Contracts\LoggingSecurityServiceInterface::class);
+        $this->logger = Mockery::mock(LoggingSecurityServiceInterface::class);
         $this->logger->shouldReceive('logSecurityEvent')->byDefault();
         $this->logger->shouldReceive('enrichSecurityContext')->byDefault()->andReturn([]);
-
 
         // 建立測試用目錄
         $this->uploadDir = sys_get_temp_dir() . '/alleynote_test_' . uniqid();
         mkdir($this->uploadDir);
 
         // 初始化測試依賴
-        $this->attachmentRepo = new \App\Domains\Attachment\Repositories\AttachmentRepository($this->db, $this->cache);
-        $this->postRepo = new \App\Domains\Post\Repositories\PostRepository($this->db, $this->cache, $this->logger);
+        $this->attachmentRepo = new AttachmentRepository($this->db, $this->cache);
+        $this->postRepo = new PostRepository($this->db, $this->cache, $this->logger);
 
         // 初始化測試對象
-        $this->attachmentService = new \App\Domains\Attachment\Services\AttachmentService($this->attachmentRepo, $this->postRepo, $this->cache, $this->authService, $this->uploadDir);
+        $this->attachmentService = new AttachmentService($this->attachmentRepo, $this->postRepo, $this->cache, $this->authService, $this->uploadDir);
 
         $this->createTestTables();
 
@@ -80,16 +84,16 @@ class AttachmentUploadTest extends TestCase
         )");
     }
 
-    protected function createUploadedFileMock(string $filename, string $mimeType, int $size): \Psr\Http\Message\UploadedFileInterface
+    protected function createUploadedFileMock(string $filename, string $mimeType, int $size): UploadedFileInterface
     {
-        $file = Mockery::mock(\Psr\Http\Message\UploadedFileInterface::class);
+        $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')
             ->andReturn($filename);
         $file->shouldReceive('getClientMediaType')
             ->andReturn($mimeType);
         $file->shouldReceive('getSize')
             ->andReturn($size);
-        $stream = Mockery::mock(\Psr\Http\Message\StreamInterface::class);
+        $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')
             ->andReturn(str_repeat('x', $size));
         $stream->shouldReceive('rewind')
@@ -101,7 +105,7 @@ class AttachmentUploadTest extends TestCase
             ->andReturnUsing(function ($path) use ($size) {
                 $directory = dirname($path);
                 if (!is_dir($directory)) {
-                    mkdir($directory, 0755, true);
+                    mkdir($directory, 0o755, true);
                 }
                 file_put_contents($path, str_repeat('x', $size));
 
@@ -122,15 +126,15 @@ class AttachmentUploadTest extends TestCase
             $file = $this->createUploadedFileMock(
                 "test{$i}.jpg",
                 'image/jpeg',
-                1024
+                1024,
             );
 
             try {
                 $attachment = $this->attachmentService->upload($postId, $file, 1);
-                $this->assertInstanceOf(\App\Domains\Attachment\Models\Attachment::class, $attachment);
+                $this->assertInstanceOf(Attachment::class, $attachment);
                 $successfulUploads++;
-            } catch (\Exception $e) {
-                $this->fail("上傳失敗: " . $e->getMessage());
+            } catch (Exception $e) {
+                $this->fail('上傳失敗: ' . $e->getMessage());
             }
         }
 
@@ -146,7 +150,7 @@ class AttachmentUploadTest extends TestCase
         $file = $this->createUploadedFileMock(
             'large_file.jpg',
             'image/jpeg',
-            $fileSize
+            $fileSize,
         );
 
         $attachment = $this->attachmentService->upload($postId, $file, 1);
@@ -172,7 +176,7 @@ class AttachmentUploadTest extends TestCase
             try {
                 $this->attachmentService->upload($postId, $file, 1);
                 $this->fail("應該拒絕 {$mimeType} 類型的檔案");
-            } catch (\App\Shared\Exceptions\ValidationException $e) {
+            } catch (ValidationException $e) {
                 $this->assertStringContainsString('不支援的檔案類型', $e->getMessage());
             }
         }
@@ -182,21 +186,21 @@ class AttachmentUploadTest extends TestCase
     public function should_handle_disk_full_error(): void
     {
         $postId = 1;
-        $file = Mockery::mock(\Psr\Http\Message\UploadedFileInterface::class);
+        $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
 
-        $stream = Mockery::mock(\Psr\Http\Message\StreamInterface::class);
+        $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')->andReturn(true);
         $file->shouldReceive('getStream')->andReturn($stream);
 
         $file->shouldReceive('moveTo')
             ->once()
-            ->andThrow(new \RuntimeException('No space left on device'));
+            ->andThrow(new RuntimeException('No space left on device'));
 
-        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('檔案上傳失敗');
 
         $this->attachmentService->upload($postId, $file, 1);
@@ -206,21 +210,21 @@ class AttachmentUploadTest extends TestCase
     public function should_handle_permission_error(): void
     {
         $postId = 1;
-        $file = Mockery::mock(\Psr\Http\Message\UploadedFileInterface::class);
+        $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
 
-        $stream = Mockery::mock(\Psr\Http\Message\StreamInterface::class);
+        $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')->andReturn(true);
         $file->shouldReceive('getStream')->andReturn($stream);
 
         $file->shouldReceive('moveTo')
             ->once()
-            ->andThrow(new \RuntimeException('Permission denied'));
+            ->andThrow(new RuntimeException('Permission denied'));
 
-        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('檔案上傳失敗');
 
         $this->attachmentService->upload($postId, $file, 1);
@@ -230,7 +234,7 @@ class AttachmentUploadTest extends TestCase
     {
         // 清理測試檔案
         if (is_dir($this->uploadDir)) {
-            chmod($this->uploadDir, 0755); // 恢復權限以便刪除
+            chmod($this->uploadDir, 0o755); // 恢復權限以便刪除
             $files = glob($this->uploadDir . '/*');
             foreach ($files as $file) {
                 if (is_file($file)) {

@@ -74,7 +74,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $appHandler = new RotatingFileHandler(
             $logsDir . '/app.log',
             0, // 保留所有檔案
-            Logger::DEBUG
+            Logger::DEBUG,
         );
         $appHandler->setFormatter(new JsonFormatter());
         $this->logger->pushHandler($appHandler);
@@ -84,7 +84,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $securityHandler = new RotatingFileHandler(
             $logsDir . '/security.log',
             30, // 保留30天
-            Logger::INFO
+            Logger::INFO,
         );
         $securityHandler->setFormatter(new JsonFormatter());
         $this->securityLogger->pushHandler($securityHandler);
@@ -93,7 +93,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $this->auditLogger = new Logger('audit');
         $auditHandler = new StreamHandler(
             $logsDir . '/audit.log',
-            Logger::INFO
+            Logger::INFO,
         );
         $auditHandler->setFormatter(new JsonFormatter());
         $this->auditLogger->pushHandler($auditHandler);
@@ -108,9 +108,9 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     private function ensureLogDirectory(string $path): void
     {
         if (!is_dir($path)) {
-            mkdir($path, 0750, true);
+            mkdir($path, 0o750, true);
         }
-        chmod($path, 0750);
+        chmod($path, 0o750);
     }
 
     /**
@@ -128,14 +128,14 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         foreach ($logFiles as $file) {
             $filepath = $logsDir . '/' . $file;
             if (file_exists($filepath)) {
-                chmod($filepath, 0640);
+                chmod($filepath, 0o640);
             }
         }
 
         // 也處理輪轉的日誌檔案
         $rotatedFiles = glob($logsDir . '/*.log-*');
         foreach ($rotatedFiles as $file) {
-            chmod($file, 0640);
+            chmod($file, 0o640);
         }
     }
 
@@ -217,7 +217,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
 
         $this->securityLogger->warning(
             "Authorization Failure: Access denied to {$resource} for action {$action}",
-            $enrichedContext
+            $enrichedContext,
         );
     }
 
@@ -328,8 +328,8 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $logFiles = glob($logsDir . '/*.log*');
 
         foreach ($logFiles as $file) {
-            $perms = fileperms($file) & 0777;
-            $expected = 0640;
+            $perms = fileperms($file) & 0o777;
+            $expected = 0o640;
 
             $results[basename($file)] = [
                 'current_permissions' => sprintf('%o', $perms),
@@ -358,7 +358,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $logsDir = storage_path('logs');
         $stats = [
             'directory' => $logsDir,
-            'directory_permissions' => sprintf('%o', fileperms($logsDir) & 0777),
+            'directory_permissions' => sprintf('%o', fileperms($logsDir) & 0o777),
             'files' => [],
         ];
 
@@ -367,7 +367,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         foreach ($logFiles as $file) {
             $stats['files'][basename($file)] = [
                 'size' => filesize($file),
-                'permissions' => sprintf('%o', fileperms($file) & 0777),
+                'permissions' => sprintf('%o', fileperms($file) & 0o777),
                 'last_modified' => date('Y-m-d H:i:s', filemtime($file)),
             ];
         }

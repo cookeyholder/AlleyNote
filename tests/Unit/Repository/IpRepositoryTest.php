@@ -6,10 +6,10 @@ namespace Tests\Unit\Repository;
 
 use App\Domains\Security\Repositories\IpRepository;
 use App\Infrastructure\Services\CacheService;
+use InvalidArgumentException;
 use Mockery;
 use PDO;
 use PHPUnit\Framework\TestCase;
-
 
 class IpRepositoryTest extends TestCase
 {
@@ -25,7 +25,7 @@ class IpRepositoryTest extends TestCase
         $this->db = new PDO('sqlite::memory:');
         $this->createTestTables();
 
-        $this->cache = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
+        $this->cache = Mockery::mock(CacheService::class);
         $this->cache->shouldReceive('remember')
             ->byDefault()
             ->andReturnUsing(function ($key, $callback) {
@@ -42,7 +42,7 @@ class IpRepositoryTest extends TestCase
             ->byDefault()
             ->andReturn(false);
 
-        $this->repository = new \App\Domains\Security\Repositories\IpRepository($this->db, $this->cache);
+        $this->repository = new IpRepository($this->db, $this->cache);
     }
 
     protected function createTestTables(): void
@@ -90,7 +90,7 @@ class IpRepositoryTest extends TestCase
             'type' => 1,
         ];
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('無效的 IP 位址格式');
 
         $this->repository->create($data);

@@ -5,27 +5,28 @@ declare(strict_types=1);
 namespace Tests\Unit\Services;
 
 use App\Domains\Security\Contracts\IpRepositoryInterface;
-use App\Shared\Validation\ValidationException;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
+use App\Domains\Security\Models\IpList;
 use App\Domains\Security\Services\IpService;
 use App\Shared\Contracts\ValidatorInterface;
-
+use App\Shared\Exceptions\ValidationException;
+use App\Shared\Validation\ValidationResult;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use App\Domains\Security\Models\IpList;
-
 
 class IpServiceTest extends TestCase
 {
     private IpRepositoryInterface $repository;
+
     private ValidatorInterface $validator;
+
     private IpService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->repository = Mockery::mock(IpRepositoryInterface::class);
-        $this->validator = Mockery::mock(\App\Shared\Contracts\ValidatorInterface::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
 
         // 設定 Validator Mock 的通用預期
         $this->validator->shouldReceive('addRule')
@@ -35,7 +36,7 @@ class IpServiceTest extends TestCase
             ->zeroOrMoreTimes()
             ->andReturnSelf();
 
-        $this->service = new \App\Domains\Security\Services\IpService($this->repository);
+        $this->service = new IpService($this->repository);
     }
 
     public function testCanCreateIpRule(): void
@@ -83,11 +84,11 @@ class IpServiceTest extends TestCase
         $this->validator->shouldReceive('validateOrFail')
             ->once()
             ->with(Mockery::any(), Mockery::any())
-            ->andThrow(new \App\Shared\Exceptions\ValidationException(
-                new \App\Shared\Validation\ValidationResult(false, ['ip_address' => ['無效的 IP 位址格式']], [], [])
+            ->andThrow(new ValidationException(
+                new ValidationResult(false, ['ip_address' => ['無效的 IP 位址格式']], [], []),
             ));
 
-        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $dto = new CreateIpRuleDTO($this->validator, $data);
         $this->service->createIpRule($dto);
@@ -104,11 +105,11 @@ class IpServiceTest extends TestCase
         $this->validator->shouldReceive('validateOrFail')
             ->once()
             ->with(Mockery::any(), Mockery::any())
-            ->andThrow(new \App\Shared\Exceptions\ValidationException(
-                new \App\Shared\Validation\ValidationResult(false, ['action' => ['無效的動作類型']], [], [])
+            ->andThrow(new ValidationException(
+                new ValidationResult(false, ['action' => ['無效的動作類型']], [], []),
             ));
 
-        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $dto = new CreateIpRuleDTO($this->validator, $data);
         $this->service->createIpRule($dto);

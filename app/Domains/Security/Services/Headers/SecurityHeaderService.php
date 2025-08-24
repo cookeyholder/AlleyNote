@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Security\Services\Headers;
 
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
+use Exception;
 
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
@@ -30,7 +31,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                 'max-age=%d%s%s',
                 $this->config['hsts']['max_age'],
                 $this->config['hsts']['include_subdomains'] ? '; includeSubDomains' : '',
-                $this->config['hsts']['preload'] ? '; preload' : ''
+                $this->config['hsts']['preload'] ? '; preload' : '',
             );
             header('Strict-Transport-Security: ' . $hstsValue);
         }
@@ -114,8 +115,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
         if (
-            strpos($contentType, 'application/csp-report') === false &&
-            strpos($contentType, 'application/json') === false
+            strpos($contentType, 'application/csp-report') === false
+            && strpos($contentType, 'application/json') === false
         ) {
             http_response_code(400);
 
@@ -176,7 +177,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             ]);
 
             file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log('Failed to send CSP violation to monitoring: ' . $e->getMessage());
         }
     }
@@ -238,9 +239,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     private function isHTTPS(): bool
     {
-        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
-            $_SERVER['SERVER_PORT'] == 443 ||
-            (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || $_SERVER['SERVER_PORT'] == 443
+            || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
     }
 
     private function getDefaultConfig(): array

@@ -9,18 +9,31 @@ use DateTime;
 class Post
 {
     private ?int $id = null;
+
     private ?string $uuid = null;
+
     private ?int $seq_number = null;
+
     private ?string $title = null;
+
     private ?string $content = null;
+
     private ?string $status = null;
+
     private ?int $user_id = null;
+
     private ?string $user_ip = null;
+
     private ?bool $is_pinned = false;
+
     private ?int $view_count = 0;
+
     private ?DateTime $publish_date = null;
+
     private ?DateTime $created_at = null;
+
     private ?DateTime $updated_at = null;
+
     private ?DateTime $deleted_at = null;
 
     public function __construct(array $data = [])

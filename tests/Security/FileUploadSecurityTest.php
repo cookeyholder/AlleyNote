@@ -4,26 +4,28 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
-use App\Domains\Attachment\Models\Attachment;
-use App\Shared\Validation\ValidationException;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Post\Models\Post;
 use App\Domains\Post\Repositories\PostRepository;
-
+use App\Domains\Security\Services\AuthorizationService;
+use App\Shared\Validation\ValidationException;
 use Mockery;
+use Mockery\MockInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;
 
-
 class FileUploadSecurityTest extends TestCase
 {
-
     protected AttachmentService $service;
-    protected \App\Domains\Security\Services\AuthorizationService|\Mockery\MockInterface $authService;
+
+    protected \App\Domains\Security\Services\AuthorizationService|MockInterface $authService;
+
     protected AttachmentRepository $attachmentRepo;
+
     protected PostRepository $postRepo;
+
     protected string $uploadDir;
 
     protected function setUp(): void
@@ -31,10 +33,10 @@ class FileUploadSecurityTest extends TestCase
         parent::setUp();
 
         // 初始化mock對象
-        $this->authService = \Mockery::mock(\App\Domains\Security\Services\AuthorizationService::class);
-        $this->attachmentRepo = \Mockery::mock(\App\Domains\Attachment\Repositories\AttachmentRepository::class);
-        $this->postRepo = \Mockery::mock(\App\Domains\Post\Repositories\PostRepository::class);
-        $this->service = \Mockery::mock(AttachmentService::class);
+        $this->authService = Mockery::mock(AuthorizationService::class);
+        $this->attachmentRepo = Mockery::mock(AttachmentRepository::class);
+        $this->postRepo = Mockery::mock(PostRepository::class);
+        $this->service = Mockery::mock(AttachmentService::class);
 
         $this->uploadDir = '/tmp/test-uploads';
 
@@ -43,7 +45,7 @@ class FileUploadSecurityTest extends TestCase
         $this->authService->shouldReceive('canDeleteAttachment')->byDefault()->andReturn(true);
 
         if (!is_dir($this->uploadDir)) {
-            mkdir($this->uploadDir, 0777, true);
+            mkdir($this->uploadDir, 0o777, true);
         }
     }
 
@@ -57,11 +59,11 @@ class FileUploadSecurityTest extends TestCase
             'application/x-msdownload',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicious"; ?>'
+            '<?php echo "malicious"; ?>',
         );
 
         // 模擬文章存在
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $postId,
             'uuid' => 'test-uuid',
             'title' => '測試文章',
@@ -77,7 +79,7 @@ class FileUploadSecurityTest extends TestCase
             ->andReturn($post);
 
         // 預期會拋出例外
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('不支援的檔案類型');
 
         // 執行測試
@@ -94,11 +96,11 @@ class FileUploadSecurityTest extends TestCase
             'image/jpeg',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicious"; ?>'
+            '<?php echo "malicious"; ?>',
         );
 
         // 模擬文章存在
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $postId,
             'uuid' => 'test-uuid',
             'title' => '測試文章',
@@ -118,7 +120,7 @@ class FileUploadSecurityTest extends TestCase
             ->never();
 
         // 預期會拋出例外
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('不支援的檔案類型');
 
         // 執行測試
@@ -135,11 +137,11 @@ class FileUploadSecurityTest extends TestCase
             'image/jpeg',
             21 * 1024 * 1024, // 21MB
             UPLOAD_ERR_OK,
-            str_repeat('a', 1024) // 模擬檔案內容
+            str_repeat('a', 1024), // 模擬檔案內容
         );
 
         // 模擬文章存在
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $postId,
             'uuid' => 'test-uuid',
             'title' => '測試文章',
@@ -155,7 +157,7 @@ class FileUploadSecurityTest extends TestCase
             ->andReturn($post);
 
         // 預期會拋出例外
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('檔案大小超過限制（10MB）');
 
         // 執行測試
@@ -172,11 +174,11 @@ class FileUploadSecurityTest extends TestCase
             'application/x-httpd-php',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicious"; ?>'
+            '<?php echo "malicious"; ?>',
         );
 
         // 模擬文章存在
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $postId,
             'uuid' => 'test-uuid',
             'title' => '測試文章',
@@ -192,7 +194,7 @@ class FileUploadSecurityTest extends TestCase
             ->andReturn($post);
 
         // 預期會拋出例外
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('不支援的檔案類型');
 
         // 執行測試
@@ -209,11 +211,11 @@ class FileUploadSecurityTest extends TestCase
             'text/plain',
             1024,
             UPLOAD_ERR_OK,
-            'root:x:0:0:root:/root:/bin/bash'
+            'root:x:0:0:root:/root:/bin/bash',
         );
 
         // 模擬文章存在
-        $post = new \App\Domains\Post\Models\Post([
+        $post = new Post([
             'id' => $postId,
             'uuid' => 'test-uuid',
             'title' => '測試文章',
@@ -233,7 +235,7 @@ class FileUploadSecurityTest extends TestCase
             ->never();
 
         // 預期會拋出例外
-        $this->expectException(\App\Shared\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('不支援的檔案類型');
 
         // 執行測試
@@ -245,7 +247,7 @@ class FileUploadSecurityTest extends TestCase
         string $mimeType,
         int $size,
         int $error,
-        string $content
+        string $content,
     ): UploadedFileInterface {
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn($filename);

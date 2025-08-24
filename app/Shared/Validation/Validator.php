@@ -5,17 +5,21 @@ declare(strict_types=1);
 namespace App\Shared\Validation;
 
 use App\Shared\Contracts\ValidatorInterface;
+use DateTime;
 
 /**
- * 主要驗證器類
+ * 主要驗證器類.
  *
  * 提供完整的資料驗證功能，支援多種驗證規則和自訂規則
  */
 class Validator implements ValidatorInterface
 {
     private array $customRules = [];
+
     private array $customMessages = [];
+
     private bool $stopOnFirstFailure = false;
+
     private array $defaultMessages = [
         'required' => '欄位 :field 為必填項目',
         'required_if' => '當 :other 為 :value 時，欄位 :field 為必填項目',
@@ -167,6 +171,7 @@ class Validator implements ValidatorInterface
     public function stopOnFirstFailure(bool $stopOnFirstFailure = true): self
     {
         $this->stopOnFirstFailure = $stopOnFirstFailure;
+
         return $this;
     }
 
@@ -258,7 +263,8 @@ class Validator implements ValidatorInterface
             return false;
         }
 
-        $date = \DateTime::createFromFormat('Y-m-d', $value);
+        $date = DateTime::createFromFormat('Y-m-d', $value);
+
         return $date && $date->format('Y-m-d') === $value;
     }
 
@@ -273,12 +279,12 @@ class Validator implements ValidatorInterface
             'Y-m-d H:i:s',
             'Y-m-d\TH:i:s',
             'Y-m-d\TH:i:s\Z',
-            \DateTime::RFC3339,
-            \DateTime::ISO8601,
+            DateTime::RFC3339,
+            DateTime::ISO8601,
         ];
 
         foreach ($formats as $format) {
-            $date = \DateTime::createFromFormat($format, $value);
+            $date = DateTime::createFromFormat($format, $value);
             if ($date && $date->format($format) === $value) {
                 return true;
             }
@@ -340,6 +346,7 @@ class Validator implements ValidatorInterface
         }
 
         $minLength = (int) $parameters[0];
+
         return mb_strlen($value) >= $minLength;
     }
 
@@ -350,6 +357,7 @@ class Validator implements ValidatorInterface
         }
 
         $maxLength = (int) $parameters[0];
+
         return mb_strlen($value) <= $maxLength;
     }
 
@@ -360,6 +368,7 @@ class Validator implements ValidatorInterface
         }
 
         $length = (int) $parameters[0];
+
         return mb_strlen($value) === $length;
     }
 
@@ -374,16 +383,19 @@ class Validator implements ValidatorInterface
 
         if (is_numeric($value)) {
             $numValue = (float) $value;
+
             return $numValue >= $min && $numValue <= $max;
         }
 
         if (is_string($value)) {
             $length = mb_strlen($value);
+
             return $length >= $min && $length <= $max;
         }
 
         if (is_array($value)) {
             $count = count($value);
+
             return $count >= $min && $count <= $max;
         }
 
@@ -407,6 +419,7 @@ class Validator implements ValidatorInterface
         }
 
         $pattern = $parameters[0];
+
         return preg_match($pattern, $value) === 1;
     }
 

@@ -4,24 +4,25 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
 
+use App\Domains\Post\Contracts\PostRepositoryInterface;
+use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
+use App\Domains\Post\Enums\PostStatus;
+use App\Domains\Post\Models\Post;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
-use App\Domains\Post\Models\Post;
-use App\Domains\Post\Contracts\PostRepositoryInterface;
-use App\Domains\Post\Contracts\PostServiceInterface;
-use App\Domains\Post\Enums\PostStatus;
-use App\Shared\Contracts\ValidatorInterface;
 use DateTimeImmutable;
+use Exception;
+use InvalidArgumentException;
+use RuntimeException;
 
 class PostService implements PostServiceInterface
 {
     public function __construct(
-        private readonly PostRepositoryInterface $repository
-    ) {
-    }
+        private readonly PostRepositoryInterface $repository,
+    ) {}
 
     public function createPost(CreatePostDTO $dto): Post
     {
@@ -29,7 +30,7 @@ class PostService implements PostServiceInterface
         $data = $dto->toArray();
 
         // 設定建立時間
-        $data['created_at'] = (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339);
 
         return $this->repository->create($data);
     }
@@ -59,14 +60,14 @@ class PostService implements PostServiceInterface
                     sprintf(
                         '無法將文章從「%s」狀態變更為「%s」',
                         $currentStatus->getLabel(),
-                        $targetStatus->getLabel()
-                    )
+                        $targetStatus->getLabel(),
+                    ),
                 );
             }
         }
 
         // 設定更新時間
-        $data['updated_at'] = (new DateTimeImmutable())->format(DateTimeImmutable::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339);
 
         return $this->repository->update($id, $data);
     }
@@ -75,12 +76,12 @@ class PostService implements PostServiceInterface
     {
         try {
             return $this->repository->safeDelete($id);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             throw new StateTransitionException($e->getMessage());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log("刪除文章失敗 (ID: $id): " . $e->getMessage());
 
-            throw new \RuntimeException('刪除文章時發生錯誤');
+            throw new RuntimeException('刪除文章時發生錯誤');
         }
     }
 
@@ -129,12 +130,12 @@ class PostService implements PostServiceInterface
     {
         try {
             return $this->repository->safeSetPinned($id, $isPinned);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             throw new StateTransitionException($e->getMessage());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log("設定置頂狀態失敗 (ID: $id): " . $e->getMessage());
 
-            throw new \RuntimeException('設定置頂狀態時發生錯誤');
+            throw new RuntimeException('設定置頂狀態時發生錯誤');
         }
     }
 
