@@ -50,29 +50,39 @@ log_info "開始 SSL 憑證續簽檢查..."
 # 切換到專案目錄
 cd "$PROJECT_DIR"
 
+# Detect compose command (prefer "docker compose" if available)
+if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD="docker-compose"
+else
+    log_error "需要安裝 Docker Compose (docker compose 或 docker-compose)"
+    exit 1
+fi
+
 # 檢查 Docker Compose 是否正常運作
-if ! docker-compose ps | grep -q "Up"; then
+if ! $COMPOSE_CMD ps | grep -q "Up"; then
     log_warning "部分服務未啟動，嘗試啟動服務..."
-    docker-compose up -d
+    $COMPOSE_CMD up -d
     sleep 10
 fi
 
 # 執行憑證續簽
 log_info "檢查憑證是否需要續簽..."
 
-if docker-compose run --rm certbot renew --dry-run; then
+if $COMPOSE_CMD run --rm certbot renew --dry-run; then
     log_info "憑證續簽檢查通過，執行實際續簽..."
     
-    if docker-compose run --rm certbot renew --quiet; then
+    if $COMPOSE_CMD run --rm certbot renew --quiet; then
         log_success "憑證續簽完成"
         
         # 重新載入 Nginx 設定
         log_info "重新載入 Nginx 設定..."
-        if docker-compose exec -T nginx nginx -s reload; then
+    if $COMPOSE_CMD exec -T nginx nginx -s reload; then
             log_success "Nginx 設定重新載入完成"
         else
             log_warning "Nginx 設定重新載入失敗，嘗試重啟容器..."
-            docker-compose restart nginx
+            $COMPOSE_CMD restart nginx
             log_info "Nginx 容器已重啟"
         fi
         
@@ -80,16 +90,16 @@ if docker-compose run --rm certbot renew --dry-run; then
         log_info "檢查憑證有效期..."
         SSL_DOMAIN=$(grep "SSL_DOMAIN=" .env | cut -d'=' -f2)
         if [ -f "ssl-data/live/$SSL_DOMAIN/fullchain.pem" ]; then
-            EXPIRY_DATE=$(docker-compose exec -T certbot openssl x509 -in "/etc/letsencrypt/live/$SSL_DOMAIN/fullchain.pem" -noout -enddate | cut -d'=' -f2)
+            EXPIRY_DATE=$($COMPOSE_CMD exec -T certbot openssl x509 -in "/etc/letsencrypt/live/$SSL_DOMAIN/fullchain.pem" -noout -enddate | cut -d'=' -f2)
             log_info "憑證有效期至: $EXPIRY_DATE"
         fi
         
         # 發送通知（如果設定了 Telegram）
-        send_notification "SSL 憑證續簽成功" "網域 $SSL_DOMAIN 的 SSL 憑證已成功續簽"
+    send_notification "SSL 憑證續簽成功" "網域 $SSL_DOMAIN 的 SSL 憑證已成功續簽"
         
     else
         log_error "憑證續簽失敗！"
-        send_notification "SSL 憑證續簽失敗" "網域 $SSL_DOMAIN 的 SSL 憑證續簽失敗，請檢查設定"
+    send_notification "SSL 憑證續簽失敗" "網域 $SSL_DOMAIN 的 SSL 憑證續簽失敗，請檢查設定"
         exit 1
     fi
 else

@@ -1,12 +1,167 @@
+
 # AlleyNote 公布欄網站
 
-[![測試](https://github.com/your-org/alleynote/workflows/測試/badge.svg)](https://github.com/your-org/alleynote/actions)
-[![程式碼品質](https://github.com/your-org/alleynote/workflows/程式碼品質/badge.svg)](https://github.com/your-org/alleynote/actions)
-[![部署](https://github.com/your-org/alleynote/workflows/部署/badge.svg)](https://github.com/your-org/alleynote/actions)
+[![測試](https://github.com/cookeyholder/alleynote/workflows/測試/badge.svg)](https://github.com/cookeyholder/alleynote/actions)
+[![程式碼品質](https://github.com/cookeyholder/alleynote/workflows/程式碼品質/badge.svg)](https://github.com/cookeyholder/alleynote/actions)
+[![部署](https://github.com/cookeyholder/alleynote/workflows/部署/badge.svg)](https://github.com/cookeyholder/alleynote/actions)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.svg)](https://www.php.net)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![測試覆蓋率](https://img.shields.io/badge/Coverage-91%25-brightgreen.svg)](docs/TEST_SUITE_IMPROVEMENTS.md)
 [![架構版本](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/ARCHITECTURE_AUDIT.md)
+
+---
+
+## 專案簡介
+
+AlleyNote 是一個現代化、可延展的公布欄網站系統，專為學校、社區、企業等單位設計，支援多用戶、權限控管、IP 黑白名單、附件上傳、資料自動備份等功能。
+本專案採用 PHP 8.4.11，SQLite 資料庫，DDD 架構，並以 Docker 容器化部署，具備完善自動化測試、CI/CD、程式碼品質檢查。
+
+---
+
+## 技術架構
+
+- **後端語言**：PHP 8.4.11
+- **Web 伺服器**：NGINX
+- **資料庫**：SQLite3
+- **快取系統**：File Cache + APCu
+- **依賴管理**：Composer
+- **容器化**：Docker, Docker Compose
+- **程式碼品質**：PHPStan、PHP-CS-Fixer、PHPUnit
+- **架構模式**：DDD（Domain-Driven Design）
+
+---
+
+## 主要功能
+
+- 文章管理（CRUD、置頂、封存）
+- 附件上傳與管理
+- 使用者認證、權限、角色控管
+- 安全防護（IP 黑白名單、CSRF、XSS 過濾）
+- 自動化備份與災難復原
+- SSL 憑證自動管理（Let's Encrypt）
+- 完整測試覆蓋、CI/CD、程式碼品質檢查
+
+---
+
+## 專案結構
+
+```
+AlleyNote/
+├── app/                        # 應用程式核心（DDD 分層）
+│   ├── Application/           # 應用層（API、控制器）
+│   ├── Domains/               # 領域層（業務邏輯、模型、DTO、服務）
+│   ├── Infrastructure/        # 基礎設施層（資料庫、外部服務）
+│   └── Shared/                # 共用元件、驗證器、例外處理
+├── tests/                     # 測試套件（Unit/Integration/Security）
+├── docs/                      # 技術與管理文件
+├── scripts/                   # 維運腳本
+├── public/                    # 公開檔案
+├── database/                  # SQLite 資料庫
+├── docker/                    # Docker 設定
+├── storage/                   # 檔案儲存
+└── .github/workflows/         # CI/CD 流程
+```
+
+---
+
+## 系統需求
+
+- **作業系統**：Debian Linux 12
+- **PHP**：8.4.11
+- **Docker**：24.0.0+
+- **Docker Compose**：2.20.0+
+- **SQLite3**
+- **NGINX**
+- **硬體**：2 核心 CPU、4GB RAM、20GB+ 硬碟空間
+
+---
+
+## 安裝與快速開始
+
+1. 取得原始碼
+   ```bash
+   git clone https://github.com/cookeyholder/alleynote.git
+   cd alleynote
+   ```
+2. 設定環境變數
+   ```bash
+   cp .env.example .env
+   # 編輯 .env 檔案，設定管理員帳號、資料庫等
+   ```
+3. 啟動服務
+   ```bash
+   docker compose up -d
+   ```
+4. 安裝相依套件
+   ```bash
+   docker compose exec web composer install
+   ```
+5. 初始化系統
+   ```bash
+   ./scripts/init-database.sh
+   ./scripts/create-admin.sh
+   ./scripts/health-check.sh
+   ```
+6. 訪問系統
+   - 網站首頁: http://localhost:8080
+   - 管理後台: http://localhost:8080/admin
+
+---
+
+## 開發與測試流程
+
+- 分支管理、PR、CI/CD、測試覆蓋率、靜態分析、程式碼風格檢查皆有自動化流程
+- 測試分類：Unit、Integration、Security
+- 主要測試指令：
+   ```bash
+   ./vendor/bin/phpunit
+   ./vendor/bin/phpstan analyse
+   ./vendor/bin/php-cs-fixer fix
+   ```
+
+---
+
+## 文件資源
+
+- [管理員快速入門指南](docs/ADMIN_QUICK_START.md)
+- [系統需求與環境準備](docs/SYSTEM_REQUIREMENTS.md)
+- [管理員操作手冊](docs/ADMIN_MANUAL.md)
+- [故障排除與維護指南](docs/TROUBLESHOOTING_GUIDE.md)
+- [開發者指南](docs/DEVELOPER_GUIDE.md)
+- [API 文件](docs/API_DOCUMENTATION.md)
+- [架構審查報告](docs/ARCHITECTURE_AUDIT.md)
+- [測試改善報告](docs/TEST_SUITE_IMPROVEMENTS.md)
+- [部署說明](docs/DEPLOYMENT.md)
+- [SSL 設定指南](docs/SSL_DEPLOYMENT_GUIDE.md)
+- [版本更新日誌](CHANGELOG.md)
+- [系統規格書](AlleyNote公布欄網站規格書.md)
+
+---
+
+## 貢獻指南
+
+1. Fork 專案並建立分支
+2. 遵循 DDD 架構原則開發
+3. 撰寫/更新測試
+4. 確保程式碼品質檢查通過
+5. 提交 Pull Request，說明變更內容
+
+---
+
+## 授權
+
+本專案採用 MIT 授權，詳見 [LICENSE](LICENSE)。
+
+---
+
+## 聯絡方式
+
+- **Issues**: [GitHub Issues](https://github.com/cookeyholder/alleynote/issues)
+- **Wiki**: [專案 Wiki](https://github.com/cookeyholder/alleynote/wiki)
+
+---
+
+*🎉 歡迎貢獻！請先閱讀 [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) 了解開發流程。*
 
 ---
 
@@ -141,7 +296,7 @@ AlleyNote/
 ### 1. 取得專案原始碼
 
 ```bash
-git clone https://github.com/your-org/alleynote.git
+git clone https://github.com/cookeyholder/alleynote.git
 cd alleynote
 ```
 
@@ -274,15 +429,15 @@ docker compose exec web composer install
 
 ### 基本部署步驟
 ```bash
-# 1. 克隆專案
-git clone https://github.com/your-org/alleynote.git
+# 1. Clone 專案
+git clone https://github.com/cookeyholder/alleynote.git
 cd alleynote
 
 # 2. 快速啟動
 ./alleynote.sh start
 
 # 3. 初始化資料庫
-docker-compose exec web ./scripts/init-sqlite.sh
+docker compose exec web ./scripts/init-sqlite.sh
 ```
 
 ### 完整管理文件

@@ -8,6 +8,16 @@ set -e
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
 PROJECT_NAME="alleynote"
 
+# Detect compose command (prefer "docker compose" if available)
+if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD="docker-compose"
+else
+    echo "錯誤: 需要安裝 Docker Compose (docker compose 或 docker-compose)"
+    exit 1
+fi
+
 show_help() {
     echo "AlleyNote 專案管理工具"
     echo ""
@@ -43,7 +53,7 @@ show_help() {
 
 check_requirements() {
     command -v docker >/dev/null 2>&1 || { echo "錯誤: 需要安裝 Docker"; exit 1; }
-    command -v docker-compose >/dev/null 2>&1 || { echo "錯誤: 需要安裝 Docker Compose"; exit 1; }
+    # COMPOSE_CMD already detected at script start
 }
 
 wait_for_service() {
@@ -54,7 +64,7 @@ wait_for_service() {
     echo "等待 $service 服務啟動..."
     
     while [ $attempt -le $max_attempts ]; do
-        if docker-compose -f "$COMPOSE_FILE" ps "$service" | grep -q "Up"; then
+    if $COMPOSE_CMD -f "$COMPOSE_FILE" ps "$service" | grep -q "Up"; then
             echo "$service 服務已啟動"
             return 0
         fi
@@ -70,40 +80,40 @@ wait_for_service() {
 case "${1:-help}" in
     "start")
         echo "啟動 AlleyNote 服務..."
-        docker-compose -f "$COMPOSE_FILE" up -d
-        wait_for_service web
+    $COMPOSE_CMD -f "$COMPOSE_FILE" up -d
+    wait_for_service web
         echo "服務啟動完成！"
         echo "網站: http://localhost"
         ;;
         
     "stop")
         echo "停止 AlleyNote 服務..."
-        docker-compose -f "$COMPOSE_FILE" down
+    $COMPOSE_CMD -f "$COMPOSE_FILE" down
         echo "服務已停止"
         ;;
         
     "restart")
         echo "重啟 AlleyNote 服務..."
-        docker-compose -f "$COMPOSE_FILE" restart
+    $COMPOSE_CMD -f "$COMPOSE_FILE" restart
         echo "服務已重啟"
         ;;
         
     "status")
         echo "AlleyNote 服務狀態:"
-        docker-compose -f "$COMPOSE_FILE" ps
+    $COMPOSE_CMD -f "$COMPOSE_FILE" ps
         ;;
         
     "logs")
         if [ -n "$2" ]; then
-            docker-compose -f "$COMPOSE_FILE" logs -f "$2"
+            $COMPOSE_CMD -f "$COMPOSE_FILE" logs -f "$2"
         else
-            docker-compose -f "$COMPOSE_FILE" logs -f
+            $COMPOSE_CMD -f "$COMPOSE_FILE" logs -f
         fi
         ;;
         
     "shell")
         echo "進入 web 容器..."
-        docker-compose -f "$COMPOSE_FILE" exec web bash
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web bash
         ;;
         
     "init")
@@ -118,12 +128,12 @@ case "${1:-help}" in
         
         # 啟動服務
         echo "啟動服務..."
-        docker-compose -f "$COMPOSE_FILE" up -d
-        wait_for_service web
+    $COMPOSE_CMD -f "$COMPOSE_FILE" up -d
+    wait_for_service web
         
         # 初始化資料庫
         echo "初始化資料庫..."
-        docker-compose -f "$COMPOSE_FILE" exec web ./scripts/init-sqlite.sh
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web ./scripts/init-sqlite.sh
         
         echo "專案初始化完成！"
         echo "網站: http://localhost"
@@ -131,12 +141,12 @@ case "${1:-help}" in
         
     "init-db")
         echo "初始化 SQLite 資料庫..."
-        docker-compose -f "$COMPOSE_FILE" exec web ./scripts/init-sqlite.sh
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web ./scripts/init-sqlite.sh
         ;;
         
     "backup-db")
         echo "備份 SQLite 資料庫..."
-        docker-compose -f "$COMPOSE_FILE" exec web ./scripts/backup_sqlite.sh
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web ./scripts/backup_sqlite.sh
         ;;
         
     "restore-db")
@@ -146,7 +156,7 @@ case "${1:-help}" in
             exit 1
         fi
         echo "還原 SQLite 資料庫..."
-        docker-compose -f "$COMPOSE_FILE" exec web ./scripts/restore_sqlite.sh "$2"
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web ./scripts/restore_sqlite.sh "$2"
         ;;
         
     "ssl-setup")
@@ -161,14 +171,14 @@ case "${1:-help}" in
         
     "ssl-renew")
         echo "手動續簽 SSL 憑證..."
-        docker-compose -f "$COMPOSE_FILE" exec certbot certbot renew
-        docker-compose -f "$COMPOSE_FILE" restart nginx
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec certbot certbot renew
+    $COMPOSE_CMD -f "$COMPOSE_FILE" restart nginx
         echo "SSL 憑證續簽完成"
         ;;
         
     "test")
         echo "執行測試套件..."
-        docker-compose -f "$COMPOSE_FILE" exec web ./vendor/bin/phpunit
+    $COMPOSE_CMD -f "$COMPOSE_FILE" exec web ./vendor/bin/phpunit
         ;;
         
     "clean")
@@ -181,8 +191,8 @@ case "${1:-help}" in
     "update")
         echo "更新專案..."
         git pull
-        docker-compose -f "$COMPOSE_FILE" build --no-cache
-        docker-compose -f "$COMPOSE_FILE" up -d
+    $COMPOSE_CMD -f "$COMPOSE_FILE" build --no-cache
+    $COMPOSE_CMD -f "$COMPOSE_FILE" up -d
         echo "更新完成"
         ;;
         

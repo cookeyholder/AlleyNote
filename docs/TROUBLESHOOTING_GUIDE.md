@@ -18,7 +18,7 @@
 ---
 
 ## 🚨 緊急故障處理
-
+docker compose ps
 ### 系統完全無法訪問
 
 #### 診斷步驟
@@ -29,8 +29,8 @@ ping your-server-ip
 # 2. 檢查 SSH 連線
 ssh user@your-server-ip
 
-# 3. 檢查容器狀態
-docker compose ps
+docker compose down --remove-orphans
+docker compose up -d
 
 # 4. 檢查系統資源
 top
@@ -73,10 +73,10 @@ docker run --rm -v $(pwd)/database:/data sqlite:latest sqlite3 /data/alleynote.d
 # 4. 嘗試修復
 docker run --rm -v $(pwd)/database:/data sqlite:latest sqlite3 /data/alleynote.db ".recover" > database/recovered.sql
 
-# 5. 如果無法修復，恢復最新備份
+docker compose exec certbot certbot renew --force-renewal
 ./scripts/restore_sqlite.sh database/backups/latest_backup.db
 ```
-
+docker compose exec nginx nginx -s reload
 ### SSL 憑證過期
 
 #### 快速修復
@@ -87,13 +87,13 @@ openssl x509 -in ssl-data/live/yourdomain.com/fullchain.pem -text -noout | grep 
 # 2. 強制更新憑證
 docker compose exec certbot certbot renew --force-renewal
 
-# 3. 重新載入 Nginx
+docker compose logs web | tail -50
 docker compose exec nginx nginx -s reload
 
 # 4. 如果更新失敗，重新申請憑證
 ./scripts/ssl-setup.sh yourdomain.com admin@yourdomain.com
 ```
-
+docker compose exec nginx tail -50 /var/log/nginx/error.log
 ---
 
 ## 🔍 常見問題診斷
@@ -107,15 +107,15 @@ uptime
 top
 
 # 2. 檢查記憶體使用
-free -h
-ps aux --sort=-%mem | head -10
+docker compose exec web chown -R www-data:www-data /var/www/html
+docker compose exec web chmod -R 755 /var/www/html
 
 # 3. 檢查磁碟 I/O
 iostat -x 1 5
 
 # 4. 檢查網路連線
-netstat -i
-ss -tuln
+docker compose down
+docker compose up -d --build
 
 # 5. 檢查 Docker 容器資源
 docker stats --no-stream
@@ -439,8 +439,8 @@ docker volume prune -f
 
 # 3. 優化資料庫
 echo "3. 優化資料庫..."
-docker-compose exec web sqlite3 database/alleynote.db "VACUUM;"
-docker-compose exec web sqlite3 database/alleynote.db "ANALYZE;"
+docker compose exec -T web sqlite3 database/alleynote.db "VACUUM;"
+docker compose exec -T web sqlite3 database/alleynote.db "ANALYZE;"
 
 # 4. 備份驗證
 echo "4. 驗證備份完整性..."
@@ -455,7 +455,7 @@ grep -i "failed\|error\|attack" logs/security.log | tail -10
 
 # 6. 效能分析
 echo "6. 效能分析..."
-docker-compose exec web php scripts/db-performance.php
+docker compose exec -T web php scripts/db-performance.php
 
 echo "=== 每週維護完成 ==="
 ```
@@ -474,9 +474,9 @@ sudo apt update && sudo apt upgrade -y
 
 # 2. 重新整理容器映像
 echo "2. 更新容器映像..."
-docker-compose pull
-docker-compose down
-docker-compose up -d --build
+docker compose pull
+docker compose down
+docker compose up -d --build
 
 # 3. 清理舊備份
 echo "3. 清理舊備份..."
@@ -485,7 +485,7 @@ find database/backups/ -name "*.tar.gz" -mtime +90 -delete
 
 # 4. 檢查 SSL 憑證續簽
 echo "4. 檢查 SSL 憑證..."
-docker-compose exec certbot certbot certificates
+docker compose exec -T certbot certbot certificates
 
 # 5. 安全掃描
 echo "5. 執行安全掃描..."
@@ -522,10 +522,10 @@ cat > curl-format.txt << 'EOF'
 EOF
 
 # 2. 分析慢查詢
-docker-compose exec web php scripts/slow-query-analyzer.php
+docker compose exec -T web php scripts/slow-query-analyzer.php
 
 # 3. 檢查快取命中率
-docker-compose exec redis redis-cli info stats | grep hit
+docker compose exec -T redis redis-cli info stats | grep hit
 ```
 
 #### 優化策略
@@ -550,7 +550,7 @@ gzip_types text/plain text/css application/json application/javascript;
 client_max_body_size 10M;
 
 # 4. 資料庫索引優化
-docker-compose exec web sqlite3 database/alleynote.db "
+docker compose exec -T web sqlite3 database/alleynote.db "
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at);
 CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
@@ -568,19 +568,19 @@ while true; do
 done >> memory_usage.log
 
 # 2. 分析記憶體使用模式
-docker-compose exec web php -r "
+docker compose exec -T web php -r "
 echo 'Memory usage: ' . memory_get_usage(true) / 1024 / 1024 . ' MB' . PHP_EOL;
 echo 'Peak usage: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB' . PHP_EOL;
 "
 
 # 3. 檢查 PHP 記憶體限制
-docker-compose exec web php -i | grep memory_limit
+docker compose exec -T web php -i | grep memory_limit
 ```
 
 #### 解決方案
 ```bash
 # 1. 重啟容器釋放記憶體
-docker-compose restart web
+docker compose restart web
 
 # 2. 調整 PHP 記憶體限制
 # 編輯 docker/php/php.ini
@@ -601,7 +601,7 @@ gc_collect_cycles();
 #### 監控指標
 ```bash
 # 1. 檢查失敗登入
-docker-compose exec web sqlite3 database/alleynote.db "
+docker compose exec -T web sqlite3 database/alleynote.db "
 SELECT ip_address, COUNT(*) as attempts, MAX(created_at) as last_attempt
 FROM failed_login_attempts 
 WHERE created_at > datetime('now', '-24 hours')
@@ -614,7 +614,7 @@ ORDER BY attempts DESC;
 tail -1000 logs/access.log | awk '{print $1}' | sort | uniq -c | sort -nr | head -20
 
 # 3. 檢查大量檔案上傳
-docker-compose exec web sqlite3 database/alleynote.db "
+docker compose exec -T web sqlite3 database/alleynote.db "
 SELECT user_id, COUNT(*) as uploads, SUM(file_size) as total_size
 FROM attachments 
 WHERE created_at > datetime('now', '-24 hours')
@@ -642,7 +642,7 @@ awk '{print $1}' logs/access.log | sort | uniq -c | sort -nr | while read count 
             echo "$(date): 封鎖 IP $ip (請求數: $count)" >> $LOG_FILE
             
             # 記錄到資料庫
-            docker-compose exec web sqlite3 database/alleynote.db "
+            docker compose exec -T web sqlite3 database/alleynote.db "
             INSERT INTO ip_lists (ip_address, type, description, created_by, created_at) 
             VALUES ('$ip', 'blacklist', '自動封鎖 - 請求數過多 ($count)', 0, datetime('now'));
             "
@@ -702,7 +702,7 @@ echo "=== 開始資料恢復程序 ==="
 
 # 1. 停止服務
 echo "停止服務..."
-docker-compose down
+docker compose down
 
 # 2. 備份當前資料庫
 echo "備份當前資料庫..."
@@ -723,7 +723,7 @@ chmod 664 database/alleynote.db
 
 # 6. 重啟服務
 echo "重啟服務..."
-docker-compose up -d
+docker compose up -d
 
 # 7. 驗證恢復
 echo "驗證恢復..."
@@ -831,7 +831,7 @@ echo
 
 # 容器狀態
 echo "🐳 容器狀態："
-docker-compose ps --format "table {{.Name}}\t{{.State}}\t{{.Status}}"
+docker compose ps --format "table {{.Name}}\t{{.State}}\t{{.Status}}"
 echo
 
 # 網站狀態
@@ -845,7 +845,7 @@ echo
 
 # 資料庫狀態
 echo "💾 資料庫狀態："
-if docker-compose exec -T web sqlite3 database/alleynote.db "SELECT 1;" > /dev/null 2>&1; then
+if docker compose exec -T web sqlite3 database/alleynote.db "SELECT 1;" > /dev/null 2>&1; then
     echo "✅ 資料庫正常"
     echo "大小: $(ls -lh database/alleynote.db | awk '{print $5}')"
 else

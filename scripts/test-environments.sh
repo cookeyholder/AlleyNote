@@ -20,9 +20,19 @@ echo
 
 # 清理所有現有容器
 echo "🧹 清理所有現有容器..."
-docker-compose down --remove-orphans 2>/dev/null || true
-docker-compose -f docker-compose.test.yml down --remove-orphans 2>/dev/null || true
-docker-compose -f docker-compose.production.yml down --remove-orphans 2>/dev/null || true
+# Detect compose command (prefer "docker compose" if available)
+if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD="docker-compose"
+else
+    echo "錯誤: 需要安裝 Docker Compose (docker compose 或 docker-compose)"
+    exit 1
+fi
+
+${COMPOSE_CMD} down --remove-orphans 2>/dev/null || true
+${COMPOSE_CMD} -f docker-compose.test.yml down --remove-orphans 2>/dev/null || true
+${COMPOSE_CMD} -f docker-compose.production.yml down --remove-orphans 2>/dev/null || true
 
 echo "🗑️  清理未使用的映像檔和容器..."
 docker system prune -f
@@ -38,14 +48,14 @@ export SSL_EMAIL=admin@localhost
 export CERTBOT_STAGING=true
 
 # 建置和測試開發環境
-docker-compose build --no-cache web
-docker-compose up -d
+${COMPOSE_CMD} build --no-cache web
+${COMPOSE_CMD} up -d
 
 echo "⏳ 等待開發環境啟動..."
 sleep 15
 
 echo "📊 開發環境容器狀態："
-docker-compose ps
+${COMPOSE_CMD} ps
 
 echo "🔍 開發環境變數檢查："
 docker exec alleynote_web env | grep -E "(APP_ENV|SSL_|DB_)" | sort
@@ -75,7 +85,7 @@ echo "=== 測試環境測試 ==="
 echo "🏗️  建置測試環境..."
 
 # 停止開發環境
-docker-compose down
+${COMPOSE_CMD} down
 
 # 設定測試環境變數
 export APP_ENV=test
@@ -83,14 +93,14 @@ export SSL_DOMAIN=test.localhost
 export SSL_EMAIL=test@localhost
 
 # 建置和測試測試環境
-docker-compose -f docker-compose.test.yml build --no-cache --target test
-docker-compose -f docker-compose.test.yml up -d
+${COMPOSE_CMD} -f docker-compose.test.yml build --no-cache --target test
+${COMPOSE_CMD} -f docker-compose.test.yml up -d
 
 echo "⏳ 等待測試環境啟動..."
 sleep 15
 
 echo "📊 測試環境容器狀態："
-docker-compose -f docker-compose.test.yml ps
+${COMPOSE_CMD} -f docker-compose.test.yml ps
 
 echo "🔍 測試環境變數檢查："
 docker exec alleynote_test_web env | grep -E "(APP_ENV|SSL_|DB_)" | sort
@@ -150,7 +160,7 @@ echo
 echo "🎉 環境比較測試完成！"
 echo
 echo "🔧 後續操作："
-echo "   停止所有容器: docker-compose down && docker-compose -f docker-compose.test.yml down"
+echo "   停止所有容器: docker compose down && docker compose -f docker-compose.test.yml down"
 echo "   啟動開發環境: ./scripts/test-development.sh"
 echo "   啟動測試環境: ./scripts/test-testing.sh"
 echo "   查看容器狀態: docker ps -a"
@@ -158,4 +168,4 @@ echo "   查看容器狀態: docker ps -a"
 # 停止所有容器
 echo
 echo "🛑 停止所有測試容器..."
-docker-compose -f docker-compose.test.yml down
+${COMPOSE_CMD} -f docker-compose.test.yml down

@@ -29,17 +29,27 @@ fi
 echo "✅ Docker 服務正常執行"
 echo
 
+# Detect compose command (prefer "docker compose" if available)
+if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD="docker-compose"
+else
+    echo "錯誤: 需要安裝 Docker Compose (docker compose 或 docker-compose)"
+    exit 1
+fi
+
 # 停止現有容器
 echo "🛑 停止現有容器..."
-docker-compose -f docker-compose.test.yml down --remove-orphans
+${COMPOSE_CMD} -f docker-compose.test.yml down --remove-orphans
 
 # 建置測試環境容器（使用 test stage）
 echo "🏗️  建置測試環境容器（包含 Xdebug）..."
-docker-compose -f docker-compose.test.yml build --no-cache --target test
+${COMPOSE_CMD} -f docker-compose.test.yml build --no-cache --target test
 
 # 啟動測試環境
 echo "🚀 啟動測試環境..."
-docker-compose -f docker-compose.test.yml up -d
+${COMPOSE_CMD} -f docker-compose.test.yml up -d
 
 # 等待容器啟動
 echo "⏳ 等待容器啟動..."
@@ -47,7 +57,7 @@ sleep 10
 
 # 檢查容器狀態
 echo "📊 檢查容器狀態..."
-docker-compose -f docker-compose.test.yml ps
+${COMPOSE_CMD} -f docker-compose.test.yml ps
 
 # 檢查 web 容器的健康狀態
 echo
@@ -127,7 +137,7 @@ fi
 # 顯示日誌
 echo
 echo "📜 顯示容器日誌（最後 20 行）..."
-docker-compose -f docker-compose.test.yml logs --tail=20
+${COMPOSE_CMD} -f docker-compose.test.yml logs --tail=20
 
 echo
 echo "🎉 測試環境建置和測試完成！"
@@ -138,7 +148,7 @@ echo "   - Swagger UI: http://localhost:8080/api/docs/ui"
 echo "   - Redis: localhost:6380"
 echo
 echo "🔧 管理指令："
-echo "   查看日誌: docker-compose -f docker-compose.test.yml logs -f"
+echo "   查看日誌: docker compose -f docker-compose.test.yml logs -f"
 echo "   進入容器: docker exec -it alleynote_test_web bash"
 echo "   執行測試: docker exec alleynote_test_web vendor/bin/phpunit"
-echo "   停止服務: docker-compose -f docker-compose.test.yml down"
+echo "   停止服務: docker compose -f docker-compose.test.yml down"

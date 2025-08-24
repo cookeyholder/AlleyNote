@@ -27,7 +27,7 @@ logs/
 
 ```bash
 # 使用 localhost 開發
-docker-compose up -d
+docker compose up -d
 
 # 存取應用程式
 http://localhost
@@ -44,10 +44,10 @@ nano .env  # 編輯 SSL_DOMAIN 和 SSL_EMAIL
 ./scripts/ssl-setup.sh
 
 # 3. 啟動服務
-docker-compose up -d
+docker compose up -d
 
 # 4. 檢查狀態
-docker-compose ps
+docker compose ps
 curl -I https://your-domain.com
 ```
 
@@ -89,19 +89,19 @@ curl -I https://your-domain.com
    nslookup your-domain.com
    
    # 檢查服務狀態
-   docker-compose ps
+   docker compose ps
    
    # 查看 Certbot 日誌
-   docker-compose logs certbot
+   docker compose logs certbot
    ```
 
 2. **HTTPS 無法存取**
    ```bash
    # 檢查 Nginx 設定
-   docker-compose exec nginx nginx -t
+   docker compose exec nginx nginx -t
    
    # 查看 Nginx 日誌
-   docker-compose logs nginx
+   docker compose logs nginx
    
    # 檢查憑證檔案
    ls -la ssl-data/live/your-domain.com/
@@ -110,7 +110,7 @@ curl -I https://your-domain.com
 3. **續簽失敗**
    ```bash
    # 手動測試續簽
-   docker-compose run --rm certbot renew --dry-run
+   docker compose run --rm certbot renew --dry-run
    
    # 檢查續簽日誌
    cat logs/ssl-renewal.log
@@ -120,17 +120,17 @@ curl -I https://your-domain.com
 
 ```bash
 # 重新啟動所有服務
-docker-compose down && docker-compose up -d
+docker compose down && docker compose up -d
 
 # 檢查容器狀態
-docker-compose ps
+docker compose ps
 
 # 查看即時日誌
-docker-compose logs -f nginx certbot
+docker compose logs -f nginx certbot
 
 # 進入容器除錯
-docker-compose exec nginx sh
-docker-compose exec certbot sh
+docker compose exec nginx sh
+docker compose exec certbot sh
 
 # 測試 SSL 設定
 openssl s_client -connect your-domain.com:443 -servername your-domain.com

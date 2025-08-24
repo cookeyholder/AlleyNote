@@ -27,19 +27,19 @@
 
 ```bash
 # 程式碼風格檢查
-docker-compose exec -T web ./vendor/bin/php-cs-fixer check --diff
+docker compose exec -T web ./vendor/bin/php-cs-fixer check --diff
 
 # 自動修復程式碼風格問題
-docker-compose exec -T web ./vendor/bin/php-cs-fixer fix
+docker compose exec -T web ./vendor/bin/php-cs-fixer fix
 
 # 靜態分析檢查
-docker-compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G
+docker compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G
 
 # 執行所有測試
-docker-compose exec -T web ./vendor/bin/phpunit
+docker compose exec -T web ./vendor/bin/phpunit
 
 # 完整的 CI 檢查（建議在提交前執行）
-docker-compose exec -T web composer ci
+docker compose exec -T web composer ci
 ```
 
 ### 使用 Composer 腳本
@@ -48,31 +48,34 @@ docker-compose exec -T web composer ci
 
 ```bash
 # 在 Docker 容器內執行
-docker-compose exec web composer cs-check     # 檢查程式碼風格
-docker-compose exec web composer cs-fix       # 修復程式碼風格
-docker-compose exec web composer analyse      # 靜態分析
-docker-compose exec web composer test         # 執行測試
-docker-compose exec web composer ci           # 完整 CI 檢查
+docker compose exec web composer cs-check     # 檢查程式碼風格
+docker compose exec web composer cs-fix       # 修復程式碼風格
+docker compose exec web composer analyse      # 靜態分析
+docker compose exec web composer test         # 執行測試
+docker compose exec web composer ci           # 完整 CI 檢查
 ```
 
 ### 建議的開發工作流程
 
 1. **開發完成後**：
-   ```bash
-   # 自動修復程式碼風格
-   docker-compose exec -T web ./vendor/bin/php-cs-fixer fix
-   ```
+
+    ```bash
+    # 自動修復程式碼風格
+    docker compose exec -T web ./vendor/bin/php-cs-fixer fix
+    ```
 
 2. **提交前檢查**：
-   ```bash
-   # 執行完整的品質檢查
-   docker-compose exec web composer ci
-   ```
+
+    ```bash
+    # 執行完整的品質檢查
+    docker compose exec web composer ci
+    ```
 
 3. **如果有錯誤**：
-   - 修復 PHP CS Fixer 報告的風格問題
-   - 解決 PHPStan 發現的靜態分析錯誤
-   - 確保所有測試通過
+
+    - 修復 PHP CS Fixer 報告的風格問題
+    - 解決 PHPStan 發現的靜態分析錯誤
+    - 確保所有測試通過
 
 4. **全部通過後才進行 git commit**
 

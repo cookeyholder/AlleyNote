@@ -29,9 +29,19 @@ fi
 echo "✅ Docker 服務正常執行"
 echo
 
+# Detect compose command (prefer "docker compose" if available)
+if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD="docker-compose"
+else
+    echo "錯誤: 需要安裝 Docker Compose (docker compose 或 docker-compose)"
+    exit 1
+fi
+
 # 停止現有容器
 echo "🛑 停止現有容器..."
-docker-compose down --remove-orphans
+${COMPOSE_CMD} down --remove-orphans
 
 # 清理舊的映像檔（可選）
 echo "🧹 清理舊的映像檔..."
@@ -39,11 +49,11 @@ docker system prune -f
 
 # 建置開發環境容器
 echo "🏗️  建置開發環境容器..."
-docker-compose build --no-cache web
+${COMPOSE_CMD} build --no-cache web
 
 # 啟動開發環境
 echo "🚀 啟動開發環境..."
-docker-compose up -d
+${COMPOSE_CMD} up -d
 
 # 等待容器啟動
 echo "⏳ 等待容器啟動..."
@@ -51,7 +61,7 @@ sleep 10
 
 # 檢查容器狀態
 echo "📊 檢查容器狀態..."
-docker-compose ps
+${COMPOSE_CMD} ps
 
 # 檢查 web 容器的健康狀態
 echo
@@ -115,7 +125,7 @@ fi
 # 顯示日誌
 echo
 echo "📜 顯示容器日誌（最後 20 行）..."
-docker-compose logs --tail=20
+${COMPOSE_CMD} logs --tail=20
 
 echo
 echo "🎉 開發環境建置和測試完成！"
@@ -126,6 +136,6 @@ echo "   - Swagger UI: http://localhost/api/docs/ui"
 echo "   - Redis: localhost:6379"
 echo
 echo "🔧 管理指令："
-echo "   查看日誌: docker-compose logs -f"
+echo "   查看日誌: docker compose logs -f"
 echo "   進入容器: docker exec -it alleynote_web bash"
-echo "   停止服務: docker-compose down"
+echo "   停止服務: docker compose down"

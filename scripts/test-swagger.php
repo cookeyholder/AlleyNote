@@ -145,7 +145,7 @@ foreach ($schemaFiles as $file => $description) {
 
 echo "\n=== 測試完成 ===\n";
 echo "\n下一步：\n";
-echo "1. 啟動 Docker 容器：docker-compose up -d\n";
+echo "1. 啟動 Docker 容器：docker compose up -d\n";
 echo "2. 進入容器：docker exec -it alleynote_web bash\n";
 echo "3. 產生文件：php scripts/generate-swagger-docs.php\n";
 echo "4. 訪問 Swagger UI：http://localhost/api/docs/ui\n";

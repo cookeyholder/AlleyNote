@@ -144,6 +144,12 @@ sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io
 
 # 安裝 Docker Compose
+# 推薦使用 Docker Compose 插件（docker compose），若系統需要可安裝 legacy 二進位檔作為備援
+## 安裝 Docker Compose plugin (建議)
+sudo apt update
+sudo apt install -y docker-compose-plugin
+
+## 可選：安裝 legacy docker-compose 二進位（備援）
 sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
@@ -164,7 +170,7 @@ newgrp docker
 docker run hello-world
 
 # 測試 Docker Compose
-docker-compose --version
+docker compose version 2>/dev/null || docker-compose --version 2>/dev/null || echo "Docker Compose 未安裝"
 
 # 檢查 Docker 服務狀態
 systemctl status docker

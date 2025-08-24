@@ -48,8 +48,13 @@ check_requirements() {
         exit 1
     fi
     
-    if ! command -v docker-compose &> /dev/null; then
-        log_error "Docker Compose 未安裝！請先安裝 Docker Compose。"
+    # Compose detection: prefer `docker compose` plugin
+    if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+        COMPOSE_CMD="docker compose"
+    elif command -v docker-compose >/dev/null 2>&1; then
+        COMPOSE_CMD="docker-compose"
+    else
+        log_error "Docker Compose 未安裝！請先安裝 Docker Compose (docker compose 或 docker-compose)。"
         exit 1
     fi
     
@@ -127,14 +132,14 @@ request_certificate() {
     fi
     
     # 啟動基本服務
-    docker-compose up -d web nginx database redis
+    $COMPOSE_CMD up -d web nginx database redis
     
     # 等待服務啟動
     log_info "等待服務啟動..."
     sleep 10
     
     # 申請憑證
-    docker-compose run --rm certbot certonly \
+    $COMPOSE_CMD run --rm certbot certonly \
         --webroot \
         --webroot-path=/var/www/certbot \
         --email "$EMAIL" \
@@ -167,10 +172,10 @@ cd "$(dirname "$0")/.."
 echo "$(date): 開始檢查 SSL 憑證續簽..."
 
 # 嘗試續簽憑證
-if docker-compose run --rm certbot renew --quiet; then
+if $COMPOSE_CMD run --rm certbot renew --quiet; then
     echo "$(date): 憑證續簽檢查完成"
     # 重新載入 Nginx 設定
-    docker-compose exec nginx nginx -s reload
+    $COMPOSE_CMD exec nginx nginx -s reload
     echo "$(date): Nginx 設定重新載入完成"
 else
     echo "$(date): 憑證續簽失敗！"
@@ -192,8 +197,8 @@ start_services() {
     log_info "啟動完整的 SSL 服務..."
     
     # 重新啟動所有服務
-    docker-compose down
-    docker-compose up -d
+    $COMPOSE_CMD down
+    $COMPOSE_CMD up -d
     
     # 等待服務啟動
     sleep 15
@@ -209,9 +214,9 @@ verify_ssl() {
     if [ -f "ssl-data/live/$DOMAIN/fullchain.pem" ]; then
         log_success "SSL 憑證檔案存在"
         
-        # 顯示憑證資訊
-        log_info "憑證資訊："
-        docker-compose exec certbot openssl x509 -in "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" -text -noout | grep -E "(Subject:|Not After:|Issuer:)"
+    # 顯示憑證資訊
+    log_info "憑證資訊："
+    $COMPOSE_CMD exec -T certbot openssl x509 -in "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" -text -noout | grep -E "(Subject:|Not After:|Issuer:)"
     else
         log_warning "SSL 憑證檔案不存在"
     fi
@@ -280,8 +285,8 @@ main() {
     echo "========================================"
     
     log_info "接下來的步驟："
-    log_info "1. 檢查服務狀態: docker-compose ps"
-    log_info "2. 查看日誌: docker-compose logs -f nginx"
+    log_info "1. 檢查服務狀態: docker compose ps"
+    log_info "2. 查看日誌: docker compose logs -f nginx"
     if [ "$DOMAIN" != "localhost" ]; then
         log_info "3. 測試網站: https://$DOMAIN"
         log_info "4. 檢查 SSL 評級: https://www.ssllabs.com/ssltest/"

@@ -31,12 +31,17 @@ rotate_log_if_needed() {
 
 # 檢查 Docker 環境
 check_docker() {
-    if ! command -v docker-compose &> /dev/null; then
-        log "錯誤: docker-compose 未安裝"
+    # detect compose command
+    if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+        COMPOSE_CMD="docker compose"
+    elif command -v docker-compose >/dev/null 2>&1; then
+        COMPOSE_CMD="docker-compose"
+    else
+        log "錯誤: docker-compose 未安裝 (需要 docker compose 或 docker-compose)"
         exit 1
     fi
 
-    if ! docker-compose ps | grep -q "alleynote_web"; then
+    if ! $COMPOSE_CMD ps | grep -q "alleynote_web"; then
         log "錯誤: AlleyNote 容器未運行"
         exit 1
     fi
@@ -52,7 +57,7 @@ cleanup_expired_cache() {
 
     # 使用 PHP 腳本清理
     local result
-    if result=$(cd "$PROJECT_DIR" && docker-compose exec -T web php scripts/cache-monitor.php clean 2>&1); then
+    if result=$(cd "$PROJECT_DIR" && ${COMPOSE_CMD} exec -T web php scripts/cache-monitor.php clean 2>&1); then
         local end_time=$(date +%s)
         local duration=$((end_time - start_time))
         local after_count=$(find "$CACHE_DIR" -name "*.cache" 2>/dev/null | wc -l || echo 0)
@@ -73,7 +78,7 @@ monitor_cache_usage() {
 
     # 獲取快取統計
     local stats_result
-    if stats_result=$(cd "$PROJECT_DIR" && docker-compose exec -T web php scripts/cache-monitor.php stats 2>&1); then
+    if stats_result=$(cd "$PROJECT_DIR" && ${COMPOSE_CMD} exec -T web php scripts/cache-monitor.php stats 2>&1); then
         # 提取關鍵指標
         local hit_rate=$(echo "$stats_result" | grep "命中率" | grep -o '[0-9]*\.[0-9]*%' || echo "0%")
         local file_count=$(echo "$stats_result" | grep "快取檔案" | grep -o '[0-9]*' || echo "0")
@@ -169,11 +174,11 @@ case "${1:-auto}" in
     "force-clean")
         log "強制清理所有快取..."
         check_docker
-        cd "$PROJECT_DIR" && docker-compose exec -T web php scripts/cache-monitor.php clear
+    cd "$PROJECT_DIR" && ${COMPOSE_CMD} exec -T web php scripts/cache-monitor.php clear
         ;;
     "stats")
         check_docker
-        cd "$PROJECT_DIR" && docker-compose exec -T web php scripts/cache-monitor.php stats
+    cd "$PROJECT_DIR" && ${COMPOSE_CMD} exec -T web php scripts/cache-monitor.php stats
         ;;
     "help"|"-h"|"--help")
         echo "AlleyNote 快取清理腳本"

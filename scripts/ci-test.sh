@@ -34,12 +34,22 @@ log_section() {
     echo "=================================================="
 }
 
+# Detect compose command
+if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD="docker-compose"
+else
+    log_error "需要安裝 Docker Compose (docker compose 或 docker-compose)"
+    exit 1
+fi
+
 # 檢查 Docker 環境
 check_docker_environment() {
     log_section "檢查 Docker 環境"
 
-    if ! docker-compose ps | grep -q "web.*Up"; then
-        log_error "Docker 容器未運行，請先執行: docker-compose up -d"
+    if ! ${COMPOSE_CMD} ps | grep -q "web.*Up"; then
+        log_error "Docker 容器未運行，請先執行: ${COMPOSE_CMD} up -d"
         exit 1
     fi
 
@@ -50,7 +60,7 @@ check_docker_environment() {
 install_dependencies() {
     log_section "安裝相依套件"
 
-    docker-compose exec -T web composer install --prefer-dist --no-progress --no-interaction
+    ${COMPOSE_CMD} exec -T web composer install --prefer-dist --no-progress --no-interaction
 
     if [ $? -eq 0 ]; then
         log_success "相依套件安裝完成"
@@ -64,14 +74,14 @@ install_dependencies() {
 security_audit() {
     log_section "執行安全性掃描"
 
-    docker-compose exec -T web composer audit --format=json > security-audit.json 2>/dev/null
+    ${COMPOSE_CMD} exec -T web composer audit --format=json > security-audit.json 2>/dev/null
 
     if [ $? -eq 0 ]; then
         log_success "安全性掃描通過"
         rm -f security-audit.json
     else
         log_warning "發現安全漏洞，詳細資訊："
-        docker-compose exec -T web composer audit 2>/dev/null || true
+    ${COMPOSE_CMD} exec -T web composer audit 2>/dev/null || true
         echo ""
         log_warning "建議執行 'composer update' 更新套件"
     fi
@@ -81,8 +91,8 @@ security_audit() {
 code_style_check() {
     log_section "執行程式碼風格檢查"
 
-    if docker-compose exec -T web test -f vendor/bin/php-cs-fixer; then
-        docker-compose exec -T web composer cs-check
+    if ${COMPOSE_CMD} exec -T web test -f vendor/bin/php-cs-fixer; then
+        ${COMPOSE_CMD} exec -T web composer cs-check
 
         if [ $? -eq 0 ]; then
             log_success "程式碼風格檢查通過"
@@ -100,10 +110,10 @@ code_style_check() {
 static_analysis() {
     log_section "執行靜態分析"
 
-    if docker-compose exec -T web test -f vendor/bin/phpstan; then
+    if ${COMPOSE_CMD} exec -T web test -f vendor/bin/phpstan; then
         # 將 PHPStan 輸出儲存到檔案以便分析
         set +e  # 暫時允許指令失敗
-        docker-compose exec -T web composer analyse > phpstan-output.txt 2>&1
+    ${COMPOSE_CMD} exec -T web composer analyse > phpstan-output.txt 2>&1
         PHPSTAN_EXIT_CODE=$?
         set -e  # 重新啟用錯誤退出
 
@@ -139,10 +149,10 @@ static_analysis() {
 run_tests() {
     log_section "執行單元測試"
 
-    if docker-compose exec -T web test -f vendor/bin/phpunit; then
+    if ${COMPOSE_CMD} exec -T web test -f vendor/bin/phpunit; then
         # 執行測試並捕獲輸出
         set +e  # 暫時允許指令失敗
-        docker-compose exec -T web composer test > test-output.txt 2>&1
+    ${COMPOSE_CMD} exec -T web composer test > test-output.txt 2>&1
         TEST_EXIT_CODE=$?
         set -e  # 重新啟用錯誤退出
 
@@ -182,9 +192,9 @@ run_tests() {
 coverage_report() {
     log_section "生成測試覆蓋率報告"
 
-    if docker-compose exec -T web test -f vendor/bin/phpunit; then
+    if ${COMPOSE_CMD} exec -T web test -f vendor/bin/phpunit; then
         set +e  # 暫時允許指令失敗
-        docker-compose exec -T web composer test:coverage > coverage-output.txt 2>&1
+    ${COMPOSE_CMD} exec -T web composer test:coverage > coverage-output.txt 2>&1
         set -e  # 重新啟用錯誤退出
 
         # 提取覆蓋率資訊

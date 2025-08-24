@@ -14,15 +14,19 @@ if ! docker info > /dev/null 2>&1; then
     exit 1
 fi
 
-# 檢查 docker-compose
-if ! command -v docker-compose &> /dev/null; then
-    echo "錯誤: 找不到 docker-compose 命令"
+# Detect compose command (prefer "docker compose" if available)
+if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD="docker-compose"
+else
+    echo "錯誤: 需要安裝 Docker Compose (docker compose 或 docker-compose)"
     exit 1
 fi
 
 # 確保容器運行
 echo "正在啟動 Docker 容器..."
-docker-compose up -d
+$COMPOSE_CMD up -d
 
 # 等待容器就緒
 echo "等待容器啟動完成..."
@@ -30,24 +34,24 @@ sleep 5
 
 # 檢查容器狀態
 echo "檢查容器狀態..."
-docker-compose ps
+$COMPOSE_CMD ps
 
 # 設定測試環境
 echo "設定測試環境..."
-docker-compose exec -T php mkdir -p storage/logs
-docker-compose exec -T php mkdir -p storage/app
-docker-compose exec -T php mkdir -p storage/backups
+${COMPOSE_CMD} exec -T php mkdir -p storage/logs
+${COMPOSE_CMD} exec -T php mkdir -p storage/app
+${COMPOSE_CMD} exec -T php mkdir -p storage/backups
 
 # 設定檔案權限
 echo "設定檔案權限..."
-docker-compose exec -T php chmod 755 storage
-docker-compose exec -T php chmod 755 storage/logs
-docker-compose exec -T php chmod 755 storage/app
-docker-compose exec -T php chmod 755 storage/backups
+${COMPOSE_CMD} exec -T php chmod 755 storage
+${COMPOSE_CMD} exec -T php chmod 755 storage/logs
+${COMPOSE_CMD} exec -T php chmod 755 storage/app
+${COMPOSE_CMD} exec -T php chmod 755 storage/backups
 
 # 執行資料庫遷移
 echo "執行資料庫遷移..."
-docker-compose exec -T php php -r "
+${COMPOSE_CMD} exec -T php php -r "
 require_once 'vendor/autoload.php';
 use App\Database\DatabaseConnection;
 
@@ -82,7 +86,7 @@ try {
 
 # 執行基本系統檢查
 echo "執行基本系統檢查..."
-docker-compose exec -T php php -r "
+${COMPOSE_CMD} exec -T php php -r "
 echo 'PHP 版本: ' . PHP_VERSION . \"\n\";
 echo 'SQLite 支援: ' . (extension_loaded('sqlite3') ? '是' : '否') . \"\n\";
 echo 'PDO 支援: ' . (extension_loaded('pdo') ? '是' : '否') . \"\n\";
@@ -97,16 +101,16 @@ echo "======================================="
 
 # 文字格式輸出
 echo "1. 執行安全測試 (文字格式)..."
-docker-compose exec -T php php tests/security_test_runner.php --verbose
+${COMPOSE_CMD} exec -T php php tests/security_test_runner.php --verbose
 
 # JSON 格式輸出
 echo -e "\n2. 產生 JSON 報告..."
-docker-compose exec -T php php tests/security_test_runner.php --format=json > security_report.json
+${COMPOSE_CMD} exec -T php php tests/security_test_runner.php --format=json > security_report.json
 echo "JSON 報告已儲存至 security_report.json"
 
 # XML 格式輸出
 echo -e "\n3. 產生 XML 報告..."
-docker-compose exec -T php php tests/security_test_runner.php --format=xml > security_report.xml
+${COMPOSE_CMD} exec -T php php tests/security_test_runner.php --format=xml > security_report.xml
 echo "XML 報告已儲存至 security_report.xml"
 
 # 執行各別類別測試
@@ -118,7 +122,7 @@ categories=("session" "authorization" "file" "headers" "errors" "password" "secr
 
 for category in "${categories[@]}"; do
     echo -e "\n--- $category 測試 ---"
-    if docker-compose exec -T php php tests/security_test_runner.php --category="$category"; then
+    if ${COMPOSE_CMD} exec -T php php tests/security_test_runner.php --category="$category"; then
         echo "✓ $category 測試完成"
     else
         echo "✗ $category 測試失敗"
@@ -130,7 +134,7 @@ echo -e "\n======================================="
 echo "產生安全檢查清單"
 echo "======================================="
 
-docker-compose exec -T php php -r "
+${COMPOSE_CMD} exec -T php php -r "
 require_once 'vendor/autoload.php';
 use App\Services\Security\SecretsManager;
 
@@ -183,7 +187,7 @@ echo -e "\n======================================="
 echo "清理測試資料"
 echo "======================================="
 
-docker-compose exec -T php php -r "
+${COMPOSE_CMD} exec -T php php -r "
 // 清理測試 session 檔案
 if (is_dir('/tmp')) {
     \$files = glob('/tmp/sess_*');

@@ -59,7 +59,7 @@ cp .env.example .env
 docker compose up -d
 
 # 執行資料庫遷移
-docker-compose exec php php /var/www/html/vendor/bin/phinx migrate
+docker compose exec php php /var/www/html/vendor/bin/phinx migrate
 
 # 設定目錄權限
 chown -R www-data:www-data storage
