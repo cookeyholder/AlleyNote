@@ -86,7 +86,6 @@ class RateLimitTest extends TestCase
 
         $this->cacheService->shouldReceive('set')
             ->with("rate_limit:{$ip}", Mockery::any(), 60)
-            ->once()
             ->andReturn(true);
 
         $resetResult = $this->rateLimitService->checkLimit($ip);

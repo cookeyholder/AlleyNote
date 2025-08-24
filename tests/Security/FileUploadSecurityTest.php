@@ -257,7 +257,7 @@ class FileUploadSecurityTest extends TestCase
             'image/jpeg',
             1024,
             UPLOAD_ERR_OK,
-            'fake-image-content'
+            'fake-image-content',
         );
 
         // 模擬文章存在

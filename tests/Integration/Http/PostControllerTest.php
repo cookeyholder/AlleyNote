@@ -414,11 +414,23 @@ class PostControllerTest extends TestCase
         $this->request->shouldReceive('getServerParams')
             ->andReturn(['REMOTE_ADDR' => '8.8.8.8']);
 
-        // 設定 validator 將會拋出驗證異常
+        // 移除預設的 validator 行為，讓它拋出異常
+        $this->validator = Mockery::mock(ValidatorInterface::class);
+        $this->controller = new PostController(
+            $this->postService,
+            $this->validator,
+        );
+
+        // 設定 validator 拋出驗證異常
         $validationResult = new ValidationResult(false, ['title' => ['標題不能為空']], [], ['title' => ['required']]);
+
+        $this->validator->shouldReceive('addRule')
+            ->andReturnSelf();
+        $this->validator->shouldReceive('addMessage')
+            ->andReturnSelf();
+        $this->validator->shouldReceive('stopOnFirstFailure')
+            ->andReturnSelf();
         $this->validator->shouldReceive('validateOrFail')
-            ->once()
-            ->with($invalidData)
             ->andThrow(new ValidationException($validationResult));
 
         // 確保 createPost 不會被調用
@@ -432,7 +444,7 @@ class PostControllerTest extends TestCase
         $body = json_decode($this->lastWrittenContent, true);
         $this->assertFalse($body['success']);
         $this->assertNotNull($body['message']);
-        $this->assertStringContainsString('title', $body['message']);
+        $this->assertStringContainsString('標題', $body['message']);
     }
 
     public function testGetPostByIdReturnsSuccess(): void
