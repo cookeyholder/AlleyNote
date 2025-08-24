@@ -35,7 +35,7 @@ class PasswordHashingTest extends TestCase
         // 建立測試資料表
         $this->createTestTables();
 
-        $this->userRepository = new \App\Domains\Auth\Repositories\UserRepository($this->db);
+        $this->userRepository = new UserRepository($this->db);
         $this->authService = new AuthService($this->userRepository);
     }
 

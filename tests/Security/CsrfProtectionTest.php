@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Application\Controllers\Api\V1\PostController;
-use App\Domains\Post\Models\Post;
 use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Exceptions\CsrfTokenException;

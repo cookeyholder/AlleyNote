@@ -11,13 +11,15 @@ use Mockery;
 use Mockery\MockInterface;
 use PDO;
 use Tests\TestCase;
-use TypeError;
 
 class SqlInjectionTest extends TestCase
 {
     protected PostRepository $repository;
+
     protected PDO $db;
+
     protected LoggingSecurityServiceInterface|MockInterface $logger;
+
     protected CacheService|MockInterface $cache;
 
     protected function setUp(): void
@@ -93,7 +95,7 @@ class SqlInjectionTest extends TestCase
         $this->assertLessThanOrEqual(3, $results['total'], 'SQL注入攻擊不應該返回所有資料');
 
         // 確保資料庫完整性
-        $totalPosts = $this->db->query("SELECT COUNT(*) as count FROM posts")->fetch();
+        $totalPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
         $this->assertEquals(3, $totalPosts['count'], '資料表應該保持完整');
     }
 
@@ -142,7 +144,7 @@ class SqlInjectionTest extends TestCase
         $this->assertNotEmpty($tableExists);
 
         // 確認原始資料仍然存在
-        $allPosts = $this->db->query("SELECT COUNT(*) as count FROM posts")->fetch();
+        $allPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
         $this->assertEquals(3, $allPosts['count']); // 我們插入的 3 筆測試資料
     }
 
@@ -165,7 +167,7 @@ class SqlInjectionTest extends TestCase
         }
 
         // 確認資料表和原始資料仍然完整
-        $totalPosts = $this->db->query("SELECT COUNT(*) as count FROM posts")->fetch();
+        $totalPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
         $this->assertEquals(3, $totalPosts['count']);
     }
 
