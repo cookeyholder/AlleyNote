@@ -201,7 +201,7 @@ class PostController extends BaseController
 
             // 添加必需的欄位
             $data['user_id'] = $request->getAttribute('user_id') ?? 1; // 從認證中間件取得
-            $data['user_ip'] = $this->getUserIp($request);
+            $data['user_ip'] = $this->getUserIp($request) ?? '127.0.0.1';
 
             $dto = new CreatePostDTO($this->validator, $data);
             $post = $this->postService->createPost($dto);
@@ -672,6 +672,7 @@ class PostController extends BaseController
             }
         }
 
-        return null;
+        // 如果無法取得有效 IP，使用 REMOTE_ADDR 或預設值
+        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
     }
 }

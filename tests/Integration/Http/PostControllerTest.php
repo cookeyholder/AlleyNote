@@ -644,7 +644,7 @@ class PostControllerTest extends TestCase
         $this->postService->shouldReceive('setPinned')
             ->once()
             ->with($postId, true)
-            ->andReturnNull();
+            ->andReturn(true);
 
         $this->postService->shouldReceive('findById')
             ->once()

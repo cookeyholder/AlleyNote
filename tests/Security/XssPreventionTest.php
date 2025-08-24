@@ -140,6 +140,10 @@ class XssPreventionTest extends TestCase
         $this->request->shouldReceive('getServerParams')
             ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
+        $this->request->shouldReceive('getAttribute')
+            ->with('user_id')
+            ->andReturn(1);
+
         // 設定驗證器行為
         $this->validator->shouldReceive('validateOrFail')
             ->with($postData)
@@ -194,6 +198,10 @@ class XssPreventionTest extends TestCase
         $this->request->shouldReceive('getServerParams')
             ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
+        $this->request->shouldReceive('getAttribute')
+            ->with('user_id')
+            ->andReturn(1);
+
         // 設定驗證器行為
         $this->validator->shouldReceive('validateOrFail')
             ->with($postData)
@@ -247,6 +255,10 @@ class XssPreventionTest extends TestCase
 
         $this->request->shouldReceive('getServerParams')
             ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
+
+        $this->request->shouldReceive('getAttribute')
+            ->with('user_id')
+            ->andReturn(1);
 
         // 設定驗證器行為
         $this->validator->shouldReceive('validateOrFail')

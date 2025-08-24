@@ -41,6 +41,8 @@ class FileUploadSecurityTest extends TestCase
         $this->postRepo = Mockery::mock(PostRepository::class);
         $this->cacheService = Mockery::mock(CacheService::class);
 
+        $this->uploadDir = '/tmp/test-uploads';
+
         // 建立真實的 AttachmentService 實例
         $this->service = new AttachmentService(
             $this->attachmentRepo,
@@ -49,8 +51,6 @@ class FileUploadSecurityTest extends TestCase
             $this->authService,
             $this->uploadDir,
         );
-
-        $this->uploadDir = '/tmp/test-uploads';
 
         // 設定預設的mock行為
         $this->authService->shouldReceive('canUploadAttachment')->byDefault()->andReturn(true);

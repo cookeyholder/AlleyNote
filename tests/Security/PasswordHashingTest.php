@@ -6,6 +6,7 @@ namespace Tests\Security;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
+use App\Shared\Contracts\ValidatorInterface;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
 use InvalidArgumentException;
@@ -21,6 +22,8 @@ class PasswordHashingTest extends TestCase
 
     protected PasswordSecurityServiceInterface $passwordService;
 
+    protected ValidatorInterface $validator;
+
     protected PDO $db;
 
     protected function setUp(): void
@@ -29,6 +32,7 @@ class PasswordHashingTest extends TestCase
 
         // 初始化mock對象
         $this->passwordService = Mockery::mock(PasswordSecurityServiceInterface::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
 
         // 使用 SQLite 記憶體資料庫進行測試
         $this->db = new PDO('sqlite::memory:');
@@ -39,6 +43,21 @@ class PasswordHashingTest extends TestCase
 
         $this->userRepository = new UserRepository($this->db);
         $this->authService = new AuthService($this->userRepository, $this->passwordService);
+
+        // 設定 validator 的預設行為
+        $this->validator->shouldReceive('addRule')
+            ->andReturnSelf()
+            ->byDefault();
+
+        $this->validator->shouldReceive('addMessage')
+            ->andReturnSelf()
+            ->byDefault();
+
+        $this->validator->shouldReceive('validate')
+            ->andReturnUsing(function ($data) {
+                return $data; // 返回原始資料作為驗證過的資料
+            })
+            ->byDefault();
     }
 
     protected function createTestTables(): void
@@ -66,10 +85,12 @@ class PasswordHashingTest extends TestCase
             'username' => 'testuser',
             'email' => 'test@example.com',
             'password' => 'password123',
+            'confirmPassword' => 'password123',
+            'userIp' => '127.0.0.1',
         ];
 
         // 建立 DTO
-        $dto = new RegisterUserDTO($userData);
+        $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
         $user = $this->authService->register($dto);
@@ -94,10 +115,12 @@ class PasswordHashingTest extends TestCase
             'username' => 'testuser2',
             'email' => 'test2@example.com',
             'password' => 'securepassword456',
+            'confirmPassword' => 'securepassword456',
+            'userIp' => '127.0.0.1',
         ];
 
         // 建立 DTO
-        $dto = new RegisterUserDTO($userData);
+        $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
         $user = $this->authService->register($dto);
@@ -125,10 +148,12 @@ class PasswordHashingTest extends TestCase
             'username' => 'testuser3',
             'email' => 'test3@example.com',
             'password' => '123', // 太短的密碼
+            'confirmPassword' => '123',
+            'userIp' => '127.0.0.1',
         ];
 
         // 建立 DTO
-        $dto = new RegisterUserDTO($userData);
+        $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 預期會拋出例外
         $this->expectException(InvalidArgumentException::class);
@@ -146,10 +171,12 @@ class PasswordHashingTest extends TestCase
             'username' => 'testuser4',
             'email' => 'test4@example.com',
             'password' => 'password123',
+            'confirmPassword' => 'password123',
+            'userIp' => '127.0.0.1',
         ];
 
         // 建立 DTO
-        $dto = new RegisterUserDTO($userData);
+        $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
         $user = $this->authService->register($dto);
