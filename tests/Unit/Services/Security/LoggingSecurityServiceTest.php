@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Security;
 
-use App\Services\Security\LoggingSecurityService;
+use App\Domains\Security\Services\Logging\LoggingSecurityService;
 use PHPUnit\Framework\TestCase;
+
 
 class LoggingSecurityServiceTest extends TestCase
 {
     private LoggingSecurityService $service;
+
     private string $tempLogsDir;
 
     protected function setUp(): void
@@ -23,6 +25,7 @@ class LoggingSecurityServiceTest extends TestCase
             function storage_path(string $path = ''): string
             {
                 global $tempLogsDir;
+
                 return $tempLogsDir . ($path ? '/' . ltrim($path, '/') : '');
             }
         }
@@ -77,8 +80,8 @@ class LoggingSecurityServiceTest extends TestCase
             'safe_data' => 'this is safe',
             'nested' => [
                 'api_key' => 'secret_key',
-                'public_info' => 'public'
-            ]
+                'public_info' => 'public',
+            ],
         ];
 
         // 使用反射呼叫私有方法進行測試
@@ -105,7 +108,7 @@ class LoggingSecurityServiceTest extends TestCase
             'password' => 'secret123', // 不在白名單中
             'user_id' => 123,
             'sensitive_param' => 'should_be_filtered', // 不在白名單中
-            'status_code' => 200
+            'status_code' => 200,
         ];
 
         $reflection = new \ReflectionClass($this->service);
@@ -200,7 +203,7 @@ class LoggingSecurityServiceTest extends TestCase
             'uri' => '/api/posts',
             'password' => 'secret123', // 應該被過濾
             'user_id' => 123,
-            'status_code' => 201
+            'status_code' => 201,
         ];
 
         $this->expectNotToPerformAssertions();
@@ -215,7 +218,7 @@ class LoggingSecurityServiceTest extends TestCase
             'API_KEY' => 'secret2',
             'user_token' => 'secret3',
             'csrf_TOKEN' => 'secret4',
-            'safe_field' => 'public'
+            'safe_field' => 'public',
         ];
 
         $reflection = new \ReflectionClass($this->service);
@@ -239,7 +242,7 @@ class LoggingSecurityServiceTest extends TestCase
             'null_value' => null,
             'zero' => 0,
             'false_value' => false,
-            'password' => ''  // 敏感欄位即使為空也要遮罩
+            'password' => '',  // 敏感欄位即使為空也要遮罩
         ];
 
         $reflection = new \ReflectionClass($this->service);

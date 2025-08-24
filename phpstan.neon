@@ -1,0 +1,20 @@
+parameters:
+    level: 4
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - src/OpenApi
+        - vendor
+        - tests/Factory
+    tmpDir: storage/phpstan
+    ignoreErrors:
+        # 忽略一些已知的第三方套件問題
+        - '#Call to an undefined method Mockery\\MockInterface::#'
+        - '#Call to an undefined method Mockery\\LegacyMockInterface::#'
+        # 忽略動態屬性設定（常見於測試）
+        - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9_]+#'
+        # 忽略一些常見的 PHPUnit 問題
+        - '#Method .+Test::.+ has no return type specified#'
+        # 忽略一些 DTO 構造函式的型別問題（暫時）
+        - '#Constructor of class .+DTO has an unused parameter#'

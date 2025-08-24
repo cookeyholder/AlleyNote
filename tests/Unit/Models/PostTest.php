@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
-use App\Models\Post;
-use Tests\TestCase;
+use App\Domains\Post\Models\Post;
 use Tests\Factory\PostFactory;
+use Tests\TestCase;
+
 
 class PostTest extends TestCase
 {
@@ -19,10 +20,10 @@ class PostTest extends TestCase
             'title' => 'Test Title',
             'content' => 'Test Content',
             'user_id' => 1,
-            'user_ip' => '127.0.0.1'
+            'user_ip' => '127.0.0.1',
         ]);
 
-        $post = new Post($data);
+        $post = new \App\Domains\Post\Models\Post($data);
 
         $this->assertEquals($data['uuid'], $post->getUuid());
         $this->assertEquals($data['seq_number'], $post->getSeqNumber());
@@ -39,10 +40,10 @@ class PostTest extends TestCase
             'uuid' => 'test-uuid',
             'seq_number' => null,
             'user_ip' => null,
-            'publish_date' => null
+            'publish_date' => null,
         ]);
 
-        $post = new Post($data);
+        $post = new \App\Domains\Post\Models\Post($data);
 
         $this->assertNull($post->getSeqNumber());
         $this->assertNull($post->getUserIp());
@@ -56,13 +57,13 @@ class PostTest extends TestCase
             'uuid' => 'test-uuid',
             'title' => 'Test Title',
             'content' => 'Test Content',
-            'user_id' => 1
+            'user_id' => 1,
         ]);
 
         // 移除 id，這樣才能測試預設值
         unset($data['id']);
 
-        $post = new Post($data);
+        $post = new \App\Domains\Post\Models\Post($data);
 
         $this->assertEquals(0, $post->getId());
         $this->assertEquals(0, $post->getViewCount());
@@ -73,23 +74,24 @@ class PostTest extends TestCase
     }
 
     /** @test */
-    public function properlyEscapesHtmlInTitleAndContent(): void
+    public function storesRawHtmlInTitleAndContent(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
             'title' => '<script>alert("XSS")</script>',
             'content' => '<p onclick="alert(\'XSS\')">Test</p>',
-            'user_id' => 1
+            'user_id' => 1,
         ]);
 
-        $post = new Post($data);
+        $post = new \App\Domains\Post\Models\Post($data);
 
+        // Model 應該存儲原始資料，HTML 轉義在視圖層處理
         $this->assertEquals(
-            htmlspecialchars('<script>alert("XSS")</script>', ENT_QUOTES, 'UTF-8'),
+            '<script>alert("XSS")</script>',
             $post->getTitle()
         );
         $this->assertEquals(
-            htmlspecialchars('<p onclick="alert(\'XSS\')">Test</p>', ENT_QUOTES, 'UTF-8'),
+            '<p onclick="alert(\'XSS\')">Test</p>',
             $post->getContent()
         );
     }

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Security;
 
-use App\Services\Security\PwnedPasswordService;
+use App\Domains\Auth\Services\Advanced\PwnedPasswordService;
 use PHPUnit\Framework\TestCase;
+
 
 class PwnedPasswordServiceTest extends TestCase
 {

@@ -4,20 +4,26 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
-use PDO;
-use App\Services\CacheService;
-use App\Repositories\PostRepository;
-use App\Models\Post;
-use Tests\Factory\PostFactory;
+use App\Domains\Post\Models\Post;
+use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
+use App\Infrastructure\Services\CacheService;
 use Mockery;
-use Mockery\MockInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
+use PDO;
+use Tests\Factory\PostFactory;
+
 
 class PostRepositoryTest extends MockeryTestCase
 {
     private PostRepository $repository;
+
     private PDO $db;
+
     private CacheService|MockInterface $cache;
+
+    private \App\Domains\Security\Contracts\App\Domains\Security\Contracts\LoggingSecurityServiceInterface|MockInterface $logger;
 
     protected function setUp(): void
     {
@@ -31,15 +37,20 @@ class PostRepositoryTest extends MockeryTestCase
         $this->createTestTables();
 
         // 模擬快取服務
-        $this->cache = Mockery::mock(CacheService::class);
+        $this->cache = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
         $this->cache->shouldReceive('remember')
             ->byDefault()
             ->andReturnUsing(function ($key, $callback) {
                 return $callback();
             });
         $this->cache->shouldReceive('delete')->byDefault();
+        $this->cache->shouldReceive('deletePattern')->byDefault();
 
-        $this->repository = new PostRepository($this->db, $this->cache);
+        // 模擬日誌安全服務
+        $this->logger = Mockery::mock(\App\Domains\Security\Contracts\LoggingSecurityServiceInterface::class);
+        $this->logger->shouldReceive('logSecurityEvent')->byDefault();
+
+        $this->repository = new \App\Domains\Post\Repositories\PostRepository($this->db, $this->cache, $this->logger);
     }
 
     protected function createTestTables(): void
@@ -59,7 +70,8 @@ class PostRepositoryTest extends MockeryTestCase
                 status VARCHAR(20) DEFAULT "draft",
                 publish_date DATETIME,
                 created_at DATETIME,
-                updated_at DATETIME
+                updated_at DATETIME,
+                deleted_at DATETIME DEFAULT NULL
             )
         ');
 
@@ -98,7 +110,7 @@ class PostRepositoryTest extends MockeryTestCase
     {
         $data = PostFactory::make([
             'title' => '測試文章',
-            'content' => '這是測試內容'
+            'content' => '這是測試內容',
         ]);
         $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
         $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
@@ -150,7 +162,7 @@ class PostRepositoryTest extends MockeryTestCase
         $updateData = [
             'title' => '更新後的標題',
             'content' => '更新後的內容',
-            'user_id' => 1
+            'user_id' => 1,
         ];
 
         $updatedPost = $this->repository->update($post->getId(), $updateData);
@@ -180,7 +192,7 @@ class PostRepositoryTest extends MockeryTestCase
         for ($i = 1; $i <= 15; $i++) {
             $this->repository->create(PostFactory::make([
                 'title' => "文章 {$i}",
-                'content' => "內容 {$i}"
+                'content' => "內容 {$i}",
             ]));
         }
 
@@ -189,8 +201,8 @@ class PostRepositoryTest extends MockeryTestCase
         $this->assertCount(10, $result['items']);
         $this->assertEquals(15, $result['total']);
         $this->assertEquals(1, $result['page']);
-        $this->assertEquals(10, $result['per_page']);
-        $this->assertEquals(2, $result['last_page']);
+        $this->assertEquals(10, $result['perPage']);
+        $this->assertEquals(2, $result['lastPage']);
     }
 
     public function testCanGetPinnedPosts(): void
@@ -198,17 +210,17 @@ class PostRepositoryTest extends MockeryTestCase
         // 建立置頂文章
         $this->repository->create(PostFactory::make([
             'is_pinned' => true,
-            'title' => '置頂文章 1'
+            'title' => '置頂文章 1',
         ]));
         $this->repository->create(PostFactory::make([
             'is_pinned' => true,
-            'title' => '置頂文章 2'
+            'title' => '置頂文章 2',
         ]));
 
         // 建立普通文章
         $this->repository->create(PostFactory::make([
             'is_pinned' => false,
-            'title' => '普通文章'
+            'title' => '普通文章',
         ]));
 
         $pinnedPosts = $this->repository->getPinnedPosts();
@@ -232,6 +244,11 @@ class PostRepositoryTest extends MockeryTestCase
 
     public function testCanIncrementViews(): void
     {
+        // 確保資料庫沒有活動交易
+        if ($this->db->inTransaction()) {
+            $this->db->rollBack();
+        }
+
         $data = PostFactory::make();
         $data['publish_date'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
         $data['created_at'] = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
@@ -266,6 +283,11 @@ class PostRepositoryTest extends MockeryTestCase
 
     public function testShouldCommitOnTagAssignmentSuccess(): void
     {
+        // 確保資料庫沒有活動交易
+        if ($this->db->inTransaction()) {
+            $this->db->rollBack();
+        }
+
         // 建立測試用標籤
         $this->db->exec("INSERT INTO tags (id, name) VALUES (1, '測試標籤')");
 

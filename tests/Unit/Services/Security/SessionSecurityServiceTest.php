@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Security;
 
-use App\Services\Security\SessionSecurityService;
+use App\Domains\Auth\Services\SessionSecurityService;
+use App\Domains\User\Entities\User;
 use PHPUnit\Framework\TestCase;
+
 
 class SessionSecurityServiceTest extends TestCase
 {

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Security;
 
-use App\Services\Security\XssProtectionService;
+use App\Domains\Security\Services\Core\XssProtectionService;
 use PHPUnit\Framework\TestCase;
+
 
 class XssProtectionServiceTest extends TestCase
 {
@@ -50,7 +51,7 @@ class XssProtectionServiceTest extends TestCase
     {
         $input = [
             'title' => '<script>alert("XSS");</script>',
-            'content' => '<img src="x" onerror="alert(\'XSS\')" />'
+            'content' => '<img src="x" onerror="alert(\'XSS\')" />',
         ];
 
         $result = $this->service->cleanArray($input, ['title', 'content']);

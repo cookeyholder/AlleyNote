@@ -5,9 +5,11 @@ namespace Tests\UI;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 
+
 abstract class UITestCase extends TestCase
 {
     protected static ?Process $serverProcess = null;
+
     protected static string $baseUrl = 'http://localhost:8080';
 
     public static function setUpBeforeClass(): void

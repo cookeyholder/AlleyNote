@@ -4,6 +4,7 @@ namespace Tests\Factory;
 
 use Tests\Factory\Abstracts\Factory;
 
+
 abstract class AbstractFactory implements Factory
 {
     protected array $defaultAttributes = [];
@@ -16,6 +17,7 @@ abstract class AbstractFactory implements Factory
     public function create(array $attributes = []): array
     {
         $data = $this->make($attributes);
+
         return $this->persist($data);
     }
 

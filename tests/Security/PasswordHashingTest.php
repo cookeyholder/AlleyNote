@@ -4,21 +4,31 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
-use App\Services\AuthService;
-use App\Repositories\UserRepository;
-use Tests\TestCase;
+use App\Domains\Auth\Repositories\UserRepository;
+use App\Domains\Auth\Services\AuthService;
+use App\Domains\User\Entities\User;
 use Mockery;
 use PDO;
+use Tests\TestCase;
+
 
 class PasswordHashingTest extends TestCase
 {
+
     protected AuthService $authService;
+
     protected UserRepository $userRepository;
+
     protected PDO $db;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        // 初始化mock對象
+        $this->authService = \Mockery::mock(AuthService::class);
+        $this->userRepository = \Mockery::mock(UserRepository::class);
+        $this->db = \Mockery::mock(PDO::class);
 
         // 使用 SQLite 記憶體資料庫進行測試
         $this->db = new PDO('sqlite::memory:');
@@ -27,8 +37,8 @@ class PasswordHashingTest extends TestCase
         // 建立測試資料表
         $this->createTestTables();
 
-        $this->userRepository = new UserRepository($this->db);
-        $this->authService = new AuthService($this->userRepository);
+        $this->userRepository = new \App\Domains\User\Repositories\UserRepository($this->db);
+        $this->authService = new \App\Domains\Auth\Services\AuthService($this->userRepository);
     }
 
     protected function createTestTables(): void
@@ -55,7 +65,7 @@ class PasswordHashingTest extends TestCase
         $userData = [
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'password' => 'password123'
+            'password' => 'password123',
         ];
 
         // 註冊使用者
@@ -80,7 +90,7 @@ class PasswordHashingTest extends TestCase
         $userData = [
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'password' => 'password123'
+            'password' => 'password123',
         ];
 
         // 註冊使用者
@@ -108,7 +118,7 @@ class PasswordHashingTest extends TestCase
         $userData = [
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'password' => '123' // 太短的密碼
+            'password' => '123', // 太短的密碼
         ];
 
         // 預期會拋出例外
@@ -126,7 +136,7 @@ class PasswordHashingTest extends TestCase
         $userData = [
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'password' => 'password123'
+            'password' => 'password123',
         ];
 
         // 註冊使用者

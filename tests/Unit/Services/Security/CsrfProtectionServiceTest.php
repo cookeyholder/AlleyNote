@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Security;
 
-use App\Services\Security\CsrfProtectionService;
-use App\Exceptions\CsrfTokenException;
+use App\Domains\Security\Services\Core\CsrfProtectionService;
+use App\Shared\Exceptions\CsrfTokenException;
 use PHPUnit\Framework\TestCase;
+
 
 class CsrfProtectionServiceTest extends TestCase
 {
@@ -67,7 +68,10 @@ class CsrfProtectionServiceTest extends TestCase
     public function throwsExceptionForExpiredToken(): void
     {
         $token = $this->service->generateToken();
-        $_SESSION['csrf_token_time'] = time() - 3601; // Set time to more than 1 hour ago
+
+        // 設定權杖池中的時間為過期（超過1小時前）
+        $_SESSION['csrf_token_pool'][$token] = time() - 3601;
+        $_SESSION['csrf_token_time'] = time() - 3601; // 也設定單一權杖時間以防萬一
 
         $this->expectException(CsrfTokenException::class);
         $this->expectExceptionMessage('CSRF token 已過期');

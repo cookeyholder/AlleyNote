@@ -1,50 +1,63 @@
 {
-    "name": "alleynote/alleynote",
-    "type": "project",
-    "description": "A modern bulletin board system",
-    "keywords": [
-        "bulletin-board",
-        "php"
+  "name": "alleynote/alleynote",
+  "type": "project",
+  "description": "A modern bulletin board system",
+  "keywords": [
+    "bulletin-board",
+    "php"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": "^8.4",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "monolog/monolog": "^2.0",
+    "vlucas/phpdotenv": "^5.3",
+    "ramsey/uuid": "^4.7",
+    "psr/http-message": "^1.0",
+    "psr/http-server-handler": "^1.0",
+    "ezyang/htmlpurifier": "^4.16",
+    "guzzlehttp/guzzle": "^7.5",
+    "zircote/swagger-php": "^5.3",
+    "robmorgan/phinx": "^0.16.10",
+    "php-di/php-di": "^7.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.0",
+    "mockery/mockery": "^1.6",
+    "squizlabs/php_codesniffer": "^3.8",
+    "friendsofphp/php-cs-fixer": "^3.86",
+    "phpstan/phpstan": "^2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    },
+    "files": [
+      "app/Shared/Helpers/functions.php"
     ],
-    "license": "MIT",
-    "require": {
-        "php": "^8.4",
-        "ext-pdo": "*",
-        "ext-json": "*",
-        "monolog/monolog": "^2.0",
-        "vlucas/phpdotenv": "^5.3",
-        "ramsey/uuid": "^4.7",
-        "psr/http-message": "^1.0",
-        "psr/http-server-handler": "^1.0",
-        "ezyang/htmlpurifier": "^4.16",
-        "guzzlehttp/guzzle": "^7.5",
-        "zircote/swagger-php": "^5.3"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^11.0",
-        "mockery/mockery": "^1.6",
-        "squizlabs/php_codesniffer": "^3.8"
-    },
-    "autoload": {
-        "psr-4": {
-            "App\\": "src/"
-        },
-        "files": [
-            "src/Helpers/functions.php"
-        ],
-        "classmap": [
-            "database/migrations"
-        ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "scripts": {
-        "test": "phpunit",
-        "audit": "composer audit --format=json",
-        "audit-report": "composer audit --format=json > security-audit-report.json || true"
-    },
-    "minimum-stability": "stable"
+    "classmap": [
+      "database/migrations"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "test:coverage": "phpunit --coverage-text",
+    "cs-fix": "php-cs-fixer fix",
+    "cs-check": "php-cs-fixer check --diff",
+    "analyse": "phpstan analyse --memory-limit=256M",
+    "ci": [
+      "@cs-check",
+      "@analyse",
+      "@test"
+    ],
+    "audit": "composer audit --format=json",
+    "audit-report": "composer audit --format=json > security-audit-report.json || true"
+  },
+  "minimum-stability": "stable"
 }

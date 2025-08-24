@@ -4,29 +4,41 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use App\Controllers\PostController;
-use App\Services\Contracts\PostServiceInterface;
-use App\Services\Security\Contracts\XssProtectionServiceInterface;
-use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
-use App\Models\Post;
-use App\Exceptions\ValidationException;
-use App\Exceptions\NotFoundException;
-use App\Exceptions\StateTransitionException;
-use Tests\TestCase;
+use App\Application\Controllers\Api\V1\PostController;
+use App\Domains\Post\Exceptions\PostNotFoundException;
+use App\Shared\Exceptions\StateTransitionException;
+use App\Shared\Exceptions\ValidationException;
+use App\Domains\Post\Models\Post;
+use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Contracts\Services\Security\CsrfProtectionServiceInterface;
+use App\Contracts\Services\Security\XssProtectionServiceInterface;
 use Mockery;
-use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Tests\TestCase;
+use App\Shared\Contracts\ValidatorInterface;
+use App\Domains\Post\DTOs\CreatePostDTO;
+use App\Domains\Post\DTOs\UpdatePostDTO;
 
 class PostControllerTest extends TestCase
 {
     private PostServiceInterface $postService;
+
     private XssProtectionServiceInterface $xssProtection;
+
     private CsrfProtectionServiceInterface $csrfProtection;
+
+    private ValidatorInterface $validator;
+
     private $request;
+
     private $response;
+
     private $stream;
+
     private $responseStatus;
+
     private $currentResponseData;
 
     protected function setUp(): void
@@ -35,6 +47,7 @@ class PostControllerTest extends TestCase
         $this->postService = Mockery::mock(PostServiceInterface::class);
         $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
         $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
 
         // 設定預設行為
         $this->xssProtection->shouldReceive('cleanArray')
@@ -49,6 +62,19 @@ class PostControllerTest extends TestCase
             ->byDefault()
             ->andReturn('new-token');
 
+        // 設定 validator 預設行為
+        $this->validator->shouldReceive('validateOrFail')
+            ->andReturnUsing(function($data, $rules) {
+                return $data;
+            })
+            ->byDefault();
+        $this->validator->shouldReceive('addRule')
+            ->andReturnNull()
+            ->byDefault();
+        $this->validator->shouldReceive('addMessage')
+            ->andReturnNull()
+            ->byDefault();
+
         // 先建立 stream
         $this->stream = $this->createStreamMock();
         // 再建立 response
@@ -62,12 +88,12 @@ class PostControllerTest extends TestCase
     {
         // 準備測試資料
         $filters = ['status' => 'published'];
-        $expectedResult = [
-            'items' => [],
+        $expectedData = [];
+        $expectedPagination = [
             'total' => 0,
             'page' => 1,
             'per_page' => 10,
-            'last_page' => 1
+            'total_pages' => 0,
         ];
 
         // 設定請求參數
@@ -76,22 +102,30 @@ class PostControllerTest extends TestCase
             ->andReturn(['page' => 1, 'per_page' => 10, 'status' => 'published']);
 
         // 設定服務層期望行為
+        $serviceResult = [
+            'items' => $expectedData,
+            'total' => 0,
+            'page' => 1,
+            'per_page' => 10,
+        ];
         $this->postService->shouldReceive('listPosts')
             ->once()
             ->with(1, 10, Mockery::subset(['status' => 'published']))
-            ->andReturn($expectedResult);
+            ->andReturn($serviceResult);
 
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->xssProtection,
-            $this->csrfProtection
+            $this->validator
         );
         $response = $controller->index($this->request, $this->response);
 
         // 驗證結果
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['data' => $expectedResult], $this->currentResponseData);
+        $this->assertTrue($this->currentResponseData['success']);
+        $this->assertEquals($expectedData, $this->currentResponseData['data']);
+        $this->assertEquals($expectedPagination, $this->currentResponseData['pagination']);
+        $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
     /** @test */
@@ -103,7 +137,7 @@ class PostControllerTest extends TestCase
             'id' => $postId,
             'title' => '測試文章',
             'content' => '測試內容',
-            'is_pinned' => false
+            'is_pinned' => false,
         ];
         $post = new Post($postData);
 
@@ -122,20 +156,22 @@ class PostControllerTest extends TestCase
             ->andReturn($post);
         $this->postService->shouldReceive('recordView')
             ->once()
-            ->with($postId, '127.0.0.1', 1)
+            ->with($postId, '203.0.113.1')
             ->andReturn(true);
 
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->xssProtection,
-            $this->csrfProtection
+            $this->validator
         );
         $response = $controller->show($this->request, $this->response, ['id' => $postId]);
 
         // 驗證結果
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['data' => $post->toArray()], $this->currentResponseData);
+        $this->assertTrue($this->currentResponseData['success']);
+        $this->assertEquals('成功取得貼文', $this->currentResponseData['message']);
+        $this->assertEquals($post->toSafeArray(), $this->currentResponseData['data']);
+        $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
     /** @test */
@@ -145,32 +181,35 @@ class PostControllerTest extends TestCase
         $postData = [
             'title' => '新文章',
             'content' => '文章內容',
-            'is_pinned' => false
+            'is_pinned' => false,
         ];
         $createdPost = new Post($postData + ['id' => 1]);
 
         // 設定請求資料
-        $this->request->shouldReceive('getParsedBody')
-            ->once()
-            ->andReturn($postData);
+        $requestBody = json_encode($postData);
+        $requestStream = Mockery::mock(StreamInterface::class);
+        $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定服務層期望行為
         $this->postService->shouldReceive('createPost')
             ->once()
-            ->with($postData)
+            ->with(\Mockery::type(\App\Domains\Post\DTOs\CreatePostDTO::class))
             ->andReturn($createdPost);
 
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->xssProtection,
-            $this->csrfProtection
+            $this->validator
         );
         $response = $controller->store($this->request, $this->response);
 
         // 驗證結果
         $this->assertEquals(201, $response->getStatusCode());
-        $this->assertEquals(['data' => $createdPost->toArray()], $this->currentResponseData);
+        $this->assertTrue($this->currentResponseData['success']);
+        $this->assertEquals('貼文建立成功', $this->currentResponseData['message']);
+        $this->assertEquals($createdPost->toSafeArray(), $this->currentResponseData['data']);
+        $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
     /** @test */
@@ -180,31 +219,34 @@ class PostControllerTest extends TestCase
         $invalidData = ['title' => ''];
 
         // 設定請求資料
-        $this->request->shouldReceive('getParsedBody')
-            ->once()
-            ->andReturn($invalidData);
+        $requestBody = json_encode($invalidData);
+        $requestStream = Mockery::mock(StreamInterface::class);
+        $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
-        // 設定服務層期望行為
-        $validationException = new ValidationException('標題不能為空', ['title' => ['標題不能為空']]);
-        $this->postService->shouldReceive('createPost')
-            ->once()
-            ->with($invalidData)
-            ->andThrow($validationException);
+        // 設定驗證器拋出異常（DTO 建立時就會失敗）
+        $this->validator->shouldReceive('validateOrFail')
+            ->andThrow(new \App\Shared\Exceptions\ValidationException(
+                \App\Shared\Validation\ValidationResult::failure(['title' => ['標題不能為空']])
+            ));
+
+        // PostService 不應該被調用，因為 DTO 建立會先失敗
+        $this->postService->shouldNotReceive('createPost');
 
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->xssProtection,
-            $this->csrfProtection
+            $this->validator
         );
         $response = $controller->store($this->request, $this->response);
 
         // 驗證結果
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals([
-            'error' => '標題不能為空',
-            'details' => ['title' => ['標題不能為空']]
-        ], $this->currentResponseData);
+        $this->assertFalse($this->currentResponseData['success']);
+        $this->assertEquals('標題不能為空', $this->currentResponseData['message']);
+        $this->assertEquals(400, $this->currentResponseData['error_code']);
+        $this->assertEquals(['title' => ['標題不能為空']], $this->currentResponseData['errors']);
+        $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
     /** @test */
@@ -215,32 +257,35 @@ class PostControllerTest extends TestCase
         $updateData = [
             'title' => '更新的標題',
             'content' => '更新的內容',
-            'is_pinned' => false
+            'is_pinned' => false,
         ];
         $updatedPost = new Post($updateData + ['id' => $postId]);
 
         // 設定請求資料
-        $this->request->shouldReceive('getParsedBody')
-            ->once()
-            ->andReturn($updateData);
+        $requestBody = json_encode($updateData);
+        $requestStream = Mockery::mock(StreamInterface::class);
+        $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定服務層期望行為
         $this->postService->shouldReceive('updatePost')
             ->once()
-            ->with($postId, $updateData)
+            ->with($postId, \Mockery::type(\App\Domains\Post\DTOs\UpdatePostDTO::class))
             ->andReturn($updatedPost);
 
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->xssProtection,
-            $this->csrfProtection
+            $this->validator
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
         // 驗證結果
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['data' => $updatedPost->toArray()], $this->currentResponseData);
+        $this->assertTrue($this->currentResponseData['success']);
+        $this->assertEquals('貼文更新成功', $this->currentResponseData['message']);
+        $this->assertEquals($updatedPost->toSafeArray(), $this->currentResponseData['data']);
+        $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
     /** @test */
@@ -251,15 +296,16 @@ class PostControllerTest extends TestCase
         $updateData = ['title' => '更新的標題'];
 
         // 設定請求資料
-        $this->request->shouldReceive('getParsedBody')
-            ->once()
-            ->andReturn($updateData);
+        $requestBody = json_encode($updateData);
+        $requestStream = Mockery::mock(StreamInterface::class);
+        $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定服務層期望行為
         $this->postService->shouldReceive('updatePost')
             ->once()
-            ->with($postId, $updateData)
-            ->andThrow(new NotFoundException('找不到指定的文章'));
+            ->with($postId, \Mockery::type(\App\Domains\Post\DTOs\UpdatePostDTO::class))
+            ->andThrow(new PostNotFoundException($postId));
 
         // 預期的回應設定
         $this->response->shouldReceive('getStatusCode')
@@ -268,17 +314,16 @@ class PostControllerTest extends TestCase
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->xssProtection,
-            $this->csrfProtection
+            $this->validator
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
         // 驗證結果
         $this->assertEquals(404, $response->getStatusCode());
-        $this->assertEquals(
-            ['error' => '找不到指定的文章'],
-            json_decode($response->getBody()->getContents(), true)
-        );
+        $this->assertFalse($this->currentResponseData['success']);
+        $this->assertEquals("找不到 ID 為 {$postId} 的貼文", $this->currentResponseData['message']);
+        $this->assertEquals(404, $this->currentResponseData['error_code']);
+        $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
     /** @test */
@@ -300,10 +345,9 @@ class PostControllerTest extends TestCase
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->xssProtection,
-            $this->csrfProtection
+            $this->validator
         );
-        $response = $controller->destroy($this->request, $this->response, ['id' => $postId]);
+        $response = $controller->delete($this->request, $this->response, ['id' => '1']);
 
         // 驗證結果
         $this->assertEquals(204, $response->getStatusCode());
@@ -314,33 +358,36 @@ class PostControllerTest extends TestCase
     {
         // 準備測試資料
         $postId = 1;
-        $pinData = ['is_pinned' => true];
+        $pinData = ['pinned' => true];
+        $post = new Post(['id' => $postId, 'title' => '測試文章', 'content' => '內容']);
 
         // 設定請求資料
-        $this->request->shouldReceive('getParsedBody')
-            ->once()
-            ->andReturn($pinData);
+        $requestBody = json_encode($pinData);
+        $requestStream = Mockery::mock(StreamInterface::class);
+        $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定服務層期望行為
         $this->postService->shouldReceive('setPinned')
             ->once()
             ->with($postId, true)
             ->andReturn(true);
-
-        // 預期的回應設定
-        $this->response->shouldReceive('getStatusCode')
-            ->andReturn(204);
+        $this->postService->shouldReceive('findById')
+            ->once()
+            ->with($postId)
+            ->andReturn($post);
 
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->xssProtection,
-            $this->csrfProtection
+            $this->validator
         );
-        $response = $controller->updatePinStatus($this->request, $this->response, ['id' => $postId]);
+        $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 
         // 驗證結果
-        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($this->currentResponseData['success']);
+        $this->assertEquals('貼文已設為置頂', $this->currentResponseData['message']);
     }
 
     /** @test */
@@ -348,37 +395,31 @@ class PostControllerTest extends TestCase
     {
         // 準備測試資料
         $postId = 1;
-        $pinData = ['is_pinned' => true];
+        $pinData = ['pinned' => true];
 
         // 設定請求資料
-        $this->request->shouldReceive('getParsedBody')
-            ->once()
-            ->andReturn($pinData);
+        $requestBody = json_encode($pinData);
+        $requestStream = Mockery::mock(StreamInterface::class);
+        $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定服務層期望行為
         $this->postService->shouldReceive('setPinned')
             ->once()
             ->with($postId, true)
-            ->andThrow(new StateTransitionException('只有已發布的文章可以置頂'));
-
-        // 預期的回應設定
-        $this->response->shouldReceive('getStatusCode')
-            ->andReturn(422);
+            ->andThrow(new StateTransitionException('無效的狀態轉換'));
 
         // 執行測試
         $controller = new PostController(
             $this->postService,
-            $this->xssProtection,
-            $this->csrfProtection
+            $this->validator
         );
-        $response = $controller->updatePinStatus($this->request, $this->response, ['id' => $postId]);
+        $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 
         // 驗證結果
         $this->assertEquals(422, $response->getStatusCode());
-        $this->assertEquals(
-            ['error' => '只有已發布的文章可以置頂'],
-            json_decode($response->getBody()->getContents(), true)
-        );
+        $this->assertFalse($this->currentResponseData['success']);
+        $this->assertEquals('無效的狀態轉換', $this->currentResponseData['message']);
     }
 
     protected function tearDown(): void
@@ -394,6 +435,20 @@ class PostControllerTest extends TestCase
             ->with('X-CSRF-TOKEN')
             ->andReturn('valid-token')
             ->byDefault();
+
+        $request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '203.0.113.1'])
+            ->byDefault();
+
+        $request->shouldReceive('getBody')
+            ->andReturn($this->stream)
+            ->byDefault();
+
+        $request->shouldReceive('getAttribute')
+            ->with('user_id')
+            ->andReturn(1)
+            ->byDefault();
+
         return $request;
     }
 
@@ -404,12 +459,14 @@ class PostControllerTest extends TestCase
         $stream->shouldReceive('write')
             ->andReturnUsing(function ($content) use ($stream) {
                 $this->currentResponseData = json_decode($content, true);
+
                 return $stream;
             });
         $stream->shouldReceive('getContents')
             ->andReturnUsing(function () {
                 return json_encode($this->currentResponseData);
             });
+
         return $stream;
     }
 
@@ -421,6 +478,7 @@ class PostControllerTest extends TestCase
         $response->shouldReceive('withStatus')
             ->andReturnUsing(function ($status) use ($response) {
                 $this->responseStatus = $status;
+
                 return $response;
             });
         $response->shouldReceive('getStatusCode')
@@ -429,6 +487,7 @@ class PostControllerTest extends TestCase
             });
         $response->shouldReceive('getBody')
             ->andReturn($this->stream);
+
         return $response;
     }
 }

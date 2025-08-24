@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repositories;
 
-use PDO;
-use App\Services\CacheService;
-use App\Repositories\AttachmentRepository;
-use Tests\TestCase;
+use App\Domains\Attachment\Models\Attachment;
+use App\Domains\Attachment\Repositories\AttachmentRepository;
+use App\Infrastructure\Services\CacheService;
 use Mockery;
+use PDO;
+use Tests\TestCase;
+
 
 class AttachmentRepositoryTest extends TestCase
 {
     protected AttachmentRepository $repository;
+
     protected PDO $db;
-    protected $cache;
+
+    protected \App\Infrastructure\Services\CacheService|\Mockery\MockInterface $cache;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -27,7 +32,7 @@ class AttachmentRepositoryTest extends TestCase
         $this->createTestTables();
 
         // 模擬快取服務
-        $this->cache = Mockery::mock(CacheService::class);
+        $this->cache = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
         $this->cache->shouldReceive('remember')
             ->byDefault()
             ->andReturnUsing(function ($key, $callback) {
@@ -35,7 +40,7 @@ class AttachmentRepositoryTest extends TestCase
             });
         $this->cache->shouldReceive('delete')->byDefault();
 
-        $this->repository = new AttachmentRepository($this->db, $this->cache);
+        $this->repository = new \App\Domains\Attachment\Repositories\AttachmentRepository($this->db, $this->cache);
     }
 
     protected function createTestTables(): void
@@ -72,7 +77,7 @@ class AttachmentRepositoryTest extends TestCase
             'original_name' => '測試圖片.jpg',
             'mime_type' => 'image/jpeg',
             'file_size' => 1024,
-            'storage_path' => '/storage/attachments/2025/04/test.jpg'
+            'storage_path' => '/storage/attachments/2025/04/test.jpg',
         ];
 
         // 執行測試
@@ -99,7 +104,7 @@ class AttachmentRepositoryTest extends TestCase
             'original_name' => '測試圖片.jpg',
             'mime_type' => 'image/jpeg',
             'file_size' => 1024,
-            'storage_path' => '/storage/attachments/2025/04/test.jpg'
+            'storage_path' => '/storage/attachments/2025/04/test.jpg',
         ];
         $created = $this->repository->create($data);
 
@@ -121,7 +126,7 @@ class AttachmentRepositoryTest extends TestCase
             'original_name' => '測試圖片.jpg',
             'mime_type' => 'image/jpeg',
             'file_size' => 1024,
-            'storage_path' => '/storage/attachments/2025/04/test.jpg'
+            'storage_path' => '/storage/attachments/2025/04/test.jpg',
         ];
         $created = $this->repository->create($data);
 
@@ -157,7 +162,7 @@ class AttachmentRepositoryTest extends TestCase
                 'original_name' => "測試圖片{$i}.jpg",
                 'mime_type' => 'image/jpeg',
                 'file_size' => 1024,
-                'storage_path' => "/storage/attachments/2025/04/test{$i}.jpg"
+                'storage_path' => "/storage/attachments/2025/04/test{$i}.jpg",
             ]);
         }
 
@@ -181,7 +186,7 @@ class AttachmentRepositoryTest extends TestCase
             'original_name' => '測試圖片.jpg',
             'mime_type' => 'image/jpeg',
             'file_size' => 1024,
-            'storage_path' => '/storage/attachments/2025/04/test.jpg'
+            'storage_path' => '/storage/attachments/2025/04/test.jpg',
         ];
         $attachment = $this->repository->create($data);
 

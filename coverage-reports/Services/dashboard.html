@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/html/src/Services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=11.0.10" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=11.0.10" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=11.0.10" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/var/www/html/src</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Services</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AttachmentService.php.html#19">App\Services\AttachmentService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuthService.php.html#10">App\Services\AuthService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CacheService.php.html#7">App\Services\CacheService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IpService.php.html#11">App\Services\IpService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OutputSanitizer.php.html#7">App\Services\OutputSanitizer</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#16">App\Services\PasswordManagementService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#18">App\Services\PostService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RateLimitService.php.html#7">App\Services\RateLimitService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#9">App\Services\Security\AdvancedRateLimitService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#11">App\Services\Security\AuthorizationService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#12">App\Services\Security\ContentModerationService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#9">App\Services\Security\CsrfProtectionService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#15">App\Services\Security\ErrorHandlerService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#11">App\Services\Security\FileSecurityService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#19">App\Services\Security\LoggingSecurityService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#10">App\Services\Security\PasswordSecurityService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#10">App\Services\Security\PwnedPasswordService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#15">App\Services\Security\RichTextProcessorService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#10">App\Services\Security\SecretsManager</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#9">App\Services\Security\SecurityHeaderService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#17">App\Services\Security\SecurityTestService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#9">App\Services\Security\SessionSecurityService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#12">App\Services\Security\XssProtectionExtensionService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#10">App\Services\Security\XssProtectionService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#11">App\Services\Validators\PostValidator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Enums/PostStatus.php.html#7">App\Services\Enums\PostStatus</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Security/SecretsManager.php.html#10">App\Services\Security\SecretsManager</a></td><td class="text-right">4422</td></tr>
+       <tr><td><a href="AttachmentService.php.html#19">App\Services\AttachmentService</a></td><td class="text-right">4290</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#10">App\Services\Security\PasswordSecurityService</a></td><td class="text-right">3306</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#15">App\Services\Security\ErrorHandlerService</a></td><td class="text-right">2862</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#11">App\Services\Security\FileSecurityService</a></td><td class="text-right">2756</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#17">App\Services\Security\SecurityTestService</a></td><td class="text-right">2756</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#12">App\Services\Security\ContentModerationService</a></td><td class="text-right">2450</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#12">App\Services\Security\XssProtectionExtensionService</a></td><td class="text-right">2450</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#9">App\Services\Security\SecurityHeaderService</a></td><td class="text-right">2162</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#19">App\Services\Security\LoggingSecurityService</a></td><td class="text-right">1806</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#11">App\Services\Validators\PostValidator</a></td><td class="text-right">1806</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#9">App\Services\Security\CsrfProtectionService</a></td><td class="text-right">1482</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#9">App\Services\Security\SessionSecurityService</a></td><td class="text-right">1260</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#9">App\Services\Security\AdvancedRateLimitService</a></td><td class="text-right">1190</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#10">App\Services\Security\XssProtectionService</a></td><td class="text-right">756</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#11">App\Services\Security\AuthorizationService</a></td><td class="text-right">650</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#15">App\Services\Security\RichTextProcessorService</a></td><td class="text-right">600</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#10">App\Services\Security\PwnedPasswordService</a></td><td class="text-right">552</td></tr>
+       <tr><td><a href="PostService.php.html#18">App\Services\PostService</a></td><td class="text-right">506</td></tr>
+       <tr><td><a href="CacheService.php.html#7">App\Services\CacheService</a></td><td class="text-right">462</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#16">App\Services\PasswordManagementService</a></td><td class="text-right">156</td></tr>
+       <tr><td><a href="IpService.php.html#11">App\Services\IpService</a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="Enums/PostStatus.php.html#7">App\Services\Enums\PostStatus</a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="OutputSanitizer.php.html#7">App\Services\OutputSanitizer</a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="RateLimitService.php.html#7">App\Services\RateLimitService</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="AuthService.php.html#10">App\Services\AuthService</a></td><td class="text-right">42</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AttachmentService.php.html#51"><abbr title="App\Services\AttachmentService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#60"><abbr title="App\Services\AttachmentService::validateFile">validateFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#99"><abbr title="App\Services\AttachmentService::containsMaliciousContent">containsMaliciousContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#139"><abbr title="App\Services\AttachmentService::sanitizeImage">sanitizeImage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#224"><abbr title="App\Services\AttachmentService::scanForVirus">scanForVirus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#250"><abbr title="App\Services\AttachmentService::secureFileValidation">secureFileValidation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#312"><abbr title="App\Services\AttachmentService::canAccessPost">canAccessPost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#331"><abbr title="App\Services\AttachmentService::canAccessAttachment">canAccessAttachment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#348"><abbr title="App\Services\AttachmentService::upload">upload</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#400"><abbr title="App\Services\AttachmentService::download">download</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#429"><abbr title="App\Services\AttachmentService::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttachmentService.php.html#458"><abbr title="App\Services\AttachmentService::getByPostId">getByPostId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuthService.php.html#12"><abbr title="App\Services\AuthService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuthService.php.html#17"><abbr title="App\Services\AuthService::register">register</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuthService.php.html#29"><abbr title="App\Services\AuthService::login">login</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CacheService.php.html#12"><abbr title="App\Services\CacheService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CacheService.php.html#20"><abbr title="App\Services\CacheService::get">get</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CacheService.php.html#45"><abbr title="App\Services\CacheService::set">set</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CacheService.php.html#56"><abbr title="App\Services\CacheService::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CacheService.php.html#66"><abbr title="App\Services\CacheService::clear">clear</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CacheService.php.html#82"><abbr title="App\Services\CacheService::remember">remember</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CacheService.php.html#96"><abbr title="App\Services\CacheService::getCacheFilename">getCacheFilename</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IpService.php.html#13"><abbr title="App\Services\IpService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IpService.php.html#17"><abbr title="App\Services\IpService::createIpRule">createIpRule</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IpService.php.html#34"><abbr title="App\Services\IpService::isIpAllowed">isIpAllowed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IpService.php.html#54"><abbr title="App\Services\IpService::getRulesByType">getRulesByType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OutputSanitizer.php.html#12"><abbr title="App\Services\OutputSanitizer::sanitizeHtml">sanitizeHtml</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OutputSanitizer.php.html#20"><abbr title="App\Services\OutputSanitizer::sanitizeTitle">sanitizeTitle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OutputSanitizer.php.html#28"><abbr title="App\Services\OutputSanitizer::sanitizeForDisplay">sanitizeForDisplay</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OutputSanitizer.php.html#44"><abbr title="App\Services\OutputSanitizer::sanitizePreserveNewlines">sanitizePreserveNewlines</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OutputSanitizer.php.html#52"><abbr title="App\Services\OutputSanitizer::sanitizeAndTruncate">sanitizeAndTruncate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#18"><abbr title="App\Services\PasswordManagementService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#32"><abbr title="App\Services\PasswordManagementService::changePassword">changePassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#59"><abbr title="App\Services\PasswordManagementService::resetPassword">resetPassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#74"><abbr title="App\Services\PasswordManagementService::checkPasswordStrength">checkPasswordStrength</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#85"><abbr title="App\Services\PasswordManagementService::generateSecurePassword">generateSecurePassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#96"><abbr title="App\Services\PasswordManagementService::needsRehash">needsRehash</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#108"><abbr title="App\Services\PasswordManagementService::upgradePasswordHash">upgradePasswordHash</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#20"><abbr title="App\Services\PostService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#24"><abbr title="App\Services\PostService::createPost">createPost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#35"><abbr title="App\Services\PostService::updatePost">updatePost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#72"><abbr title="App\Services\PostService::deletePost">deletePost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#84"><abbr title="App\Services\PostService::findById">findById</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#100"><abbr title="App\Services\PostService::listPosts">listPosts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#110"><abbr title="App\Services\PostService::getPinnedPosts">getPinnedPosts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#117"><abbr title="App\Services\PostService::setPinned">setPinned</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#134"><abbr title="App\Services\PostService::setTags">setTags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PostService.php.html#147"><abbr title="App\Services\PostService::recordView">recordView</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RateLimitService.php.html#9"><abbr title="App\Services\RateLimitService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RateLimitService.php.html#14"><abbr title="App\Services\RateLimitService::checkLimit">checkLimit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RateLimitService.php.html#63"><abbr title="App\Services\RateLimitService::isAllowed">isAllowed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#15"><abbr title="App\Services\Security\AdvancedRateLimitService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#25"><abbr title="App\Services\Security\AdvancedRateLimitService::checkLimit">checkLimit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#48"><abbr title="App\Services\Security\AdvancedRateLimitService::getRealClientIP">getRealClientIP</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#87"><abbr title="App\Services\Security\AdvancedRateLimitService::checkUserLimit">checkUserLimit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#96"><abbr title="App\Services\Security\AdvancedRateLimitService::checkIPLimit">checkIPLimit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#105"><abbr title="App\Services\Security\AdvancedRateLimitService::performLimitCheck">performLimitCheck</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#172"><abbr title="App\Services\Security\AdvancedRateLimitService::getLimitsForAction">getLimitsForAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#180"><abbr title="App\Services\Security\AdvancedRateLimitService::isTrustedProxy">isTrustedProxy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#198"><abbr title="App\Services\Security\AdvancedRateLimitService::ipInRange">ipInRange</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#223"><abbr title="App\Services\Security\AdvancedRateLimitService::clearLimit">clearLimit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#237"><abbr title="App\Services\Security\AdvancedRateLimitService::getLimitStatus">getLimitStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#274"><abbr title="App\Services\Security\AdvancedRateLimitService::getDefaultConfig">getDefaultConfig</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#17"><abbr title="App\Services\Security\AuthorizationService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#23"><abbr title="App\Services\Security\AuthorizationService::hasPermission">hasPermission</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#34"><abbr title="App\Services\Security\AuthorizationService::hasRole">hasRole</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#45"><abbr title="App\Services\Security\AuthorizationService::can">can</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#57"><abbr title="App\Services\Security\AuthorizationService::assignRole">assignRole</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#91"><abbr title="App\Services\Security\AuthorizationService::removeRole">removeRole</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#112"><abbr title="App\Services\Security\AuthorizationService::givePermission">givePermission</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#146"><abbr title="App\Services\Security\AuthorizationService::revokePermission">revokePermission</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#167"><abbr title="App\Services\Security\AuthorizationService::getUserRoles">getUserRoles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#180"><abbr title="App\Services\Security\AuthorizationService::getUserPermissions">getUserPermissions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#207"><abbr title="App\Services\Security\AuthorizationService::isSuperAdmin">isSuperAdmin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#212"><abbr title="App\Services\Security\AuthorizationService::clearUserCache">clearUserCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#18"><abbr title="App\Services\Security\ContentModerationService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#31"><abbr title="App\Services\Security\ContentModerationService::moderateContent">moderateContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#83"><abbr title="App\Services\Security\ContentModerationService::checkSecurity">checkSecurity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#119"><abbr title="App\Services\Security\ContentModerationService::checkQuality">checkQuality</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#169"><abbr title="App\Services\Security\ContentModerationService::checkSensitiveWords">checkSensitiveWords</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#194"><abbr title="App\Services\Security\ContentModerationService::calculateSpamScore">calculateSpamScore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#236"><abbr title="App\Services\Security\ContentModerationService::determineFinalStatus">determineFinalStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#267"><abbr title="App\Services\Security\ContentModerationService::isRepetitiveContent">isRepetitiveContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#283"><abbr title="App\Services\Security\ContentModerationService::isAllCaps">isAllCaps</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#296"><abbr title="App\Services\Security\ContentModerationService::getUpperCaseRatio">getUpperCaseRatio</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#310"><abbr title="App\Services\Security\ContentModerationService::hasExcessiveRepetition">hasExcessiveRepetition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#320"><abbr title="App\Services\Security\ContentModerationService::hasSuspiciousUrls">hasSuspiciousUrls</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#342"><abbr title="App\Services\Security\ContentModerationService::getSensitiveWordSeverity">getSensitiveWordSeverity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#360"><abbr title="App\Services\Security\ContentModerationService::getDefaultConfig">getDefaultConfig</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#16"><abbr title="App\Services\Security\CsrfProtectionService::generateToken">generateToken</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#41"><abbr title="App\Services\Security\CsrfProtectionService::validateToken">validateToken</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#59"><abbr title="App\Services\Security\CsrfProtectionService::validateTokenFromPool">validateTokenFromPool</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#94"><abbr title="App\Services\Security\CsrfProtectionService::validateSingleToken">validateSingleToken</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#116"><abbr title="App\Services\Security\CsrfProtectionService::cleanExpiredTokens">cleanExpiredTokens</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#135"><abbr title="App\Services\Security\CsrfProtectionService::limitPoolSize">limitPoolSize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#154"><abbr title="App\Services\Security\CsrfProtectionService::isTokenValid">isTokenValid</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#187"><abbr title="App\Services\Security\CsrfProtectionService::initializeTokenPool">initializeTokenPool</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#200"><abbr title="App\Services\Security\CsrfProtectionService::getTokenPoolStatus">getTokenPoolStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#21"><abbr title="App\Services\Security\ErrorHandlerService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#49"><abbr title="App\Services\Security\ErrorHandlerService::handleException">handleException</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#72"><abbr title="App\Services\Security\ErrorHandlerService::logSecurityEvent">logSecurityEvent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#85"><abbr title="App\Services\Security\ErrorHandlerService::logAuthenticationAttempt">logAuthenticationAttempt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#95"><abbr title="App\Services\Security\ErrorHandlerService::logSuspiciousActivity">logSuspiciousActivity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#105"><abbr title="App\Services\Security\ErrorHandlerService::sanitizeLogData">sanitizeLogData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#129"><abbr title="App\Services\Security\ErrorHandlerService::initializeLogger">initializeLogger</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#186"><abbr title="App\Services\Security\ErrorHandlerService::registerErrorHandlers">registerErrorHandlers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#198"><abbr title="App\Services\Security\ErrorHandlerService::globalExceptionHandler">globalExceptionHandler</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#211"><abbr title="App\Services\Security\ErrorHandlerService::globalErrorHandler">globalErrorHandler</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#227"><abbr title="App\Services\Security\ErrorHandlerService::shutdownHandler">shutdownHandler</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#244"><abbr title="App\Services\Security\ErrorHandlerService::logException">logException</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#257"><abbr title="App\Services\Security\ErrorHandlerService::getPublicErrorMessage">getPublicErrorMessage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#268"><abbr title="App\Services\Security\ErrorHandlerService::getErrorCode">getErrorCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#279"><abbr title="App\Services\Security\ErrorHandlerService::isSensitiveKey">isSensitiveKey</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#292"><abbr title="App\Services\Security\ErrorHandlerService::containsSensitiveData">containsSensitiveData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#312"><abbr title="App\Services\Security\ErrorHandlerService::truncateString">truncateString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#67"><abbr title="App\Services\Security\FileSecurityService::validateUpload">validateUpload</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#75"><abbr title="App\Services\Security\FileSecurityService::generateSecureFileName">generateSecureFileName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#84"><abbr title="App\Services\Security\FileSecurityService::detectActualMimeType">detectActualMimeType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#105"><abbr title="App\Services\Security\FileSecurityService::sanitizeFileName">sanitizeFileName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#125"><abbr title="App\Services\Security\FileSecurityService::isInAllowedDirectory">isInAllowedDirectory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#137"><abbr title="App\Services\Security\FileSecurityService::validateBasicProperties">validateBasicProperties</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#152"><abbr title="App\Services\Security\FileSecurityService::validateFileName">validateFileName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#187"><abbr title="App\Services\Security\FileSecurityService::validateMimeType">validateMimeType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#204"><abbr title="App\Services\Security\FileSecurityService::validateFileContent">validateFileContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#220"><abbr title="App\Services\Security\FileSecurityService::containsMaliciousContent">containsMaliciousContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#257"><abbr title="App\Services\Security\FileSecurityService::validateFileSignature">validateFileSignature</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#286"><abbr title="App\Services\Security\FileSecurityService::extractSafeExtension">extractSafeExtension</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#301"><abbr title="App\Services\Security\FileSecurityService::getUploadErrorMessage">getUploadErrorMessage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#56"><abbr title="App\Services\Security\LoggingSecurityService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#64"><abbr title="App\Services\Security\LoggingSecurityService::initializeLoggers">initializeLoggers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#107"><abbr title="App\Services\Security\LoggingSecurityService::ensureLogDirectory">ensureLogDirectory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#118"><abbr title="App\Services\Security\LoggingSecurityService::setLogFilePermissions">setLogFilePermissions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#144"><abbr title="App\Services\Security\LoggingSecurityService::info">info</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#150"><abbr title="App\Services\Security\LoggingSecurityService::warning">warning</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#156"><abbr title="App\Services\Security\LoggingSecurityService::error">error</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#165"><abbr title="App\Services\Security\LoggingSecurityService::logSecurityEvent">logSecurityEvent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#176"><abbr title="App\Services\Security\LoggingSecurityService::logCriticalSecurityEvent">logCriticalSecurityEvent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#190"><abbr title="App\Services\Security\LoggingSecurityService::logRequest">logRequest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#201"><abbr title="App\Services\Security\LoggingSecurityService::logAuthenticationFailure">logAuthenticationFailure</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#212"><abbr title="App\Services\Security\LoggingSecurityService::logAuthorizationFailure">logAuthorizationFailure</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#226"><abbr title="App\Services\Security\LoggingSecurityService::applyRequestWhitelist">applyRequestWhitelist</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#242"><abbr title="App\Services\Security\LoggingSecurityService::sanitizeContext">sanitizeContext</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#250"><abbr title="App\Services\Security\LoggingSecurityService::recursiveSanitize">recursiveSanitize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#284"><abbr title="App\Services\Security\LoggingSecurityService::enrichSecurityContext">enrichSecurityContext</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#303"><abbr title="App\Services\Security\LoggingSecurityService::enrichRequestContext">enrichRequestContext</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#318"><abbr title="App\Services\Security\LoggingSecurityService::verifyLogFilePermissions">verifyLogFilePermissions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#355"><abbr title="App\Services\Security\LoggingSecurityService::getLogStatistics">getLogStatistics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#50"><abbr title="App\Services\Security\PasswordSecurityService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#55"><abbr title="App\Services\Security\PasswordSecurityService::hashPassword">hashPassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#83"><abbr title="App\Services\Security\PasswordSecurityService::verifyPassword">verifyPassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#88"><abbr title="App\Services\Security\PasswordSecurityService::needsRehash">needsRehash</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#112"><abbr title="App\Services\Security\PasswordSecurityService::validatePassword">validatePassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#147"><abbr title="App\Services\Security\PasswordSecurityService::generateSecurePassword">generateSecurePassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#179"><abbr title="App\Services\Security\PasswordSecurityService::calculatePasswordStrength">calculatePasswordStrength</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#255"><abbr title="App\Services\Security\PasswordSecurityService::validatePasswordComplexity">validatePasswordComplexity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#286"><abbr title="App\Services\Security\PasswordSecurityService::isCommonPassword">isCommonPassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#324"><abbr title="App\Services\Security\PasswordSecurityService::hasExcessiveRepetition">hasExcessiveRepetition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#330"><abbr title="App\Services\Security\PasswordSecurityService::hasSequentialChars">hasSequentialChars</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#19"><abbr title="App\Services\Security\PwnedPasswordService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#36"><abbr title="App\Services\Security\PwnedPasswordService::isPasswordPwned">isPasswordPwned</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#90"><abbr title="App\Services\Security\PwnedPasswordService::fetchHashesFromApi">fetchHashesFromApi</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#110"><abbr title="App\Services\Security\PwnedPasswordService::findHashInList">findHashInList</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#127"><abbr title="App\Services\Security\PwnedPasswordService::isInCache">isInCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#133"><abbr title="App\Services\Security\PwnedPasswordService::getFromCache">getFromCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#138"><abbr title="App\Services\Security\PwnedPasswordService::setCache">setCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#149"><abbr title="App\Services\Security\PwnedPasswordService::clearCache">clearCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#157"><abbr title="App\Services\Security\PwnedPasswordService::getApiStatus">getApiStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#176"><abbr title="App\Services\Security\PwnedPasswordService::checkMultiplePasswords">checkMultiplePasswords</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#22"><abbr title="App\Services\Security\RichTextProcessorService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#31"><abbr title="App\Services\Security\RichTextProcessorService::initializePurifiers">initializePurifiers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#92"><abbr title="App\Services\Security\RichTextProcessorService::processContent">processContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#131"><abbr title="App\Services\Security\RichTextProcessorService::processCKEditorContent">processCKEditorContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#143"><abbr title="App\Services\Security\RichTextProcessorService::preprocessCKEditorContent">preprocessCKEditorContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#162"><abbr title="App\Services\Security\RichTextProcessorService::getAllowedElements">getAllowedElements</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#188"><abbr title="App\Services\Security\RichTextProcessorService::generateStatistics">generateStatistics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#206"><abbr title="App\Services\Security\RichTextProcessorService::generatePreview">generatePreview</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#225"><abbr title="App\Services\Security\RichTextProcessorService::validateSecurity">validateSecurity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#267"><abbr title="App\Services\Security\RichTextProcessorService::getCachePath">getCachePath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#16"><abbr title="App\Services\Security\SecretsManager::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#21"><abbr title="App\Services\Security\SecretsManager::load">load</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#38"><abbr title="App\Services\Security\SecretsManager::get">get</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#66"><abbr title="App\Services\Security\SecretsManager::set">set</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#76"><abbr title="App\Services\Security\SecretsManager::has">has</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#81"><abbr title="App\Services\Security\SecretsManager::getRequired">getRequired</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#92"><abbr title="App\Services\Security\SecretsManager::validateRequiredSecrets">validateRequiredSecrets</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#109"><abbr title="App\Services\Security\SecretsManager::isProduction">isProduction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#114"><abbr title="App\Services\Security\SecretsManager::isDevelopment">isDevelopment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#119"><abbr title="App\Services\Security\SecretsManager::getSecretsSummary">getSecretsSummary</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#159"><abbr title="App\Services\Security\SecretsManager::generateSecret">generateSecret</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#164"><abbr title="App\Services\Security\SecretsManager::validateEnvFile">validateEnvFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#220"><abbr title="App\Services\Security\SecretsManager::loadFromEnvironment">loadFromEnvironment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#234"><abbr title="App\Services\Security\SecretsManager::loadFromFile">loadFromFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#270"><abbr title="App\Services\Security\SecretsManager::parseValue">parseValue</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#290"><abbr title="App\Services\Security\SecretsManager::isSensitiveKey">isSensitiveKey</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#14"><abbr title="App\Services\Security\SecurityHeaderService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#19"><abbr title="App\Services\Security\SecurityHeaderService::setSecurityHeaders">setSecurityHeaders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#86"><abbr title="App\Services\Security\SecurityHeaderService::generateNonce">generateNonce</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#97"><abbr title="App\Services\Security\SecurityHeaderService::getCurrentNonce">getCurrentNonce</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#105"><abbr title="App\Services\Security\SecurityHeaderService::handleCSPReport">handleCSPReport</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#138"><abbr title="App\Services\Security\SecurityHeaderService::logCSPViolation">logCSPViolation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#159"><abbr title="App\Services\Security\SecurityHeaderService::sendToMonitoring">sendToMonitoring</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#179"><abbr title="App\Services\Security\SecurityHeaderService::removeServerSignature">removeServerSignature</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#191"><abbr title="App\Services\Security\SecurityHeaderService::buildCSP">buildCSP</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#219"><abbr title="App\Services\Security\SecurityHeaderService::buildPermissionsPolicy">buildPermissionsPolicy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#234"><abbr title="App\Services\Security\SecurityHeaderService::isHTTPS">isHTTPS</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#241"><abbr title="App\Services\Security\SecurityHeaderService::getDefaultConfig">getDefaultConfig</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#28"><abbr title="App\Services\Security\SecurityTestService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#46"><abbr title="App\Services\Security\SecurityTestService::runAllTests">runAllTests</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#63"><abbr title="App\Services\Security\SecurityTestService::testSessionSecurity">testSessionSecurity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#124"><abbr title="App\Services\Security\SecurityTestService::testAuthorization">testAuthorization</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#173"><abbr title="App\Services\Security\SecurityTestService::testFileSecurity">testFileSecurity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#234"><abbr title="App\Services\Security\SecurityTestService::testSecurityHeaders">testSecurityHeaders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#296"><abbr title="App\Services\Security\SecurityTestService::testErrorHandling">testErrorHandling</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#338"><abbr title="App\Services\Security\SecurityTestService::testPasswordSecurity">testPasswordSecurity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#412"><abbr title="App\Services\Security\SecurityTestService::testSecretsManagement">testSecretsManagement</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#466"><abbr title="App\Services\Security\SecurityTestService::testSystemSecurity">testSystemSecurity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#531"><abbr title="App\Services\Security\SecurityTestService::generateSecurityReport">generateSecurityReport</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#572"><abbr title="App\Services\Security\SecurityTestService::createMockUploadedFile">createMockUploadedFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#599"><abbr title="App\Services\Security\SecurityTestService::getSecurityLevel">getSecurityLevel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#612"><abbr title="App\Services\Security\SecurityTestService::getRecommendations">getRecommendations</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#14"><abbr title="App\Services\Security\SessionSecurityService::initializeSecureSession">initializeSecureSession</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#40"><abbr title="App\Services\Security\SessionSecurityService::regenerateSessionId">regenerateSessionId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#50"><abbr title="App\Services\Security\SessionSecurityService::destroySession">destroySession</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#78"><abbr title="App\Services\Security\SessionSecurityService::isSessionValid">isSessionValid</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#110"><abbr title="App\Services\Security\SessionSecurityService::updateActivity">updateActivity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#120"><abbr title="App\Services\Security\SessionSecurityService::setUserSession">setUserSession</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#136"><abbr title="App\Services\Security\SessionSecurityService::validateSessionIp">validateSessionIp</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#148"><abbr title="App\Services\Security\SessionSecurityService::validateSessionUserAgent">validateSessionUserAgent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#160"><abbr title="App\Services\Security\SessionSecurityService::requiresIpVerification">requiresIpVerification</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#168"><abbr title="App\Services\Security\SessionSecurityService::markIpChangeDetected">markIpChangeDetected</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#178"><abbr title="App\Services\Security\SessionSecurityService::confirmIpChange">confirmIpChange</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#191"><abbr title="App\Services\Security\SessionSecurityService::isIpVerificationExpired">isIpVerificationExpired</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#203"><abbr title="App\Services\Security\SessionSecurityService::performSecurityCheck">performSecurityCheck</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#19"><abbr title="App\Services\Security\XssProtectionExtensionService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#34"><abbr title="App\Services\Security\XssProtectionExtensionService::protectByContext">protectByContext</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#83"><abbr title="App\Services\Security\XssProtectionExtensionService::protectRichTextEditor">protectRichTextEditor</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#112"><abbr title="App\Services\Security\XssProtectionExtensionService::protectUserBio">protectUserBio</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#132"><abbr title="App\Services\Security\XssProtectionExtensionService::protectPostTitle">protectPostTitle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#155"><abbr title="App\Services\Security\XssProtectionExtensionService::protectPostContent">protectPostContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#189"><abbr title="App\Services\Security\XssProtectionExtensionService::protectComment">protectComment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#214"><abbr title="App\Services\Security\XssProtectionExtensionService::protectSearchQuery">protectSearchQuery</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#240"><abbr title="App\Services\Security\XssProtectionExtensionService::protectUrlParameter">protectUrlParameter</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#257"><abbr title="App\Services\Security\XssProtectionExtensionService::protectJsonData">protectJsonData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#289"><abbr title="App\Services\Security\XssProtectionExtensionService::protectFileUpload">protectFileUpload</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#322"><abbr title="App\Services\Security\XssProtectionExtensionService::protectGeneric">protectGeneric</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#339"><abbr title="App\Services\Security\XssProtectionExtensionService::cleanJsonRecursively">cleanJsonRecursively</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#355"><abbr title="App\Services\Security\XssProtectionExtensionService::cleanFilename">cleanFilename</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#374"><abbr title="App\Services\Security\XssProtectionExtensionService::calculateSecurityScore">calculateSecurityScore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#404"><abbr title="App\Services\Security\XssProtectionExtensionService::getDefaultConfig">getDefaultConfig</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#15"><abbr title="App\Services\Security\XssProtectionService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#23"><abbr title="App\Services\Security\XssProtectionService::initializePurifiers">initializePurifiers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#48"><abbr title="App\Services\Security\XssProtectionService::clean">clean</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#60"><abbr title="App\Services\Security\XssProtectionService::cleanHtml">cleanHtml</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#72"><abbr title="App\Services\Security\XssProtectionService::cleanStrict">cleanStrict</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#84"><abbr title="App\Services\Security\XssProtectionService::cleanArray">cleanArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#97"><abbr title="App\Services\Security\XssProtectionService::cleanHtmlArray">cleanHtmlArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#110"><abbr title="App\Services\Security\XssProtectionService::cleanForJs">cleanForJs</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#125"><abbr title="App\Services\Security\XssProtectionService::cleanForUrl">cleanForUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#139"><abbr title="App\Services\Security\XssProtectionService::detectXss">detectXss</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#181"><abbr title="App\Services\Security\XssProtectionService::getRiskLevel">getRiskLevel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#200"><abbr title="App\Services\Security\XssProtectionService::getAllowedHtmlTags">getAllowedHtmlTags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#209"><abbr title="App\Services\Security\XssProtectionService::getCachePath">getCachePath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#15"><abbr title="App\Services\Validators\PostValidator::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#25"><abbr title="App\Services\Validators\PostValidator::validateForCreation">validateForCreation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#40"><abbr title="App\Services\Validators\PostValidator::validateForUpdate">validateForUpdate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#73"><abbr title="App\Services\Validators\PostValidator::validateTagAssignment">validateTagAssignment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#95"><abbr title="App\Services\Validators\PostValidator::validateRequiredFields">validateRequiredFields</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#118"><abbr title="App\Services\Validators\PostValidator::validateFieldLengths">validateFieldLengths</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#138"><abbr title="App\Services\Validators\PostValidator::validateDataTypes">validateDataTypes</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#159"><abbr title="App\Services\Validators\PostValidator::validateStatus">validateStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#170"><abbr title="App\Services\Validators\PostValidator::validatePublishDate">validatePublishDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#184"><abbr title="App\Services\Validators\PostValidator::validateUserIp">validateUserIp</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#194"><abbr title="App\Services\Validators\PostValidator::tagsExist">tagsExist</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Enums/PostStatus.php.html#16"><abbr title="App\Services\Enums\PostStatus::getLabel">getLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Enums/PostStatus.php.html#28"><abbr title="App\Services\Enums\PostStatus::canTransitionTo">canTransitionTo</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#179"><abbr title="App\Services\Security\PasswordSecurityService::calculatePasswordStrength">calculatePasswordStrength</abbr></a></td><td class="text-right">306</td></tr>
+       <tr><td><a href="AttachmentService.php.html#139"><abbr title="App\Services\AttachmentService::sanitizeImage">sanitizeImage</abbr></a></td><td class="text-right">240</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#19"><abbr title="App\Services\Security\SecurityHeaderService::setSecurityHeaders">setSecurityHeaders</abbr></a></td><td class="text-right">240</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#164"><abbr title="App\Services\Security\SecretsManager::validateEnvFile">validateEnvFile</abbr></a></td><td class="text-right">182</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#234"><abbr title="App\Services\Security\SecretsManager::loadFromFile">loadFromFile</abbr></a></td><td class="text-right">156</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#255"><abbr title="App\Services\Security\PasswordSecurityService::validatePasswordComplexity">validatePasswordComplexity</abbr></a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#34"><abbr title="App\Services\Security\XssProtectionExtensionService::protectByContext">protectByContext</abbr></a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#154"><abbr title="App\Services\Security\CsrfProtectionService::isTokenValid">isTokenValid</abbr></a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="AttachmentService.php.html#60"><abbr title="App\Services\AttachmentService::validateFile">validateFile</abbr></a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="AttachmentService.php.html#348"><abbr title="App\Services\AttachmentService::upload">upload</abbr></a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#152"><abbr title="App\Services\Security\FileSecurityService::validateFileName">validateFileName</abbr></a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#301"><abbr title="App\Services\Security\FileSecurityService::getUploadErrorMessage">getUploadErrorMessage</abbr></a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#194"><abbr title="App\Services\Security\ContentModerationService::calculateSpamScore">calculateSpamScore</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#236"><abbr title="App\Services\Security\ContentModerationService::determineFinalStatus">determineFinalStatus</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#250"><abbr title="App\Services\Security\LoggingSecurityService::recursiveSanitize">recursiveSanitize</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="AttachmentService.php.html#250"><abbr title="App\Services\AttachmentService::secureFileValidation">secureFileValidation</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="CacheService.php.html#20"><abbr title="App\Services\CacheService::get">get</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#48"><abbr title="App\Services\Security\AdvancedRateLimitService::getRealClientIP">getRealClientIP</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#191"><abbr title="App\Services\Security\SecurityHeaderService::buildCSP">buildCSP</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#78"><abbr title="App\Services\Security\SessionSecurityService::isSessionValid">isSessionValid</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="AttachmentService.php.html#429"><abbr title="App\Services\AttachmentService::delete">delete</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#105"><abbr title="App\Services\Security\ErrorHandlerService::sanitizeLogData">sanitizeLogData</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#257"><abbr title="App\Services\Security\ErrorHandlerService::getPublicErrorMessage">getPublicErrorMessage</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#268"><abbr title="App\Services\Security\ErrorHandlerService::getErrorCode">getErrorCode</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#112"><abbr title="App\Services\Security\PasswordSecurityService::validatePassword">validatePassword</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#234"><abbr title="App\Services\Security\SecurityTestService::testSecurityHeaders">testSecurityHeaders</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#412"><abbr title="App\Services\Security\SecurityTestService::testSecretsManagement">testSecretsManagement</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#203"><abbr title="App\Services\Security\SessionSecurityService::performSecurityCheck">performSecurityCheck</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#374"><abbr title="App\Services\Security\XssProtectionExtensionService::calculateSecurityScore">calculateSecurityScore</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#73"><abbr title="App\Services\Validators\PostValidator::validateTagAssignment">validateTagAssignment</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#118"><abbr title="App\Services\Validators\PostValidator::validateFieldLengths">validateFieldLengths</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#138"><abbr title="App\Services\Validators\PostValidator::validateDataTypes">validateDataTypes</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="AttachmentService.php.html#400"><abbr title="App\Services\AttachmentService::download">download</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="PostService.php.html#35"><abbr title="App\Services\PostService::updatePost">updatePost</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="RateLimitService.php.html#14"><abbr title="App\Services\RateLimitService::checkLimit">checkLimit</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#105"><abbr title="App\Services\Security\AdvancedRateLimitService::performLimitCheck">performLimitCheck</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#57"><abbr title="App\Services\Security\AuthorizationService::assignRole">assignRole</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#112"><abbr title="App\Services\Security\AuthorizationService::givePermission">givePermission</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#31"><abbr title="App\Services\Security\ContentModerationService::moderateContent">moderateContent</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#83"><abbr title="App\Services\Security\ContentModerationService::checkSecurity">checkSecurity</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#119"><abbr title="App\Services\Security\ContentModerationService::checkQuality">checkQuality</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#59"><abbr title="App\Services\Security\CsrfProtectionService::validateTokenFromPool">validateTokenFromPool</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#94"><abbr title="App\Services\Security\CsrfProtectionService::validateSingleToken">validateSingleToken</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#211"><abbr title="App\Services\Security\ErrorHandlerService::globalErrorHandler">globalErrorHandler</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#292"><abbr title="App\Services\Security\ErrorHandlerService::containsSensitiveData">containsSensitiveData</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#137"><abbr title="App\Services\Security\FileSecurityService::validateBasicProperties">validateBasicProperties</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#257"><abbr title="App\Services\Security\FileSecurityService::validateFileSignature">validateFileSignature</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#284"><abbr title="App\Services\Security\LoggingSecurityService::enrichSecurityContext">enrichSecurityContext</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#318"><abbr title="App\Services\Security\LoggingSecurityService::verifyLogFilePermissions">verifyLogFilePermissions</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#286"><abbr title="App\Services\Security\PasswordSecurityService::isCommonPassword">isCommonPassword</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#330"><abbr title="App\Services\Security\PasswordSecurityService::hasSequentialChars">hasSequentialChars</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#36"><abbr title="App\Services\Security\PwnedPasswordService::isPasswordPwned">isPasswordPwned</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#92"><abbr title="App\Services\Security\RichTextProcessorService::processContent">processContent</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#162"><abbr title="App\Services\Security\RichTextProcessorService::getAllowedElements">getAllowedElements</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#38"><abbr title="App\Services\Security\SecretsManager::get">get</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#92"><abbr title="App\Services\Security\SecretsManager::validateRequiredSecrets">validateRequiredSecrets</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#119"><abbr title="App\Services\Security\SecretsManager::getSecretsSummary">getSecretsSummary</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#220"><abbr title="App\Services\Security\SecretsManager::loadFromEnvironment">loadFromEnvironment</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#270"><abbr title="App\Services\Security\SecretsManager::parseValue">parseValue</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#105"><abbr title="App\Services\Security\SecurityHeaderService::handleCSPReport">handleCSPReport</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#234"><abbr title="App\Services\Security\SecurityHeaderService::isHTTPS">isHTTPS</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#338"><abbr title="App\Services\Security\SecurityTestService::testPasswordSecurity">testPasswordSecurity</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#466"><abbr title="App\Services\Security\SecurityTestService::testSystemSecurity">testSystemSecurity</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#531"><abbr title="App\Services\Security\SecurityTestService::generateSecurityReport">generateSecurityReport</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#40"><abbr title="App\Services\Validators\PostValidator::validateForUpdate">validateForUpdate</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#95"><abbr title="App\Services\Validators\PostValidator::validateRequiredFields">validateRequiredFields</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Enums/PostStatus.php.html#28"><abbr title="App\Services\Enums\PostStatus::canTransitionTo">canTransitionTo</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="AuthService.php.html#29"><abbr title="App\Services\AuthService::login">login</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="CacheService.php.html#66"><abbr title="App\Services\CacheService::clear">clear</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="IpService.php.html#34"><abbr title="App\Services\IpService::isIpAllowed">isIpAllowed</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#108"><abbr title="App\Services\PasswordManagementService::upgradePasswordHash">upgradePasswordHash</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#180"><abbr title="App\Services\Security\AdvancedRateLimitService::isTrustedProxy">isTrustedProxy</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#198"><abbr title="App\Services\Security\AdvancedRateLimitService::ipInRange">ipInRange</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#237"><abbr title="App\Services\Security\AdvancedRateLimitService::getLimitStatus">getLimitStatus</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#169"><abbr title="App\Services\Security\ContentModerationService::checkSensitiveWords">checkSensitiveWords</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#41"><abbr title="App\Services\Security\CsrfProtectionService::validateToken">validateToken</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#116"><abbr title="App\Services\Security\CsrfProtectionService::cleanExpiredTokens">cleanExpiredTokens</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#84"><abbr title="App\Services\Security\FileSecurityService::detectActualMimeType">detectActualMimeType</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#187"><abbr title="App\Services\Security\FileSecurityService::validateMimeType">validateMimeType</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#118"><abbr title="App\Services\Security\LoggingSecurityService::setLogFilePermissions">setLogFilePermissions</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#147"><abbr title="App\Services\Security\PasswordSecurityService::generateSecurePassword">generateSecurePassword</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#110"><abbr title="App\Services\Security\PwnedPasswordService::findHashInList">findHashInList</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#225"><abbr title="App\Services\Security\RichTextProcessorService::validateSecurity">validateSecurity</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#63"><abbr title="App\Services\Security\SecurityTestService::testSessionSecurity">testSessionSecurity</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#173"><abbr title="App\Services\Security\SecurityTestService::testFileSecurity">testFileSecurity</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#296"><abbr title="App\Services\Security\SecurityTestService::testErrorHandling">testErrorHandling</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#599"><abbr title="App\Services\Security\SecurityTestService::getSecurityLevel">getSecurityLevel</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#170"><abbr title="App\Services\Validators\PostValidator::validatePublishDate">validatePublishDate</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Enums/PostStatus.php.html#16"><abbr title="App\Services\Enums\PostStatus::getLabel">getLabel</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="AttachmentService.php.html#99"><abbr title="App\Services\AttachmentService::containsMaliciousContent">containsMaliciousContent</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="AttachmentService.php.html#224"><abbr title="App\Services\AttachmentService::scanForVirus">scanForVirus</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="AttachmentService.php.html#312"><abbr title="App\Services\AttachmentService::canAccessPost">canAccessPost</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="AttachmentService.php.html#331"><abbr title="App\Services\AttachmentService::canAccessAttachment">canAccessAttachment</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="CacheService.php.html#82"><abbr title="App\Services\CacheService::remember">remember</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="IpService.php.html#17"><abbr title="App\Services\IpService::createIpRule">createIpRule</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="OutputSanitizer.php.html#28"><abbr title="App\Services\OutputSanitizer::sanitizeForDisplay">sanitizeForDisplay</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="PasswordManagementService.php.html#32"><abbr title="App\Services\PasswordManagementService::changePassword">changePassword</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="PostService.php.html#72"><abbr title="App\Services\PostService::deletePost">deletePost</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="PostService.php.html#117"><abbr title="App\Services\PostService::setPinned">setPinned</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="PostService.php.html#147"><abbr title="App\Services\PostService::recordView">recordView</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#25"><abbr title="App\Services\Security\AdvancedRateLimitService::checkLimit">checkLimit</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#91"><abbr title="App\Services\Security\AuthorizationService::removeRole">removeRole</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#146"><abbr title="App\Services\Security\AuthorizationService::revokePermission">revokePermission</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#320"><abbr title="App\Services\Security\ContentModerationService::hasSuspiciousUrls">hasSuspiciousUrls</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#135"><abbr title="App\Services\Security\CsrfProtectionService::limitPoolSize">limitPoolSize</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#200"><abbr title="App\Services\Security\CsrfProtectionService::getTokenPoolStatus">getTokenPoolStatus</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#49"><abbr title="App\Services\Security\ErrorHandlerService::handleException">handleException</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#129"><abbr title="App\Services\Security\ErrorHandlerService::initializeLogger">initializeLogger</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#227"><abbr title="App\Services\Security\ErrorHandlerService::shutdownHandler">shutdownHandler</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#279"><abbr title="App\Services\Security\ErrorHandlerService::isSensitiveKey">isSensitiveKey</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#125"><abbr title="App\Services\Security\FileSecurityService::isInAllowedDirectory">isInAllowedDirectory</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#204"><abbr title="App\Services\Security\FileSecurityService::validateFileContent">validateFileContent</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#220"><abbr title="App\Services\Security\FileSecurityService::containsMaliciousContent">containsMaliciousContent</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#286"><abbr title="App\Services\Security\FileSecurityService::extractSafeExtension">extractSafeExtension</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#226"><abbr title="App\Services\Security\LoggingSecurityService::applyRequestWhitelist">applyRequestWhitelist</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#55"><abbr title="App\Services\Security\PasswordSecurityService::hashPassword">hashPassword</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/PasswordSecurityService.php.html#88"><abbr title="App\Services\Security\PasswordSecurityService::needsRehash">needsRehash</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#90"><abbr title="App\Services\Security\PwnedPasswordService::fetchHashesFromApi">fetchHashesFromApi</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#176"><abbr title="App\Services\Security\PwnedPasswordService::checkMultiplePasswords">checkMultiplePasswords</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#21"><abbr title="App\Services\Security\SecretsManager::load">load</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#81"><abbr title="App\Services\Security\SecretsManager::getRequired">getRequired</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#290"><abbr title="App\Services\Security\SecretsManager::isSensitiveKey">isSensitiveKey</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#219"><abbr title="App\Services\Security\SecurityHeaderService::buildPermissionsPolicy">buildPermissionsPolicy</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#124"><abbr title="App\Services\Security\SecurityTestService::testAuthorization">testAuthorization</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/SecurityTestService.php.html#612"><abbr title="App\Services\Security\SecurityTestService::getRecommendations">getRecommendations</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#14"><abbr title="App\Services\Security\SessionSecurityService::initializeSecureSession">initializeSecureSession</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#50"><abbr title="App\Services\Security\SessionSecurityService::destroySession">destroySession</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#132"><abbr title="App\Services\Security\XssProtectionExtensionService::protectPostTitle">protectPostTitle</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#189"><abbr title="App\Services\Security\XssProtectionExtensionService::protectComment">protectComment</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#214"><abbr title="App\Services\Security\XssProtectionExtensionService::protectSearchQuery">protectSearchQuery</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#257"><abbr title="App\Services\Security\XssProtectionExtensionService::protectJsonData">protectJsonData</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#289"><abbr title="App\Services\Security\XssProtectionExtensionService::protectFileUpload">protectFileUpload</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#339"><abbr title="App\Services\Security\XssProtectionExtensionService::cleanJsonRecursively">cleanJsonRecursively</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#84"><abbr title="App\Services\Security\XssProtectionService::cleanArray">cleanArray</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#97"><abbr title="App\Services\Security\XssProtectionService::cleanHtmlArray">cleanHtmlArray</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#139"><abbr title="App\Services\Security\XssProtectionService::detectXss">detectXss</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#181"><abbr title="App\Services\Security\XssProtectionService::getRiskLevel">getRiskLevel</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#159"><abbr title="App\Services\Validators\PostValidator::validateStatus">validateStatus</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#184"><abbr title="App\Services\Validators\PostValidator::validateUserIp">validateUserIp</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="CacheService.php.html#12"><abbr title="App\Services\CacheService::__construct">__construct</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="CacheService.php.html#45"><abbr title="App\Services\CacheService::set">set</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="CacheService.php.html#56"><abbr title="App\Services\CacheService::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="IpService.php.html#54"><abbr title="App\Services\IpService::getRulesByType">getRulesByType</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="OutputSanitizer.php.html#52"><abbr title="App\Services\OutputSanitizer::sanitizeAndTruncate">sanitizeAndTruncate</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PostService.php.html#84"><abbr title="App\Services\PostService::findById">findById</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PostService.php.html#134"><abbr title="App\Services\PostService::setTags">setTags</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/AdvancedRateLimitService.php.html#223"><abbr title="App\Services\Security\AdvancedRateLimitService::clearLimit">clearLimit</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/AuthorizationService.php.html#45"><abbr title="App\Services\Security\AuthorizationService::can">can</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#267"><abbr title="App\Services\Security\ContentModerationService::isRepetitiveContent">isRepetitiveContent</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#283"><abbr title="App\Services\Security\ContentModerationService::isAllCaps">isAllCaps</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#296"><abbr title="App\Services\Security\ContentModerationService::getUpperCaseRatio">getUpperCaseRatio</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/ContentModerationService.php.html#310"><abbr title="App\Services\Security\ContentModerationService::hasExcessiveRepetition">hasExcessiveRepetition</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#16"><abbr title="App\Services\Security\CsrfProtectionService::generateToken">generateToken</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/CsrfProtectionService.php.html#187"><abbr title="App\Services\Security\CsrfProtectionService::initializeTokenPool">initializeTokenPool</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#21"><abbr title="App\Services\Security\ErrorHandlerService::__construct">__construct</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#85"><abbr title="App\Services\Security\ErrorHandlerService::logAuthenticationAttempt">logAuthenticationAttempt</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#198"><abbr title="App\Services\Security\ErrorHandlerService::globalExceptionHandler">globalExceptionHandler</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#244"><abbr title="App\Services\Security\ErrorHandlerService::logException">logException</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/ErrorHandlerService.php.html#312"><abbr title="App\Services\Security\ErrorHandlerService::truncateString">truncateString</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/FileSecurityService.php.html#105"><abbr title="App\Services\Security\FileSecurityService::sanitizeFileName">sanitizeFileName</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#107"><abbr title="App\Services\Security\LoggingSecurityService::ensureLogDirectory">ensureLogDirectory</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#303"><abbr title="App\Services\Security\LoggingSecurityService::enrichRequestContext">enrichRequestContext</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/LoggingSecurityService.php.html#355"><abbr title="App\Services\Security\LoggingSecurityService::getLogStatistics">getLogStatistics</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#127"><abbr title="App\Services\Security\PwnedPasswordService::isInCache">isInCache</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/PwnedPasswordService.php.html#157"><abbr title="App\Services\Security\PwnedPasswordService::getApiStatus">getApiStatus</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#188"><abbr title="App\Services\Security\RichTextProcessorService::generateStatistics">generateStatistics</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#206"><abbr title="App\Services\Security\RichTextProcessorService::generatePreview">generatePreview</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/RichTextProcessorService.php.html#267"><abbr title="App\Services\Security\RichTextProcessorService::getCachePath">getCachePath</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SecretsManager.php.html#16"><abbr title="App\Services\Security\SecretsManager::__construct">__construct</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#86"><abbr title="App\Services\Security\SecurityHeaderService::generateNonce">generateNonce</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#138"><abbr title="App\Services\Security\SecurityHeaderService::logCSPViolation">logCSPViolation</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#159"><abbr title="App\Services\Security\SecurityHeaderService::sendToMonitoring">sendToMonitoring</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SecurityHeaderService.php.html#179"><abbr title="App\Services\Security\SecurityHeaderService::removeServerSignature">removeServerSignature</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#40"><abbr title="App\Services\Security\SessionSecurityService::regenerateSessionId">regenerateSessionId</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#110"><abbr title="App\Services\Security\SessionSecurityService::updateActivity">updateActivity</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#136"><abbr title="App\Services\Security\SessionSecurityService::validateSessionIp">validateSessionIp</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#148"><abbr title="App\Services\Security\SessionSecurityService::validateSessionUserAgent">validateSessionUserAgent</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#160"><abbr title="App\Services\Security\SessionSecurityService::requiresIpVerification">requiresIpVerification</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#178"><abbr title="App\Services\Security\SessionSecurityService::confirmIpChange">confirmIpChange</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/SessionSecurityService.php.html#191"><abbr title="App\Services\Security\SessionSecurityService::isIpVerificationExpired">isIpVerificationExpired</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#83"><abbr title="App\Services\Security\XssProtectionExtensionService::protectRichTextEditor">protectRichTextEditor</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#112"><abbr title="App\Services\Security\XssProtectionExtensionService::protectUserBio">protectUserBio</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#155"><abbr title="App\Services\Security\XssProtectionExtensionService::protectPostContent">protectPostContent</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#240"><abbr title="App\Services\Security\XssProtectionExtensionService::protectUrlParameter">protectUrlParameter</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#322"><abbr title="App\Services\Security\XssProtectionExtensionService::protectGeneric">protectGeneric</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionExtensionService.php.html#355"><abbr title="App\Services\Security\XssProtectionExtensionService::cleanFilename">cleanFilename</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#48"><abbr title="App\Services\Security\XssProtectionService::clean">clean</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#60"><abbr title="App\Services\Security\XssProtectionService::cleanHtml">cleanHtml</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#72"><abbr title="App\Services\Security\XssProtectionService::cleanStrict">cleanStrict</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#110"><abbr title="App\Services\Security\XssProtectionService::cleanForJs">cleanForJs</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#125"><abbr title="App\Services\Security\XssProtectionService::cleanForUrl">cleanForUrl</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Security/XssProtectionService.php.html#209"><abbr title="App\Services\Security\XssProtectionService::getCachePath">getCachePath</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Validators/PostValidator.php.html#194"><abbr title="App\Services\Validators\PostValidator::tagsExist">tagsExist</abbr></a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.10</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.11</a> and <a href="https://phpunit.de/">PHPUnit 11.5.34</a> at Sat Aug 23 13:51:23 CST 2025.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=11.0.10" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=11.0.10" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=11.0.10" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([26,0,0,0,0,0,0,0,0,0,0,1], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([275,0,0,0,0,0,0,0,0,0,0,0], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,65,"<a href=\"AttachmentService.php.html#19\">App\\Services\\AttachmentService<\/a>"],[0,6,"<a href=\"AuthService.php.html#10\">App\\Services\\AuthService<\/a>"],[0,21,"<a href=\"CacheService.php.html#7\">App\\Services\\CacheService<\/a>"],[100,0,"<a href=\"Enums\/FileRules.php.html#7\">App\\Services\\Enums\\FileRules<\/a>"],[0,10,"<a href=\"IpService.php.html#11\">App\\Services\\IpService<\/a>"],[0,8,"<a href=\"OutputSanitizer.php.html#7\">App\\Services\\OutputSanitizer<\/a>"],[0,12,"<a href=\"PasswordManagementService.php.html#16\">App\\Services\\PasswordManagementService<\/a>"],[0,22,"<a href=\"PostService.php.html#18\">App\\Services\\PostService<\/a>"],[0,7,"<a href=\"RateLimitService.php.html#7\">App\\Services\\RateLimitService<\/a>"],[0,34,"<a href=\"Security\/AdvancedRateLimitService.php.html#9\">App\\Services\\Security\\AdvancedRateLimitService<\/a>"],[0,25,"<a href=\"Security\/AuthorizationService.php.html#11\">App\\Services\\Security\\AuthorizationService<\/a>"],[0,49,"<a href=\"Security\/ContentModerationService.php.html#12\">App\\Services\\Security\\ContentModerationService<\/a>"],[0,38,"<a href=\"Security\/CsrfProtectionService.php.html#9\">App\\Services\\Security\\CsrfProtectionService<\/a>"],[0,53,"<a href=\"Security\/ErrorHandlerService.php.html#15\">App\\Services\\Security\\ErrorHandlerService<\/a>"],[0,52,"<a href=\"Security\/FileSecurityService.php.html#11\">App\\Services\\Security\\FileSecurityService<\/a>"],[0,42,"<a href=\"Security\/LoggingSecurityService.php.html#19\">App\\Services\\Security\\LoggingSecurityService<\/a>"],[0,57,"<a href=\"Security\/PasswordSecurityService.php.html#10\">App\\Services\\Security\\PasswordSecurityService<\/a>"],[0,23,"<a href=\"Security\/PwnedPasswordService.php.html#10\">App\\Services\\Security\\PwnedPasswordService<\/a>"],[0,24,"<a href=\"Security\/RichTextProcessorService.php.html#15\">App\\Services\\Security\\RichTextProcessorService<\/a>"],[0,66,"<a href=\"Security\/SecretsManager.php.html#10\">App\\Services\\Security\\SecretsManager<\/a>"],[0,46,"<a href=\"Security\/SecurityHeaderService.php.html#9\">App\\Services\\Security\\SecurityHeaderService<\/a>"],[0,52,"<a href=\"Security\/SecurityTestService.php.html#17\">App\\Services\\Security\\SecurityTestService<\/a>"],[0,35,"<a href=\"Security\/SessionSecurityService.php.html#9\">App\\Services\\Security\\SessionSecurityService<\/a>"],[0,49,"<a href=\"Security\/XssProtectionExtensionService.php.html#12\">App\\Services\\Security\\XssProtectionExtensionService<\/a>"],[0,27,"<a href=\"Security\/XssProtectionService.php.html#10\">App\\Services\\Security\\XssProtectionService<\/a>"],[0,42,"<a href=\"Validators\/PostValidator.php.html#11\">App\\Services\\Validators\\PostValidator<\/a>"],[0,9,"<a href=\"Enums\/PostStatus.php.html#7\">App\\Services\\Enums\\PostStatus<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"AttachmentService.php.html#51\">App\\Services\\AttachmentService::__construct<\/a>"],[0,9,"<a href=\"AttachmentService.php.html#60\">App\\Services\\AttachmentService::validateFile<\/a>"],[0,3,"<a href=\"AttachmentService.php.html#99\">App\\Services\\AttachmentService::containsMaliciousContent<\/a>"],[0,15,"<a href=\"AttachmentService.php.html#139\">App\\Services\\AttachmentService::sanitizeImage<\/a>"],[0,3,"<a href=\"AttachmentService.php.html#224\">App\\Services\\AttachmentService::scanForVirus<\/a>"],[0,7,"<a href=\"AttachmentService.php.html#250\">App\\Services\\AttachmentService::secureFileValidation<\/a>"],[0,3,"<a href=\"AttachmentService.php.html#312\">App\\Services\\AttachmentService::canAccessPost<\/a>"],[0,3,"<a href=\"AttachmentService.php.html#331\">App\\Services\\AttachmentService::canAccessAttachment<\/a>"],[0,9,"<a href=\"AttachmentService.php.html#348\">App\\Services\\AttachmentService::upload<\/a>"],[0,5,"<a href=\"AttachmentService.php.html#400\">App\\Services\\AttachmentService::download<\/a>"],[0,6,"<a href=\"AttachmentService.php.html#429\">App\\Services\\AttachmentService::delete<\/a>"],[0,1,"<a href=\"AttachmentService.php.html#458\">App\\Services\\AttachmentService::getByPostId<\/a>"],[0,1,"<a href=\"AuthService.php.html#12\">App\\Services\\AuthService::__construct<\/a>"],[0,1,"<a href=\"AuthService.php.html#17\">App\\Services\\AuthService::register<\/a>"],[0,4,"<a href=\"AuthService.php.html#29\">App\\Services\\AuthService::login<\/a>"],[0,2,"<a href=\"CacheService.php.html#12\">App\\Services\\CacheService::__construct<\/a>"],[0,7,"<a href=\"CacheService.php.html#20\">App\\Services\\CacheService::get<\/a>"],[0,2,"<a href=\"CacheService.php.html#45\">App\\Services\\CacheService::set<\/a>"],[0,2,"<a href=\"CacheService.php.html#56\">App\\Services\\CacheService::delete<\/a>"],[0,4,"<a href=\"CacheService.php.html#66\">App\\Services\\CacheService::clear<\/a>"],[0,3,"<a href=\"CacheService.php.html#82\">App\\Services\\CacheService::remember<\/a>"],[0,1,"<a href=\"CacheService.php.html#96\">App\\Services\\CacheService::getCacheFilename<\/a>"],[0,1,"<a href=\"IpService.php.html#13\">App\\Services\\IpService::__construct<\/a>"],[0,3,"<a href=\"IpService.php.html#17\">App\\Services\\IpService::createIpRule<\/a>"],[0,4,"<a href=\"IpService.php.html#34\">App\\Services\\IpService::isIpAllowed<\/a>"],[0,2,"<a href=\"IpService.php.html#54\">App\\Services\\IpService::getRulesByType<\/a>"],[0,1,"<a href=\"OutputSanitizer.php.html#12\">App\\Services\\OutputSanitizer::sanitizeHtml<\/a>"],[0,1,"<a href=\"OutputSanitizer.php.html#20\">App\\Services\\OutputSanitizer::sanitizeTitle<\/a>"],[0,3,"<a href=\"OutputSanitizer.php.html#28\">App\\Services\\OutputSanitizer::sanitizeForDisplay<\/a>"],[0,1,"<a href=\"OutputSanitizer.php.html#44\">App\\Services\\OutputSanitizer::sanitizePreserveNewlines<\/a>"],[0,2,"<a href=\"OutputSanitizer.php.html#52\">App\\Services\\OutputSanitizer::sanitizeAndTruncate<\/a>"],[0,1,"<a href=\"PasswordManagementService.php.html#18\">App\\Services\\PasswordManagementService::__construct<\/a>"],[0,3,"<a href=\"PasswordManagementService.php.html#32\">App\\Services\\PasswordManagementService::changePassword<\/a>"],[0,1,"<a href=\"PasswordManagementService.php.html#59\">App\\Services\\PasswordManagementService::resetPassword<\/a>"],[0,1,"<a href=\"PasswordManagementService.php.html#74\">App\\Services\\PasswordManagementService::checkPasswordStrength<\/a>"],[0,1,"<a href=\"PasswordManagementService.php.html#85\">App\\Services\\PasswordManagementService::generateSecurePassword<\/a>"],[0,1,"<a href=\"PasswordManagementService.php.html#96\">App\\Services\\PasswordManagementService::needsRehash<\/a>"],[0,4,"<a href=\"PasswordManagementService.php.html#108\">App\\Services\\PasswordManagementService::upgradePasswordHash<\/a>"],[0,1,"<a href=\"PostService.php.html#20\">App\\Services\\PostService::__construct<\/a>"],[0,1,"<a href=\"PostService.php.html#24\">App\\Services\\PostService::createPost<\/a>"],[0,5,"<a href=\"PostService.php.html#35\">App\\Services\\PostService::updatePost<\/a>"],[0,3,"<a href=\"PostService.php.html#72\">App\\Services\\PostService::deletePost<\/a>"],[0,2,"<a href=\"PostService.php.html#84\">App\\Services\\PostService::findById<\/a>"],[0,1,"<a href=\"PostService.php.html#100\">App\\Services\\PostService::listPosts<\/a>"],[0,1,"<a href=\"PostService.php.html#110\">App\\Services\\PostService::getPinnedPosts<\/a>"],[0,3,"<a href=\"PostService.php.html#117\">App\\Services\\PostService::setPinned<\/a>"],[0,2,"<a href=\"PostService.php.html#134\">App\\Services\\PostService::setTags<\/a>"],[0,3,"<a href=\"PostService.php.html#147\">App\\Services\\PostService::recordView<\/a>"],[0,1,"<a href=\"RateLimitService.php.html#9\">App\\Services\\RateLimitService::__construct<\/a>"],[0,5,"<a href=\"RateLimitService.php.html#14\">App\\Services\\RateLimitService::checkLimit<\/a>"],[0,1,"<a href=\"RateLimitService.php.html#63\">App\\Services\\RateLimitService::isAllowed<\/a>"],[0,1,"<a href=\"Security\/AdvancedRateLimitService.php.html#15\">App\\Services\\Security\\AdvancedRateLimitService::__construct<\/a>"],[0,3,"<a href=\"Security\/AdvancedRateLimitService.php.html#25\">App\\Services\\Security\\AdvancedRateLimitService::checkLimit<\/a>"],[0,7,"<a href=\"Security\/AdvancedRateLimitService.php.html#48\">App\\Services\\Security\\AdvancedRateLimitService::getRealClientIP<\/a>"],[0,1,"<a href=\"Security\/AdvancedRateLimitService.php.html#87\">App\\Services\\Security\\AdvancedRateLimitService::checkUserLimit<\/a>"],[0,1,"<a href=\"Security\/AdvancedRateLimitService.php.html#96\">App\\Services\\Security\\AdvancedRateLimitService::checkIPLimit<\/a>"],[0,5,"<a href=\"Security\/AdvancedRateLimitService.php.html#105\">App\\Services\\Security\\AdvancedRateLimitService::performLimitCheck<\/a>"],[0,1,"<a href=\"Security\/AdvancedRateLimitService.php.html#172\">App\\Services\\Security\\AdvancedRateLimitService::getLimitsForAction<\/a>"],[0,4,"<a href=\"Security\/AdvancedRateLimitService.php.html#180\">App\\Services\\Security\\AdvancedRateLimitService::isTrustedProxy<\/a>"],[0,4,"<a href=\"Security\/AdvancedRateLimitService.php.html#198\">App\\Services\\Security\\AdvancedRateLimitService::ipInRange<\/a>"],[0,2,"<a href=\"Security\/AdvancedRateLimitService.php.html#223\">App\\Services\\Security\\AdvancedRateLimitService::clearLimit<\/a>"],[0,4,"<a href=\"Security\/AdvancedRateLimitService.php.html#237\">App\\Services\\Security\\AdvancedRateLimitService::getLimitStatus<\/a>"],[0,1,"<a href=\"Security\/AdvancedRateLimitService.php.html#274\">App\\Services\\Security\\AdvancedRateLimitService::getDefaultConfig<\/a>"],[0,1,"<a href=\"Security\/AuthorizationService.php.html#17\">App\\Services\\Security\\AuthorizationService::__construct<\/a>"],[0,1,"<a href=\"Security\/AuthorizationService.php.html#23\">App\\Services\\Security\\AuthorizationService::hasPermission<\/a>"],[0,1,"<a href=\"Security\/AuthorizationService.php.html#34\">App\\Services\\Security\\AuthorizationService::hasRole<\/a>"],[0,2,"<a href=\"Security\/AuthorizationService.php.html#45\">App\\Services\\Security\\AuthorizationService::can<\/a>"],[0,5,"<a href=\"Security\/AuthorizationService.php.html#57\">App\\Services\\Security\\AuthorizationService::assignRole<\/a>"],[0,3,"<a href=\"Security\/AuthorizationService.php.html#91\">App\\Services\\Security\\AuthorizationService::removeRole<\/a>"],[0,5,"<a href=\"Security\/AuthorizationService.php.html#112\">App\\Services\\Security\\AuthorizationService::givePermission<\/a>"],[0,3,"<a href=\"Security\/AuthorizationService.php.html#146\">App\\Services\\Security\\AuthorizationService::revokePermission<\/a>"],[0,1,"<a href=\"Security\/AuthorizationService.php.html#167\">App\\Services\\Security\\AuthorizationService::getUserRoles<\/a>"],[0,1,"<a href=\"Security\/AuthorizationService.php.html#180\">App\\Services\\Security\\AuthorizationService::getUserPermissions<\/a>"],[0,1,"<a href=\"Security\/AuthorizationService.php.html#207\">App\\Services\\Security\\AuthorizationService::isSuperAdmin<\/a>"],[0,1,"<a href=\"Security\/AuthorizationService.php.html#212\">App\\Services\\Security\\AuthorizationService::clearUserCache<\/a>"],[0,1,"<a href=\"Security\/ContentModerationService.php.html#18\">App\\Services\\Security\\ContentModerationService::__construct<\/a>"],[0,5,"<a href=\"Security\/ContentModerationService.php.html#31\">App\\Services\\Security\\ContentModerationService::moderateContent<\/a>"],[0,5,"<a href=\"Security\/ContentModerationService.php.html#83\">App\\Services\\Security\\ContentModerationService::checkSecurity<\/a>"],[0,5,"<a href=\"Security\/ContentModerationService.php.html#119\">App\\Services\\Security\\ContentModerationService::checkQuality<\/a>"],[0,4,"<a href=\"Security\/ContentModerationService.php.html#169\">App\\Services\\Security\\ContentModerationService::checkSensitiveWords<\/a>"],[0,8,"<a href=\"Security\/ContentModerationService.php.html#194\">App\\Services\\Security\\ContentModerationService::calculateSpamScore<\/a>"],[0,8,"<a href=\"Security\/ContentModerationService.php.html#236\">App\\Services\\Security\\ContentModerationService::determineFinalStatus<\/a>"],[0,2,"<a href=\"Security\/ContentModerationService.php.html#267\">App\\Services\\Security\\ContentModerationService::isRepetitiveContent<\/a>"],[0,2,"<a href=\"Security\/ContentModerationService.php.html#283\">App\\Services\\Security\\ContentModerationService::isAllCaps<\/a>"],[0,2,"<a href=\"Security\/ContentModerationService.php.html#296\">App\\Services\\Security\\ContentModerationService::getUpperCaseRatio<\/a>"],[0,2,"<a href=\"Security\/ContentModerationService.php.html#310\">App\\Services\\Security\\ContentModerationService::hasExcessiveRepetition<\/a>"],[0,3,"<a href=\"Security\/ContentModerationService.php.html#320\">App\\Services\\Security\\ContentModerationService::hasSuspiciousUrls<\/a>"],[0,1,"<a href=\"Security\/ContentModerationService.php.html#342\">App\\Services\\Security\\ContentModerationService::getSensitiveWordSeverity<\/a>"],[0,1,"<a href=\"Security\/ContentModerationService.php.html#360\">App\\Services\\Security\\ContentModerationService::getDefaultConfig<\/a>"],[0,2,"<a href=\"Security\/CsrfProtectionService.php.html#16\">App\\Services\\Security\\CsrfProtectionService::generateToken<\/a>"],[0,4,"<a href=\"Security\/CsrfProtectionService.php.html#41\">App\\Services\\Security\\CsrfProtectionService::validateToken<\/a>"],[0,5,"<a href=\"Security\/CsrfProtectionService.php.html#59\">App\\Services\\Security\\CsrfProtectionService::validateTokenFromPool<\/a>"],[0,5,"<a href=\"Security\/CsrfProtectionService.php.html#94\">App\\Services\\Security\\CsrfProtectionService::validateSingleToken<\/a>"],[0,4,"<a href=\"Security\/CsrfProtectionService.php.html#116\">App\\Services\\Security\\CsrfProtectionService::cleanExpiredTokens<\/a>"],[0,3,"<a href=\"Security\/CsrfProtectionService.php.html#135\">App\\Services\\Security\\CsrfProtectionService::limitPoolSize<\/a>"],[0,10,"<a href=\"Security\/CsrfProtectionService.php.html#154\">App\\Services\\Security\\CsrfProtectionService::isTokenValid<\/a>"],[0,2,"<a href=\"Security\/CsrfProtectionService.php.html#187\">App\\Services\\Security\\CsrfProtectionService::initializeTokenPool<\/a>"],[0,3,"<a href=\"Security\/CsrfProtectionService.php.html#200\">App\\Services\\Security\\CsrfProtectionService::getTokenPoolStatus<\/a>"],[0,2,"<a href=\"Security\/ErrorHandlerService.php.html#21\">App\\Services\\Security\\ErrorHandlerService::__construct<\/a>"],[0,3,"<a href=\"Security\/ErrorHandlerService.php.html#49\">App\\Services\\Security\\ErrorHandlerService::handleException<\/a>"],[0,1,"<a href=\"Security\/ErrorHandlerService.php.html#72\">App\\Services\\Security\\ErrorHandlerService::logSecurityEvent<\/a>"],[0,2,"<a href=\"Security\/ErrorHandlerService.php.html#85\">App\\Services\\Security\\ErrorHandlerService::logAuthenticationAttempt<\/a>"],[0,1,"<a href=\"Security\/ErrorHandlerService.php.html#95\">App\\Services\\Security\\ErrorHandlerService::logSuspiciousActivity<\/a>"],[0,6,"<a href=\"Security\/ErrorHandlerService.php.html#105\">App\\Services\\Security\\ErrorHandlerService::sanitizeLogData<\/a>"],[0,3,"<a href=\"Security\/ErrorHandlerService.php.html#129\">App\\Services\\Security\\ErrorHandlerService::initializeLogger<\/a>"],[0,1,"<a href=\"Security\/ErrorHandlerService.php.html#186\">App\\Services\\Security\\ErrorHandlerService::registerErrorHandlers<\/a>"],[0,2,"<a href=\"Security\/ErrorHandlerService.php.html#198\">App\\Services\\Security\\ErrorHandlerService::globalExceptionHandler<\/a>"],[0,5,"<a href=\"Security\/ErrorHandlerService.php.html#211\">App\\Services\\Security\\ErrorHandlerService::globalErrorHandler<\/a>"],[0,3,"<a href=\"Security\/ErrorHandlerService.php.html#227\">App\\Services\\Security\\ErrorHandlerService::shutdownHandler<\/a>"],[0,2,"<a href=\"Security\/ErrorHandlerService.php.html#244\">App\\Services\\Security\\ErrorHandlerService::logException<\/a>"],[0,6,"<a href=\"Security\/ErrorHandlerService.php.html#257\">App\\Services\\Security\\ErrorHandlerService::getPublicErrorMessage<\/a>"],[0,6,"<a href=\"Security\/ErrorHandlerService.php.html#268\">App\\Services\\Security\\ErrorHandlerService::getErrorCode<\/a>"],[0,3,"<a href=\"Security\/ErrorHandlerService.php.html#279\">App\\Services\\Security\\ErrorHandlerService::isSensitiveKey<\/a>"],[0,5,"<a href=\"Security\/ErrorHandlerService.php.html#292\">App\\Services\\Security\\ErrorHandlerService::containsSensitiveData<\/a>"],[0,2,"<a href=\"Security\/ErrorHandlerService.php.html#312\">App\\Services\\Security\\ErrorHandlerService::truncateString<\/a>"],[0,1,"<a href=\"Security\/FileSecurityService.php.html#67\">App\\Services\\Security\\FileSecurityService::validateUpload<\/a>"],[0,1,"<a href=\"Security\/FileSecurityService.php.html#75\">App\\Services\\Security\\FileSecurityService::generateSecureFileName<\/a>"],[0,4,"<a href=\"Security\/FileSecurityService.php.html#84\">App\\Services\\Security\\FileSecurityService::detectActualMimeType<\/a>"],[0,2,"<a href=\"Security\/FileSecurityService.php.html#105\">App\\Services\\Security\\FileSecurityService::sanitizeFileName<\/a>"],[0,3,"<a href=\"Security\/FileSecurityService.php.html#125\">App\\Services\\Security\\FileSecurityService::isInAllowedDirectory<\/a>"],[0,5,"<a href=\"Security\/FileSecurityService.php.html#137\">App\\Services\\Security\\FileSecurityService::validateBasicProperties<\/a>"],[0,9,"<a href=\"Security\/FileSecurityService.php.html#152\">App\\Services\\Security\\FileSecurityService::validateFileName<\/a>"],[0,4,"<a href=\"Security\/FileSecurityService.php.html#187\">App\\Services\\Security\\FileSecurityService::validateMimeType<\/a>"],[0,3,"<a href=\"Security\/FileSecurityService.php.html#204\">App\\Services\\Security\\FileSecurityService::validateFileContent<\/a>"],[0,3,"<a href=\"Security\/FileSecurityService.php.html#220\">App\\Services\\Security\\FileSecurityService::containsMaliciousContent<\/a>"],[0,5,"<a href=\"Security\/FileSecurityService.php.html#257\">App\\Services\\Security\\FileSecurityService::validateFileSignature<\/a>"],[0,3,"<a href=\"Security\/FileSecurityService.php.html#286\">App\\Services\\Security\\FileSecurityService::extractSafeExtension<\/a>"],[0,9,"<a href=\"Security\/FileSecurityService.php.html#301\">App\\Services\\Security\\FileSecurityService::getUploadErrorMessage<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#56\">App\\Services\\Security\\LoggingSecurityService::__construct<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#64\">App\\Services\\Security\\LoggingSecurityService::initializeLoggers<\/a>"],[0,2,"<a href=\"Security\/LoggingSecurityService.php.html#107\">App\\Services\\Security\\LoggingSecurityService::ensureLogDirectory<\/a>"],[0,4,"<a href=\"Security\/LoggingSecurityService.php.html#118\">App\\Services\\Security\\LoggingSecurityService::setLogFilePermissions<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#144\">App\\Services\\Security\\LoggingSecurityService::info<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#150\">App\\Services\\Security\\LoggingSecurityService::warning<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#156\">App\\Services\\Security\\LoggingSecurityService::error<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#165\">App\\Services\\Security\\LoggingSecurityService::logSecurityEvent<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#176\">App\\Services\\Security\\LoggingSecurityService::logCriticalSecurityEvent<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#190\">App\\Services\\Security\\LoggingSecurityService::logRequest<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#201\">App\\Services\\Security\\LoggingSecurityService::logAuthenticationFailure<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#212\">App\\Services\\Security\\LoggingSecurityService::logAuthorizationFailure<\/a>"],[0,3,"<a href=\"Security\/LoggingSecurityService.php.html#226\">App\\Services\\Security\\LoggingSecurityService::applyRequestWhitelist<\/a>"],[0,1,"<a href=\"Security\/LoggingSecurityService.php.html#242\">App\\Services\\Security\\LoggingSecurityService::sanitizeContext<\/a>"],[0,8,"<a href=\"Security\/LoggingSecurityService.php.html#250\">App\\Services\\Security\\LoggingSecurityService::recursiveSanitize<\/a>"],[0,5,"<a href=\"Security\/LoggingSecurityService.php.html#284\">App\\Services\\Security\\LoggingSecurityService::enrichSecurityContext<\/a>"],[0,2,"<a href=\"Security\/LoggingSecurityService.php.html#303\">App\\Services\\Security\\LoggingSecurityService::enrichRequestContext<\/a>"],[0,5,"<a href=\"Security\/LoggingSecurityService.php.html#318\">App\\Services\\Security\\LoggingSecurityService::verifyLogFilePermissions<\/a>"],[0,2,"<a href=\"Security\/LoggingSecurityService.php.html#355\">App\\Services\\Security\\LoggingSecurityService::getLogStatistics<\/a>"],[0,1,"<a href=\"Security\/PasswordSecurityService.php.html#50\">App\\Services\\Security\\PasswordSecurityService::__construct<\/a>"],[0,3,"<a href=\"Security\/PasswordSecurityService.php.html#55\">App\\Services\\Security\\PasswordSecurityService::hashPassword<\/a>"],[0,1,"<a href=\"Security\/PasswordSecurityService.php.html#83\">App\\Services\\Security\\PasswordSecurityService::verifyPassword<\/a>"],[0,3,"<a href=\"Security\/PasswordSecurityService.php.html#88\">App\\Services\\Security\\PasswordSecurityService::needsRehash<\/a>"],[0,6,"<a href=\"Security\/PasswordSecurityService.php.html#112\">App\\Services\\Security\\PasswordSecurityService::validatePassword<\/a>"],[0,4,"<a href=\"Security\/PasswordSecurityService.php.html#147\">App\\Services\\Security\\PasswordSecurityService::generateSecurePassword<\/a>"],[0,17,"<a href=\"Security\/PasswordSecurityService.php.html#179\">App\\Services\\Security\\PasswordSecurityService::calculatePasswordStrength<\/a>"],[0,11,"<a href=\"Security\/PasswordSecurityService.php.html#255\">App\\Services\\Security\\PasswordSecurityService::validatePasswordComplexity<\/a>"],[0,5,"<a href=\"Security\/PasswordSecurityService.php.html#286\">App\\Services\\Security\\PasswordSecurityService::isCommonPassword<\/a>"],[0,1,"<a href=\"Security\/PasswordSecurityService.php.html#324\">App\\Services\\Security\\PasswordSecurityService::hasExcessiveRepetition<\/a>"],[0,5,"<a href=\"Security\/PasswordSecurityService.php.html#330\">App\\Services\\Security\\PasswordSecurityService::hasSequentialChars<\/a>"],[0,1,"<a href=\"Security\/PwnedPasswordService.php.html#19\">App\\Services\\Security\\PwnedPasswordService::__construct<\/a>"],[0,5,"<a href=\"Security\/PwnedPasswordService.php.html#36\">App\\Services\\Security\\PwnedPasswordService::isPasswordPwned<\/a>"],[0,3,"<a href=\"Security\/PwnedPasswordService.php.html#90\">App\\Services\\Security\\PwnedPasswordService::fetchHashesFromApi<\/a>"],[0,4,"<a href=\"Security\/PwnedPasswordService.php.html#110\">App\\Services\\Security\\PwnedPasswordService::findHashInList<\/a>"],[0,2,"<a href=\"Security\/PwnedPasswordService.php.html#127\">App\\Services\\Security\\PwnedPasswordService::isInCache<\/a>"],[0,1,"<a href=\"Security\/PwnedPasswordService.php.html#133\">App\\Services\\Security\\PwnedPasswordService::getFromCache<\/a>"],[0,1,"<a href=\"Security\/PwnedPasswordService.php.html#138\">App\\Services\\Security\\PwnedPasswordService::setCache<\/a>"],[0,1,"<a href=\"Security\/PwnedPasswordService.php.html#149\">App\\Services\\Security\\PwnedPasswordService::clearCache<\/a>"],[0,2,"<a href=\"Security\/PwnedPasswordService.php.html#157\">App\\Services\\Security\\PwnedPasswordService::getApiStatus<\/a>"],[0,3,"<a href=\"Security\/PwnedPasswordService.php.html#176\">App\\Services\\Security\\PwnedPasswordService::checkMultiplePasswords<\/a>"],[0,1,"<a href=\"Security\/RichTextProcessorService.php.html#22\">App\\Services\\Security\\RichTextProcessorService::__construct<\/a>"],[0,1,"<a href=\"Security\/RichTextProcessorService.php.html#31\">App\\Services\\Security\\RichTextProcessorService::initializePurifiers<\/a>"],[0,5,"<a href=\"Security\/RichTextProcessorService.php.html#92\">App\\Services\\Security\\RichTextProcessorService::processContent<\/a>"],[0,1,"<a href=\"Security\/RichTextProcessorService.php.html#131\">App\\Services\\Security\\RichTextProcessorService::processCKEditorContent<\/a>"],[0,1,"<a href=\"Security\/RichTextProcessorService.php.html#143\">App\\Services\\Security\\RichTextProcessorService::preprocessCKEditorContent<\/a>"],[0,5,"<a href=\"Security\/RichTextProcessorService.php.html#162\">App\\Services\\Security\\RichTextProcessorService::getAllowedElements<\/a>"],[0,2,"<a href=\"Security\/RichTextProcessorService.php.html#188\">App\\Services\\Security\\RichTextProcessorService::generateStatistics<\/a>"],[0,2,"<a href=\"Security\/RichTextProcessorService.php.html#206\">App\\Services\\Security\\RichTextProcessorService::generatePreview<\/a>"],[0,4,"<a href=\"Security\/RichTextProcessorService.php.html#225\">App\\Services\\Security\\RichTextProcessorService::validateSecurity<\/a>"],[0,2,"<a href=\"Security\/RichTextProcessorService.php.html#267\">App\\Services\\Security\\RichTextProcessorService::getCachePath<\/a>"],[0,2,"<a href=\"Security\/SecretsManager.php.html#16\">App\\Services\\Security\\SecretsManager::__construct<\/a>"],[0,3,"<a href=\"Security\/SecretsManager.php.html#21\">App\\Services\\Security\\SecretsManager::load<\/a>"],[0,5,"<a href=\"Security\/SecretsManager.php.html#38\">App\\Services\\Security\\SecretsManager::get<\/a>"],[0,1,"<a href=\"Security\/SecretsManager.php.html#66\">App\\Services\\Security\\SecretsManager::set<\/a>"],[0,1,"<a href=\"Security\/SecretsManager.php.html#76\">App\\Services\\Security\\SecretsManager::has<\/a>"],[0,3,"<a href=\"Security\/SecretsManager.php.html#81\">App\\Services\\Security\\SecretsManager::getRequired<\/a>"],[0,5,"<a href=\"Security\/SecretsManager.php.html#92\">App\\Services\\Security\\SecretsManager::validateRequiredSecrets<\/a>"],[0,1,"<a href=\"Security\/SecretsManager.php.html#109\">App\\Services\\Security\\SecretsManager::isProduction<\/a>"],[0,1,"<a href=\"Security\/SecretsManager.php.html#114\">App\\Services\\Security\\SecretsManager::isDevelopment<\/a>"],[0,5,"<a href=\"Security\/SecretsManager.php.html#119\">App\\Services\\Security\\SecretsManager::getSecretsSummary<\/a>"],[0,1,"<a href=\"Security\/SecretsManager.php.html#159\">App\\Services\\Security\\SecretsManager::generateSecret<\/a>"],[0,13,"<a href=\"Security\/SecretsManager.php.html#164\">App\\Services\\Security\\SecretsManager::validateEnvFile<\/a>"],[0,5,"<a href=\"Security\/SecretsManager.php.html#220\">App\\Services\\Security\\SecretsManager::loadFromEnvironment<\/a>"],[0,12,"<a href=\"Security\/SecretsManager.php.html#234\">App\\Services\\Security\\SecretsManager::loadFromFile<\/a>"],[0,5,"<a href=\"Security\/SecretsManager.php.html#270\">App\\Services\\Security\\SecretsManager::parseValue<\/a>"],[0,3,"<a href=\"Security\/SecretsManager.php.html#290\">App\\Services\\Security\\SecretsManager::isSensitiveKey<\/a>"],[0,1,"<a href=\"Security\/SecurityHeaderService.php.html#14\">App\\Services\\Security\\SecurityHeaderService::__construct<\/a>"],[0,15,"<a href=\"Security\/SecurityHeaderService.php.html#19\">App\\Services\\Security\\SecurityHeaderService::setSecurityHeaders<\/a>"],[0,2,"<a href=\"Security\/SecurityHeaderService.php.html#86\">App\\Services\\Security\\SecurityHeaderService::generateNonce<\/a>"],[0,1,"<a href=\"Security\/SecurityHeaderService.php.html#97\">App\\Services\\Security\\SecurityHeaderService::getCurrentNonce<\/a>"],[0,5,"<a href=\"Security\/SecurityHeaderService.php.html#105\">App\\Services\\Security\\SecurityHeaderService::handleCSPReport<\/a>"],[0,2,"<a href=\"Security\/SecurityHeaderService.php.html#138\">App\\Services\\Security\\SecurityHeaderService::logCSPViolation<\/a>"],[0,2,"<a href=\"Security\/SecurityHeaderService.php.html#159\">App\\Services\\Security\\SecurityHeaderService::sendToMonitoring<\/a>"],[0,2,"<a href=\"Security\/SecurityHeaderService.php.html#179\">App\\Services\\Security\\SecurityHeaderService::removeServerSignature<\/a>"],[0,7,"<a href=\"Security\/SecurityHeaderService.php.html#191\">App\\Services\\Security\\SecurityHeaderService::buildCSP<\/a>"],[0,3,"<a href=\"Security\/SecurityHeaderService.php.html#219\">App\\Services\\Security\\SecurityHeaderService::buildPermissionsPolicy<\/a>"],[0,5,"<a href=\"Security\/SecurityHeaderService.php.html#234\">App\\Services\\Security\\SecurityHeaderService::isHTTPS<\/a>"],[0,1,"<a href=\"Security\/SecurityHeaderService.php.html#241\">App\\Services\\Security\\SecurityHeaderService::getDefaultConfig<\/a>"],[0,1,"<a href=\"Security\/SecurityTestService.php.html#28\">App\\Services\\Security\\SecurityTestService::__construct<\/a>"],[0,1,"<a href=\"Security\/SecurityTestService.php.html#46\">App\\Services\\Security\\SecurityTestService::runAllTests<\/a>"],[0,4,"<a href=\"Security\/SecurityTestService.php.html#63\">App\\Services\\Security\\SecurityTestService::testSessionSecurity<\/a>"],[0,3,"<a href=\"Security\/SecurityTestService.php.html#124\">App\\Services\\Security\\SecurityTestService::testAuthorization<\/a>"],[0,4,"<a href=\"Security\/SecurityTestService.php.html#173\">App\\Services\\Security\\SecurityTestService::testFileSecurity<\/a>"],[0,6,"<a href=\"Security\/SecurityTestService.php.html#234\">App\\Services\\Security\\SecurityTestService::testSecurityHeaders<\/a>"],[0,4,"<a href=\"Security\/SecurityTestService.php.html#296\">App\\Services\\Security\\SecurityTestService::testErrorHandling<\/a>"],[0,5,"<a href=\"Security\/SecurityTestService.php.html#338\">App\\Services\\Security\\SecurityTestService::testPasswordSecurity<\/a>"],[0,6,"<a href=\"Security\/SecurityTestService.php.html#412\">App\\Services\\Security\\SecurityTestService::testSecretsManagement<\/a>"],[0,5,"<a href=\"Security\/SecurityTestService.php.html#466\">App\\Services\\Security\\SecurityTestService::testSystemSecurity<\/a>"],[0,5,"<a href=\"Security\/SecurityTestService.php.html#531\">App\\Services\\Security\\SecurityTestService::generateSecurityReport<\/a>"],[0,1,"<a href=\"Security\/SecurityTestService.php.html#572\">App\\Services\\Security\\SecurityTestService::createMockUploadedFile<\/a>"],[0,4,"<a href=\"Security\/SecurityTestService.php.html#599\">App\\Services\\Security\\SecurityTestService::getSecurityLevel<\/a>"],[0,3,"<a href=\"Security\/SecurityTestService.php.html#612\">App\\Services\\Security\\SecurityTestService::getRecommendations<\/a>"],[0,3,"<a href=\"Security\/SessionSecurityService.php.html#14\">App\\Services\\Security\\SessionSecurityService::initializeSecureSession<\/a>"],[0,2,"<a href=\"Security\/SessionSecurityService.php.html#40\">App\\Services\\Security\\SessionSecurityService::regenerateSessionId<\/a>"],[0,3,"<a href=\"Security\/SessionSecurityService.php.html#50\">App\\Services\\Security\\SessionSecurityService::destroySession<\/a>"],[0,7,"<a href=\"Security\/SessionSecurityService.php.html#78\">App\\Services\\Security\\SessionSecurityService::isSessionValid<\/a>"],[0,2,"<a href=\"Security\/SessionSecurityService.php.html#110\">App\\Services\\Security\\SessionSecurityService::updateActivity<\/a>"],[0,1,"<a href=\"Security\/SessionSecurityService.php.html#120\">App\\Services\\Security\\SessionSecurityService::setUserSession<\/a>"],[0,2,"<a href=\"Security\/SessionSecurityService.php.html#136\">App\\Services\\Security\\SessionSecurityService::validateSessionIp<\/a>"],[0,2,"<a href=\"Security\/SessionSecurityService.php.html#148\">App\\Services\\Security\\SessionSecurityService::validateSessionUserAgent<\/a>"],[0,2,"<a href=\"Security\/SessionSecurityService.php.html#160\">App\\Services\\Security\\SessionSecurityService::requiresIpVerification<\/a>"],[0,1,"<a href=\"Security\/SessionSecurityService.php.html#168\">App\\Services\\Security\\SessionSecurityService::markIpChangeDetected<\/a>"],[0,2,"<a href=\"Security\/SessionSecurityService.php.html#178\">App\\Services\\Security\\SessionSecurityService::confirmIpChange<\/a>"],[0,2,"<a href=\"Security\/SessionSecurityService.php.html#191\">App\\Services\\Security\\SessionSecurityService::isIpVerificationExpired<\/a>"],[0,6,"<a href=\"Security\/SessionSecurityService.php.html#203\">App\\Services\\Security\\SessionSecurityService::performSecurityCheck<\/a>"],[0,1,"<a href=\"Security\/XssProtectionExtensionService.php.html#19\">App\\Services\\Security\\XssProtectionExtensionService::__construct<\/a>"],[0,11,"<a href=\"Security\/XssProtectionExtensionService.php.html#34\">App\\Services\\Security\\XssProtectionExtensionService::protectByContext<\/a>"],[0,2,"<a href=\"Security\/XssProtectionExtensionService.php.html#83\">App\\Services\\Security\\XssProtectionExtensionService::protectRichTextEditor<\/a>"],[0,2,"<a href=\"Security\/XssProtectionExtensionService.php.html#112\">App\\Services\\Security\\XssProtectionExtensionService::protectUserBio<\/a>"],[0,3,"<a href=\"Security\/XssProtectionExtensionService.php.html#132\">App\\Services\\Security\\XssProtectionExtensionService::protectPostTitle<\/a>"],[0,2,"<a href=\"Security\/XssProtectionExtensionService.php.html#155\">App\\Services\\Security\\XssProtectionExtensionService::protectPostContent<\/a>"],[0,3,"<a href=\"Security\/XssProtectionExtensionService.php.html#189\">App\\Services\\Security\\XssProtectionExtensionService::protectComment<\/a>"],[0,3,"<a href=\"Security\/XssProtectionExtensionService.php.html#214\">App\\Services\\Security\\XssProtectionExtensionService::protectSearchQuery<\/a>"],[0,2,"<a href=\"Security\/XssProtectionExtensionService.php.html#240\">App\\Services\\Security\\XssProtectionExtensionService::protectUrlParameter<\/a>"],[0,3,"<a href=\"Security\/XssProtectionExtensionService.php.html#257\">App\\Services\\Security\\XssProtectionExtensionService::protectJsonData<\/a>"],[0,3,"<a href=\"Security\/XssProtectionExtensionService.php.html#289\">App\\Services\\Security\\XssProtectionExtensionService::protectFileUpload<\/a>"],[0,2,"<a href=\"Security\/XssProtectionExtensionService.php.html#322\">App\\Services\\Security\\XssProtectionExtensionService::protectGeneric<\/a>"],[0,3,"<a href=\"Security\/XssProtectionExtensionService.php.html#339\">App\\Services\\Security\\XssProtectionExtensionService::cleanJsonRecursively<\/a>"],[0,2,"<a href=\"Security\/XssProtectionExtensionService.php.html#355\">App\\Services\\Security\\XssProtectionExtensionService::cleanFilename<\/a>"],[0,6,"<a href=\"Security\/XssProtectionExtensionService.php.html#374\">App\\Services\\Security\\XssProtectionExtensionService::calculateSecurityScore<\/a>"],[0,1,"<a href=\"Security\/XssProtectionExtensionService.php.html#404\">App\\Services\\Security\\XssProtectionExtensionService::getDefaultConfig<\/a>"],[0,1,"<a href=\"Security\/XssProtectionService.php.html#15\">App\\Services\\Security\\XssProtectionService::__construct<\/a>"],[0,1,"<a href=\"Security\/XssProtectionService.php.html#23\">App\\Services\\Security\\XssProtectionService::initializePurifiers<\/a>"],[0,2,"<a href=\"Security\/XssProtectionService.php.html#48\">App\\Services\\Security\\XssProtectionService::clean<\/a>"],[0,2,"<a href=\"Security\/XssProtectionService.php.html#60\">App\\Services\\Security\\XssProtectionService::cleanHtml<\/a>"],[0,2,"<a href=\"Security\/XssProtectionService.php.html#72\">App\\Services\\Security\\XssProtectionService::cleanStrict<\/a>"],[0,3,"<a href=\"Security\/XssProtectionService.php.html#84\">App\\Services\\Security\\XssProtectionService::cleanArray<\/a>"],[0,3,"<a href=\"Security\/XssProtectionService.php.html#97\">App\\Services\\Security\\XssProtectionService::cleanHtmlArray<\/a>"],[0,2,"<a href=\"Security\/XssProtectionService.php.html#110\">App\\Services\\Security\\XssProtectionService::cleanForJs<\/a>"],[0,2,"<a href=\"Security\/XssProtectionService.php.html#125\">App\\Services\\Security\\XssProtectionService::cleanForUrl<\/a>"],[0,3,"<a href=\"Security\/XssProtectionService.php.html#139\">App\\Services\\Security\\XssProtectionService::detectXss<\/a>"],[0,3,"<a href=\"Security\/XssProtectionService.php.html#181\">App\\Services\\Security\\XssProtectionService::getRiskLevel<\/a>"],[0,1,"<a href=\"Security\/XssProtectionService.php.html#200\">App\\Services\\Security\\XssProtectionService::getAllowedHtmlTags<\/a>"],[0,2,"<a href=\"Security\/XssProtectionService.php.html#209\">App\\Services\\Security\\XssProtectionService::getCachePath<\/a>"],[0,1,"<a href=\"Validators\/PostValidator.php.html#15\">App\\Services\\Validators\\PostValidator::__construct<\/a>"],[0,1,"<a href=\"Validators\/PostValidator.php.html#25\">App\\Services\\Validators\\PostValidator::validateForCreation<\/a>"],[0,5,"<a href=\"Validators\/PostValidator.php.html#40\">App\\Services\\Validators\\PostValidator::validateForUpdate<\/a>"],[0,6,"<a href=\"Validators\/PostValidator.php.html#73\">App\\Services\\Validators\\PostValidator::validateTagAssignment<\/a>"],[0,5,"<a href=\"Validators\/PostValidator.php.html#95\">App\\Services\\Validators\\PostValidator::validateRequiredFields<\/a>"],[0,6,"<a href=\"Validators\/PostValidator.php.html#118\">App\\Services\\Validators\\PostValidator::validateFieldLengths<\/a>"],[0,6,"<a href=\"Validators\/PostValidator.php.html#138\">App\\Services\\Validators\\PostValidator::validateDataTypes<\/a>"],[0,3,"<a href=\"Validators\/PostValidator.php.html#159\">App\\Services\\Validators\\PostValidator::validateStatus<\/a>"],[0,4,"<a href=\"Validators\/PostValidator.php.html#170\">App\\Services\\Validators\\PostValidator::validatePublishDate<\/a>"],[0,3,"<a href=\"Validators\/PostValidator.php.html#184\">App\\Services\\Validators\\PostValidator::validateUserIp<\/a>"],[0,2,"<a href=\"Validators\/PostValidator.php.html#194\">App\\Services\\Validators\\PostValidator::tagsExist<\/a>"],[0,4,"<a href=\"Enums\/PostStatus.php.html#16\">App\\Services\\Enums\\PostStatus::getLabel<\/a>"],[0,5,"<a href=\"Enums\/PostStatus.php.html#28\">App\\Services\\Enums\\PostStatus::canTransitionTo<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

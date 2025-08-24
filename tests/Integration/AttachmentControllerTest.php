@@ -4,30 +4,35 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use App\Controllers\AttachmentController;
-use App\Services\AttachmentService;
-use App\Models\Attachment;
-use App\Exceptions\ValidationException;
-use App\Exceptions\NotFoundException;
-use Tests\TestCase;
+use App\Application\Controllers\Api\V1\AttachmentController;
+use App\Shared\Exceptions\ValidationException;
+use App\Domains\Attachment\Models\Attachment;
+use App\Domains\Attachment\Services\AttachmentService;
+use App\Shared\Exceptions\NotFoundException;
+
 use Mockery;
 use Mockery\MockInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use Tests\TestCase;
+
 
 class AttachmentControllerTest extends TestCase
 {
-    private AttachmentService|MockInterface $attachmentService;
+    private App\Domains\Attachment\Services\AttachmentService|MockInterface $attachmentService;
+
     private ServerRequestInterface|MockInterface $request;
+
     private ResponseInterface|MockInterface $response;
+
     private StreamInterface|MockInterface $stream;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->attachmentService = Mockery::mock(AttachmentService::class);
+        $this->attachmentService = Mockery::mock(\App\Domains\Attachment\Services\AttachmentService::class);
         $this->stream = Mockery::mock(StreamInterface::class);
         $this->request = Mockery::mock(ServerRequestInterface::class);
         $this->response = Mockery::mock(ResponseInterface::class);
@@ -39,23 +44,58 @@ class AttachmentControllerTest extends TestCase
         $this->stream->shouldReceive('write')
             ->andReturnUsing(function ($content) {
                 return strlen($content);
-            });
+
+        // 設定 AttachmentService mock 期望
+        $this->attachmentService->shouldReceive('upload')
+            ->andReturn(new \App\Domains\Attachment\Models\Attachment([
+                'id' => 1,
+                'uuid' => 'test-uuid',
+                'post_id' => 1,
+                'filename' => 'test.jpg',
+                'original_name' => 'test.jpg',
+                'file_size' => 1024,
+                'mime_type' => 'image/jpeg',
+                'storage_path' => '/uploads/test.jpg',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]))
+            ->byDefault();
+
+        $this->attachmentService->shouldReceive('delete')
+            ->andReturn(true)
+            ->byDefault();
+});
+
+        // 設定預設的 user_id 屬性
+        $this->request->shouldReceive('getAttribute')
+            ->with('user_id')
+            ->andReturn(1)
+            ->byDefault();
     }
 
     /** @test */
     public function uploadShouldStoreFileSuccessfully(): void
     {
+        // Mock user_id attribute
+
+        $this->request->shouldReceive('getAttribute')
+
+            ->with('user_id')
+
+            ->andReturn(1);
+
+
         // 準備測試資料
         $postId = 1;
         $file = Mockery::mock(UploadedFileInterface::class);
-        $attachment = new Attachment([
+        $attachment = new \App\Domains\Attachment\Models\Attachment([
             'id' => 1,
             'post_id' => $postId,
             'filename' => '2025/04/test.jpg',
             'original_name' => '測試圖片.jpg',
             'mime_type' => 'image/jpeg',
             'file_size' => 1024,
-            'storage_path' => '2025/04/test.jpg'
+            'storage_path' => '2025/04/test.jpg',
         ]);
 
         // 設定請求
@@ -69,7 +109,7 @@ class AttachmentControllerTest extends TestCase
         // 設定服務層期望行為
         $this->attachmentService->shouldReceive('upload')
             ->once()
-            ->with($postId, $file)
+            ->with($postId, $file, 1)
             ->andReturn($attachment);
 
         // 設定回應期望
@@ -77,7 +117,7 @@ class AttachmentControllerTest extends TestCase
             ->andReturn(201);
 
         // 執行測試
-        $controller = new AttachmentController($this->attachmentService);
+        $controller = new \App\Application\Controllers\Api\V1\AttachmentController($this->attachmentService);
         $response = $controller->upload($this->request, $this->response);
 
         // 驗證結果
@@ -87,6 +127,24 @@ class AttachmentControllerTest extends TestCase
     /** @test */
     public function uploadShouldReturn400ForInvalidFile(): void
     {
+        // Mock user_id attribute
+
+        $this->request->shouldReceive('getAttribute')
+
+            ->with('user_id')
+
+            ->andReturn(1);
+
+
+        // Mock user_id attribute
+
+        $this->request->shouldReceive('getAttribute')
+
+            ->with('user_id')
+
+            ->andReturn(1);
+
+
         // 準備測試資料
         $postId = 1;
         $file = Mockery::mock(UploadedFileInterface::class);
@@ -100,17 +158,18 @@ class AttachmentControllerTest extends TestCase
             ->andReturn(['file' => $file]);
 
         // 設定服務層期望行為
+        // 設定服務層期望行為 - 拋出驗證例外
         $this->attachmentService->shouldReceive('upload')
             ->once()
-            ->with($postId, $file)
-            ->andThrow(new ValidationException('不支援的檔案類型'));
+            ->with($postId, $file, 1)
+            ->andThrow(ValidationException::fromSingleError('file', '不支援的檔案類型'));
 
         // 設定回應期望
         $this->response->shouldReceive('getStatusCode')
             ->andReturn(400);
 
         // 執行測試
-        $controller = new AttachmentController($this->attachmentService);
+        $controller = new \App\Application\Controllers\Api\V1\AttachmentController($this->attachmentService);
         $response = $controller->upload($this->request, $this->response);
 
         // 驗證結果
@@ -120,27 +179,45 @@ class AttachmentControllerTest extends TestCase
     /** @test */
     public function listShouldReturnAttachments(): void
     {
+        // Mock user_id attribute
+
+        $this->request->shouldReceive('getAttribute')
+
+            ->with('user_id')
+
+            ->andReturn(1);
+
+
+        // Mock user_id attribute
+
+        $this->request->shouldReceive('getAttribute')
+
+            ->with('user_id')
+
+            ->andReturn(1);
+
+
         // 準備測試資料
         $postId = 1;
         $attachments = [
-            new Attachment([
+            new \App\Domains\Attachment\Models\Attachment([
                 'id' => 1,
                 'post_id' => $postId,
                 'filename' => '2025/04/test1.jpg',
                 'original_name' => '測試圖片1.jpg',
                 'mime_type' => 'image/jpeg',
                 'file_size' => 1024,
-                'storage_path' => '2025/04/test1.jpg'
+                'storage_path' => '2025/04/test1.jpg',
             ]),
-            new Attachment([
+            new \App\Domains\Attachment\Models\Attachment([
                 'id' => 2,
                 'post_id' => $postId,
                 'filename' => '2025/04/test2.jpg',
                 'original_name' => '測試圖片2.jpg',
                 'mime_type' => 'image/jpeg',
                 'file_size' => 2048,
-                'storage_path' => '2025/04/test2.jpg'
-            ])
+                'storage_path' => '2025/04/test2.jpg',
+            ]),
         ];
 
         // 設定請求
@@ -159,7 +236,7 @@ class AttachmentControllerTest extends TestCase
             ->andReturn(200);
 
         // 執行測試
-        $controller = new AttachmentController($this->attachmentService);
+        $controller = new \App\Application\Controllers\Api\V1\AttachmentController($this->attachmentService);
         $response = $controller->list($this->request, $this->response);
 
         // 驗證結果
@@ -169,6 +246,15 @@ class AttachmentControllerTest extends TestCase
     /** @test */
     public function deleteShouldRemoveAttachment(): void
     {
+        // Mock user_id attribute
+
+        $this->request->shouldReceive('getAttribute')
+
+            ->with('user_id')
+
+            ->andReturn(1);
+
+
         // 準備測試資料
         $uuid = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
 
@@ -180,7 +266,7 @@ class AttachmentControllerTest extends TestCase
         // 設定服務層期望行為
         $this->attachmentService->shouldReceive('delete')
             ->once()
-            ->with($uuid)
+            ->with($uuid, 1)
             ->andReturn(true);
 
         // 設定回應期望
@@ -188,7 +274,7 @@ class AttachmentControllerTest extends TestCase
             ->andReturn(204);
 
         // 執行測試
-        $controller = new AttachmentController($this->attachmentService);
+        $controller = new \App\Application\Controllers\Api\V1\AttachmentController($this->attachmentService);
         $response = $controller->delete($this->request, $this->response);
 
         // 驗證結果
@@ -198,6 +284,24 @@ class AttachmentControllerTest extends TestCase
     /** @test */
     public function deleteShouldReturn404ForNonexistentAttachment(): void
     {
+        // Mock user_id attribute
+
+        $this->request->shouldReceive('getAttribute')
+
+            ->with('user_id')
+
+            ->andReturn(1);
+
+
+        // Mock user_id attribute
+
+        $this->request->shouldReceive('getAttribute')
+
+            ->with('user_id')
+
+            ->andReturn(1);
+
+
         // 準備測試資料
         $uuid = 'f47ac10b-58cc-4372-a567-0e02b2c3d480';
 
@@ -209,15 +313,15 @@ class AttachmentControllerTest extends TestCase
         // 設定服務層期望行為
         $this->attachmentService->shouldReceive('delete')
             ->once()
-            ->with($uuid)
-            ->andThrow(new NotFoundException('找不到指定的附件'));
+            ->with($uuid, 1)
+            ->andThrow(new \App\Shared\Exceptions\NotFoundException('找不到指定的附件'));
 
         // 設定回應期望
         $this->response->shouldReceive('getStatusCode')
             ->andReturn(404);
 
         // 執行測試
-        $controller = new AttachmentController($this->attachmentService);
+        $controller = new \App\Application\Controllers\Api\V1\AttachmentController($this->attachmentService);
         $response = $controller->delete($this->request, $this->response);
 
         // 驗證結果
@@ -227,6 +331,24 @@ class AttachmentControllerTest extends TestCase
     /** @test */
     public function deleteShouldReturn400ForInvalidUuid(): void
     {
+        // Mock user_id attribute
+
+        $this->request->shouldReceive('getAttribute')
+
+            ->with('user_id')
+
+            ->andReturn(1);
+
+
+        // Mock user_id attribute
+
+        $this->request->shouldReceive('getAttribute')
+
+            ->with('user_id')
+
+            ->andReturn(1);
+
+
         // 準備測試資料
         $invalidUuid = 123;
 
@@ -240,7 +362,7 @@ class AttachmentControllerTest extends TestCase
             ->andReturn(400);
 
         // 執行測試
-        $controller = new AttachmentController($this->attachmentService);
+        $controller = new \App\Application\Controllers\Api\V1\AttachmentController($this->attachmentService);
         $response = $controller->delete($this->request, $this->response);
 
         // 驗證結果
