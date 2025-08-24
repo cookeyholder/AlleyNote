@@ -41,7 +41,7 @@ class FileUploadSecurityTest extends TestCase
         $this->service = new AttachmentService(
             $this->attachmentRepo,
             $this->postRepo,
-            $this->authService
+            $this->authService,
         );
 
         $this->uploadDir = '/tmp/test-uploads';
@@ -51,7 +51,7 @@ class FileUploadSecurityTest extends TestCase
         $this->authService->shouldReceive('canDeleteAttachment')->byDefault()->andReturn(true);
 
         if (!is_dir($this->uploadDir)) {
-            mkdir($this->uploadDir, 0777, true);
+            mkdir($this->uploadDir, 0o777, true);
         }
     }
 
@@ -65,7 +65,7 @@ class FileUploadSecurityTest extends TestCase
             'application/x-msdownload',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicious"; ?>'
+            '<?php echo "malicious"; ?>',
         );
 
         // 模擬文章存在
@@ -102,7 +102,7 @@ class FileUploadSecurityTest extends TestCase
             'image/jpeg',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicious"; ?>'
+            '<?php echo "malicious"; ?>',
         );
 
         // 模擬文章存在
@@ -139,7 +139,7 @@ class FileUploadSecurityTest extends TestCase
             'image/jpeg',
             15728640, // 15MB，超過 10MB 限制
             UPLOAD_ERR_OK,
-            str_repeat('x', 15728640)
+            str_repeat('x', 15728640),
         );
 
         // 模擬文章存在
@@ -176,7 +176,7 @@ class FileUploadSecurityTest extends TestCase
             'application/x-php', // 惡意 MIME 類型
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicious"; ?>'
+            '<?php echo "malicious"; ?>',
         );
 
         // 模擬文章存在
@@ -213,7 +213,7 @@ class FileUploadSecurityTest extends TestCase
             'text/plain',
             1024,
             UPLOAD_ERR_OK,
-            'root:x:0:0:root:/root:/bin/bash'
+            'root:x:0:0:root:/root:/bin/bash',
         );
 
         // 模擬文章存在
@@ -250,7 +250,7 @@ class FileUploadSecurityTest extends TestCase
             'image/jpeg',
             1024,
             UPLOAD_ERR_OK,
-            'fake-image-content'
+            'fake-image-content',
         );
 
         // 模擬文章存在
@@ -297,14 +297,14 @@ class FileUploadSecurityTest extends TestCase
     }
 
     /**
-     * 建立模擬的上傳檔案
+     * 建立模擬的上傳檔案.
      */
     protected function createUploadedFileMock(
         string $filename,
         string $mimeType,
         int $size,
         int $error,
-        string $content
+        string $content,
     ): UploadedFileInterface {
         $file = Mockery::mock(UploadedFileInterface::class);
         $stream = Mockery::mock(StreamInterface::class);
@@ -319,10 +319,10 @@ class FileUploadSecurityTest extends TestCase
         $stream->shouldReceive('getSize')->andReturn($size);
 
         // 為有效檔案設定 moveTo 方法
-        if ($error === UPLOAD_ERR_OK && $size <= 10485760 &&
-            !preg_match('/\.(php|exe|bat|cmd|sh)$/i', $filename) &&
-            !str_contains($filename, '..') &&
-            in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain'])) {
+        if ($error === UPLOAD_ERR_OK && $size <= 10485760
+            && !preg_match('/\.(php|exe|bat|cmd|sh)$/i', $filename)
+            && !str_contains($filename, '..')
+            && in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain'])) {
             $file->shouldReceive('moveTo')->andReturnNull();
         }
 
