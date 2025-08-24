@@ -2,9 +2,10 @@
 
 namespace Tests\Unit\Database;
 
-use App\Database\DatabaseConnection;
+use App\Infrastructure\Database\DatabaseConnection;
 use PDO;
 use PHPUnit\Framework\TestCase;
+
 
 class DatabaseConnectionTest extends TestCase
 {

@@ -2,21 +2,23 @@
 
 namespace Tests;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
-use App\Database\DatabaseConnection;
-use App\Services\CacheService;
+use App\Infrastructure\Database\DatabaseConnection;
+use App\Infrastructure\Services\CacheService;
 use Mockery;
 use PDO;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 use Psr\Http\Message\ResponseInterface;
+
 
 abstract class TestCase extends BaseTestCase
 {
     protected PDO $db;
+
     /** @var CacheService&\Mockery\MockInterface */
-    protected $cache;
+    protected \App\Infrastructure\Services\CacheService|\Mockery\MockInterface $cache;
 
     /**
-     * 初始化測試環境
+     * 初始化測試環境.
      */
     protected function setUp(): void
     {
@@ -31,7 +33,7 @@ abstract class TestCase extends BaseTestCase
         try {
             $this->db = new PDO('sqlite::memory:', null, null, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
 
             // 啟用外鍵約束
@@ -53,7 +55,7 @@ abstract class TestCase extends BaseTestCase
         $storage = [];
 
         // 模擬快取服務
-        $this->cache = Mockery::mock(CacheService::class);
+        $this->cache = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
         $this->cache->shouldReceive('get')
             ->andReturnUsing(function ($key) use (&$storage) {
                 return $storage[$key] ?? null;
@@ -61,11 +63,13 @@ abstract class TestCase extends BaseTestCase
         $this->cache->shouldReceive('set')
             ->andReturnUsing(function ($key, $value, $ttl = null) use (&$storage) {
                 $storage[$key] = $value;
+
                 return true;
             });
         $this->cache->shouldReceive('put')
             ->andReturnUsing(function ($key, $value, $ttl = null) use (&$storage) {
                 $storage[$key] = $value;
+
                 return true;
             });
         $this->cache->shouldReceive('has')
@@ -75,16 +79,19 @@ abstract class TestCase extends BaseTestCase
         $this->cache->shouldReceive('forget')
             ->andReturnUsing(function ($key) use (&$storage) {
                 unset($storage[$key]);
+
                 return true;
             });
         $this->cache->shouldReceive('clear')
             ->andReturnUsing(function () use (&$storage) {
                 $storage = [];
+
                 return true;
             });
         $this->cache->shouldReceive('delete')
             ->andReturnUsing(function ($key) use (&$storage) {
                 unset($storage[$key]);
+
                 return true;
             });
         $this->cache->shouldReceive('tags')
@@ -94,17 +101,18 @@ abstract class TestCase extends BaseTestCase
                 if (!isset($storage[$key])) {
                     $storage[$key] = $callback();
                 }
+
                 return $storage[$key];
             });
     }
 
     /**
-     * 建立測試用資料表
+     * 建立測試用資料表.
      */
     protected function createTestTables(): void
     {
         // 建立基本資料表
-        $this->db->exec("
+        $this->db->exec('
             CREATE TABLE IF NOT EXISTS posts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 uuid TEXT NOT NULL UNIQUE,
@@ -120,10 +128,10 @@ abstract class TestCase extends BaseTestCase
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             )
-        ");
+        ');
 
         // 建立 IP 黑白名單資料表
-        $this->db->exec("
+        $this->db->exec('
             CREATE TABLE IF NOT EXISTS ip_lists (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 uuid TEXT NOT NULL UNIQUE,
@@ -134,10 +142,10 @@ abstract class TestCase extends BaseTestCase
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             )
-        ");
+        ');
 
         // 建立附件資料表
-        $this->db->exec("
+        $this->db->exec('
             CREATE TABLE IF NOT EXISTS attachments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 uuid TEXT NOT NULL UNIQUE,
@@ -152,43 +160,43 @@ abstract class TestCase extends BaseTestCase
                 deleted_at TEXT,
                 FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
             )
-        ");
+        ');
 
         // 建立所需的索引
         $this->createIndices();
     }
 
     /**
-     * 建立資料表索引
+     * 建立資料表索引.
      */
     private function createIndices(): void
     {
         // Posts 索引
-        $this->db->exec("
+        $this->db->exec('
             CREATE INDEX IF NOT EXISTS idx_posts_uuid ON posts(uuid);
             CREATE INDEX IF NOT EXISTS idx_posts_title ON posts(title);
             CREATE INDEX IF NOT EXISTS idx_posts_publish_date ON posts(publish_date);
             CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
             CREATE INDEX IF NOT EXISTS idx_posts_views ON posts(views)
-        ");
+        ');
 
         // IP Lists 索引
-        $this->db->exec("
+        $this->db->exec('
             CREATE INDEX IF NOT EXISTS idx_ip_lists_uuid ON ip_lists(uuid);
             CREATE INDEX IF NOT EXISTS idx_ip_lists_ip_address ON ip_lists(ip_address);
             CREATE INDEX IF NOT EXISTS idx_ip_lists_type ON ip_lists(type)
-        ");
+        ');
 
         // Attachments 索引
-        $this->db->exec("
+        $this->db->exec('
             CREATE INDEX IF NOT EXISTS idx_attachments_uuid ON attachments(uuid);
             CREATE INDEX IF NOT EXISTS idx_attachments_post_id ON attachments(post_id);
             CREATE INDEX IF NOT EXISTS idx_attachments_created_at ON attachments(created_at)
-        ");
+        ');
     }
 
     /**
-     * 建立 HTTP 回應的模擬物件
+     * 建立 HTTP 回應的模擬物件.
      */
     protected function createResponseMock(): ResponseInterface
     {
@@ -201,11 +209,12 @@ abstract class TestCase extends BaseTestCase
             ->andReturnSelf();
         $response->shouldReceive('withHeader')
             ->andReturnSelf();
+
         return $response;
     }
 
     /**
-     * 清理測試環境
+     * 清理測試環境.
      */
     protected function tearDown(): void
     {

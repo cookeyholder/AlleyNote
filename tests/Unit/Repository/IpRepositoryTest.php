@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
-use PHPUnit\Framework\TestCase;
-use App\Repositories\IpRepository;
-use App\Services\CacheService;
-use PDO;
+use App\Domains\Security\Repositories\IpRepository;
+use App\Infrastructure\Services\CacheService;
 use Mockery;
+use PDO;
+use PHPUnit\Framework\TestCase;
+
 
 class IpRepositoryTest extends TestCase
 {
     private PDO $db;
+
     private CacheService $cache;
+
     private IpRepository $repository;
 
     protected function setUp(): void
@@ -22,7 +25,7 @@ class IpRepositoryTest extends TestCase
         $this->db = new PDO('sqlite::memory:');
         $this->createTestTables();
 
-        $this->cache = Mockery::mock(CacheService::class);
+        $this->cache = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
         $this->cache->shouldReceive('remember')
             ->byDefault()
             ->andReturnUsing(function ($key, $callback) {
@@ -39,7 +42,7 @@ class IpRepositoryTest extends TestCase
             ->byDefault()
             ->andReturn(false);
 
-        $this->repository = new IpRepository($this->db, $this->cache);
+        $this->repository = new \App\Domains\Security\Repositories\IpRepository($this->db, $this->cache);
     }
 
     protected function createTestTables(): void
@@ -69,7 +72,7 @@ class IpRepositoryTest extends TestCase
         $data = [
             'ip_address' => '192.168.1.1',
             'type' => 1,
-            'description' => '測試白名單'
+            'description' => '測試白名單',
         ];
 
         $result = $this->repository->create($data);
@@ -84,7 +87,7 @@ class IpRepositoryTest extends TestCase
     {
         $data = [
             'ip_address' => 'invalid-ip',
-            'type' => 1
+            'type' => 1,
         ];
 
         $this->expectException(\InvalidArgumentException::class);
@@ -98,7 +101,7 @@ class IpRepositoryTest extends TestCase
         $data = [
             'ip_address' => '192.168.1.0/24',
             'type' => 0,
-            'description' => '測試子網路遮罩'
+            'description' => '測試子網路遮罩',
         ];
 
         $result = $this->repository->create($data);
@@ -111,7 +114,7 @@ class IpRepositoryTest extends TestCase
         // 先建立一筆資料
         $this->repository->create([
             'ip_address' => '192.168.1.1',
-            'type' => 1
+            'type' => 1,
         ]);
 
         $result = $this->repository->findByIpAddress('192.168.1.1');
@@ -125,13 +128,13 @@ class IpRepositoryTest extends TestCase
         // 建立白名單
         $this->repository->create([
             'ip_address' => '192.168.1.1',
-            'type' => 1
+            'type' => 1,
         ]);
 
         // 建立黑名單
         $this->repository->create([
             'ip_address' => '192.168.1.2',
-            'type' => 0
+            'type' => 0,
         ]);
 
         $whitelist = $this->repository->getByType(1);

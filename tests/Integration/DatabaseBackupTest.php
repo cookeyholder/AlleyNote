@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use Tests\TestCase;
 use PDO;
+use Tests\TestCase;
+
 
 class DatabaseBackupTest extends TestCase
 {
     protected string $backupDir;
+
     protected PDO $db;
+
     protected string $dbPath;
 
     protected function setUp(): void

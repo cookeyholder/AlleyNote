@@ -4,30 +4,47 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\TestCase;
-use App\Services\IpService;
-use App\Repositories\Contracts\IpRepositoryInterface;
-use App\Models\IpList;
+use App\Domains\Security\Contracts\IpRepositoryInterface;
+use App\Shared\Validation\ValidationException;
+use App\Domains\Security\DTOs\CreateIpRuleDTO;
+use App\Domains\Security\Services\IpService;
+use App\Shared\Contracts\ValidatorInterface;
+
 use Mockery;
+use PHPUnit\Framework\TestCase;
+use App\Domains\Security\Models\IpList;
+
 
 class IpServiceTest extends TestCase
 {
     private IpRepositoryInterface $repository;
+    private ValidatorInterface $validator;
     private IpService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->repository = Mockery::mock(IpRepositoryInterface::class);
-        $this->service = new IpService($this->repository);
+        $this->validator = Mockery::mock(\App\Shared\Contracts\ValidatorInterface::class);
+
+        // 設定 Validator Mock 的通用預期
+        $this->validator->shouldReceive('addRule')
+            ->zeroOrMoreTimes()
+            ->andReturnSelf();
+        $this->validator->shouldReceive('addMessage')
+            ->zeroOrMoreTimes()
+            ->andReturnSelf();
+
+        $this->service = new \App\Domains\Security\Services\IpService($this->repository);
     }
 
     public function testCanCreateIpRule(): void
     {
         $data = [
             'ip_address' => '192.168.1.1',
-            'type' => 1,
-            'description' => '測試白名單'
+            'action' => 'allow',
+            'reason' => '測試白名單',
+            'created_by' => 1,
         ];
 
         $expectedIpList = new IpList([
@@ -35,15 +52,22 @@ class IpServiceTest extends TestCase
             'uuid' => 'test-uuid',
             'ip_address' => '192.168.1.1',
             'type' => 1,
-            'description' => '測試白名單'
+            'description' => '測試白名單',
         ]);
+
+        $this->validator->shouldReceive('validateOrFail')
+            ->once()
+            ->with(Mockery::any(), Mockery::any())
+            ->andReturn($data);
+
+        $dto = new CreateIpRuleDTO($this->validator, $data);
 
         $this->repository->shouldReceive('create')
             ->once()
-            ->with($data)
+            ->with(Mockery::any())
             ->andReturn($expectedIpList);
 
-        $result = $this->service->createIpRule($data);
+        $result = $this->service->createIpRule($dto);
 
         $this->assertSame($expectedIpList, $result);
     }
@@ -52,26 +76,42 @@ class IpServiceTest extends TestCase
     {
         $data = [
             'ip_address' => 'invalid-ip',
-            'type' => 1
+            'action' => 'allow',
+            'created_by' => 1,
         ];
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('無效的 IP 位址格式');
+        $this->validator->shouldReceive('validateOrFail')
+            ->once()
+            ->with(Mockery::any(), Mockery::any())
+            ->andThrow(new \App\Shared\Exceptions\ValidationException(
+                new \App\Shared\Validation\ValidationResult(false, ['ip_address' => ['無效的 IP 位址格式']], [], [])
+            ));
 
-        $this->service->createIpRule($data);
+        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+
+        $dto = new CreateIpRuleDTO($this->validator, $data);
+        $this->service->createIpRule($dto);
     }
 
     public function testCannotCreateWithInvalidType(): void
     {
         $data = [
             'ip_address' => '192.168.1.1',
-            'type' => 2
+            'action' => 'invalid_action',
+            'created_by' => 1,
         ];
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('無效的名單類型，必須是 0（黑名單）或 1（白名單）');
+        $this->validator->shouldReceive('validateOrFail')
+            ->once()
+            ->with(Mockery::any(), Mockery::any())
+            ->andThrow(new \App\Shared\Exceptions\ValidationException(
+                new \App\Shared\Validation\ValidationResult(false, ['action' => ['無效的動作類型']], [], [])
+            ));
 
-        $this->service->createIpRule($data);
+        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+
+        $dto = new CreateIpRuleDTO($this->validator, $data);
+        $this->service->createIpRule($dto);
     }
 
     public function testCanCheckIpAccess(): void
@@ -121,26 +161,34 @@ class IpServiceTest extends TestCase
         $validRanges = [
             '192.168.1.0/24',
             '10.0.0.0/8',
-            '172.16.0.0/12'
+            '172.16.0.0/12',
         ];
 
         foreach ($validRanges as $range) {
             $data = [
                 'ip_address' => $range,
-                'type' => 0
+                'action' => 'block',
+                'created_by' => 1,
             ];
 
             $mockIpList = new IpList([
                 'ip_address' => $range,
-                'type' => 0
+                'type' => 0,
             ]);
+
+            $this->validator->shouldReceive('validateOrFail')
+                ->once()
+                ->with(Mockery::any(), Mockery::any())
+                ->andReturn($data);
+
+            $dto = new CreateIpRuleDTO($this->validator, $data);
 
             $this->repository->shouldReceive('create')
                 ->once()
-                ->with($data)
+                ->with(Mockery::any())
                 ->andReturn($mockIpList);
 
-            $result = $this->service->createIpRule($data);
+            $result = $this->service->createIpRule($dto);
             $this->assertEquals($range, $result->getIpAddress());
         }
     }
@@ -151,12 +199,12 @@ class IpServiceTest extends TestCase
         $mockRules = [
             new IpList([
                 'ip_address' => '192.168.1.1',
-                'type' => 1
+                'type' => 1,
             ]),
             new IpList([
                 'ip_address' => '192.168.1.2',
-                'type' => 1
-            ])
+                'type' => 1,
+            ]),
         ];
 
         $this->repository->shouldReceive('getByType')

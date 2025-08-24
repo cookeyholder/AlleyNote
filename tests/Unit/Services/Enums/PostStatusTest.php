@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Enums;
 
-use App\Services\Enums\PostStatus;
+use App\Domains\Post\Models\Post;
+use App\Domains\Post\Enums\PostStatus;
 use PHPUnit\Framework\TestCase;
+
 
 class PostStatusTest extends TestCase
 {

@@ -21,7 +21,7 @@ class PostFactory
             'views' => 0,
             'publish_date' => (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339),
             'created_at' => (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339),
-            'updated_at' => (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339)
+            'updated_at' => (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339),
         ], $attributes);
     }
 }

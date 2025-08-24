@@ -4,28 +4,39 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
-use App\Controllers\PostController;
+use App\Application\Controllers\Api\V1\PostController;
+use App\Domains\Post\Models\Post;
 use App\Services\Contracts\PostServiceInterface;
-use App\Services\Security\Contracts\XssProtectionServiceInterface;
 use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
-use App\Exceptions\CsrfTokenException;
-use Tests\TestCase;
+use App\Services\Security\Contracts\XssProtectionServiceInterface;
+use App\Shared\Exceptions\CsrfTokenException;
 use Mockery;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Tests\TestCase;
+
 
 class CsrfProtectionTest extends TestCase
 {
     private PostServiceInterface $postService;
+
     private XssProtectionServiceInterface $xssProtection;
+
     private CsrfProtectionServiceInterface $csrfProtection;
+
     private ServerRequestInterface $request;
+
     private ResponseInterface $response;
+
     private PostController $controller;
+
     private StreamInterface $stream;
+
     private string $lastWrittenContent = '';
+
     private int $lastStatusCode = 0;
+
     private array $headers = [];
 
     protected function setUp(): void
@@ -40,7 +51,7 @@ class CsrfProtectionTest extends TestCase
         $this->response = Mockery::mock(ResponseInterface::class);
         $this->stream = Mockery::mock(StreamInterface::class);
 
-        $this->controller = new PostController(
+        $this->controller = new \App\Application\Controllers\Api\V1\PostController(
             $this->postService,
             $this->xssProtection,
             $this->csrfProtection
@@ -52,16 +63,25 @@ class CsrfProtectionTest extends TestCase
         $this->stream->shouldReceive('write')
             ->andReturnUsing(function ($content) {
                 $this->lastWrittenContent = $content;
+
                 return strlen($content);
-            });
+            
+        // 設定預設的 user_id 屬性
+        $this->request->shouldReceive('getAttribute')
+            ->with('user_id')
+            ->andReturn(1)
+            ->byDefault();
+});
         $this->response->shouldReceive('withStatus')
             ->andReturnUsing(function ($status) {
                 $this->lastStatusCode = $status;
+
                 return $this->response;
             });
         $this->response->shouldReceive('withHeader')
             ->andReturnUsing(function ($name, $value) {
                 $this->headers[$name] = $value;
+
                 return $this->response;
             });
         $this->response->shouldReceive('getStatusCode')
@@ -96,7 +116,7 @@ class CsrfProtectionTest extends TestCase
         // 準備測試資料
         $postData = [
             'title' => '測試文章',
-            'content' => '測試內容'
+            'content' => '測試內容',
         ];
         $this->request->shouldReceive('getParsedBody')
             ->andReturn($postData);
@@ -126,7 +146,7 @@ class CsrfProtectionTest extends TestCase
         // 準備測試資料
         $postData = [
             'title' => '測試文章',
-            'content' => '測試內容'
+            'content' => '測試內容',
         ];
         $this->request->shouldReceive('getParsedBody')
             ->andReturn($postData);
@@ -161,13 +181,13 @@ class CsrfProtectionTest extends TestCase
         $postData = [
             'title' => '測試文章',
             'content' => '測試內容',
-            'user_id' => 1
+            'user_id' => 1,
         ];
         $this->request->shouldReceive('getParsedBody')
             ->andReturn($postData);
 
         // 設定 Post 模擬物件
-        $post = Mockery::mock('App\Models\Post');
+        $post = Mockery::mock('App\Domains\Post\Models\Post');
         $post->shouldReceive('toArray')
             ->andReturn($postData + ['id' => 1]);
 

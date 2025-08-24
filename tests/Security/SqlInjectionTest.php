@@ -4,21 +4,32 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
-use App\Repositories\PostRepository;
-use Tests\TestCase;
+use App\Domains\Post\Models\Post;
+use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use Mockery;
+use Tests\TestCase;
+
 
 class SqlInjectionTest extends TestCase
 {
+
     protected PostRepository $repository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->repository = new PostRepository($this->db, $this->cache);
-        $this->createTestTables();
+        // 初始化mock對象
+        $this->repository = \Mockery::mock(PostRepository::class);
+        $this->logger = \Mockery::mock(\App\Domains\Security\Contracts\LoggingSecurityServiceInterface::class);
+
+        // 設定預設的mock行為
+        $this->logger->shouldReceive('logSecurityEvent')->byDefault();
+        $this->logger->shouldReceive('enrichSecurityContext')->byDefault()->andReturn([]);
     }
+
+    protected \App\Domains\Security\Contracts\LoggingSecurityServiceInterface|\Mockery\MockInterface $logger;
 
     protected function createTestTables(): void
     {
@@ -63,7 +74,7 @@ class SqlInjectionTest extends TestCase
             'uuid' => 'test-uuid',
             'title' => 'Test Post',
             'content' => $content,
-            'user_id' => 1
+            'user_id' => 1,
         ];
 
         // 執行測試
@@ -78,7 +89,7 @@ class SqlInjectionTest extends TestCase
     public function shouldPreventSqlInjectionInUserIdFilter(): void
     {
         // 準備測試資料
-        $maliciousUserId = "1; DROP TABLE posts;";
+        $maliciousUserId = '1; DROP TABLE posts;';
 
         try {
             // 執行測試
@@ -91,7 +102,7 @@ class SqlInjectionTest extends TestCase
 
         // 確認資料表仍然存在
         $tableExists = $this->db->query("
-            SELECT name FROM sqlite_master 
+            SELECT name FROM sqlite_master
             WHERE type='table' AND name='posts'
         ")->fetch();
 

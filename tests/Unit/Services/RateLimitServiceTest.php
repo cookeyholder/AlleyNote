@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
-use App\Services\RateLimitService;
-use App\Services\CacheService;
-use Tests\TestCase;
+use App\Infrastructure\Services\CacheService;
+use App\Infrastructure\Services\RateLimitService;
 use Mockery;
+use Tests\TestCase;
+
 
 class RateLimitServiceTest extends TestCase
 {
     private RateLimitService $rateLimitService;
+
     private $cacheMock;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->cacheMock = Mockery::mock(CacheService::class);
+        $this->cacheMock = Mockery::mock(\App\Infrastructure\Services\CacheService::class);
         $this->rateLimitService = new RateLimitService($this->cacheMock);
     }
 

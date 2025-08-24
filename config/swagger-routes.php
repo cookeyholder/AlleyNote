@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 /**
  * Swagger UI 路由設定
- * 
+ *
  * 將此路由加入到主路由檔案中
  */
 
-use App\Controllers\SwaggerController;
+use App\Application\Controllers\Web\SwaggerController;
 
 // Swagger API 文件路由
 return [

@@ -25,3 +25,11 @@ coverage/
 *.db-shm
 /database/*.db
 /database/backups/*.db*
+
+# PHPStan cache
+/storage/phpstan/
+.phpstan.cache
+.php-cs-fixer.cache
+
+# DI container cache
+/storage/di-cache/

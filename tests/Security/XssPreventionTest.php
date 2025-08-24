@@ -4,27 +4,36 @@ declare(strict_types=1);
 
 namespace Tests\Security;
 
-use App\Controllers\PostController;
+use App\Application\Controllers\Api\V1\PostController;
+use App\Domains\Post\Models\Post;
 use App\Services\Contracts\PostServiceInterface;
-use App\Services\Security\Contracts\XssProtectionServiceInterface;
 use App\Services\Security\Contracts\CsrfProtectionServiceInterface;
-use App\Models\Post;
-use Tests\TestCase;
+use App\Services\Security\Contracts\XssProtectionServiceInterface;
 use Mockery;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Tests\TestCase;
+
 
 class XssPreventionTest extends TestCase
 {
     private PostServiceInterface $postService;
+
     private XssProtectionServiceInterface $xssProtection;
+
     private CsrfProtectionServiceInterface $csrfProtection;
+
     private ServerRequestInterface $request;
+
     private ResponseInterface $response;
+
     private PostController $controller;
+
     private StreamInterface $stream;
+
     private string $lastWrittenContent = '';
+
     private int $lastStatusCode = 0;
 
     protected function setUp(): void
@@ -38,7 +47,7 @@ class XssPreventionTest extends TestCase
         $this->response = Mockery::mock(ResponseInterface::class);
         $this->stream = Mockery::mock(StreamInterface::class);
 
-        $this->controller = new PostController(
+        $this->controller = new \App\Application\Controllers\Api\V1\PostController(
             $this->postService,
             $this->xssProtection,
             $this->csrfProtection
@@ -50,11 +59,19 @@ class XssPreventionTest extends TestCase
         $this->stream->shouldReceive('write')
             ->andReturnUsing(function ($content) {
                 $this->lastWrittenContent = $content;
+
                 return strlen($content);
-            });
+            
+        // 設定預設的 user_id 屬性
+        $this->request->shouldReceive('getAttribute')
+            ->with('user_id')
+            ->andReturn(1)
+            ->byDefault();
+});
         $this->response->shouldReceive('withStatus')
             ->andReturnUsing(function ($status) {
                 $this->lastStatusCode = $status;
+
                 return $this->response;
             });
         $this->response->shouldReceive('withHeader')
@@ -83,7 +100,7 @@ class XssPreventionTest extends TestCase
         $postData = [
             'title' => $maliciousTitle,
             'content' => '正常內容',
-            'user_id' => 1
+            'user_id' => 1,
         ];
 
         // 設定請求模擬
@@ -96,11 +113,11 @@ class XssPreventionTest extends TestCase
             ->andReturn([
                 'title' => htmlspecialchars($maliciousTitle, ENT_QUOTES, 'UTF-8'),
                 'content' => '正常內容',
-                'user_id' => 1
+                'user_id' => 1,
             ]);
 
         // 模擬處理後的安全資料
-        $safePost = Mockery::mock(Post::class);
+        $safePost = Mockery::mock(\App\Domains\Post\Models\Post::class);
         $safePost->shouldReceive('toArray')
             ->andReturn([
                 'id' => 1,
@@ -109,7 +126,7 @@ class XssPreventionTest extends TestCase
                 'content' => '正常內容',
                 'user_id' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
         // 設定服務層期望行為
@@ -137,7 +154,7 @@ class XssPreventionTest extends TestCase
         $postData = [
             'title' => '正常標題',
             'content' => $maliciousContent,
-            'user_id' => 1
+            'user_id' => 1,
         ];
 
         // 設定請求模擬
@@ -150,11 +167,11 @@ class XssPreventionTest extends TestCase
             ->andReturn([
                 'title' => '正常標題',
                 'content' => htmlspecialchars($maliciousContent, ENT_QUOTES, 'UTF-8'),
-                'user_id' => 1
+                'user_id' => 1,
             ]);
 
         // 模擬處理後的安全資料
-        $safePost = Mockery::mock(Post::class);
+        $safePost = Mockery::mock(\App\Domains\Post\Models\Post::class);
         $safePost->shouldReceive('toArray')
             ->andReturn([
                 'id' => 1,
@@ -163,7 +180,7 @@ class XssPreventionTest extends TestCase
                 'content' => htmlspecialchars($maliciousContent, ENT_QUOTES, 'UTF-8'),
                 'user_id' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
         // 設定服務層期望行為
@@ -191,7 +208,7 @@ class XssPreventionTest extends TestCase
         $postData = [
             'title' => '正常標題',
             'content' => $encodedScript,
-            'user_id' => 1
+            'user_id' => 1,
         ];
 
         // 設定請求模擬
@@ -204,11 +221,11 @@ class XssPreventionTest extends TestCase
             ->andReturn([
                 'title' => '正常標題',
                 'content' => htmlspecialchars(urldecode($encodedScript), ENT_QUOTES, 'UTF-8'),
-                'user_id' => 1
+                'user_id' => 1,
             ]);
 
         // 模擬處理後的安全資料
-        $safePost = Mockery::mock(Post::class);
+        $safePost = Mockery::mock(\App\Domains\Post\Models\Post::class);
         $safePost->shouldReceive('toArray')
             ->andReturn([
                 'id' => 1,
@@ -217,7 +234,7 @@ class XssPreventionTest extends TestCase
                 'content' => htmlspecialchars(urldecode($encodedScript), ENT_QUOTES, 'UTF-8'),
                 'user_id' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
         // 設定服務層期望行為

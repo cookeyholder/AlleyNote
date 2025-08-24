@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Factory;
 
-use Tests\Factory\PostFactory;
 use PHPUnit\Framework\TestCase;
+use Tests\Factory\PostFactory;
+
 
 class PostFactoryTest extends TestCase
 {
@@ -22,7 +23,7 @@ class PostFactoryTest extends TestCase
     {
         $data = PostFactory::make([
             'title' => '客製化標題',
-            'content' => '客製化內容'
+            'content' => '客製化內容',
         ]);
 
         $this->assertEquals('客製化標題', $data['title']);
@@ -33,7 +34,7 @@ class PostFactoryTest extends TestCase
     {
         $data = PostFactory::make([
             'id' => 999,
-            'title' => '自訂標題'
+            'title' => '自訂標題',
         ]);
 
         $this->assertEquals(999, $data['id']);
