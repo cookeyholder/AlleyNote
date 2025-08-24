@@ -426,8 +426,8 @@ class CreatePostDTO
 #### Day 18-19: Docker 改進
 - [ ] **分離 dev/prod compose**（3小時）
   ```yaml
-  # docker-compose.dev.yml
-  # docker-compose.prod.yml
+  # docker compose dev.yml
+  # docker compose prod.yml
   ```
 
 - [ ] **加入健康檢查**（2小時）

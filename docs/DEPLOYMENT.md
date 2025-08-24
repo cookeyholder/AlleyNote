@@ -56,7 +56,7 @@ cp .env.example .env
 # - Telegram 通知設定
 
 # 啟動容器
-docker-compose up -d
+docker compose up -d
 
 # 執行資料庫遷移
 docker-compose exec php php /var/www/html/vendor/bin/phinx migrate

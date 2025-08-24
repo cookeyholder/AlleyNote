@@ -31,17 +31,8 @@
 
 ### 作業系統
 #### 支援的 Linux 發行版
-- **Ubuntu 20.04 LTS** （推薦）
-- **Ubuntu 22.04 LTS**
-- **CentOS 8**
-- **Rocky Linux 8**
-- **Debian 11**
+- **Ubuntu 22.04 LTS** （推薦）
 - **Debian 12**
-
-#### Windows 支援
-- **Windows Server 2019**
-- **Windows Server 2022**
-- **Windows 10 Pro**（開發環境）
 
 ### 必要軟體
 ```bash
@@ -83,7 +74,7 @@ docker --version 2>/dev/null || echo "Docker 未安裝"
 
 # 檢查 Docker Compose
 echo "6. Docker Compose 版本："
-docker-compose --version 2>/dev/null || echo "Docker Compose 未安裝"
+docker compose version 2>/dev/null || echo "Docker Compose 未安裝"
 
 # 檢查 Git
 echo "7. Git 版本："

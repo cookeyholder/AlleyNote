@@ -7,7 +7,7 @@
 ## 📋 前置需求檢查
 
 ### 系統需求
-- **作業系統**：Linux (推薦 Ubuntu 20.04+ 或 CentOS 8+)
+- **作業系統**：Linux (推薦 Debian 12+ 或 Ubuntu 22.04+)
 - **硬體需求**：
   - CPU: 2 核心以上
   - RAM: 4GB 以上
@@ -21,7 +21,7 @@
 ```bash
 # 檢查 Docker
 docker --version
-docker-compose --version
+docker compose version
 
 # 檢查可用空間
 df -h
@@ -47,7 +47,7 @@ chmod +x alleynote.sh
 ./alleynote.sh start
 
 # 或直接使用 Docker Compose
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 3. 初始化資料庫
@@ -56,7 +56,7 @@ docker-compose up -d
 sleep 30
 
 # 初始化 SQLite 資料庫
-docker-compose exec web ./scripts/init-sqlite.sh
+docker compose exec web ./scripts/init-sqlite.sh
 ```
 
 ### 4. 檢查狀態
@@ -65,7 +65,7 @@ docker-compose exec web ./scripts/init-sqlite.sh
 ./alleynote.sh status
 
 # 檢查容器日誌
-docker-compose logs -f web
+docker compose logs -f web
 ```
 
 ### 5. 訪問系統
@@ -116,7 +116,7 @@ ADMIN_PASSWORD=your-secure-password
 ### 方法一：使用腳本（推薦）
 ```bash
 # 進入容器
-docker-compose exec web bash
+docker compose exec web bash
 
 # 建立管理員（如有相關腳本）
 php scripts/create-admin.php
@@ -125,7 +125,7 @@ php scripts/create-admin.php
 ### 方法二：直接操作資料庫
 ```bash
 # 進入 SQLite 命令列
-docker-compose exec web sqlite3 database/alleynote.db
+docker compose exec web sqlite3 database/alleynote.db
 
 # 查看使用者表結構
 .schema users
@@ -145,15 +145,15 @@ VALUES ('admin@yourdomain.com', '$2y$10$hashed_password', 'admin', datetime('now
 ### 檢查服務狀態
 ```bash
 # 查看所有容器狀態
-docker-compose ps
+docker compose ps
 
 # 查看特定服務日誌
-docker-compose logs web
-docker-compose logs nginx
-docker-compose logs redis
+docker compose logs web
+docker compose logs nginx
+docker compose logs redis
 
 # 即時監控日誌
-docker-compose logs -f --tail=50
+docker compose logs -f --tail=50
 ```
 
 ### 檢查資料庫
@@ -162,10 +162,10 @@ docker-compose logs -f --tail=50
 ls -la database/alleynote.db
 
 # 檢查資料庫表格
-docker-compose exec web sqlite3 database/alleynote.db ".tables"
+docker compose exec web sqlite3 database/alleynote.db ".tables"
 
 # 檢查使用者數量
-docker-compose exec web sqlite3 database/alleynote.db "SELECT COUNT(*) FROM users;"
+docker compose exec web sqlite3 database/alleynote.db "SELECT COUNT(*) FROM users;"
 ```
 
 ### 檢查系統資源
@@ -228,11 +228,11 @@ ls -la database/backups/
 git pull origin main
 
 # 重建並重啟容器
-docker-compose down
-docker-compose up -d --build
+docker compose down
+docker compose up -d --build
 
 # 執行資料庫遷移（如有）
-docker-compose exec web ./scripts/migrate.sh
+docker compose exec web ./scripts/migrate.sh
 ```
 
 ### 清理日誌
@@ -269,14 +269,14 @@ df -h
 ls -la database/alleynote.db
 
 # 修復權限
-docker-compose exec web chown www-data:www-data database/alleynote.db
-docker-compose exec web chmod 664 database/alleynote.db
+docker compose exec web chown www-data:www-data database/alleynote.db
+docker compose exec web chmod 664 database/alleynote.db
 ```
 
 #### 網站無法訪問
 ```bash
 # 檢查 Nginx 設定
-docker-compose exec nginx nginx -t
+docker compose exec nginx nginx -t
 
 # 檢查防火牆
 ufw status
@@ -288,20 +288,20 @@ getenforce
 
 ### 日誌檢查位置
 - **應用程式日誌**：`logs/app.log`
-- **Nginx 日誌**：`docker-compose logs nginx`
-- **PHP 錯誤日誌**：`docker-compose logs web`
+- **Nginx 日誌**：`docker compose logs nginx`
+- **PHP 錯誤日誌**：`docker compose logs web`
 - **系統日誌**：`/var/log/messages` 或 `/var/log/syslog`
 
 ### 緊急重啟
 ```bash
 # 強制停止所有容器
-docker-compose down --remove-orphans
+docker compose down --remove-orphans
 
 # 清理暫存
 docker system prune -f
 
 # 重新啟動
-docker-compose up -d
+docker compose up -d
 ```
 
 ---
@@ -348,7 +348,7 @@ docker-compose up -d
 
 部署完成後，請確認以下項目：
 
-- [ ] 服務正常運行（`docker-compose ps` 全部 Up）
+- [ ] 服務正常運行（`docker compose ps` 全部 Up）
 - [ ] 網站可正常訪問（HTTP 200 回應）
 - [ ] 資料庫初始化成功（有資料表）
 - [ ] 管理員帳號可正常登入
@@ -361,4 +361,4 @@ docker-compose up -d
 
 **🎉 恭喜！您的 AlleyNote 系統已成功部署！**
 
-如需更詳細的配置和維護說明，請參考 [管理員操作手冊](ADMIN_MANUAL.md)。
+如需更詳細的配置和維護說明，請參考 [管理員操作手冊](ADMIN_MANUAL.md)

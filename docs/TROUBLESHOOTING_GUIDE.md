@@ -30,7 +30,7 @@ ping your-server-ip
 ssh user@your-server-ip
 
 # 3. 檢查容器狀態
-docker-compose ps
+docker compose ps
 
 # 4. 檢查系統資源
 top
@@ -41,17 +41,17 @@ free -h
 #### 緊急恢復程序
 ```bash
 # 1. 強制重啟所有容器
-docker-compose down --remove-orphans
-docker-compose up -d
+docker compose down --remove-orphans
+docker compose up -d
 
 # 2. 如果容器無法啟動，檢查日誌
-docker-compose logs --tail=100
+docker compose logs --tail=100
 
 # 3. 檢查系統日誌
 sudo journalctl -u docker.service --since "1 hour ago"
 
 # 4. 緊急模式啟動（僅 Web 服務）
-docker-compose up -d web
+docker compose up -d web
 
 # 5. 最後手段：重啟整個系統
 sudo reboot
@@ -62,7 +62,7 @@ sudo reboot
 #### 立即處理
 ```bash
 # 1. 停止所有服務
-docker-compose down
+docker compose down
 
 # 2. 備份當前資料庫（即使損壞）
 cp database/alleynote.db database/alleynote_corrupted_$(date +%Y%m%d_%H%M%S).db
@@ -85,10 +85,10 @@ docker run --rm -v $(pwd)/database:/data sqlite:latest sqlite3 /data/alleynote.d
 openssl x509 -in ssl-data/live/yourdomain.com/fullchain.pem -text -noout | grep "Not After"
 
 # 2. 強制更新憑證
-docker-compose exec certbot certbot renew --force-renewal
+docker compose exec certbot certbot renew --force-renewal
 
 # 3. 重新載入 Nginx
-docker-compose exec nginx nginx -s reload
+docker compose exec nginx nginx -s reload
 
 # 4. 如果更新失敗，重新申請憑證
 ./scripts/ssl-setup.sh yourdomain.com admin@yourdomain.com
@@ -127,15 +127,15 @@ docker stats --no-stream
 sudo sync && sudo sysctl vm.drop_caches=3
 
 # 重啟緩慢的容器
-docker-compose restart web
+docker compose restart web
 
 # 清理應用程式快取
-docker-compose exec web rm -rf storage/cache/*
-docker-compose exec redis redis-cli FLUSHALL
+docker compose exec web rm -rf storage/cache/*
+docker compose exec redis redis-cli FLUSHALL
 
 # 優化資料庫
-docker-compose exec web sqlite3 database/alleynote.db "VACUUM;"
-docker-compose exec web sqlite3 database/alleynote.db "REINDEX;"
+docker compose exec web sqlite3 database/alleynote.db "VACUUM;"
+docker compose exec web sqlite3 database/alleynote.db "REINDEX;"
 ```
 
 ### 404 錯誤頻發
@@ -143,17 +143,17 @@ docker-compose exec web sqlite3 database/alleynote.db "REINDEX;"
 #### 檢查項目
 ```bash
 # 1. 檢查 Nginx 配置
-docker-compose exec nginx nginx -t
+docker compose exec nginx nginx -t
 
 # 2. 檢查 Nginx 錯誤日誌
-docker-compose logs nginx | grep "404"
+docker compose logs nginx | grep "404"
 
 # 3. 檢查檔案權限
 ls -la public/
 ls -la storage/
 
 # 4. 檢查路由配置
-docker-compose exec web php -r "
+docker compose exec web php -r "
 include 'vendor/autoload.php';
 // 檢查路由設定
 "
@@ -162,16 +162,16 @@ include 'vendor/autoload.php';
 #### 修復步驟
 ```bash
 # 1. 修復檔案權限
-docker-compose exec web chown -R www-data:www-data /var/www/html
-docker-compose exec web chmod -R 755 public/
-docker-compose exec web chmod -R 775 storage/
+docker compose exec web chown -R www-data:www-data /var/www/html
+docker compose exec web chmod -R 755 public/
+docker compose exec web chmod -R 775 storage/
 
 # 2. 清理並重建快取
-docker-compose exec web php artisan cache:clear
-docker-compose exec web php artisan route:clear
+docker compose exec web php artisan cache:clear
+docker compose exec web php artisan route:clear
 
 # 3. 重新載入 Nginx 配置
-docker-compose exec nginx nginx -s reload
+docker compose exec nginx nginx -s reload
 ```
 
 ### 500 內部伺服器錯誤
@@ -179,13 +179,13 @@ docker-compose exec nginx nginx -s reload
 #### 日誌檢查
 ```bash
 # 1. 檢查 PHP 錯誤日誌
-docker-compose logs web | tail -50
+docker compose logs web | tail -50
 
 # 2. 檢查應用程式日誌
 tail -50 logs/app.log
 
 # 3. 檢查 Nginx 錯誤日誌
-docker-compose exec nginx tail -50 /var/log/nginx/error.log
+docker compose exec nginx tail -50 /var/log/nginx/error.log
 
 # 4. 檢查系統日誌
 sudo journalctl -u docker.service --since "1 hour ago"
@@ -198,15 +198,16 @@ sudo journalctl -u docker.service --since "1 hour ago"
 memory_limit = 512M
 
 # 檔案權限問題
-docker-compose exec web chown -R www-data:www-data /var/www/html
-docker-compose exec web chmod -R 755 /var/www/html
+# 檔案權限問題
+docker compose exec web chown -R www-data:www-data /var/www/html
+docker compose exec web chmod -R 755 /var/www/html
 
 # PHP 擴展缺失
-docker-compose exec web php -m | grep -i needed_extension
+docker compose exec web php -m | grep -i needed_extension
 
 # 重建容器
-docker-compose down
-docker-compose up -d --build
+docker compose down
+docker compose up -d --build
 ```
 
 ### 資料庫連線失敗
@@ -217,10 +218,10 @@ docker-compose up -d --build
 ls -la database/alleynote.db
 
 # 2. 檢查檔案權限
-docker-compose exec web ls -la database/alleynote.db
+docker compose exec web ls -la database/alleynote.db
 
 # 3. 測試資料庫連線
-docker-compose exec web sqlite3 database/alleynote.db "SELECT 1;"
+docker compose exec web sqlite3 database/alleynote.db "SELECT 1;"
 
 # 4. 檢查資料庫鎖定
 lsof database/alleynote.db
@@ -229,14 +230,14 @@ lsof database/alleynote.db
 #### 修復方法
 ```bash
 # 1. 修復檔案權限
-docker-compose exec web chown www-data:www-data database/alleynote.db
-docker-compose exec web chmod 664 database/alleynote.db
+docker compose exec web chown www-data:www-data database/alleynote.db
+docker compose exec web chmod 664 database/alleynote.db
 
 # 2. 檢查並修復資料庫
-docker-compose exec web sqlite3 database/alleynote.db "PRAGMA integrity_check;"
+docker compose exec web sqlite3 database/alleynote.db "PRAGMA integrity_check;"
 
 # 3. 重建資料庫索引
-docker-compose exec web sqlite3 database/alleynote.db "REINDEX;"
+docker compose exec web sqlite3 database/alleynote.db "REINDEX;"
 
 # 4. 如果資料庫損壞，恢復備份
 ./scripts/restore_sqlite.sh database/backups/latest_backup.db
@@ -279,7 +280,7 @@ check_website() {
 
 # 檢查容器狀態
 check_containers() {
-    local failed_containers=$(docker-compose ps | grep -v "Up" | grep -v "Name" | wc -l)
+    local failed_containers=$(docker compose ps | grep -v "Up" | grep -v "Name" | wc -l)
     if [ $failed_containers -gt 0 ]; then
         send_alert "發現 $failed_containers 個容器狀態異常"
         return 1
@@ -309,7 +310,7 @@ check_memory() {
 
 # 檢查資料庫
 check_database() {
-    if ! docker-compose exec -T web sqlite3 database/alleynote.db "SELECT 1;" > /dev/null 2>&1; then
+    if ! docker compose exec -T web sqlite3 database/alleynote.db "SELECT 1;" > /dev/null 2>&1; then
         send_alert "資料庫連線失敗"
         return 1
     fi

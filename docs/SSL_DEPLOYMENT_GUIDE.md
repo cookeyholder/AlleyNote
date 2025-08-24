@@ -47,7 +47,7 @@ SSL_DOMAIN=your-domain.com SSL_EMAIL=admin@your-domain.com ./scripts/ssl-setup.s
 
 ```bash
 # 建立並初始化 SQLite 資料庫
-docker-compose exec web ./scripts/init-sqlite.sh
+docker compose exec web ./scripts/init-sqlite.sh
 ```
 
 ### 4. 切換到正式環境
@@ -76,38 +76,38 @@ mkdir -p ssl-data certbot-data logs/nginx logs/certbot
 ### 2. 啟動基本服務
 ```bash
 # 啟動服務（不含資料庫，因為使用 SQLite）
-docker-compose up -d web nginx redis
+docker compose up -d web nginx redis
 
 # 初始化 SQLite 資料庫
-docker-compose exec web ./scripts/init-sqlite.sh
+docker compose exec web ./scripts/init-sqlite.sh
 ```
 
 ### 3. 申請 SSL 憑證
 ```bash
 # 測試環境憑證
-docker-compose run --rm certbot certonly \
-  --webroot \
-  --webroot-path=/var/www/certbot \
-  --email admin@your-domain.com \
-  --agree-tos \
-  --no-eff-email \
-  --staging \
-  -d your-domain.com
+docker compose run --rm certbot certonly \
+   --webroot \
+   --webroot-path=/var/www/certbot \
+   --email admin@your-domain.com \
+   --agree-tos \
+   --no-eff-email \
+   --staging \
+   -d your-domain.com
 
 # 正式環境憑證（移除 --staging）
-docker-compose run --rm certbot certonly \
-  --webroot \
-  --webroot-path=/var/www/certbot \
-  --email admin@your-domain.com \
-  --agree-tos \
-  --no-eff-email \
-  -d your-domain.com
+docker compose run --rm certbot certonly \
+   --webroot \
+   --webroot-path=/var/www/certbot \
+   --email admin@your-domain.com \
+   --agree-tos \
+   --no-eff-email \
+   -d your-domain.com
 ```
 
 ### 4. 重啟服務
 ```bash
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 ```
 
 ## 正式環境部署
@@ -116,7 +116,7 @@ docker-compose up -d
 
 ```bash
 # 使用正式環境設定啟動
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker-compose.production.yml up -d
 
 # 檢查服務狀態
 docker-compose -f docker-compose.production.yml ps
