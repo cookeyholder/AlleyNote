@@ -10,7 +10,6 @@ use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
-
 use Mockery;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
