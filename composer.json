@@ -48,9 +48,9 @@
   "scripts": {
     "test": "phpunit",
     "test:coverage": "phpunit --coverage-text",
-    "cs-fix": "php-cs-fixer fix",
-    "cs-check": "php-cs-fixer check --diff",
-    "analyse": "phpstan analyse --memory-limit=256M",
+    "cs-fix": "vendor/bin/php-cs-fixer fix",
+    "cs-check": "vendor/bin/php-cs-fixer check --diff",
+    "analyse": "vendor/bin/phpstan analyse --memory-limit=256M",
     "ci": [
       "@cs-check",
       "@analyse",
