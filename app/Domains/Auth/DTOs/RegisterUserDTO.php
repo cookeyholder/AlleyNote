@@ -6,6 +6,7 @@ namespace App\Domains\Auth\DTOs;
 
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
+use App\Shared\Exceptions\ValidationException;
 
 /**
  * 使用者註冊的資料傳輸物件.
@@ -112,8 +113,14 @@ class RegisterUserDTO extends BaseDTO
 
             // 檢查不能是常見弱密碼
             $weakPasswords = [
-                'password', '12345678', 'qwerty123', 'abc12345',
-                '11111111', 'password123', '123456789', 'qwertyui',
+                'password',
+                '12345678',
+                'qwerty123',
+                'abc12345',
+                '11111111',
+                'password123',
+                '123456789',
+                'qwertyui',
             ];
 
             if (in_array(strtolower($password), $weakPasswords, true)) {
@@ -187,8 +194,12 @@ class RegisterUserDTO extends BaseDTO
 
             // 檢查是否為常見的一次性郵箱域名
             $disposableEmailDomains = [
-                '10minutemail.com', 'tempmail.org', 'guerrillamail.com',
-                'mailinator.com', 'yopmail.com', 'throwaway.email',
+                '10minutemail.com',
+                'tempmail.org',
+                'guerrillamail.com',
+                'mailinator.com',
+                'yopmail.com',
+                'throwaway.email',
             ];
 
             $domain = substr(strrchr($email, '@'), 1);
@@ -337,8 +348,14 @@ class RegisterUserDTO extends BaseDTO
     public function isBusinessEmail(): bool
     {
         $businessDomains = [
-            'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
-            'qq.com', '163.com', '126.com', 'sina.com',
+            'gmail.com',
+            'yahoo.com',
+            'hotmail.com',
+            'outlook.com',
+            'qq.com',
+            '163.com',
+            '126.com',
+            'sina.com',
         ];
 
         $domain = $this->getEmailDomain();

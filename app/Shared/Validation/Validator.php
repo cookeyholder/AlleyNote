@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Validation;
 
 use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\Exceptions\ValidationException;
 use DateTime;
 
 /**

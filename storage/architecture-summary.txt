@@ -1,0 +1,49 @@
+=== 專案架構快速摘要 (2025-08-26 00:01:31) ===
+
+📊 統計資訊:
+- 類別: 105 個
+- 介面: 29 個
+- 命名空間: 63 個
+
+🏗️ DDD 架構:
+- Application: 12 個檔案
+- Domains: 60 個檔案
+- Infrastructure: 40 個檔案
+- Shared: 18 個檔案
+
+❌ 架構問題 (3 個):
+- 可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
+- 可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
+- 可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
+
+🧪 測試覆蓋:
+- 有測試: 0 個類別
+- 缺少測試: 105 個類別
+
+🔌 介面實作:
+- : 72 個實作
+- FileSecurityServiceInterface: 1 個實作
+- AttachmentServiceInterface: 1 個實作
+- SessionSecurityServiceInterface: 1 個實作
+- AuthorizationServiceInterface: 1 個實作
+
+💉 重依賴類別 (≥3個依賴): 6 個
+
+❓ 可能問題引用: 72 個
+
+🔑 重點服務/控制器:
+- AttachmentRepository (app/Domains/Attachment/Repositories/AttachmentRepository.php)
+- FileSecurityService (app/Domains/Attachment/Services/FileSecurityService.php)
+- AttachmentService (app/Domains/Attachment/Services/AttachmentService.php)
+- UserRepository (app/Domains/Auth/Repositories/UserRepository.php)
+- SessionSecurityService (app/Domains/Auth/Services/SessionSecurityService.php)
+- PasswordManagementService (app/Domains/Auth/Services/PasswordManagementService.php)
+- AuthorizationService (app/Domains/Auth/Services/AuthorizationService.php)
+- PwnedPasswordService (app/Domains/Auth/Services/Advanced/PwnedPasswordService.php)
+- AuthService (app/Domains/Auth/Services/AuthService.php)
+- PasswordSecurityService (app/Domains/Auth/Services/PasswordSecurityService.php)
+- IpRepository (app/Domains/Security/Repositories/IpRepository.php)
+- LoggingSecurityService (app/Domains/Security/Services/Logging/LoggingSecurityService.php)
+- ErrorHandlerService (app/Domains/Security/Services/Error/ErrorHandlerService.php)
+- SecurityHeaderService (app/Domains/Security/Services/Headers/SecurityHeaderService.php)
+- XssProtectionExtensionService (app/Domains/Security/Services/Content/XssProtectionExtensionService.php)

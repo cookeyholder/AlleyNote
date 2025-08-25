@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Security;
 
-use App\Services\Security\Contracts\LoggingSecurityServiceInterface;
+use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;

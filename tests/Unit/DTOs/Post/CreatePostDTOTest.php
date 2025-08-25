@@ -6,7 +6,7 @@ namespace Tests\Unit\DTOs\Post;
 
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\Enums\PostStatus;
-use App\Shared\Validation\ValidationException;
+use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 

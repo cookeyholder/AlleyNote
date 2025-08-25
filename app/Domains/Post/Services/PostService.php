@@ -111,8 +111,8 @@ class PostService implements PostServiceInterface
             'items' => $result['items'],
             'total' => $result['total'],
             'page' => $result['page'],
-            'per_page' => $result['per_page'],
-            'last_page' => $result['last_page'],
+            'per_page' => $result['perPage'],
+            'last_page' => $result['lastPage'],
         ];
     }
 

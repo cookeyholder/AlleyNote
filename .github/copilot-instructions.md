@@ -1,29 +1,43 @@
+# copilot-instructions.md
+
+> **📌 本專案採用 DDD（Domain-Driven Design）原則開發，請在開發過程中遵循以下準則與流程。**
+
 以資深程式設計師的角度出發，在開發程式時，請做到以下幾點：
 
--   充分理解需求，提出適當問題以釐清需求，並且將討論過程簡要地紀錄下來。
--   先設計好程式架構和資料庫結構，以高效和安全為最優先考量。
--   在動手開發前，先列出詳細的開發計劃和任務清單，最好是能切分任務到每項都能獨立開發的。
--   清單地排列以合乎邏輯的順序進行開發，若是有依賴關係的任務，務必先完成基礎任務。
--   開發功能前嘗試使用 Context7 MCP 查詢最新的 API 文件和範例程式碼，以加速開發流程。
--   每次開發前都先建立一個新的分支，並且在完成任務後進行大量的單元測試和整合測試，確保功能正常。
--   **提交前必須在本地端進行程式碼品質檢查**，確保符合專案標準後再提交。
--   完成一項任務後，先更新任務清單，再以繁體中文撰寫符合 conventional commit 規範的 commit message。
--   在開發過程中，隨時記錄遇到的問題和解決方案，以便日後參考。
--   開發完成後，撰寫詳細的文件說明，包括程式碼註解、使用說明和維護指南。
+-   充分理解領域需求，與 PM、領域專家（Domain Expert）密切溝通，提出適當問題以釐清模糊地帶，並簡要紀錄討論結果。
+-   在開始開發前，先建構清楚的子領域（Subdomains）、限界上下文（Bounded Context）及核心模型（Core Domain），並設計出清楚的模組劃分。
+-   將業務邏輯封裝於領域層（Domain Layer），並避免將其寫在控制器或基礎設施層。
+-   設計好系統架構和資料庫結構，以**高內聚、低耦合**、可測試性與擴充性為優先考量。
+-   開始開發前，列出詳細的開發計劃與任務清單，每項任務盡可能切割為可獨立開發與測試的最小單元。
+-   根據模組依賴順序進行開發，例如：Domain → Application → Infrastructure → Interface（如 Web API）。
+-   嘗試先撰寫測試（TDD），在撰寫實作前，定義好 Entity、Value Object、Aggregate Root 等核心概念。
+-   每次開發請使用 Context7 MCP 查詢相關 API 文件或參考範例程式碼。
+-   每項開發任務請從建立分支開始，並撰寫單元測試與整合測試，確保功能正確、邏輯合理。
+-   **提交前務必執行本地程式碼品質檢查**，確保程式碼品質與格式皆符合專案標準。
+-   完成任務後，請更新任務清單，並以**繁體中文**撰寫符合 Conventional Commit 規範的 commit message。
+-   在開發過程中，隨時記錄遇到的技術問題、建模考量與解決方式，便於後續回顧與知識分享。
+-   所有完成的功能，需撰寫清楚的文件說明，包括程式碼註解、模組設計說明與維護指南。
+-   先撰寫一個腳本，可以用 shell script 也可以用專案使用的程式語言。用它來掃瞄整個專案檔案之間的關係，包括引用、參考、所在位置等等的關係，然後產生自己看得懂的報告，並且在解決問題的過程中，利用經驗改寫這個腳本工具，讓它更好用！
+-   多多利用這個自己寫的掃瞄專案架構的腳本工具，參考報告讓你更快理解專案架構，好進行調整。
 
-這是一個 PHP 專案，請依照上述原則進行開發，並且留意以下事項：
+---
 
-## 程式碼品質與風格規範
+## ⚙️ 程式碼品質與風格規範
 
--   按照字母順序重新排列 import 語句
--   符合 PHP CS Fixer 程式碼風格規範
--   所有程式碼必須通過 PHPStan 靜態分析檢查
+-   所有命名需具描述性，禁止使用單字母、不明確名稱，並遵循 lower camel case 命名慣例
+-   Import 語句須按字母順序排列
+-   遵循 PSR-7、PSR-15、PSR-17 標準
+-   撰寫測試時，請先查詢正確的函式參數與回傳型態
+-   所有程式碼應符合 PHP CS Fixer 的風格規範
+-   必須通過 PHPStan 靜態分析（建議等級 8 或團隊預設等級）
 
-## 本地端程式碼品質檢查
+---
 
-**在每次提交前，務必執行以下檢查指令以確保程式碼品質：**
+## 🧪 本地端程式碼品質檢查
 
-### 使用 Docker Compose（推薦）
+**在每次提交前，務必執行以下指令以確保程式碼品質：**
+
+### 使用 Docker Compose（推薦方式）
 
 ```bash
 # 程式碼風格檢查
@@ -38,47 +52,47 @@ docker-compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G
 # 執行所有測試
 docker-compose exec -T web ./vendor/bin/phpunit
 
-# 完整的 CI 檢查（建議在提交前執行）
+# 執行完整 CI 檢查（建議提交前執行）
 docker-compose exec -T web composer ci
 ```
 
-### 使用 Composer 腳本
+---
 
-專案已定義了以下 Composer 腳本，可直接使用：
-
-```bash
-# 在 Docker 容器內執行
-docker-compose exec web composer cs-check     # 檢查程式碼風格
-docker-compose exec web composer cs-fix       # 修復程式碼風格
-docker-compose exec web composer analyse      # 靜態分析
-docker-compose exec web composer test         # 執行測試
-docker-compose exec web composer ci           # 完整 CI 檢查
-```
-
-### 建議的開發工作流程
+## 🔄 建議的開發工作流程
 
 1. **開發完成後**：
-   ```bash
-   # 自動修復程式碼風格
-   docker-compose exec -T web ./vendor/bin/php-cs-fixer fix
-   ```
 
-2. **提交前檢查**：
-   ```bash
-   # 執行完整的品質檢查
-   docker-compose exec web composer ci
-   ```
+    ```bash
+    # 自動修復程式碼風格
+    docker-compose exec -T web ./vendor/bin/php-cs-fixer fix
+    ```
 
-3. **如果有錯誤**：
-   - 修復 PHP CS Fixer 報告的風格問題
-   - 解決 PHPStan 發現的靜態分析錯誤
-   - 確保所有測試通過
+2. **提交前進行檢查**：
 
-4. **全部通過後才進行 git commit**
+    ```bash
+    # 執行完整的品質檢查
+    docker-compose exec web composer ci
+    ```
 
-### 注意事項
+3. **如有錯誤，請依序處理**：
 
--   使用 `php-cs-fixer fix` 可自動修復大部分風格問題
--   PHPStan 錯誤需要手動修復，通常涉及類型宣告、未使用的變數等
--   建議在 IDE 中整合這些工具，以便即時檢查
--   團隊成員應定期同步 `.php-cs-fixer.php` 和 `phpstan.neon` 配置檔案
+    - 使用 `php-cs-fixer` 修正風格錯誤
+    - 修復 PHPStan 報告的問題（如類型錯誤、未使用變數等）
+    - 確保所有測試均通過
+
+4. **全部通過後再進行 Git Commit，Message 請符合 Conventional Commit 規範（以繁體中文撰寫）**
+
+---
+
+## 📌 額外注意事項（DDD 專案特有）
+
+-   Value Object 應該是 immutable，不得提供修改狀態的方法
+-   Entity 必須有唯一識別（通常為 UUID），不可混用概念
+-   不得在 Infrastructure 層直接操作 Domain 層資料結構
+-   使用 Repository 模式封裝資料存取，勿將 ORM 邏輯散佈於 Domain 或 Application 層
+-   每個 Bounded Context 應維持高內聚，必要時使用 Anti-Corruption Layer（ACL）進行整合
+-   當涉及跨模組溝通，請考慮使用 Domain Event 或 Application Event 的方式實作
+
+---
+
+如對本專案有任何實作、建模或架構相關的疑問，請先記錄在 `/docs/decision-log/` 中，再開啟 issue 或發起技術討論。

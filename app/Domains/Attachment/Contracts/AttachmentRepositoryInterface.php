@@ -57,7 +57,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param int $id 附件 ID
      * @param array $data 更新的資料
      */
-    public function update(int $id, array $data): bool;
+    public function update(int $id, array $data): object;
 
     /**
      * 軟刪除附件.

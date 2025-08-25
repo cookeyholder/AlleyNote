@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Services;
 
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
-use App\Infrastructure\Services\CacheService;
+use App\Shared\Contracts\CacheServiceInterface;
 use Exception;
 use PDO;
 
@@ -13,11 +13,11 @@ class AuthorizationService implements AuthorizationServiceInterface
 {
     private PDO $db;
 
-    private CacheService $cache;
+    private CacheServiceInterface $cache;
 
     private const CACHE_TTL = 3600; // 1 hour
 
-    public function __construct(PDO $db, CacheService $cache)
+    public function __construct(PDO $db, CacheServiceInterface $cache)
     {
         $this->db = $db;
         $this->cache = $cache;

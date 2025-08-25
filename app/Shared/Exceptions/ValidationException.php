@@ -6,20 +6,21 @@ namespace App\Shared\Exceptions;
 
 use App\Shared\Validation\ValidationResult;
 use Exception;
+use Throwable;
 
- // Import ValidationResult
+// Import ValidationResult
 
 class ValidationException extends Exception
 {
     protected ValidationResult $validationResult; // Store the ValidationResult
 
-    public function __construct(ValidationResult $validationResult, string $message = '')
+    public function __construct(ValidationResult $validationResult, string $message = '', int $code = 422, ?Throwable $previous = null)
     {
         // If no message is provided, use the first error from ValidationResult
         if (empty($message)) {
-            $message = $validationResult->getFirstError() ?? 'Validation failed.';
+            $message = $validationResult->getFirstError() ?? '驗證失敗';
         }
-        parent::__construct($message);
+        parent::__construct($message, $code, $previous); // 使用提供的錯誤碼，預設 422
         $this->validationResult = $validationResult;
     }
 
@@ -29,17 +30,27 @@ class ValidationException extends Exception
     }
 
     // Static factory method for creating from an array of errors
-    public static function fromErrors(array $errors, string $message = ''): self
+    public static function fromErrors(array $errors, array|string $failedRulesOrMessage = '', string $message = ''): self
     {
-        $validationResult = ValidationResult::failure($errors);
+        // Handle overloaded parameters
+        if (is_array($failedRulesOrMessage)) {
+            $failedRules = $failedRulesOrMessage;
+            $validationResult = ValidationResult::failure($errors, $failedRules);
+        } else {
+            $message = $failedRulesOrMessage;
+            $validationResult = ValidationResult::failure($errors);
+        }
 
         return new self($validationResult, $message);
     }
 
     // Static factory method for creating from a single error
-    public static function fromSingleError(string $field, string $error, string $message = ''): self
+    public static function fromSingleError(string $field, string $error, string $rule = '', string $message = ''): self
     {
-        $validationResult = ValidationResult::failure([$field => [$error]]);
+        $errors = [$field => [$error]];
+        $failedRules = $rule ? [$field => [$rule]] : [];
+
+        $validationResult = ValidationResult::failure($errors, $failedRules);
 
         return new self($validationResult, $message);
     }
@@ -48,6 +59,12 @@ class ValidationException extends Exception
     public function getErrors(): array
     {
         return $this->validationResult->getErrors();
+    }
+
+    // Get failed rules from ValidationResult
+    public function getFailedRules(): array
+    {
+        return $this->validationResult->getFailedRules();
     }
 
     /**

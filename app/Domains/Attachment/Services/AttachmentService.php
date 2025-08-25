@@ -9,7 +9,7 @@ use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Repositories\PostRepository;
-use App\Infrastructure\Services\CacheService;
+use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use Exception;
@@ -51,7 +51,8 @@ class AttachmentService implements AttachmentServiceInterface
     public function __construct(
         private AttachmentRepository $attachmentRepo,
         private PostRepository $postRepo,
-        private CacheService $cache, // TODO: 實作附件快取功能
+        /** @phpstan-ignore-next-line Property is reserved for future cache implementation */
+        private CacheServiceInterface $cache, // TODO: 實作附件快取功能
         private AuthorizationService $authService,
         private string $uploadDir,
     ) {}

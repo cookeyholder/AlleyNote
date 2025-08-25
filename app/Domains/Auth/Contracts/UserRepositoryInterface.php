@@ -4,45 +4,45 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Contracts;
 
-use App\Domains\User\Models\User;
-use App\Shared\Contracts\RepositoryInterface;
-
 /**
  * 使用者資料庫介面.
  *
  * 定義使用者相關的資料庫操作標準介面
  */
-interface UserRepositoryInterface extends RepositoryInterface
+interface UserRepositoryInterface
 {
     /**
      * 根據使用者名稱查找使用者.
      *
      * @param string $username 使用者名稱
+     * @return array|null 使用者資料陣列或 null
      */
-    public function findByUsername(string $username): ?User;
+    public function findByUsername(string $username): ?array;
 
     /**
      * 根據電子郵件查找使用者.
      *
      * @param string $email 電子郵件
+     * @return array|null 使用者資料陣列或 null
      */
-    public function findByEmail(string $email): ?User;
+    public function findByEmail(string $email): ?array;
 
     /**
      * 根據 UUID 查找使用者.
      *
      * @param string $uuid 使用者 UUID
+     * @return array|null 使用者資料陣列或 null
      */
-    public function findByUuid(string $uuid): ?User;
+    public function findByUuid(string $uuid): ?array;
 
     /**
      * 驗證使用者登入憑證.
      *
      * @param string $username 使用者名稱或電子郵件
      * @param string $password 密碼
-     * @return User|null 驗證成功返回使用者，失敗返回 null
+     * @return array|null 驗證成功返回使用者資料，失敗返回 null
      */
-    public function validateCredentials(string $username, string $password): ?User;
+    public function validateCredentials(string $username, string $password): ?array;
 
     /**
      * 更新使用者最後登入時間.
@@ -71,8 +71,9 @@ interface UserRepositoryInterface extends RepositoryInterface
      * 建立新使用者.
      *
      * @param array $data 使用者資料
+     * @return array 建立的使用者資料
      */
-    public function create(array $data): User;
+    public function create(array $data): array;
 
     /**
      * 更新使用者資料.

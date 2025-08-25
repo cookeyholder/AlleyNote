@@ -6,6 +6,7 @@ namespace App\Domains\Attachment\DTOs;
 
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
+use App\Shared\Exceptions\ValidationException;
 
 /**
  * 建立附件的資料傳輸物件.

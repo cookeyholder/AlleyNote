@@ -10,7 +10,7 @@ use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Shared\Contracts\ValidatorInterface;
-use App\Shared\Validation\ValidationException;
+use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\Validator;
 use Tests\TestCase;
 
@@ -547,6 +547,10 @@ class DTOValidationTest extends TestCase
 
         $endTime = microtime(true);
         $endMemory = memory_get_usage();
+
+        // 計算效能指標
+        $executionTime = $endTime - $startTime;
+        $memoryUsage = $endMemory - $startMemory;
 
         // 效能斷言
         $this->assertLessThan(0.5, $executionTime, '100 個 DTO 驗證應該在 0.5 秒內完成');

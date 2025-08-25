@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
 
+use App\Domains\Security\Services\Core\XssProtectionService;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 

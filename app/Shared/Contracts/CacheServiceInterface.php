@@ -91,4 +91,14 @@ interface CacheServiceInterface
      * @return array 包含命中率、快取數量等統計資訊
      */
     public function getStats(): array;
+
+    /**
+     * 記憶化快取 - 如果快取不存在則執行回調並快取結果.
+     *
+     * @param string $key 快取鍵
+     * @param callable $callback 回調函式
+     * @param int|null $ttl 存活時間（秒），null 使用預設值
+     * @return mixed 快取的資料或回調結果
+     */
+    public function remember(string $key, callable $callback, ?int $ttl = null): mixed;
 }

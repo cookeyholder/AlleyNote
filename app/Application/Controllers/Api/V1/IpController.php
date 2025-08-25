@@ -7,6 +7,7 @@ namespace App\Application\Controllers\Api\V1;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Domains\Security\Models\IpList;
 use App\Domains\Security\Services\IpService;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use Exception;
@@ -17,6 +18,7 @@ class IpController
     public function __construct(
         private IpService $service,
         private ValidatorInterface $validator,
+        private OutputSanitizerInterface $sanitizer,
     ) {}
 
     public function create(array $request): array
@@ -27,7 +29,7 @@ class IpController
 
             return [
                 'status' => 201,
-                'data' => $ipList->toSafeArray(),
+                'data' => $ipList->toSafeArray($this->sanitizer),
             ];
         } catch (ValidationException $e) {
             return [
@@ -59,7 +61,7 @@ class IpController
             return [
                 'status' => 200,
                 'data' => array_map(
-                    fn(IpList $rule) => $rule->toSafeArray(),
+                    fn(IpList $rule) => $rule->toSafeArray($this->sanitizer),
                     array_filter($rules, fn($rule) => $rule instanceof IpList),
                 ),
             ];
