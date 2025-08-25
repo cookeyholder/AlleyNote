@@ -8,9 +8,9 @@
 
 總任務數: **24 項**  
 狀態統計:
-- ⏳ 未開始: 19 項
+- ⏳ 未開始: 18 項
 - 🔄 進行中: 0 項  
-- ✅ 已完成: 5 項
+- ✅ 已完成: 6 項
 
 ---
 
@@ -109,21 +109,23 @@
 - **測試覆蓋率**: 128 個測試，604 個斷言，100% 通過
 
 ### 1.6 建立 JWT 領域介面
-- **優先級**: 高
-- **預估時間**: 45分鐘
-- **狀態**: ⏳ 未開始
+- **優先級**: 中
+- **預估時間**: 60分鐘
+- **狀態**: ✅ 已完成
 - **描述**:
-  - 建立 `JwtTokenServiceInterface`
-  - 建立 `RefreshTokenRepositoryInterface`
-  - 建立 `TokenBlacklistRepositoryInterface`
-  - 定義所有必要的方法簽名
+  - 定義 JwtTokenServiceInterface 
+  - 定義 RefreshTokenRepositoryInterface
+  - 定義 TokenBlacklistRepositoryInterface
+  - 撰寫介面的單元測試
 - **驗收標準**:
   - ✅ 介面方法簽名清楚且完整
   - ✅ 包含詳細的 PHPDoc 註解
   - ✅ 方法參數和回傳類型正確定義
   - ✅ 介面設計符合 SOLID 原則
+  - ✅ 介面單元測試完整覆蓋（74測試，552斷言）
 - **相依任務**: 1.4 (需要 Value Objects)
-- **檔案異動**: `app/Domains/Auth/Contracts/JwtTokenServiceInterface.php`, `app/Domains/Auth/Contracts/RefreshTokenRepositoryInterface.php`, `app/Domains/Auth/Contracts/TokenBlacklistRepositoryInterface.php`
+- **完成日期**: 2025-08-26
+- **檔案異動**: `app/Domains/Auth/Contracts/JwtTokenServiceInterface.php`, `app/Domains/Auth/Contracts/RefreshTokenRepositoryInterface.php`, `app/Domains/Auth/Contracts/TokenBlacklistRepositoryInterface.php`, `tests/Unit/Domains/Auth/Contracts/*`
 
 ---
 

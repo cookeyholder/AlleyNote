@@ -755,7 +755,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/CsrfProtectionTest.php' => 
     array (
-      0 => '176a55f04468d426159eca7ed4466f6fb6c76c1f',
+      0 => 'f51cb212ad5f3873f3908d2c3739f149680d7bef',
       1 => 
       array (
         0 => 'tests\\security\\csrfprotectiontest',
@@ -795,7 +795,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/XssPreventionTest.php' => 
     array (
-      0 => 'fb13bf5fe3fcc97a3e39a9de4afcd1266d284b49',
+      0 => '5a411aeddbc25241fd874ed9a15920f1b7601108',
       1 => 
       array (
         0 => 'tests\\security\\xsspreventiontest',
@@ -959,7 +959,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/PostControllerTest.php' => 
     array (
-      0 => '1d013e1519129accb3b7a4e6c13b019ca75462ef',
+      0 => '47bc0515641aeb78becec76c4791410b9a5ddb99',
       1 => 
       array (
         0 => 'tests\\integration\\postcontrollertest',
@@ -987,7 +987,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/Http/PostControllerTest.php' => 
     array (
-      0 => '0c1696546e69af868cfc6f3c2fcd015523dd882e',
+      0 => '59546ed67acafb919db54b680163fa716c90e350',
       1 => 
       array (
         0 => 'tests\\integration\\http\\postcontrollertest',
@@ -2016,6 +2016,558 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         15 => 'tests\\unit\\services\\security\\testdetectactualmimetypewithnonexistentfile',
         16 => 'tests\\unit\\services\\security\\testdetectactualmimetypewithvalidfile',
         17 => 'tests\\unit\\services\\security\\createuploadedfile',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Exceptions/InvalidTokenExceptionTest.php' => 
+    array (
+      0 => 'd5f068e36635e100592f44f28b45a5979e729c4d',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\invalidtokenexceptiontest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructor',
+        1 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructorwithreason',
+        2 => 'tests\\unit\\domains\\auth\\exceptions\\testcustommessage',
+        3 => 'tests\\unit\\domains\\auth\\exceptions\\testadditionalcontext',
+        4 => 'tests\\unit\\domains\\auth\\exceptions\\testalldefaultmessages',
+        5 => 'tests\\unit\\domains\\auth\\exceptions\\testuserfriendlymessages',
+        6 => 'tests\\unit\\domains\\auth\\exceptions\\testisreason',
+        7 => 'tests\\unit\\domains\\auth\\exceptions\\testcategorychecks',
+        8 => 'tests\\unit\\domains\\auth\\exceptions\\testmalformedfactorymethod',
+        9 => 'tests\\unit\\domains\\auth\\exceptions\\testsignatureinvalidfactorymethod',
+        10 => 'tests\\unit\\domains\\auth\\exceptions\\testalgorithmmismatchfactorymethod',
+        11 => 'tests\\unit\\domains\\auth\\exceptions\\testissuerinvalidfactorymethod',
+        12 => 'tests\\unit\\domains\\auth\\exceptions\\testaudienceinvalidfactorymethod',
+        13 => 'tests\\unit\\domains\\auth\\exceptions\\testsubjectmissingfactorymethod',
+        14 => 'tests\\unit\\domains\\auth\\exceptions\\testclaimsinvalidfactorymethod',
+        15 => 'tests\\unit\\domains\\auth\\exceptions\\testblacklistedfactorymethod',
+        16 => 'tests\\unit\\domains\\auth\\exceptions\\testnotbeforefactorymethod',
+        17 => 'tests\\unit\\domains\\auth\\exceptions\\testerrordetails',
+        18 => 'tests\\unit\\domains\\auth\\exceptions\\testdefaults',
+        19 => 'tests\\unit\\domains\\auth\\exceptions\\testcomplexscenario',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Exceptions/AuthenticationExceptionTest.php' => 
+    array (
+      0 => 'd6961308354a167955a449d76feb584cf2cabe84',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\authenticationexceptiontest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructor',
+        1 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructorwithreason',
+        2 => 'tests\\unit\\domains\\auth\\exceptions\\testcustommessage',
+        3 => 'tests\\unit\\domains\\auth\\exceptions\\testadditionalcontext',
+        4 => 'tests\\unit\\domains\\auth\\exceptions\\testalldefaultmessages',
+        5 => 'tests\\unit\\domains\\auth\\exceptions\\testuserfriendlymessages',
+        6 => 'tests\\unit\\domains\\auth\\exceptions\\testattemptid',
+        7 => 'tests\\unit\\domains\\auth\\exceptions\\testcontextgetters',
+        8 => 'tests\\unit\\domains\\auth\\exceptions\\testcontextgetterswithemptycontext',
+        9 => 'tests\\unit\\domains\\auth\\exceptions\\testisreason',
+        10 => 'tests\\unit\\domains\\auth\\exceptions\\testcategorychecks',
+        11 => 'tests\\unit\\domains\\auth\\exceptions\\testretryability',
+        12 => 'tests\\unit\\domains\\auth\\exceptions\\testrequiresaccountaction',
+        13 => 'tests\\unit\\domains\\auth\\exceptions\\testinvalidcredentialsfactorymethod',
+        14 => 'tests\\unit\\domains\\auth\\exceptions\\testaccountlockedfactorymethod',
+        15 => 'tests\\unit\\domains\\auth\\exceptions\\testaccountdisabledfactorymethod',
+        16 => 'tests\\unit\\domains\\auth\\exceptions\\testaccountnotverifiedfactorymethod',
+        17 => 'tests\\unit\\domains\\auth\\exceptions\\testtoomanyattemptsfactorymethod',
+        18 => 'tests\\unit\\domains\\auth\\exceptions\\testusernotfoundfactorymethod',
+        19 => 'tests\\unit\\domains\\auth\\exceptions\\testpasswordexpiredfactorymethod',
+        20 => 'tests\\unit\\domains\\auth\\exceptions\\testmissingcredentialsfactorymethod',
+        21 => 'tests\\unit\\domains\\auth\\exceptions\\testinvalidtokenfactorymethod',
+        22 => 'tests\\unit\\domains\\auth\\exceptions\\testtokenrequiredfactorymethod',
+        23 => 'tests\\unit\\domains\\auth\\exceptions\\testinsufficientprivilegesfactorymethod',
+        24 => 'tests\\unit\\domains\\auth\\exceptions\\testerrordetails',
+        25 => 'tests\\unit\\domains\\auth\\exceptions\\testdefaults',
+        26 => 'tests\\unit\\domains\\auth\\exceptions\\testcomplexscenario',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Exceptions/TokenExpiredExceptionTest.php' => 
+    array (
+      0 => '829d27d0d876e5931952b2acce70ae67d58887b2',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\tokenexpiredexceptiontest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructor',
+        1 => 'tests\\unit\\domains\\auth\\exceptions\\testaccesstokenconstruction',
+        2 => 'tests\\unit\\domains\\auth\\exceptions\\testrefreshtokenconstruction',
+        3 => 'tests\\unit\\domains\\auth\\exceptions\\testwithoutexpiredtime',
+        4 => 'tests\\unit\\domains\\auth\\exceptions\\testcustommessage',
+        5 => 'tests\\unit\\domains\\auth\\exceptions\\testdurationformatseconds',
+        6 => 'tests\\unit\\domains\\auth\\exceptions\\testdurationformatsinglesecond',
+        7 => 'tests\\unit\\domains\\auth\\exceptions\\testdurationformatminutes',
+        8 => 'tests\\unit\\domains\\auth\\exceptions\\testdurationformatsingleminute',
+        9 => 'tests\\unit\\domains\\auth\\exceptions\\testdurationformathours',
+        10 => 'tests\\unit\\domains\\auth\\exceptions\\testdurationformatsinglehour',
+        11 => 'tests\\unit\\domains\\auth\\exceptions\\testdurationformatdays',
+        12 => 'tests\\unit\\domains\\auth\\exceptions\\testdurationformatsingleday',
+        13 => 'tests\\unit\\domains\\auth\\exceptions\\testuserfriendlymessageaccesstoken',
+        14 => 'tests\\unit\\domains\\auth\\exceptions\\testuserfriendlymessagerefreshtoken',
+        15 => 'tests\\unit\\domains\\auth\\exceptions\\testcontextinformation',
+        16 => 'tests\\unit\\domains\\auth\\exceptions\\testusingcurrenttime',
+        17 => 'tests\\unit\\domains\\auth\\exceptions\\testaccesstokenfactorymethod',
+        18 => 'tests\\unit\\domains\\auth\\exceptions\\testrefreshtokenfactorymethod',
+        19 => 'tests\\unit\\domains\\auth\\exceptions\\testfactorymethodswithdefaults',
+        20 => 'tests\\unit\\domains\\auth\\exceptions\\testerrordetails',
+        21 => 'tests\\unit\\domains\\auth\\exceptions\\testzerodurationedgecase',
+        22 => 'tests\\unit\\domains\\auth\\exceptions\\testnegativeduration',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Exceptions/RefreshTokenExceptionTest.php' => 
+    array (
+      0 => '35a399cbff13a6672043bb866d38fbae1f0149be',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\refreshtokenexceptiontest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructor',
+        1 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructorwithreason',
+        2 => 'tests\\unit\\domains\\auth\\exceptions\\testcustommessage',
+        3 => 'tests\\unit\\domains\\auth\\exceptions\\testadditionalcontext',
+        4 => 'tests\\unit\\domains\\auth\\exceptions\\testalldefaultmessages',
+        5 => 'tests\\unit\\domains\\auth\\exceptions\\testuserfriendlymessages',
+        6 => 'tests\\unit\\domains\\auth\\exceptions\\testoperationid',
+        7 => 'tests\\unit\\domains\\auth\\exceptions\\testcontextgetters',
+        8 => 'tests\\unit\\domains\\auth\\exceptions\\testcontextgetterswithemptycontext',
+        9 => 'tests\\unit\\domains\\auth\\exceptions\\testisreason',
+        10 => 'tests\\unit\\domains\\auth\\exceptions\\testcategorychecks',
+        11 => 'tests\\unit\\domains\\auth\\exceptions\\testnotfoundfactorymethod',
+        12 => 'tests\\unit\\domains\\auth\\exceptions\\testrevokedfactorymethod',
+        13 => 'tests\\unit\\domains\\auth\\exceptions\\testalreadyusedfactorymethod',
+        14 => 'tests\\unit\\domains\\auth\\exceptions\\testdevicemismatchfactorymethod',
+        15 => 'tests\\unit\\domains\\auth\\exceptions\\testusermismatchfactorymethod',
+        16 => 'tests\\unit\\domains\\auth\\exceptions\\teststoragefailedfactorymethod',
+        17 => 'tests\\unit\\domains\\auth\\exceptions\\testdeletionfailedfactorymethod',
+        18 => 'tests\\unit\\domains\\auth\\exceptions\\testrotationfailedfactorymethod',
+        19 => 'tests\\unit\\domains\\auth\\exceptions\\testlimitexceededfactorymethod',
+        20 => 'tests\\unit\\domains\\auth\\exceptions\\testfamilymismatchfactorymethod',
+        21 => 'tests\\unit\\domains\\auth\\exceptions\\testerrordetails',
+        22 => 'tests\\unit\\domains\\auth\\exceptions\\testdefaults',
+        23 => 'tests\\unit\\domains\\auth\\exceptions\\testcomplexscenario',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Exceptions/JwtExceptionTest.php' => 
+    array (
+      0 => '36efb6a87b98826236fde23b7d234b8657d3acef',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\jwtexceptiontest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\createconcretejwtexception',
+        1 => 'tests\\unit\\domains\\auth\\exceptions\\__construct',
+        2 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructor',
+        3 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructorwithdefaults',
+        4 => 'tests\\unit\\domains\\auth\\exceptions\\testcontextgetterandsetter',
+        5 => 'tests\\unit\\domains\\auth\\exceptions\\testaddcontext',
+        6 => 'tests\\unit\\domains\\auth\\exceptions\\testerrortype',
+        7 => 'tests\\unit\\domains\\auth\\exceptions\\testgeterrordetails',
+        8 => 'tests\\unit\\domains\\auth\\exceptions\\testgetuserfriendlymessage',
+        9 => 'tests\\unit\\domains\\auth\\exceptions\\testtoarray',
+        10 => 'tests\\unit\\domains\\auth\\exceptions\\testtostringwithoutcontext',
+        11 => 'tests\\unit\\domains\\auth\\exceptions\\testtostringwithcontext',
+        12 => 'tests\\unit\\domains\\auth\\exceptions\\testcomplexcontextdata',
+        13 => 'tests\\unit\\domains\\auth\\exceptions\\testinheritancechain',
+        14 => 'tests\\unit\\domains\\auth\\exceptions\\testcontextimmutability',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Exceptions/TokenGenerationExceptionTest.php' => 
+    array (
+      0 => '2bed3b19e6e0223e20a906b491231dac7331ec14',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\tokengenerationexceptiontest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructor',
+        1 => 'tests\\unit\\domains\\auth\\exceptions\\testconstructorwithreason',
+        2 => 'tests\\unit\\domains\\auth\\exceptions\\testcustommessage',
+        3 => 'tests\\unit\\domains\\auth\\exceptions\\testadditionalcontext',
+        4 => 'tests\\unit\\domains\\auth\\exceptions\\testalldefaultmessages',
+        5 => 'tests\\unit\\domains\\auth\\exceptions\\testuserfriendlymessages',
+        6 => 'tests\\unit\\domains\\auth\\exceptions\\testisreason',
+        7 => 'tests\\unit\\domains\\auth\\exceptions\\testgenerationattemptid',
+        8 => 'tests\\unit\\domains\\auth\\exceptions\\testcategorychecks',
+        9 => 'tests\\unit\\domains\\auth\\exceptions\\testkeyinvalidfactorymethod',
+        10 => 'tests\\unit\\domains\\auth\\exceptions\\testkeymissingfactorymethod',
+        11 => 'tests\\unit\\domains\\auth\\exceptions\\testpayloadinvalidfactorymethod',
+        12 => 'tests\\unit\\domains\\auth\\exceptions\\testalgorithmunsupportedfactorymethod',
+        13 => 'tests\\unit\\domains\\auth\\exceptions\\testclaimsinvalidfactorymethod',
+        14 => 'tests\\unit\\domains\\auth\\exceptions\\testsignaturefailedfactorymethod',
+        15 => 'tests\\unit\\domains\\auth\\exceptions\\testresourceexhaustedfactorymethod',
+        16 => 'tests\\unit\\domains\\auth\\exceptions\\testencodingfailedfactorymethod',
+        17 => 'tests\\unit\\domains\\auth\\exceptions\\testfactorymethodswithdefaults',
+        18 => 'tests\\unit\\domains\\auth\\exceptions\\testerrordetails',
+        19 => 'tests\\unit\\domains\\auth\\exceptions\\testdefaults',
+        20 => 'tests\\unit\\domains\\auth\\exceptions\\testcomplexscenario',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/ValueObjects/TokenPairTest.php' => 
+    array (
+      0 => '3d934b9363da3169e80b2a01e3c48ab6d1a95482',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\valueobjects\\tokenpairtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\valueobjects\\setup',
+        1 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithvaliddata',
+        2 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithcustomtokentype',
+        3 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetaccesstokenexpiresin',
+        4 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetrefreshtokenexpiresin',
+        5 => 'tests\\unit\\domains\\auth\\valueobjects\\testisaccesstokenexpired',
+        6 => 'tests\\unit\\domains\\auth\\valueobjects\\testisrefreshtokenexpired',
+        7 => 'tests\\unit\\domains\\auth\\valueobjects\\testisfullyexpired',
+        8 => 'tests\\unit\\domains\\auth\\valueobjects\\testcanrefresh',
+        9 => 'tests\\unit\\domains\\auth\\valueobjects\\testisaccesstokennearexpiry',
+        10 => 'tests\\unit\\domains\\auth\\valueobjects\\testisaccesstokennearexpirywithcustomthreshold',
+        11 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetauthorizationheader',
+        12 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetauthorizationheaderwithcustomtokentype',
+        13 => 'tests\\unit\\domains\\auth\\valueobjects\\testtoarray',
+        14 => 'tests\\unit\\domains\\auth\\valueobjects\\testtoapiresponse',
+        15 => 'tests\\unit\\domains\\auth\\valueobjects\\testtoapiresponsewithoutrefreshtoken',
+        16 => 'tests\\unit\\domains\\auth\\valueobjects\\testjsonserialize',
+        17 => 'tests\\unit\\domains\\auth\\valueobjects\\testequals',
+        18 => 'tests\\unit\\domains\\auth\\valueobjects\\testtostring',
+        19 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptyaccesstoken',
+        20 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvalidaccesstokenformat',
+        21 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvalidaccesstokenparts',
+        22 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptyrefreshtoken',
+        23 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithtooshortrefreshtoken',
+        24 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithtoolongrefreshtoken',
+        25 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptytokentype',
+        26 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvalidtokentype',
+        27 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithaccesstokenexpirationinpast',
+        28 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithrefreshtokenexpirationinpast',
+        29 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithrefreshtokenexpirationbeforeaccesstoken',
+        30 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithexcessivetimeinterval',
+        31 => 'tests\\unit\\domains\\auth\\valueobjects\\testisaccesstokennearexpirywithnegativethreshold',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/ValueObjects/DeviceInfoTest.php' => 
+    array (
+      0 => '1a9ae58433c2ce0e986138a126148b3ab8e3ae1a',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\valueobjects\\deviceinfotest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\valueobjects\\setup',
+        1 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithvaliddata',
+        2 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithminimaldata',
+        3 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromuseragentwithwindowschrome',
+        4 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromuseragentwithmacsafari',
+        5 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromuseragentwithandroidmobile',
+        6 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromuseragentwithipad',
+        7 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromuseragentwithfirefox',
+        8 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromuseragentwithcustomdevicename',
+        9 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromarray',
+        10 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetdevicetype',
+        11 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetfingerprint',
+        12 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetfullbrowserinfo',
+        13 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetfullbrowserinfowithoutbrowser',
+        14 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetfullplatforminfo',
+        15 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetfullplatforminfowithoutplatform',
+        16 => 'tests\\unit\\domains\\auth\\valueobjects\\testmatches',
+        17 => 'tests\\unit\\domains\\auth\\valueobjects\\testtoarray',
+        18 => 'tests\\unit\\domains\\auth\\valueobjects\\testtosummary',
+        19 => 'tests\\unit\\domains\\auth\\valueobjects\\testjsonserialize',
+        20 => 'tests\\unit\\domains\\auth\\valueobjects\\testequals',
+        21 => 'tests\\unit\\domains\\auth\\valueobjects\\testtostring',
+        22 => 'tests\\unit\\domains\\auth\\valueobjects\\testmaskipaddressipv4',
+        23 => 'tests\\unit\\domains\\auth\\valueobjects\\testmaskipaddressipv6',
+        24 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptydeviceid',
+        25 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithtoolongdeviceid',
+        26 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvaliddeviceidcharacters',
+        27 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptydevicename',
+        28 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithtoolongdevicename',
+        29 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptyuseragent',
+        30 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithtoolonguseragent',
+        31 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptyipaddress',
+        32 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvalidipaddress',
+        33 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvalidplatform',
+        34 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvalidbrowser',
+        35 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithmultipledevicetypestrue',
+        36 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithnodevicetypetrue',
+        37 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromarraywithmissingrequiredfield',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/ValueObjects/JwtPayloadTest.php' => 
+    array (
+      0 => '518750a38d480ac4ab0a918016e04bbeb116c538',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\valueobjects\\jwtpayloadtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\valueobjects\\setup',
+        1 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithvaliddata',
+        2 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithnotbeforeandcustomclaims',
+        3 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromarraywithvaliddata',
+        4 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromarraywithstringaudience',
+        5 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromarraywithnotbefore',
+        6 => 'tests\\unit\\domains\\auth\\valueobjects\\testisexpired',
+        7 => 'tests\\unit\\domains\\auth\\valueobjects\\testisactive',
+        8 => 'tests\\unit\\domains\\auth\\valueobjects\\testisactivewithoutnotbefore',
+        9 => 'tests\\unit\\domains\\auth\\valueobjects\\testhasaudience',
+        10 => 'tests\\unit\\domains\\auth\\valueobjects\\testtoarray',
+        11 => 'tests\\unit\\domains\\auth\\valueobjects\\testtoarraywithsingleaudience',
+        12 => 'tests\\unit\\domains\\auth\\valueobjects\\testjsonserialize',
+        13 => 'tests\\unit\\domains\\auth\\valueobjects\\testequals',
+        14 => 'tests\\unit\\domains\\auth\\valueobjects\\testtostring',
+        15 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptyjti',
+        16 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithtoolongjti',
+        17 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptysubject',
+        18 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvalidsubject',
+        19 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithnonnumericsubject',
+        20 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptyissuer',
+        21 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptyaudience',
+        22 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvalidaudiencevalues',
+        23 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithexpirationbeforeissuedtime',
+        24 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithnotbeforeafterexpiration',
+        25 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithreservedcustomclaim',
+        26 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromarraywithmissingrequiredfield',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/ValueObjects/TokenBlacklistEntryTest.php' => 
+    array (
+      0 => '543b36c159f873b95f1fb692a2a1b9aa9d8e353d',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\valueobjects\\tokenblacklistentrytest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\valueobjects\\setup',
+        1 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithvaliddata',
+        2 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithminimaldata',
+        3 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromarray',
+        4 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromarraywithstringdates',
+        5 => 'tests\\unit\\domains\\auth\\valueobjects\\testforuserlogout',
+        6 => 'tests\\unit\\domains\\auth\\valueobjects\\testforsecuritybreach',
+        7 => 'tests\\unit\\domains\\auth\\valueobjects\\testforsecuritybreachwithinvalidreason',
+        8 => 'tests\\unit\\domains\\auth\\valueobjects\\testforaccountchange',
+        9 => 'tests\\unit\\domains\\auth\\valueobjects\\testcanbecleanedup',
+        10 => 'tests\\unit\\domains\\auth\\valueobjects\\testissecurityrelated',
+        11 => 'tests\\unit\\domains\\auth\\valueobjects\\testisuserinitiated',
+        12 => 'tests\\unit\\domains\\auth\\valueobjects\\testissysteminitiated',
+        13 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetreasondescription',
+        14 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetpriority',
+        15 => 'tests\\unit\\domains\\auth\\valueobjects\\testisactive',
+        16 => 'tests\\unit\\domains\\auth\\valueobjects\\testtoarray',
+        17 => 'tests\\unit\\domains\\auth\\valueobjects\\testtodatabasearray',
+        18 => 'tests\\unit\\domains\\auth\\valueobjects\\testtodatabasearraywithemptymetadata',
+        19 => 'tests\\unit\\domains\\auth\\valueobjects\\testjsonserialize',
+        20 => 'tests\\unit\\domains\\auth\\valueobjects\\testequals',
+        21 => 'tests\\unit\\domains\\auth\\valueobjects\\testtostring',
+        22 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetvalidtokentypes',
+        23 => 'tests\\unit\\domains\\auth\\valueobjects\\testgetvalidreasons',
+        24 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptyjti',
+        25 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithtoolongjti',
+        26 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvalidtokentype',
+        27 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvalidreason',
+        28 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithblacklistedtimetooold',
+        29 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithblacklistedtimetoofuture',
+        30 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithinvaliduserid',
+        31 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithemptydeviceid',
+        32 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithtoolongdeviceid',
+        33 => 'tests\\unit\\domains\\auth\\valueobjects\\testconstructorwithnonserializablemetadata',
+        34 => 'tests\\unit\\domains\\auth\\valueobjects\\testforaccountchangewithinvalidchangetype',
+        35 => 'tests\\unit\\domains\\auth\\valueobjects\\testfromarraywithmissingrequiredfield',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Shared/Config/JwtConfigTest.php' => 
+    array (
+      0 => 'd4b666cf4a046187729b071e804f90f2d12eddc2',
+      1 => 
+      array (
+        0 => 'tests\\unit\\shared\\config\\jwtconfigtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\shared\\config\\setup',
+        1 => 'tests\\unit\\shared\\config\\teardown',
+        2 => 'tests\\unit\\shared\\config\\testsuccessfulconfigurationload',
+        3 => 'tests\\unit\\shared\\config\\testprivatekeymissing',
+        4 => 'tests\\unit\\shared\\config\\testpublickeymissing',
+        5 => 'tests\\unit\\shared\\config\\testinvalidprivatekeyformat',
+        6 => 'tests\\unit\\shared\\config\\testinvalidpublickeyformat',
+        7 => 'tests\\unit\\shared\\config\\testunsupportedalgorithm',
+        8 => 'tests\\unit\\shared\\config\\testinvalidaccesstokenttl',
+        9 => 'tests\\unit\\shared\\config\\testinvalidrefreshtokenttl',
+        10 => 'tests\\unit\\shared\\config\\testrefreshtokenttllessthanaccesstoken',
+        11 => 'tests\\unit\\shared\\config\\testdefaultvalues',
+        12 => 'tests\\unit\\shared\\config\\testgetbasepayload',
+        13 => 'tests\\unit\\shared\\config\\testgetconfigsummary',
+        14 => 'tests\\unit\\shared\\config\\testexpirytimestamps',
+        15 => 'tests\\unit\\shared\\config\\setvalidenvironmentvariables',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Contracts/JwtTokenServiceInterfaceTest.php' => 
+    array (
+      0 => '2be79d985bdd38abad1e1bb7b3fa509f2573f236',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\contracts\\jwttokenserviceinterfacetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\contracts\\setup',
+        1 => 'tests\\unit\\domains\\auth\\contracts\\testinterfaceexists',
+        2 => 'tests\\unit\\domains\\auth\\contracts\\testgeneratetokenpairmethodsignature',
+        3 => 'tests\\unit\\domains\\auth\\contracts\\testvalidateaccesstokenmethodsignature',
+        4 => 'tests\\unit\\domains\\auth\\contracts\\testvalidaterefreshtokenmethodsignature',
+        5 => 'tests\\unit\\domains\\auth\\contracts\\testextractpayloadmethodsignature',
+        6 => 'tests\\unit\\domains\\auth\\contracts\\testrefreshtokensmethodsignature',
+        7 => 'tests\\unit\\domains\\auth\\contracts\\testrevoketokenmethodsignature',
+        8 => 'tests\\unit\\domains\\auth\\contracts\\testrevokeallusertokensmethodsignature',
+        9 => 'tests\\unit\\domains\\auth\\contracts\\testistokenrevokedmethodsignature',
+        10 => 'tests\\unit\\domains\\auth\\contracts\\testgettokenremainingtimemethodsignature',
+        11 => 'tests\\unit\\domains\\auth\\contracts\\testistokennearexpirymethodsignature',
+        12 => 'tests\\unit\\domains\\auth\\contracts\\testistokenownedbymethodsignature',
+        13 => 'tests\\unit\\domains\\auth\\contracts\\testistokenfromdevicemethodsignature',
+        14 => 'tests\\unit\\domains\\auth\\contracts\\testgetalgorithmmethodsignature',
+        15 => 'tests\\unit\\domains\\auth\\contracts\\testgetaccesstokenttlmethodsignature',
+        16 => 'tests\\unit\\domains\\auth\\contracts\\testgetrefreshtokenttlmethodsignature',
+        17 => 'tests\\unit\\domains\\auth\\contracts\\testallrequiredmethodsexist',
+        18 => 'tests\\unit\\domains\\auth\\contracts\\testinterfacehascorrectdocumentation',
+        19 => 'tests\\unit\\domains\\auth\\contracts\\testinterfaceisincorrectnamespace',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Contracts/RefreshTokenRepositoryInterfaceTest.php' => 
+    array (
+      0 => 'c6c501a5b4bd06139ff1430ba297f33ed804ca17',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\contracts\\refreshtokenrepositoryinterfacetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\contracts\\setup',
+        1 => 'tests\\unit\\domains\\auth\\contracts\\testinterfaceexists',
+        2 => 'tests\\unit\\domains\\auth\\contracts\\testcreatemethodsignature',
+        3 => 'tests\\unit\\domains\\auth\\contracts\\testfindbyjtimethodsignature',
+        4 => 'tests\\unit\\domains\\auth\\contracts\\testfindbytokenhashmethodsignature',
+        5 => 'tests\\unit\\domains\\auth\\contracts\\testfindbyuseridmethodsignature',
+        6 => 'tests\\unit\\domains\\auth\\contracts\\testfindbyuseridanddevicemethodsignature',
+        7 => 'tests\\unit\\domains\\auth\\contracts\\testupdatelastusedmethodsignature',
+        8 => 'tests\\unit\\domains\\auth\\contracts\\testrevokemethodsignature',
+        9 => 'tests\\unit\\domains\\auth\\contracts\\testrevokeallbyuseridmethodsignature',
+        10 => 'tests\\unit\\domains\\auth\\contracts\\testrevokeallbydevicemethodsignature',
+        11 => 'tests\\unit\\domains\\auth\\contracts\\testdeletemethodsignature',
+        12 => 'tests\\unit\\domains\\auth\\contracts\\testvalidationmethods',
+        13 => 'tests\\unit\\domains\\auth\\contracts\\testcleanupmethodsignature',
+        14 => 'tests\\unit\\domains\\auth\\contracts\\testcleanuprevokedmethodsignature',
+        15 => 'tests\\unit\\domains\\auth\\contracts\\testgetusertokenstatsmethodsignature',
+        16 => 'tests\\unit\\domains\\auth\\contracts\\testtokenfamilymethods',
+        17 => 'tests\\unit\\domains\\auth\\contracts\\testbatchmethods',
+        18 => 'tests\\unit\\domains\\auth\\contracts\\testgettokensnearexpirymethodsignature',
+        19 => 'tests\\unit\\domains\\auth\\contracts\\testgetsystemstatsmethodsignature',
+        20 => 'tests\\unit\\domains\\auth\\contracts\\testallrequiredmethodsexist',
+        21 => 'tests\\unit\\domains\\auth\\contracts\\testinterfacehascorrectdocumentation',
+        22 => 'tests\\unit\\domains\\auth\\contracts\\testinterfaceisincorrectnamespace',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Contracts/TokenBlacklistRepositoryInterfaceTest.php' => 
+    array (
+      0 => '3ca1312a56765674986b42191f1711f45f6ee3bd',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\contracts\\tokenblacklistrepositoryinterfacetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\contracts\\setup',
+        1 => 'tests\\unit\\domains\\auth\\contracts\\testinterfaceexists',
+        2 => 'tests\\unit\\domains\\auth\\contracts\\testaddtoblacklistmethodsignature',
+        3 => 'tests\\unit\\domains\\auth\\contracts\\testisblacklistedmethodsignature',
+        4 => 'tests\\unit\\domains\\auth\\contracts\\testistokenhashblacklistedmethodsignature',
+        5 => 'tests\\unit\\domains\\auth\\contracts\\testremovefromblacklistmethodsignature',
+        6 => 'tests\\unit\\domains\\auth\\contracts\\testfindbyjtimethodsignature',
+        7 => 'tests\\unit\\domains\\auth\\contracts\\testfindbyuseridmethodsignature',
+        8 => 'tests\\unit\\domains\\auth\\contracts\\testfindbydeviceidmethodsignature',
+        9 => 'tests\\unit\\domains\\auth\\contracts\\testfindbyreasonmethodsignature',
+        10 => 'tests\\unit\\domains\\auth\\contracts\\testbatchaddtoblacklistmethodsignature',
+        11 => 'tests\\unit\\domains\\auth\\contracts\\testbatchisblacklistedmethodsignature',
+        12 => 'tests\\unit\\domains\\auth\\contracts\\testbatchremovefromblacklistmethodsignature',
+        13 => 'tests\\unit\\domains\\auth\\contracts\\testblacklistallusertokensmethodsignature',
+        14 => 'tests\\unit\\domains\\auth\\contracts\\testblacklistalldevicetokensmethodsignature',
+        15 => 'tests\\unit\\domains\\auth\\contracts\\testcleanupmethodsignature',
+        16 => 'tests\\unit\\domains\\auth\\contracts\\testcleanupexpiredentriesmethodsignature',
+        17 => 'tests\\unit\\domains\\auth\\contracts\\testcleanupoldentriesmethodsignature',
+        18 => 'tests\\unit\\domains\\auth\\contracts\\testgetblackliststatsmethodsignature',
+        19 => 'tests\\unit\\domains\\auth\\contracts\\testgetuserblackliststatsmethodsignature',
+        20 => 'tests\\unit\\domains\\auth\\contracts\\testgetrecentblacklistentriesmethodsignature',
+        21 => 'tests\\unit\\domains\\auth\\contracts\\testgethighpriorityentriesmethodsignature',
+        22 => 'tests\\unit\\domains\\auth\\contracts\\testsearchmethodsignature',
+        23 => 'tests\\unit\\domains\\auth\\contracts\\testcountsearchmethodsignature',
+        24 => 'tests\\unit\\domains\\auth\\contracts\\testissizeexceededmethodsignature',
+        25 => 'tests\\unit\\domains\\auth\\contracts\\testgetsizeinfomethodsignature',
+        26 => 'tests\\unit\\domains\\auth\\contracts\\testoptimizemethodsignature',
+        27 => 'tests\\unit\\domains\\auth\\contracts\\testallrequiredmethodsexist',
+        28 => 'tests\\unit\\domains\\auth\\contracts\\testinterfacehascorrectdocumentation',
+        29 => 'tests\\unit\\domains\\auth\\contracts\\testinterfaceisincorrectnamespace',
+        30 => 'tests\\unit\\domains\\auth\\contracts\\testmethodsarepublic',
+        31 => 'tests\\unit\\domains\\auth\\contracts\\testinterfaceextendsnootherinterface',
+        32 => 'tests\\unit\\domains\\auth\\contracts\\testinterfacehasnoconstants',
+        33 => 'tests\\unit\\domains\\auth\\contracts\\testinterfacehasnoproperties',
       ),
       3 => 
       array (

@@ -24,7 +24,12 @@
 
 ## ⚙️ 程式碼品質與風格規範
 
--   所有命名需具描述性，禁止使用單字母、不明確名稱，並遵循 lower camel case 命名慣例
+-   盡量使用 PHP 8.4 或更新版本的語法特性
+-   嚴格使用型別宣告（strict types）
+-   每個檔案開頭必須有 `declare(strict_types=1);`
+-   盡量保持 SOLID 原則
+-   所有類、介面、Trait、例外類別名稱需使用 UpperCamelCase 命名慣例
+-   所有變數、函式、方法名稱需使用 lowerCamelCase 命名慣例
 -   Import 語句須按字母順序排列
 -   遵循 PSR-7、PSR-15、PSR-17 標準
 -   撰寫測試時，請先查詢正確的函式參數與回傳型態

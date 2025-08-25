@@ -26,7 +26,7 @@ class JwtExceptionTest extends TestCase
         array $context = [],
         string $errorType = 'test_jwt_error',
     ): JwtException {
-        return new class($message, $code, $previous, $context, $errorType) extends JwtException {
+        return new class ($message, $code, $previous, $context, $errorType) extends JwtException {
             public function __construct(
                 string $message,
                 int $code,
