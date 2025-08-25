@@ -17,7 +17,12 @@ class ProjectArchitectureScanner
         'traits' => [],
         'dependencies' => [],
         'ddd_structure' => [],
-        'issues' => []
+        'issues' => [],
+        'interface_implementations' => [],
+        'test_coverage' => [],
+        'constructor_dependencies' => [],
+        'missing_imports' => [],
+        'namespace_mismatches' => []
     ];
 
     private string $projectRoot;
@@ -53,6 +58,18 @@ class ProjectArchitectureScanner
 
         // 分析依賴關係
         $this->analyzeDependencies();
+
+        // 分析介面實作關係
+        $this->analyzeInterfaceImplementations();
+
+        // 分析測試覆蓋
+        $this->analyzeTestCoverage();
+
+        // 分析建構子依賴
+        $this->analyzeConstructorDependencies();
+
+        // 檢查命名空間一致性
+        $this->checkNamespaceConsistency();
 
         // 輸出結果
         $this->generateReport();
@@ -224,6 +241,168 @@ class ProjectArchitectureScanner
         }
     }
 
+    private function analyzeInterfaceImplementations(): void
+    {
+        foreach ($this->analysis['classes'] as $className => $classInfo) {
+            if (!empty($classInfo['implements'])) {
+                foreach ($classInfo['implements'] as $interface) {
+                    $this->analysis['interface_implementations'][$interface][] = [
+                        'class' => $className,
+                        'file' => $classInfo['file']
+                    ];
+                }
+            }
+        }
+    }
+
+    private function analyzeTestCoverage(): void
+    {
+        foreach ($this->analysis['classes'] as $className => $classInfo) {
+            $file = $classInfo['file'];
+
+            // 跳過測試檔案本身
+            if (str_contains($file, 'tests/') || str_ends_with($className, 'Test')) {
+                continue;
+            }
+
+            // 尋找對應的測試檔案
+            $testFiles = $this->findTestFiles($className, $file);
+            $this->analysis['test_coverage'][$className] = [
+                'file' => $file,
+                'test_files' => $testFiles,
+                'has_tests' => !empty($testFiles)
+            ];
+        }
+    }
+
+    private function findTestFiles(string $className, string $sourceFile): array
+    {
+        $testFiles = [];
+        $possibleTestNames = [
+            $className . 'Test',
+            str_replace(['Service', 'Repository', 'Controller'], '', $className) . 'Test'
+        ];
+
+        foreach ($this->analysis['classes'] as $testClass => $testInfo) {
+            if (
+                str_contains($testInfo['file'], 'tests/') &&
+                (in_array($testClass, $possibleTestNames) || str_contains($testClass, $className))
+            ) {
+                $testFiles[] = $testInfo['file'];
+            }
+        }
+
+        return $testFiles;
+    }
+
+    private function analyzeConstructorDependencies(): void
+    {
+        foreach ($this->analysis['classes'] as $className => $classInfo) {
+            $content = file_get_contents($this->projectRoot . '/' . $classInfo['file']);
+
+            // 提取建構子依賴
+            if (preg_match('/public function __construct\s*\(([^)]*)\)/', $content, $matches)) {
+                $params = $matches[1];
+                $dependencies = $this->extractConstructorParams($params);
+
+                if (!empty($dependencies)) {
+                    $this->analysis['constructor_dependencies'][$className] = [
+                        'file' => $classInfo['file'],
+                        'dependencies' => $dependencies
+                    ];
+                }
+            }
+        }
+    }
+
+    private function extractConstructorParams(string $params): array
+    {
+        $dependencies = [];
+
+        if (empty(trim($params))) {
+            return $dependencies;
+        }
+
+        // 簡單的參數解析（可以改進）
+        $paramPairs = explode(',', $params);
+
+        foreach ($paramPairs as $param) {
+            $param = trim($param);
+            if (preg_match('/(?:private|protected|public)?\s*(?:readonly\s+)?([A-Z][A-Za-z0-9_\\\\]*)\s+\$(\w+)/', $param, $matches)) {
+                $dependencies[] = [
+                    'type' => $matches[1],
+                    'name' => $matches[2]
+                ];
+            }
+        }
+
+        return $dependencies;
+    }
+
+    private function checkNamespaceConsistency(): void
+    {
+        // 忽略的外部函式庫和 PHP 內建類別
+        $ignoredImports = [
+            'PDO',
+            'Exception',
+            'InvalidArgumentException',
+            'RuntimeException',
+            'JsonSerializable',
+            'ArrayAccess',
+            'Countable',
+            'Iterator',
+            'DateTime',
+            'DateTimeImmutable',
+            'SplFileInfo',
+            'Ramsey\\Uuid\\',
+            'Psr\\',
+            'OpenApi\\',
+            'PHPUnit\\',
+            'Mockery\\',
+            'RecursiveIteratorIterator',
+            'RecursiveDirectoryIterator'
+        ];
+
+        foreach ($this->analysis['dependencies'] as $file => $deps) {
+            foreach ($deps as $dep) {
+                // 跳過被忽略的引用
+                $shouldIgnore = false;
+                foreach ($ignoredImports as $ignored) {
+                    if (str_contains($dep, $ignored)) {
+                        $shouldIgnore = true;
+                        break;
+                    }
+                }
+
+                if ($shouldIgnore) {
+                    continue;
+                }
+
+                // 檢查 use 的類別是否真的存在
+                $foundClass = false;
+                $depClassName = basename(str_replace('\\', '/', $dep));
+
+                foreach ($this->analysis['classes'] as $className => $classInfo) {
+                    if ($className === $depClassName) {
+                        $foundClass = true;
+                        break;
+                    }
+                }
+
+                foreach ($this->analysis['interfaces'] as $interfaceName => $interfaceInfo) {
+                    if ($interfaceName === $depClassName) {
+                        $foundClass = true;
+                        break;
+                    }
+                }
+
+                if (!$foundClass) {
+                    $this->analysis['missing_imports'][] = "❓ 找不到類別/介面: $dep (在 $file 中使用)";
+                }
+            }
+        }
+    }
+
     private function generateReport(): void
     {
         $timestamp = date('Y-m-d H:i:s');
@@ -298,6 +477,67 @@ class ProjectArchitectureScanner
             }
         }
 
+        // 介面實作分析
+        if (!empty($this->analysis['interface_implementations'])) {
+            $report .= "\n## 🔌 介面實作分析\n\n";
+            foreach ($this->analysis['interface_implementations'] as $interface => $implementations) {
+                $report .= "### `$interface`\n";
+                foreach ($implementations as $impl) {
+                    $report .= "- {$impl['class']} (`{$impl['file']}`)\n";
+                }
+                $report .= "\n";
+            }
+        }
+
+        // 測試覆蓋分析
+        $testedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => $coverage['has_tests']);
+        $untestedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => !$coverage['has_tests']);
+
+        $report .= "\n## 🧪 測試覆蓋分析\n\n";
+        $report .= "- **有測試的類別**: " . count($testedClasses) . " 個\n";
+        $report .= "- **缺少測試的類別**: " . count($untestedClasses) . " 個\n\n";
+
+        if (!empty($untestedClasses)) {
+            $report .= "### 缺少測試的重要類別\n";
+            foreach (array_slice($untestedClasses, 0, 20) as $className => $info) {
+                if (str_contains($info['file'], 'Service') || str_contains($info['file'], 'Repository')) {
+                    $report .= "- **$className**: `{$info['file']}`\n";
+                }
+            }
+            $report .= "\n";
+        }
+
+        // 依賴注入分析
+        if (!empty($this->analysis['constructor_dependencies'])) {
+            $report .= "\n## 💉 依賴注入分析\n\n";
+            $heavyDeps = array_filter(
+                $this->analysis['constructor_dependencies'],
+                fn($deps) => count($deps['dependencies']) >= 3
+            );
+
+            if (!empty($heavyDeps)) {
+                $report .= "### 依賴較多的類別 (≥3個依賴)\n";
+                foreach ($heavyDeps as $className => $info) {
+                    $report .= "- **$className** (" . count($info['dependencies']) . " 個依賴)\n";
+                    foreach ($info['dependencies'] as $dep) {
+                        $report .= "  - `{$dep['type']}` \${$dep['name']}\n";
+                    }
+                    $report .= "\n";
+                }
+            }
+        }
+
+        // 缺少的引用
+        if (!empty($this->analysis['missing_imports'])) {
+            $report .= "\n## ❓ 可能的問題引用\n\n";
+            foreach (array_slice($this->analysis['missing_imports'], 0, 10) as $missing) {
+                $report .= "- $missing\n";
+            }
+            if (count($this->analysis['missing_imports']) > 10) {
+                $report .= "- ... 還有 " . (count($this->analysis['missing_imports']) - 10) . " 個\n";
+            }
+        }
+
         file_put_contents($reportPath, $report);
 
         // 快速摘要 (重構時快速查閱用)
@@ -320,6 +560,36 @@ class ProjectArchitectureScanner
             if (count($this->analysis['issues']) > 10) {
                 $summary .= "... 還有 " . (count($this->analysis['issues']) - 10) . " 個問題\n";
             }
+        }
+
+        // 測試覆蓋統計
+        $testedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => $coverage['has_tests']);
+        $untestedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => !$coverage['has_tests']);
+
+        $summary .= "\n🧪 測試覆蓋:\n";
+        $summary .= "- 有測試: " . count($testedClasses) . " 個類別\n";
+        $summary .= "- 缺少測試: " . count($untestedClasses) . " 個類別\n";
+
+        // 介面實作統計
+        if (!empty($this->analysis['interface_implementations'])) {
+            $summary .= "\n🔌 介面實作:\n";
+            foreach (array_slice($this->analysis['interface_implementations'], 0, 5, true) as $interface => $implementations) {
+                $summary .= "- $interface: " . count($implementations) . " 個實作\n";
+            }
+        }
+
+        // 依賴注入統計
+        $heavyDeps = array_filter(
+            $this->analysis['constructor_dependencies'],
+            fn($deps) => count($deps['dependencies']) >= 3
+        );
+        if (!empty($heavyDeps)) {
+            $summary .= "\n💉 重依賴類別 (≥3個依賴): " . count($heavyDeps) . " 個\n";
+        }
+
+        // 可能的問題
+        if (!empty($this->analysis['missing_imports'])) {
+            $summary .= "\n❓ 可能問題引用: " . count($this->analysis['missing_imports']) . " 個\n";
         }
 
         $summary .= "\n🔑 重點服務/控制器:\n";
