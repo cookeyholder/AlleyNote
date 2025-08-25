@@ -65,12 +65,12 @@
 
 ### Phase 2: 路由配置和整合 (預計 1-2 天)
 
-#### ⏳ Task 2.1: 整合現有 Controller 系統
-- [ ] 建立 API v1 路由定義檔
-- [ ] 遷移 PostController 路由
-- [ ] 遷移 AttachmentController 路由
-- [ ] 遷移 AuthController 路由
-- [ ] 遷移 IpController 路由
+#### ✅ Task 2.1: 整合現有 Controller 系統 (已完成)
+- ✅ **控制器解析器 (ControllerResolver)** - 支援多種處理器格式和依賴注入
+- ✅ **路由分派器 (RouteDispatcher)** - 整合路由匹配、中間件和控制器執行
+- ✅ **應用程式核心 (Application)** - DI 容器、路由載入、例外處理
+- ✅ **PostController 範例** - 完整 CRUD 操作和 PSR-7 整合
+- ✅ **測試驗證** - 控制器解析和整合功能測試
 
 #### ⏳ Task 2.2: 建立路由配置檔案
 - [ ] 建立路由配置檔案結構

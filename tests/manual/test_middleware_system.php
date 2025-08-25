@@ -200,7 +200,7 @@ $response = new class implements ResponseInterface {
 
     public function getBody()
     {
-        return new class($this->body) {
+        return new class ($this->body) {
             public function __construct(private string $content) {}
 
             public function __toString(): string

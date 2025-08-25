@@ -1438,7 +1438,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/manual/test_routing_system.php' => 
     array (
-      0 => '15fe26cba36a0c3060148c755d50b99afbac3dbf',
+      0 => 'e091ee6e3f571778a0819c9a2581d24d3af5f873',
       1 => 
       array (
         0 => 'mockserverrequest',
@@ -1458,7 +1458,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/manual/test_route_cache.php' => 
     array (
-      0 => '76fbaa467473d2285823a56bf914aca96f0127a3',
+      0 => 'd766fe630d6a76ddfcee63d7cdb44bd4e4d1c1f6',
       1 => 
       array (
       ),
@@ -1472,7 +1472,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/manual/test_middleware_system.php' => 
     array (
-      0 => 'dea390aee7446becc96d180b2c4425a0e81b273c',
+      0 => '46c3efafd9241643364adde9a866d0ec0f580bad',
       1 => 
       array (
         0 => 'loggingmiddleware',
@@ -1549,6 +1549,101 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         66 => 'withaddedheader',
         67 => 'withoutheader',
         68 => 'withbody',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_controller_integration.php' => 
+    array (
+      0 => '85ffc7604c1795c20c262d4e1ece377e0c0a4873',
+      1 => 
+      array (
+        0 => 'mockstream',
+        1 => 'mockuri',
+        2 => 'mockresponse',
+        3 => 'mockrequest',
+      ),
+      2 => 
+      array (
+        0 => '__tostring',
+        1 => 'close',
+        2 => 'detach',
+        3 => 'getsize',
+        4 => 'tell',
+        5 => 'eof',
+        6 => 'isseekable',
+        7 => 'seek',
+        8 => 'rewind',
+        9 => 'iswritable',
+        10 => 'write',
+        11 => 'isreadable',
+        12 => 'read',
+        13 => 'getcontents',
+        14 => 'getmetadata',
+        15 => '__construct',
+        16 => 'getscheme',
+        17 => 'getauthority',
+        18 => 'getuserinfo',
+        19 => 'gethost',
+        20 => 'getport',
+        21 => 'getpath',
+        22 => 'getquery',
+        23 => 'getfragment',
+        24 => 'withscheme',
+        25 => 'withuserinfo',
+        26 => 'withhost',
+        27 => 'withport',
+        28 => 'withpath',
+        29 => 'withquery',
+        30 => 'withfragment',
+        31 => '__tostring',
+        32 => '__construct',
+        33 => 'getprotocolversion',
+        34 => 'withprotocolversion',
+        35 => 'getheaders',
+        36 => 'hasheader',
+        37 => 'getheader',
+        38 => 'getheaderline',
+        39 => 'withheader',
+        40 => 'withaddedheader',
+        41 => 'withoutheader',
+        42 => 'getbody',
+        43 => 'withbody',
+        44 => 'getstatuscode',
+        45 => 'withstatus',
+        46 => 'getreasonphrase',
+        47 => '__construct',
+        48 => 'getrequesttarget',
+        49 => 'withrequesttarget',
+        50 => 'getmethod',
+        51 => 'withmethod',
+        52 => 'geturi',
+        53 => 'withuri',
+        54 => 'getprotocolversion',
+        55 => 'withprotocolversion',
+        56 => 'getheaders',
+        57 => 'hasheader',
+        58 => 'getheader',
+        59 => 'getheaderline',
+        60 => 'withheader',
+        61 => 'withaddedheader',
+        62 => 'withoutheader',
+        63 => 'getbody',
+        64 => 'withbody',
+        65 => 'getserverparams',
+        66 => 'getcookieparams',
+        67 => 'withcookieparams',
+        68 => 'getqueryparams',
+        69 => 'withqueryparams',
+        70 => 'getuploadedfiles',
+        71 => 'withuploadedfiles',
+        72 => 'getparsedbody',
+        73 => 'withparsedbody',
+        74 => 'getattributes',
+        75 => 'getattribute',
+        76 => 'withattribute',
+        77 => 'withoutattribute',
       ),
       3 => 
       array (

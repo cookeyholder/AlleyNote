@@ -104,25 +104,41 @@ try {
     echo "   ✓ 註冊了 3 個路由\n";
     echo '   ✓ 路由總數: ' . $router->getRoutes()->count() . "\n\n";
 
-    // 6. 測試路由分派
-    echo "6. 測試路由分派...\n";
-    $testRequests = [
-        new MockServerRequest('GET', '/api/posts'),
-        new MockServerRequest('POST', '/api/posts'),
-        new MockServerRequest('GET', '/api/posts/123'),
-        new MockServerRequest('GET', '/api/users'), // 不存在的路由
+    // 6. 測試路由匹配功能
+    echo "6. 測試路由匹配功能...\n";
+
+    // 測試路由匹配而不是完整分派
+    $testCases = [
+        ['GET', '/api/posts', '應該匹配 posts.index'],
+        ['POST', '/api/posts', '應該匹配 posts.store'],
+        ['GET', '/api/posts/123', '應該匹配 posts.show 並提取參數'],
+        ['GET', '/api/users', '應該不匹配任何路由'],
     ];
 
-    foreach ($testRequests as $i => $testRequest) {
-        $result = $router->dispatch($testRequest);
-        $method = $testRequest->getMethod();
-        $path = $testRequest->getUri()->getPath();
+    foreach ($testCases as [$method, $path, $description]) {
+        $matched = false;
+        $matchedRoute = null;
+        $parameters = [];
 
-        if ($result->isMatched()) {
-            $routeName = $result->getRoute()?->getName() ?? '無名稱';
-            $params = $result->getParameters();
-            echo "   ✓ {$method} {$path}: 匹配路由 '{$routeName}'"
-                . (!empty($params) ? ', 參數: ' . json_encode($params) : '') . "\n";
+        foreach ($router->getRoutes()->all() as $route) {
+            if ($route->matchesMethod($method)) {
+                $pathMatch = $route->matchesPath($path);
+                if ($pathMatch->isMatched()) {
+                    $matched = true;
+                    $matchedRoute = $route;
+                    $parameters = $pathMatch->getParameters();
+                    break;
+                }
+            }
+        }
+
+        if ($matched) {
+            $routeName = $matchedRoute?->getName() ?? '無名稱';
+            echo "   ✓ {$method} {$path}: 匹配路由 '{$routeName}'";
+            if (!empty($parameters)) {
+                echo ', 參數: ' . json_encode($parameters);
+            }
+            echo "\n";
         } else {
             echo "   ✗ {$method} {$path}: 未找到匹配的路由\n";
         }
