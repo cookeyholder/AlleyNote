@@ -15,6 +15,7 @@
 
 ## 程式碼品質與風格規範
 
+-   變數的命名必須具描述性，避免使用單字母或不明確的名稱，以 lower camel case 方式命名
 -   按照字母順序重新排列 import 語句
 -   符合 PHP CS Fixer 程式碼風格規範
 -   所有程式碼必須通過 PHPStan 靜態分析檢查
@@ -58,21 +59,24 @@ docker-compose exec web composer ci           # 完整 CI 檢查
 ### 建議的開發工作流程
 
 1. **開發完成後**：
-   ```bash
-   # 自動修復程式碼風格
-   docker-compose exec -T web ./vendor/bin/php-cs-fixer fix
-   ```
+
+    ```bash
+    # 自動修復程式碼風格
+    docker-compose exec -T web ./vendor/bin/php-cs-fixer fix
+    ```
 
 2. **提交前檢查**：
-   ```bash
-   # 執行完整的品質檢查
-   docker-compose exec web composer ci
-   ```
+
+    ```bash
+    # 執行完整的品質檢查
+    docker-compose exec web composer ci
+    ```
 
 3. **如果有錯誤**：
-   - 修復 PHP CS Fixer 報告的風格問題
-   - 解決 PHPStan 發現的靜態分析錯誤
-   - 確保所有測試通過
+
+    - 修復 PHP CS Fixer 報告的風格問題
+    - 解決 PHPStan 發現的靜態分析錯誤
+    - 確保所有測試通過
 
 4. **全部通過後才進行 git commit**
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Attachment\Contracts;
 
-use App\Exceptions\ValidationException;
+use App\Shared\Exceptions\ValidationException;
 use Psr\Http\Message\UploadedFileInterface;
 
 interface FileSecurityServiceInterface

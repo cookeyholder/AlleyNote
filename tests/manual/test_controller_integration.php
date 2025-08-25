@@ -13,18 +13,9 @@ use DI\ContainerBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriInterface    use App\Application\Controllers\PostController;
-use App\Infrastructure\Routing\ClosureRequestHandler;
-use App\Infrastructure\Routing\ControllerResolver;
-use App\Infrastructure\Routing\Core\Route;
-use App\Infrastructure\Routing\Core\Router;
-use DI\ContainerBuilder;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
-// 簡單的 Mock 實作用於測試 Mock 實作用於測試
+// 簡單的 Mock 實作用於測試
 class MockStream implements StreamInterface
 {
     private string $content = '';

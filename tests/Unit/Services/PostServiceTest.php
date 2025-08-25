@@ -357,6 +357,7 @@ class PostServiceTest extends MockeryTestCase
             'total' => 2,
             'page' => $page,
             'perPage' => $perPage,
+            'lastPage' => 1,
         ];
 
         $this->repository->shouldReceive('paginate')

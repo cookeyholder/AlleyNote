@@ -2,7 +2,7 @@
 
 namespace App\Application\Middleware;
 
-use App\Services\Security\AdvancedRateLimitService;
+use App\Infrastructure\Services\RateLimitService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface;
@@ -10,11 +10,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class RateLimitMiddleware implements MiddlewareInterface
 {
-    private AdvancedRateLimitService $rateLimitService;
+    private RateLimitService $rateLimitService;
 
     private array $config;
 
-    public function __construct(AdvancedRateLimitService $rateLimitService, array $config = [])
+    public function __construct(RateLimitService $rateLimitService, array $config = [])
     {
         $this->rateLimitService = $rateLimitService;
         $this->config = array_merge($this->getDefaultConfig(), $config);
@@ -30,7 +30,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
 
         // 取得真實客戶端 IP
-        $ip = $this->rateLimitService->getRealClientIP($request->getServerParams());
+        $ip = $this->getRealClientIP($request->getServerParams());
 
         // 判斷操作類型
         $action = $this->determineAction($request);
@@ -39,7 +39,9 @@ class RateLimitMiddleware implements MiddlewareInterface
         $userId = $this->getUserId($request);
 
         // 檢查速率限制
-        $result = $this->rateLimitService->checkLimit($ip, $action, $userId);
+        $maxRequests = $this->config['max_requests'] ?? 60;
+        $timeWindow = $this->config['time_window'] ?? 60;
+        $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
 
         if (!$result['allowed']) {
             return $this->createRateLimitResponse($result, $request);
@@ -102,12 +104,14 @@ class RateLimitMiddleware implements MiddlewareInterface
      */
     private function createRateLimitResponse(array $result, Request $request): Response
     {
-        $response = new \Slim\Psr7\Response();
-
         // 判斷回應格式
         $acceptHeader = $request->getHeaderLine('Accept');
         $isJsonRequest = strpos($acceptHeader, 'application/json') !== false
             || strpos($request->getUri()->getPath(), '/api/') === 0;
+
+        // 建立回應物件
+        $response = new \Nyholm\Psr7\Response(429);
+        $stream = \Nyholm\Psr7\Stream::create();
 
         if ($isJsonRequest) {
             $body = json_encode([
@@ -125,7 +129,7 @@ class RateLimitMiddleware implements MiddlewareInterface
             $response = $response->withHeader('Content-Type', 'text/html; charset=utf-8');
         }
 
-        $response->getBody()->write($body);
+        $stream->write($body);
 
         return $response
             ->withStatus(429)
@@ -222,5 +226,34 @@ class RateLimitMiddleware implements MiddlewareInterface
                 '/favicon.ico',
             ],
         ];
+    }
+
+    /**
+     * 取得真實的客戶端 IP 位址.
+     */
+    private function getRealClientIP(array $serverParams): string
+    {
+        // 檢查代理伺服器的標頭
+        $headers = [
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_X_REAL_IP',
+            'HTTP_CLIENT_IP',
+            'HTTP_X_CLUSTER_CLIENT_IP',
+            'HTTP_X_FORWARDED',
+            'HTTP_FORWARDED_FOR',
+            'HTTP_FORWARDED',
+        ];
+
+        foreach ($headers as $header) {
+            if (!empty($serverParams[$header])) {
+                $ips = explode(',', $serverParams[$header]);
+                $ip = trim($ips[0]);
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
     }
 }

@@ -548,6 +548,10 @@ class DTOValidationTest extends TestCase
         $endTime = microtime(true);
         $endMemory = memory_get_usage();
 
+        // 計算效能指標
+        $executionTime = $endTime - $startTime;
+        $memoryUsage = $endMemory - $startMemory;
+
         // 效能斷言
         $this->assertLessThan(0.5, $executionTime, '100 個 DTO 驗證應該在 0.5 秒內完成');
         $this->assertLessThan(5 * 1024 * 1024, $memoryUsage, '記憶體使用量應該少於 5MB');
