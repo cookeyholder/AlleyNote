@@ -6,7 +6,7 @@ namespace Tests\Unit\DTOs;
 
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
-use App\Shared\Validation\ValidationException;
+use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 

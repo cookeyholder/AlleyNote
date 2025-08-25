@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Contracts;
 
-use App\Exceptions\ValidationException;
+use App\Shared\Exceptions\ValidationException;
 
 interface PasswordSecurityServiceInterface
 {
@@ -26,7 +26,7 @@ interface PasswordSecurityServiceInterface
     /**
      * 驗證密碼強度.
      *
-     * @throws ValidationException
+     * @throws \App\Shared\Exceptions\ValidationException
      */
     public function validatePassword(string $password): void;
 

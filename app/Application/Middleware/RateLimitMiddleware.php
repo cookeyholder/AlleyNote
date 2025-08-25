@@ -264,7 +264,7 @@ class RateLimitMiddleware implements MiddlewareInterface
     public function shouldProcess(Request $request): bool
     {
         $uri = $request->getUri()->getPath();
-        
+
         // 檢查是否需要跳過速率限制
         return !in_array($uri, $this->config['skip_paths'], true);
     }

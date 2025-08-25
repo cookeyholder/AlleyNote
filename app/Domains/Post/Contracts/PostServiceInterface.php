@@ -13,7 +13,7 @@ interface PostServiceInterface
     /**
      * 建立新文章.
      * @param CreatePostDTO $dto 文章資料
-     * @throws ValidationException
+     * @throws \App\Shared\Exceptions\ValidationException
      */
     public function createPost(CreatePostDTO $dto): Post;
 
@@ -21,7 +21,7 @@ interface PostServiceInterface
      * 更新文章.
      * @param int $id 文章 ID
      * @param UpdatePostDTO $dto 更新資料
-     * @throws ValidationException
+     * @throws \App\Shared\Exceptions\ValidationException
      * @throws NotFoundException
      */
     public function updatePost(int $id, UpdatePostDTO $dto): Post;

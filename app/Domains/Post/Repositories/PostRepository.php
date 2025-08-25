@@ -9,7 +9,7 @@ use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Infrastructure\Cache\CacheKeys;
-use App\Infrastructure\Services\CacheService;
+use App\Shared\Contracts\CacheServiceInterface;
 use Exception;
 use InvalidArgumentException;
 use PDO;
@@ -20,7 +20,7 @@ class PostRepository implements PostRepositoryInterface
 {
     private PDO $db;
 
-    private CacheService $cache;
+    private CacheServiceInterface $cache;
 
     private LoggingSecurityServiceInterface $logger;
 
@@ -59,7 +59,7 @@ class PostRepository implements PostRepositoryInterface
 
     public function __construct(
         PDO $db,
-        CacheService $cache,
+        CacheServiceInterface $cache,
         LoggingSecurityServiceInterface $logger,
     ) {
         $this->db = $db;

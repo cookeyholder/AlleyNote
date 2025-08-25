@@ -27,7 +27,7 @@ class RegisterUserDTO extends BaseDTO
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array $data 輸入資料
-     * @throws ValidationException 當驗證失敗時
+     * @throws \App\Shared\Exceptions\ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
     {
@@ -112,8 +112,14 @@ class RegisterUserDTO extends BaseDTO
 
             // 檢查不能是常見弱密碼
             $weakPasswords = [
-                'password', '12345678', 'qwerty123', 'abc12345',
-                '11111111', 'password123', '123456789', 'qwertyui',
+                'password',
+                '12345678',
+                'qwerty123',
+                'abc12345',
+                '11111111',
+                'password123',
+                '123456789',
+                'qwertyui',
             ];
 
             if (in_array(strtolower($password), $weakPasswords, true)) {
@@ -187,8 +193,12 @@ class RegisterUserDTO extends BaseDTO
 
             // 檢查是否為常見的一次性郵箱域名
             $disposableEmailDomains = [
-                '10minutemail.com', 'tempmail.org', 'guerrillamail.com',
-                'mailinator.com', 'yopmail.com', 'throwaway.email',
+                '10minutemail.com',
+                'tempmail.org',
+                'guerrillamail.com',
+                'mailinator.com',
+                'yopmail.com',
+                'throwaway.email',
             ];
 
             $domain = substr(strrchr($email, '@'), 1);
@@ -226,7 +236,7 @@ class RegisterUserDTO extends BaseDTO
      *
      * @param array $data 輸入資料
      * @return array 驗證通過的資料
-     * @throws ValidationException 當驗證失敗時
+     * @throws \App\Shared\Exceptions\ValidationException 當驗證失敗時
      */
     protected function validate(array $data): array
     {
@@ -337,8 +347,14 @@ class RegisterUserDTO extends BaseDTO
     public function isBusinessEmail(): bool
     {
         $businessDomains = [
-            'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
-            'qq.com', '163.com', '126.com', 'sina.com',
+            'gmail.com',
+            'yahoo.com',
+            'hotmail.com',
+            'outlook.com',
+            'qq.com',
+            '163.com',
+            '126.com',
+            'sina.com',
         ];
 
         $domain = $this->getEmailDomain();

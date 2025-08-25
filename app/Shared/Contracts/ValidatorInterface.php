@@ -28,7 +28,7 @@ interface ValidatorInterface
      *
      * @param array $data 要驗證的資料
      * @param array $rules 驗證規則
-     * @throws ValidationException 當驗證失敗時
+     * @throws \App\Shared\Exceptions\ValidationException 當驗證失敗時
      * @return array 驗證通過的資料
      */
     public function validateOrFail(array $data, array $rules): array;

@@ -6,7 +6,7 @@ namespace App\Domains\Security\Repositories;
 
 use App\Domains\Security\Contracts\IpRepositoryInterface;
 use App\Domains\Security\Models\IpList;
-use App\Infrastructure\Services\CacheService;
+use App\Shared\Contracts\CacheServiceInterface;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
@@ -33,7 +33,7 @@ class IpRepository implements IpRepositoryInterface
 
     public function __construct(
         private PDO $db,
-        private CacheService $cache,
+        private CacheServiceInterface $cache,
     ) {
         // 設定事務隔離級別
         $this->db->exec('PRAGMA foreign_keys = ON');

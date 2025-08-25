@@ -1,0 +1,42 @@
+=== 專案架構快速摘要 (2025-08-25 15:22:04) ===
+
+📊 統計資訊:
+- 類別: 162 個
+- 介面: 29 個
+- 命名空間: 87 個
+
+🏗️ DDD 架構:
+- Application: 12 個檔案
+- Domains: 59 個檔案
+- Infrastructure: 37 個檔案
+- Shared: 17 個檔案
+
+❌ 架構問題 (11 個):
+- Domain層不應依賴Infrastructure層: app/Domains/Attachment/Repositories/AttachmentRepository.php -> App\Infrastructure\Services\CacheService
+- Domain層不應依賴Infrastructure層: app/Domains/Attachment/Services/AttachmentService.php -> App\Infrastructure\Services\CacheService
+- Domain層不應依賴Infrastructure層: app/Domains/Auth/Services/AuthorizationService.php -> App\Infrastructure\Services\CacheService
+- Domain層不應依賴Infrastructure層: app/Domains/Security/Repositories/IpRepository.php -> App\Infrastructure\Services\CacheService
+- Domain層不應依賴Infrastructure層: app/Domains/Security/Models/IpList.php -> App\Infrastructure\Services\OutputSanitizer
+- Domain層不應依賴Infrastructure層: app/Domains/Post/Repositories/PostRepository.php -> App\Infrastructure\Cache\CacheKeys
+- Domain層不應依賴Infrastructure層: app/Domains/Post/Repositories/PostRepository.php -> App\Infrastructure\Services\CacheService
+- Domain層不應依賴Infrastructure層: app/Domains/Post/Models/Post.php -> App\Infrastructure\Services\OutputSanitizer
+- 可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
+- 可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
+... 還有 1 個問題
+
+🔑 重點服務/控制器:
+- AttachmentRepository (app/Domains/Attachment/Repositories/AttachmentRepository.php)
+- FileSecurityService (app/Domains/Attachment/Services/FileSecurityService.php)
+- AttachmentService (app/Domains/Attachment/Services/AttachmentService.php)
+- UserRepository (app/Domains/Auth/Repositories/UserRepository.php)
+- SessionSecurityService (app/Domains/Auth/Services/SessionSecurityService.php)
+- PasswordManagementService (app/Domains/Auth/Services/PasswordManagementService.php)
+- AuthorizationService (app/Domains/Auth/Services/AuthorizationService.php)
+- PwnedPasswordService (app/Domains/Auth/Services/Advanced/PwnedPasswordService.php)
+- AuthService (app/Domains/Auth/Services/AuthService.php)
+- PasswordSecurityService (app/Domains/Auth/Services/PasswordSecurityService.php)
+- IpRepository (app/Domains/Security/Repositories/IpRepository.php)
+- LoggingSecurityService (app/Domains/Security/Services/Logging/LoggingSecurityService.php)
+- ErrorHandlerService (app/Domains/Security/Services/Error/ErrorHandlerService.php)
+- SecurityHeaderService (app/Domains/Security/Services/Headers/SecurityHeaderService.php)
+- XssProtectionExtensionService (app/Domains/Security/Services/Content/XssProtectionExtensionService.php)

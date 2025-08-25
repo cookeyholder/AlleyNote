@@ -12,7 +12,7 @@ interface FileSecurityServiceInterface
     /**
      * 驗證上傳的檔案是否安全.
      *
-     * @throws ValidationException
+     * @throws \App\Shared\Exceptions\ValidationException
      */
     public function validateUpload(UploadedFileInterface $file): void;
 
