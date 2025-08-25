@@ -57,7 +57,7 @@ class XssPreventionTest extends TestCase
         $this->controller = new PostController(
             $this->postService,
             $this->validator,
-            $this->sanitizer
+            $this->sanitizer,
         );
 
         // 設定預設回應行為

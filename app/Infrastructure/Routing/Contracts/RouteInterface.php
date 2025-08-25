@@ -41,7 +41,7 @@ interface RouteInterface
      *
      * @return callable|string 處理器
      */
-    public function getHandler(): callable|string;
+    public function getHandler(): callable|string|array;
 
     /**
      * 新增中介軟體.

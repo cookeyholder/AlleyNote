@@ -55,7 +55,7 @@ class Route implements RouteInterface
         return $this->name;
     }
 
-    public function getHandler(): callable|string
+    public function getHandler(): callable|string|array
     {
         return $this->handler;
     }

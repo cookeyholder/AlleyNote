@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\PostController;
-use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
-use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Models\Post;
+use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
+use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
+use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -25,19 +26,19 @@ use Tests\TestCase;
 
 class PostControllerTest extends TestCase
 {
-    /** @var PostServiceInterface&\Mockery\MockInterface */
+    /** @var PostServiceInterface&MockInterface */
     private PostServiceInterface $postService;
 
-    /** @var XssProtectionServiceInterface&\Mockery\MockInterface */
+    /** @var XssProtectionServiceInterface&MockInterface */
     private XssProtectionServiceInterface $xssProtection;
 
-    /** @var CsrfProtectionServiceInterface&\Mockery\MockInterface */
+    /** @var CsrfProtectionServiceInterface&MockInterface */
     private CsrfProtectionServiceInterface $csrfProtection;
 
-    /** @var ValidatorInterface&\Mockery\MockInterface */
+    /** @var ValidatorInterface&MockInterface */
     private ValidatorInterface $validator;
 
-    /** @var OutputSanitizerInterface&\Mockery\MockInterface */
+    /** @var OutputSanitizerInterface&MockInterface */
     private OutputSanitizerInterface $sanitizer;
 
     private $request;
@@ -134,7 +135,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
-            $this->sanitizer
+            $this->sanitizer,
         );
         $response = $controller->index($this->request, $this->response);
 
@@ -181,7 +182,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
-            $this->sanitizer
+            $this->sanitizer,
         );
         $response = $controller->show($this->request, $this->response, ['id' => $postId]);
 
@@ -497,7 +498,7 @@ class PostControllerTest extends TestCase
     }
 
     /**
-     * @return ResponseInterface&\Mockery\MockInterface
+     * @return ResponseInterface&MockInterface
      */
     protected function createResponseMock(): ResponseInterface
     {

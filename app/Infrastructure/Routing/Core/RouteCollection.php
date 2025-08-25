@@ -75,7 +75,8 @@ class RouteCollection implements RouteCollectionInterface
         $candidates = $this->getByMethod($method);
 
         foreach ($candidates as $route) {
-            if ($route->matches($request)) {
+            $matchResult = $route->matches($request);
+            if ($matchResult->isMatched()) {
                 return $route;
             }
         }

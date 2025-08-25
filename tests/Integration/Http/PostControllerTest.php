@@ -68,7 +68,7 @@ class PostControllerTest extends TestCase
         $this->controller = new PostController(
             $this->postService,
             $this->validator,
-            $this->sanitizer
+            $this->sanitizer,
         );
 
         // 設定預設的response行為
@@ -431,7 +431,7 @@ class PostControllerTest extends TestCase
         $this->controller = new PostController(
             $this->postService,
             $this->validator,
-            $this->sanitizer
+            $this->sanitizer,
         );
 
         // 設定 validator 拋出驗證異常

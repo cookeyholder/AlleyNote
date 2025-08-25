@@ -36,11 +36,6 @@ class ControllerResolver
     ): ResponseInterface {
         $handler = $route->getHandler();
 
-        if (is_callable($handler)) {
-            // 處理器是閉包函式
-            return $this->handleCallable($handler, $request, $parameters);
-        }
-
         if (is_array($handler) && count($handler) === 2) {
             // 處理器是陣列格式: [ControllerClass::class, 'method']
             return $this->handleArrayHandler($handler, $request, $parameters);
@@ -49,6 +44,11 @@ class ControllerResolver
         if (is_string($handler)) {
             // 處理器是字串格式: "ControllerClass@method"
             return $this->handleStringHandler($handler, $request, $parameters);
+        }
+
+        if (is_callable($handler)) {
+            // 處理器是閉包函式
+            return $this->handleCallable($handler, $request, $parameters);
         }
 
         throw new RuntimeException('無效的路由處理器格式');
@@ -73,6 +73,134 @@ class ControllerResolver
 
         // 否則將結果轉換為 JSON 回應
         return $this->createJsonResponse($result);
+    }
+
+    /**
+     * 建立空的 PSR-7 Response 物件.
+     */
+    private function createResponse(): ResponseInterface
+    {
+        return new class implements ResponseInterface {
+            private array $headers = [];
+
+            private $body;
+
+            private int $statusCode = 200;
+
+            private string $reasonPhrase = 'OK';
+
+            private string $protocolVersion = '1.1';
+
+            public function __construct()
+            {
+                $this->body = new class {
+                    private string $content = '';
+
+                    public function write(string $string): int
+                    {
+                        $this->content .= $string;
+
+                        return strlen($string);
+                    }
+
+                    public function __toString(): string
+                    {
+                        return $this->content;
+                    }
+                };
+            }
+
+            public function getStatusCode(): int
+            {
+                return $this->statusCode;
+            }
+
+            public function withStatus($code, $reasonPhrase = ''): self
+            {
+                $new = clone $this;
+                $new->statusCode = $code;
+                if ($reasonPhrase) {
+                    $new->reasonPhrase = $reasonPhrase;
+                }
+
+                return $new;
+            }
+
+            public function getReasonPhrase(): string
+            {
+                return $this->reasonPhrase;
+            }
+
+            public function getProtocolVersion(): string
+            {
+                return $this->protocolVersion;
+            }
+
+            public function withProtocolVersion($version): self
+            {
+                $new = clone $this;
+                $new->protocolVersion = $version;
+
+                return $new;
+            }
+
+            public function getHeaders(): array
+            {
+                return $this->headers;
+            }
+
+            public function hasHeader($name): bool
+            {
+                return isset($this->headers[$name]);
+            }
+
+            public function getHeader($name): array
+            {
+                return $this->headers[$name] ?? [];
+            }
+
+            public function getHeaderLine($name): string
+            {
+                return implode(', ', $this->getHeader($name));
+            }
+
+            public function withHeader($name, $value): self
+            {
+                $new = clone $this;
+                $new->headers[$name] = is_array($value) ? $value : [$value];
+
+                return $new;
+            }
+
+            public function withAddedHeader($name, $value): self
+            {
+                $new = clone $this;
+                $new->headers[$name] = array_merge($this->getHeader($name), is_array($value) ? $value : [$value]);
+
+                return $new;
+            }
+
+            public function withoutHeader($name): self
+            {
+                $new = clone $this;
+                unset($new->headers[$name]);
+
+                return $new;
+            }
+
+            public function getBody()
+            {
+                return $this->body;
+            }
+
+            public function withBody($body): self
+            {
+                $new = clone $this;
+                $new->body = $body;
+
+                return $new;
+            }
+        };
     }
 
     /**
@@ -353,6 +481,12 @@ class ControllerResolver
                     $requestWithParams = $requestWithParams->withAttribute($key, $value);
                 }
                 $args[] = $requestWithParams;
+                continue;
+            }
+
+            // 處理 PSR-7 回應物件
+            if ($type && $type instanceof ReflectionNamedType && $type->getName() === ResponseInterface::class) {
+                $args[] = $this->createResponse();
                 continue;
             }
 
