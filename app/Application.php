@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace App;
 
 use App\Infrastructure\Routing\Contracts\RouterInterface;
-use App\Infrastructure\Routing\ControllerResolver;
-use App\Infrastructure\Routing\Core\Router;
-use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
+use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Infrastructure\Routing\RouteDispatcher;
-use App\Infrastructure\Routing\RouteLoader;
 use DI\ContainerBuilder;
 use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
 
 /**
  * 應用程式核心類別.
@@ -57,11 +53,9 @@ class Application
     {
         $builder = new ContainerBuilder();
 
-        // 基本服務定義
-        $builder->addDefinitions([
-            RouterInterface::class => \DI\create(Router::class),
-            MiddlewareDispatcher::class => \DI\create(),
-        ]);
+        // 載入容器配置檔案
+        $containerConfig = require __DIR__ . '/../config/container.php';
+        $builder->addDefinitions($containerConfig);
 
         $this->container = $builder->build();
     }
@@ -79,15 +73,7 @@ class Application
      */
     private function initializeRouteDispatcher(): void
     {
-        $middlewareDispatcher = $this->container->get(MiddlewareDispatcher::class);
-        $controllerResolver = new ControllerResolver($this->container);
-
-        $this->routeDispatcher = new RouteDispatcher(
-            $this->router,
-            $controllerResolver,
-            $middlewareDispatcher,
-            $this->container,
-        );
+        $this->routeDispatcher = $this->container->get(RouteDispatcher::class);
     }
 
     /**
@@ -95,31 +81,8 @@ class Application
      */
     private function loadRoutes(): void
     {
-        $routeLoader = new RouteLoader();
-
-        try {
-            // 載入各種路由配置檔案
-            $routeLoader
-                ->addRouteFile(__DIR__ . '/../config/routes/api.php', 'api')
-                ->addRouteFile(__DIR__ . '/../config/routes/web.php', 'web')
-                ->addRouteFile(__DIR__ . '/../config/routes/auth.php', 'auth')
-                ->addRouteFile(__DIR__ . '/../config/routes/admin.php', 'admin');
-
-            // 載入所有路由到路由器
-            $routeLoader->loadRoutes($this->router);
-        } catch (Throwable $e) {
-            // 記錄路由載入錯誤並回退到基本配置
-            error_log('路由載入失敗: ' . $e->getMessage());
-
-            // 嘗試載入舊版路由檔案作為回退
-            $legacyRoutesFile = __DIR__ . '/../config/routes.php';
-            if (file_exists($legacyRoutesFile)) {
-                $routeDefinitions = require $legacyRoutesFile;
-                if (is_callable($routeDefinitions)) {
-                    $routeDefinitions($this->router);
-                }
-            }
-        }
+        // 使用路由服務提供者載入路由
+        RoutingServiceProvider::loadRoutes($this->container);
     }
 
     /**
