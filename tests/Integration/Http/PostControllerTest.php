@@ -12,6 +12,7 @@ use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
@@ -32,6 +33,8 @@ class PostControllerTest extends TestCase
     private CsrfProtectionServiceInterface|MockInterface $csrfProtection;
 
     private ValidatorInterface|MockInterface $validator;
+
+    private OutputSanitizerInterface|MockInterface $sanitizer;
 
     private ServerRequestInterface|MockInterface $request;
 
@@ -56,6 +59,7 @@ class PostControllerTest extends TestCase
         $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
         $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
+        $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
         $this->request = Mockery::mock(ServerRequestInterface::class);
         $this->response = Mockery::mock(ResponseInterface::class);
         $this->stream = Mockery::mock(StreamInterface::class);
@@ -64,6 +68,7 @@ class PostControllerTest extends TestCase
         $this->controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer
         );
 
         // 設定預設的response行為
@@ -419,6 +424,7 @@ class PostControllerTest extends TestCase
         $this->controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer
         );
 
         // 設定 validator 拋出驗證異常

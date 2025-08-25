@@ -10,24 +10,12 @@ parameters:
         - coverage-reports
     tmpDir: storage/phpstan
     ignoreErrors:
-        # 忽略 Mockery 相關的方法呼叫問題
+        # 忽略一些已知的第三方套件問題
         - '#Call to an undefined method Mockery\\MockInterface::#'
         - '#Call to an undefined method Mockery\\LegacyMockInterface::#'
-        - '#Call to an undefined method Mockery\\ExpectationInterface::#'
-        - '#Call to an undefined method Mockery\\HigherOrderMessage::#'
-        - '#Call to an undefined method .*::shouldReceive\(\)#'
-        - '#Call to an undefined method .*::shouldNotReceive\(\)#'
-        # 忽略 Mockery 型別註解問題
-        - '#does not accept Mockery\\MockInterface#'
-        - '#should return .* but returns Mockery\\MockInterface#'
-        # 忽留動態屬性設定（常見於測試）
+        # 忽略動態屬性設定（常見於測試）
         - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9_]+#'
         # 忽略一些常見的 PHPUnit 問題
         - '#Method .+Test::.+ has no return type specified#'
         # 忽略一些 DTO 構造函式的型別問題（暫時）
         - '#Constructor of class .+DTO has an unused parameter#'
-        # 忽略一些已知的測試框架型別推斷問題
-        - '#Call to method PHPUnit\\Framework\\Assert::assert.* will always evaluate to#'
-        # 忽略由於配置常數導致的恆真問題
-        - '#Left side of && is always true#'
-        - '#Right side of && is always true#'

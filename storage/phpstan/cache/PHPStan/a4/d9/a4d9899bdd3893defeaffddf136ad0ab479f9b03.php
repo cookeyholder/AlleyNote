@@ -959,7 +959,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/PostControllerTest.php' => 
     array (
-      0 => '167cbee941d723d07f54587af20b08c2e794cf6e',
+      0 => '83699ef644043f77640456812fa79b9fa01da1ca',
       1 => 
       array (
         0 => 'tests\\integration\\postcontrollertest',

@@ -1,4 +1,4 @@
-=== 專案架構快速摘要 (2025-08-25 20:36:15) ===
+=== 專案架構快速摘要 (2025-08-25 20:55:25) ===
 
 📊 統計資訊:
 - 類別: 105 個
@@ -29,7 +29,7 @@
 
 💉 重依賴類別 (≥3個依賴): 6 個
 
-❓ 可能問題引用: 71 個
+❓ 可能問題引用: 72 個
 
 🔑 重點服務/控制器:
 - AttachmentRepository (app/Domains/Attachment/Repositories/AttachmentRepository.php)

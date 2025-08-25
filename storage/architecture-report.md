@@ -1,6 +1,6 @@
 # 專案架構分析報告
 
-**生成時間**: 2025-08-25 20:36:15
+**生成時間**: 2025-08-25 20:55:25
 
 ## 📁 目錄結構
 
@@ -899,4 +899,4 @@
             $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE id = :id') (在 app/Domains/Security/Repositories/IpRepository.php 中使用)
 - ❓ 找不到類別/介面: ($uuid) {
             $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE uuid = ?') (在 app/Domains/Security/Repositories/IpRepository.php 中使用)
-- ... 還有 61 個
+- ... 還有 62 個
