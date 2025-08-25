@@ -7,9 +7,9 @@ namespace App\Domains\Post\Repositories;
 use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Post\Models\Post;
+use App\Domains\Post\Services\PostCacheKeyService;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
-use App\Infrastructure\Cache\CacheKeys;
-use App\Infrastructure\Services\CacheService;
+use App\Shared\Contracts\CacheServiceInterface;
 use Exception;
 use InvalidArgumentException;
 use PDO;
@@ -20,7 +20,7 @@ class PostRepository implements PostRepositoryInterface
 {
     private PDO $db;
 
-    private CacheService $cache;
+    private CacheServiceInterface $cache;
 
     private LoggingSecurityServiceInterface $logger;
 
@@ -59,7 +59,7 @@ class PostRepository implements PostRepositoryInterface
 
     public function __construct(
         PDO $db,
-        CacheService $cache,
+        CacheServiceInterface $cache,
         LoggingSecurityServiceInterface $logger,
     ) {
         $this->db = $db;
@@ -95,20 +95,20 @@ class PostRepository implements PostRepositoryInterface
         $post = $this->find($postId);
         if ($post) {
             // 刪除單一貼文相關快取
-            $this->cache->delete(CacheKeys::post($post->getId()));
-            $this->cache->delete(CacheKeys::postByUuid($post->getUuid()));
-            $this->cache->delete(CacheKeys::postTags($post->getId()));
-            $this->cache->delete(CacheKeys::postViews($post->getId()));
+            $this->cache->delete(PostCacheKeyService::post($post->getId()));
+            $this->cache->delete(PostCacheKeyService::postByUuid($post->getUuid()));
+            $this->cache->delete(PostCacheKeyService::postTags($post->getId()));
+            $this->cache->delete(PostCacheKeyService::postViews($post->getId()));
 
             // 刪除貼文列表相關快取
-            $this->cache->delete(CacheKeys::pinnedPosts());
+            $this->cache->delete(PostCacheKeyService::pinnedPosts());
 
             // 使用模式刪除相關的分頁快取
-            $this->cache->deletePattern(CacheKeys::postsListPattern());
+            $this->cache->deletePattern(PostCacheKeyService::postsListPattern());
 
             // 刪除使用者貼文快取（如果有）
             if ($post->getUserId()) {
-                $this->cache->deletePattern(CacheKeys::userPattern($post->getUserId()));
+                $this->cache->deletePattern(PostCacheKeyService::userPattern($post->getUserId()));
             }
         }
     }
@@ -200,7 +200,7 @@ class PostRepository implements PostRepositoryInterface
 
     public function find(int $id): ?Post
     {
-        $cacheKey = CacheKeys::post($id);
+        $cacheKey = PostCacheKeyService::post($id);
 
         $data = $this->cache->remember($cacheKey, function () use ($id) {
             $sql = $this->buildSelectQuery('id = ?');
@@ -237,7 +237,7 @@ class PostRepository implements PostRepositoryInterface
 
     public function findByUuid(string $uuid): ?Post
     {
-        $cacheKey = CacheKeys::postByUuid($uuid);
+        $cacheKey = PostCacheKeyService::postByUuid($uuid);
 
         $data = $this->cache->remember($cacheKey, function () use ($uuid) {
             $sql = $this->buildSelectQuery('uuid = ?');
@@ -447,11 +447,11 @@ class PostRepository implements PostRepositoryInterface
     {
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
-            $cacheKey = CacheKeys::postList($page, 'published');
+            $cacheKey = PostCacheKeyService::postList($page, 'published');
         } elseif (isset($conditions['status'])) {
-            $cacheKey = CacheKeys::postList($page, $conditions['status']);
+            $cacheKey = PostCacheKeyService::postList($page, $conditions['status']);
         } elseif (isset($conditions['category'])) {
-            $cacheKey = CacheKeys::postsByCategory($conditions['category'], $page);
+            $cacheKey = PostCacheKeyService::postsByCategory($conditions['category'], $page);
         } else {
             // 複雜查詢使用舊的方式
             $cacheKey = sprintf(
@@ -524,7 +524,7 @@ class PostRepository implements PostRepositoryInterface
 
     public function getPinnedPosts(int $limit = 5): array
     {
-        $cacheKey = CacheKeys::pinnedPosts();
+        $cacheKey = PostCacheKeyService::pinnedPosts();
 
         return $this->cache->remember($cacheKey, function () use ($limit) {
             $sql = $this->buildSelectQuery('is_pinned = 1')
@@ -543,7 +543,7 @@ class PostRepository implements PostRepositoryInterface
 
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
-        $cacheKey = CacheKeys::tagPosts($tagId, $page);
+        $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
 
         return $this->cache->remember($cacheKey, function () use ($tagId, $page, $perPage) {
             $offset = ($page - 1) * $perPage;

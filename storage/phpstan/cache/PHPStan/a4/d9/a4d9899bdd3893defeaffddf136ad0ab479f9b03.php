@@ -368,7 +368,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/DTOs/Post/CreatePostDTOTest.php' => 
     array (
-      0 => 'f2ba9cc1b146c247d379c2fdaddcefc8e9e5a6e8',
+      0 => '703d797d0c214eb7d5024ab1fd1496755979073a',
       1 => 
       array (
         0 => 'tests\\unit\\dtos\\post\\createpostdtotest',
@@ -429,7 +429,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Controllers/IpControllerTest.php' => 
     array (
-      0 => '0d93398d9c794f23a4ca0d2cb234f0123af02524',
+      0 => '69514de4a65f08d70f2a27f46086cd13594a3349',
       1 => 
       array (
         0 => 'tests\\unit\\controllers\\ipcontrollertest',
@@ -598,7 +598,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/PostServiceTest.php' => 
     array (
-      0 => '64d058af3930735a0e272314e744221b994e77cb',
+      0 => 'cc5e8202cb855560ee68cced864fdf59e41f0abc',
       1 => 
       array (
         0 => 'tests\\unit\\services\\postservicetest',
@@ -669,7 +669,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/AuthServiceTest.php' => 
     array (
-      0 => '26572e04437f21985157e84de8ad57ba8f6ddb21',
+      0 => 'adb3caa02630ef8e9d21f2db7535a52e706ebe19',
       1 => 
       array (
         0 => 'tests\\unit\\services\\authservicetest',
@@ -690,7 +690,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/AttachmentServiceTest.php' => 
     array (
-      0 => 'fb5e60465fa26324a773e24430102b4f44feb76d',
+      0 => 'd85707aad5b414f118a9ac6b23669c01a010a2df',
       1 => 
       array (
         0 => 'tests\\unit\\services\\attachmentservicetest',
@@ -704,6 +704,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         4 => 'tests\\unit\\services\\shouldrejectuploadtononexistentpost',
         5 => 'tests\\unit\\services\\createuploadedfilemock',
         6 => 'tests\\unit\\services\\teardown',
+        7 => 'tests\\unit\\services\\recursiveremovedirectory',
       ),
       3 => 
       array (
@@ -754,7 +755,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/CsrfProtectionTest.php' => 
     array (
-      0 => '7025d602de6a57b84bb2da36e9a978d7a12d76ef',
+      0 => '176a55f04468d426159eca7ed4466f6fb6c76c1f',
       1 => 
       array (
         0 => 'tests\\security\\csrfprotectiontest',
@@ -794,7 +795,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/XssPreventionTest.php' => 
     array (
-      0 => '075c58420224b3324bb1edf72421730b6bfde4c1',
+      0 => 'fb13bf5fe3fcc97a3e39a9de4afcd1266d284b49',
       1 => 
       array (
         0 => 'tests\\security\\xsspreventiontest',
@@ -813,7 +814,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/FileUploadSecurityTest.php' => 
     array (
-      0 => '2e985e15fbd0ef614294144c3d1c3b773d5ce636',
+      0 => '4906bc3903f20c95b1166aa3e4218afb41be1646',
       1 => 
       array (
         0 => 'tests\\security\\fileuploadsecuritytest',
@@ -936,7 +937,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AttachmentControllerTest.php' => 
     array (
-      0 => '75f4dab6fc8e34c1389e5bbb3146347e3c883ded',
+      0 => '7740e5a4e94a21022d7505b0dfae8241cac8f8dc',
       1 => 
       array (
         0 => 'tests\\integration\\attachmentcontrollertest',
@@ -958,7 +959,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/PostControllerTest.php' => 
     array (
-      0 => '167cbee941d723d07f54587af20b08c2e794cf6e',
+      0 => '1d013e1519129accb3b7a4e6c13b019ca75462ef',
       1 => 
       array (
         0 => 'tests\\integration\\postcontrollertest',
@@ -986,7 +987,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/Http/PostControllerTest.php' => 
     array (
-      0 => 'd3d8e44a8b31888e6e72a3a2819b28463868bcce',
+      0 => '0c1696546e69af868cfc6f3c2fcd015523dd882e',
       1 => 
       array (
         0 => 'tests\\integration\\http\\postcontrollertest',
@@ -1110,7 +1111,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/DTOs/Post/UpdatePostDTOTest.php' => 
     array (
-      0 => 'bdf3b8da4d0c3a045870b476fe9936e790177b28',
+      0 => 'f5b68547762defd63335e83cd592d5505d6235c3',
       1 => 
       array (
         0 => 'tests\\unit\\dtos\\post\\updatepostdtotest',
@@ -1155,7 +1156,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/DTOs/BaseDTOTest.php' => 
     array (
-      0 => '27423beb10b61f05141bd43b9b2b0f6f12f44e59',
+      0 => '54872a8719c4255f43f792cf3eabb74262684169',
       1 => 
       array (
         0 => 'tests\\unit\\dtos\\basedtotest',
@@ -1190,7 +1191,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/DTOs/DTOValidationTest.php' => 
     array (
-      0 => '3998b6a2504b71e75fec44acc1297f978dbec40c',
+      0 => '27c41f98b0a8790b06929b93c580296a747b9bea',
       1 => 
       array (
         0 => 'tests\\unit\\dtos\\dtovalidationtest',
@@ -1226,7 +1227,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Validation/ValidationExceptionTest.php' => 
     array (
-      0 => 'e89074aecb0fade5f43ad04b1c4547f5297c48f7',
+      0 => 'ec349770e9350c88a24c5c02e866acf40a279d47',
       1 => 
       array (
         0 => 'tests\\unit\\validation\\validationexceptiontest',
@@ -1263,7 +1264,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Validation/ValidatorTest.php' => 
     array (
-      0 => '027fcb3854883a7a072bcbf19281155268e6d73c',
+      0 => '71d5b9ff4a2e5377c6a5a4e7ac8a8a6610c6fa11',
       1 => 
       array (
         0 => 'tests\\unit\\validation\\validatortest',
@@ -1365,7 +1366,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/DTOs/DTOControllerIntegrationTest.php' => 
     array (
-      0 => '734d6ede025c366bcfb7c5c7c3be59802795b687',
+      0 => '9b88870e37f50b052287318a89ed80ea1187f7fa',
       1 => 
       array (
         0 => 'tests\\integration\\dtos\\dtocontrollerintegrationtest',
@@ -1388,7 +1389,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/DTOs/DTOValidationIntegrationTest.php' => 
     array (
-      0 => '12eeaaddff5cfda964591f3f346b65fe021d83a2',
+      0 => '7e7d75b3d72a049d4b5188b844fa58d50c596699',
       1 => 
       array (
         0 => 'tests\\integration\\dtos\\dtovalidationintegrationtest',
@@ -1413,7 +1414,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/DIValidationIntegrationTest.php' => 
     array (
-      0 => 'dd04baca1324ddeab62f27030bc8860c9dfcafeb',
+      0 => '85ebbd57fbd129f6a24b781870039098f1b39905',
       1 => 
       array (
         0 => 'tests\\integration\\divalidationintegrationtest',
@@ -1431,6 +1432,590 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         8 => 'tests\\integration\\test_validator_error_message_localization',
         9 => 'tests\\integration\\test_validator_performance_and_memory',
         10 => 'tests\\integration\\test_simplified_validation_scenarios',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_routing_system.php' => 
+    array (
+      0 => 'e091ee6e3f571778a0819c9a2581d24d3af5f873',
+      1 => 
+      array (
+        0 => 'mockserverrequest',
+        1 => 'mockuri',
+      ),
+      2 => 
+      array (
+        0 => '__construct',
+        1 => 'getmethod',
+        2 => 'geturi',
+        3 => '__construct',
+        4 => 'getpath',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_route_cache.php' => 
+    array (
+      0 => 'd766fe630d6a76ddfcee63d7cdb44bd4e4d1c1f6',
+      1 => 
+      array (
+      ),
+      2 => 
+      array (
+        0 => 'createtestroutes',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_middleware_system.php' => 
+    array (
+      0 => '46c3efafd9241643364adde9a866d0ec0f580bad',
+      1 => 
+      array (
+        0 => 'loggingmiddleware',
+        1 => 'authmiddleware',
+      ),
+      2 => 
+      array (
+        0 => 'getmethod',
+        1 => 'geturi',
+        2 => 'getpath',
+        3 => 'withattribute',
+        4 => 'getattribute',
+        5 => 'getattributes',
+        6 => 'getprotocolversion',
+        7 => 'withprotocolversion',
+        8 => 'getheaders',
+        9 => 'hasheader',
+        10 => 'getheader',
+        11 => 'getheaderline',
+        12 => 'withheader',
+        13 => 'withaddedheader',
+        14 => 'withoutheader',
+        15 => 'getbody',
+        16 => '__tostring',
+        17 => 'withbody',
+        18 => 'getrequesttarget',
+        19 => 'withrequesttarget',
+        20 => 'withmethod',
+        21 => 'withuri',
+        22 => 'getserverparams',
+        23 => 'getcookieparams',
+        24 => 'withcookieparams',
+        25 => 'getqueryparams',
+        26 => 'withqueryparams',
+        27 => 'getuploadedfiles',
+        28 => 'withuploadedfiles',
+        29 => 'getparsedbody',
+        30 => 'withparsedbody',
+        31 => 'withoutattribute',
+        32 => '__construct',
+        33 => 'getbody',
+        34 => '__construct',
+        35 => '__tostring',
+        36 => 'getstatuscode',
+        37 => 'withstatus',
+        38 => 'getreasonphrase',
+        39 => 'getprotocolversion',
+        40 => 'withprotocolversion',
+        41 => 'getheaders',
+        42 => 'hasheader',
+        43 => 'getheader',
+        44 => 'getheaderline',
+        45 => 'withheader',
+        46 => 'withaddedheader',
+        47 => 'withoutheader',
+        48 => 'withbody',
+        49 => '__construct',
+        50 => 'execute',
+        51 => '__construct',
+        52 => 'execute',
+        53 => 'handle',
+        54 => 'getbody',
+        55 => '__tostring',
+        56 => 'getstatuscode',
+        57 => 'withstatus',
+        58 => 'getreasonphrase',
+        59 => 'getprotocolversion',
+        60 => 'withprotocolversion',
+        61 => 'getheaders',
+        62 => 'hasheader',
+        63 => 'getheader',
+        64 => 'getheaderline',
+        65 => 'withheader',
+        66 => 'withaddedheader',
+        67 => 'withoutheader',
+        68 => 'withbody',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_controller_integration.php' => 
+    array (
+      0 => '85ffc7604c1795c20c262d4e1ece377e0c0a4873',
+      1 => 
+      array (
+        0 => 'mockstream',
+        1 => 'mockuri',
+        2 => 'mockresponse',
+        3 => 'mockrequest',
+      ),
+      2 => 
+      array (
+        0 => '__tostring',
+        1 => 'close',
+        2 => 'detach',
+        3 => 'getsize',
+        4 => 'tell',
+        5 => 'eof',
+        6 => 'isseekable',
+        7 => 'seek',
+        8 => 'rewind',
+        9 => 'iswritable',
+        10 => 'write',
+        11 => 'isreadable',
+        12 => 'read',
+        13 => 'getcontents',
+        14 => 'getmetadata',
+        15 => '__construct',
+        16 => 'getscheme',
+        17 => 'getauthority',
+        18 => 'getuserinfo',
+        19 => 'gethost',
+        20 => 'getport',
+        21 => 'getpath',
+        22 => 'getquery',
+        23 => 'getfragment',
+        24 => 'withscheme',
+        25 => 'withuserinfo',
+        26 => 'withhost',
+        27 => 'withport',
+        28 => 'withpath',
+        29 => 'withquery',
+        30 => 'withfragment',
+        31 => '__tostring',
+        32 => '__construct',
+        33 => 'getprotocolversion',
+        34 => 'withprotocolversion',
+        35 => 'getheaders',
+        36 => 'hasheader',
+        37 => 'getheader',
+        38 => 'getheaderline',
+        39 => 'withheader',
+        40 => 'withaddedheader',
+        41 => 'withoutheader',
+        42 => 'getbody',
+        43 => 'withbody',
+        44 => 'getstatuscode',
+        45 => 'withstatus',
+        46 => 'getreasonphrase',
+        47 => '__construct',
+        48 => 'getrequesttarget',
+        49 => 'withrequesttarget',
+        50 => 'getmethod',
+        51 => 'withmethod',
+        52 => 'geturi',
+        53 => 'withuri',
+        54 => 'getprotocolversion',
+        55 => 'withprotocolversion',
+        56 => 'getheaders',
+        57 => 'hasheader',
+        58 => 'getheader',
+        59 => 'getheaderline',
+        60 => 'withheader',
+        61 => 'withaddedheader',
+        62 => 'withoutheader',
+        63 => 'getbody',
+        64 => 'withbody',
+        65 => 'getserverparams',
+        66 => 'getcookieparams',
+        67 => 'withcookieparams',
+        68 => 'getqueryparams',
+        69 => 'withqueryparams',
+        70 => 'getuploadedfiles',
+        71 => 'withuploadedfiles',
+        72 => 'getparsedbody',
+        73 => 'withparsedbody',
+        74 => 'getattributes',
+        75 => 'getattribute',
+        76 => 'withattribute',
+        77 => 'withoutattribute',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_multiple_routes.php' => 
+    array (
+      0 => '7d121ab21c629f3d1caa8a2d9f2a7b0740fdcabb',
+      1 => 
+      array (
+      ),
+      2 => 
+      array (
+        0 => '__construct',
+        1 => 'getserverparams',
+        2 => 'getcookieparams',
+        3 => 'withcookieparams',
+        4 => 'getqueryparams',
+        5 => 'withqueryparams',
+        6 => 'getuploadedfiles',
+        7 => 'withuploadedfiles',
+        8 => 'getparsedbody',
+        9 => 'withparsedbody',
+        10 => 'getattributes',
+        11 => 'getattribute',
+        12 => 'withattribute',
+        13 => 'withoutattribute',
+        14 => 'getrequesttarget',
+        15 => 'withrequesttarget',
+        16 => 'getmethod',
+        17 => 'withmethod',
+        18 => 'geturi',
+        19 => '__construct',
+        20 => '__tostring',
+        21 => 'getscheme',
+        22 => 'getauthority',
+        23 => 'getuserinfo',
+        24 => 'gethost',
+        25 => 'getport',
+        26 => 'getpath',
+        27 => 'getquery',
+        28 => 'getfragment',
+        29 => 'withscheme',
+        30 => 'withuserinfo',
+        31 => 'withhost',
+        32 => 'withport',
+        33 => 'withpath',
+        34 => 'withquery',
+        35 => 'withfragment',
+        36 => 'withuri',
+        37 => 'getprotocolversion',
+        38 => 'withprotocolversion',
+        39 => 'getheaders',
+        40 => 'hasheader',
+        41 => 'getheader',
+        42 => 'getheaderline',
+        43 => 'withheader',
+        44 => 'withaddedheader',
+        45 => 'withoutheader',
+        46 => 'getbody',
+        47 => '__tostring',
+        48 => 'close',
+        49 => 'detach',
+        50 => 'getsize',
+        51 => 'tell',
+        52 => 'eof',
+        53 => 'isseekable',
+        54 => 'seek',
+        55 => 'rewind',
+        56 => 'iswritable',
+        57 => 'write',
+        58 => 'isreadable',
+        59 => 'read',
+        60 => 'getcontents',
+        61 => 'getmetadata',
+        62 => 'withbody',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_di_container.php' => 
+    array (
+      0 => 'e7cfd954a7b70415cc97b8460004a250e0bec615',
+      1 => 
+      array (
+      ),
+      2 => 
+      array (
+        0 => 'getserverparams',
+        1 => 'getcookieparams',
+        2 => 'withcookieparams',
+        3 => 'getqueryparams',
+        4 => 'withqueryparams',
+        5 => 'getuploadedfiles',
+        6 => 'withuploadedfiles',
+        7 => 'getparsedbody',
+        8 => 'withparsedbody',
+        9 => 'getattributes',
+        10 => 'getattribute',
+        11 => 'withattribute',
+        12 => 'withoutattribute',
+        13 => 'getrequesttarget',
+        14 => 'withrequesttarget',
+        15 => 'getmethod',
+        16 => 'withmethod',
+        17 => 'geturi',
+        18 => '__construct',
+        19 => '__tostring',
+        20 => 'getscheme',
+        21 => 'getauthority',
+        22 => 'getuserinfo',
+        23 => 'gethost',
+        24 => 'getport',
+        25 => 'getpath',
+        26 => 'getquery',
+        27 => 'getfragment',
+        28 => 'withscheme',
+        29 => 'withuserinfo',
+        30 => 'withhost',
+        31 => 'withport',
+        32 => 'withpath',
+        33 => 'withquery',
+        34 => 'withfragment',
+        35 => 'withuri',
+        36 => 'getprotocolversion',
+        37 => 'withprotocolversion',
+        38 => 'getheaders',
+        39 => 'hasheader',
+        40 => 'getheader',
+        41 => 'getheaderline',
+        42 => 'withheader',
+        43 => 'withaddedheader',
+        44 => 'withoutheader',
+        45 => 'getbody',
+        46 => '__tostring',
+        47 => 'close',
+        48 => 'detach',
+        49 => 'getsize',
+        50 => 'tell',
+        51 => 'eof',
+        52 => 'isseekable',
+        53 => 'seek',
+        54 => 'rewind',
+        55 => 'iswritable',
+        56 => 'write',
+        57 => 'isreadable',
+        58 => 'read',
+        59 => 'getcontents',
+        60 => 'getmetadata',
+        61 => 'withbody',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_controller_simple.php' => 
+    array (
+      0 => '40bc113a14a1762e6cbb7054ec535742177c3067',
+      1 => 
+      array (
+        0 => 'mockstream',
+        1 => 'mockresponse',
+        2 => 'mockrequest',
+      ),
+      2 => 
+      array (
+        0 => '__tostring',
+        1 => 'close',
+        2 => 'detach',
+        3 => 'getsize',
+        4 => 'tell',
+        5 => 'eof',
+        6 => 'isseekable',
+        7 => 'seek',
+        8 => 'rewind',
+        9 => 'iswritable',
+        10 => 'write',
+        11 => 'isreadable',
+        12 => 'read',
+        13 => 'getcontents',
+        14 => 'getmetadata',
+        15 => '__construct',
+        16 => 'getprotocolversion',
+        17 => 'withprotocolversion',
+        18 => 'getheaders',
+        19 => 'hasheader',
+        20 => 'getheader',
+        21 => 'getheaderline',
+        22 => 'withheader',
+        23 => 'withaddedheader',
+        24 => 'withoutheader',
+        25 => 'getbody',
+        26 => 'withbody',
+        27 => 'getstatuscode',
+        28 => 'withstatus',
+        29 => 'getreasonphrase',
+        30 => '__construct',
+        31 => 'getrequesttarget',
+        32 => 'withrequesttarget',
+        33 => 'getmethod',
+        34 => 'withmethod',
+        35 => 'geturi',
+        36 => '__construct',
+        37 => 'getpath',
+        38 => 'withuri',
+        39 => 'getprotocolversion',
+        40 => 'withprotocolversion',
+        41 => 'getheaders',
+        42 => 'hasheader',
+        43 => 'getheader',
+        44 => 'getheaderline',
+        45 => 'withheader',
+        46 => 'withaddedheader',
+        47 => 'withoutheader',
+        48 => 'getbody',
+        49 => 'withbody',
+        50 => 'getserverparams',
+        51 => 'getcookieparams',
+        52 => 'withcookieparams',
+        53 => 'getqueryparams',
+        54 => 'withqueryparams',
+        55 => 'getuploadedfiles',
+        56 => 'withuploadedfiles',
+        57 => 'getparsedbody',
+        58 => 'withparsedbody',
+        59 => 'getattributes',
+        60 => 'getattribute',
+        61 => 'withattribute',
+        62 => 'withoutattribute',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_route_configuration.php' => 
+    array (
+      0 => 'a5e8838e9f5af394d8dd6637ac9d6b37d23f98be',
+      1 => 
+      array (
+      ),
+      2 => 
+      array (
+        0 => 'map',
+        1 => 'setname',
+        2 => 'middleware',
+        3 => 'getname',
+        4 => 'getmiddlewares',
+        5 => 'map',
+        6 => 'setname',
+        7 => 'middleware',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_route_loader_integration.php' => 
+    array (
+      0 => 'f1106840acf64cee74659c89ff34aa9f2654ec16',
+      1 => 
+      array (
+      ),
+      2 => 
+      array (
+        0 => 'getserverparams',
+        1 => 'getcookieparams',
+        2 => 'withcookieparams',
+        3 => 'getqueryparams',
+        4 => 'withqueryparams',
+        5 => 'getuploadedfiles',
+        6 => 'withuploadedfiles',
+        7 => 'getparsedbody',
+        8 => 'withparsedbody',
+        9 => 'getattributes',
+        10 => 'getattribute',
+        11 => 'withattribute',
+        12 => 'withoutattribute',
+        13 => 'getrequesttarget',
+        14 => 'withrequesttarget',
+        15 => 'getmethod',
+        16 => 'withmethod',
+        17 => 'geturi',
+        18 => '__construct',
+        19 => '__tostring',
+        20 => 'getscheme',
+        21 => 'getauthority',
+        22 => 'getuserinfo',
+        23 => 'gethost',
+        24 => 'getport',
+        25 => 'getpath',
+        26 => 'getquery',
+        27 => 'getfragment',
+        28 => 'withscheme',
+        29 => 'withuserinfo',
+        30 => 'withhost',
+        31 => 'withport',
+        32 => 'withpath',
+        33 => 'withquery',
+        34 => 'withfragment',
+        35 => 'withuri',
+        36 => 'getprotocolversion',
+        37 => 'withprotocolversion',
+        38 => 'getheaders',
+        39 => 'hasheader',
+        40 => 'getheader',
+        41 => 'getheaderline',
+        42 => 'withheader',
+        43 => 'withaddedheader',
+        44 => 'withoutheader',
+        45 => 'getbody',
+        46 => '__tostring',
+        47 => 'close',
+        48 => 'detach',
+        49 => 'getsize',
+        50 => 'tell',
+        51 => 'eof',
+        52 => 'isseekable',
+        53 => 'seek',
+        54 => 'rewind',
+        55 => 'iswritable',
+        56 => 'write',
+        57 => 'isreadable',
+        58 => 'read',
+        59 => 'getcontents',
+        60 => 'getmetadata',
+        61 => 'withbody',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_routing_performance.php' => 
+    array (
+      0 => '8fb1c1db89ff1c3f1cb5a296b0280daa91fcb911',
+      1 => 
+      array (
+      ),
+      2 => 
+      array (
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Services/Security/FileSecurityServiceTest.php' => 
+    array (
+      0 => 'dfe04f7b9ab0989984012e6d3fc999a3d6d48db2',
+      1 => 
+      array (
+        0 => 'tests\\unit\\services\\security\\filesecurityservicetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\services\\security\\setup',
+        1 => 'tests\\unit\\services\\security\\testvalidateuploadwithvalidfile',
+        2 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithemptyfile',
+        3 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithoversizedfile',
+        4 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithinvalidmimetype',
+        5 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithmismatchedextensionandmimetype',
+        6 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithpathtraversalinfilename',
+        7 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithnullbyteinfilename',
+        8 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithforbiddenextension',
+        9 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithmaliciouscontent',
+        10 => 'tests\\unit\\services\\security\\testgeneratesecurefilename',
+        11 => 'tests\\unit\\services\\security\\testgeneratesecurefilenamewithprefix',
+        12 => 'tests\\unit\\services\\security\\testsanitizefilename',
+        13 => 'tests\\unit\\services\\security\\testisinalloweddirectorywithvalidpath',
+        14 => 'tests\\unit\\services\\security\\testisinalloweddirectorywithinvalidpath',
+        15 => 'tests\\unit\\services\\security\\testdetectactualmimetypewithnonexistentfile',
+        16 => 'tests\\unit\\services\\security\\testdetectactualmimetypewithvalidfile',
+        17 => 'tests\\unit\\services\\security\\createuploadedfile',
       ),
       3 => 
       array (

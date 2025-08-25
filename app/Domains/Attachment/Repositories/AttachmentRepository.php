@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Attachment\Repositories;
 
 use App\Domains\Attachment\Models\Attachment;
-use App\Infrastructure\Services\CacheService;
+use App\Shared\Contracts\CacheServiceInterface;
 use PDO;
 use Ramsey\Uuid\Uuid;
 
@@ -13,7 +13,7 @@ class AttachmentRepository
 {
     public function __construct(
         private PDO $db,
-        private CacheService $cache,
+        private CacheServiceInterface $cache,
     ) {}
 
     public function create(array $data): Attachment

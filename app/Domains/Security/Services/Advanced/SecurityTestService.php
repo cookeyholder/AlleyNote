@@ -191,23 +191,13 @@ class SecurityTestService implements SecurityTestInterface
         // 建立測試檔案物件
         $testFile = $this->createMockUploadedFile();
 
-        // 測試檔案驗證
-        try {
-            // 跳過實際的檔案驗證測試，因為需要真實的 PSR 檔案物件
-            $results['tests'][] = [
-                'name' => '檔案上傳驗證',
-                'status' => 'SKIP',
-                'message' => '檔案驗證功能需要真實檔案進行測試',
-            ];
-            $results['passed']++;
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => '檔案上傳驗證',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
+        // 測試檔案驗證 - 跳過實際的檔案驗證測試，因為需要真實的 PSR 檔案物件
+        $results['tests'][] = [
+            'name' => '檔案上傳驗證',
+            'status' => 'SKIP',
+            'message' => '檔案驗證功能需要真實檔案進行測試',
+        ];
+        $results['passed']++;
 
         // 測試檔名清理
         try {
@@ -318,7 +308,7 @@ class SecurityTestService implements SecurityTestInterface
             $exception = new Exception('Test exception');
             $response = $this->errorService->handleException($exception, false);
 
-            if (is_array($response) && isset($response['error'])) {
+            if (isset($response['error'])) {
                 $results['tests'][] = [
                     'name' => '錯誤處理',
                     'status' => 'PASS',

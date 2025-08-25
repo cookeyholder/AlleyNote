@@ -13,6 +13,7 @@ class CacheService implements CacheServiceInterface
     private const TTL = 3600; // 預設快取時間 1 小時
 
     // 快取統計
+    /** @var array<string, int> */
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
@@ -236,7 +237,7 @@ class CacheService implements CacheServiceInterface
                 ? round($this->stats['hits'] / ($this->stats['hits'] + $this->stats['misses']) * 100, 2)
                 : 0,
             'total_size' => $this->stats['size'],
-            'file_count' => $files ? count($files) : 0,
+            'file_count' => is_array($files) ? count($files) : 0,
             'cache_path' => $this->cachePath,
         ];
     }

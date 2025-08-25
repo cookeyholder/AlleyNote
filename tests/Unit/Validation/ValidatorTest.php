@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Validation;
 
 use App\Shared\Contracts\ValidatorInterface;
-use App\Shared\Validation\ValidationException;
+use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\Validator;
 use stdClass;
 use Tests\TestCase;

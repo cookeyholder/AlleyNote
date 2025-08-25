@@ -5,18 +5,20 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\PostController;
-use App\Contracts\Services\Security\CsrfProtectionServiceInterface;
-use App\Contracts\Services\Security\XssProtectionServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Models\Post;
+use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
+use App\Domains\Security\Contracts\XssProtectionServiceInterface;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
+use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -24,13 +26,20 @@ use Tests\TestCase;
 
 class PostControllerTest extends TestCase
 {
+    /** @var PostServiceInterface&MockInterface */
     private PostServiceInterface $postService;
 
+    /** @var XssProtectionServiceInterface&MockInterface */
     private XssProtectionServiceInterface $xssProtection;
 
+    /** @var CsrfProtectionServiceInterface&MockInterface */
     private CsrfProtectionServiceInterface $csrfProtection;
 
+    /** @var ValidatorInterface&MockInterface */
     private ValidatorInterface $validator;
+
+    /** @var OutputSanitizerInterface&MockInterface */
+    private OutputSanitizerInterface $sanitizer;
 
     private $request;
 
@@ -49,6 +58,7 @@ class PostControllerTest extends TestCase
         $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
         $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
+        $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
 
         // 設定預設行為
         $this->xssProtection->shouldReceive('cleanArray')
@@ -62,6 +72,13 @@ class PostControllerTest extends TestCase
         $this->csrfProtection->shouldReceive('generateToken')
             ->byDefault()
             ->andReturn('new-token');
+
+        // 設定 sanitizer 預設行為 - 返回原值
+        $this->sanitizer->shouldReceive('sanitizeHtml')
+            ->andReturnUsing(function ($input) {
+                return $input;
+            })
+            ->byDefault();
 
         // 設定 validator 預設行為
         $this->validator->shouldReceive('validateOrFail')
@@ -118,6 +135,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->index($this->request, $this->response);
 
@@ -164,6 +182,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->show($this->request, $this->response, ['id' => $postId]);
 
@@ -171,7 +190,7 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($this->currentResponseData['success']);
         $this->assertEquals('成功取得貼文', $this->currentResponseData['message']);
-        $this->assertEquals($post->toSafeArray(), $this->currentResponseData['data']);
+        $this->assertEquals($post->toSafeArray($this->sanitizer), $this->currentResponseData['data']);
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
@@ -202,6 +221,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -209,7 +229,7 @@ class PostControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertTrue($this->currentResponseData['success']);
         $this->assertEquals('貼文建立成功', $this->currentResponseData['message']);
-        $this->assertEquals($createdPost->toSafeArray(), $this->currentResponseData['data']);
+        $this->assertEquals($createdPost->toSafeArray($this->sanitizer), $this->currentResponseData['data']);
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
@@ -238,6 +258,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -278,6 +299,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -285,7 +307,7 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($this->currentResponseData['success']);
         $this->assertEquals('貼文更新成功', $this->currentResponseData['message']);
-        $this->assertEquals($updatedPost->toSafeArray(), $this->currentResponseData['data']);
+        $this->assertEquals($updatedPost->toSafeArray($this->sanitizer), $this->currentResponseData['data']);
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
@@ -316,6 +338,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -347,6 +370,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->delete($this->request, $this->response, ['id' => '1']);
 
@@ -382,6 +406,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 
@@ -414,6 +439,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 
@@ -471,6 +497,9 @@ class PostControllerTest extends TestCase
         return $stream;
     }
 
+    /**
+     * @return ResponseInterface&MockInterface
+     */
     protected function createResponseMock(): ResponseInterface
     {
         $response = Mockery::mock(ResponseInterface::class);
