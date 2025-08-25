@@ -7,6 +7,7 @@ namespace App\Domains\Post\Contracts;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Models\Post;
+use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 
 interface PostServiceInterface

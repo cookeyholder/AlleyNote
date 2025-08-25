@@ -429,7 +429,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Controllers/IpControllerTest.php' => 
     array (
-      0 => '0d93398d9c794f23a4ca0d2cb234f0123af02524',
+      0 => '69514de4a65f08d70f2a27f46086cd13594a3349',
       1 => 
       array (
         0 => 'tests\\unit\\controllers\\ipcontrollertest',
@@ -1156,7 +1156,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/DTOs/BaseDTOTest.php' => 
     array (
-      0 => 'eda7547d4db316f0e56fb30c0440f9b6b7467bbc',
+      0 => '54872a8719c4255f43f792cf3eabb74262684169',
       1 => 
       array (
         0 => 'tests\\unit\\dtos\\basedtotest',
@@ -1414,7 +1414,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/DIValidationIntegrationTest.php' => 
     array (
-      0 => '5191755e225219d3f867ba99a186fc0017bf49af',
+      0 => '85ebbd57fbd129f6a24b781870039098f1b39905',
       1 => 
       array (
         0 => 'tests\\integration\\divalidationintegrationtest',
@@ -1984,6 +1984,38 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       ),
       2 => 
       array (
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Services/Security/FileSecurityServiceTest.php' => 
+    array (
+      0 => 'dfe04f7b9ab0989984012e6d3fc999a3d6d48db2',
+      1 => 
+      array (
+        0 => 'tests\\unit\\services\\security\\filesecurityservicetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\services\\security\\setup',
+        1 => 'tests\\unit\\services\\security\\testvalidateuploadwithvalidfile',
+        2 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithemptyfile',
+        3 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithoversizedfile',
+        4 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithinvalidmimetype',
+        5 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithmismatchedextensionandmimetype',
+        6 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithpathtraversalinfilename',
+        7 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithnullbyteinfilename',
+        8 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithforbiddenextension',
+        9 => 'tests\\unit\\services\\security\\testvalidateuploadfailswithmaliciouscontent',
+        10 => 'tests\\unit\\services\\security\\testgeneratesecurefilename',
+        11 => 'tests\\unit\\services\\security\\testgeneratesecurefilenamewithprefix',
+        12 => 'tests\\unit\\services\\security\\testsanitizefilename',
+        13 => 'tests\\unit\\services\\security\\testisinalloweddirectorywithvalidpath',
+        14 => 'tests\\unit\\services\\security\\testisinalloweddirectorywithinvalidpath',
+        15 => 'tests\\unit\\services\\security\\testdetectactualmimetypewithnonexistentfile',
+        16 => 'tests\\unit\\services\\security\\testdetectactualmimetypewithvalidfile',
+        17 => 'tests\\unit\\services\\security\\createuploadedfile',
       ),
       3 => 
       array (

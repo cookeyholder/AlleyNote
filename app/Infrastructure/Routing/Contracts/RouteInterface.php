@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Contracts;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -31,6 +32,11 @@ interface RouteInterface
     public function getName(): ?string;
 
     /**
+     * 設定路由名稱.
+     */
+    public function setName(string $name): self;
+
+    /**
      * 取得路由處理器.
      *
      * @return callable|string 處理器
@@ -43,6 +49,13 @@ interface RouteInterface
      * @param MiddlewareInterface $middleware 中介軟體實例
      */
     public function addMiddleware(MiddlewareInterface $middleware): self;
+
+    /**
+     * 新增中介軟體（別名方法）.
+     *
+     * @param MiddlewareInterface|string $middleware 中介軟體實例或類別名稱
+     */
+    public function middleware(MiddlewareInterface|string $middleware): self;
 
     /**
      * 新增多個中介軟體.
