@@ -2490,7 +2490,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Contracts/RefreshTokenRepositoryInterfaceTest.php' => 
     array (
-      0 => 'c6c501a5b4bd06139ff1430ba297f33ed804ca17',
+      0 => 'b71dba47089e1e1eb5fd9a7f3e2cd240793a27e8',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\contracts\\refreshtokenrepositoryinterfacetest',
@@ -2568,6 +2568,50 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         31 => 'tests\\unit\\domains\\auth\\contracts\\testinterfaceextendsnootherinterface',
         32 => 'tests\\unit\\domains\\auth\\contracts\\testinterfacehasnoconstants',
         33 => 'tests\\unit\\domains\\auth\\contracts\\testinterfacehasnoproperties',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php' => 
+    array (
+      0 => 'd6bb0a3118b816e1bb0573197c7f2ad5cee78d78',
+      1 => 
+      array (
+        0 => 'tests\\unit\\infrastructure\\auth\\jwt\\firebasejwtprovidertest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\infrastructure\\auth\\jwt\\setup',
+        1 => 'tests\\unit\\infrastructure\\auth\\jwt\\teardown',
+        2 => 'tests\\unit\\infrastructure\\auth\\jwt\\testconstructorsuccessfullyinitializesprovider',
+        3 => 'tests\\unit\\infrastructure\\auth\\jwt\\testconstructorthrowsexceptionforinvalidprivatekey',
+        4 => 'tests\\unit\\infrastructure\\auth\\jwt\\testconstructorthrowsexceptionforinvalidpublickey',
+        5 => 'tests\\unit\\infrastructure\\auth\\jwt\\testconstructorthrowsexceptionformismatchedkeys',
+        6 => 'tests\\unit\\infrastructure\\auth\\jwt\\testgenerateaccesstokensuccessfully',
+        7 => 'tests\\unit\\infrastructure\\auth\\jwt\\testgeneraterefreshtokensuccessfully',
+        8 => 'tests\\unit\\infrastructure\\auth\\jwt\\testgenerateaccesstokenwithcustomttl',
+        9 => 'tests\\unit\\infrastructure\\auth\\jwt\\testgeneraterefreshtokenwithcustomttl',
+        10 => 'tests\\unit\\infrastructure\\auth\\jwt\\testvalidateaccesstokensuccessfully',
+        11 => 'tests\\unit\\infrastructure\\auth\\jwt\\testvalidaterefreshtokensuccessfully',
+        12 => 'tests\\unit\\infrastructure\\auth\\jwt\\testvalidatetokenthrowsexceptionforemptytoken',
+        13 => 'tests\\unit\\infrastructure\\auth\\jwt\\testvalidatetokenthrowsexceptionformalformedtoken',
+        14 => 'tests\\unit\\infrastructure\\auth\\jwt\\testvalidatetokenthrowsexceptionforexpiredtoken',
+        15 => 'tests\\unit\\infrastructure\\auth\\jwt\\testvalidatetokenthrowsexceptionforwrongtokentype',
+        16 => 'tests\\unit\\infrastructure\\auth\\jwt\\testvalidatetokenthrowsexceptionforinvalidsignature',
+        17 => 'tests\\unit\\infrastructure\\auth\\jwt\\testparsetokenunsafesuccessfully',
+        18 => 'tests\\unit\\infrastructure\\auth\\jwt\\testparsetokenunsafethrowsexceptionforemptytoken',
+        19 => 'tests\\unit\\infrastructure\\auth\\jwt\\testparsetokenunsafethrowsexceptionforinvalidformat',
+        20 => 'tests\\unit\\infrastructure\\auth\\jwt\\testgettokenexpirationsuccessfully',
+        21 => 'tests\\unit\\infrastructure\\auth\\jwt\\testgettokenexpirationreturnsnullforinvalidtoken',
+        22 => 'tests\\unit\\infrastructure\\auth\\jwt\\testistokenexpiredforvalidtoken',
+        23 => 'tests\\unit\\infrastructure\\auth\\jwt\\testistokenexpiredforexpiredtoken',
+        24 => 'tests\\unit\\infrastructure\\auth\\jwt\\testistokenexpiredreturnsfalseforinvalidtoken',
+        25 => 'tests\\unit\\infrastructure\\auth\\jwt\\testvalidatetokenthrowsexceptionforinvalidissuer',
+        26 => 'tests\\unit\\infrastructure\\auth\\jwt\\testvalidatetokenthrowsexceptionforinvalidaudience',
+        27 => 'tests\\unit\\infrastructure\\auth\\jwt\\testgeneratedtokenshaveuniquejti',
+        28 => 'tests\\unit\\infrastructure\\auth\\jwt\\generatetestkeys',
+        29 => 'tests\\unit\\infrastructure\\auth\\jwt\\generatealternativekeys',
       ),
       3 => 
       array (

@@ -376,10 +376,27 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
     public function testAllRequiredMethodsExist(): void
     {
         $expectedMethods = [
-            'create', 'findByJti', 'findByTokenHash', 'findByUserId', 'findByUserIdAndDevice',
-            'updateLastUsed', 'revoke', 'revokeAllByUserId', 'revokeAllByDevice', 'delete',
-            'isRevoked', 'isExpired', 'isValid', 'cleanup', 'cleanupRevoked', 'getUserTokenStats',
-            'getTokenFamily', 'revokeTokenFamily', 'batchCreate', 'batchRevoke', 'getTokensNearExpiry',
+            'create',
+            'findByJti',
+            'findByTokenHash',
+            'findByUserId',
+            'findByUserIdAndDevice',
+            'updateLastUsed',
+            'revoke',
+            'revokeAllByUserId',
+            'revokeAllByDevice',
+            'delete',
+            'isRevoked',
+            'isExpired',
+            'isValid',
+            'cleanup',
+            'cleanupRevoked',
+            'getUserTokenStats',
+            'getTokenFamily',
+            'revokeTokenFamily',
+            'batchCreate',
+            'batchRevoke',
+            'getTokensNearExpiry',
             'getSystemStats',
         ];
 
