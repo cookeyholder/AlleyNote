@@ -8,9 +8,9 @@
 
 總任務數: **24 項**  
 狀態統計:
-- ⏳ 未開始: 18 項
+- ⏳ 未開始: 17 項
 - 🔄 進行中: 0 項  
-- ✅ 已完成: 6 項
+- ✅ 已完成: 7 項
 
 ---
 
@@ -134,7 +134,7 @@
 ### 2.1 實作 Firebase JWT Provider
 - **優先級**: 高
 - **預估時間**: 90分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 建立 FirebaseJwtProvider 包裝類別
   - 實作 RS256 token 產生、驗證、解析功能
@@ -147,7 +147,9 @@
   - ✅ 正確處理所有例外情況
   - ✅ 包含完整的單元測試
 - **相依任務**: 1.1, 1.3, 1.5
-- **檔案異動**: `app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php`
+- **完成日期**: 2025-08-26
+- **檔案異動**: `app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php`, `app/Domains/Auth/Exceptions/JwtConfigurationException.php`, `app/Domains/Auth/Exceptions/TokenValidationException.php`, `app/Domains/Auth/Exceptions/TokenParsingException.php`, `tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php`
+- **測試覆蓋率**: 26 個測試，53 個斷言，100% 通過
 
 ### 2.2 實作 JwtTokenService
 - **優先級**: 高
