@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Content;
 
+use App\Domains\Security\Services\Core\XssProtectionService;
+use App\Domains\Post\Services\RichTextProcessorService;
+use App\Domains\Post\Services\ContentModerationService;
+
 /**
  * XSS 防護擴展服務.
  *
