@@ -21,15 +21,15 @@ final class CreateTokenBlacklistTable extends AbstractMigration
     {
         $table = $this->table('token_blacklist', ['id' => false, 'primary_key' => 'id']);
         $table->addColumn('id', 'integer', ['identity' => true])
-              ->addColumn('jti', 'string', ['limit' => 255, 'null' => false])
-              ->addColumn('token_type', 'string', ['limit' => 20, 'null' => false])
-              ->addColumn('user_id', 'integer', ['null' => true])
-              ->addColumn('expires_at', 'datetime', ['null' => false])
-              ->addColumn('blacklisted_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP', 'null' => false])
-              ->addColumn('reason', 'string', ['limit' => 255, 'null' => true])
-              ->addIndex(['jti'], ['unique' => true])
-              ->addIndex(['expires_at'])
-              ->addForeignKey('user_id', 'users', 'id', ['delete' => 'SET_NULL', 'update' => 'NO_ACTION'])
-              ->create();
+            ->addColumn('jti', 'string', ['limit' => 255, 'null' => false])
+            ->addColumn('token_type', 'string', ['limit' => 20, 'null' => false])
+            ->addColumn('user_id', 'integer', ['null' => true])
+            ->addColumn('expires_at', 'datetime', ['null' => false])
+            ->addColumn('blacklisted_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP', 'null' => false])
+            ->addColumn('reason', 'string', ['limit' => 255, 'null' => true])
+            ->addIndex(['jti'], ['unique' => true])
+            ->addIndex(['expires_at'])
+            ->addForeignKey('user_id', 'users', 'id', ['delete' => 'SET_NULL', 'update' => 'NO_ACTION'])
+            ->create();
     }
 }
