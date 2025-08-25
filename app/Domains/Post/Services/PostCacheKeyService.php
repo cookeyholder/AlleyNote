@@ -5,18 +5,19 @@ declare(strict_types=1);
 namespace App\Domains\Post\Services;
 
 /**
- * Post 相關的快取鍵服務
- * 
+ * Post 相關的快取鍵服務.
+ *
  * 此服務負責產生 Post Domain 相關的快取鍵，
  * 避免 Domain 層直接依賴 Infrastructure 層的 CacheKeys 類別
  */
 class PostCacheKeyService
 {
     private const PREFIX = 'alleynote';
+
     private const SEPARATOR = ':';
 
     /**
-     * 建立快取鍵的通用方法
+     * 建立快取鍵的通用方法.
      */
     private static function buildKey(...$parts): string
     {
@@ -30,11 +31,12 @@ class PostCacheKeyService
     }
 
     /**
-     * 建立模式匹配的快取鍵（用於刪除相關快取）
+     * 建立模式匹配的快取鍵（用於刪除相關快取）.
      */
     private static function pattern(...$parts): string
     {
         $pattern = self::buildKey(...$parts);
+
         return $pattern . '*';
     }
 

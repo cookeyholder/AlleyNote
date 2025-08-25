@@ -7,6 +7,7 @@ namespace App\Domains\Post\DTOs;
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
+use App\Shared\Exceptions\ValidationException;
 use DateTime;
 
 /**
@@ -30,7 +31,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array $data 輸入資料
-     * @throws \App\Shared\Exceptions\ValidationException 當驗證失敗時
+     * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
     {
@@ -217,7 +218,7 @@ class UpdatePostDTO extends BaseDTO
      *
      * @param array $data 要驗證的資料
      * @return array 驗證通過的資料
-     * @throws \App\Shared\Exceptions\ValidationException 當驗證失敗時
+     * @throws ValidationException 當驗證失敗時
      */
     protected function validatePartialData(array $data): array
     {

@@ -9,7 +9,6 @@ use App\Shared\Exceptions\ValidationException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use RuntimeException;
 
 class FileSecurityServiceTest extends TestCase
 {
@@ -30,7 +29,7 @@ class FileSecurityServiceTest extends TestCase
             content: $validJpegContent,
             filename: 'test.jpg',
             mimeType: 'image/jpeg',
-            size: strlen($validJpegContent)
+            size: strlen($validJpegContent),
         );
 
         $this->assertNull($this->service->validateUpload($file));
@@ -42,7 +41,7 @@ class FileSecurityServiceTest extends TestCase
             content: '',
             filename: 'empty.jpg',
             mimeType: 'image/jpeg',
-            size: 0
+            size: 0,
         );
 
         $this->expectException(ValidationException::class);
@@ -56,7 +55,7 @@ class FileSecurityServiceTest extends TestCase
             content: str_repeat('x', 11 * 1024 * 1024), // 11MB
             filename: 'large.jpg',
             mimeType: 'image/jpeg',
-            size: 11 * 1024 * 1024
+            size: 11 * 1024 * 1024,
         );
 
         $this->expectException(ValidationException::class);
@@ -70,7 +69,7 @@ class FileSecurityServiceTest extends TestCase
             content: 'test content',
             filename: 'test.exe',
             mimeType: 'application/x-executable',
-            size: 100
+            size: 100,
         );
 
         $this->expectException(ValidationException::class);
@@ -84,7 +83,7 @@ class FileSecurityServiceTest extends TestCase
             content: 'test content',
             filename: 'test.jpg',
             mimeType: 'application/pdf', // MIME type doesn't match extension
-            size: 100
+            size: 100,
         );
 
         $this->expectException(ValidationException::class);
@@ -98,7 +97,7 @@ class FileSecurityServiceTest extends TestCase
             content: 'test content',
             filename: '../../../malicious.jpg',
             mimeType: 'image/jpeg',
-            size: 100
+            size: 100,
         );
 
         $this->expectException(ValidationException::class);
@@ -112,7 +111,7 @@ class FileSecurityServiceTest extends TestCase
             content: 'test content',
             filename: "test\0.jpg",
             mimeType: 'image/jpeg',
-            size: 100
+            size: 100,
         );
 
         $this->expectException(ValidationException::class);
@@ -126,7 +125,7 @@ class FileSecurityServiceTest extends TestCase
             content: 'test content',
             filename: 'script.php.jpg', // Contains forbidden .php extension
             mimeType: 'image/jpeg',
-            size: 100
+            size: 100,
         );
 
         $this->expectException(ValidationException::class);
@@ -140,7 +139,7 @@ class FileSecurityServiceTest extends TestCase
             content: '<script>alert("xss")</script>',
             filename: 'malicious.txt',
             mimeType: 'text/plain',
-            size: 30
+            size: 30,
         );
 
         $this->expectException(ValidationException::class);
@@ -189,6 +188,7 @@ class FileSecurityServiceTest extends TestCase
         $this->assertLessThanOrEqual(255, strlen($result), 'Filename should be truncated to 255 characters');
         // Note: The current implementation may cut off the extension, this is expected behavior
     }
+
     public function testIsInAllowedDirectoryWithValidPath(): void
     {
         $tempDir = sys_get_temp_dir();
@@ -197,7 +197,7 @@ class FileSecurityServiceTest extends TestCase
 
         // Create directory structure
         if (!is_dir($allowedDir)) {
-            mkdir($allowedDir, 0755, true);
+            mkdir($allowedDir, 0o755, true);
         }
         file_put_contents($testFile, 'test');
 
@@ -246,14 +246,14 @@ class FileSecurityServiceTest extends TestCase
     }
 
     /**
-     * Helper method to create mock UploadedFileInterface
+     * Helper method to create mock UploadedFileInterface.
      */
     private function createUploadedFile(
         string $content,
         string $filename,
         string $mimeType,
         int $size,
-        int $error = UPLOAD_ERR_OK
+        int $error = UPLOAD_ERR_OK,
     ): UploadedFileInterface {
         $stream = $this->createMock(StreamInterface::class);
         $stream->method('read')

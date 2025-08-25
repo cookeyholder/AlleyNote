@@ -34,7 +34,7 @@ class BaseDTOTest extends TestCase
      */
     private function createTestDTO(): BaseDTO
     {
-        return new class($this->validator) extends BaseDTO {
+        return new class ($this->validator) extends BaseDTO {
             public string $name = '';
 
             public int $age = 0;

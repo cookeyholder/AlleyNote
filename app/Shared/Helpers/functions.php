@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Models\Post;
-use App\Services\OutputSanitizer;
 use Ramsey\Uuid\Uuid;
 
 if (!function_exists('generate_uuid')) {

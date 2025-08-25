@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Shared\Contracts\ValidatorInterface;
-use App\Shared\Validation\Factory\ValidatorFactory;
 use App\Shared\Exceptions\ValidationException;
+use App\Shared\Validation\Factory\ValidatorFactory;
 use DI\Container;
 use DI\ContainerBuilder;
 use Tests\TestCase;

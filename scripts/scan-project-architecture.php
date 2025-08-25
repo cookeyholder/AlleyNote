@@ -26,11 +26,11 @@ class ProjectArchitectureScanner
     ];
 
     private string $projectRoot;
-    private array $excludeDirs = [
+    private array $excludeDirectories = [
+        'tests',
         'vendor',
         'node_modules',
         '.git',
-        'coverage_report',
         'coverage-reports',
         'storage',
         'database/backups',
@@ -620,7 +620,7 @@ class ProjectArchitectureScanner
 
     private function shouldExclude(string $path): bool
     {
-        foreach ($this->excludeDirs as $excludeDir) {
+        foreach ($this->excludeDirectories as $excludeDir) {
             if (str_contains($path, '/' . $excludeDir . '/') || str_ends_with($path, '/' . $excludeDir)) {
                 return true;
             }

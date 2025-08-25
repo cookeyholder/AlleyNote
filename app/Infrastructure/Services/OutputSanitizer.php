@@ -7,7 +7,7 @@ namespace App\Infrastructure\Services;
 use App\Shared\Contracts\OutputSanitizerInterface;
 
 /**
- * 向下相容的靜態輸出清理器
+ * 向下相容的靜態輸出清理器.
  * @deprecated 請遷移到使用 OutputSanitizerService 的實例方法
  */
 class OutputSanitizer
@@ -68,7 +68,7 @@ class OutputSanitizer
 }
 
 /**
- * 實作 DDD 合規的輸出清理服務
+ * 實作 DDD 合規的輸出清理服務.
  */
 class OutputSanitizerService implements OutputSanitizerInterface
 {

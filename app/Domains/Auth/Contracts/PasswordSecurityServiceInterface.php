@@ -26,7 +26,7 @@ interface PasswordSecurityServiceInterface
     /**
      * 驗證密碼強度.
      *
-     * @throws \App\Shared\Exceptions\ValidationException
+     * @throws ValidationException
      */
     public function validatePassword(string $password): void;
 

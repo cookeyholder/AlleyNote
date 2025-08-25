@@ -6,6 +6,7 @@ namespace App\Domains\Attachment\DTOs;
 
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
+use App\Shared\Exceptions\ValidationException;
 
 /**
  * 建立附件的資料傳輸物件.
@@ -31,7 +32,7 @@ class CreateAttachmentDTO extends BaseDTO
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array $data 輸入資料
-     * @throws \App\Shared\Exceptions\ValidationException 當驗證失敗時
+     * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
     {

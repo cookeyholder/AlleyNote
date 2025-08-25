@@ -6,6 +6,7 @@ namespace App\Domains\Auth\DTOs;
 
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
+use App\Shared\Exceptions\ValidationException;
 
 /**
  * 使用者註冊的資料傳輸物件.
@@ -27,7 +28,7 @@ class RegisterUserDTO extends BaseDTO
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array $data 輸入資料
-     * @throws \App\Shared\Exceptions\ValidationException 當驗證失敗時
+     * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
     {
@@ -236,7 +237,7 @@ class RegisterUserDTO extends BaseDTO
      *
      * @param array $data 輸入資料
      * @return array 驗證通過的資料
-     * @throws \App\Shared\Exceptions\ValidationException 當驗證失敗時
+     * @throws ValidationException 當驗證失敗時
      */
     protected function validate(array $data): array
     {

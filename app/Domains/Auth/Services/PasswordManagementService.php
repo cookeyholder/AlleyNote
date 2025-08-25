@@ -27,7 +27,7 @@ class PasswordManagementService
      * @param int $userId 使用者 ID
      * @param string $currentPassword 目前密碼
      * @param string $newPassword 新密碼
-     * @throws \App\Shared\Exceptions\ValidationException 當密碼驗證失敗時
+     * @throws ValidationException 當密碼驗證失敗時
      * @throws InvalidArgumentException 當使用者不存在或目前密碼錯誤時
      */
     public function changePassword(int $userId, string $currentPassword, string $newPassword): bool
@@ -55,7 +55,7 @@ class PasswordManagementService
      *
      * @param int $userId 使用者 ID
      * @param string $newPassword 新密碼
-     * @throws \App\Shared\Exceptions\ValidationException 當密碼驗證失敗時
+     * @throws ValidationException 當密碼驗證失敗時
      */
     public function resetPassword(int $userId, string $newPassword): bool
     {

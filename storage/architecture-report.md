@@ -1,6 +1,6 @@
 # 專案架構分析報告
 
-**生成時間**: 2025-08-25 15:59:13
+**生成時間**: 2025-08-25 20:36:15
 
 ## 📁 目錄結構
 
@@ -136,6 +136,9 @@
 - `app/Infrastructure/Cache`
 - `app/Infrastructure/Cache/..`
 - `app/Infrastructure/Cache/.`
+- `app/Infrastructure/Http`
+- `app/Infrastructure/Http/..`
+- `app/Infrastructure/Http/.`
 - `app/Infrastructure/Database`
 - `app/Infrastructure/Database/..`
 - `app/Infrastructure/Database/.`
@@ -258,84 +261,6 @@
 - `.vscode`
 - `.vscode/..`
 - `.vscode/.`
-- `tests`
-- `tests/..`
-- `tests/UI`
-- `tests/UI/..`
-- `tests/UI/.`
-- `tests/Integration`
-- `tests/Integration/..`
-- `tests/Integration/Http`
-- `tests/Integration/Http/..`
-- `tests/Integration/Http/.`
-- `tests/Integration/Repositories`
-- `tests/Integration/Repositories/..`
-- `tests/Integration/Repositories/.`
-- `tests/Integration/.`
-- `tests/Integration/DTOs`
-- `tests/Integration/DTOs/..`
-- `tests/Integration/DTOs/.`
-- `tests/.`
-- `tests/Unit`
-- `tests/Unit/..`
-- `tests/Unit/Cache`
-- `tests/Unit/Cache/..`
-- `tests/Unit/Cache/.`
-- `tests/Unit/Http`
-- `tests/Unit/Http/..`
-- `tests/Unit/Http/.`
-- `tests/Unit/Database`
-- `tests/Unit/Database/..`
-- `tests/Unit/Database/.`
-- `tests/Unit/Repositories`
-- `tests/Unit/Repositories/..`
-- `tests/Unit/Repositories/.`
-- `tests/Unit/.`
-- `tests/Unit/Exceptions`
-- `tests/Unit/Exceptions/..`
-- `tests/Unit/Exceptions/.`
-- `tests/Unit/Controllers`
-- `tests/Unit/Controllers/..`
-- `tests/Unit/Controllers/.`
-- `tests/Unit/Models`
-- `tests/Unit/Models/..`
-- `tests/Unit/Models/.`
-- `tests/Unit/DTOs`
-- `tests/Unit/DTOs/..`
-- `tests/Unit/DTOs/.`
-- `tests/Unit/DTOs/Post`
-- `tests/Unit/DTOs/Post/..`
-- `tests/Unit/DTOs/Post/.`
-- `tests/Unit/Services`
-- `tests/Unit/Services/..`
-- `tests/Unit/Services/Enums`
-- `tests/Unit/Services/Enums/..`
-- `tests/Unit/Services/Enums/.`
-- `tests/Unit/Services/.`
-- `tests/Unit/Services/Security`
-- `tests/Unit/Services/Security/..`
-- `tests/Unit/Services/Security/.`
-- `tests/Unit/Validation`
-- `tests/Unit/Validation/..`
-- `tests/Unit/Validation/.`
-- `tests/Unit/Repository`
-- `tests/Unit/Repository/..`
-- `tests/Unit/Repository/.`
-- `tests/Unit/Factory`
-- `tests/Unit/Factory/..`
-- `tests/Unit/Factory/.`
-- `tests/Security`
-- `tests/Security/..`
-- `tests/Security/.`
-- `tests/Factory`
-- `tests/Factory/..`
-- `tests/Factory/.`
-- `tests/Factory/Abstracts`
-- `tests/Factory/Abstracts/..`
-- `tests/Factory/Abstracts/.`
-- `tests/manual`
-- `tests/manual/..`
-- `tests/manual/.`
 
 ## 🏷️ 命名空間分析
 
@@ -472,6 +397,11 @@
 - app/Infrastructure/Cache/CacheManager.php
 - app/Infrastructure/Cache/CacheKeys.php
 
+### `App\Infrastructure\Http`
+- app/Infrastructure/Http/ServerRequestFactory.php
+- app/Infrastructure/Http/ServerRequest.php
+- app/Infrastructure/Http/Uri.php
+
 ### `App\Infrastructure\Database`
 - app/Infrastructure/Database/DatabaseConnection.php
 
@@ -591,116 +521,6 @@
 ### `$new`
 - scripts/ddd-namespace-updater.php
 
-### `Tests\UI`
-- tests/UI/UITestCase.php
-- tests/UI/CrossBrowserTest.php
-- tests/UI/PostUITest.php
-- tests/UI/UserExperienceTest.php
-
-### `Tests`
-- tests/TestCase.php
-
-### `Tests\Integration`
-- tests/Integration/DIValidationIntegrationTest.php
-- tests/Integration/AttachmentUploadTest.php
-- tests/Integration/PostControllerTest_new.php
-- tests/Integration/AuthControllerTest.php
-- tests/Integration/AttachmentControllerTest.php
-- tests/Integration/DatabaseBackupTest.php
-- tests/Integration/FileSystemBackupTest.php
-- tests/Integration/RateLimitTest.php
-- tests/Integration/PostControllerTest.php
-
-### `Tests\Integration\Http`
-- tests/Integration/Http/PostControllerTest.php
-
-### `Tests\Integration\Repositories`
-- tests/Integration/Repositories/PostRepositoryTest.php
-
-### `Tests\Integration\DTOs`
-- tests/Integration/DTOs/DTOValidationIntegrationTest.php
-- tests/Integration/DTOs/DTOControllerIntegrationTest.php
-
-### `Tests\Unit\Cache`
-- tests/Unit/Cache/CacheManagerTest.php
-- tests/Unit/Cache/CacheKeysTest.php
-
-### `Tests\Unit\Http`
-- tests/Unit/Http/ApiResponseTest.php
-
-### `Tests\Unit\Database`
-- tests/Unit/Database/DatabaseConnectionTest.php
-
-### `Tests\Unit\Repositories`
-- tests/Unit/Repositories/AttachmentRepositoryTest.php
-
-### `Tests\Unit`
-- tests/Unit/ExampleTest.php
-
-### `Tests\Unit\Exceptions`
-- tests/Unit/Exceptions/PostNotFoundExceptionTest.php
-
-### `Tests\Unit\Controllers`
-- tests/Unit/Controllers/IpControllerTest.php
-
-### `Tests\Unit\Models`
-- tests/Unit/Models/PostTest.php
-
-### `Tests\Unit\DTOs`
-- tests/Unit/DTOs/DTOValidationTest.php
-- tests/Unit/DTOs/BaseDTOTest.php
-
-### `Tests\Unit\DTOs\Post`
-- tests/Unit/DTOs/Post/UpdatePostDTOTest.php
-- tests/Unit/DTOs/Post/CreatePostDTOTest.php
-
-### `Tests\Unit\Services`
-- tests/Unit/Services/PostServiceTest.php
-- tests/Unit/Services/RateLimitServiceTest.php
-- tests/Unit/Services/AuthServiceTest.php
-- tests/Unit/Services/CacheServiceTest.php
-- tests/Unit/Services/IpServiceTest.php
-- tests/Unit/Services/AttachmentServiceTest.php
-
-### `Tests\Unit\Services\Enums`
-- tests/Unit/Services/Enums/PostStatusTest.php
-
-### `Tests\Unit\Services\Security`
-- tests/Unit/Services/Security/LoggingSecurityServiceTest.php
-- tests/Unit/Services/Security/XssProtectionServiceTest.php
-- tests/Unit/Services/Security/PwnedPasswordServiceTest.php
-- tests/Unit/Services/Security/CsrfProtectionServiceTest.php
-- tests/Unit/Services/Security/SessionSecurityServiceTest.php
-
-### `Tests\Unit\Validation`
-- tests/Unit/Validation/ValidationExceptionTest.php
-- tests/Unit/Validation/ValidatorTest.php
-- tests/Unit/Validation/ValidationResultTest.php
-
-### `Tests\Unit\Repository`
-- tests/Unit/Repository/PostRepositoryTest.php
-- tests/Unit/Repository/UserRepositoryTest.php
-- tests/Unit/Repository/IpRepositoryTest.php
-- tests/Unit/Repository/PostRepositoryPerformanceTest.php
-
-### `Tests\Unit\Factory`
-- tests/Unit/Factory/PostFactoryTest.php
-
-### `Tests\Security`
-- tests/Security/XssPreventionTest.php
-- tests/Security/SqlInjectionTest.php
-- tests/Security/CsrfProtectionTest.php
-- tests/Security/FileUploadSecurityTest.php
-- tests/Security/PasswordHashingTest.php
-
-### `Tests\Factory`
-- tests/Factory/Factory.php
-- tests/Factory/PostFactory.php
-
-### `Tests\Factory\Abstracts`
-- tests/Factory/Abstracts/Factory.php
-- tests/Factory/Abstracts/AbstractFactory.php
-
 
 ## 🏗️ DDD 架構分析
 
@@ -713,8 +533,8 @@
 **檔案數量**: 60
 
 ### Infrastructure 層
-**子目錄**: .., Cache, Cache/.., Cache/., Database, Database/.., Database/., OpenApi, OpenApi/.., OpenApi/., Services, Services/.., Services/., Routing, Routing/.., Routing/Cache, Routing/Cache/.., Routing/Cache/., Routing/., Routing/Exceptions, Routing/Exceptions/.., Routing/Exceptions/., Routing/Core, Routing/Core/.., Routing/Core/., Routing/Providers, Routing/Providers/.., Routing/Providers/., Routing/Middleware, Routing/Middleware/.., Routing/Middleware/., Routing/Contracts, Routing/Contracts/.., Routing/Contracts/., Config, Config/.., Config/.
-**檔案數量**: 37
+**子目錄**: .., Cache, Cache/.., Cache/., Http, Http/.., Http/., Database, Database/.., Database/., OpenApi, OpenApi/.., OpenApi/., Services, Services/.., Services/., Routing, Routing/.., Routing/Cache, Routing/Cache/.., Routing/Cache/., Routing/., Routing/Exceptions, Routing/Exceptions/.., Routing/Exceptions/., Routing/Core, Routing/Core/.., Routing/Core/., Routing/Providers, Routing/Providers/.., Routing/Providers/., Routing/Middleware, Routing/Middleware/.., Routing/Middleware/., Routing/Contracts, Routing/Contracts/.., Routing/Contracts/., Config, Config/.., Config/.
+**檔案數量**: 40
 
 ### Shared 層
 **子目錄**: .., Http, Http/.., Http/., Exceptions, Exceptions/.., Exceptions/., Exceptions/Validation, Exceptions/Validation/.., Exceptions/Validation/., DTOs, DTOs/.., DTOs/., Helpers, Helpers/.., Helpers/., Schemas, Schemas/.., Schemas/., Validation, Validation/.., Validation/., Validation/Factory, Validation/Factory/.., Validation/Factory/., Contracts, Contracts/.., Contracts/.
@@ -723,8 +543,8 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 164
-- **介面總數**: 30
+- **類別總數**: 105
+- **介面總數**: 29
 - **Trait 總數**: 0
 
 ## ⚠️ 發現的架構問題
@@ -785,6 +605,8 @@
   - 實作: 
 - **RichTextProcessorService**: `app/Domains/Post/Services/RichTextProcessorService.php`
   - 實作: 
+- **implements**: `app/Infrastructure/Routing/ControllerResolver.php`
+  - 實作: 
 - **RateLimitService**: `app/Infrastructure/Services/RateLimitService.php`
   - 實作: 
 - **OutputSanitizer**: `app/Infrastructure/Services/OutputSanitizer.php`
@@ -814,72 +636,6 @@
 - **CSPReportController**: `app/Application/Controllers/Security/CSPReportController.php`
   - 實作: 
 - **BaseController**: `app/Application/Controllers/BaseController.php`
-  - 實作: 
-- **PostControllerTest**: `tests/Integration/PostControllerTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **PostRepositoryTest**: `tests/Unit/Repository/PostRepositoryTest.php`
-  - 繼承: MockeryTestCase
-  - 實作: 
-- **AuthControllerTest**: `tests/Integration/AuthControllerTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **AttachmentControllerTest**: `tests/Integration/AttachmentControllerTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **DTOControllerIntegrationTest**: `tests/Integration/DTOs/DTOControllerIntegrationTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **AttachmentRepositoryTest**: `tests/Unit/Repositories/AttachmentRepositoryTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **IpControllerTest**: `tests/Unit/Controllers/IpControllerTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **PostServiceTest**: `tests/Unit/Services/PostServiceTest.php`
-  - 繼承: MockeryTestCase
-  - 實作: 
-- **RateLimitServiceTest**: `tests/Unit/Services/RateLimitServiceTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **PostStatusTest**: `tests/Unit/Services/Enums/PostStatusTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **AuthServiceTest**: `tests/Unit/Services/AuthServiceTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **CacheServiceTest**: `tests/Unit/Services/CacheServiceTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **IpServiceTest**: `tests/Unit/Services/IpServiceTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **AttachmentServiceTest**: `tests/Unit/Services/AttachmentServiceTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **LoggingSecurityServiceTest**: `tests/Unit/Services/Security/LoggingSecurityServiceTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **XssProtectionServiceTest**: `tests/Unit/Services/Security/XssProtectionServiceTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **PwnedPasswordServiceTest**: `tests/Unit/Services/Security/PwnedPasswordServiceTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **CsrfProtectionServiceTest**: `tests/Unit/Services/Security/CsrfProtectionServiceTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **SessionSecurityServiceTest**: `tests/Unit/Services/Security/SessionSecurityServiceTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **UserRepositoryTest**: `tests/Unit/Repository/UserRepositoryTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **IpRepositoryTest**: `tests/Unit/Repository/IpRepositoryTest.php`
-  - 繼承: TestCase
-  - 實作: 
-- **PostRepositoryPerformanceTest**: `tests/Unit/Repository/PostRepositoryPerformanceTest.php`
-  - 繼承: MockeryTestCase
   - 實作: 
 
 ## 🔌 介面實作分析
@@ -913,9 +669,10 @@
 - RichTextProcessorService (`app/Domains/Post/Services/RichTextProcessorService.php`)
 - PostValidator (`app/Domains/Post/Validation/PostValidator.php`)
 - Application (`app/Application.php`)
-- implements (`tests/manual/test_route_loader_integration.php`)
+- implements (`app/Infrastructure/Routing/ControllerResolver.php`)
 - CacheManager (`app/Infrastructure/Cache/CacheManager.php`)
 - CacheKeys (`app/Infrastructure/Cache/CacheKeys.php`)
+- ServerRequestFactory (`app/Infrastructure/Http/ServerRequestFactory.php`)
 - DatabaseConnection (`app/Infrastructure/Database/DatabaseConnection.php`)
 - OpenApiSpec (`app/Infrastructure/OpenApi/OpenApiSpec.php`)
 - RateLimitService (`app/Infrastructure/Services/RateLimitService.php`)
@@ -956,64 +713,6 @@
 - ProjectArchitectureScanner (`scripts/scan-project-architecture.php`)
 - ImprovementShowcase (`scripts/show-improvements.php`)
 - DDDNamespaceUpdater (`scripts/ddd-namespace-updater.php`)
-- UITestCase (`tests/UI/UITestCase.php`)
-- CrossBrowserTest (`tests/UI/CrossBrowserTest.php`)
-- PostUITest (`tests/UI/PostUITest.php`)
-- UserExperienceTest (`tests/UI/UserExperienceTest.php`)
-- TestCase (`tests/TestCase.php`)
-- DIValidationIntegrationTest (`tests/Integration/DIValidationIntegrationTest.php`)
-- PostControllerTest (`tests/Integration/PostControllerTest.php`)
-- AttachmentUploadTest (`tests/Integration/AttachmentUploadTest.php`)
-- PostRepositoryTest (`tests/Unit/Repository/PostRepositoryTest.php`)
-- AuthControllerTest (`tests/Integration/AuthControllerTest.php`)
-- AttachmentControllerTest (`tests/Integration/AttachmentControllerTest.php`)
-- DatabaseBackupTest (`tests/Integration/DatabaseBackupTest.php`)
-- DTOValidationIntegrationTest (`tests/Integration/DTOs/DTOValidationIntegrationTest.php`)
-- DTOControllerIntegrationTest (`tests/Integration/DTOs/DTOControllerIntegrationTest.php`)
-- FileSystemBackupTest (`tests/Integration/FileSystemBackupTest.php`)
-- RateLimitTest (`tests/Integration/RateLimitTest.php`)
-- CacheManagerTest (`tests/Unit/Cache/CacheManagerTest.php`)
-- CacheKeysTest (`tests/Unit/Cache/CacheKeysTest.php`)
-- ApiResponseTest (`tests/Unit/Http/ApiResponseTest.php`)
-- DatabaseConnectionTest (`tests/Unit/Database/DatabaseConnectionTest.php`)
-- AttachmentRepositoryTest (`tests/Unit/Repositories/AttachmentRepositoryTest.php`)
-- ExampleTest (`tests/Unit/ExampleTest.php`)
-- PostNotFoundExceptionTest (`tests/Unit/Exceptions/PostNotFoundExceptionTest.php`)
-- IpControllerTest (`tests/Unit/Controllers/IpControllerTest.php`)
-- PostTest (`tests/Unit/Models/PostTest.php`)
-- DTOValidationTest (`tests/Unit/DTOs/DTOValidationTest.php`)
-- BaseDTOTest (`tests/Unit/DTOs/BaseDTOTest.php`)
-- UpdatePostDTOTest (`tests/Unit/DTOs/Post/UpdatePostDTOTest.php`)
-- CreatePostDTOTest (`tests/Unit/DTOs/Post/CreatePostDTOTest.php`)
-- PostServiceTest (`tests/Unit/Services/PostServiceTest.php`)
-- RateLimitServiceTest (`tests/Unit/Services/RateLimitServiceTest.php`)
-- PostStatusTest (`tests/Unit/Services/Enums/PostStatusTest.php`)
-- AuthServiceTest (`tests/Unit/Services/AuthServiceTest.php`)
-- CacheServiceTest (`tests/Unit/Services/CacheServiceTest.php`)
-- IpServiceTest (`tests/Unit/Services/IpServiceTest.php`)
-- AttachmentServiceTest (`tests/Unit/Services/AttachmentServiceTest.php`)
-- LoggingSecurityServiceTest (`tests/Unit/Services/Security/LoggingSecurityServiceTest.php`)
-- XssProtectionServiceTest (`tests/Unit/Services/Security/XssProtectionServiceTest.php`)
-- PwnedPasswordServiceTest (`tests/Unit/Services/Security/PwnedPasswordServiceTest.php`)
-- CsrfProtectionServiceTest (`tests/Unit/Services/Security/CsrfProtectionServiceTest.php`)
-- SessionSecurityServiceTest (`tests/Unit/Services/Security/SessionSecurityServiceTest.php`)
-- ValidationExceptionTest (`tests/Unit/Validation/ValidationExceptionTest.php`)
-- ValidatorTest (`tests/Unit/Validation/ValidatorTest.php`)
-- ValidationResultTest (`tests/Unit/Validation/ValidationResultTest.php`)
-- UserRepositoryTest (`tests/Unit/Repository/UserRepositoryTest.php`)
-- IpRepositoryTest (`tests/Unit/Repository/IpRepositoryTest.php`)
-- PostRepositoryPerformanceTest (`tests/Unit/Repository/PostRepositoryPerformanceTest.php`)
-- PostFactoryTest (`tests/Unit/Factory/PostFactoryTest.php`)
-- XssPreventionTest (`tests/Security/XssPreventionTest.php`)
-- SqlInjectionTest (`tests/Security/SqlInjectionTest.php`)
-- CsrfProtectionTest (`tests/Security/CsrfProtectionTest.php`)
-- FileUploadSecurityTest (`tests/Security/FileUploadSecurityTest.php`)
-- PasswordHashingTest (`tests/Security/PasswordHashingTest.php`)
-- AbstractFactory (`tests/Factory/Abstracts/AbstractFactory.php`)
-- PostFactory (`tests/Factory/PostFactory.php`)
-- MockServerRequest (`tests/manual/test_routing_system.php`)
-- LoggingMiddleware (`tests/manual/test_middleware_system.php`)
-- AuthMiddleware (`tests/manual/test_middleware_system.php`)
 
 ### `FileSecurityServiceInterface`
 - FileSecurityService (`app/Domains/Attachment/Services/FileSecurityService.php`)
@@ -1060,6 +759,12 @@
 ### `PostServiceInterface`
 - PostService (`app/Domains/Post/Services/PostService.php`)
 
+### `ServerRequestInterface`
+- ServerRequest (`app/Infrastructure/Http/ServerRequest.php`)
+
+### `UriInterface`
+- Uri (`app/Infrastructure/Http/Uri.php`)
+
 ### `OutputSanitizerInterface`
 - OutputSanitizerService (`app/Infrastructure/Services/OutputSanitizer.php`)
 
@@ -1096,34 +801,24 @@
 ### `ValidatorInterface`
 - Validator (`app/Shared/Validation/Validator.php`)
 
-### `UriInterface`
-- MockUri (`tests/manual/test_controller_integration.php`)
-
-### `StreamInterface`
-- MockStream (`tests/manual/test_controller_integration.php`)
-
-### `ResponseInterface`
-- MockResponse (`tests/manual/test_controller_integration.php`)
-
-### `ServerRequestInterface`
-- MockRequest (`tests/manual/test_controller_integration.php`)
-
 
 ## 🧪 測試覆蓋分析
 
-- **有測試的類別**: 33 個
-- **缺少測試的類別**: 68 個
+- **有測試的類別**: 0 個
+- **缺少測試的類別**: 105 個
 
 ### 缺少測試的重要類別
+- **AttachmentRepository**: `app/Domains/Attachment/Repositories/AttachmentRepository.php`
 - **FileSecurityService**: `app/Domains/Attachment/Services/FileSecurityService.php`
+- **AttachmentService**: `app/Domains/Attachment/Services/AttachmentService.php`
+- **UserRepository**: `app/Domains/Auth/Repositories/UserRepository.php`
+- **SessionSecurityService**: `app/Domains/Auth/Services/SessionSecurityService.php`
 - **PasswordManagementService**: `app/Domains/Auth/Services/PasswordManagementService.php`
 - **AuthorizationService**: `app/Domains/Auth/Services/AuthorizationService.php`
+- **PwnedPasswordService**: `app/Domains/Auth/Services/Advanced/PwnedPasswordService.php`
+- **AuthService**: `app/Domains/Auth/Services/AuthService.php`
 - **PasswordSecurityService**: `app/Domains/Auth/Services/PasswordSecurityService.php`
-- **ErrorHandlerService**: `app/Domains/Security/Services/Error/ErrorHandlerService.php`
-- **SecurityHeaderService**: `app/Domains/Security/Services/Headers/SecurityHeaderService.php`
-- **XssProtectionExtensionService**: `app/Domains/Security/Services/Content/XssProtectionExtensionService.php`
-- **SecurityTestService**: `app/Domains/Security/Services/Advanced/SecurityTestService.php`
-- **SecretsManager**: `app/Domains/Security/Services/Secrets/SecretsManager.php`
+- **IpRepository**: `app/Domains/Security/Repositories/IpRepository.php`
 
 
 ## 💉 依賴注入分析
@@ -1204,4 +899,4 @@
             $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE id = :id') (在 app/Domains/Security/Repositories/IpRepository.php 中使用)
 - ❓ 找不到類別/介面: ($uuid) {
             $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE uuid = ?') (在 app/Domains/Security/Repositories/IpRepository.php 中使用)
-- ... 還有 123 個
+- ... 還有 61 個
