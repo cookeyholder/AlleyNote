@@ -19,13 +19,13 @@ use Tests\TestCase;
 
 class AttachmentControllerTest extends TestCase
 {
-    private App\Domains\Attachment\Services\AttachmentService|MockInterface $attachmentService;
+    private AttachmentService&MockInterface $attachmentService;
 
-    private ServerRequestInterface|MockInterface $request;
+    private ServerRequestInterface&MockInterface $request;
 
-    private ResponseInterface|MockInterface $response;
+    private ResponseInterface&MockInterface $response;
 
-    private StreamInterface|MockInterface $stream;
+    private StreamInterface&MockInterface $stream;
 
     protected function setUp(): void
     {
@@ -42,26 +42,27 @@ class AttachmentControllerTest extends TestCase
         $this->stream->shouldReceive('write')
             ->andReturnUsing(function ($content) {
                 return strlen($content);
-                // 設定 AttachmentService mock 期望
-                $this->attachmentService->shouldReceive('upload')
-                    ->andReturn(new Attachment([
-                        'id' => 1,
-                        'uuid' => 'test-uuid',
-                        'post_id' => 1,
-                        'filename' => 'test.jpg',
-                        'original_name' => 'test.jpg',
-                        'file_size' => 1024,
-                        'mime_type' => 'image/jpeg',
-                        'storage_path' => '/uploads/test.jpg',
-                        'created_at' => date('Y-m-d H:i:s'),
-                        'updated_at' => date('Y-m-d H:i:s'),
-                    ]))
-                    ->byDefault();
-
-                $this->attachmentService->shouldReceive('delete')
-                    ->andReturn(true)
-                    ->byDefault();
             });
+
+        // 設定 AttachmentService mock 期望
+        $this->attachmentService->shouldReceive('upload')
+            ->andReturn(new Attachment([
+                'id' => 1,
+                'uuid' => 'test-uuid',
+                'post_id' => 1,
+                'filename' => 'test.jpg',
+                'original_name' => 'test.jpg',
+                'file_size' => 1024,
+                'mime_type' => 'image/jpeg',
+                'storage_path' => '/uploads/test.jpg',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]))
+            ->byDefault();
+
+        $this->attachmentService->shouldReceive('delete')
+            ->andReturn(true)
+            ->byDefault();
 
         // 設定預設的 user_id 屬性
         $this->request->shouldReceive('getAttribute')

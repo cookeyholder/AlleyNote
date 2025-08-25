@@ -6,6 +6,7 @@ namespace App\Domains\Security\DTOs;
 
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
+use App\Shared\Exceptions\ValidationException;
 
 /**
  * 建立 IP 規則的資料傳輸物件.
@@ -25,7 +26,7 @@ class CreateIpRuleDTO extends BaseDTO
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array $data 輸入資料
-     * @throws ValidationException 當驗證失敗時
+     *                    * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
     {

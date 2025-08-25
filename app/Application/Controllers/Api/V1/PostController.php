@@ -10,6 +10,7 @@ use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Exceptions\PostStatusException;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\Validation\RequestValidationException;
@@ -24,6 +25,7 @@ class PostController extends BaseController
     public function __construct(
         private readonly PostServiceInterface $postService,
         private readonly ValidatorInterface $validator,
+        private readonly OutputSanitizerInterface $sanitizer,
     ) {}
 
     #[OA\Get(
@@ -205,7 +207,7 @@ class PostController extends BaseController
             $dto = new CreatePostDTO($this->validator, $data);
             $post = $this->postService->createPost($dto);
 
-            $successResponse = $this->successResponse($post->toSafeArray(), '貼文建立成功');
+            $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '貼文建立成功');
             $response->getBody()->write($successResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
@@ -276,7 +278,7 @@ class PostController extends BaseController
                 $this->postService->recordView($id, $userIp);
             }
 
-            $successResponse = $this->successResponse($post->toSafeArray(), '成功取得貼文');
+            $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '成功取得貼文');
             $response->getBody()->write($successResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -383,7 +385,7 @@ class PostController extends BaseController
             $dto = new UpdatePostDTO($this->validator, $data);
             $post = $this->postService->updatePost($id, $dto);
 
-            $successResponse = $this->successResponse($post->toSafeArray(), '貼文更新成功');
+            $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '貼文更新成功');
             $response->getBody()->write($successResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -601,7 +603,7 @@ class PostController extends BaseController
             $post = $this->postService->findById($id);
 
             $message = $data['pinned'] ? '貼文已設為置頂' : '貼文已取消置頂';
-            $successResponse = $this->successResponse($post->toSafeArray(), $message);
+            $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), $message);
             $response->getBody()->write($successResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);

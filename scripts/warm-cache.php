@@ -32,20 +32,20 @@ try {
     echo "🔥 預熱核心服務...\n";
 
     $services = [
-        'App\Services\Contracts\PostServiceInterface',
-        'App\Services\Contracts\CacheServiceInterface',
-        'App\Repositories\Contracts\PostRepositoryInterface',
-        'App\Repositories\Contracts\UserRepositoryInterface',
-        'App\Repositories\Contracts\AttachmentRepositoryInterface',
+        'App\Domains\Post\Contracts\PostServiceInterface',
+        'App\Shared\Contracts\CacheServiceInterface',
+        'App\Domains\Post\Contracts\PostRepositoryInterface',
+        'App\Domains\Auth\Contracts\UserRepositoryInterface',
+        'App\Domains\Attachment\Contracts\AttachmentRepositoryInterface',
         'App\Domains\Attachment\Services\AttachmentService',
-        'App\Services\Security\Contracts\XssProtectionServiceInterface',
-        'App\Services\Security\Contracts\CsrfProtectionServiceInterface',
-        'App\Services\Security\Contracts\LoggingSecurityServiceInterface',
+        'App\Domains\Security\Contracts\XssProtectionServiceInterface',
+        'App\Domains\Security\Contracts\CsrfProtectionServiceInterface',
+        'App\Domains\Security\Contracts\LoggingSecurityServiceInterface',
         'App\Shared\Contracts\ValidatorInterface',
-        'App\Controllers\PostController',
-        'App\Controllers\AttachmentController',
-        'App\Controllers\AuthController',
-        'App\Controllers\IpController',
+        'App\Application\Controllers\PostController',
+        'App\Application\Controllers\Api\V1\AttachmentController',
+        'App\Application\Controllers\Api\V1\AuthController',
+        'App\Application\Controllers\Api\V1\IpController',
     ];
 
     $warmedServices = 0;
@@ -96,7 +96,6 @@ try {
     }
 
     echo "\n✨ 應用程式已準備就緒，享受更快的啟動速度！\n";
-
 } catch (Exception $e) {
     echo "\n❌ 快取預熱失敗: {$e->getMessage()}\n";
     echo "📍 錯誤位置: {$e->getFile()}:{$e->getLine()}\n";

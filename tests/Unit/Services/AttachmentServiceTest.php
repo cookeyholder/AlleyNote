@@ -15,6 +15,8 @@ use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Tests\TestCase;
 
 class AttachmentServiceTest extends TestCase
@@ -256,7 +258,7 @@ class AttachmentServiceTest extends TestCase
         $file->shouldReceive('getClientMediaType')->andReturn($mimeType);
         $file->shouldReceive('getSize')->andReturn($size);
         $file->shouldReceive('getError')->andReturn($error);
-        $file->shouldReceive('moveTo')->andReturnUsing(function ($path) {
+        $file->shouldReceive('moveTo')->andReturnUsing(function ($path) use ($mimeType) {
             // 建立實際檔案以便 finfo 可以檢測 MIME 類型
             if ($mimeType === 'image/jpeg') {
                 // 建立一個有效的最小 JPEG 檔案 (1x1 像素)
@@ -282,12 +284,29 @@ class AttachmentServiceTest extends TestCase
 
         // 清理測試上傳目錄
         if (is_dir($this->uploadDir)) {
-            $attachmentsDir = $this->uploadDir . '/attachments';
-            if (is_dir($attachmentsDir)) {
-                array_map('unlink', glob($attachmentsDir . '/*.*'));
-                rmdir($attachmentsDir);
-            }
-            rmdir($this->uploadDir);
+            $this->recursiveRemoveDirectory($this->uploadDir);
         }
+    }
+
+    /**
+     * 遞歸刪除目錄.
+     */
+    private function recursiveRemoveDirectory(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST,
+        );
+
+        foreach ($files as $fileinfo) {
+            $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+            $todo($fileinfo->getRealPath());
+        }
+
+        rmdir($dir);
     }
 }

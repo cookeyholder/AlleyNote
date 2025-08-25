@@ -5,6 +5,8 @@ declare(strict_types=1);
 // 載入 Composer autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
+use App\Application;
+use App\Infrastructure\Http\ServerRequestFactory;
 use OpenApi\Generator;
 
 // 設定錯誤報告
@@ -21,8 +23,38 @@ $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 // 移除查詢參數
 $path = parse_url($requestUri, PHP_URL_PATH);
 
-// 簡單的路由處理
+// 檢查是否為特殊路由（文件系統等），使用舊的路由處理
+$specialRoutes = ['/api/docs', '/api/docs/ui', '/docs'];
+$useNewRoutingSystem = !in_array($path, $specialRoutes, true);
+
+// 路由處理
 try {
+    if ($useNewRoutingSystem) {
+        // 使用新的路由系統
+        try {
+            $application = new Application();
+            $request = ServerRequestFactory::fromGlobals();
+            $response = $application->run($request);
+
+            // 輸出回應
+            http_response_code($response->getStatusCode());
+
+            foreach ($response->getHeaders() as $name => $values) {
+                foreach ($values as $value) {
+                    header($name . ': ' . $value, false);
+                }
+            }
+
+            echo $response->getBody();
+            exit;
+        } catch (Exception $e) {
+            // 如果新路由系統失敗，回退到舊系統
+            error_log("新路由系統錯誤: " . $e->getMessage());
+            // 繼續使用下方的舊路由處理
+        }
+    }
+
+    // 舊的路由處理系統（向後相容）
     switch ($path) {
         case '/api/docs':
             // API 文件 JSON 格式
@@ -99,7 +131,6 @@ function generateApiDocs(): void
         header('Access-Control-Allow-Headers: Content-Type, Authorization, X-CSRF-TOKEN');
 
         echo $json;
-
     } catch (Exception $e) {
         // 錯誤處理 - 返回基本文件
         $errorDoc = [

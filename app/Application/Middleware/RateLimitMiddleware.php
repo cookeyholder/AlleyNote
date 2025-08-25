@@ -2,25 +2,26 @@
 
 namespace App\Application\Middleware;
 
-use App\Services\Security\AdvancedRateLimitService;
-use Psr\Http\Message\ResponseInterface as Response;
+use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
+use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
+use App\Infrastructure\Services\RateLimitService;
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 class RateLimitMiddleware implements MiddlewareInterface
 {
-    private AdvancedRateLimitService $rateLimitService;
+    private RateLimitService $rateLimitService;
 
     private array $config;
 
-    public function __construct(AdvancedRateLimitService $rateLimitService, array $config = [])
+    public function __construct(RateLimitService $rateLimitService, array $config = [])
     {
         $this->rateLimitService = $rateLimitService;
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
 
-    public function process(Request $request, RequestHandlerInterface $handler): Response
+    public function process(Request $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $uri = $request->getUri()->getPath();
 
@@ -30,7 +31,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
 
         // 取得真實客戶端 IP
-        $ip = $this->rateLimitService->getRealClientIP($request->getServerParams());
+        $ip = $this->getRealClientIP($request->getServerParams());
 
         // 判斷操作類型
         $action = $this->determineAction($request);
@@ -39,7 +40,9 @@ class RateLimitMiddleware implements MiddlewareInterface
         $userId = $this->getUserId($request);
 
         // 檢查速率限制
-        $result = $this->rateLimitService->checkLimit($ip, $action, $userId);
+        $maxRequests = $this->config['max_requests'] ?? 60;
+        $timeWindow = $this->config['time_window'] ?? 60;
+        $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
 
         if (!$result['allowed']) {
             return $this->createRateLimitResponse($result, $request);
@@ -100,10 +103,8 @@ class RateLimitMiddleware implements MiddlewareInterface
     /**
      * 建立速率限制回應.
      */
-    private function createRateLimitResponse(array $result, Request $request): Response
+    private function createRateLimitResponse(array $result, Request $request): ResponseInterface
     {
-        $response = new \Slim\Psr7\Response();
-
         // 判斷回應格式
         $acceptHeader = $request->getHeaderLine('Accept');
         $isJsonRequest = strpos($acceptHeader, 'application/json') !== false
@@ -119,16 +120,13 @@ class RateLimitMiddleware implements MiddlewareInterface
                 'retry_after' => $result['reset'] - time(),
             ]);
 
-            $response = $response->withHeader('Content-Type', 'application/json');
+            $response = new Response(429, ['Content-Type' => 'application/json'], $body);
         } else {
             $body = $this->generateRateLimitHtml($result);
-            $response = $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+            $response = new Response(429, ['Content-Type' => 'text/html; charset=utf-8'], $body);
         }
 
-        $response->getBody()->write($body);
-
         return $response
-            ->withStatus(429)
             ->withHeader('Retry-After', (string) ($result['reset'] - time()))
             ->withHeader('X-RateLimit-Limit', (string) $result['limit'])
             ->withHeader('X-RateLimit-Remaining', '0')
@@ -138,7 +136,7 @@ class RateLimitMiddleware implements MiddlewareInterface
     /**
      * 添加速率限制標頭.
      */
-    private function addRateLimitHeaders(Response $response, array $result): Response
+    private function addRateLimitHeaders(ResponseInterface $response, array $result): ResponseInterface
     {
         return $response
             ->withHeader('X-RateLimit-Limit', (string) $result['limit'])
@@ -222,5 +220,52 @@ class RateLimitMiddleware implements MiddlewareInterface
                 '/favicon.ico',
             ],
         ];
+    }
+
+    /**
+     * 取得真實的客戶端 IP 位址.
+     */
+    private function getRealClientIP(array $serverParams): string
+    {
+        // 檢查代理伺服器的標頭
+        $headers = [
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_X_REAL_IP',
+            'HTTP_CLIENT_IP',
+            'HTTP_X_CLUSTER_CLIENT_IP',
+            'HTTP_X_FORWARDED',
+            'HTTP_FORWARDED_FOR',
+            'HTTP_FORWARDED',
+        ];
+
+        foreach ($headers as $header) {
+            if (!empty($serverParams[$header])) {
+                $ips = explode(',', $serverParams[$header]);
+                $ip = trim($ips[0]);
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+    }
+
+    public function getPriority(): int
+    {
+        return 10; // 中等優先級
+    }
+
+    public function getName(): string
+    {
+        return 'rate-limit';
+    }
+
+    public function shouldProcess(Request $request): bool
+    {
+        $uri = $request->getUri()->getPath();
+
+        // 檢查是否需要跳過速率限制
+        return !in_array($uri, $this->config['skip_paths'], true);
     }
 }

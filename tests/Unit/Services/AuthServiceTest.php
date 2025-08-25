@@ -15,9 +15,11 @@ use Tests\TestCase;
 
 class AuthServiceTest extends TestCase
 {
+    private UserRepository|MockInterface $userRepository;
+
     private PasswordSecurityServiceInterface|MockInterface $passwordService;
 
-    private App\Shared\Contracts\ValidatorInterface|MockInterface $validator;
+    private ValidatorInterface|MockInterface $validator;
 
     private AuthService $service;
 

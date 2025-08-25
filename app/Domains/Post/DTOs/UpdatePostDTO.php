@@ -7,6 +7,7 @@ namespace App\Domains\Post\DTOs;
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
+use App\Shared\Exceptions\ValidationException;
 use DateTime;
 
 /**

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Validation;
 
-use App\Shared\Validation\ValidationException;
+use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Exception;
 use Tests\TestCase;

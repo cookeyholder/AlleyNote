@@ -10,7 +10,7 @@ use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Shared\Contracts\ValidatorInterface;
-use App\Shared\Validation\ValidationException;
+use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\Validator;
 use Tests\TestCase;
 

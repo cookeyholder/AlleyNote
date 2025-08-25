@@ -5,26 +5,25 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Services;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
+use App\Domains\Auth\Services\Advanced\PwnedPasswordService;
 use App\Shared\Exceptions\ValidationException;
 
 class PasswordSecurityService implements PasswordSecurityServiceInterface
 {
-    // 密碼最小長度
-    private const MIN_PASSWORD_LENGTH = 12;
+    /**
+     * 最小密碼長度.
+     */
+    private const MIN_LENGTH = 8;
 
-    // 密碼最大長度 (防止 DoS 攻擊)
-    private const MAX_PASSWORD_LENGTH = 128;
+    /**
+     * 最大密碼長度.
+     */
+    private const MAX_LENGTH = 128;
 
-    // 密碼複雜度要求
-    private const REQUIRE_UPPERCASE = true;
-
-    private const REQUIRE_LOWERCASE = true;
-
-    private const REQUIRE_NUMBERS = true;
-
-    private const REQUIRE_SYMBOLS = true;
-
-    private const MIN_UNIQUE_CHARS = 8;
+    /**
+     * 最小唯一字元數量.
+     */
+    private const MIN_UNIQUE_CHARS = 4;
 
     // 基本弱密碼清單（作為備選方案）
     private const FALLBACK_COMMON_PASSWORDS = [
@@ -116,17 +115,17 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     public function validatePassword(string $password): void
     {
         // 檢查長度
-        if (strlen($password) < self::MIN_PASSWORD_LENGTH) {
+        if (strlen($password) < self::MIN_LENGTH) {
             throw ValidationException::fromSingleError(
                 'password',
-                sprintf('密碼長度必須至少為 %d 個字元', self::MIN_PASSWORD_LENGTH),
+                sprintf('密碼長度必須至少為 %d 個字元', self::MIN_LENGTH),
             );
         }
 
-        if (strlen($password) > self::MAX_PASSWORD_LENGTH) {
+        if (strlen($password) > self::MAX_LENGTH) {
             throw ValidationException::fromSingleError(
                 'password',
-                sprintf('密碼長度不能超過 %d 個字元', self::MAX_PASSWORD_LENGTH),
+                sprintf('密碼長度不能超過 %d 個字元', self::MAX_LENGTH),
             );
         }
 
@@ -152,12 +151,12 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
     public function generateSecurePassword(int $length = 16): string
     {
-        if ($length < self::MIN_PASSWORD_LENGTH) {
-            $length = self::MIN_PASSWORD_LENGTH;
+        if ($length < self::MIN_LENGTH) {
+            $length = self::MIN_LENGTH;
         }
 
-        if ($length > self::MAX_PASSWORD_LENGTH) {
-            $length = self::MAX_PASSWORD_LENGTH;
+        if ($length > self::MAX_LENGTH) {
+            $length = self::MAX_LENGTH;
         }
 
         $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -270,19 +269,23 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     {
         $errors = [];
 
-        if (self::REQUIRE_UPPERCASE && !preg_match('/[A-Z]/', $password)) {
+        // 檢查大寫字母要求
+        if (!preg_match('/[A-Z]/', $password)) {
             $errors[] = '至少包含一個大寫字母';
         }
 
-        if (self::REQUIRE_LOWERCASE && !preg_match('/[a-z]/', $password)) {
+        // 檢查小寫字母要求
+        if (!preg_match('/[a-z]/', $password)) {
             $errors[] = '至少包含一個小寫字母';
         }
 
-        if (self::REQUIRE_NUMBERS && !preg_match('/[0-9]/', $password)) {
+        // 檢查數字要求
+        if (!preg_match('/[0-9]/', $password)) {
             $errors[] = '至少包含一個數字';
         }
 
-        if (self::REQUIRE_SYMBOLS && !preg_match('/[^A-Za-z0-9]/', $password)) {
+        // 檢查特殊符號要求
+        if (!preg_match('/[^A-Za-z0-9]/', $password)) {
             $errors[] = '至少包含一個特殊符號';
         }
 

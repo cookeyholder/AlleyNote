@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Models\Post;
-use App\Services\OutputSanitizer;
 use Ramsey\Uuid\Uuid;
 
 if (!function_exists('generate_uuid')) {
@@ -114,24 +113,20 @@ if (!function_exists('get_file_mime_type')) {
 if (!function_exists('sanitize_post_array')) {
     /**
      * 清理 Post 陣列中的 HTML 內容，適用於 API 輸出.
-     * @param array $posts Post 物件陣列或 Post 資料陣列
+     * @param array $posts Post 資料陣列
      * @return array 清理過的陣列
      */
     function sanitize_post_array(array $posts): array
     {
         return array_map(function ($post) {
-            if ($post instanceof Post) {
-                return $post->toSafeArray();
-            }
-
             // 如果是陣列，手動清理
             if (is_array($post)) {
                 $sanitized = $post;
                 if (isset($sanitized['title'])) {
-                    $sanitized['title'] = OutputSanitizer::sanitizeHtml($sanitized['title']);
+                    $sanitized['title'] = htmlspecialchars($sanitized['title'], ENT_QUOTES, 'UTF-8');
                 }
                 if (isset($sanitized['content'])) {
-                    $sanitized['content'] = OutputSanitizer::sanitizeHtml($sanitized['content']);
+                    $sanitized['content'] = htmlspecialchars($sanitized['content'], ENT_QUOTES, 'UTF-8');
                 }
 
                 return $sanitized;

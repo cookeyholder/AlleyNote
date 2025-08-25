@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Models;
 
-use App\Infrastructure\Services\OutputSanitizer;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use JsonSerializable;
 
 class Post implements JsonSerializable
@@ -155,14 +155,16 @@ class Post implements JsonSerializable
 
     /**
      * 取得清理過的資料陣列，適用於前端顯示.
+     *
+     * @param OutputSanitizerInterface $sanitizer 清理服務
      */
-    public function toSafeArray(): array
+    public function toSafeArray(OutputSanitizerInterface $sanitizer): array
     {
         $data = $this->toArray();
 
         // 清理可能包含 HTML 的欄位
-        $data['title'] = OutputSanitizer::sanitizeHtml($data['title']);
-        $data['content'] = OutputSanitizer::sanitizeHtml($data['content']);
+        $data['title'] = $sanitizer->sanitizeHtml($data['title']);
+        $data['content'] = $sanitizer->sanitizeHtml($data['content']);
 
         return $data;
     }

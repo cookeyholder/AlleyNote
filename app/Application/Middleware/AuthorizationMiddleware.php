@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Middleware;
 
-use App\Services\Security\Contracts\AuthorizationServiceInterface;
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 
 class AuthorizationMiddleware
 {

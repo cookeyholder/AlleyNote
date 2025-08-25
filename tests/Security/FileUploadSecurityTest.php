@@ -258,9 +258,7 @@ class FileUploadSecurityTest extends TestCase
             1024,
             UPLOAD_ERR_OK,
             'fake-image-content',
-        );
-
-        // 模擬文章存在
+        );        // 模擬文章存在
         $post = new Post([
             'id' => $postId,
             'uuid' => 'test-uuid',
@@ -324,7 +322,11 @@ class FileUploadSecurityTest extends TestCase
         $stream->shouldReceive('rewind')->andReturnNull();
 
         // 為所有檔案設定 moveTo 方法，讓 AttachmentService 能夠調用
-        $file->shouldReceive('moveTo')->andReturnNull();
+        $file->shouldReceive('moveTo')->with(Mockery::type('string'))->andReturnUsing(function ($path) use ($content) {
+            // 建立一個空檔案避免 finfo_file 警告，但不寫入真實內容
+            // 這樣 finfo_file 會回傳 false 或空值，從而觸發預期的異常
+            touch($path);
+        });
 
         return $file;
     }

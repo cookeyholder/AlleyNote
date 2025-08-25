@@ -9,6 +9,7 @@ use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
 use Psr\Http\Message\ResponseInterface;
@@ -21,6 +22,8 @@ class XssPreventionTest extends TestCase
     private PostServiceInterface $postService;
 
     private ValidatorInterface $validator;
+
+    private OutputSanitizerInterface $sanitizer;
 
     private XssProtectionServiceInterface $xssProtection;
 
@@ -44,6 +47,7 @@ class XssPreventionTest extends TestCase
 
         $this->postService = Mockery::mock(PostServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
+        $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
         $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
         $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
         $this->request = Mockery::mock(ServerRequestInterface::class);
@@ -53,6 +57,7 @@ class XssPreventionTest extends TestCase
         $this->controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
 
         // 設定預設回應行為
@@ -92,6 +97,13 @@ class XssPreventionTest extends TestCase
             ->andReturnNull();
         $this->csrfProtection->shouldReceive('generateToken')
             ->andReturn('new-token');
+
+        // 設定 sanitizer 預設行為 - 返回原值
+        $this->sanitizer->shouldReceive('sanitizeHtml')
+            ->andReturnUsing(function ($input) {
+                return $input;
+            })
+            ->byDefault();
 
         // 設定 validator 的預設期望值
         $this->validator->shouldReceive('addRule')
