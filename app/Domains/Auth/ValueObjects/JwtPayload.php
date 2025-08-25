@@ -9,19 +9,19 @@ use InvalidArgumentException;
 use JsonSerializable;
 
 /**
- * JWT Payload Value Object
- * 
+ * JWT Payload Value Object.
+ *
  * 表示 JWT Token 的載荷資訊，包含所有標準和自訂宣告。
  * 此類別是不可變的，確保 payload 資料的完整性。
- * 
+ *
  * @author GitHub Copilot
  * @since 1.0.0
  */
 final readonly class JwtPayload implements JsonSerializable
 {
     /**
-     * 建構 JWT Payload
-     * 
+     * 建構 JWT Payload.
+     *
      * @param string $jti JWT 唯一識別符 (JWT ID)
      * @param string $sub 主題，通常是使用者 ID (Subject)
      * @param string $iss 發行者 (Issuer)
@@ -30,7 +30,7 @@ final readonly class JwtPayload implements JsonSerializable
      * @param DateTimeImmutable $exp 過期時間 (Expiration)
      * @param DateTimeImmutable|null $nbf 生效時間 (Not Before)
      * @param array<string, mixed> $customClaims 自訂宣告
-     * 
+     *
      * @throws InvalidArgumentException 當參數無效時
      */
     public function __construct(
@@ -41,7 +41,7 @@ final readonly class JwtPayload implements JsonSerializable
         private DateTimeImmutable $iat,
         private DateTimeImmutable $exp,
         private ?DateTimeImmutable $nbf = null,
-        private array $customClaims = []
+        private array $customClaims = [],
     ) {
         $this->validateJti($jti);
         $this->validateSub($sub);
@@ -52,10 +52,9 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 從陣列建立 JWT Payload
-     * 
+     * 從陣列建立 JWT Payload.
+     *
      * @param array<string, mixed> $data JWT payload 資料
-     * @return self
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -95,14 +94,12 @@ final readonly class JwtPayload implements JsonSerializable
             iat: $iat,
             exp: $exp,
             nbf: $nbf,
-            customClaims: $customClaims
+            customClaims: $customClaims,
         );
     }
 
     /**
-     * 取得 JWT ID
-     * 
-     * @return string
+     * 取得 JWT ID.
      */
     public function getJti(): string
     {
@@ -110,9 +107,7 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 取得主題 (通常是使用者 ID)
-     * 
-     * @return string
+     * 取得主題 (通常是使用者 ID).
      */
     public function getSubject(): string
     {
@@ -120,9 +115,7 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 取得使用者 ID (subject 的別名)
-     * 
-     * @return int
+     * 取得使用者 ID (subject 的別名).
      */
     public function getUserId(): int
     {
@@ -130,9 +123,7 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 取得發行者
-     * 
-     * @return string
+     * 取得發行者.
      */
     public function getIssuer(): string
     {
@@ -140,8 +131,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 取得受眾
-     * 
+     * 取得受眾.
+     *
      * @return array<string>
      */
     public function getAudience(): array
@@ -150,9 +141,7 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 取得發行時間
-     * 
-     * @return DateTimeImmutable
+     * 取得發行時間.
      */
     public function getIssuedAt(): DateTimeImmutable
     {
@@ -160,9 +149,7 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 取得過期時間
-     * 
-     * @return DateTimeImmutable
+     * 取得過期時間.
      */
     public function getExpiresAt(): DateTimeImmutable
     {
@@ -170,9 +157,7 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 取得生效時間
-     * 
-     * @return DateTimeImmutable|null
+     * 取得生效時間.
      */
     public function getNotBefore(): ?DateTimeImmutable
     {
@@ -180,8 +165,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 取得自訂宣告
-     * 
+     * 取得自訂宣告.
+     *
      * @return array<string, mixed>
      */
     public function getCustomClaims(): array
@@ -190,8 +175,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 取得特定自訂宣告
-     * 
+     * 取得特定自訂宣告.
+     *
      * @param string $claim 宣告名稱
      * @return mixed|null
      */
@@ -202,25 +187,24 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 檢查是否已過期
-     * 
+     *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
-     * @return bool
      */
     public function isExpired(?DateTimeImmutable $now = null): bool
     {
-        $now = $now ?? new DateTimeImmutable();
+        $now ??= new DateTimeImmutable();
+
         return $this->exp <= $now;
     }
 
     /**
-     * 檢查是否已生效
-     * 
+     * 檢查是否已生效.
+     *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
-     * @return bool
      */
     public function isActive(?DateTimeImmutable $now = null): bool
     {
-        $now = $now ?? new DateTimeImmutable();
+        $now ??= new DateTimeImmutable();
 
         // 如果有 nbf，檢查是否已生效
         if ($this->nbf !== null && $this->nbf > $now) {
@@ -232,10 +216,9 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 檢查是否包含特定受眾
-     * 
+     * 檢查是否包含特定受眾.
+     *
      * @param string $audience 受眾
-     * @return bool
      */
     public function hasAudience(string $audience): bool
     {
@@ -243,8 +226,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 轉換為陣列格式（用於 JWT 編碼）
-     * 
+     * 轉換為陣列格式（用於 JWT 編碼）.
+     *
      * @return array<string, mixed>
      */
     public function toArray(): array
@@ -267,8 +250,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * JsonSerializable 實作
-     * 
+     * JsonSerializable 實作.
+     *
      * @return array<string, mixed>
      */
     public function jsonSerialize(): array
@@ -277,10 +260,9 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 檢查與另一個 JwtPayload 是否相等
-     * 
+     * 檢查與另一個 JwtPayload 是否相等.
+     *
      * @param JwtPayload $other 另一個 JwtPayload
-     * @return bool
      */
     public function equals(JwtPayload $other): bool
     {
@@ -295,9 +277,7 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 轉換為字串表示
-     * 
-     * @return string
+     * 轉換為字串表示.
      */
     public function toString(): string
     {
@@ -313,14 +293,12 @@ final readonly class JwtPayload implements JsonSerializable
             $this->iat->format('Y-m-d H:i:s'),
             $this->exp->format('Y-m-d H:i:s'),
             $nbf,
-            $customClaimsCount
+            $customClaimsCount,
         );
     }
 
     /**
-     * __toString 魔術方法
-     * 
-     * @return string
+     * __toString 魔術方法.
      */
     public function __toString(): string
     {
@@ -328,8 +306,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 驗證 JWT ID
-     * 
+     * 驗證 JWT ID.
+     *
      * @param string $jti JWT ID
      * @throws InvalidArgumentException 當 JTI 無效時
      */
@@ -345,8 +323,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 驗證主題
-     * 
+     * 驗證主題.
+     *
      * @param string $sub 主題
      * @throws InvalidArgumentException 當主題無效時
      */
@@ -363,8 +341,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 驗證發行者
-     * 
+     * 驗證發行者.
+     *
      * @param string $iss 發行者
      * @throws InvalidArgumentException 當發行者無效時
      */
@@ -376,8 +354,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 驗證受眾
-     * 
+     * 驗證受眾.
+     *
      * @param array<string> $aud 受眾陣列
      * @throws InvalidArgumentException 當受眾無效時
      */
@@ -395,8 +373,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 驗證時間相關宣告
-     * 
+     * 驗證時間相關宣告.
+     *
      * @param DateTimeImmutable $iat 發行時間
      * @param DateTimeImmutable $exp 過期時間
      * @param DateTimeImmutable|null $nbf 生效時間
@@ -414,8 +392,8 @@ final readonly class JwtPayload implements JsonSerializable
     }
 
     /**
-     * 驗證自訂宣告
-     * 
+     * 驗證自訂宣告.
+     *
      * @param array<string, mixed> $customClaims 自訂宣告
      * @throws InvalidArgumentException 當自訂宣告無效時
      */

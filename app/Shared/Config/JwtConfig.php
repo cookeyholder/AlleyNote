@@ -4,21 +4,28 @@ declare(strict_types=1);
 
 namespace App\Shared\Config;
 
+use Exception;
 use InvalidArgumentException;
 
 /**
- * JWT 配置管理類別
- * 
+ * JWT 配置管理類別.
+ *
  * 負責載入和驗證 JWT 相關的配置參數，包括 RS256 金鑰對管理
  */
 final class JwtConfig
 {
     private string $algorithm;
+
     private string $privateKey;
+
     private string $publicKey;
+
     private string $issuer;
+
     private string $audience;
+
     private int $accessTokenTtl;
+
     private int $refreshTokenTtl;
 
     public function __construct()
@@ -28,7 +35,7 @@ final class JwtConfig
     }
 
     /**
-     * 從環境變數載入配置
+     * 從環境變數載入配置.
      */
     private function loadFromEnvironment(): void
     {
@@ -42,7 +49,7 @@ final class JwtConfig
     }
 
     /**
-     * 載入私鑰
+     * 載入私鑰.
      */
     private function loadPrivateKey(): string
     {
@@ -64,7 +71,7 @@ final class JwtConfig
     }
 
     /**
-     * 載入公鑰
+     * 載入公鑰.
      */
     private function loadPublicKey(): string
     {
@@ -86,7 +93,7 @@ final class JwtConfig
     }
 
     /**
-     * 驗證配置完整性
+     * 驗證配置完整性.
      */
     private function validateConfiguration(): void
     {
@@ -119,7 +126,7 @@ final class JwtConfig
     }
 
     /**
-     * 驗證金鑰對是否匹配
+     * 驗證金鑰對是否匹配.
      */
     private function validateKeyPair(): void
     {
@@ -147,7 +154,7 @@ final class JwtConfig
             if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {
                 throw new InvalidArgumentException('金鑰對不匹配，公鑰無法驗證私鑰簽名');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new InvalidArgumentException('金鑰驗證失敗: ' . $e->getMessage());
         }
     }
@@ -190,7 +197,7 @@ final class JwtConfig
     }
 
     /**
-     * 取得 access token 過期時間戳記
+     * 取得 access token 過期時間戳記.
      */
     public function getAccessTokenExpiryTimestamp(): int
     {
@@ -198,7 +205,7 @@ final class JwtConfig
     }
 
     /**
-     * 取得 refresh token 過期時間戳記
+     * 取得 refresh token 過期時間戳記.
      */
     public function getRefreshTokenExpiryTimestamp(): int
     {
@@ -206,11 +213,12 @@ final class JwtConfig
     }
 
     /**
-     * 取得基本 JWT payload 結構
+     * 取得基本 JWT payload 結構.
      */
     public function getBasePayload(): array
     {
         $now = time();
+
         return [
             'iss' => $this->issuer,
             'aud' => $this->audience,
@@ -220,7 +228,7 @@ final class JwtConfig
     }
 
     /**
-     * 檢查配置是否已正確載入
+     * 檢查配置是否已正確載入.
      */
     public function isConfigured(): bool
     {
@@ -231,7 +239,7 @@ final class JwtConfig
     }
 
     /**
-     * 取得配置摘要（用於日誌記錄，不包含敏感資訊）
+     * 取得配置摘要（用於日誌記錄，不包含敏感資訊）.
      */
     public function getConfigSummary(): array
     {

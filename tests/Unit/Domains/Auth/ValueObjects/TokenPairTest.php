@@ -11,14 +11,18 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Token Pair Value Object 單元測試
+ * Token Pair Value Object 單元測試.
  */
 final class TokenPairTest extends TestCase
 {
     private DateTimeImmutable $now;
+
     private DateTimeImmutable $accessExpiry;
+
     private DateTimeImmutable $refreshExpiry;
+
     private string $validAccessToken;
+
     private string $validRefreshToken;
 
     protected function setUp(): void
@@ -38,7 +42,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $this->assertSame($this->validAccessToken, $tokenPair->getAccessToken());
@@ -55,7 +59,7 @@ final class TokenPairTest extends TestCase
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
             refreshTokenExpiresAt: $this->refreshExpiry,
-            tokenType: 'Basic'
+            tokenType: 'Basic',
         );
 
         $this->assertSame('Basic', $tokenPair->getTokenType());
@@ -67,7 +71,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         // 1小時 = 3600秒
@@ -88,7 +92,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         // 7天 = 604800秒
@@ -109,7 +113,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $this->assertFalse($tokenPair->isAccessTokenExpired($this->now));
@@ -124,7 +128,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $this->assertFalse($tokenPair->isRefreshTokenExpired($this->now));
@@ -139,7 +143,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $this->assertFalse($tokenPair->isFullyExpired($this->now));
@@ -153,7 +157,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $this->assertFalse($tokenPair->canRefresh($this->now)); // access token still valid
@@ -167,7 +171,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         // 10分鐘前 (50分鐘剩餘，大於預設300秒閾值)
@@ -193,7 +197,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         // 50分鐘後 (10分鐘剩餘，小於15分鐘閾值)
@@ -208,7 +212,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $expected = 'Bearer ' . $this->validAccessToken;
@@ -222,7 +226,7 @@ final class TokenPairTest extends TestCase
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
             refreshTokenExpiresAt: $this->refreshExpiry,
-            tokenType: 'Basic'
+            tokenType: 'Basic',
         );
 
         $expected = 'Basic ' . $this->validAccessToken;
@@ -235,7 +239,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $array = $tokenPair->toArray();
@@ -254,7 +258,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $response = $tokenPair->toApiResponse();
@@ -273,7 +277,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $response = $tokenPair->toApiResponse(false);
@@ -290,7 +294,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $this->assertEquals($tokenPair->toArray(), $tokenPair->jsonSerialize());
@@ -302,21 +306,21 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $tokenPair2 = new TokenPair(
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $tokenPair3 = new TokenPair(
             accessToken: 'different.access.token',
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $this->assertTrue($tokenPair1->equals($tokenPair2));
@@ -329,7 +333,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $string = $tokenPair->toString();
@@ -355,7 +359,7 @@ final class TokenPairTest extends TestCase
             accessToken: '',
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
     }
 
@@ -368,7 +372,7 @@ final class TokenPairTest extends TestCase
             accessToken: 'invalid-jwt-format',
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
     }
 
@@ -381,7 +385,7 @@ final class TokenPairTest extends TestCase
             accessToken: 'invalid..parts',
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
     }
 
@@ -394,7 +398,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: '',
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
     }
 
@@ -407,7 +411,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: 'short',
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
     }
 
@@ -420,7 +424,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: str_repeat('a', 256),
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
     }
 
@@ -434,7 +438,7 @@ final class TokenPairTest extends TestCase
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
             refreshTokenExpiresAt: $this->refreshExpiry,
-            tokenType: ''
+            tokenType: '',
         );
     }
 
@@ -448,7 +452,7 @@ final class TokenPairTest extends TestCase
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
             refreshTokenExpiresAt: $this->refreshExpiry,
-            tokenType: 'InvalidType'
+            tokenType: 'InvalidType',
         );
     }
 
@@ -463,7 +467,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $pastTime,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
     }
 
@@ -479,7 +483,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $futureTime, // 確保 Access Token 時間有效
-            refreshTokenExpiresAt: $pastTime    // Refresh Token 時間無效
+            refreshTokenExpiresAt: $pastTime,    // Refresh Token 時間無效
         );
     }
 
@@ -495,7 +499,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $accessTime,
-            refreshTokenExpiresAt: $refreshTime
+            refreshTokenExpiresAt: $refreshTime,
         );
     }
 
@@ -511,7 +515,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $accessTime,
-            refreshTokenExpiresAt: $tooLateRefreshTime
+            refreshTokenExpiresAt: $tooLateRefreshTime,
         );
     }
 
@@ -524,7 +528,7 @@ final class TokenPairTest extends TestCase
             accessToken: $this->validAccessToken,
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
-            refreshTokenExpiresAt: $this->refreshExpiry
+            refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
         $tokenPair->isAccessTokenNearExpiry(-100);

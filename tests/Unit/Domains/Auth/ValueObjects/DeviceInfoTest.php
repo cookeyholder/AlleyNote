@@ -9,13 +9,16 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Device Info Value Object 單元測試
+ * Device Info Value Object 單元測試.
  */
 final class DeviceInfoTest extends TestCase
 {
     private string $validDeviceId;
+
     private string $validDeviceName;
+
     private string $validUserAgent;
+
     private string $validIpAddress;
 
     protected function setUp(): void
@@ -39,7 +42,7 @@ final class DeviceInfoTest extends TestCase
             osVersion: '10.0',
             isMobile: false,
             isTablet: false,
-            isDesktop: true
+            isDesktop: true,
         );
 
         $this->assertSame($this->validDeviceId, $deviceInfo->getDeviceId());
@@ -61,7 +64,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
 
         $this->assertNull($deviceInfo->getPlatform());
@@ -172,7 +175,7 @@ final class DeviceInfoTest extends TestCase
             'os_version' => '10.0',
             'is_mobile' => false,
             'is_tablet' => false,
-            'is_desktop' => true
+            'is_desktop' => true,
         ];
 
         $deviceInfo = DeviceInfo::fromArray($data);
@@ -193,7 +196,7 @@ final class DeviceInfoTest extends TestCase
             ipAddress: $this->validIpAddress,
             isMobile: true,
             isTablet: false,
-            isDesktop: false
+            isDesktop: false,
         );
 
         $tabletDevice = new DeviceInfo(
@@ -203,7 +206,7 @@ final class DeviceInfoTest extends TestCase
             ipAddress: $this->validIpAddress,
             isMobile: false,
             isTablet: true,
-            isDesktop: false
+            isDesktop: false,
         );
 
         $desktopDevice = new DeviceInfo(
@@ -213,7 +216,7 @@ final class DeviceInfoTest extends TestCase
             ipAddress: $this->validIpAddress,
             isMobile: false,
             isTablet: false,
-            isDesktop: true
+            isDesktop: true,
         );
 
         $this->assertSame('mobile', $mobileDevice->getDeviceType());
@@ -232,7 +235,7 @@ final class DeviceInfoTest extends TestCase
             browser: 'Chrome',
             isMobile: false,
             isTablet: false,
-            isDesktop: true
+            isDesktop: true,
         );
 
         $fingerprint = $deviceInfo->getFingerprint();
@@ -251,7 +254,7 @@ final class DeviceInfoTest extends TestCase
             userAgent: $this->validUserAgent,
             ipAddress: $this->validIpAddress,
             browser: 'Chrome',
-            browserVersion: '120.0.0.0'
+            browserVersion: '120.0.0.0',
         );
 
         $this->assertSame('Chrome 120.0.0.0', $deviceInfo->getFullBrowserInfo());
@@ -263,7 +266,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
 
         $this->assertSame('Unknown Browser', $deviceInfo->getFullBrowserInfo());
@@ -277,7 +280,7 @@ final class DeviceInfoTest extends TestCase
             userAgent: $this->validUserAgent,
             ipAddress: $this->validIpAddress,
             platform: 'Windows',
-            osVersion: '10.0'
+            osVersion: '10.0',
         );
 
         $this->assertSame('Windows 10.0', $deviceInfo->getFullPlatformInfo());
@@ -289,7 +292,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
 
         $this->assertSame('Unknown Platform', $deviceInfo->getFullPlatformInfo());
@@ -304,7 +307,7 @@ final class DeviceInfoTest extends TestCase
             ipAddress: $this->validIpAddress,
             platform: 'Windows',
             browser: 'Chrome',
-            isDesktop: true
+            isDesktop: true,
         );
 
         $device2 = new DeviceInfo(
@@ -314,7 +317,7 @@ final class DeviceInfoTest extends TestCase
             ipAddress: $this->validIpAddress,
             platform: 'Windows',
             browser: 'Chrome',
-            isDesktop: true
+            isDesktop: true,
         );
 
         $device3 = new DeviceInfo(
@@ -324,7 +327,7 @@ final class DeviceInfoTest extends TestCase
             ipAddress: $this->validIpAddress,
             platform: 'Linux',
             browser: 'Firefox',
-            isDesktop: true
+            isDesktop: true,
         );
 
         $this->assertTrue($device1->matches($device2)); // 相同指紋
@@ -344,7 +347,7 @@ final class DeviceInfoTest extends TestCase
             osVersion: '10.0',
             isMobile: false,
             isTablet: false,
-            isDesktop: true
+            isDesktop: true,
         );
 
         $array = $deviceInfo->toArray();
@@ -374,7 +377,7 @@ final class DeviceInfoTest extends TestCase
             platform: 'Windows',
             browser: 'Chrome',
             browserVersion: '120.0.0.0',
-            osVersion: '10.0'
+            osVersion: '10.0',
         );
 
         $summary = $deviceInfo->toSummary();
@@ -394,7 +397,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
 
         $this->assertEquals($deviceInfo->toArray(), $deviceInfo->jsonSerialize());
@@ -407,7 +410,7 @@ final class DeviceInfoTest extends TestCase
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
             ipAddress: $this->validIpAddress,
-            platform: 'Windows'
+            platform: 'Windows',
         );
 
         $device2 = new DeviceInfo(
@@ -415,7 +418,7 @@ final class DeviceInfoTest extends TestCase
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
             ipAddress: $this->validIpAddress,
-            platform: 'Windows'
+            platform: 'Windows',
         );
 
         $device3 = new DeviceInfo(
@@ -423,7 +426,7 @@ final class DeviceInfoTest extends TestCase
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
             ipAddress: $this->validIpAddress,
-            platform: 'Windows'
+            platform: 'Windows',
         );
 
         $this->assertTrue($device1->equals($device2));
@@ -438,7 +441,7 @@ final class DeviceInfoTest extends TestCase
             userAgent: $this->validUserAgent,
             ipAddress: '192.168.1.100',
             platform: 'Windows',
-            browser: 'Chrome'
+            browser: 'Chrome',
         );
 
         $string = $deviceInfo->toString();
@@ -460,7 +463,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: '192.168.1.100'
+            ipAddress: '192.168.1.100',
         );
 
         $summary = $deviceInfo->toSummary();
@@ -473,7 +476,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: '2001:db8::1'
+            ipAddress: '2001:db8::1',
         );
 
         $summary = $deviceInfo->toSummary();
@@ -489,7 +492,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: '',
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
     }
 
@@ -502,7 +505,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: str_repeat('a', 256),
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
     }
 
@@ -515,7 +518,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: 'invalid@device#id',
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
     }
 
@@ -528,7 +531,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: '',
             userAgent: $this->validUserAgent,
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
     }
 
@@ -541,7 +544,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: str_repeat('a', 256),
             userAgent: $this->validUserAgent,
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
     }
 
@@ -554,7 +557,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: $this->validDeviceName,
             userAgent: '',
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
     }
 
@@ -567,7 +570,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: $this->validDeviceName,
             userAgent: str_repeat('a', 1001),
-            ipAddress: $this->validIpAddress
+            ipAddress: $this->validIpAddress,
         );
     }
 
@@ -580,7 +583,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: ''
+            ipAddress: '',
         );
     }
 
@@ -593,7 +596,7 @@ final class DeviceInfoTest extends TestCase
             deviceId: $this->validDeviceId,
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
-            ipAddress: 'invalid-ip'
+            ipAddress: 'invalid-ip',
         );
     }
 
@@ -607,7 +610,7 @@ final class DeviceInfoTest extends TestCase
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
             ipAddress: $this->validIpAddress,
-            platform: 'InvalidPlatform'
+            platform: 'InvalidPlatform',
         );
     }
 
@@ -621,7 +624,7 @@ final class DeviceInfoTest extends TestCase
             deviceName: $this->validDeviceName,
             userAgent: $this->validUserAgent,
             ipAddress: $this->validIpAddress,
-            browser: 'InvalidBrowser'
+            browser: 'InvalidBrowser',
         );
     }
 
@@ -637,7 +640,7 @@ final class DeviceInfoTest extends TestCase
             ipAddress: $this->validIpAddress,
             isMobile: true,
             isTablet: true,
-            isDesktop: false
+            isDesktop: false,
         );
     }
 
@@ -653,7 +656,7 @@ final class DeviceInfoTest extends TestCase
             ipAddress: $this->validIpAddress,
             isMobile: false,
             isTablet: false,
-            isDesktop: false
+            isDesktop: false,
         );
     }
 
@@ -665,7 +668,7 @@ final class DeviceInfoTest extends TestCase
         DeviceInfo::fromArray([
             'device_id' => $this->validDeviceId,
             'user_agent' => $this->validUserAgent,
-            'ip_address' => $this->validIpAddress
+            'ip_address' => $this->validIpAddress,
         ]);
     }
 }

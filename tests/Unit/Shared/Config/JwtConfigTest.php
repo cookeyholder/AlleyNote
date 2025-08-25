@@ -236,8 +236,8 @@ class JwtConfigTest extends TestCase
         $publicKey = $publicKeyDetails['key'];
 
         $_ENV['JWT_ALGORITHM'] = 'RS256';
-        $_ENV['JWT_PRIVATE_KEY'] = str_replace("\n", "\\n", $privateKey);
-        $_ENV['JWT_PUBLIC_KEY'] = str_replace("\n", "\\n", $publicKey);
+        $_ENV['JWT_PRIVATE_KEY'] = str_replace("\n", '\\n', $privateKey);
+        $_ENV['JWT_PUBLIC_KEY'] = str_replace("\n", '\\n', $publicKey);
         $_ENV['JWT_ISSUER'] = 'test-issuer';
         $_ENV['JWT_AUDIENCE'] = 'test-audience';
         $_ENV['JWT_ACCESS_TOKEN_TTL'] = '7200';

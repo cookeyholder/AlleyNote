@@ -11,11 +11,12 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * JWT Payload Value Object 單元測試
+ * JWT Payload Value Object 單元測試.
  */
 final class JwtPayloadTest extends TestCase
 {
     private DateTimeImmutable $baseTime;
+
     private DateTimeImmutable $futureTime;
 
     protected function setUp(): void
@@ -33,7 +34,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'alleynote',
             aud: ['web', 'mobile'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
 
         $this->assertSame('test-jti-123', $payload->getJti());
@@ -60,7 +61,7 @@ final class JwtPayloadTest extends TestCase
             iat: $this->baseTime,
             exp: $this->futureTime,
             nbf: $nbf,
-            customClaims: $customClaims
+            customClaims: $customClaims,
         );
 
         $this->assertEquals($nbf, $payload->getNotBefore());
@@ -79,7 +80,7 @@ final class JwtPayloadTest extends TestCase
             'aud' => ['client1', 'client2'],
             'iat' => $this->baseTime->getTimestamp(),
             'exp' => $this->futureTime->getTimestamp(),
-            'custom_field' => 'custom_value'
+            'custom_field' => 'custom_value',
         ];
 
         $payload = JwtPayload::fromArray($data);
@@ -101,7 +102,7 @@ final class JwtPayloadTest extends TestCase
             'iss' => 'issuer',
             'aud' => 'single-client',
             'iat' => $this->baseTime->getTimestamp(),
-            'exp' => $this->futureTime->getTimestamp()
+            'exp' => $this->futureTime->getTimestamp(),
         ];
 
         $payload = JwtPayload::fromArray($data);
@@ -119,7 +120,7 @@ final class JwtPayloadTest extends TestCase
             'aud' => ['client'],
             'iat' => $this->baseTime->getTimestamp(),
             'exp' => $this->futureTime->getTimestamp(),
-            'nbf' => $nbf->getTimestamp()
+            'nbf' => $nbf->getTimestamp(),
         ];
 
         $payload = JwtPayload::fromArray($data);
@@ -135,7 +136,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['client'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
 
         $this->assertFalse($payload->isExpired($this->baseTime));
@@ -157,7 +158,7 @@ final class JwtPayloadTest extends TestCase
             aud: ['client'],
             iat: $now,
             exp: $exp,
-            nbf: $nbf
+            nbf: $nbf,
         );
 
         // 在 nbf 之前
@@ -181,7 +182,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['client'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
 
         $this->assertTrue($payload->isActive($this->baseTime));
@@ -197,7 +198,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['web', 'mobile', 'api'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
 
         $this->assertTrue($payload->hasAudience('web'));
@@ -217,7 +218,7 @@ final class JwtPayloadTest extends TestCase
             aud: ['client1', 'client2'],
             iat: $this->baseTime,
             exp: $this->futureTime,
-            customClaims: $customClaims
+            customClaims: $customClaims,
         );
 
         $expected = [
@@ -227,7 +228,7 @@ final class JwtPayloadTest extends TestCase
             'aud' => ['client1', 'client2'],
             'iat' => $this->baseTime->getTimestamp(),
             'exp' => $this->futureTime->getTimestamp(),
-            'role' => 'admin'
+            'role' => 'admin',
         ];
 
         $this->assertEquals($expected, $payload->toArray());
@@ -241,7 +242,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['single-client'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
 
         $array = $payload->toArray();
@@ -256,7 +257,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['client'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
 
         $this->assertEquals($payload->toArray(), $payload->jsonSerialize());
@@ -271,7 +272,7 @@ final class JwtPayloadTest extends TestCase
             aud: ['client'],
             iat: $this->baseTime,
             exp: $this->futureTime,
-            customClaims: ['role' => 'user']
+            customClaims: ['role' => 'user'],
         );
 
         $payload2 = new JwtPayload(
@@ -281,7 +282,7 @@ final class JwtPayloadTest extends TestCase
             aud: ['client'],
             iat: $this->baseTime,
             exp: $this->futureTime,
-            customClaims: ['role' => 'user']
+            customClaims: ['role' => 'user'],
         );
 
         $payload3 = new JwtPayload(
@@ -291,7 +292,7 @@ final class JwtPayloadTest extends TestCase
             aud: ['client'],
             iat: $this->baseTime,
             exp: $this->futureTime,
-            customClaims: ['role' => 'user']
+            customClaims: ['role' => 'user'],
         );
 
         $this->assertTrue($payload1->equals($payload2));
@@ -307,7 +308,7 @@ final class JwtPayloadTest extends TestCase
             aud: ['web', 'mobile'],
             iat: $this->baseTime,
             exp: $this->futureTime,
-            customClaims: ['role' => 'admin', 'dept' => 'IT']
+            customClaims: ['role' => 'admin', 'dept' => 'IT'],
         );
 
         $result = $payload->toString();
@@ -339,7 +340,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['client'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
     }
 
@@ -354,7 +355,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['client'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
     }
 
@@ -369,7 +370,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['client'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
     }
 
@@ -384,7 +385,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['client'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
     }
 
@@ -399,7 +400,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['client'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
     }
 
@@ -414,7 +415,7 @@ final class JwtPayloadTest extends TestCase
             iss: '',
             aud: ['client'],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
     }
 
@@ -429,7 +430,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: [],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
     }
 
@@ -444,7 +445,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['valid', ''],
             iat: $this->baseTime,
-            exp: $this->futureTime
+            exp: $this->futureTime,
         );
     }
 
@@ -459,7 +460,7 @@ final class JwtPayloadTest extends TestCase
             iss: 'issuer',
             aud: ['client'],
             iat: $this->futureTime,
-            exp: $this->baseTime
+            exp: $this->baseTime,
         );
     }
 
@@ -477,7 +478,7 @@ final class JwtPayloadTest extends TestCase
             aud: ['client'],
             iat: $this->baseTime,
             exp: $this->futureTime,
-            nbf: $tooLateNbf
+            nbf: $tooLateNbf,
         );
     }
 
@@ -493,7 +494,7 @@ final class JwtPayloadTest extends TestCase
             aud: ['client'],
             iat: $this->baseTime,
             exp: $this->futureTime,
-            customClaims: ['jti' => 'should-not-work']
+            customClaims: ['jti' => 'should-not-work'],
         );
     }
 
@@ -507,7 +508,7 @@ final class JwtPayloadTest extends TestCase
             'iss' => 'issuer',
             'aud' => ['client'],
             'iat' => $this->baseTime->getTimestamp(),
-            'exp' => $this->futureTime->getTimestamp()
+            'exp' => $this->futureTime->getTimestamp(),
         ]);
     }
 }

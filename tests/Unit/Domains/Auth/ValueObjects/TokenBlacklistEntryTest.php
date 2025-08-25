@@ -11,13 +11,16 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Token Blacklist Entry Value Object 單元測試
+ * Token Blacklist Entry Value Object 單元測試.
  */
 final class TokenBlacklistEntryTest extends TestCase
 {
     private DateTimeImmutable $now;
+
     private DateTimeImmutable $futureExpiry;
+
     private DateTimeImmutable $blacklistedTime;
+
     private string $validJti;
 
     protected function setUp(): void
@@ -38,7 +41,7 @@ final class TokenBlacklistEntryTest extends TestCase
             reason: TokenBlacklistEntry::REASON_LOGOUT,
             userId: 42,
             deviceId: 'device-123',
-            metadata: ['ip' => '192.168.1.1']
+            metadata: ['ip' => '192.168.1.1'],
         );
 
         $this->assertSame($this->validJti, $entry->getJti());
@@ -60,7 +63,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_EXPIRED
+            reason: TokenBlacklistEntry::REASON_EXPIRED,
         );
 
         $this->assertNull($entry->getUserId());
@@ -80,7 +83,7 @@ final class TokenBlacklistEntryTest extends TestCase
             'reason' => TokenBlacklistEntry::REASON_LOGOUT,
             'user_id' => 123,
             'device_id' => 'test-device',
-            'metadata' => ['session_id' => 'sess-456']
+            'metadata' => ['session_id' => 'sess-456'],
         ];
 
         $entry = TokenBlacklistEntry::fromArray($data);
@@ -106,7 +109,7 @@ final class TokenBlacklistEntryTest extends TestCase
             'token_type' => TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
             'expires_at' => $futureTime->format('Y-m-d H:i:s'),
             'blacklisted_at' => $pastTime->format('Y-m-d H:i:s'),
-            'reason' => TokenBlacklistEntry::REASON_REVOKED
+            'reason' => TokenBlacklistEntry::REASON_REVOKED,
         ];
 
         $entry = TokenBlacklistEntry::fromArray($data);
@@ -122,7 +125,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             userId: 42,
-            deviceId: 'device-456'
+            deviceId: 'device-456',
         );
 
         $this->assertSame($this->validJti, $entry->getJti());
@@ -144,7 +147,7 @@ final class TokenBlacklistEntryTest extends TestCase
             expiresAt: $this->futureExpiry,
             securityReason: TokenBlacklistEntry::REASON_SUSPICIOUS_ACTIVITY,
             userId: 99,
-            metadata: $metadata
+            metadata: $metadata,
         );
 
         $this->assertSame(TokenBlacklistEntry::REASON_SUSPICIOUS_ACTIVITY, $entry->getReason());
@@ -160,7 +163,7 @@ final class TokenBlacklistEntryTest extends TestCase
             jti: $this->validJti,
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
-            securityReason: 'invalid_security_reason'
+            securityReason: 'invalid_security_reason',
         );
 
         // 應該回退到預設的安全原因
@@ -174,7 +177,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
             expiresAt: $this->futureExpiry,
             userId: 77,
-            changeType: TokenBlacklistEntry::REASON_PASSWORD_CHANGED
+            changeType: TokenBlacklistEntry::REASON_PASSWORD_CHANGED,
         );
 
         $this->assertSame(TokenBlacklistEntry::REASON_PASSWORD_CHANGED, $entry->getReason());
@@ -190,7 +193,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->now->modify('-1 hour'), // 已過期
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         $activeEntry = new TokenBlacklistEntry(
@@ -198,7 +201,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->now->modify('+1 hour'), // 未過期
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         $this->assertTrue($expiredEntry->canBeCleanedUp($this->now));
@@ -220,7 +223,7 @@ final class TokenBlacklistEntryTest extends TestCase
                 tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
                 expiresAt: $this->futureExpiry,
                 blacklistedAt: $this->blacklistedTime,
-                reason: $reason
+                reason: $reason,
             );
 
             $this->assertTrue($entry->isSecurityRelated(), "Failed for reason: {$reason}");
@@ -231,7 +234,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         $this->assertFalse($nonSecurityEntry->isSecurityRelated());
@@ -251,7 +254,7 @@ final class TokenBlacklistEntryTest extends TestCase
                 tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
                 expiresAt: $this->futureExpiry,
                 blacklistedAt: $this->blacklistedTime,
-                reason: $reason
+                reason: $reason,
             );
 
             $this->assertTrue($entry->isUserInitiated(), "Failed for reason: {$reason}");
@@ -262,7 +265,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_EXPIRED
+            reason: TokenBlacklistEntry::REASON_EXPIRED,
         );
 
         $this->assertFalse($systemEntry->isUserInitiated());
@@ -283,7 +286,7 @@ final class TokenBlacklistEntryTest extends TestCase
                 tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
                 expiresAt: $this->futureExpiry,
                 blacklistedAt: $this->blacklistedTime,
-                reason: $reason
+                reason: $reason,
             );
 
             $this->assertTrue($entry->isSystemInitiated(), "Failed for reason: {$reason}");
@@ -294,7 +297,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         $this->assertFalse($userEntry->isSystemInitiated());
@@ -307,7 +310,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         $this->assertSame('User logged out', $entry->getReasonDescription());
@@ -321,7 +324,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->now->modify('-1 hour'),
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         // 安全相關的項目 (優先級 2)
@@ -330,7 +333,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_SECURITY_BREACH
+            reason: TokenBlacklistEntry::REASON_SECURITY_BREACH,
         );
 
         // 使用者主動的項目 (優先級 3)
@@ -339,7 +342,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         // 其他系統原因的項目 (優先級 4)
@@ -348,7 +351,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_ACCOUNT_SUSPENDED
+            reason: TokenBlacklistEntry::REASON_ACCOUNT_SUSPENDED,
         );
 
         $this->assertSame(1, $expiredEntry->getPriority());
@@ -364,7 +367,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         $expiredEntry = new TokenBlacklistEntry(
@@ -372,7 +375,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->now->modify('-1 hour'),
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         $this->assertTrue($activeEntry->isActive($this->now));
@@ -390,7 +393,7 @@ final class TokenBlacklistEntryTest extends TestCase
             reason: TokenBlacklistEntry::REASON_LOGOUT,
             userId: 42,
             deviceId: 'device-123',
-            metadata: $metadata
+            metadata: $metadata,
         );
 
         $array = $entry->toArray();
@@ -421,7 +424,7 @@ final class TokenBlacklistEntryTest extends TestCase
             reason: TokenBlacklistEntry::REASON_LOGOUT,
             userId: 42,
             deviceId: 'device-123',
-            metadata: $metadata
+            metadata: $metadata,
         );
 
         $dbArray = $entry->toDatabaseArray();
@@ -443,7 +446,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         $dbArray = $entry->toDatabaseArray();
@@ -458,7 +461,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
 
         $this->assertEquals($entry->toArray(), $entry->jsonSerialize());
@@ -474,7 +477,7 @@ final class TokenBlacklistEntryTest extends TestCase
             reason: TokenBlacklistEntry::REASON_LOGOUT,
             userId: 42,
             deviceId: 'device-123',
-            metadata: ['key' => 'value']
+            metadata: ['key' => 'value'],
         );
 
         $entry2 = new TokenBlacklistEntry(
@@ -485,7 +488,7 @@ final class TokenBlacklistEntryTest extends TestCase
             reason: TokenBlacklistEntry::REASON_LOGOUT,
             userId: 42,
             deviceId: 'device-123',
-            metadata: ['key' => 'value']
+            metadata: ['key' => 'value'],
         );
 
         $entry3 = new TokenBlacklistEntry(
@@ -496,7 +499,7 @@ final class TokenBlacklistEntryTest extends TestCase
             reason: TokenBlacklistEntry::REASON_LOGOUT,
             userId: 42,
             deviceId: 'device-123',
-            metadata: ['key' => 'value']
+            metadata: ['key' => 'value'],
         );
 
         $this->assertTrue($entry1->equals($entry2));
@@ -512,7 +515,7 @@ final class TokenBlacklistEntryTest extends TestCase
             blacklistedAt: $this->blacklistedTime,
             reason: TokenBlacklistEntry::REASON_LOGOUT,
             userId: 42,
-            deviceId: 'device-123'
+            deviceId: 'device-123',
         );
 
         $string = $entry->toString();
@@ -557,7 +560,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
     }
 
@@ -571,7 +574,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
     }
 
@@ -585,7 +588,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: 'invalid',
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
     }
 
@@ -599,7 +602,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $this->blacklistedTime,
-            reason: 'invalid_reason'
+            reason: 'invalid_reason',
         );
     }
 
@@ -615,7 +618,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $tooOldTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
     }
 
@@ -631,7 +634,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             blacklistedAt: $tooFutureTime,
-            reason: TokenBlacklistEntry::REASON_LOGOUT
+            reason: TokenBlacklistEntry::REASON_LOGOUT,
         );
     }
 
@@ -648,7 +651,7 @@ final class TokenBlacklistEntryTest extends TestCase
             expiresAt: $this->futureExpiry,
             blacklistedAt: $validBlacklistedTime,
             reason: TokenBlacklistEntry::REASON_LOGOUT,
-            userId: 0 // 無效的使用者 ID
+            userId: 0, // 無效的使用者 ID
         );
     }
 
@@ -665,7 +668,7 @@ final class TokenBlacklistEntryTest extends TestCase
             expiresAt: $this->futureExpiry,
             blacklistedAt: $validBlacklistedTime,
             reason: TokenBlacklistEntry::REASON_LOGOUT,
-            deviceId: ''
+            deviceId: '',
         );
     }
 
@@ -682,7 +685,7 @@ final class TokenBlacklistEntryTest extends TestCase
             expiresAt: $this->futureExpiry,
             blacklistedAt: $validBlacklistedTime,
             reason: TokenBlacklistEntry::REASON_LOGOUT,
-            deviceId: str_repeat('a', 256)
+            deviceId: str_repeat('a', 256),
         );
     }
 
@@ -702,7 +705,7 @@ final class TokenBlacklistEntryTest extends TestCase
             expiresAt: $this->futureExpiry,
             blacklistedAt: $validBlacklistedTime,
             reason: TokenBlacklistEntry::REASON_LOGOUT,
-            metadata: ['resource' => $resource]
+            metadata: ['resource' => $resource],
         );
 
         if ($resource) {
@@ -720,7 +723,7 @@ final class TokenBlacklistEntryTest extends TestCase
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             expiresAt: $this->futureExpiry,
             userId: 42,
-            changeType: 'invalid_change_type'
+            changeType: 'invalid_change_type',
         );
     }
 
@@ -733,7 +736,7 @@ final class TokenBlacklistEntryTest extends TestCase
             'jti' => $this->validJti,
             'token_type' => TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             'expires_at' => $this->futureExpiry,
-            'blacklisted_at' => $this->blacklistedTime
+            'blacklisted_at' => $this->blacklistedTime,
         ]);
     }
 }

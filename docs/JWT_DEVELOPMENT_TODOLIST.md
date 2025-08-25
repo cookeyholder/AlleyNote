@@ -8,9 +8,9 @@
 
 總任務數: **24 項**  
 狀態統計:
-- ⏳ 未開始: 20 項
+- ⏳ 未開始: 19 項
 - 🔄 進行中: 0 項  
-- ✅ 已完成: 4 項
+- ✅ 已完成: 5 項
 
 ---
 
@@ -93,7 +93,7 @@
 ### 1.5 建立 JWT 領域例外類別
 - **優先級**: 中
 - **預估時間**: 30分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 建立 JwtException 基礎類別
   - 建立特定 JWT 例外類別 (TokenExpiredException, InvalidTokenException, 等)
@@ -105,6 +105,8 @@
   - ✅ 例外類別命名符合專案規範
 - **相依任務**: 無
 - **檔案異動**: `app/Domains/Auth/Exceptions/JwtException.php`, `app/Domains/Auth/Exceptions/TokenExpiredException.php`, `app/Domains/Auth/Exceptions/InvalidTokenException.php`, 等
+- **完成日期**: 2025-01-25
+- **測試覆蓋率**: 128 個測試，604 個斷言，100% 通過
 
 ### 1.6 建立 JWT 領域介面
 - **優先級**: 高
