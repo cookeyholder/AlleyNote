@@ -47,14 +47,14 @@ final class JwtConfig
     private function loadPrivateKey(): string
     {
         $privateKey = $_ENV['JWT_PRIVATE_KEY'] ?? '';
-        
+
         if (empty($privateKey)) {
             throw new InvalidArgumentException('JWT_PRIVATE_KEY 環境變數未設定');
         }
 
         // 將環境變數中的 \n 轉換為實際的換行符
         $privateKey = str_replace('\\n', "\n", $privateKey);
-        
+
         // 驗證私鑰格式
         if (!str_contains($privateKey, 'BEGIN PRIVATE KEY')) {
             throw new InvalidArgumentException('JWT_PRIVATE_KEY 格式無效，必須是 PEM 格式的私鑰');
@@ -69,14 +69,14 @@ final class JwtConfig
     private function loadPublicKey(): string
     {
         $publicKey = $_ENV['JWT_PUBLIC_KEY'] ?? '';
-        
+
         if (empty($publicKey)) {
             throw new InvalidArgumentException('JWT_PUBLIC_KEY 環境變數未設定');
         }
 
         // 將環境變數中的 \n 轉換為實際的換行符
         $publicKey = str_replace('\\n', "\n", $publicKey);
-        
+
         // 驗證公鑰格式
         if (!str_contains($publicKey, 'BEGIN PUBLIC KEY')) {
             throw new InvalidArgumentException('JWT_PUBLIC_KEY 格式無效，必須是 PEM 格式的公鑰');
@@ -139,7 +139,7 @@ final class JwtConfig
             // 簡單的金鑰對匹配測試
             $testData = 'jwt-config-validation-test';
             $signature = '';
-            
+
             if (!openssl_sign($testData, $signature, $privateKeyResource, OPENSSL_ALGO_SHA256)) {
                 throw new InvalidArgumentException('私鑰簽名測試失敗');
             }
@@ -147,7 +147,6 @@ final class JwtConfig
             if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {
                 throw new InvalidArgumentException('金鑰對不匹配，公鑰無法驗證私鑰簽名');
             }
-
         } catch (\Exception $e) {
             throw new InvalidArgumentException('金鑰驗證失敗: ' . $e->getMessage());
         }
@@ -225,9 +224,9 @@ final class JwtConfig
      */
     public function isConfigured(): bool
     {
-        return !empty($this->privateKey) 
-            && !empty($this->publicKey) 
-            && !empty($this->issuer) 
+        return !empty($this->privateKey)
+            && !empty($this->publicKey)
+            && !empty($this->issuer)
             && !empty($this->audience);
     }
 

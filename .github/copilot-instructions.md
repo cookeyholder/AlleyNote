@@ -41,46 +41,64 @@
 
 ```bash
 # 程式碼風格檢查
-docker-compose exec -T web ./vendor/bin/php-cs-fixer check --diff
+docker compose exec -T web ./vendor/bin/php-cs-fixer check --diff
 
 # 自動修復程式碼風格問題
-docker-compose exec -T web ./vendor/bin/php-cs-fixer fix
+docker compose exec -T web ./vendor/bin/php-cs-fixer fix
 
 # 靜態分析檢查
-docker-compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G
+docker compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G
 
 # 執行所有測試
-docker-compose exec -T web ./vendor/bin/phpunit
+docker compose exec -T web ./vendor/bin/phpunit
 
 # 執行完整 CI 檢查（建議提交前執行）
-docker-compose exec -T web composer ci
+docker compose exec -T web composer ci
 ```
 
 ---
 
 ## 🔄 建議的開發工作流程
 
-1. **開發完成後**：
+1. **開發前**：
+
+    - 先從主分支拉出新的功能分支
+    - 規畫功能清單，並切割為可獨立開發與測試的最小單元
+    - 建立詳細的規格書與測試案例
+    - 了解相關的 API 規格與參考範例
+    - 設計好系統架構與資料庫結構
+    - 了解模組間的依賴關係與開發順序
+    - 了解核心模型（Entity、Value Object、Aggregate Root 等）
+    - 確認所有業務邏輯已被封裝在領域層中
+    - 建立開發待辦清單，每個待辦事項盡可能切割為獨立的最小單元，要明確寫清楚驗收標準
+    - 撰寫測試（TDD）
+        - 要依照規格書仔仔細細撰寫測試案例
+        - 測試案例要涵蓋所有正常與異常情況
+        - 測試案例要能獨立執行，且不依賴外部狀態
+        - 測試案例要能快速執行
+    - 測試案例要能夠清楚地表達其意圖，並提供足夠的上下文資訊
+
+2. **開發完成後**：
 
     ```bash
     # 自動修復程式碼風格
     docker-compose exec -T web ./vendor/bin/php-cs-fixer fix
     ```
 
-2. **提交前進行檢查**：
+3. **提交前進行檢查**：
 
     ```bash
     # 執行完整的品質檢查
     docker-compose exec web composer ci
     ```
 
-3. **如有錯誤，請依序處理**：
+4. **如有錯誤，請依序處理**：
 
     - 使用 `php-cs-fixer` 修正風格錯誤
     - 修復 PHPStan 報告的問題（如類型錯誤、未使用變數等）
     - 確保所有測試均通過
 
-4. **全部通過後再進行 Git Commit，Message 請符合 Conventional Commit 規範（以繁體中文撰寫）**
+5. **全部通過後再進行 Git Commit，Message 請符合 Conventional Commit 規範（以繁體中文撰寫）**
 
 ---
 

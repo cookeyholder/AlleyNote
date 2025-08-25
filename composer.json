@@ -33,7 +33,7 @@
   },
   "autoload": {
     "psr-4": {
-      "App\\": "app/"
+      "AlleyNote\\": "app/"
     },
     "files": [
       "app/Shared/Helpers/functions.php"
