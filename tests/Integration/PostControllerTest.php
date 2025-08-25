@@ -25,14 +25,19 @@ use Tests\TestCase;
 
 class PostControllerTest extends TestCase
 {
+    /** @var PostServiceInterface&\Mockery\MockInterface */
     private PostServiceInterface $postService;
 
+    /** @var XssProtectionServiceInterface&\Mockery\MockInterface */
     private XssProtectionServiceInterface $xssProtection;
 
+    /** @var CsrfProtectionServiceInterface&\Mockery\MockInterface */
     private CsrfProtectionServiceInterface $csrfProtection;
 
+    /** @var ValidatorInterface&\Mockery\MockInterface */
     private ValidatorInterface $validator;
 
+    /** @var OutputSanitizerInterface&\Mockery\MockInterface */
     private OutputSanitizerInterface $sanitizer;
 
     private $request;
@@ -177,7 +182,7 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($this->currentResponseData['success']);
         $this->assertEquals('成功取得貼文', $this->currentResponseData['message']);
-        $this->assertEquals($post->toSafeArray(), $this->currentResponseData['data']);
+        $this->assertEquals($post->toSafeArray($this->sanitizer), $this->currentResponseData['data']);
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
@@ -216,7 +221,7 @@ class PostControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertTrue($this->currentResponseData['success']);
         $this->assertEquals('貼文建立成功', $this->currentResponseData['message']);
-        $this->assertEquals($createdPost->toSafeArray(), $this->currentResponseData['data']);
+        $this->assertEquals($createdPost->toSafeArray($this->sanitizer), $this->currentResponseData['data']);
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
@@ -294,7 +299,7 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($this->currentResponseData['success']);
         $this->assertEquals('貼文更新成功', $this->currentResponseData['message']);
-        $this->assertEquals($updatedPost->toSafeArray(), $this->currentResponseData['data']);
+        $this->assertEquals($updatedPost->toSafeArray($this->sanitizer), $this->currentResponseData['data']);
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
@@ -484,6 +489,9 @@ class PostControllerTest extends TestCase
         return $stream;
     }
 
+    /**
+     * @return ResponseInterface&\Mockery\MockInterface
+     */
     protected function createResponseMock(): ResponseInterface
     {
         $response = Mockery::mock(ResponseInterface::class);
