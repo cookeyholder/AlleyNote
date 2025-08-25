@@ -1156,7 +1156,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/DTOs/BaseDTOTest.php' => 
     array (
-      0 => '27423beb10b61f05141bd43b9b2b0f6f12f44e59',
+      0 => 'eda7547d4db316f0e56fb30c0440f9b6b7467bbc',
       1 => 
       array (
         0 => 'tests\\unit\\dtos\\basedtotest',

@@ -1,6 +1,6 @@
 # 專案架構分析報告
 
-**生成時間**: 2025-08-25 15:22:04
+**生成時間**: 2025-08-25 15:32:28
 
 ## 📁 目錄結構
 
@@ -453,6 +453,7 @@
 - app/Domains/Post/DTOs/UpdatePostDTO.php
 
 ### `App\Domains\Post\Services`
+- app/Domains/Post/Services/PostCacheKeyService.php
 - app/Domains/Post/Services/PostService.php
 - app/Domains/Post/Services/ContentModerationService.php
 - app/Domains/Post/Services/RichTextProcessorService.php
@@ -558,6 +559,7 @@
 - app/Shared/Contracts/CacheServiceInterface.php
 - app/Shared/Contracts/RepositoryInterface.php
 - app/Shared/Contracts/ValidatorInterface.php
+- app/Shared/Contracts/OutputSanitizerInterface.php
 
 ### `App\Application\Controllers\Api\V1`
 - app/Application/Controllers/Api/V1/AuthController.php
@@ -708,7 +710,7 @@
 
 ### Domains 層
 **子目錄**: .., Attachment, Attachment/.., Attachment/Repositories, Attachment/Repositories/.., Attachment/Repositories/., Attachment/Enums, Attachment/Enums/.., Attachment/Enums/., Attachment/., Attachment/Models, Attachment/Models/.., Attachment/Models/., Attachment/DTOs, Attachment/DTOs/.., Attachment/DTOs/., Attachment/Services, Attachment/Services/.., Attachment/Services/., Attachment/Contracts, Attachment/Contracts/.., Attachment/Contracts/., storage, storage/.., storage/., storage/cache, storage/cache/.., storage/cache/htmlpurifier, storage/cache/htmlpurifier/.., storage/cache/htmlpurifier/., storage/cache/., Auth, Auth/.., Auth/Repositories, Auth/Repositories/.., Auth/Repositories/., Auth/., Auth/Exceptions, Auth/Exceptions/.., Auth/Exceptions/., Auth/Models, Auth/Models/.., Auth/Models/., Auth/DTOs, Auth/DTOs/.., Auth/DTOs/., Auth/Services, Auth/Services/.., Auth/Services/., Auth/Services/Advanced, Auth/Services/Advanced/.., Auth/Services/Advanced/., Auth/Contracts, Auth/Contracts/.., Auth/Contracts/., Security, Security/.., Security/Repositories, Security/Repositories/.., Security/Repositories/., Security/., Security/Models, Security/Models/.., Security/Models/., Security/DTOs, Security/DTOs/.., Security/DTOs/., Security/Services, Security/Services/Logging, Security/Services/Logging/.., Security/Services/Logging/., Security/Services/.., Security/Services/Error, Security/Services/Error/.., Security/Services/Error/., Security/Services/Headers, Security/Services/Headers/.., Security/Services/Headers/., Security/Services/., Security/Services/Content, Security/Services/Content/.., Security/Services/Content/., Security/Services/Core, Security/Services/Core/.., Security/Services/Core/., Security/Services/Advanced, Security/Services/Advanced/.., Security/Services/Advanced/., Security/Services/Secrets, Security/Services/Secrets/.., Security/Services/Secrets/., Security/Contracts, Security/Contracts/.., Security/Contracts/., Post, Post/.., Post/Repositories, Post/Repositories/.., Post/Repositories/., Post/Enums, Post/Enums/.., Post/Enums/., Post/., Post/Exceptions, Post/Exceptions/.., Post/Exceptions/., Post/Models, Post/Models/.., Post/Models/., Post/DTOs, Post/DTOs/.., Post/DTOs/., Post/Services, Post/Services/.., Post/Services/., Post/Validation, Post/Validation/.., Post/Validation/., Post/Contracts, Post/Contracts/.., Post/Contracts/.
-**檔案數量**: 59
+**檔案數量**: 60
 
 ### Infrastructure 層
 **子目錄**: .., Cache, Cache/.., Cache/., Database, Database/.., Database/., OpenApi, OpenApi/.., OpenApi/., Services, Services/.., Services/., Routing, Routing/.., Routing/Cache, Routing/Cache/.., Routing/Cache/., Routing/., Routing/Exceptions, Routing/Exceptions/.., Routing/Exceptions/., Routing/Core, Routing/Core/.., Routing/Core/., Routing/Providers, Routing/Providers/.., Routing/Providers/., Routing/Middleware, Routing/Middleware/.., Routing/Middleware/., Routing/Contracts, Routing/Contracts/.., Routing/Contracts/., Config, Config/.., Config/.
@@ -716,25 +718,17 @@
 
 ### Shared 層
 **子目錄**: .., Http, Http/.., Http/., Exceptions, Exceptions/.., Exceptions/., Exceptions/Validation, Exceptions/Validation/.., Exceptions/Validation/., DTOs, DTOs/.., DTOs/., Helpers, Helpers/.., Helpers/., Schemas, Schemas/.., Schemas/., Validation, Validation/.., Validation/., Validation/Factory, Validation/Factory/.., Validation/Factory/., Contracts, Contracts/.., Contracts/.
-**檔案數量**: 17
+**檔案數量**: 18
 
 
 ## 📊 類別統計
 
-- **類別總數**: 162
-- **介面總數**: 29
+- **類別總數**: 164
+- **介面總數**: 30
 - **Trait 總數**: 0
 
 ## ⚠️ 發現的架構問題
 
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Attachment/Repositories/AttachmentRepository.php -> App\Infrastructure\Services\CacheService
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Attachment/Services/AttachmentService.php -> App\Infrastructure\Services\CacheService
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Services/AuthorizationService.php -> App\Infrastructure\Services\CacheService
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Security/Repositories/IpRepository.php -> App\Infrastructure\Services\CacheService
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Security/Models/IpList.php -> App\Infrastructure\Services\OutputSanitizer
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Post/Repositories/PostRepository.php -> App\Infrastructure\Cache\CacheKeys
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Post/Repositories/PostRepository.php -> App\Infrastructure\Services\CacheService
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Post/Models/Post.php -> App\Infrastructure\Services\OutputSanitizer
 - ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
 - ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
 - ⚠️  可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
@@ -783,6 +777,8 @@
   - 實作: SecretsManagerInterface
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
   - 實作: PostRepositoryInterface
+- **PostCacheKeyService**: `app/Domains/Post/Services/PostCacheKeyService.php`
+  - 實作: 
 - **PostService**: `app/Domains/Post/Services/PostService.php`
   - 實作: PostServiceInterface
 - **ContentModerationService**: `app/Domains/Post/Services/ContentModerationService.php`
@@ -793,6 +789,8 @@
   - 實作: 
 - **OutputSanitizer**: `app/Infrastructure/Services/OutputSanitizer.php`
   - 實作: 
+- **OutputSanitizerService**: `app/Infrastructure/Services/OutputSanitizer.php`
+  - 實作: OutputSanitizerInterface
 - **CacheService**: `app/Infrastructure/Services/CacheService.php`
   - 實作: CacheServiceInterface
 - **ControllerResolver**: `app/Infrastructure/Routing/ControllerResolver.php`

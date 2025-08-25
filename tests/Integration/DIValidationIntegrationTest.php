@@ -6,7 +6,7 @@ namespace Tests\Integration;
 
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Validation\Factory\ValidatorFactory;
-use App\Shared\Validation\ValidationException;
+use App\Shared\Exceptions\ValidationException;
 use DI\Container;
 use DI\ContainerBuilder;
 use Tests\TestCase;

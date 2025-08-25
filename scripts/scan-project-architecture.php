@@ -233,7 +233,7 @@ class ProjectArchitectureScanner
         // 生成詳細報告
         $report = "# 專案架構分析報告\n\n";
         $report .= "**生成時間**: $timestamp\n\n";
-        
+
         // 生成快速摘要
         $summary = "=== 專案架構快速摘要 ($timestamp) ===\n\n";
 
@@ -299,19 +299,19 @@ class ProjectArchitectureScanner
         }
 
         file_put_contents($reportPath, $report);
-        
+
         // 快速摘要 (重構時快速查閱用)
         $summary .= "📊 統計資訊:\n";
         $summary .= "- 類別: " . count($this->analysis['classes']) . " 個\n";
         $summary .= "- 介面: " . count($this->analysis['interfaces']) . " 個\n";
         $summary .= "- 命名空間: " . count($this->analysis['namespaces']) . " 個\n\n";
-        
+
         $summary .= "🏗️ DDD 架構:\n";
         foreach ($this->analysis['ddd_structure'] as $layer => $structure) {
             $fileCount = isset($structure['files']) ? count($structure['files']) : 0;
             $summary .= "- $layer: $fileCount 個檔案\n";
         }
-        
+
         if (!empty($this->analysis['issues'])) {
             $summary .= "\n❌ 架構問題 (" . count($this->analysis['issues']) . " 個):\n";
             foreach (array_slice($this->analysis['issues'], 0, 10) as $issue) {
@@ -321,13 +321,15 @@ class ProjectArchitectureScanner
                 $summary .= "... 還有 " . (count($this->analysis['issues']) - 10) . " 個問題\n";
             }
         }
-        
+
         $summary .= "\n🔑 重點服務/控制器:\n";
         $importantClasses = [];
         foreach ($this->analysis['classes'] as $className => $info) {
-            if (str_contains($info['file'], 'Controller') || 
+            if (
+                str_contains($info['file'], 'Controller') ||
                 str_contains($info['file'], 'Service') ||
-                str_contains($info['file'], 'Repository')) {
+                str_contains($info['file'], 'Repository')
+            ) {
                 if (!str_contains($info['file'], 'Test')) {
                     $importantClasses[] = "$className ({$info['file']})";
                 }
@@ -336,10 +338,10 @@ class ProjectArchitectureScanner
         foreach (array_slice($importantClasses, 0, 15) as $class) {
             $summary .= "- $class\n";
         }
-        
+
         file_put_contents($summaryPath, $summary);
         file_put_contents($reportPath, $report);
-        
+
         // 輸出摘要到控制台
         echo "\n" . $summary;
         echo "\n📝 詳細報告: $reportPath\n";

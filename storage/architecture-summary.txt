@@ -1,28 +1,20 @@
-=== 專案架構快速摘要 (2025-08-25 15:22:04) ===
+=== 專案架構快速摘要 (2025-08-25 15:32:28) ===
 
 📊 統計資訊:
-- 類別: 162 個
-- 介面: 29 個
+- 類別: 164 個
+- 介面: 30 個
 - 命名空間: 87 個
 
 🏗️ DDD 架構:
 - Application: 12 個檔案
-- Domains: 59 個檔案
+- Domains: 60 個檔案
 - Infrastructure: 37 個檔案
-- Shared: 17 個檔案
+- Shared: 18 個檔案
 
-❌ 架構問題 (11 個):
-- Domain層不應依賴Infrastructure層: app/Domains/Attachment/Repositories/AttachmentRepository.php -> App\Infrastructure\Services\CacheService
-- Domain層不應依賴Infrastructure層: app/Domains/Attachment/Services/AttachmentService.php -> App\Infrastructure\Services\CacheService
-- Domain層不應依賴Infrastructure層: app/Domains/Auth/Services/AuthorizationService.php -> App\Infrastructure\Services\CacheService
-- Domain層不應依賴Infrastructure層: app/Domains/Security/Repositories/IpRepository.php -> App\Infrastructure\Services\CacheService
-- Domain層不應依賴Infrastructure層: app/Domains/Security/Models/IpList.php -> App\Infrastructure\Services\OutputSanitizer
-- Domain層不應依賴Infrastructure層: app/Domains/Post/Repositories/PostRepository.php -> App\Infrastructure\Cache\CacheKeys
-- Domain層不應依賴Infrastructure層: app/Domains/Post/Repositories/PostRepository.php -> App\Infrastructure\Services\CacheService
-- Domain層不應依賴Infrastructure層: app/Domains/Post/Models/Post.php -> App\Infrastructure\Services\OutputSanitizer
+❌ 架構問題 (3 個):
 - 可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
 - 可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
-... 還有 1 個問題
+- 可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
 
 🔑 重點服務/控制器:
 - AttachmentRepository (app/Domains/Attachment/Repositories/AttachmentRepository.php)
