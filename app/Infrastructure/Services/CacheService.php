@@ -13,6 +13,7 @@ class CacheService implements CacheServiceInterface
     private const TTL = 3600; // 預設快取時間 1 小時
 
     // 快取統計
+    /** @var array<string, int> */
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
