@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace App;
 
 use App\Infrastructure\Routing\Contracts\RouterInterface;
+use App\Infrastructure\Routing\ControllerResolver;
 use App\Infrastructure\Routing\Core\Router;
 use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
 use App\Infrastructure\Routing\RouteDispatcher;
+use App\Infrastructure\Routing\RouteLoader;
 use DI\ContainerBuilder;
 use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * 應用程式核心類別.
@@ -25,14 +28,26 @@ class Application
 
     private RouterInterface $router;
 
-    private RouteDispatcher $dispatcher;
+    private RouteDispatcher $routeDispatcher;
 
     public function __construct()
     {
         $this->initializeContainer();
         $this->initializeRouter();
-        $this->initializeDispatcher();
+        $this->initializeRouteDispatcher();
         $this->loadRoutes();
+    }
+
+    /**
+     * 執行應用程式.
+     */
+    public function run(ServerRequestInterface $request): ResponseInterface
+    {
+        try {
+            return $this->handleRequest($request);
+        } catch (Exception $e) {
+            return $this->handleException($e);
+        }
     }
 
     /**
@@ -60,24 +75,49 @@ class Application
     }
 
     /**
-     * 初始化分派器.
+     * 初始化路由分派器.
      */
-    private function initializeDispatcher(): void
+    private function initializeRouteDispatcher(): void
     {
-        $this->dispatcher = RouteDispatcher::create($this->container);
+        $middlewareDispatcher = $this->container->get(MiddlewareDispatcher::class);
+        $controllerResolver = new ControllerResolver($this->container);
+
+        $this->routeDispatcher = new RouteDispatcher(
+            $this->router,
+            $controllerResolver,
+            $middlewareDispatcher,
+            $this->container,
+        );
     }
 
     /**
-     * 載入路由定義.
+     * 載入路由配置.
      */
     private function loadRoutes(): void
     {
-        $routesFile = __DIR__ . '/../config/routes.php';
+        $routeLoader = new RouteLoader();
 
-        if (file_exists($routesFile)) {
-            $routeDefinitions = require $routesFile;
-            if (is_callable($routeDefinitions)) {
-                $routeDefinitions($this->router);
+        try {
+            // 載入各種路由配置檔案
+            $routeLoader
+                ->addRouteFile(__DIR__ . '/../config/routes/api.php', 'api')
+                ->addRouteFile(__DIR__ . '/../config/routes/web.php', 'web')
+                ->addRouteFile(__DIR__ . '/../config/routes/auth.php', 'auth')
+                ->addRouteFile(__DIR__ . '/../config/routes/admin.php', 'admin');
+
+            // 載入所有路由到路由器
+            $routeLoader->loadRoutes($this->router);
+        } catch (Throwable $e) {
+            // 記錄路由載入錯誤並回退到基本配置
+            error_log('路由載入失敗: ' . $e->getMessage());
+
+            // 嘗試載入舊版路由檔案作為回退
+            $legacyRoutesFile = __DIR__ . '/../config/routes.php';
+            if (file_exists($legacyRoutesFile)) {
+                $routeDefinitions = require $legacyRoutesFile;
+                if (is_callable($routeDefinitions)) {
+                    $routeDefinitions($this->router);
+                }
             }
         }
     }
@@ -87,31 +127,144 @@ class Application
      */
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
-        try {
-            return $this->dispatcher->dispatch($request);
-        } catch (Exception $e) {
-            return $this->handleException($e, $request);
-        }
+        return $this->routeDispatcher->dispatch($request);
     }
 
     /**
-     * 處理例外狀況
+     * 處理例外狀況.
      */
-    private function handleException(Exception $e, ServerRequestInterface $request): ResponseInterface
+    private function handleException(Exception $e): ResponseInterface
     {
-        // 記錄錯誤
-        error_log('應用程式錯誤: ' . $e->getMessage() . ' 在 ' . $e->getFile() . ':' . $e->getLine());
+        // 建立基本的錯誤回應（使用匿名類別實作）
+        $response = new class implements ResponseInterface {
+            private array $headers = ['Content-Type' => ['application/json']];
 
-        // 建立錯誤回應
-        $response = $this->container->get(ResponseInterface::class);
+            private $body;
+
+            private int $statusCode = 500;
+
+            private string $reasonPhrase = 'Internal Server Error';
+
+            private string $protocolVersion = '1.1';
+
+            public function __construct()
+            {
+                $this->body = new class {
+                    private string $content = '';
+
+                    public function write(string $string): int
+                    {
+                        $this->content .= $string;
+
+                        return strlen($string);
+                    }
+
+                    public function __toString(): string
+                    {
+                        return $this->content;
+                    }
+                };
+            }
+
+            public function getStatusCode(): int
+            {
+                return $this->statusCode;
+            }
+
+            public function withStatus($code, $reasonPhrase = ''): self
+            {
+                $new = clone $this;
+                $new->statusCode = $code;
+                if ($reasonPhrase) {
+                    $new->reasonPhrase = $reasonPhrase;
+                }
+
+                return $new;
+            }
+
+            public function getReasonPhrase(): string
+            {
+                return $this->reasonPhrase;
+            }
+
+            public function getProtocolVersion(): string
+            {
+                return $this->protocolVersion;
+            }
+
+            public function withProtocolVersion($version): self
+            {
+                $new = clone $this;
+                $new->protocolVersion = $version;
+
+                return $new;
+            }
+
+            public function getHeaders(): array
+            {
+                return $this->headers;
+            }
+
+            public function hasHeader($name): bool
+            {
+                return isset($this->headers[$name]);
+            }
+
+            public function getHeader($name): array
+            {
+                return $this->headers[$name] ?? [];
+            }
+
+            public function getHeaderLine($name): string
+            {
+                return implode(', ', $this->getHeader($name));
+            }
+
+            public function withHeader($name, $value): self
+            {
+                $new = clone $this;
+                $new->headers[$name] = is_array($value) ? $value : [$value];
+
+                return $new;
+            }
+
+            public function withAddedHeader($name, $value): self
+            {
+                $new = clone $this;
+                $new->headers[$name] = array_merge($this->getHeader($name), is_array($value) ? $value : [$value]);
+
+                return $new;
+            }
+
+            public function withoutHeader($name): self
+            {
+                $new = clone $this;
+                unset($new->headers[$name]);
+
+                return $new;
+            }
+
+            public function getBody()
+            {
+                return $this->body;
+            }
+
+            public function withBody($body): self
+            {
+                $new = clone $this;
+                $new->body = $body;
+
+                return $new;
+            }
+        };
 
         $errorData = [
-            'error' => 'Internal Server Error',
+            'error' => true,
             'message' => $e->getMessage(),
-            'timestamp' => date('c'),
+            'code' => $e->getCode(),
         ];
 
-        // 在除錯模式下加入更多資訊
+        // 在除錯模式下提供詳細資訊
         if ($this->isDebugMode()) {
             $errorData['debug'] = [
                 'file' => $e->getFile(),
@@ -122,9 +275,7 @@ class Application
 
         $response->getBody()->write(json_encode($errorData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
-        return $response
-            ->withStatus(500)
-            ->withHeader('Content-Type', 'application/json');
+        return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
     }
 
     /**

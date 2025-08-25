@@ -27,32 +27,34 @@ class ControllerResolver
     ) {}
 
     /**
-     * 解析並執行控制器方法
+     * 解析並執行控制器方法.
      */
     public function resolve(
         RouteInterface $route,
         ServerRequestInterface $request,
-        array $parameters = []
+        array $parameters = [],
     ): ResponseInterface {
         $handler = $route->getHandler();
-        
+
         if (is_callable($handler)) {
             // 處理器是閉包函式
             return $this->handleCallable($handler, $request, $parameters);
         }
-        
+
         if (is_array($handler) && count($handler) === 2) {
             // 處理器是陣列格式: [ControllerClass::class, 'method']
             return $this->handleArrayHandler($handler, $request, $parameters);
         }
-        
+
         if (is_string($handler)) {
             // 處理器是字串格式: "ControllerClass@method"
             return $this->handleStringHandler($handler, $request, $parameters);
         }
-        
+
         throw new RuntimeException('無效的路由處理器格式');
-    }    /**
+    }
+
+    /**
      * 處理閉包函式處理器.
      */
     private function handleCallable(callable $handler, ServerRequestInterface $request, array $parameters): ResponseInterface
@@ -62,7 +64,150 @@ class ControllerResolver
             $request = $request->withAttribute($key, $value);
         }
 
-        return $handler($request);
+        $result = $handler($request);
+
+        // 如果結果已經是 ResponseInterface，直接回傳
+        if ($result instanceof ResponseInterface) {
+            return $result;
+        }
+
+        // 否則將結果轉換為 JSON 回應
+        return $this->createJsonResponse($result);
+    }
+
+    /**
+     * 建立 JSON 回應.
+     */
+    private function createJsonResponse(mixed $data, int $status = 200): ResponseInterface
+    {
+        // 建立簡單的 PSR-7 回應
+        $response = new class implements ResponseInterface {
+            private array $headers = ['Content-Type' => ['application/json']];
+
+            private $body;
+
+            private int $statusCode = 200;
+
+            private string $reasonPhrase = 'OK';
+
+            private string $protocolVersion = '1.1';
+
+            public function __construct()
+            {
+                $this->body = new class {
+                    private string $content = '';
+
+                    public function write(string $string): int
+                    {
+                        $this->content .= $string;
+
+                        return strlen($string);
+                    }
+
+                    public function __toString(): string
+                    {
+                        return $this->content;
+                    }
+                };
+            }
+
+            public function getStatusCode(): int
+            {
+                return $this->statusCode;
+            }
+
+            public function withStatus($code, $reasonPhrase = ''): self
+            {
+                $new = clone $this;
+                $new->statusCode = $code;
+                if ($reasonPhrase) {
+                    $new->reasonPhrase = $reasonPhrase;
+                }
+
+                return $new;
+            }
+
+            public function getReasonPhrase(): string
+            {
+                return $this->reasonPhrase;
+            }
+
+            public function getProtocolVersion(): string
+            {
+                return $this->protocolVersion;
+            }
+
+            public function withProtocolVersion($version): self
+            {
+                $new = clone $this;
+                $new->protocolVersion = $version;
+
+                return $new;
+            }
+
+            public function getHeaders(): array
+            {
+                return $this->headers;
+            }
+
+            public function hasHeader($name): bool
+            {
+                return isset($this->headers[$name]);
+            }
+
+            public function getHeader($name): array
+            {
+                return $this->headers[$name] ?? [];
+            }
+
+            public function getHeaderLine($name): string
+            {
+                return implode(', ', $this->getHeader($name));
+            }
+
+            public function withHeader($name, $value): self
+            {
+                $new = clone $this;
+                $new->headers[$name] = is_array($value) ? $value : [$value];
+
+                return $new;
+            }
+
+            public function withAddedHeader($name, $value): self
+            {
+                $new = clone $this;
+                $new->headers[$name] = array_merge($this->getHeader($name), is_array($value) ? $value : [$value]);
+
+                return $new;
+            }
+
+            public function withoutHeader($name): self
+            {
+                $new = clone $this;
+                unset($new->headers[$name]);
+
+                return $new;
+            }
+
+            public function getBody()
+            {
+                return $this->body;
+            }
+
+            public function withBody($body): self
+            {
+                $new = clone $this;
+                $new->body = $body;
+
+                return $new;
+            }
+        };
+
+        // 將資料編碼為 JSON
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $response->getBody()->write($json ?: '{}');
+
+        return $response->withStatus($status)->withHeader('Content-Type', 'application/json');
     }
 
     /**
@@ -149,7 +294,7 @@ class ControllerResolver
 
         foreach ($constructor->getParameters() as $parameter) {
             $type = $parameter->getType();
-            
+
             if ($type === null) {
                 if ($parameter->isDefaultValueAvailable()) {
                     $args[] = $parameter->getDefaultValue();
@@ -158,13 +303,13 @@ class ControllerResolver
                 }
                 continue;
             }
-            
-            if (!$type instanceof \ReflectionNamedType) {
+
+            if (!$type instanceof ReflectionNamedType) {
                 throw new RuntimeException("不支援的參數類型: {$parameter->getName()}");
             }
-            
+
             $typeName = $type->getName();
-            
+
             if ($this->container->has($typeName)) {
                 $args[] = $this->container->get($typeName);
             } elseif ($parameter->isDefaultValueAvailable()) {
@@ -174,7 +319,9 @@ class ControllerResolver
             } else {
                 throw new RuntimeException("無法解析參數: {$parameter->getName()}，類型: {$typeName}");
             }
-        }        return $args;
+        }
+
+        return $args;
     }
 
     /**
@@ -199,7 +346,7 @@ class ControllerResolver
             $type = $parameter->getType();
 
             // 優先處理 PSR-7 請求物件
-            if ($type && $type instanceof \ReflectionNamedType && $type->getName() === ServerRequestInterface::class) {
+            if ($type && $type instanceof ReflectionNamedType && $type->getName() === ServerRequestInterface::class) {
                 // 將路由參數注入到請求屬性中
                 $requestWithParams = $request;
                 foreach ($routeParameters as $key => $value) {
@@ -216,7 +363,7 @@ class ControllerResolver
             }
 
             // 處理依賴注入
-            if ($type && $type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+            if ($type && $type instanceof ReflectionNamedType && !$type->isBuiltin()) {
                 $typeName = $type->getName();
                 if ($this->container->has($typeName)) {
                     $args[] = $this->container->get($typeName);
