@@ -20,7 +20,7 @@ fi
 
 # 設定變數
 BACKUP_FILE="$1"
-TARGET_DB="${2:-${DB_DATABASE:-/var/www/html/database/alleynote.db}}"
+TARGET_DB="${2:-${DB_DATABASE:-/var/www/html/database/alleynote.sqlite3}}"
 TEMP_DIR="/tmp/sqlite_restore_$$"
 
 echo "正在還原 SQLite 資料庫..."

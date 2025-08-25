@@ -7,7 +7,7 @@ set -e
 
 # 設定變數
 DB_DIR="/var/www/html/database"
-DB_FILE="$DB_DIR/alleynote.db"
+DB_FILE="$DB_DIR/alleynote.sqlite3"
 MIGRATIONS_DIR="$DB_DIR/migrations"
 
 echo "正在初始化 SQLite 資料庫..."

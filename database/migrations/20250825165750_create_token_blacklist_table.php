@@ -22,7 +22,7 @@ final class CreateTokenBlacklistTable extends AbstractMigration
         $table = $this->table('token_blacklist', ['id' => false, 'primary_key' => 'id']);
         $table->addColumn('id', 'integer', ['identity' => true])
               ->addColumn('jti', 'string', ['limit' => 255, 'null' => false])
-              ->addColumn('token_type', 'enum', ['values' => ['access', 'refresh'], 'null' => false])
+              ->addColumn('token_type', 'string', ['limit' => 20, 'null' => false])
               ->addColumn('user_id', 'integer', ['null' => true])
               ->addColumn('expires_at', 'datetime', ['null' => false])
               ->addColumn('blacklisted_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP', 'null' => false])

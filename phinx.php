@@ -10,17 +10,17 @@ return [
         'default_environment' => 'development',
         'development' => [
             'adapter' => 'sqlite',
-            'name' => 'database/alleynote.db',
+            'name' => 'database/alleynote',
             'charset' => 'utf8'
         ],
         'testing' => [
             'adapter' => 'sqlite',
-            'name' => 'database/test.db',
+            'name' => 'database/test',
             'charset' => 'utf8'
         ],
         'production' => [
             'adapter' => 'sqlite',
-            'name' => 'database/alleynote_production.db',
+            'name' => 'database/alleynote',
             'charset' => 'utf8'
         ]
     ],

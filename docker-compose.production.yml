@@ -15,7 +15,7 @@ services:
             APP_DEBUG: ${APP_DEBUG:-false}
             APP_URL: ${APP_URL}
             DB_CONNECTION: ${DB_CONNECTION:-sqlite}
-            DB_DATABASE: ${DB_DATABASE:-/var/www/html/database/alleynote.db}
+            DB_DATABASE: ${DB_DATABASE:-/var/www/html/database/alleynote.sqlite3}
             SESSION_LIFETIME: ${SESSION_LIFETIME:-120}
             CSRF_TOKEN_LIFETIME: ${CSRF_TOKEN_LIFETIME:-120}
             UPLOAD_MAX_SIZE: ${UPLOAD_MAX_SIZE:-10M}

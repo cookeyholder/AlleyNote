@@ -6,7 +6,7 @@
 set -e
 
 # 設定變數
-DB_FILE="${DB_DATABASE:-/var/www/html/database/alleynote.db}"
+DB_FILE="${DB_DATABASE:-/var/www/html/database/alleynote.sqlite3}"
 BACKUP_DIR="/var/www/html/database/backups"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 BACKUP_FILE="$BACKUP_DIR/alleynote_backup_$TIMESTAMP.db"
