@@ -99,6 +99,13 @@ class CsrfProtectionTest extends TestCase
                 return $this->headers[$name] ?? '';
             });
 
+        // 設定 sanitizer 預設行為 - 返回原值
+        $this->sanitizer->shouldReceive('sanitizeHtml')
+            ->andReturnUsing(function ($input) {
+                return $input;
+            })
+            ->byDefault();
+
         // 設定 XSS 防護預設行為
         $this->xssProtection->shouldReceive('cleanArray')
             ->andReturnUsing(function ($data) {

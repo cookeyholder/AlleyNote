@@ -74,6 +74,13 @@ class PostControllerTest extends TestCase
         // 設定預設的response行為
         $this->setupResponseMocks();
 
+        // 設定預設的 sanitizer 行為 - 返回原值
+        $this->sanitizer->shouldReceive('sanitizeHtml')
+            ->andReturnUsing(function ($input) {
+                return $input;
+            })
+            ->byDefault();
+
         // 設定預設的XSS防護
         $this->xssProtection->shouldReceive('cleanArray')
             ->andReturnUsing(function ($data) {
