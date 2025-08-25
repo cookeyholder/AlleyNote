@@ -755,7 +755,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/CsrfProtectionTest.php' => 
     array (
-      0 => '7025d602de6a57b84bb2da36e9a978d7a12d76ef',
+      0 => '176a55f04468d426159eca7ed4466f6fb6c76c1f',
       1 => 
       array (
         0 => 'tests\\security\\csrfprotectiontest',
@@ -795,7 +795,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/XssPreventionTest.php' => 
     array (
-      0 => '075c58420224b3324bb1edf72421730b6bfde4c1',
+      0 => 'fb13bf5fe3fcc97a3e39a9de4afcd1266d284b49',
       1 => 
       array (
         0 => 'tests\\security\\xsspreventiontest',
@@ -959,7 +959,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/PostControllerTest.php' => 
     array (
-      0 => '83699ef644043f77640456812fa79b9fa01da1ca',
+      0 => '1d013e1519129accb3b7a4e6c13b019ca75462ef',
       1 => 
       array (
         0 => 'tests\\integration\\postcontrollertest',
@@ -987,7 +987,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/Http/PostControllerTest.php' => 
     array (
-      0 => 'd3d8e44a8b31888e6e72a3a2819b28463868bcce',
+      0 => '0c1696546e69af868cfc6f3c2fcd015523dd882e',
       1 => 
       array (
         0 => 'tests\\integration\\http\\postcontrollertest',

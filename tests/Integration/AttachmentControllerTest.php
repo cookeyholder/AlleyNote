@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\AttachmentController;
+use App\Domains\Attachment\Contracts\AttachmentServiceInterface;
 use App\Domains\Attachment\Models\Attachment;
-use App\Domains\Attachment\Services\AttachmentService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
@@ -19,7 +19,7 @@ use Tests\TestCase;
 
 class AttachmentControllerTest extends TestCase
 {
-    private App\Domains\Attachment\Services\AttachmentService|MockInterface $attachmentService;
+    private AttachmentServiceInterface|MockInterface $attachmentService;
 
     private ServerRequestInterface|MockInterface $request;
 
@@ -30,7 +30,7 @@ class AttachmentControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->attachmentService = Mockery::mock(AttachmentService::class);
+        $this->attachmentService = Mockery::mock(AttachmentServiceInterface::class);
         $this->stream = Mockery::mock(StreamInterface::class);
         $this->request = Mockery::mock(ServerRequestInterface::class);
         $this->response = Mockery::mock(ResponseInterface::class);
