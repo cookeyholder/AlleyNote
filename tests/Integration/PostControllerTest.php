@@ -72,6 +72,13 @@ class PostControllerTest extends TestCase
             ->byDefault()
             ->andReturn('new-token');
 
+        // 設定 sanitizer 預設行為 - 返回原值
+        $this->sanitizer->shouldReceive('sanitizeHtml')
+            ->andReturnUsing(function ($input) {
+                return $input;
+            })
+            ->byDefault();
+
         // 設定 validator 預設行為
         $this->validator->shouldReceive('validateOrFail')
             ->andReturnUsing(function ($data, $rules) {
