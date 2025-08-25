@@ -1,4 +1,4 @@
-=== 專案架構快速摘要 (2025-08-25 15:32:28) ===
+=== 專案架構快速摘要 (2025-08-25 15:59:13) ===
 
 📊 統計資訊:
 - 類別: 164 個
@@ -15,6 +15,21 @@
 - 可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
 - 可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
 - 可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
+
+🧪 測試覆蓋:
+- 有測試: 33 個類別
+- 缺少測試: 68 個類別
+
+🔌 介面實作:
+- : 129 個實作
+- FileSecurityServiceInterface: 1 個實作
+- AttachmentServiceInterface: 1 個實作
+- SessionSecurityServiceInterface: 1 個實作
+- AuthorizationServiceInterface: 1 個實作
+
+💉 重依賴類別 (≥3個依賴): 6 個
+
+❓ 可能問題引用: 133 個
 
 🔑 重點服務/控制器:
 - AttachmentRepository (app/Domains/Attachment/Repositories/AttachmentRepository.php)

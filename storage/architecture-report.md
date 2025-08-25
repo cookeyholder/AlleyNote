@@ -1,6 +1,6 @@
 # 專案架構分析報告
 
-**生成時間**: 2025-08-25 15:32:28
+**生成時間**: 2025-08-25 15:59:13
 
 ## 📁 目錄結構
 
@@ -881,3 +881,327 @@
 - **PostRepositoryPerformanceTest**: `tests/Unit/Repository/PostRepositoryPerformanceTest.php`
   - 繼承: MockeryTestCase
   - 實作: 
+
+## 🔌 介面實作分析
+
+### ``
+- AttachmentRepository (`app/Domains/Attachment/Repositories/AttachmentRepository.php`)
+- FileRules (`app/Domains/Attachment/Enums/FileRules.php`)
+- Attachment (`app/Domains/Attachment/Models/Attachment.php`)
+- CreateAttachmentDTO (`app/Domains/Attachment/DTOs/CreateAttachmentDTO.php`)
+- UserRepository (`app/Domains/Auth/Repositories/UserRepository.php`)
+- ForbiddenException (`app/Domains/Auth/Exceptions/ForbiddenException.php`)
+- UnauthorizedException (`app/Domains/Auth/Exceptions/UnauthorizedException.php`)
+- Role (`app/Domains/Auth/Models/Role.php`)
+- Permission (`app/Domains/Auth/Models/Permission.php`)
+- RegisterUserDTO (`app/Domains/Auth/DTOs/RegisterUserDTO.php`)
+- PasswordManagementService (`app/Domains/Auth/Services/PasswordManagementService.php`)
+- PwnedPasswordService (`app/Domains/Auth/Services/Advanced/PwnedPasswordService.php`)
+- AuthService (`app/Domains/Auth/Services/AuthService.php`)
+- CreateIpRuleDTO (`app/Domains/Security/DTOs/CreateIpRuleDTO.php`)
+- XssProtectionExtensionService (`app/Domains/Security/Services/Content/XssProtectionExtensionService.php`)
+- XssProtectionService (`app/Domains/Security/Services/Core/XssProtectionService.php`)
+- CsrfProtectionService (`app/Domains/Security/Services/Core/CsrfProtectionService.php`)
+- IpService (`app/Domains/Security/Services/IpService.php`)
+- PostNotFoundException (`app/Domains/Post/Exceptions/PostNotFoundException.php`)
+- PostValidationException (`app/Domains/Post/Exceptions/PostValidationException.php`)
+- PostStatusException (`app/Domains/Post/Exceptions/PostStatusException.php`)
+- CreatePostDTO (`app/Domains/Post/DTOs/CreatePostDTO.php`)
+- UpdatePostDTO (`app/Domains/Post/DTOs/UpdatePostDTO.php`)
+- PostCacheKeyService (`app/Domains/Post/Services/PostCacheKeyService.php`)
+- ContentModerationService (`app/Domains/Post/Services/ContentModerationService.php`)
+- RichTextProcessorService (`app/Domains/Post/Services/RichTextProcessorService.php`)
+- PostValidator (`app/Domains/Post/Validation/PostValidator.php`)
+- Application (`app/Application.php`)
+- implements (`tests/manual/test_route_loader_integration.php`)
+- CacheManager (`app/Infrastructure/Cache/CacheManager.php`)
+- CacheKeys (`app/Infrastructure/Cache/CacheKeys.php`)
+- DatabaseConnection (`app/Infrastructure/Database/DatabaseConnection.php`)
+- OpenApiSpec (`app/Infrastructure/OpenApi/OpenApiSpec.php`)
+- RateLimitService (`app/Infrastructure/Services/RateLimitService.php`)
+- OutputSanitizer (`app/Infrastructure/Services/OutputSanitizer.php`)
+- RouteCacheFactory (`app/Infrastructure/Routing/Cache/RouteCacheFactory.php`)
+- ControllerResolver (`app/Infrastructure/Routing/ControllerResolver.php`)
+- RouteConfigurationException (`app/Infrastructure/Routing/Exceptions/RouteConfigurationException.php`)
+- RouteValidator (`app/Infrastructure/Routing/RouteValidator.php`)
+- RoutingServiceProvider (`app/Infrastructure/Routing/Providers/RoutingServiceProvider.php`)
+- RouteLoader (`app/Infrastructure/Routing/RouteLoader.php`)
+- RouteDispatcher (`app/Infrastructure/Routing/RouteDispatcher.php`)
+- RouteParametersMiddleware (`app/Infrastructure/Routing/Middleware/RouteParametersMiddleware.php`)
+- RouteInfoMiddleware (`app/Infrastructure/Routing/Middleware/RouteInfoMiddleware.php`)
+- RouteMatchResult (`app/Infrastructure/Routing/Contracts/RouteMatchResult.php`)
+- ContainerFactory (`app/Infrastructure/Config/ContainerFactory.php`)
+- ApiResponse (`app/Shared/Http/ApiResponse.php`)
+- ValidationException (`app/Shared/Exceptions/ValidationException.php`)
+- NotFoundException (`app/Shared/Exceptions/NotFoundException.php`)
+- CsrfTokenException (`app/Shared/Exceptions/CsrfTokenException.php`)
+- StateTransitionException (`app/Shared/Exceptions/StateTransitionException.php`)
+- RequestValidationException (`app/Shared/Exceptions/Validation/RequestValidationException.php`)
+- PostRequestSchema (`app/Shared/Schemas/PostRequestSchema.php`)
+- PostSchema (`app/Shared/Schemas/PostSchema.php`)
+- AuthSchema (`app/Shared/Schemas/AuthSchema.php`)
+- ValidatorFactory (`app/Shared/Validation/Factory/ValidatorFactory.php`)
+- AuthController (`app/Application/Controllers/Api/V1/AuthController.php`)
+- IpController (`app/Application/Controllers/Api/V1/IpController.php`)
+- PostController (`app/Application/Controllers/PostController.php`)
+- AttachmentController (`app/Application/Controllers/Api/V1/AttachmentController.php`)
+- HealthController (`app/Application/Controllers/TestController.php`)
+- SwaggerController (`app/Application/Controllers/Web/SwaggerController.php`)
+- CSPReportController (`app/Application/Controllers/Security/CSPReportController.php`)
+- BaseController (`app/Application/Controllers/BaseController.php`)
+- AuthorizationMiddleware (`app/Application/Middleware/AuthorizationMiddleware.php`)
+- InitialSchema (`database/migrations/20250823051608_initial_schema.php`)
+- TestFixer (`scripts/test-fixer.php`)
+- ConsoleOutput (`scripts/lib/ConsoleOutput.php`)
+- ProjectArchitectureScanner (`scripts/scan-project-architecture.php`)
+- ImprovementShowcase (`scripts/show-improvements.php`)
+- DDDNamespaceUpdater (`scripts/ddd-namespace-updater.php`)
+- UITestCase (`tests/UI/UITestCase.php`)
+- CrossBrowserTest (`tests/UI/CrossBrowserTest.php`)
+- PostUITest (`tests/UI/PostUITest.php`)
+- UserExperienceTest (`tests/UI/UserExperienceTest.php`)
+- TestCase (`tests/TestCase.php`)
+- DIValidationIntegrationTest (`tests/Integration/DIValidationIntegrationTest.php`)
+- PostControllerTest (`tests/Integration/PostControllerTest.php`)
+- AttachmentUploadTest (`tests/Integration/AttachmentUploadTest.php`)
+- PostRepositoryTest (`tests/Unit/Repository/PostRepositoryTest.php`)
+- AuthControllerTest (`tests/Integration/AuthControllerTest.php`)
+- AttachmentControllerTest (`tests/Integration/AttachmentControllerTest.php`)
+- DatabaseBackupTest (`tests/Integration/DatabaseBackupTest.php`)
+- DTOValidationIntegrationTest (`tests/Integration/DTOs/DTOValidationIntegrationTest.php`)
+- DTOControllerIntegrationTest (`tests/Integration/DTOs/DTOControllerIntegrationTest.php`)
+- FileSystemBackupTest (`tests/Integration/FileSystemBackupTest.php`)
+- RateLimitTest (`tests/Integration/RateLimitTest.php`)
+- CacheManagerTest (`tests/Unit/Cache/CacheManagerTest.php`)
+- CacheKeysTest (`tests/Unit/Cache/CacheKeysTest.php`)
+- ApiResponseTest (`tests/Unit/Http/ApiResponseTest.php`)
+- DatabaseConnectionTest (`tests/Unit/Database/DatabaseConnectionTest.php`)
+- AttachmentRepositoryTest (`tests/Unit/Repositories/AttachmentRepositoryTest.php`)
+- ExampleTest (`tests/Unit/ExampleTest.php`)
+- PostNotFoundExceptionTest (`tests/Unit/Exceptions/PostNotFoundExceptionTest.php`)
+- IpControllerTest (`tests/Unit/Controllers/IpControllerTest.php`)
+- PostTest (`tests/Unit/Models/PostTest.php`)
+- DTOValidationTest (`tests/Unit/DTOs/DTOValidationTest.php`)
+- BaseDTOTest (`tests/Unit/DTOs/BaseDTOTest.php`)
+- UpdatePostDTOTest (`tests/Unit/DTOs/Post/UpdatePostDTOTest.php`)
+- CreatePostDTOTest (`tests/Unit/DTOs/Post/CreatePostDTOTest.php`)
+- PostServiceTest (`tests/Unit/Services/PostServiceTest.php`)
+- RateLimitServiceTest (`tests/Unit/Services/RateLimitServiceTest.php`)
+- PostStatusTest (`tests/Unit/Services/Enums/PostStatusTest.php`)
+- AuthServiceTest (`tests/Unit/Services/AuthServiceTest.php`)
+- CacheServiceTest (`tests/Unit/Services/CacheServiceTest.php`)
+- IpServiceTest (`tests/Unit/Services/IpServiceTest.php`)
+- AttachmentServiceTest (`tests/Unit/Services/AttachmentServiceTest.php`)
+- LoggingSecurityServiceTest (`tests/Unit/Services/Security/LoggingSecurityServiceTest.php`)
+- XssProtectionServiceTest (`tests/Unit/Services/Security/XssProtectionServiceTest.php`)
+- PwnedPasswordServiceTest (`tests/Unit/Services/Security/PwnedPasswordServiceTest.php`)
+- CsrfProtectionServiceTest (`tests/Unit/Services/Security/CsrfProtectionServiceTest.php`)
+- SessionSecurityServiceTest (`tests/Unit/Services/Security/SessionSecurityServiceTest.php`)
+- ValidationExceptionTest (`tests/Unit/Validation/ValidationExceptionTest.php`)
+- ValidatorTest (`tests/Unit/Validation/ValidatorTest.php`)
+- ValidationResultTest (`tests/Unit/Validation/ValidationResultTest.php`)
+- UserRepositoryTest (`tests/Unit/Repository/UserRepositoryTest.php`)
+- IpRepositoryTest (`tests/Unit/Repository/IpRepositoryTest.php`)
+- PostRepositoryPerformanceTest (`tests/Unit/Repository/PostRepositoryPerformanceTest.php`)
+- PostFactoryTest (`tests/Unit/Factory/PostFactoryTest.php`)
+- XssPreventionTest (`tests/Security/XssPreventionTest.php`)
+- SqlInjectionTest (`tests/Security/SqlInjectionTest.php`)
+- CsrfProtectionTest (`tests/Security/CsrfProtectionTest.php`)
+- FileUploadSecurityTest (`tests/Security/FileUploadSecurityTest.php`)
+- PasswordHashingTest (`tests/Security/PasswordHashingTest.php`)
+- AbstractFactory (`tests/Factory/Abstracts/AbstractFactory.php`)
+- PostFactory (`tests/Factory/PostFactory.php`)
+- MockServerRequest (`tests/manual/test_routing_system.php`)
+- LoggingMiddleware (`tests/manual/test_middleware_system.php`)
+- AuthMiddleware (`tests/manual/test_middleware_system.php`)
+
+### `FileSecurityServiceInterface`
+- FileSecurityService (`app/Domains/Attachment/Services/FileSecurityService.php`)
+
+### `AttachmentServiceInterface`
+- AttachmentService (`app/Domains/Attachment/Services/AttachmentService.php`)
+
+### `SessionSecurityServiceInterface`
+- SessionSecurityService (`app/Domains/Auth/Services/SessionSecurityService.php`)
+
+### `AuthorizationServiceInterface`
+- AuthorizationService (`app/Domains/Auth/Services/AuthorizationService.php`)
+
+### `PasswordSecurityServiceInterface`
+- PasswordSecurityService (`app/Domains/Auth/Services/PasswordSecurityService.php`)
+
+### `IpRepositoryInterface`
+- IpRepository (`app/Domains/Security/Repositories/IpRepository.php`)
+
+### `JsonSerializable`
+- IpList (`app/Domains/Security/Models/IpList.php`)
+- Post (`app/Domains/Post/Models/Post.php`)
+- BaseDTO (`app/Shared/DTOs/BaseDTO.php`)
+- ValidationResult (`app/Shared/Validation/ValidationResult.php`)
+
+### `LoggingSecurityServiceInterface`
+- LoggingSecurityService (`app/Domains/Security/Services/Logging/LoggingSecurityService.php`)
+
+### `ErrorHandlerServiceInterface`
+- ErrorHandlerService (`app/Domains/Security/Services/Error/ErrorHandlerService.php`)
+
+### `SecurityHeaderServiceInterface`
+- SecurityHeaderService (`app/Domains/Security/Services/Headers/SecurityHeaderService.php`)
+
+### `SecurityTestInterface`
+- SecurityTestService (`app/Domains/Security/Services/Advanced/SecurityTestService.php`)
+
+### `SecretsManagerInterface`
+- SecretsManager (`app/Domains/Security/Services/Secrets/SecretsManager.php`)
+
+### `PostRepositoryInterface`
+- PostRepository (`app/Domains/Post/Repositories/PostRepository.php`)
+
+### `PostServiceInterface`
+- PostService (`app/Domains/Post/Services/PostService.php`)
+
+### `OutputSanitizerInterface`
+- OutputSanitizerService (`app/Infrastructure/Services/OutputSanitizer.php`)
+
+### `CacheServiceInterface`
+- CacheService (`app/Infrastructure/Services/CacheService.php`)
+
+### `RouteCacheInterface`
+- MemoryRouteCache (`app/Infrastructure/Routing/Cache/MemoryRouteCache.php`)
+- FileRouteCache (`app/Infrastructure/Routing/Cache/FileRouteCache.php`)
+- RedisRouteCache (`app/Infrastructure/Routing/Cache/RedisRouteCache.php`)
+
+### `RequestHandlerInterface`
+- ClosureRequestHandler (`app/Infrastructure/Routing/ClosureRequestHandler.php`)
+
+### `RouteCollectionInterface`
+- RouteCollection (`app/Infrastructure/Routing/Core/RouteCollection.php`)
+
+### `RouteInterface`
+- Route (`app/Infrastructure/Routing/Core/Route.php`)
+
+### `RouterInterface`
+- Router (`app/Infrastructure/Routing/Core/Router.php`)
+
+### `MiddlewareDispatcherInterface`
+- MiddlewareDispatcher (`app/Infrastructure/Routing/Middleware/MiddlewareDispatcher.php`)
+
+### `MiddlewareInterface`
+- AbstractMiddleware (`app/Infrastructure/Routing/Middleware/AbstractMiddleware.php`)
+- RateLimitMiddleware (`app/Application/Middleware/RateLimitMiddleware.php`)
+
+### `MiddlewareManagerInterface`
+- MiddlewareManager (`app/Infrastructure/Routing/Middleware/MiddlewareManager.php`)
+
+### `ValidatorInterface`
+- Validator (`app/Shared/Validation/Validator.php`)
+
+### `UriInterface`
+- MockUri (`tests/manual/test_controller_integration.php`)
+
+### `StreamInterface`
+- MockStream (`tests/manual/test_controller_integration.php`)
+
+### `ResponseInterface`
+- MockResponse (`tests/manual/test_controller_integration.php`)
+
+### `ServerRequestInterface`
+- MockRequest (`tests/manual/test_controller_integration.php`)
+
+
+## 🧪 測試覆蓋分析
+
+- **有測試的類別**: 33 個
+- **缺少測試的類別**: 68 個
+
+### 缺少測試的重要類別
+- **FileSecurityService**: `app/Domains/Attachment/Services/FileSecurityService.php`
+- **PasswordManagementService**: `app/Domains/Auth/Services/PasswordManagementService.php`
+- **AuthorizationService**: `app/Domains/Auth/Services/AuthorizationService.php`
+- **PasswordSecurityService**: `app/Domains/Auth/Services/PasswordSecurityService.php`
+- **ErrorHandlerService**: `app/Domains/Security/Services/Error/ErrorHandlerService.php`
+- **SecurityHeaderService**: `app/Domains/Security/Services/Headers/SecurityHeaderService.php`
+- **XssProtectionExtensionService**: `app/Domains/Security/Services/Content/XssProtectionExtensionService.php`
+- **SecurityTestService**: `app/Domains/Security/Services/Advanced/SecurityTestService.php`
+- **SecretsManager**: `app/Domains/Security/Services/Secrets/SecretsManager.php`
+
+
+## 💉 依賴注入分析
+
+### 依賴較多的類別 (≥3個依賴)
+- **AttachmentService** (4 個依賴)
+  - `AttachmentRepository` $attachmentRepo
+  - `PostRepository` $postRepo
+  - `CacheServiceInterface` $cache
+  - `AuthorizationService` $authService
+
+- **XssProtectionExtensionService** (3 個依賴)
+  - `XssProtectionService` $baseXssProtection
+  - `RichTextProcessorService` $richTextProcessor
+  - `ContentModerationService` $contentModerator
+
+- **SecurityTestService** (7 個依賴)
+  - `SessionSecurityServiceInterface` $sessionService
+  - `AuthorizationServiceInterface` $authService
+  - `FileSecurityServiceInterface` $fileService
+  - `SecurityHeaderServiceInterface` $headerService
+  - `ErrorHandlerServiceInterface` $errorService
+  - `PasswordSecurityServiceInterface` $passwordService
+  - `SecretsManagerInterface` $secretsManager
+
+- **PostRepository** (3 個依賴)
+  - `PDO` $db
+  - `CacheServiceInterface` $cache
+  - `LoggingSecurityServiceInterface` $logger
+
+- **RouteDispatcher** (4 個依賴)
+  - `RouterInterface` $router
+  - `ControllerResolver` $controllerResolver
+  - `MiddlewareDispatcher` $middlewareDispatcher
+  - `ContainerInterface` $container
+
+- **IpController** (3 個依賴)
+  - `IpService` $service
+  - `ValidatorInterface` $validator
+  - `OutputSanitizerInterface` $sanitizer
+
+
+## ❓ 可能的問題引用
+
+- ❓ 找不到類別/介面: ($router) {
+
+        // 貼文相關路由
+        $postsIndex = $router->get('/posts', [PostController::class, 'index']) (在 config/routes.php 中使用)
+- ❓ 找不到類別/介面: ($id) {
+            $sql = '
+                SELECT *
+                FROM attachments
+                WHERE id = :id
+            ' (在 app/Domains/Attachment/Repositories/AttachmentRepository.php 中使用)
+- ❓ 找不到類別/介面: ($uuid) {
+            $sql = '
+                SELECT *
+                FROM attachments
+                WHERE uuid = :uuid
+            ' (在 app/Domains/Attachment/Repositories/AttachmentRepository.php 中使用)
+- ❓ 找不到類別/介面: ($postId) {
+            $sql = '
+                SELECT *
+                FROM attachments
+                WHERE post_id = :post_id
+                AND deleted_at IS NULL
+                ORDER BY created_at DESC
+            ' (在 app/Domains/Attachment/Repositories/AttachmentRepository.php 中使用)
+- ❓ 找不到類別/介面: ($data) {
+            if (!is_string($value)) {
+                return false (在 app/Domains/Auth/DTOs/RegisterUserDTO.php 中使用)
+- ❓ 找不到類別/介面: ($userId) {
+            return $this->getUserPermissions($userId) (在 app/Domains/Auth/Services/AuthorizationService.php 中使用)
+- ❓ 找不到類別/介面: ($userId) {
+            return $this->getUserRoles($userId) (在 app/Domains/Auth/Services/AuthorizationService.php 中使用)
+- ❓ 找不到類別/介面: GuzzleHttp\Client (在 app/Domains/Auth/Services/Advanced/PwnedPasswordService.php 中使用)
+- ❓ 找不到類別/介面: ($id) {
+            $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE id = :id') (在 app/Domains/Security/Repositories/IpRepository.php 中使用)
+- ❓ 找不到類別/介面: ($uuid) {
+            $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE uuid = ?') (在 app/Domains/Security/Repositories/IpRepository.php 中使用)
+- ... 還有 123 個
