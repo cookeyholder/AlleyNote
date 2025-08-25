@@ -1436,5 +1436,123 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
       ),
     ),
+    '/var/www/html/tests/manual/test_routing_system.php' => 
+    array (
+      0 => '15fe26cba36a0c3060148c755d50b99afbac3dbf',
+      1 => 
+      array (
+        0 => 'mockserverrequest',
+        1 => 'mockuri',
+      ),
+      2 => 
+      array (
+        0 => '__construct',
+        1 => 'getmethod',
+        2 => 'geturi',
+        3 => '__construct',
+        4 => 'getpath',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_route_cache.php' => 
+    array (
+      0 => '76fbaa467473d2285823a56bf914aca96f0127a3',
+      1 => 
+      array (
+      ),
+      2 => 
+      array (
+        0 => 'createtestroutes',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/manual/test_middleware_system.php' => 
+    array (
+      0 => 'dea390aee7446becc96d180b2c4425a0e81b273c',
+      1 => 
+      array (
+        0 => 'loggingmiddleware',
+        1 => 'authmiddleware',
+      ),
+      2 => 
+      array (
+        0 => 'getmethod',
+        1 => 'geturi',
+        2 => 'getpath',
+        3 => 'withattribute',
+        4 => 'getattribute',
+        5 => 'getattributes',
+        6 => 'getprotocolversion',
+        7 => 'withprotocolversion',
+        8 => 'getheaders',
+        9 => 'hasheader',
+        10 => 'getheader',
+        11 => 'getheaderline',
+        12 => 'withheader',
+        13 => 'withaddedheader',
+        14 => 'withoutheader',
+        15 => 'getbody',
+        16 => '__tostring',
+        17 => 'withbody',
+        18 => 'getrequesttarget',
+        19 => 'withrequesttarget',
+        20 => 'withmethod',
+        21 => 'withuri',
+        22 => 'getserverparams',
+        23 => 'getcookieparams',
+        24 => 'withcookieparams',
+        25 => 'getqueryparams',
+        26 => 'withqueryparams',
+        27 => 'getuploadedfiles',
+        28 => 'withuploadedfiles',
+        29 => 'getparsedbody',
+        30 => 'withparsedbody',
+        31 => 'withoutattribute',
+        32 => '__construct',
+        33 => 'getbody',
+        34 => '__construct',
+        35 => '__tostring',
+        36 => 'getstatuscode',
+        37 => 'withstatus',
+        38 => 'getreasonphrase',
+        39 => 'getprotocolversion',
+        40 => 'withprotocolversion',
+        41 => 'getheaders',
+        42 => 'hasheader',
+        43 => 'getheader',
+        44 => 'getheaderline',
+        45 => 'withheader',
+        46 => 'withaddedheader',
+        47 => 'withoutheader',
+        48 => 'withbody',
+        49 => '__construct',
+        50 => 'execute',
+        51 => '__construct',
+        52 => 'execute',
+        53 => 'handle',
+        54 => 'getbody',
+        55 => '__tostring',
+        56 => 'getstatuscode',
+        57 => 'withstatus',
+        58 => 'getreasonphrase',
+        59 => 'getprotocolversion',
+        60 => 'withprotocolversion',
+        61 => 'getheaders',
+        62 => 'hasheader',
+        63 => 'getheader',
+        64 => 'getheaderline',
+        65 => 'withheader',
+        66 => 'withaddedheader',
+        67 => 'withoutheader',
+        68 => 'withbody',
+      ),
+      3 => 
+      array (
+      ),
+    ),
   ),
 ));
