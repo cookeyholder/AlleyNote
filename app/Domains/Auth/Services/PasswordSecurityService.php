@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Services;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
+use App\Domains\Auth\Services\Advanced\PwnedPasswordService;
 use App\Shared\Exceptions\ValidationException;
 
 class PasswordSecurityService implements PasswordSecurityServiceInterface

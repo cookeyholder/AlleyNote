@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Validation;
 
-use App\Services\Enums\PostStatus;
+use App\Domains\Post\Enums\PostStatus;
+use App\Shared\Validation\ValidationResult;
+use App\Shared\Validation\Validator;
 use DateTime;
 
 /**

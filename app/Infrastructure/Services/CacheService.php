@@ -236,7 +236,7 @@ class CacheService implements CacheServiceInterface
                 ? round($this->stats['hits'] / ($this->stats['hits'] + $this->stats['misses']) * 100, 2)
                 : 0,
             'total_size' => $this->stats['size'],
-            'file_count' => $files ? count($files) : 0,
+            'file_count' => is_array($files) ? count($files) : 0,
             'cache_path' => $this->cachePath,
         ];
     }

@@ -2,11 +2,12 @@
 
 namespace App\Application\Middleware;
 
+use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
+use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use App\Infrastructure\Services\RateLimitService;
-use Psr\Http\Message\ResponseInterface as Response;
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 class RateLimitMiddleware implements MiddlewareInterface
 {
@@ -20,7 +21,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
 
-    public function process(Request $request, RequestHandlerInterface $handler): Response
+    public function process(Request $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $uri = $request->getUri()->getPath();
 
@@ -102,16 +103,12 @@ class RateLimitMiddleware implements MiddlewareInterface
     /**
      * 建立速率限制回應.
      */
-    private function createRateLimitResponse(array $result, Request $request): Response
+    private function createRateLimitResponse(array $result, Request $request): ResponseInterface
     {
         // 判斷回應格式
         $acceptHeader = $request->getHeaderLine('Accept');
         $isJsonRequest = strpos($acceptHeader, 'application/json') !== false
             || strpos($request->getUri()->getPath(), '/api/') === 0;
-
-        // 建立回應物件
-        $response = new \Nyholm\Psr7\Response(429);
-        $stream = \Nyholm\Psr7\Stream::create();
 
         if ($isJsonRequest) {
             $body = json_encode([
@@ -123,16 +120,13 @@ class RateLimitMiddleware implements MiddlewareInterface
                 'retry_after' => $result['reset'] - time(),
             ]);
 
-            $response = $response->withHeader('Content-Type', 'application/json');
+            $response = new Response(429, ['Content-Type' => 'application/json'], $body);
         } else {
             $body = $this->generateRateLimitHtml($result);
-            $response = $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+            $response = new Response(429, ['Content-Type' => 'text/html; charset=utf-8'], $body);
         }
 
-        $stream->write($body);
-
         return $response
-            ->withStatus(429)
             ->withHeader('Retry-After', (string) ($result['reset'] - time()))
             ->withHeader('X-RateLimit-Limit', (string) $result['limit'])
             ->withHeader('X-RateLimit-Remaining', '0')
@@ -142,7 +136,7 @@ class RateLimitMiddleware implements MiddlewareInterface
     /**
      * 添加速率限制標頭.
      */
-    private function addRateLimitHeaders(Response $response, array $result): Response
+    private function addRateLimitHeaders(ResponseInterface $response, array $result): ResponseInterface
     {
         return $response
             ->withHeader('X-RateLimit-Limit', (string) $result['limit'])
@@ -255,5 +249,23 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
 
         return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+    }
+
+    public function getPriority(): int
+    {
+        return 10; // 中等優先級
+    }
+
+    public function getName(): string
+    {
+        return 'rate-limit';
+    }
+
+    public function shouldProcess(Request $request): bool
+    {
+        $uri = $request->getUri()->getPath();
+        
+        // 檢查是否需要跳過速率限制
+        return !in_array($uri, $this->config['skip_paths'], true);
     }
 }
