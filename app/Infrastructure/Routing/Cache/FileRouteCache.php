@@ -105,11 +105,11 @@ class FileRouteCache implements RouteCacheInterface
 
         $result = true;
         if (file_exists($cacheFile)) {
-            $result = unlink($cacheFile) && $result;
+            $result = $result && unlink($cacheFile);
         }
 
         if (file_exists($statsFile)) {
-            $result = unlink($statsFile) && $result;
+            $result = $result && unlink($statsFile);
         }
 
         // 重置統計
