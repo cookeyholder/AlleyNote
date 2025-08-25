@@ -8,9 +8,9 @@
 
 總任務數: **24 項**  
 狀態統計:
-- ⏳ 未開始: 24 項
+- ⏳ 未開始: 20 項
 - 🔄 進行中: 0 項  
-- ✅ 已完成: 0 項
+- ✅ 已完成: 4 項
 
 ---
 
@@ -19,7 +19,7 @@
 ### 1.1 安裝和配置 JWT 函式庫
 - **優先級**: 高
 - **預估時間**: 30分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**: 
   - 安裝 `firebase/php-jwt` 套件
   - 更新 composer.json 和 composer.lock
@@ -29,12 +29,13 @@
   - ✅ 可以在程式碼中成功 import JWT 相關類別
   - ✅ Docker 容器內可以正常使用 JWT 功能
 - **相依任務**: 無
+- **完成日期**: 2025-08-26
 - **檔案異動**: `composer.json`, `composer.lock`
 
 ### 1.2 建立 JWT 相關資料庫遷移
 - **優先級**: 高
 - **預估時間**: 45分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 建立 `refresh_tokens` 表的遷移檔案
   - 建立 `token_blacklist` 表的遷移檔案
@@ -48,11 +49,12 @@
   - ✅ 遷移可以正常 rollback
 - **相依任務**: 無
 - **檔案異動**: `database/migrations/xxx_create_refresh_tokens_table.php`, `database/migrations/xxx_create_token_blacklist_table.php`
+- **完成日期**: 2025-08-26
 
 ### 1.3 建立 JWT 配置管理
 - **優先級**: 高
 - **預估時間**: 30分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 在 .env 中加入 JWT 相關配置 (RS256 演算法)
   - 建立 JwtConfig 類別管理配置
@@ -65,11 +67,12 @@
   - ✅ RSA 金鑰對格式驗證正確
 - **相依任務**: 無
 - **檔案異動**: `.env`, `app/Shared/Config/JwtConfig.php`
+- **完成日期**: 2025-08-26
 
 ### 1.4 建立 JWT Value Objects
 - **優先級**: 高
 - **預估時間**: 60分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 建立 `JwtPayload` Value Object
   - 建立 `TokenPair` Value Object
@@ -84,6 +87,8 @@
   - ✅ 有完整的 PHPDoc 註解
 - **相依任務**: 無
 - **檔案異動**: `app/Domains/Auth/ValueObjects/JwtPayload.php`, `app/Domains/Auth/ValueObjects/TokenPair.php`, `app/Domains/Auth/ValueObjects/DeviceInfo.php`, `app/Domains/Auth/ValueObjects/TokenBlacklistEntry.php`
+- **完成日期**: 2025-08-26
+- **測試覆蓋率**: 129 個測試，420 個斷言，100% 通過
 
 ### 1.5 建立 JWT 領域例外類別
 - **優先級**: 中
