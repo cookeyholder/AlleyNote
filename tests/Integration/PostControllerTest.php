@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\PostController;
-use App\Contracts\Services\Security\CsrfProtectionServiceInterface;
-use App\Contracts\Services\Security\XssProtectionServiceInterface;
+use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
+use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Models\Post;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
@@ -32,6 +33,8 @@ class PostControllerTest extends TestCase
 
     private ValidatorInterface $validator;
 
+    private OutputSanitizerInterface $sanitizer;
+
     private $request;
 
     private $response;
@@ -49,6 +52,7 @@ class PostControllerTest extends TestCase
         $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
         $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
+        $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
 
         // 設定預設行為
         $this->xssProtection->shouldReceive('cleanArray')
@@ -118,6 +122,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer
         );
         $response = $controller->index($this->request, $this->response);
 
@@ -164,6 +169,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer
         );
         $response = $controller->show($this->request, $this->response, ['id' => $postId]);
 
@@ -202,6 +208,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -238,6 +245,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -278,6 +286,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -316,6 +325,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -347,6 +357,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->delete($this->request, $this->response, ['id' => '1']);
 
@@ -382,6 +393,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 
@@ -414,6 +426,7 @@ class PostControllerTest extends TestCase
         $controller = new PostController(
             $this->postService,
             $this->validator,
+            $this->sanitizer,
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 
