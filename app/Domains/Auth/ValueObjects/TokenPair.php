@@ -307,13 +307,13 @@ final readonly class TokenPair implements JsonSerializable
             throw new InvalidArgumentException('Refresh token cannot be empty');
         }
 
-        // 檢查 Refresh Token 長度（通常是 UUID 或隨機字串）
+        // 檢查 Refresh Token 長度（JWT refresh token 通常會比較長）
         if (mb_strlen($refreshToken) < 16) {
             throw new InvalidArgumentException('Refresh token must be at least 16 characters long');
         }
 
-        if (mb_strlen($refreshToken) > 255) {
-            throw new InvalidArgumentException('Refresh token cannot exceed 255 characters');
+        if (mb_strlen($refreshToken) > 2000) {
+            throw new InvalidArgumentException('Refresh token cannot exceed 2000 characters');
         }
     }
 

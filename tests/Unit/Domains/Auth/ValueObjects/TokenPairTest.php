@@ -418,11 +418,11 @@ final class TokenPairTest extends TestCase
     public function testConstructorWithTooLongRefreshToken(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Refresh token cannot exceed 255 characters');
+        $this->expectExceptionMessage('Refresh token cannot exceed 2000 characters');
 
         new TokenPair(
             accessToken: $this->validAccessToken,
-            refreshToken: str_repeat('a', 256),
+            refreshToken: str_repeat('a', 2001),
             accessTokenExpiresAt: $this->accessExpiry,
             refreshTokenExpiresAt: $this->refreshExpiry,
         );
