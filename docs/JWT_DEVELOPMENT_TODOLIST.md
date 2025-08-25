@@ -8,9 +8,9 @@
 
 總任務數: **24 項**  
 狀態統計:
-- ⏳ 未開始: 17 項
+- ⏳ 未開始: 16 項
 - 🔄 進行中: 0 項  
-- ✅ 已完成: 7 項
+- ✅ 已完成: 8 項
 
 ---
 
@@ -154,20 +154,28 @@
 ### 2.2 實作 JwtTokenService
 - **優先級**: 高
 - **預估時間**: 120分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
-  - 實作 JwtTokenServiceInterface
-  - 整合 FirebaseJwtProvider
-  - 實作 token 生命週期管理
-  - 加入安全性驗證邏輯
+  - 實作 JwtTokenService 類別，實現 JwtTokenServiceInterface
+  - 整合 FirebaseJwtProvider 和 Repository 層
+  - 實作 token 產生、驗證、撤銷功能
+  - 實作安全性檢查（IP、裝置、使用者歸屬）
+  - 建立完整的單元測試
 - **驗收標準**:
-  - ✅ 可以根據使用者資料產生 token pair
-  - ✅ 可以驗證 access token 和 refresh token
-  - ✅ 正確處理 token 過期
-  - ✅ 包含 IP 和裝置驗證
-  - ✅ 包含完整的單元測試
+  - ✅ generateTokenPair() 可以產生有效的 JWT token pair
+  - ✅ validateAccessToken() 可以正確驗證 token
+  - ✅ refreshTokens() 可以使用 refresh token 產生新 token
+  - ✅ revokeToken() 和 revokeAllUserTokens() 可以正確撤銷 token
+  - ✅ extractPayload() 可以提取 token payload（不驗證）
+  - ✅ isTokenOwnedBy() 和 isTokenFromDevice() 安全性檢查正確
+  - ✅ getTokenRemainingTime() 和 isTokenNearExpiry() 時效檢查正確
+  - ✅ 所有工具方法（getAlgorithm, getTTL 等）正確實作
+  - ✅ 單元測試涵蓋率 >= 95%
+  - ✅ 所有例外情境都有適當處理
+  - ✅ 與 FirebaseJwtProvider 整合正確
 - **相依任務**: 1.4, 1.6, 2.1
-- **檔案異動**: `app/Domains/Auth/Services/JwtTokenService.php`
+- **檔案異動**: `app/Domains/Auth/Services/JwtTokenService.php`, `tests/Unit/Domains/Auth/Services/JwtTokenServiceTest.php`
+- **完成日期**: 2025-08-26
 
 ### 2.3 實作 RefreshToken Entity
 - **優先級**: 高
