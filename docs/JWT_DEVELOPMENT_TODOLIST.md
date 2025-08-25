@@ -54,14 +54,15 @@
 - **預估時間**: 30分鐘
 - **狀態**: ⏳ 未開始
 - **描述**:
-  - 在 .env 中加入 JWT 相關配置
+  - 在 .env 中加入 JWT 相關配置 (RS256 演算法)
   - 建立 JwtConfig 類別管理配置
   - 實作配置驗證和預設值
+  - 處理 RSA 金鑰對的載入和驗證
 - **驗收標準**:
-  - ✅ .env 檔案包含所有 JWT 必要配置
+  - ✅ .env 檔案包含所有 JWT 必要配置 (RS256 金鑰對)
   - ✅ JwtConfig 類別可以正確載入所有配置
   - ✅ 缺少必要配置時會拋出適當例外
-  - ✅ 配置值格式驗證正確
+  - ✅ RSA 金鑰對格式驗證正確
 - **相依任務**: 無
 - **檔案異動**: `.env`, `app/Shared/Config/JwtConfig.php`
 
@@ -127,12 +128,12 @@
 - **狀態**: ⏳ 未開始
 - **描述**:
   - 建立 FirebaseJwtProvider 包裝類別
-  - 實作 token 產生、驗證、解析功能
+  - 實作 RS256 token 產生、驗證、解析功能
   - 處理所有 JWT 相關例外
   - 加入詳細的日誌記錄
 - **驗收標準**:
-  - ✅ 可以正確產生 JWT access token
-  - ✅ 可以正確產生 JWT refresh token
+  - ✅ 可以正確產生 RS256 JWT access token
+  - ✅ 可以正確產生 RS256 JWT refresh token
   - ✅ 可以正確驗證和解析 token
   - ✅ 正確處理所有例外情況
   - ✅ 包含完整的單元測試

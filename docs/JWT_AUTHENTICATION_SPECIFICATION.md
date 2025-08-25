@@ -32,7 +32,7 @@
 #### 2.1.1 Header
 ```json
 {
-  "alg": "HS256",
+  "alg": "RS256",
   "typ": "JWT"
 }
 ```
@@ -79,8 +79,8 @@
 - **記住我**: Refresh token 延長至 90 天
 
 ### 2.3 安全性設計
-- 使用 HS256 演算法 (可升級至 RS256)
-- JWT Secret 從環境變數載入
+- 使用 RS256 演算法 (RSA SHA-256)
+- RSA 金鑰對從環境變數載入 (私鑰用於簽章，公鑰用於驗證)
 - 支援 token 黑名單機制
 - 防重放攻擊 (jti)
 - IP 地址綁定 (可選)
@@ -290,7 +290,9 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 ## 7. 安全性考量
 
 ### 7.1 Token 安全
-- 使用強隨機密鑰 (至少 256 位元)
+- 使用 RSA 2048 位元金鑰對
+- 私鑰安全存儲，僅用於 token 簽章
+- 公鑰可以共享，用於 token 驗證
 - Token 不包含敏感資訊 (如密碼)
 - 實作 token 輪轉機制
 - 支援強制登出所有裝置
@@ -310,7 +312,7 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 ## 8. 效能考量
 
 ### 8.1 快取策略
-- JWT secret 快取
+- RSA 公鑰快取
 - 黑名單快取 (Redis 可選)
 - 使用者權限快取
 
