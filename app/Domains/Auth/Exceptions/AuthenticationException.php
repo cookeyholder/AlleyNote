@@ -46,6 +46,10 @@ class AuthenticationException extends JwtException
 
     public const REASON_INVALID_TOKEN = 'invalid_token';
 
+    public const REASON_INVALID_REFRESH_TOKEN = 'invalid_refresh_token';
+
+    public const REASON_TOKEN_REFRESH_FAILED = 'token_refresh_failed';
+
     public const REASON_TOKEN_REQUIRED = 'token_required';
 
     public const REASON_INSUFFICIENT_PRIVILEGES = 'insufficient_privileges';
@@ -90,6 +94,8 @@ class AuthenticationException extends JwtException
             self::REASON_PASSWORD_EXPIRED => 'Password has expired and needs to be changed',
             self::REASON_MISSING_CREDENTIALS => 'Authentication credentials are missing',
             self::REASON_INVALID_TOKEN => 'Invalid authentication token',
+            self::REASON_INVALID_REFRESH_TOKEN => 'Invalid refresh token',
+            self::REASON_TOKEN_REFRESH_FAILED => 'Token refresh failed',
             self::REASON_TOKEN_REQUIRED => 'Authentication token is required',
             self::REASON_INSUFFICIENT_PRIVILEGES => 'Insufficient privileges to access this resource',
             default => 'Authentication failed',
@@ -113,6 +119,8 @@ class AuthenticationException extends JwtException
             self::REASON_PASSWORD_EXPIRED => '您的密碼已過期，請更新密碼。',
             self::REASON_MISSING_CREDENTIALS => '請提供完整的登入資訊。',
             self::REASON_INVALID_TOKEN => '認證 Token 無效，請重新登入。',
+            self::REASON_INVALID_REFRESH_TOKEN => '重新整理 Token 無效，請重新登入。',
+            self::REASON_TOKEN_REFRESH_FAILED => 'Token 重新整理失敗，請重新登入。',
             self::REASON_TOKEN_REQUIRED => '需要提供認證 Token 才能存取此資源。',
             self::REASON_INSUFFICIENT_PRIVILEGES => '您沒有足夠的權限存取此資源。',
             default => '身份驗證失敗，請重新嘗試。',
@@ -217,6 +225,8 @@ class AuthenticationException extends JwtException
     {
         return in_array($this->getReason(), [
             self::REASON_INVALID_TOKEN,
+            self::REASON_INVALID_REFRESH_TOKEN,
+            self::REASON_TOKEN_REFRESH_FAILED,
             self::REASON_TOKEN_REQUIRED,
         ]);
     }

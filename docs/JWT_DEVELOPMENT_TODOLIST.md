@@ -8,9 +8,9 @@
 
 總任務數: **24 項**  
 狀態統計:
-- ⏳ 未開始: 16 項
+- ⏳ 未開始: 15 項
 - 🔄 進行中: 0 項  
-- ✅ 已完成: 8 項
+- ✅ 已完成: 9 項
 
 ---
 
@@ -180,7 +180,7 @@
 ### 2.3 實作 RefreshToken Entity
 - **優先級**: 高
 - **預估時間**: 60分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 建立 RefreshToken Entity 類別
   - 實作業務邏輯方法
@@ -193,12 +193,14 @@
   - ✅ 正確實作 JsonSerializable
   - ✅ 包含完整的單元測試
 - **相依任務**: 1.4
-- **檔案異動**: `app/Domains/Auth/Entities/RefreshToken.php`
+- **完成日期**: 2025-08-26
+- **檔案異動**: `app/Domains/Auth/Entities/RefreshToken.php`, `tests/Unit/Domains/Auth/Entities/RefreshTokenTest.php`
+- **測試覆蓋率**: 42 個測試，249 個斷言，100% 通過
 
 ### 2.4 實作 RefreshTokenRepository
 - **優先級**: 高
 - **預估時間**: 90分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 實作 RefreshTokenRepositoryInterface
   - 建立 CRUD 操作方法
@@ -211,9 +213,34 @@
   - ✅ 可以清理過期的 token
   - ✅ 包含完整的單元測試
 - **相依任務**: 1.2, 1.6, 2.3
-- **檔案異動**: `app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php`
+- **完成日期**: 2025-08-26
+- **檔案異動**: `app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php`, `tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php`
+- **測試覆蓋率**: 30 個測試，157 個斷言，100% 通過
 
-### 2.5 實作 TokenBlacklistRepository
+### 2.5 實作 AuthenticationService 系統
+- **優先級**: 高
+- **預估時間**: 180分鐘
+- **狀態**: ✅ 已完成
+- **描述**:
+  - 設計 AuthenticationServiceInterface 介面
+  - 建立認證相關 DTO 類別 (LoginRequestDTO, LoginResponseDTO, RefreshRequestDTO, RefreshResponseDTO, LogoutRequestDTO)
+  - 實作 AuthenticationService 類別，整合 JwtTokenService、RefreshTokenRepository、UserRepository
+  - 撰寫完整的單元測試，涵蓋所有業務流程與異常情境
+  - 執行 CI 品質檢查 (phpunit、php-cs-fixer、phpstan)
+- **驗收標準**:
+  - ✅ AuthenticationServiceInterface 介面設計完整
+  - ✅ 所有 DTO 類別實作完成，包含驗證邏輯
+  - ✅ AuthenticationService 實作所有認證業務邏輯
+  - ✅ login、refresh、logout、validate 方法全部正確實作
+  - ✅ 25 個單元測試全部通過，涵蓋正常與異常情況
+  - ✅ 程式碼風格檢查通過 (php-cs-fixer)
+  - ✅ 靜態分析檢查通過 (phpstan)
+- **相依任務**: 2.1, 2.2, 2.3, 2.4
+- **完成日期**: 2025-08-26
+- **檔案異動**: `app/Domains/Auth/Contracts/AuthenticationServiceInterface.php`, `app/Domains/Auth/DTOs/LoginRequestDTO.php`, `app/Domains/Auth/DTOs/LoginResponseDTO.php`, `app/Domains/Auth/DTOs/RefreshRequestDTO.php`, `app/Domains/Auth/DTOs/RefreshResponseDTO.php`, `app/Domains/Auth/DTOs/LogoutRequestDTO.php`, `app/Domains/Auth/Services/AuthenticationService.php`, `tests/Unit/Domains/Auth/Services/AuthenticationServiceTest.php`
+- **測試覆蓋率**: 25 個測試，145 個斷言，100% 通過
+
+### 2.6 實作 TokenBlacklistRepository
 - **優先級**: 高
 - **預估時間**: 75分鐘
 - **狀態**: ⏳ 未開始

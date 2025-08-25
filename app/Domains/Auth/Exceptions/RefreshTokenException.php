@@ -48,6 +48,20 @@ class RefreshTokenException extends JwtException
 
     public const REASON_FAMILY_MISMATCH = 'family_mismatch';
 
+    public const REASON_CREATION_FAILED = 'creation_failed';
+
+    public const REASON_DATABASE_ERROR = 'database_error';
+
+    public const REASON_UPDATE_FAILED = 'update_failed';
+
+    public const REASON_REVOCATION_FAILED = 'revocation_failed';
+
+    public const REASON_CLEANUP_FAILED = 'cleanup_failed';
+
+    public const REASON_FAMILY_REVOCATION_FAILED = 'family_revocation_failed';
+
+    public const REASON_BATCH_OPERATION_FAILED = 'batch_operation_failed';
+
     /**
      * 建立 Refresh Token 操作例外.
      *
@@ -89,6 +103,13 @@ class RefreshTokenException extends JwtException
             self::REASON_ROTATION_FAILED => 'Failed to rotate refresh token',
             self::REASON_LIMIT_EXCEEDED => 'Refresh token limit exceeded for this user',
             self::REASON_FAMILY_MISMATCH => 'Refresh token does not belong to the expected token family',
+            self::REASON_CREATION_FAILED => 'Failed to create refresh token',
+            self::REASON_DATABASE_ERROR => 'Database operation failed',
+            self::REASON_UPDATE_FAILED => 'Failed to update refresh token',
+            self::REASON_REVOCATION_FAILED => 'Failed to revoke refresh token',
+            self::REASON_CLEANUP_FAILED => 'Failed to cleanup refresh tokens',
+            self::REASON_FAMILY_REVOCATION_FAILED => 'Failed to revoke token family',
+            self::REASON_BATCH_OPERATION_FAILED => 'Batch operation failed',
             default => 'Refresh token operation failed',
         };
     }
