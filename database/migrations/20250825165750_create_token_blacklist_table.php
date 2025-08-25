@@ -27,8 +27,14 @@ final class CreateTokenBlacklistTable extends AbstractMigration
             ->addColumn('expires_at', 'datetime', ['null' => false])
             ->addColumn('blacklisted_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP', 'null' => false])
             ->addColumn('reason', 'string', ['limit' => 255, 'null' => true])
+            ->addColumn('device_id', 'string', ['limit' => 255, 'null' => true])
+            ->addColumn('metadata', 'text', ['null' => true])
             ->addIndex(['jti'], ['unique' => true])
             ->addIndex(['expires_at'])
+            ->addIndex(['user_id'])
+            ->addIndex(['device_id'])
+            ->addIndex(['reason'])
+            ->addIndex(['blacklisted_at'])
             ->addForeignKey('user_id', 'users', 'id', ['delete' => 'SET_NULL', 'update' => 'NO_ACTION'])
             ->create();
     }

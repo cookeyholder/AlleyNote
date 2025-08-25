@@ -8,9 +8,9 @@
 
 總任務數: **24 項**  
 狀態統計:
-- ⏳ 未開始: 15 項
+- ⏳ 未開始: 14 項
 - 🔄 進行中: 0 項  
-- ✅ 已完成: 9 項
+- ✅ 已完成: 10 項
 
 ---
 
@@ -243,22 +243,27 @@
 ### 2.6 實作 TokenBlacklistRepository
 - **優先級**: 高
 - **預估時間**: 75分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 實作 TokenBlacklistRepositoryInterface
   - 建立黑名單 CRUD 操作
   - 實作高效的查詢機制
   - 加入自動清理功能
+  - 撰寫完整單元測試並執行 CI 檢查
 - **驗收標準**:
   - ✅ 可以新增 token 到黑名單
   - ✅ 可以快速檢查 token 是否在黑名單
   - ✅ 可以批次處理黑名單操作
   - ✅ 自動清理過期的黑名單項目
   - ✅ 包含完整的單元測試
+  - ✅ 程式碼風格檢查通過 (php-cs-fixer)
+  - ✅ 靜態分析檢查通過 (phpstan)
 - **相依任務**: 1.2, 1.4, 1.6
-- **檔案異動**: `app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php`
+- **完成日期**: 2025-08-26
+- **檔案異動**: `app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php`, `database/migrations/create_token_blacklist_table.php`, `tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php`
+- **測試覆蓋率**: 43 個測試，99 個斷言，100% 通過
 
-### 2.6 實作 RefreshTokenService
+### 2.7 實作 RefreshTokenService
 - **優先級**: 高
 - **預估時間**: 90分鐘
 - **狀態**: ⏳ 未開始
@@ -273,10 +278,10 @@
   - ✅ 可以撤銷單個或所有裝置的 token
   - ✅ 自動清理過期和無效的 token
   - ✅ 包含完整的單元測試
-- **相依任務**: 2.2, 2.3, 2.4
+- **相依任務**: 2.2, 2.3, 2.4, 2.6
 - **檔案異動**: `app/Domains/Auth/Services/RefreshTokenService.php`
 
-### 2.7 實作 TokenBlacklistService
+### 2.8 實作 TokenBlacklistService
 - **優先級**: 中
 - **預估時間**: 60分鐘
 - **狀態**: ⏳ 未開始
@@ -291,10 +296,10 @@
   - ✅ 可以批次處理黑名單操作
   - ✅ 提供統計和監控功能
   - ✅ 包含完整的單元測試
-- **相依任務**: 2.5
+- **相依任務**: 2.6
 - **檔案異動**: `app/Domains/Auth/Services/TokenBlacklistService.php`
 
-### 2.8 更新現有 AuthService
+### 2.9 更新現有 AuthService
 - **優先級**: 高
 - **預估時間**: 120分鐘
 - **狀態**: ⏳ 未開始
@@ -309,7 +314,7 @@
   - ✅ 支援新舊認證方式共存
   - ✅ 正確處理所有錯誤情況
   - ✅ 包含完整的單元測試
-- **相依任務**: 2.2, 2.6, 2.7
+- **相依任務**: 2.2, 2.7, 2.8
 - **檔案異動**: `app/Domains/Auth/Services/AuthService.php`
 
 ---

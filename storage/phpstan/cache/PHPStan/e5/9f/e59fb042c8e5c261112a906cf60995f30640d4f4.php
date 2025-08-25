@@ -22,7 +22,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/database/migrations/20250825165750_create_token_blacklist_table.php' => 
     array (
-      0 => 'a3a04960eb404e5053904749f6463ae5b9e21aa3',
+      0 => 'c1794183ad592e2e1aaf516252b61eb5bd58f796',
       1 => 
       array (
         0 => 'createtokenblacklisttable',

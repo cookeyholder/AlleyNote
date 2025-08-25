@@ -1,35 +1,36 @@
-=== 專案架構快速摘要 (2025-08-26 02:20:15) ===
+=== 專案架構快速摘要 (2025-08-26 03:41:53) ===
 
 📊 統計資訊:
-- 類別: 122 個
-- 介面: 32 個
-- 命名空間: 68 個
+- 類別: 131 個
+- 介面: 33 個
+- 命名空間: 72 個
 
 🏗️ DDD 架構:
 - Application: 12 個檔案
-- Domains: 76 個檔案
-- Infrastructure: 41 個檔案
+- Domains: 85 個檔案
+- Infrastructure: 42 個檔案
 - Shared: 19 個檔案
 
-❌ 架構問題 (3 個):
+❌ 架構問題 (4 個):
+- Domain層不應依賴Infrastructure層: app/Domains/Auth/Services/JwtTokenService.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
 - 可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
 - 可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
 - 可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
 
 🧪 測試覆蓋:
 - 有測試: 0 個類別
-- 缺少測試: 122 個類別
+- 缺少測試: 131 個類別
 
 🔌 介面實作:
-- : 85 個實作
+- : 90 個實作
 - PostRepositoryInterface: 1 個實作
-- JsonSerializable: 8 個實作
+- JsonSerializable: 9 個實作
 - PostServiceInterface: 1 個實作
 - IpRepositoryInterface: 1 個實作
 
-💉 重依賴類別 (≥3個依賴): 8 個
+💉 重依賴類別 (≥3個依賴): 11 個
 
-❓ 可能問題引用: 78 個
+❓ 可能問題引用: 83 個
 
 🔑 重點服務/控制器:
 - implements (app/Infrastructure/Routing/ControllerResolver.php)
