@@ -163,6 +163,50 @@ abstract class TestCase extends BaseTestCase
             )
         ');
 
+        // 建立使用者資料表
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                email TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL,
+                status INTEGER NOT NULL DEFAULT 1,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+        ');
+
+        // 建立 Refresh Token 資料表
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS refresh_tokens (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                jti TEXT NOT NULL UNIQUE,
+                user_id INTEGER NOT NULL,
+                device_id TEXT,
+                device_name TEXT,
+                expires_at TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ');
+
+        // 建立 Token Blacklist 資料表
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS token_blacklist (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                jti TEXT NOT NULL UNIQUE,
+                token_type TEXT NOT NULL,
+                user_id INTEGER,
+                expires_at TEXT NOT NULL,
+                blacklisted_at TEXT NOT NULL,
+                reason TEXT,
+                device_id TEXT,
+                metadata TEXT,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+            )
+        ');
+
         // 建立所需的索引
         $this->createIndices();
     }
