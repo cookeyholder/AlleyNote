@@ -13,10 +13,10 @@ use App\Infrastructure\Services\CacheService;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 class FileUploadSecurityTest extends TestCase
 {
@@ -64,8 +64,6 @@ class FileUploadSecurityTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldRejectExecutableFiles(): void
     {
         // 準備測試資料
@@ -103,8 +101,6 @@ class FileUploadSecurityTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldRejectDoubleExtensionFiles(): void
     {
         // 準備測試資料
@@ -142,8 +138,6 @@ class FileUploadSecurityTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldRejectOversizedFiles(): void
     {
         // 準備測試資料 - 檔案大小超過限制
@@ -181,8 +175,6 @@ class FileUploadSecurityTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldRejectMaliciousMimeTypes(): void
     {
         // 準備測試資料
@@ -220,8 +212,6 @@ class FileUploadSecurityTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldPreventPathTraversal(): void
     {
         // 準備測試資料 - 包含路徑遍歷攻擊的檔案名
@@ -259,8 +249,6 @@ class FileUploadSecurityTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldAcceptValidFiles(): void
     {
         // 準備測試資料 - 有效的檔案

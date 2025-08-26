@@ -1,50 +1,49 @@
-=== 專案架構快速摘要 (2025-08-26 08:01:03) ===
+=== 專案架構快速摘要 (2025-08-26 18:25:48) ===
 
 📊 統計資訊:
-- 類別: 133 個
-- 介面: 33 個
-- 命名空間: 72 個
+- 類別: 139 個
+- 介面: 34 個
+- 命名空間: 76 個
 
 🏗️ DDD 架構:
 - Application: 12 個檔案
-- Domains: 86 個檔案
+- Domains: 88 個檔案
 - Infrastructure: 43 個檔案
 - Shared: 19 個檔案
 
-❌ 架構問題 (4 個):
-- Domain層不應依賴Infrastructure層: app/Domains/Auth/Services/JwtTokenService.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
-- 可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
+❌ 架構問題 (3 個):
 - 可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
 - 可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
+- 可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
 
 🧪 測試覆蓋:
 - 有測試: 0 個類別
-- 缺少測試: 133 個類別
+- 缺少測試: 139 個類別
 
 🔌 介面實作:
-- : 91 個實作
-- PostRepositoryInterface: 1 個實作
+- : 96 個實作
+- FileSecurityServiceInterface: 1 個實作
+- AttachmentServiceInterface: 1 個實作
 - JsonSerializable: 9 個實作
-- PostServiceInterface: 1 個實作
-- IpRepositoryInterface: 1 個實作
+- SessionSecurityServiceInterface: 1 個實作
 
-💉 重依賴類別 (≥3個依賴): 11 個
+💉 重依賴類別 (≥3個依賴): 13 個
 
-❓ 可能問題引用: 85 個
+❓ 可能問題引用: 106 個
 
 🔑 重點服務/控制器:
-- implements (app/Infrastructure/Routing/ControllerResolver.php)
-- PostRepository (app/Domains/Post/Repositories/PostRepository.php)
-- PostService (app/Domains/Post/Services/PostService.php)
-- ContentModerationService (app/Domains/Post/Services/ContentModerationService.php)
-- RichTextProcessorService (app/Domains/Post/Services/RichTextProcessorService.php)
-- PostCacheKeyService (app/Domains/Post/Services/PostCacheKeyService.php)
+- AttachmentRepository (app/Domains/Attachment/Repositories/AttachmentRepository.php)
+- FileSecurityService (app/Domains/Attachment/Services/FileSecurityService.php)
+- AttachmentService (app/Domains/Attachment/Services/AttachmentService.php)
+- UserRepository (app/Domains/Auth/Repositories/UserRepository.php)
+- SessionSecurityService (app/Domains/Auth/Services/SessionSecurityService.php)
+- RefreshTokenService (app/Domains/Auth/Services/RefreshTokenService.php)
+- PasswordManagementService (app/Domains/Auth/Services/PasswordManagementService.php)
+- AuthorizationService (app/Domains/Auth/Services/AuthorizationService.php)
+- JwtTokenService (app/Domains/Auth/Services/JwtTokenService.php)
+- PwnedPasswordService (app/Domains/Auth/Services/Advanced/PwnedPasswordService.php)
+- AuthenticationService (app/Domains/Auth/Services/AuthenticationService.php)
+- TokenBlacklistService (app/Domains/Auth/Services/TokenBlacklistService.php)
+- AuthService (app/Domains/Auth/Services/AuthService.php)
+- PasswordSecurityService (app/Domains/Auth/Services/PasswordSecurityService.php)
 - IpRepository (app/Domains/Security/Repositories/IpRepository.php)
-- XssProtectionService (app/Domains/Security/Services/Core/XssProtectionService.php)
-- CsrfProtectionService (app/Domains/Security/Services/Core/CsrfProtectionService.php)
-- SecretsManager (app/Domains/Security/Services/Secrets/SecretsManager.php)
-- XssProtectionExtensionService (app/Domains/Security/Services/Content/XssProtectionExtensionService.php)
-- IpService (app/Domains/Security/Services/IpService.php)
-- SecurityHeaderService (app/Domains/Security/Services/Headers/SecurityHeaderService.php)
-- ErrorHandlerService (app/Domains/Security/Services/Error/ErrorHandlerService.php)
-- LoggingSecurityService (app/Domains/Security/Services/Logging/LoggingSecurityService.php)

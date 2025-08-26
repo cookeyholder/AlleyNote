@@ -6,7 +6,6 @@ namespace AlleyNote\Domains\Auth\Services;
 
 use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
-use DateTime;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;

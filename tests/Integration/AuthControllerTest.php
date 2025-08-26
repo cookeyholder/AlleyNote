@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use App\Application\Controllers\Api\V1\AuthController;
 use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
 use App\Shared\Contracts\ValidatorInterface;
@@ -15,11 +15,11 @@ use App\Shared\Validation\ValidationResult;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 /**
  * @group integration
@@ -108,8 +108,6 @@ class AuthControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function registerUserSuccessfully(): void
     {
         $userData = [
@@ -146,8 +144,6 @@ class AuthControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function returnValidationErrorsForInvalidRegistrationData(): void
     {
         $invalidData = [
@@ -179,8 +175,6 @@ class AuthControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function loginUserSuccessfully(): void
     {
         $credentials = [
@@ -216,8 +210,6 @@ class AuthControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function returnErrorForInvalidLogin(): void
     {
         $invalidCredentials = [
@@ -242,8 +234,6 @@ class AuthControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function logoutUserSuccessfully(): void
     {
         // logout 方法不需要調用 AuthService，直接返回成功響應
@@ -261,8 +251,6 @@ class AuthControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function getUserInfoSuccessfully(): void
     {
         // getUserInfo 方法已經在 BaseController 中實現，此處測試直接使用默認行為

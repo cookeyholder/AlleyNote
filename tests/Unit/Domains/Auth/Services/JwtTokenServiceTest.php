@@ -14,7 +14,6 @@ use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
-use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use App\Shared\Config\JwtConfig;
 use DateTimeImmutable;
 use Exception;
@@ -113,7 +112,7 @@ final class JwtTokenServiceTest extends TestCase
                     'exp' => time() + 3600,
                     'role' => 'user',
                     'type' => 'access',
-                ]
+                ],
             );
 
         $this->mockRefreshTokenRepository
@@ -488,7 +487,7 @@ final class JwtTokenServiceTest extends TestCase
                 // First call: blacklist check in validateRefreshToken
                 $payload,
                 // Second call: store new refresh token
-                ['jti' => 'new-refresh-jti']
+                ['jti' => 'new-refresh-jti'],
             );
 
         $this->mockBlacklistRepository->method('isBlacklisted')->willReturn(false);

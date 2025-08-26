@@ -7,8 +7,8 @@ use App\Domains\Auth\Services\AuthService;
 use DateTime;
 use PDO;
 use PDOException;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
 class UserRepositoryTest extends TestCase
 {
@@ -41,8 +41,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function createUserSuccessfully(): void
     {
         $userData = [
@@ -62,8 +60,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function updateUserSuccessfully(): void
     {
         $user = $this->repository->create([
@@ -85,8 +81,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function deleteUserSuccessfully(): void
     {
         $user = $this->repository->create([
@@ -103,8 +97,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function findUserByUuid(): void
     {
         $userData = [
@@ -122,8 +114,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function findUserByUsername(): void
     {
         $userData = [
@@ -140,8 +130,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function findUserByEmail(): void
     {
         $userData = [
@@ -158,8 +146,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function preventDuplicateUsername(): void
     {
         $userData = [
@@ -177,8 +163,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function preventDuplicateEmail(): void
     {
         $userData = [
@@ -196,8 +180,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function findUserById(): void
     {
         $userData = [
@@ -215,8 +197,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function returnNullWhenUserNotFound(): void
     {
         $result = $this->repository->findById('999');
@@ -224,8 +204,6 @@ class UserRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function updateLastLoginTime(): void
     {
         $user = $this->repository->create([

@@ -10,8 +10,8 @@ use App\Infrastructure\Services\CacheService;
 use Mockery;
 use Mockery\MockInterface;
 use PDO;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class SqlInjectionTest extends TestCase
 {
@@ -83,8 +83,6 @@ class SqlInjectionTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldPreventSqlInjectionInTitleSearch(): void
     {
         // 準備測試資料 - 嘗試 SQL 注入攻擊
@@ -103,8 +101,6 @@ class SqlInjectionTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldHandleSpecialCharactersInContent(): void
     {
         // 準備含有特殊字元的測試資料
@@ -127,8 +123,6 @@ class SqlInjectionTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldPreventSqlInjectionInUserIdFilter(): void
     {
         // 準備測試資料 - 使用合法的整數 user_id
@@ -156,8 +150,6 @@ class SqlInjectionTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldSanitizeSearchInput(): void
     {
         // 測試各種可能的 SQL 注入嘗試

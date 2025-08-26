@@ -365,9 +365,12 @@ final class FirebaseJwtProvider implements JwtProviderInterface
      */
     private function generateJti(): string
     {
-        return bin2hex(random_bytes(16));
-    }
+        // 使用微秒時間戳和隨機位元組來確保唯一性
+        $timestamp = number_format(microtime(true) * 10000, 0, '', '');
+        $randomBytes = bin2hex(random_bytes(12));
 
+        return $timestamp . $randomBytes;
+    }
     /**
      * 驗證必要欄位.
      *

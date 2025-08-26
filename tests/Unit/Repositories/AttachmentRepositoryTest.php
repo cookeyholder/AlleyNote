@@ -9,8 +9,8 @@ use App\Infrastructure\Services\CacheService;
 use Mockery;
 use Mockery\MockInterface;
 use PDO;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class AttachmentRepositoryTest extends TestCase
 {
@@ -68,8 +68,6 @@ class AttachmentRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldCreateAttachmentSuccessfully(): void
     {
         // 準備測試資料
@@ -97,8 +95,6 @@ class AttachmentRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldFindAttachmentById(): void
     {
         // 建立測試資料
@@ -121,8 +117,6 @@ class AttachmentRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldFindAttachmentByUuid(): void
     {
         // 建立測試資料
@@ -145,24 +139,18 @@ class AttachmentRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldReturnNullForNonExistentId(): void
     {
         $this->assertNull($this->repository->find(999));
     }
 
     #[Test]
-
-
     public function shouldReturnNullForNonExistentUuid(): void
     {
         $this->assertNull($this->repository->findByUuid('non-existent-uuid'));
     }
 
     #[Test]
-
-
     public function shouldGetAttachmentsByPostId(): void
     {
         // 建立多個附件
@@ -189,8 +177,6 @@ class AttachmentRepositoryTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldSoftDeleteAttachment(): void
     {
         // 建立測試資料

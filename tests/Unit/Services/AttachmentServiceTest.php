@@ -14,11 +14,11 @@ use App\Infrastructure\Services\CacheService;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\UploadedFileInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 class AttachmentServiceTest extends TestCase
 {
@@ -81,8 +81,6 @@ class AttachmentServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldUploadFileSuccessfully(): void
     {
         // 準備測試資料
@@ -143,8 +141,6 @@ class AttachmentServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldRejectInvalidFileType(): void
     {
         // 準備測試資料
@@ -181,8 +177,6 @@ class AttachmentServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldRejectOversizedFile(): void
     {
         // 準備測試資料
@@ -219,8 +213,6 @@ class AttachmentServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldRejectUploadToNonExistentPost(): void
     {
         // 準備測試資料

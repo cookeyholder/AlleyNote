@@ -99,7 +99,6 @@ class ModernAutoFixTool
 
         $envContent = file_get_contents($envFile);
         $requiredJwtVars = [
-            'JWT_SECRET_KEY',
             'JWT_ALGORITHM',
             'JWT_PRIVATE_KEY',
             'JWT_PUBLIC_KEY',

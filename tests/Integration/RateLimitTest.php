@@ -8,8 +8,8 @@ use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
 use Exception;
 use Mockery;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class RateLimitTest extends TestCase
 {
@@ -40,8 +40,6 @@ class RateLimitTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldLimitRateSuccessfully(): void
     {
         $ip = '192.168.1.1';
@@ -62,8 +60,6 @@ class RateLimitTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldResetLimitAfterTimeWindow(): void
     {
         $ip = '192.168.1.2';
@@ -99,8 +95,6 @@ class RateLimitTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldHandleDifferentIpsIndependently(): void
     {
         $ip1 = '192.168.1.3';
@@ -133,8 +127,6 @@ class RateLimitTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldHandleServiceUnavailability(): void
     {
         $ip = '192.168.1.5';
@@ -151,8 +143,6 @@ class RateLimitTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldIncrementCounterCorrectly(): void
     {
         $ip = '192.168.1.6';
@@ -183,8 +173,6 @@ class RateLimitTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldHandleMaxAttemptsReached(): void
     {
         $ip = '192.168.1.7';

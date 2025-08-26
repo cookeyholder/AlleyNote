@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class FileSystemBackupTest extends TestCase
 {
@@ -53,8 +53,6 @@ class FileSystemBackupTest extends TestCase
     }
 
     #[Test]
-
-
     public function backupFilesSuccessfully(): void
     {
         // 執行備份腳本
@@ -101,8 +99,6 @@ class FileSystemBackupTest extends TestCase
     }
 
     #[Test]
-
-
     public function restoreFilesSuccessfully(): void
     {
         // 先建立備份
@@ -146,8 +142,6 @@ class FileSystemBackupTest extends TestCase
     }
 
     #[Test]
-
-
     public function handleBackupErrorsGracefully(): void
     {
         // 使用不存在的來源目錄
@@ -169,8 +163,6 @@ class FileSystemBackupTest extends TestCase
     }
 
     #[Test]
-
-
     public function handleRestoreErrorsGracefully(): void
     {
         // 使用不存在的備份檔案
@@ -192,8 +184,6 @@ class FileSystemBackupTest extends TestCase
     }
 
     #[Test]
-
-
     public function handlePermissionErrors(): void
     {
         // 使用不存在的備份檔案來測試錯誤處理
@@ -222,8 +212,6 @@ class FileSystemBackupTest extends TestCase
     }
 
     #[Test]
-
-
     public function maintainFileMetadataDuringBackupRestore(): void
     {
         // 記錄原始檔案的中繼資料

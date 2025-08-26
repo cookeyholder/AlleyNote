@@ -11,12 +11,12 @@ use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 class AttachmentControllerTest extends TestCase
 {
@@ -73,8 +73,6 @@ class AttachmentControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function uploadShouldStoreFileSuccessfully(): void
     {
         // Mock user_id attribute
@@ -125,8 +123,6 @@ class AttachmentControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function uploadShouldReturn400ForInvalidFile(): void
     {
         // Mock user_id attribute
@@ -177,8 +173,6 @@ class AttachmentControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function listShouldReturnAttachments(): void
     {
         // Mock user_id attribute
@@ -244,8 +238,6 @@ class AttachmentControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function deleteShouldRemoveAttachment(): void
     {
         // Mock user_id attribute
@@ -283,8 +275,6 @@ class AttachmentControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function deleteShouldReturn404ForNonexistentAttachment(): void
     {
         // Mock user_id attribute
@@ -330,8 +320,6 @@ class AttachmentControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function deleteShouldReturn400ForInvalidUuid(): void
     {
         // Mock user_id attribute

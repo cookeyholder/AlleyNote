@@ -6,8 +6,8 @@ namespace Tests\Unit\Services\Security;
 
 use App\Domains\Security\Services\Core\CsrfProtectionService;
 use App\Shared\Exceptions\CsrfTokenException;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
 class CsrfProtectionServiceTest extends TestCase
 {
@@ -25,8 +25,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function generatesValidToken(): void
     {
         $token = $this->service->generateToken();
@@ -38,8 +36,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function validatesCorrectToken(): void
     {
         $token = $this->service->generateToken();
@@ -49,8 +45,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function throwsExceptionForEmptyToken(): void
     {
         $this->expectException(CsrfTokenException::class);
@@ -60,8 +54,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function throwsExceptionForInvalidToken(): void
     {
         $this->service->generateToken();
@@ -73,8 +65,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function throwsExceptionForExpiredToken(): void
     {
         $token = $this->service->generateToken();
@@ -90,8 +80,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function updatesTokenAfterSuccessfulValidation(): void
     {
         $token = $this->service->generateToken();
@@ -103,8 +91,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function initializesTokenPool(): void
     {
         $this->service->initializeTokenPool();
@@ -116,8 +102,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function supportsMultipleValidTokensInPool(): void
     {
         $this->service->initializeTokenPool();
@@ -134,8 +118,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function validatesTokenFromPoolWithConstantTimeComparison(): void
     {
         $this->service->initializeTokenPool();
@@ -147,8 +129,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function removesTokenFromPoolAfterUse(): void
     {
         $this->service->initializeTokenPool();
@@ -164,8 +144,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function cleansExpiredTokensFromPool(): void
     {
         $this->service->initializeTokenPool();
@@ -180,8 +158,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function limitsTokenPoolSize(): void
     {
         $this->service->initializeTokenPool();
@@ -195,8 +171,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function getTokenPoolStatusReturnsCorrectInfo(): void
     {
         $this->service->initializeTokenPool();
@@ -215,8 +189,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function fallsBackToSingleTokenModeWhenPoolNotInitialized(): void
     {
         // 不初始化權杖池，使用舊的單一權杖模式
@@ -227,8 +199,6 @@ class CsrfProtectionServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function isTokenValidReturnsFalseForInvalidToken(): void
     {
         $this->service->generateToken();

@@ -19,11 +19,11 @@ use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 class PostControllerTest extends TestCase
 {
@@ -103,8 +103,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function indexShouldReturnPaginatedPosts(): void
     {
         // 準備測試資料
@@ -151,8 +149,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function showShouldReturnPostDetails(): void
     {
         // 準備測試資料
@@ -200,8 +196,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function storeShouldCreateNewPost(): void
     {
         // 準備測試資料
@@ -241,8 +235,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function storeShouldReturn400WhenValidationFails(): void
     {
         // 準備測試資料
@@ -281,8 +273,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function updateShouldModifyExistingPost(): void
     {
         // 準備測試資料
@@ -323,8 +313,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function updateShouldReturn404WhenPostNotFound(): void
     {
         // 準備測試資料
@@ -364,8 +352,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function destroyShouldDeletePost(): void
     {
         // 準備測試資料
@@ -394,8 +380,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function updatePinStatusShouldUpdatePinStatus(): void
     {
         // 準備測試資料
@@ -434,8 +418,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function updatePinStatusShouldReturn422WhenInvalidStateTransition(): void
     {
         // 準備測試資料

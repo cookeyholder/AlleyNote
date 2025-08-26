@@ -7,7 +7,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
   array (
     '/var/www/html/tests/UI/PostUITest.php' => 
     array (
-      0 => 'df80b6e869261308c16e875f6fa41f2f9e25dfb6',
+      0 => '80b69870cbe2932d3a63ce4eca8504065f852ad7',
       1 => 
       array (
         0 => 'tests\\ui\\postuitest',
@@ -50,7 +50,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/UI/CrossBrowserTest.php' => 
     array (
-      0 => '0bd4920423b10b1043f49cea34f1991ef0e9f918',
+      0 => '087aacaa63829b5e75103f9da0056473dd3f34b6',
       1 => 
       array (
         0 => 'tests\\ui\\crossbrowsertest',
@@ -71,7 +71,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/UI/UserExperienceTest.php' => 
     array (
-      0 => 'dfd5a3dd7b2028edf311e251f5da36fa0e537a43',
+      0 => '7b2fd5d69ede6230d90779e8c8e5946971b8131e',
       1 => 
       array (
         0 => 'tests\\ui\\userexperiencetest',
@@ -99,7 +99,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Database/DatabaseConnectionTest.php' => 
     array (
-      0 => 'e4b9c399594011e4959747d54bf103212a07fba5',
+      0 => '4c8412dbb95ae9139efae3b0131fe738393eeae8',
       1 => 
       array (
         0 => 'tests\\unit\\database\\databaseconnectiontest',
@@ -165,7 +165,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/UserRepositoryTest.php' => 
     array (
-      0 => '9a583ae431abee438e77269285a0a0d668115332',
+      0 => '3cc42f33899d5c939affdebc17468adb35b2061c',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\userrepositorytest',
@@ -292,7 +292,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/ExampleTest.php' => 
     array (
-      0 => '70bcefac6518229d96177306687e327f43d3d3f3',
+      0 => '7067d8a73db765ce7f5bd76518238266995a44ff',
       1 => 
       array (
         0 => 'tests\\unit\\exampletest',
@@ -307,7 +307,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repositories/AttachmentRepositoryTest.php' => 
     array (
-      0 => 'e7dd819c0dc7fc13b1176b022cba16372aa8df8f',
+      0 => '9cb59c3337087acb066d8182ded2b33aab2a9f92',
       1 => 
       array (
         0 => 'tests\\unit\\repositories\\attachmentrepositorytest',
@@ -331,7 +331,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Models/PostTest.php' => 
     array (
-      0 => '99ea4b54f03e99e1d007d800c5183c3c5fa70dcc',
+      0 => '4d606f60775c2c85d080334db147c4ddfb04f8da',
       1 => 
       array (
         0 => 'tests\\unit\\models\\posttest',
@@ -467,7 +467,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/XssProtectionServiceTest.php' => 
     array (
-      0 => 'f0916640cacf0cee017aa2911fa6f37fe85b045c',
+      0 => 'f9be92b7abecc32ad7e4034aceaeda78435e32ef',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\xssprotectionservicetest',
@@ -486,7 +486,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/SessionSecurityServiceTest.php' => 
     array (
-      0 => 'bb6d39fcd4cfc0e85403033fdce873c55bb2c025',
+      0 => '9645078e70c7d667259e38a2b54abbd3238ac1b7',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\sessionsecurityservicetest',
@@ -517,7 +517,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/LoggingSecurityServiceTest.php' => 
     array (
-      0 => '3872d457bf7a2a91e5a04eb6dda45e443721161b',
+      0 => '7ba2412e7465fa23cce87c215462f995904012ca',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\loggingsecurityservicetest',
@@ -567,7 +567,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/CsrfProtectionServiceTest.php' => 
     array (
-      0 => 'b54edfdd3c1213c751f79e0f4e97305de2e903e8',
+      0 => 'e3659de07a0c9ae0b571fa9d348a3ebc04aeea6a',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\csrfprotectionservicetest',
@@ -649,7 +649,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/CacheServiceTest.php' => 
     array (
-      0 => 'f8544f77cb87d0645cd35026ff9eb18e8c18263b',
+      0 => 'e1903d72815deedd8d627f2c87b49693165facfc',
       1 => 
       array (
         0 => 'tests\\unit\\services\\cacheservicetest',
@@ -669,7 +669,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/AuthServiceTest.php' => 
     array (
-      0 => 'adb3caa02630ef8e9d21f2db7535a52e706ebe19',
+      0 => 'ab931b26196b56c13691b3eb56361216f33053ae',
       1 => 
       array (
         0 => 'tests\\unit\\services\\authservicetest',
@@ -690,7 +690,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/AttachmentServiceTest.php' => 
     array (
-      0 => 'd85707aad5b414f118a9ac6b23669c01a010a2df',
+      0 => '3c585dcd8f87be07b37611620dd6f36bc4d5ab7a',
       1 => 
       array (
         0 => 'tests\\unit\\services\\attachmentservicetest',
@@ -734,7 +734,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/RateLimitServiceTest.php' => 
     array (
-      0 => 'c3c1820cf82ed45b0f83ce5f8b38d5b05852f436',
+      0 => '55230e729c0612b58e8df9f583e56fc94f7d5f76',
       1 => 
       array (
         0 => 'tests\\unit\\services\\ratelimitservicetest',
@@ -755,7 +755,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/CsrfProtectionTest.php' => 
     array (
-      0 => 'f51cb212ad5f3873f3908d2c3739f149680d7bef',
+      0 => '605a038be3c5b650e24554c06b2737655a26b526',
       1 => 
       array (
         0 => 'tests\\security\\csrfprotectiontest',
@@ -774,7 +774,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/SqlInjectionTest.php' => 
     array (
-      0 => 'd7be013afe0d9155cccc0c14a080785c230179c3',
+      0 => '8565512530dabc4b570a44c1768bd5a60c1a49dc',
       1 => 
       array (
         0 => 'tests\\security\\sqlinjectiontest',
@@ -795,7 +795,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/XssPreventionTest.php' => 
     array (
-      0 => '5a411aeddbc25241fd874ed9a15920f1b7601108',
+      0 => 'b005b7f72e70fc65e6492f2c7ba526f4ee471da3',
       1 => 
       array (
         0 => 'tests\\security\\xsspreventiontest',
@@ -814,7 +814,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/FileUploadSecurityTest.php' => 
     array (
-      0 => '4906bc3903f20c95b1166aa3e4218afb41be1646',
+      0 => '1592e85674eee368c077aa894e59d239e20b380e',
       1 => 
       array (
         0 => 'tests\\security\\fileuploadsecuritytest',
@@ -838,7 +838,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/PasswordHashingTest.php' => 
     array (
-      0 => 'f09fb63cd1955bdf8f62bdff23a859a55d9ff971',
+      0 => '1016ddd39d6a896a84965988c0c228566bd28678',
       1 => 
       array (
         0 => 'tests\\security\\passwordhashingtest',
@@ -859,7 +859,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/RateLimitTest.php' => 
     array (
-      0 => 'd252b0abc6f01a3398d8293b81e0ec4e27165c5d',
+      0 => '4d35fc6042b89895d9da4d909c4aa2735fef108d',
       1 => 
       array (
         0 => 'tests\\integration\\ratelimittest',
@@ -881,7 +881,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AuthControllerTest.php' => 
     array (
-      0 => '65b88b7285ecc4eda9bcf04a2cf1985389a130b2',
+      0 => '91c9e34891de5eca0c760479a4be842ce7403224',
       1 => 
       array (
         0 => 'tests\\integration\\authcontrollertest',
@@ -895,6 +895,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         4 => 'tests\\integration\\loginusersuccessfully',
         5 => 'tests\\integration\\returnerrorforinvalidlogin',
         6 => 'tests\\integration\\logoutusersuccessfully',
+        7 => 'tests\\integration\\getuserinfosuccessfully',
       ),
       3 => 
       array (
@@ -937,7 +938,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AttachmentControllerTest.php' => 
     array (
-      0 => '7740e5a4e94a21022d7505b0dfae8241cac8f8dc',
+      0 => '6354077c41bc39d974f1d7928c81abe4f19790a1',
       1 => 
       array (
         0 => 'tests\\integration\\attachmentcontrollertest',
@@ -959,7 +960,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/PostControllerTest.php' => 
     array (
-      0 => '47bc0515641aeb78becec76c4791410b9a5ddb99',
+      0 => '17ae9a2f2807a683ffc882f0e4c38e0e65e3fb8b',
       1 => 
       array (
         0 => 'tests\\integration\\postcontrollertest',
@@ -1023,7 +1024,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/FileSystemBackupTest.php' => 
     array (
-      0 => '819d46a7f08233d9a464c5c36cca8d9b682297c3',
+      0 => '79e1ec6f61614cbbfb2c96f79e77843c8c5e0d67',
       1 => 
       array (
         0 => 'tests\\integration\\filesystembackuptest',
@@ -1046,7 +1047,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/DatabaseBackupTest.php' => 
     array (
-      0 => 'f6f7684823a6ed3c654a3f2da9eb934170389305',
+      0 => '4dc95ef4465286a59e39cdd199e811449ea6f920',
       1 => 
       array (
         0 => 'tests\\integration\\databasebackuptest',
@@ -1069,7 +1070,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AttachmentUploadTest.php' => 
     array (
-      0 => '2c8cd306d5641a8691184fd69209c83d474d06c3',
+      0 => '426442e14e81e6b46021e03a431173c640578f7b',
       1 => 
       array (
         0 => 'tests\\integration\\attachmentuploadtest',
@@ -1092,7 +1093,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/TestCase.php' => 
     array (
-      0 => 'bba23e8568307bc719078467928b5b819a743fa7',
+      0 => 'd8a25c053c36f91a66dd5a023541779a9fc679da',
       1 => 
       array (
         0 => 'tests\\testcase',
@@ -1342,7 +1343,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/PostControllerTest_new.php' => 
     array (
-      0 => '0479b4156139402066695c883f2c0f5be601d86a',
+      0 => '7c5e6b39e35bc603af9fc0a8ff16bf94962eb751',
       1 => 
       array (
         0 => 'tests\\integration\\postcontrollertest',
@@ -2649,7 +2650,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Services/JwtTokenServiceTest.php' => 
     array (
-      0 => '6354547575fa5530da7f3a33fb366777136a4605',
+      0 => 'fcd17beb7da16c0d3eb3780ee1b524988b67a41e',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\services\\jwttokenservicetest',
@@ -2813,7 +2814,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Services/AuthenticationServiceTest.php' => 
     array (
-      0 => '1629e36f52e87397ad86cc321b0bc56ba4a63bd7',
+      0 => '34895bf7c8e1a7ec9934ea580afe99401dd86f13',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\services\\authenticationservicetest',
@@ -2914,7 +2915,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Services/TokenBlacklistServiceTest.php' => 
     array (
-      0 => '53897dc946332fe93611cd3730c5b79b2a6c1828',
+      0 => 'c88951a72b2baca0e370537fb1703c197256eecf',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\services\\tokenblacklistservicetest',
@@ -2975,7 +2976,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/JwtAuthenticationIntegrationTest.php' => 
     array (
-      0 => '3ce87a55500e750bf24ff31f418d81dbae2bdb36',
+      0 => '9e384c0379f0c63cbf67b4fe9c34ecdd9dad18d7',
       1 => 
       array (
         0 => 'tests\\integration\\jwtauthenticationintegrationtest',
@@ -3023,7 +3024,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/JwtTokenBlacklistIntegrationTest.php' => 
     array (
-      0 => '1ac5cdc0e5e0c43be14555b7498debe30c76a12f',
+      0 => '9c0db7757d55b7851c826d9116a14282bd40c6ec',
       1 => 
       array (
         0 => 'tests\\integration\\jwttokenblacklistintegrationtest',
@@ -3046,7 +3047,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Services/AuthServiceTest.php' => 
     array (
-      0 => 'c632517dca3a3fd77439edf9b7067483aa561ef5',
+      0 => '45f7239cebc46954691fff860b356d26baa1437f',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\services\\authservicetest',
@@ -3063,6 +3064,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         7 => 'tests\\unit\\domains\\auth\\services\\test_login_user_not_found',
         8 => 'tests\\unit\\domains\\auth\\services\\test_login_user_disabled',
         9 => 'tests\\unit\\domains\\auth\\services\\test_login_invalid_password',
+        10 => 'tests\\unit\\domains\\auth\\services\\test_logout_traditional_mode',
+        11 => 'tests\\unit\\domains\\auth\\services\\test_logout_jwt_mode_success',
+        12 => 'tests\\unit\\domains\\auth\\services\\test_logout_jwt_mode_revocation_failure',
       ),
       3 => 
       array (

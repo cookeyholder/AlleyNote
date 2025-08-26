@@ -10,6 +10,7 @@ use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
+use Exception;
 
 class AuthService
 {
@@ -151,7 +152,7 @@ class AuthService
                     'success' => true,
                     'message' => '登出成功',
                 ];
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // 如果撤銷失敗，記錄錯誤但仍然回傳成功（使用者體驗優先）
                 error_log('JWT token revocation failed during logout: ' . $e->getMessage());
             }

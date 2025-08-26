@@ -23,8 +23,6 @@ class CrossBrowserTest extends UITestCase
     ];
 
     #[Test]
-
-
     public function browserAction(): void
     {
         foreach ($this->browsers as $browser) {

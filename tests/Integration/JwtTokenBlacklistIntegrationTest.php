@@ -7,7 +7,6 @@ namespace Tests\Integration;
 use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
-use DateTime;
 use DateTimeImmutable;
 use PDO;
 use Tests\TestCase;

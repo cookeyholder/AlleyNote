@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace AlleyNote\Domains\Auth\Contracts;
 
+use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
+use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
+use AlleyNote\Domains\Auth\Exceptions\TokenGenerationException;
+use AlleyNote\Domains\Auth\Exceptions\TokenParsingException;
+use AlleyNote\Domains\Auth\Exceptions\TokenValidationException;
 use DateTimeImmutable;
 
 /**
@@ -11,8 +16,6 @@ use DateTimeImmutable;
  *
  * 定義JWT token操作的核心方法，包含token生成、驗證、解析等功能。
  * 實作類別需要提供完整的JWT token處理能力。
- *
- * @package AlleyNote\Domains\Auth\Contracts
  */
 interface JwtProviderInterface
 {
@@ -23,7 +26,7 @@ interface JwtProviderInterface
      * @param int|null $ttl Token 有效期（秒）
      * @return string JWT token
      *
-     * @throws \AlleyNote\Domains\Auth\Exceptions\TokenGenerationException 當token生成失敗時
+     * @throws TokenGenerationException 當token生成失敗時
      */
     public function generateAccessToken(array $payload, ?int $ttl = null): string;
 
@@ -34,7 +37,7 @@ interface JwtProviderInterface
      * @param int|null $ttl Token 有效期（秒）
      * @return string JWT token
      *
-     * @throws \AlleyNote\Domains\Auth\Exceptions\TokenGenerationException 當token生成失敗時
+     * @throws TokenGenerationException 當token生成失敗時
      */
     public function generateRefreshToken(array $payload, ?int $ttl = null): string;
 
@@ -45,9 +48,9 @@ interface JwtProviderInterface
      * @param string|null $expectedType 期望的token類型
      * @return array<string, mixed> 解析後的payload
      *
-     * @throws \AlleyNote\Domains\Auth\Exceptions\TokenExpiredException 當token過期時
-     * @throws \AlleyNote\Domains\Auth\Exceptions\InvalidTokenException 當token無效時
-     * @throws \AlleyNote\Domains\Auth\Exceptions\TokenValidationException 當token驗證失敗時
+     * @throws TokenExpiredException 當token過期時
+     * @throws InvalidTokenException 當token無效時
+     * @throws TokenValidationException 當token驗證失敗時
      */
     public function validateToken(string $token, ?string $expectedType = null): array;
 
@@ -57,7 +60,7 @@ interface JwtProviderInterface
      * @param string $token JWT token
      * @return array<string, mixed> 解析後的payload
      *
-     * @throws \AlleyNote\Domains\Auth\Exceptions\TokenParsingException 當token解析失敗時
+     * @throws TokenParsingException 當token解析失敗時
      */
     public function parseTokenUnsafe(string $token): array;
 

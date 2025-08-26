@@ -7,9 +7,9 @@ namespace Tests\Unit\Services;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use RuntimeException;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 class RateLimitServiceTest extends TestCase
 {
@@ -25,8 +25,6 @@ class RateLimitServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldAllowFirstRequest(): void
     {
         $ip = '127.0.0.1';
@@ -48,8 +46,6 @@ class RateLimitServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldRejectWhenLimitExceeded(): void
     {
         $ip = '127.0.0.1';
@@ -65,8 +61,6 @@ class RateLimitServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldHandleCacheFailureGracefully(): void
     {
         $ip = '127.0.0.1';
@@ -82,8 +76,6 @@ class RateLimitServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldIncrementRequestCount(): void
     {
         $ip = '127.0.0.1';
@@ -104,8 +96,6 @@ class RateLimitServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldHandleSetFailure(): void
     {
         $ip = '127.0.0.1';

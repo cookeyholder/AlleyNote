@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Tests\Unit\Models;
 
 use App\Domains\Post\Models\Post;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Factory\PostFactory;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 class PostTest extends TestCase
 {
     #[Test]
-
     public function correctlyInitializesWithValidData(): void
     {
         $data = PostFactory::make([
@@ -35,8 +34,6 @@ class PostTest extends TestCase
     }
 
     #[Test]
-
-
     public function handlesNullableFieldsCorrectly(): void
     {
         $data = PostFactory::make([
@@ -54,8 +51,6 @@ class PostTest extends TestCase
     }
 
     #[Test]
-
-
     public function setsDefaultValuesCorrectly(): void
     {
         $data = PostFactory::make([
@@ -79,8 +74,6 @@ class PostTest extends TestCase
     }
 
     #[Test]
-
-
     public function storesRawHtmlInTitleAndContent(): void
     {
         $data = PostFactory::make([

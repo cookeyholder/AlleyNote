@@ -7,7 +7,6 @@ namespace Tests\Unit\Domains\Auth\Services;
 use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
-use DateTime;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;

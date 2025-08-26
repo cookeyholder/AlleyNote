@@ -152,8 +152,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function login_使用者不存在_應該拋出認證例外(): void
     {
         // Arrange
@@ -176,8 +174,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function login_使用者已被軟刪除_應該拋出認證例外(): void
     {
         // Arrange
@@ -206,8 +202,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function login_超過最大Token數量限制_應該撤銷最舊的Token(): void
     {
         // Arrange
@@ -277,8 +271,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function refresh_成功重新整理_應該返回新的Token對(): void
     {
         // Arrange
@@ -333,8 +325,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function refresh_無效的RefreshToken_應該拋出認證例外(): void
     {
         // Arrange
@@ -356,8 +346,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function refresh_過期的RefreshToken_應該拋出認證例外(): void
     {
         // Arrange
@@ -379,8 +367,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function logout_單一Token登出_應該成功撤銷Token(): void
     {
         // Arrange
@@ -418,8 +404,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function logout_全部Token登出_應該撤銷使用者所有Token(): void
     {
         // Arrange
@@ -457,8 +441,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function logout_沒有RefreshToken_應該仍然成功(): void
     {
         // Arrange
@@ -481,8 +463,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function validateAccessToken_有效的Token_應該返回true(): void
     {
         // Arrange
@@ -503,8 +483,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function validateAccessToken_無效的Token_應該返回false(): void
     {
         // Arrange
@@ -524,8 +502,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function validateRefreshToken_有效的Token_應該返回true(): void
     {
         // Arrange
@@ -552,8 +528,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function validateRefreshToken_無效的Token_應該返回false(): void
     {
         // Arrange
@@ -573,8 +547,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function validateRefreshToken_Token已被撤銷_應該返回false(): void
     {
         // Arrange
@@ -601,8 +573,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function revokeRefreshToken_成功撤銷_應該返回true(): void
     {
         // Arrange
@@ -629,8 +599,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function revokeRefreshToken_撤銷失敗_應該返回false(): void
     {
         // Arrange
@@ -657,8 +625,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function revokeAllUserTokens_成功撤銷_應該返回撤銷數量(): void
     {
         // Arrange
@@ -680,8 +646,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function revokeDeviceTokens_成功撤銷_應該返回撤銷數量(): void
     {
         // Arrange
@@ -703,8 +667,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function getUserTokenStats_成功取得統計_應該返回統計資料(): void
     {
         // Arrange
@@ -730,8 +692,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function getUserTokenStats_發生例外_應該返回預設統計(): void
     {
         // Arrange
@@ -756,8 +716,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function cleanupExpiredTokens_成功清理_應該返回清理數量(): void
     {
         // Arrange
@@ -777,8 +735,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function cleanupExpiredTokens_沒有指定日期_應該使用預設日期(): void
     {
         // Arrange
@@ -796,8 +752,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function cleanupRevokedTokens_成功清理_應該返回清理數量(): void
     {
         // Arrange
@@ -817,8 +771,6 @@ final class AuthenticationServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function cleanupRevokedTokens_使用預設天數_應該清理30天前的記錄(): void
     {
         // Arrange

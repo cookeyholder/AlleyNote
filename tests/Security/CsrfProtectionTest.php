@@ -12,11 +12,11 @@ use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 class CsrfProtectionTest extends TestCase
 {
@@ -138,8 +138,6 @@ class CsrfProtectionTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldRejectRequestWithoutCsrfToken(): void
     {
         // 準備測試資料
@@ -189,8 +187,6 @@ class CsrfProtectionTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldRejectRequestWithInvalidCsrfToken(): void
     {
         // 準備測試資料
@@ -240,8 +236,6 @@ class CsrfProtectionTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldAcceptRequestWithValidCsrfToken(): void
     {
         // 準備測試資料

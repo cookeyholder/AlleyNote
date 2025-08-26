@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Services\Security;
 
 use App\Domains\Security\Services\Logging\LoggingSecurityService;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 class LoggingSecurityServiceTest extends TestCase
@@ -72,8 +72,6 @@ class LoggingSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function sanitizesContextDataCorrectly(): void
     {
         $sensitiveData = [
@@ -103,8 +101,6 @@ class LoggingSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function appliesRequestWhitelistCorrectly(): void
     {
         $requestData = [
@@ -131,8 +127,6 @@ class LoggingSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function truncatesLongStrings(): void
     {
         $longString = str_repeat('A', 1500);
@@ -149,8 +143,6 @@ class LoggingSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function enrichesSecurityContext(): void
     {
         $_SESSION['user_id'] = 123;
@@ -171,8 +163,6 @@ class LoggingSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function enrichesRequestContext(): void
     {
         $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 Test Browser';
@@ -195,8 +185,6 @@ class LoggingSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function logsSecurityEventsCorrectly(): void
     {
         $this->expectNotToPerformAssertions();
@@ -209,8 +197,6 @@ class LoggingSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function logsRequestsWithWhitelist(): void
     {
         $requestData = [
@@ -226,8 +212,6 @@ class LoggingSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function handlesSensitiveFieldVariations(): void
     {
         $data = [
@@ -252,8 +236,6 @@ class LoggingSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function handlesEmptyAndNullValues(): void
     {
         $data = [
@@ -278,8 +260,6 @@ class LoggingSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function returnsLogStatistics(): void
     {
         $stats = $this->service->getLogStatistics();

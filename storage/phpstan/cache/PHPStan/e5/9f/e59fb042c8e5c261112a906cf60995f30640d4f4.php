@@ -50,5 +50,35 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
       ),
     ),
+    '/var/www/html/database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php' => 
+    array (
+      0 => '5d3f5e77fb4b666667f46a987ea7342edcc0f9b8',
+      1 => 
+      array (
+        0 => 'addtokenhashtorefreshtokenstable',
+      ),
+      2 => 
+      array (
+        0 => 'change',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/database/migrations/20250103000000_add_missing_columns_to_refresh_tokens.php' => 
+    array (
+      0 => '9b3431f1b512e8177aabf24e92b46b9d5e1e69c8',
+      1 => 
+      array (
+        0 => 'addmissingcolumnstorefreshtokens',
+      ),
+      2 => 
+      array (
+        0 => 'change',
+      ),
+      3 => 
+      array (
+      ),
+    ),
   ),
 ));

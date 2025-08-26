@@ -6,8 +6,8 @@ namespace Tests\Unit\Services\Security;
 
 use App\Domains\Auth\Services\SessionSecurityService;
 use App\Domains\User\Entities\User;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
 class SessionSecurityServiceTest extends TestCase
 {
@@ -36,8 +36,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function initializesSecureSessionInProduction(): void
     {
         $_ENV['APP_ENV'] = 'production';
@@ -52,8 +50,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function initializesSecureSessionInDevelopment(): void
     {
         $_ENV['APP_ENV'] = 'development';
@@ -65,8 +61,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function setsUserSessionWithUserAgentBinding(): void
     {
         $this->service->initializeSecureSession();
@@ -86,8 +80,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function validatesUserAgentCorrectly(): void
     {
         $this->service->initializeSecureSession();
@@ -103,8 +95,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function validatesSessionIpCorrectly(): void
     {
         $this->service->initializeSecureSession();
@@ -120,8 +110,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function performsComprehensiveSecurityCheck(): void
     {
         $this->service->initializeSecureSession();
@@ -139,8 +127,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function detectsUserAgentChange(): void
     {
         $this->service->initializeSecureSession();
@@ -157,8 +143,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function detectsIpChange(): void
     {
         $this->service->initializeSecureSession();
@@ -177,8 +161,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function handlesIpVerificationFlow(): void
     {
         $this->service->initializeSecureSession();
@@ -200,8 +182,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function detectsExpiredSession(): void
     {
         $this->service->initializeSecureSession();
@@ -215,8 +195,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function updatesActivityTime(): void
     {
         $this->service->initializeSecureSession();
@@ -232,8 +210,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function destroysSessionSecurely(): void
     {
         $this->service->initializeSecureSession();
@@ -246,8 +222,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function regeneratesSessionId(): void
     {
         $this->service->initializeSecureSession();
@@ -260,8 +234,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function handlesMissingSessionData(): void
     {
         $this->service->initializeSecureSession();
@@ -273,8 +245,6 @@ class SessionSecurityServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function handlesIpVerificationTimeout(): void
     {
         $this->service->initializeSecureSession();

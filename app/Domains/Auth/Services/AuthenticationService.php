@@ -84,13 +84,20 @@ final class AuthenticationService implements AuthenticationServiceInterface
             // 6. 儲存 refresh token 到資料庫
             $payload = $this->jwtTokenService->extractPayload($tokenPair->getRefreshToken());
 
-            $this->refreshTokenRepository->create(
+            $createResult = $this->refreshTokenRepository->create(
                 jti: $payload->getJti(),
                 userId: $userId,
                 tokenHash: hash('sha256', $tokenPair->getRefreshToken()),
                 expiresAt: new DateTime('@' . $payload->getExpiresAt()->getTimestamp()),
                 deviceInfo: $deviceInfo,
             );
+
+            if (!$createResult) {
+                throw new AuthenticationException(
+                    AuthenticationException::REASON_TOKEN_REFRESH_FAILED,
+                    'Failed to save refresh token to database',
+                );
+            }
 
             // 7. 更新使用者最後登入時間
             $this->userRepository->updateLastLogin($userId);
@@ -146,7 +153,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 sessionId: $newPayload->getJti(),
                 permissions: $request->scopes,
             );
-        } catch (InvalidTokenException|TokenExpiredException $e) {
+        } catch (InvalidTokenException | TokenExpiredException $e) {
             throw new AuthenticationException(
                 AuthenticationException::REASON_INVALID_REFRESH_TOKEN,
                 'Invalid refresh token: ' . $e->getMessage(),

@@ -5,7 +5,6 @@ namespace Tests\UI;
 class UserExperienceTest extends UITestCase
 {
     #[Test]
-
     public function shouldMeetAccessibilityStandards(): void
     {
         // 啟動瀏覽器
@@ -43,8 +42,6 @@ class UserExperienceTest extends UITestCase
     }
 
     #[Test]
-
-
     public function shouldProvideGoodUserInteraction(): void
     {
         // 啟動瀏覽器
@@ -67,8 +64,6 @@ class UserExperienceTest extends UITestCase
     }
 
     #[Test]
-
-
     public function shouldPerformWell(): void
     {
         // 啟動瀏覽器
@@ -88,8 +83,6 @@ class UserExperienceTest extends UITestCase
     }
 
     #[Test]
-
-
     public function shouldHandleErrors(): void
     {
         // 啟動瀏覽器

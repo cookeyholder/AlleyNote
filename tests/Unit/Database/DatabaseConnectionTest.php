@@ -4,8 +4,8 @@ namespace Tests\Unit\Database;
 
 use App\Infrastructure\Database\DatabaseConnection;
 use PDO;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
 class DatabaseConnectionTest extends TestCase
 {
@@ -16,8 +16,6 @@ class DatabaseConnectionTest extends TestCase
     }
 
     #[Test]
-
-
     public function createsSingletonPdoInstance(): void
     {
         $connection1 = DatabaseConnection::getInstance();
@@ -28,8 +26,6 @@ class DatabaseConnectionTest extends TestCase
     }
 
     #[Test]
-
-
     public function executesQuerySuccessfully(): void
     {
         $pdo = DatabaseConnection::getInstance();

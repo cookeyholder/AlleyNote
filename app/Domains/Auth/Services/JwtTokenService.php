@@ -67,9 +67,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $accessTokenExpiresAt = $now->modify('+' . $this->config->getAccessTokenTtl() . ' seconds');
             $refreshTokenExpiresAt = $now->modify('+' . $this->config->getRefreshTokenTtl() . ' seconds');
 
-            // 將 refresh token 儲存到資料庫
-            $this->storeRefreshToken($refreshToken, $userId, $deviceInfo, $refreshTokenExpiresAt);
-
             return new TokenPair(
                 accessToken: $accessToken,
                 refreshToken: $refreshToken,

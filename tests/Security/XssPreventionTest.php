@@ -12,11 +12,11 @@ use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 class XssPreventionTest extends TestCase
 {
@@ -131,8 +131,6 @@ class XssPreventionTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldEscapeHtmlInPostTitle(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
@@ -191,8 +189,6 @@ class XssPreventionTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldEscapeHtmlInPostContent(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
@@ -251,8 +247,6 @@ class XssPreventionTest extends TestCase
     }
 
     #[Test]
-
-
     public function shouldHandleEncodedXssAttempts(): void
     {
         // 準備編碼的 XSS 攻擊程式碼

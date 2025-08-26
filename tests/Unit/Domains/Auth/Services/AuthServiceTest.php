@@ -14,6 +14,7 @@ use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
 use App\Shared\Contracts\ValidatorInterface;
 use DateTimeImmutable;
+use Exception;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
@@ -504,7 +505,7 @@ class AuthServiceTest extends TestCase
         $this->jwtTokenService->shouldReceive('revokeToken')
             ->once()
             ->with($accessToken)
-            ->andThrow(new \Exception('Revocation failed'));
+            ->andThrow(new Exception('Revocation failed'));
 
         $result = $service->logout($accessToken, $deviceInfo);
 

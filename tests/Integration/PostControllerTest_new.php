@@ -12,11 +12,11 @@ use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Exceptions\NotFoundException;
 use InvalidArgumentException;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 class PostControllerTest extends TestCase
 {
@@ -92,8 +92,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function indexShouldReturnPaginatedPosts(): void
     {
         // Mock user_id attribute
@@ -140,8 +138,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function showShouldReturnPostDetails(): void
     {
         // Mock user_id attribute
@@ -179,8 +175,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function storeShouldCreateNewPost(): void
     {
         // Mock user_id attribute
@@ -218,8 +212,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function storeShouldReturn400WhenValidationFails(): void
     {
         // Mock user_id attribute
@@ -257,8 +249,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function updateShouldModifyExistingPost(): void
     {
         // Mock user_id attribute
@@ -288,8 +278,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function updateShouldReturn404WhenPostNotFound(): void
     {
         // Mock user_id attribute
@@ -327,8 +315,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function destroyShouldDeletePost(): void
     {
         // Mock user_id attribute
@@ -351,8 +337,6 @@ class PostControllerTest extends TestCase
     }
 
     #[Test]
-
-
     public function destroyShouldReturn404WhenPostNotFound(): void
     {
         // Mock user_id attribute

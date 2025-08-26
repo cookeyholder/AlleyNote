@@ -3,8 +3,8 @@
 namespace Tests\Unit\Services;
 
 use App\Infrastructure\Services\CacheService;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class CacheServiceTest extends TestCase
 {
@@ -17,8 +17,6 @@ class CacheServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function storeAndRetrieveData(): void
     {
         $key = 'test_key';
@@ -33,8 +31,6 @@ class CacheServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function handleConnectionFailure(): void
     {
         $key = 'test_key';
@@ -48,8 +44,6 @@ class CacheServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function handleConcurrentRequests(): void
     {
         $key = 'test_key';
@@ -69,8 +63,6 @@ class CacheServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function clearCache(): void
     {
         $result = $this->cacheService->clear();
@@ -79,8 +71,6 @@ class CacheServiceTest extends TestCase
     }
 
     #[Test]
-
-
     public function deleteSpecificKey(): void
     {
         $result = $this->cacheService->delete('test_key');
