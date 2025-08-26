@@ -385,13 +385,12 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $healthStatus = $this->tokenBlacklistService->getHealthStatus();
 
         // 驗證健康狀態包含預期資訊
-        $this->assertArrayHasKey('totalBlacklisted', $healthStatus);
-        $this->assertArrayHasKey('expiredCount', $healthStatus);
-        $this->assertArrayHasKey('activeCount', $healthStatus);
-        $this->assertArrayHasKey('oldestEntry', $healthStatus);
-        $this->assertArrayHasKey('newestEntry', $healthStatus);
+        $this->assertArrayHasKey('total_entries', $healthStatus);
+        $this->assertArrayHasKey('expired_entries', $healthStatus);
+        $this->assertArrayHasKey('active_entries', $healthStatus);
+        $this->assertArrayHasKey('healthy', $healthStatus);
 
-        $this->assertGreaterThanOrEqual(1, $healthStatus['totalBlacklisted']);
+        $this->assertGreaterThanOrEqual(1, $healthStatus['total_entries']);
     }
 
     /**

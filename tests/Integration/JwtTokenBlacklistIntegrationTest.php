@@ -182,10 +182,9 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
         // 2. 透過 Service 取得整體統計
         $stats = $this->tokenBlacklistService->getStatistics();
-        $this->assertArrayHasKey('total_blacklisted', $stats);
-        $this->assertArrayHasKey('expired_count', $stats);
-        $this->assertArrayHasKey('active_count', $stats);
-        $this->assertEquals(5, $stats['total_blacklisted']);
+        $this->assertArrayHasKey('total', $stats);
+        $this->assertArrayHasKey('size_info', $stats);
+        $this->assertEquals(5, $stats['total']);
 
         // 3. 透過 Repository 取得使用者統計
         $userStats = $this->tokenBlacklistRepository->getUserBlacklistStats(1);
@@ -194,9 +193,9 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
         // 4. 透過 Service 取得健康狀態
         $health = $this->tokenBlacklistService->getHealthStatus();
-        $this->assertArrayHasKey('totalBlacklisted', $health);
-        $this->assertArrayHasKey('expiredCount', $health);
-        $this->assertArrayHasKey('activeCount', $health);
+        $this->assertArrayHasKey('total_entries', $health);
+        $this->assertArrayHasKey('expired_entries', $health);
+        $this->assertArrayHasKey('active_entries', $health);
     }
 
     /**
