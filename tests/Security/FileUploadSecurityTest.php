@@ -259,8 +259,8 @@ class FileUploadSecurityTest extends TestCase
         // 我們改為驗證服務能夠正確實例化，並且檢查基本的驗證邏輯。
 
         $this->assertInstanceOf(
-            \App\Domains\Attachment\Services\AttachmentService::class,
-            $this->service
+            AttachmentService::class,
+            $this->service,
         );
 
         // 驗證服務的配置是否正確

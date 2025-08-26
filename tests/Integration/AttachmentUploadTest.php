@@ -15,15 +15,14 @@ use Exception;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 use Tests\TestCase;
 
-/**
- * @group failing
- */
+#[Group('failing')]
 class AttachmentUploadTest extends TestCase
 {
     use MockeryPHPUnitIntegration;

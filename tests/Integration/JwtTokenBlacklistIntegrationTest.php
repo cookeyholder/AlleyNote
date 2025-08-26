@@ -9,6 +9,8 @@ use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use DateTimeImmutable;
 use PDO;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -16,10 +18,9 @@ use Tests\TestCase;
  *
  * 測試 TokenBlacklistRepository 和 TokenBlacklistService 的整合協作
  * 驗證黑名單功能的端到端流程
- *
- * @group integration
- * @group auth
  */
+#[Group('integration')]
+#[Group('auth')]
 class JwtTokenBlacklistIntegrationTest extends TestCase
 {
     private TokenBlacklistRepository $tokenBlacklistRepository;
@@ -44,9 +45,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
     /**
      * 測試基本的黑名單功能整合.
-     *
-     * @test
      */
+    #[Test]
     public function testBasicBlacklistIntegration(): void
     {
         // 1. 建立黑名單項目
@@ -76,9 +76,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
     /**
      * 測試透過 Service 的黑名單操作.
-     *
-     * @test
      */
+    #[Test]
     public function testServiceBlacklistOperations(): void
     {
         // 1. 透過 Service 將 token 加入黑名單
@@ -107,9 +106,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
     /**
      * 測試批次操作整合.
-     *
-     * @test
      */
+    #[Test]
     public function testBatchOperationsIntegration(): void
     {
         // 1. 準備批次資料
@@ -154,9 +152,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
     /**
      * 測試統計功能整合.
-     *
-     * @test
      */
+    #[Test]
     public function testStatisticsIntegration(): void
     {
         // 1. 建立測試資料：不同使用者、不同狀態的 token
@@ -200,9 +197,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
     /**
      * 測試自動清理功能整合.
-     *
-     * @test
      */
+    #[Test]
     public function testAutoCleanupIntegration(): void
     {
         // 1. 建立過期和活躍的黑名單項目
@@ -241,9 +237,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
     /**
      * 測試查詢功能整合.
-     *
-     * @test
      */
+    #[Test]
     public function testQueryFunctionsIntegration(): void
     {
         // 1. 建立不同使用者的 token
@@ -298,9 +293,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
     /**
      * 測試錯誤處理和邊界情況
-     *
-     * @test
      */
+    #[Test]
     public function testErrorHandlingIntegration(): void
     {
         // 1. 測試重複新增同一個 JTI

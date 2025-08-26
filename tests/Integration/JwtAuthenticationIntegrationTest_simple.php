@@ -11,14 +11,14 @@ use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
 use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use DateTime;
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 /**
  * JWT 認證系統整合測試 - 簡化版本
  * 專注於測試各 Repository 和 Service 間的協作.
- *
- * @group integration
  */
+#[Group('integration')]
 class JwtAuthenticationIntegrationTest extends TestCase
 {
     private RefreshTokenRepository $refreshTokenRepository;
@@ -42,8 +42,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試 RefreshToken Repository 基本功能.
-     *
-     * @test
      */
     public function canManageRefreshTokens(): void
     {
@@ -83,8 +81,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試 TokenBlacklist Repository 基本功能.
-     *
-     * @test
      */
     public function canManageTokenBlacklist(): void
     {
@@ -127,8 +123,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試 TokenBlacklist Service 高層功能.
-     *
-     * @test
      */
     public function canUseTokenBlacklistService(): void
     {
@@ -172,8 +166,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試自動清理功能.
-     *
-     * @test
      */
     public function canAutoCleanupExpiredEntries(): void
     {
@@ -214,8 +206,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試批次操作功能.
-     *
-     * @test
      */
     public function canPerformBatchOperations(): void
     {

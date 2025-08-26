@@ -12,15 +12,15 @@ use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use App\Shared\Config\JwtConfig;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 /**
  * FirebaseJwtProvider 單元測試.
  *
  * 測試 Firebase JWT Provider 的所有功能，包括 token 產生、驗證、解析等
- *
- * @covers \App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
  */
+#[CoversClass(FirebaseJwtProvider::class)]
 final class FirebaseJwtProviderTest extends TestCase
 {
     private FirebaseJwtProvider $provider;

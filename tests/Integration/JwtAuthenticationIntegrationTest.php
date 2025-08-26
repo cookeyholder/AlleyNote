@@ -30,14 +30,15 @@ use DateTimeImmutable;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
  * JWT 認證系統整合測試
  * 驗證各元件間的協作與端到端流程.
- *
- * @group integration
  */
+#[Group('integration')]
 class JwtAuthenticationIntegrationTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
@@ -97,9 +98,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試完整的登入流程.
-     *
-     * @test
      */
+    #[Test]
     public function canPerformCompleteLoginFlow(): void
     {
         // 準備登入請求
@@ -136,9 +136,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試 Token 刷新流程.
-     *
-     * @test
      */
+    #[Test]
     public function canRefreshTokensSuccessfully(): void
     {
         // 先進行登入獲取 Token
@@ -183,9 +182,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試登出流程與 Token 黑名單.
-     *
-     * @test
      */
+    #[Test]
     public function canLogoutAndBlacklistTokens(): void
     {
         // 進行登入
@@ -222,9 +220,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試多設備登入管理.
-     *
-     * @test
      */
+    #[Test]
     public function canManageMultipleDeviceLogins(): void
     {
         $loginRequest = new LoginRequestDTO(
@@ -273,9 +270,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試無效憑證登入.
-     *
-     * @test
      */
+    #[Test]
     public function canHandleInvalidCredentials(): void
     {
         $loginRequest = new LoginRequestDTO(
@@ -315,9 +311,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試黑名單自動清理功能.
-     *
-     * @test
      */
+    #[Test]
     public function canCleanupExpiredBlacklistEntries(): void
     {
         // 建立已過期的黑名單條目
@@ -356,9 +351,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試系統健康檢查.
-     *
-     * @test
      */
+    #[Test]
     public function canPerformHealthCheck(): void
     {
         // 建立一些測試資料

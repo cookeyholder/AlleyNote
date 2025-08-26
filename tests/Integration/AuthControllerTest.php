@@ -6,27 +6,29 @@ namespace Tests\Integration;
 
 use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use AlleyNote\Domains\Auth\DTOs\LoginResponseDTO;
 use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
+use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
 use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
 
-/**
- * @group integration
- * @group skip
- */
+#[Group('integration')]
+#[Group('skip')]
 class AuthControllerTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
@@ -202,28 +204,28 @@ class AuthControllerTest extends TestCase
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
         // 模擬 AuthenticationService 的成功回應
-        $accessTokenExpiresAt = new \DateTimeImmutable('+1 hour');
-        $refreshTokenExpiresAt = new \DateTimeImmutable('+30 days');
+        $accessTokenExpiresAt = new DateTimeImmutable('+1 hour');
+        $refreshTokenExpiresAt = new DateTimeImmutable('+30 days');
 
         // 使用有效的 JWT 格式（假的但格式正確）
         $fakeAccessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6ImFjY2VzcyJ9.fake-signature';
         $fakeRefreshToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6InJlZnJlc2gifQ.fake-signature';
 
-        $mockTokenPair = new \AlleyNote\Domains\Auth\ValueObjects\TokenPair(
+        $mockTokenPair = new TokenPair(
             accessToken: $fakeAccessToken,
             refreshToken: $fakeRefreshToken,
             accessTokenExpiresAt: $accessTokenExpiresAt,
             refreshTokenExpiresAt: $refreshTokenExpiresAt,
-            tokenType: 'Bearer'
+            tokenType: 'Bearer',
         );
 
-        $mockLoginResponse = new \AlleyNote\Domains\Auth\DTOs\LoginResponseDTO(
+        $mockLoginResponse = new LoginResponseDTO(
             tokens: $mockTokenPair,
             userId: 1,
             userEmail: 'test@example.com',
             expiresAt: $accessTokenExpiresAt->getTimestamp(),
             sessionId: 'test-session-id',
-            permissions: ['read', 'write']
+            permissions: ['read', 'write'],
         );
 
         $this->authenticationService->shouldReceive('login')

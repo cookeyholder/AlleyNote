@@ -12,8 +12,6 @@ use DateTime;
  *
  * 定義refresh token的資料存取操作，包含建立、查詢、更新、刪除等功能。
  * 負責管理refresh token的持久化儲存和生命週期管理。
- *
- * @package AlleyNote\Domains\Auth\Contracts
  */
 interface RefreshTokenRepositoryInterface
 {
