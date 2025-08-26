@@ -328,7 +328,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
-            ->with([$userId]); // 不應該包含時間參數
+            ->with([$userId, RefreshToken::STATUS_ACTIVE]); // 現在包含狀態參數
 
         $this->mockStatement
             ->expects($this->once())
@@ -356,7 +356,7 @@ final class RefreshTokenRepositoryTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) use ($userId) {
-                return count($params) === 2 && $params[0] === $userId;
+                return count($params) === 3 && $params[0] === $userId && $params[1] === RefreshToken::STATUS_ACTIVE;
             }));
 
         $this->mockStatement
