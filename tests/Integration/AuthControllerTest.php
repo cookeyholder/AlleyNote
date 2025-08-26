@@ -6,6 +6,7 @@ namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\AuthController;
 use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
 use App\Shared\Contracts\ValidatorInterface;
@@ -29,6 +30,8 @@ class AuthControllerTest extends TestCase
 
     private AuthenticationServiceInterface|MockInterface $authenticationService;
 
+    private JwtTokenServiceInterface|MockInterface $jwtTokenService;
+
     private ValidatorInterface|MockInterface $validator;
 
     private ServerRequestInterface|MockInterface $request;
@@ -42,6 +45,7 @@ class AuthControllerTest extends TestCase
         parent::setUp();
         $this->authService = Mockery::mock(AuthService::class);
         $this->authenticationService = Mockery::mock(AuthenticationServiceInterface::class);
+        $this->jwtTokenService = Mockery::mock(JwtTokenServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
 
         // 設置 Request Mock
@@ -60,27 +64,22 @@ class AuthControllerTest extends TestCase
         // 設定預設的 user_id 屬性
         $this->request->shouldReceive('getAttribute')
             ->with('user_id')
-            ->andReturn(1)
-            ->byDefault();
+            ->andReturn(1);
 
         // 設定 validator 預設行為
         $this->validator->shouldReceive('validateOrFail')
             ->andReturnUsing(function ($data, $rules) {
                 return $data; // 返回原始數據作為驗證通過的數據
-            })
-            ->byDefault();
+            });
 
         $this->validator->shouldReceive('addRule')
-            ->andReturnNull()
-            ->byDefault();
+            ->andReturnNull();
 
         $this->validator->shouldReceive('addMessage')
-            ->andReturnNull()
-            ->byDefault();
+            ->andReturnNull();
 
         $this->validator->shouldReceive('stopOnFirstFailure')
-            ->andReturn($this->validator)
-            ->byDefault();
+            ->andReturn($this->validator);
 
         $this->response->shouldReceive('getStatusCode')->andReturnUsing(function () {
             return $this->statusCode;
@@ -132,7 +131,7 @@ class AuthControllerTest extends TestCase
             ]);
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -167,7 +166,7 @@ class AuthControllerTest extends TestCase
         $this->authService->shouldNotReceive('register');
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -199,7 +198,7 @@ class AuthControllerTest extends TestCase
             ]);
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應
@@ -226,7 +225,7 @@ class AuthControllerTest extends TestCase
             ->andThrow(new InvalidArgumentException('無效的憑證'));
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應 - 當 AuthService 拋出 InvalidArgumentException 時，控制器返回 400
@@ -239,7 +238,7 @@ class AuthControllerTest extends TestCase
         // logout 方法不需要調用 AuthService，直接返回成功響應
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
         $response = $controller->logout($this->request, $this->response);
 
         // 驗證回應
@@ -254,6 +253,6 @@ class AuthControllerTest extends TestCase
     public function getUserInfoSuccessfully(): void
     {
         // getUserInfo 方法已經在 BaseController 中實現，此處測試直接使用默認行為
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
     }
 }

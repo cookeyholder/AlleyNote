@@ -255,6 +255,47 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     }
 
     /**
+     * 根據 token 類型查找項目.
+     *
+     * @param string $tokenType token 類型
+     * @param int|null $limit 限制數量，null 時不限制
+     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     */
+    public function findByTokenType(string $tokenType, ?int $limit = null): array
+    {
+        try {
+            $sql = '
+                SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
+                FROM token_blacklist 
+                WHERE token_type = :token_type
+                ORDER BY blacklisted_at DESC
+            ';
+
+            if ($limit !== null) {
+                $sql .= ' LIMIT :limit';
+            }
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue('token_type', $tokenType, PDO::PARAM_STR);
+
+            if ($limit !== null) {
+                $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+            }
+
+            $stmt->execute();
+
+            $entries = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $entries[] = $this->createEntryFromRow($row);
+            }
+
+            return $entries;
+        } catch (PDOException) {
+            return [];
+        }
+    }
+
+    /**
      * 根據黑名單原因查找項目.
      *
      * @param string $reason 黑名單原因

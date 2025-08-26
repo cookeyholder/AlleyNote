@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Auth\Jwt;
 
+use AlleyNote\Domains\Auth\Contracts\JwtProviderInterface;
 use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
 use AlleyNote\Domains\Auth\Exceptions\JwtConfigurationException;
 use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
@@ -24,7 +25,7 @@ use UnexpectedValueException;
  *
  * 封裝 Firebase JWT 函式庫，提供 RS256 演算法的 JWT token 產生、驗證、解析功能
  */
-final class FirebaseJwtProvider
+final class FirebaseJwtProvider implements JwtProviderInterface
 {
     private JwtConfig $config;
 

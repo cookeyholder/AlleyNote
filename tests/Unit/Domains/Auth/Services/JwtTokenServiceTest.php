@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Services;
 
+use AlleyNote\Domains\Auth\Contracts\JwtProviderInterface;
 use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
@@ -29,7 +30,8 @@ final class JwtTokenServiceTest extends TestCase
 {
     private JwtTokenService $service;
 
-    private FirebaseJwtProvider $jwtProvider;
+    /** @var MockObject&JwtProviderInterface */
+    private MockObject $mockJwtProvider;
 
     /** @var MockObject&RefreshTokenRepositoryInterface */
     private MockObject $mockRefreshTokenRepository;
@@ -45,13 +47,13 @@ final class JwtTokenServiceTest extends TestCase
     {
         parent::setUp();
 
+        $this->mockJwtProvider = $this->createMock(JwtProviderInterface::class);
         $this->mockRefreshTokenRepository = $this->createMock(RefreshTokenRepositoryInterface::class);
         $this->mockBlacklistRepository = $this->createMock(TokenBlacklistRepositoryInterface::class);
         $this->config = new JwtConfig();
-        $this->jwtProvider = new FirebaseJwtProvider($this->config);
 
         $this->service = new JwtTokenService(
-            $this->jwtProvider,
+            $this->mockJwtProvider,
             $this->mockRefreshTokenRepository,
             $this->mockBlacklistRepository,
             $this->config,
@@ -72,6 +74,18 @@ final class JwtTokenServiceTest extends TestCase
         // Arrange
         $userId = 123;
         $customClaims = ['role' => 'user'];
+
+        $this->mockJwtProvider
+            ->expects($this->once())
+            ->method('parseTokenUnsafe')
+            ->willReturn([
+                'jti' => 'test-refresh-jti',
+                'sub' => (string) $userId,
+                'iss' => 'test-issuer',
+                'aud' => 'test-audience',
+                'iat' => time(),
+                'exp' => time() + 3600,
+            ]);
 
         $this->mockRefreshTokenRepository
             ->expects($this->once())

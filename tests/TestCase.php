@@ -184,9 +184,20 @@ abstract class TestCase extends BaseTestCase
                 user_id INTEGER NOT NULL,
                 device_id TEXT,
                 device_name TEXT,
+                device_type TEXT,
+                user_agent TEXT,
+                ip_address TEXT,
+                platform TEXT,
+                browser TEXT,
                 expires_at TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
+                token_hash TEXT,
+                status TEXT NOT NULL DEFAULT "active",
+                revoked_at TEXT,
+                revoked_reason TEXT,
+                last_used_at TEXT,
+                parent_token_jti TEXT,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             )
         ');

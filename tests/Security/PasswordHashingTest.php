@@ -11,6 +11,7 @@ use App\Domains\Auth\Services\AuthService;
 use App\Shared\Contracts\ValidatorInterface;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\MockInterface;
 use PDO;
 use Tests\TestCase;
 
@@ -20,9 +21,9 @@ class PasswordHashingTest extends TestCase
 
     protected UserRepository $userRepository;
 
-    protected PasswordSecurityServiceInterface $passwordService;
+    protected PasswordSecurityServiceInterface|MockInterface $passwordService;
 
-    protected ValidatorInterface $validator;
+    protected ValidatorInterface|MockInterface $validator;
 
     protected PDO $db;
 
@@ -110,7 +111,11 @@ class PasswordHashingTest extends TestCase
         $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
-        $user = $this->authService->register($dto);
+        $result = $this->authService->register($dto);
+
+        // 確認註冊成功並取得用戶資料
+        $this->assertTrue($result['success']);
+        $user = $result['user'];
 
         // 從資料庫取得雜湊後的密碼
         $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
@@ -140,7 +145,11 @@ class PasswordHashingTest extends TestCase
         $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
-        $user = $this->authService->register($dto);
+        $result = $this->authService->register($dto);
+
+        // 確認註冊成功並取得用戶資料
+        $this->assertTrue($result['success']);
+        $user = $result['user'];
 
         // 從資料庫取得雜湊後的密碼
         $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
@@ -201,7 +210,11 @@ class PasswordHashingTest extends TestCase
         $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
-        $user = $this->authService->register($dto);
+        $result = $this->authService->register($dto);
+
+        // 確認註冊成功並取得用戶資料
+        $this->assertTrue($result['success']);
+        $user = $result['user'];
 
         // 模擬使用者嘗試更新密碼為相同的密碼
         $this->expectException(InvalidArgumentException::class);

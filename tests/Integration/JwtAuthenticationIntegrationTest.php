@@ -423,6 +423,11 @@ class JwtAuthenticationIntegrationTest extends TestCase
                 return null;
             });
 
+        // 設定更新最後登入時間
+        $this->userRepository->shouldReceive('updateLastLogin')
+            ->with(1)
+            ->andReturn(true);
+
         // 其他可能需要的方法
         $this->userRepository->shouldReceive('findById')
             ->andReturnUsing(function ($id) {

@@ -363,6 +363,7 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
                 blacklisted_at DATETIME NOT NULL,
                 reason VARCHAR(100) NOT NULL,
                 device_id VARCHAR(255),
+                metadata TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )

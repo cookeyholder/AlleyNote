@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AlleyNote\Domains\Auth\Services;
 
+use AlleyNote\Domains\Auth\Contracts\JwtProviderInterface;
 use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
@@ -13,10 +14,10 @@ use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
-use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use App\Shared\Config\JwtConfig;
 use DateTime;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Throwable;
 
 /**
@@ -28,7 +29,7 @@ use Throwable;
 final class JwtTokenService implements JwtTokenServiceInterface
 {
     public function __construct(
-        private readonly FirebaseJwtProvider $jwtProvider,
+        private readonly JwtProviderInterface $jwtProvider,
         private readonly RefreshTokenRepositoryInterface $refreshTokenRepository,
         private readonly TokenBlacklistRepositoryInterface $blacklistRepository,
         private readonly JwtConfig $config,
@@ -308,6 +309,14 @@ final class JwtTokenService implements JwtTokenServiceInterface
     private function createJwtPayloadFromArray(array $payload): JwtPayload
     {
         try {
+            // 確保必要的鍵存在
+            $requiredKeys = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp'];
+            foreach ($requiredKeys as $key) {
+                if (!isset($payload[$key])) {
+                    throw new InvalidArgumentException("Missing required payload key: {$key}");
+                }
+            }
+
             return new JwtPayload(
                 jti: $payload['jti'],
                 sub: $payload['sub'],
