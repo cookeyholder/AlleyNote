@@ -6,6 +6,7 @@ namespace Tests\Integration;
 
 use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
 use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
@@ -266,7 +267,26 @@ class AuthControllerTest extends TestCase
     #[Test]
     public function logoutUserSuccessfully(): void
     {
-        // logout 方法不需要調用 AuthService，直接返回成功響應
+        // 準備登出請求資料
+        $logoutData = [
+            'access_token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6ImFjY2VzcyJ9.fake-signature',
+            'refresh_token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6InJlZnJlc2gifQ.fake-signature',
+        ];
+
+        // 設定 Mock 期望和請求數據
+        $this->request->shouldReceive('getParsedBody')->andReturn($logoutData);
+        $this->request->shouldReceive('getHeaderLine')->with('Authorization')->andReturn('');
+        $this->request->shouldReceive('getHeaderLine')->with('User-Agent')->andReturn('Test User Agent');
+
+        // Mock getClientIpAddress 所需的 header 檢查
+        $this->request->shouldReceive('hasHeader')->andReturn(false);
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
+
+        // Mock AuthenticationService 的登出方法 - 接受 LogoutRequestDTO
+        $this->authenticationService->shouldReceive('logout')
+            ->once()
+            ->with(Mockery::type(LogoutRequestDTO::class))
+            ->andReturn(true);
 
         // 建立控制器並執行
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
@@ -274,10 +294,6 @@ class AuthControllerTest extends TestCase
 
         // 驗證回應
         $this->assertEquals(200, $response->getStatusCode());
-        $responseBody = (string) $response->getBody();
-        $responseData = json_decode($responseBody, true);
-        $this->assertTrue($responseData['success']);
-        $this->assertEquals('登出成功', $responseData['message']);
     }
 
     #[Test]

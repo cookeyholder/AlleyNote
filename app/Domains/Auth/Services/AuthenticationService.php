@@ -145,13 +145,13 @@ final class AuthenticationService implements AuthenticationServiceInterface
                     $this->refreshTokenRepository->revokeAllByUserId($payload->getUserId(), 'logout_all');
                 } else {
                     // 只撤銷當前 refresh token
-                    $this->refreshTokenRepository->revoke($payload->getJti(), 'logout');
+                    $this->refreshTokenRepository->revoke($payload->getJti(), 'user_logout');
                 }
             }
 
             // 撤銷 access token（加入黑名單）
             if ($request->accessToken !== '') {
-                $this->jwtTokenService->revokeToken($request->accessToken, 'logout');
+                $this->jwtTokenService->revokeToken($request->accessToken, 'user_logout');
             }
 
             return true;

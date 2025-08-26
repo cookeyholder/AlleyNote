@@ -110,8 +110,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     public function findByUserId(int $userId, bool $includeExpired = false): array
     {
         try {
-            $sql = 'SELECT * FROM ' . self::TABLE_NAME . ' WHERE user_id = ?';
-            $params = [$userId];
+            $sql = 'SELECT * FROM ' . self::TABLE_NAME . ' WHERE user_id = ? AND status = ?';
+            $params = [$userId, RefreshToken::STATUS_ACTIVE];
 
             if (!$includeExpired) {
                 $sql .= ' AND expires_at > ?';

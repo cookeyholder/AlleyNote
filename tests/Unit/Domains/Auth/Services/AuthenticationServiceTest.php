@@ -351,13 +351,13 @@ final class AuthenticationServiceTest extends TestCase
         $this->refreshTokenRepository
             ->expects($this->once())
             ->method('revoke')
-            ->with('test-jti', 'logout')
+            ->with('test-jti', 'user_logout')
             ->willReturn(true);
 
         $this->jwtTokenService
             ->expects($this->once())
             ->method('revokeToken')
-            ->with('access-token', 'logout')
+            ->with('access-token', 'user_logout')
             ->willReturn(true);
 
         // Act
@@ -394,7 +394,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->jwtTokenService
             ->expects($this->once())
             ->method('revokeToken')
-            ->with('access-token', 'logout')
+            ->with('access-token', 'user_logout')
             ->willReturn(true);
 
         // Act
@@ -416,7 +416,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->jwtTokenService
             ->expects($this->once())
             ->method('revokeToken')
-            ->with('access-token', 'logout')
+            ->with('access-token', 'user_logout')
             ->willReturn(true);
 
         // Act

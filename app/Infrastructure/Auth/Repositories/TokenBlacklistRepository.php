@@ -577,7 +577,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     {
         try {
             if ($beforeDate === null) {
-                $sql = 'DELETE FROM token_blacklist WHERE expires_at <= NOW()';
+                $sql = 'DELETE FROM token_blacklist WHERE expires_at <= datetime("now")';
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->execute();
             } else {
@@ -708,7 +708,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT 
-                    COUNT(*) as total,
+                    COUNT(*) as total_blacklisted,
                     COUNT(CASE WHEN token_type = "access" THEN 1 END) as access_tokens,
                     COUNT(CASE WHEN token_type = "refresh" THEN 1 END) as refresh_tokens,
                     COUNT(CASE WHEN reason IN ("security_breach", "suspicious_activity", "device_lost", "invalid_signature") THEN 1 END) as security_related,
@@ -721,7 +721,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute(['user_id' => $userId]);
 
             return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
-                'total' => 0,
+                'total_blacklisted' => 0,
                 'access_tokens' => 0,
                 'refresh_tokens' => 0,
                 'security_related' => 0,
@@ -729,7 +729,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             ];
         } catch (PDOException) {
             return [
-                'total' => 0,
+                'total_blacklisted' => 0,
                 'access_tokens' => 0,
                 'refresh_tokens' => 0,
                 'security_related' => 0,

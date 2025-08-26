@@ -299,8 +299,11 @@ final class FirebaseJwtProviderTest extends TestCase
     {
         $token = $this->provider->generateAccessToken(['sub' => 'user-123']);
 
-        // 修改 token 的最後一個字元以破壞簽名
-        $corruptedToken = substr($token, 0, -1) . 'X';
+        // 更大幅度地破壞簽名 - 將整個簽名部分替換為無效的簽名
+        $parts = explode('.', $token);
+        $parts[2] = 'invalid-signature-12345'; // 完全替換簽名部分
+
+        $corruptedToken = implode('.', $parts);
 
         $this->expectException(TokenValidationException::class);
 
