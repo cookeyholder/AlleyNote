@@ -9,6 +9,7 @@ use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
 use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
+use DateTime;
 use DateTimeImmutable;
 use Tests\TestCase;
 
@@ -268,9 +269,14 @@ class JwtAuthenticationIntegrationTest extends TestCase
      */
     private function createTestUser(): void
     {
-        $this->db->exec("
+        $now = new DateTime()->format('Y-m-d H:i:s');
+        $stmt = $this->db->prepare("
             INSERT INTO users (id, username, email, password, status, created_at, updated_at)
-            VALUES (1, 'testuser', 'test@example.com', 'password123', 1, datetime('now'), datetime('now'))
+            VALUES (1, 'testuser', 'test@example.com', 'password123', 1, :created_at, :updated_at)
         ");
+        $stmt->execute([
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
     }
 }

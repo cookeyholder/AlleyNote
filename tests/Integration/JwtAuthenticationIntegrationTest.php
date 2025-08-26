@@ -25,6 +25,7 @@ use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use App\Shared\Config\JwtConfig;
+use DateTime;
 use DateTimeImmutable;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -478,10 +479,15 @@ class JwtAuthenticationIntegrationTest extends TestCase
      */
     private function createTestUser(): void
     {
-        $this->db->exec("
+        $now = new DateTime()->format('Y-m-d H:i:s');
+        $stmt = $this->db->prepare("
             INSERT INTO users (id, username, email, password, status, created_at, updated_at)
-            VALUES (1, 'testuser', 'test@example.com', 'password123', 1, datetime('now'), datetime('now'))
+            VALUES (1, 'testuser', 'test@example.com', 'password123', 1, :created_at, :updated_at)
         ");
+        $stmt->execute([
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
     }
 
     /**

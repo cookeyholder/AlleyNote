@@ -82,15 +82,19 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function isBlacklisted(string $jti): bool
     {
         try {
+            $currentTime = new DateTime();
             $sql = '
                 SELECT COUNT(*) 
                 FROM token_blacklist 
                 WHERE jti = :jti 
-                AND expires_at > NOW()
+                AND expires_at > :current_time
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['jti' => $jti]);
+            $stmt->execute([
+                'jti' => $jti,
+                'current_time' => $currentTime->format('Y-m-d H:i:s'),
+            ]);
 
             return (int) $stmt->fetchColumn() > 0;
         } catch (PDOException) {
@@ -107,16 +111,20 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function isTokenHashBlacklisted(string $tokenHash): bool
     {
         try {
+            $currentTime = new DateTime();
             // 假設我們在 metadata 中儲存 token_hash
             $sql = '
                 SELECT COUNT(*) 
                 FROM token_blacklist 
                 WHERE JSON_EXTRACT(metadata, "$.token_hash") = :token_hash 
-                AND expires_at > NOW()
+                AND expires_at > :current_time
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['token_hash' => $tokenHash]);
+            $stmt->execute([
+                'token_hash' => $tokenHash,
+                'current_time' => $currentTime->format('Y-m-d H:i:s'),
+            ]);
 
             return (int) $stmt->fetchColumn() > 0;
         } catch (PDOException) {
@@ -408,16 +416,18 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         }
 
         try {
+            $currentTime = new DateTime();
             $placeholders = str_repeat('?,', count($jtis) - 1) . '?';
             $sql = "
                 SELECT jti 
                 FROM token_blacklist 
                 WHERE jti IN ({$placeholders}) 
-                AND expires_at > NOW()
+                AND expires_at > ?
             ";
 
+            $params = array_merge($jtis, [$currentTime->format('Y-m-d H:i:s')]);
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute($jtis);
+            $stmt->execute($params);
 
             $blacklistedJtis = $stmt->fetchAll(PDO::FETCH_COLUMN);
             $blacklistedSet = array_flip($blacklistedJtis);
@@ -470,13 +480,15 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function blacklistAllUserTokens(int $userId, string $reason, ?string $excludeJti = null): int
     {
         try {
+            $currentTime = new DateTime();
+
             // 先查找該使用者所有的 refresh token
             $selectSql = '
                 SELECT jti 
                 FROM refresh_tokens 
                 WHERE user_id = :user_id 
                 AND revoked = 0 
-                AND expires_at > NOW()
+                AND expires_at > :current_time
             ';
 
             if ($excludeJti !== null) {
@@ -484,7 +496,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             $stmt = $this->pdo->prepare($selectSql);
-            $params = ['user_id' => $userId];
+            $params = [
+                'user_id' => $userId,
+                'current_time' => $currentTime->format('Y-m-d H:i:s'),
+            ];
             if ($excludeJti !== null) {
                 $params['exclude_jti'] = $excludeJti;
             }
@@ -527,17 +542,22 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function blacklistAllDeviceTokens(string $deviceId, string $reason): int
     {
         try {
+            $currentTime = new DateTime();
+
             // 查找該裝置所有的 refresh token
             $selectSql = '
                 SELECT jti, user_id 
                 FROM refresh_tokens 
                 WHERE device_id = :device_id 
                 AND revoked = 0 
-                AND expires_at > NOW()
+                AND expires_at > :current_time
             ';
 
             $stmt = $this->pdo->prepare($selectSql);
-            $stmt->execute(['device_id' => $deviceId]);
+            $stmt->execute([
+                'device_id' => $deviceId,
+                'current_time' => $currentTime->format('Y-m-d H:i:s'),
+            ]);
 
             $tokens = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if (empty($tokens)) {
@@ -577,9 +597,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     {
         try {
             if ($beforeDate === null) {
-                $sql = 'DELETE FROM token_blacklist WHERE expires_at <= datetime("now")';
+                $currentTime = new DateTime();
+                $sql = 'DELETE FROM token_blacklist WHERE expires_at <= :current_time';
                 $stmt = $this->pdo->prepare($sql);
-                $stmt->execute();
+                $stmt->execute(['current_time' => $currentTime->format('Y-m-d H:i:s')]);
             } else {
                 $sql = 'DELETE FROM token_blacklist WHERE expires_at <= :before_date';
                 $stmt = $this->pdo->prepare($sql);
@@ -611,13 +632,16 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function cleanupOldEntries(int $days = 90): int
     {
         try {
+            $cutoffDate = new DateTime();
+            $cutoffDate->modify("-{$days} days");
+
             $sql = '
                 DELETE FROM token_blacklist 
-                WHERE blacklisted_at <= DATE_SUB(NOW(), INTERVAL :days DAY)
+                WHERE blacklisted_at <= :cutoff_date
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['days' => $days]);
+            $stmt->execute(['cutoff_date' => $cutoffDate->format('Y-m-d H:i:s')]);
 
             return $stmt->rowCount();
         } catch (PDOException) {
@@ -979,16 +1003,22 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function getSizeInfo(): array
     {
         try {
+            $currentTime = new DateTime();
+            $formattedTime = $currentTime->format('Y-m-d H:i:s');
+
             $sql = '
                 SELECT 
                     COUNT(*) as total_entries,
-                    COUNT(CASE WHEN expires_at > NOW() THEN 1 END) as active_entries,
-                    COUNT(CASE WHEN expires_at <= NOW() THEN 1 END) as expired_entries
+                    COUNT(CASE WHEN expires_at > :current_time_1 THEN 1 END) as active_entries,
+                    COUNT(CASE WHEN expires_at <= :current_time_2 THEN 1 END) as expired_entries
                 FROM token_blacklist
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
+            $stmt->execute([
+                'current_time_1' => $formattedTime,
+                'current_time_2' => $formattedTime,
+            ]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             $totalEntries = (int) $result['total_entries'];
