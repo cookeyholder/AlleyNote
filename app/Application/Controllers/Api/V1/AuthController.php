@@ -7,7 +7,7 @@ namespace App\Application\Controllers\Api\V1;
 use AlleyNote\Domains\Auth\DTOs\LoginRequestDTO;
 use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
 use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
-use AlleyNote\Domains\Auth\Services\AuthenticationService;
+use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
@@ -34,7 +34,7 @@ class AuthController extends BaseController
 {
     public function __construct(
         private AuthService $authService,
-        private AuthenticationService $authenticationService,
+        private AuthenticationServiceInterface $authenticationService,
         private ValidatorInterface $validator,
     ) {}
 

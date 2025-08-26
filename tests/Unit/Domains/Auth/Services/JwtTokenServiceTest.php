@@ -62,7 +62,7 @@ final class JwtTokenServiceTest extends TestCase
             deviceName: 'Test Device',
             ipAddress: '192.168.1.100',
             userAgent: 'Test User Agent',
-            platform: 'web',
+            platform: 'Linux',
             browser: 'Chrome',
         );
     }
