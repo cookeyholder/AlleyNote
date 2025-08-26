@@ -1092,7 +1092,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/TestCase.php' => 
     array (
-      0 => '9f64e6176eaa977a5c9ee64042f31f0209fbd5ed',
+      0 => 'bba23e8568307bc719078467928b5b819a743fa7',
       1 => 
       array (
         0 => 'tests\\testcase',
@@ -2968,6 +2968,77 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         44 => 'tests\\unit\\domains\\auth\\services\\testgethealthstatusunhealthywithrecommendations',
         45 => 'tests\\unit\\domains\\auth\\services\\testgethealthstatuswithrepositoryexception',
         46 => 'tests\\unit\\domains\\auth\\services\\testservicewithoutlogger',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Integration/JwtAuthenticationIntegrationTest.php' => 
+    array (
+      0 => 'ce0c612b186ab3d58b3e881779df57bdd0a7ba33',
+      1 => 
+      array (
+        0 => 'tests\\integration\\jwtauthenticationintegrationtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\integration\\setup',
+        1 => 'tests\\integration\\canperformcompleteloginflow',
+        2 => 'tests\\integration\\canrefreshtokenssuccessfully',
+        3 => 'tests\\integration\\canlogoutandblacklisttokens',
+        4 => 'tests\\integration\\canmanagemultipledevicelogins',
+        5 => 'tests\\integration\\canhandleinvalidcredentials',
+        6 => 'tests\\integration\\cancleanupexpiredblacklistentries',
+        7 => 'tests\\integration\\canperformhealthcheck',
+        8 => 'tests\\integration\\createjwttokenservice',
+        9 => 'tests\\integration\\setupuserrepositorymock',
+        10 => 'tests\\integration\\createtestuser',
+        11 => 'tests\\integration\\generatetestprivatekey',
+        12 => 'tests\\integration\\generatetestpublickey',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Integration/JwtAuthenticationIntegrationTest_simple.php' => 
+    array (
+      0 => 'f6307ea56938319630903f59bbde322c78e1c2df',
+      1 => 
+      array (
+        0 => 'tests\\integration\\jwtauthenticationintegrationtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\integration\\setup',
+        1 => 'tests\\integration\\canmanagerefreshtokens',
+        2 => 'tests\\integration\\canmanagetokenblacklist',
+        3 => 'tests\\integration\\canusetokenblacklistservice',
+        4 => 'tests\\integration\\canautocleanupexpiredentries',
+        5 => 'tests\\integration\\canperformbatchoperations',
+        6 => 'tests\\integration\\createtestuser',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Integration/JwtTokenBlacklistIntegrationTest.php' => 
+    array (
+      0 => '1ac5cdc0e5e0c43be14555b7498debe30c76a12f',
+      1 => 
+      array (
+        0 => 'tests\\integration\\jwttokenblacklistintegrationtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\integration\\setup',
+        1 => 'tests\\integration\\testbasicblacklistintegration',
+        2 => 'tests\\integration\\testserviceblacklistoperations',
+        3 => 'tests\\integration\\testbatchoperationsintegration',
+        4 => 'tests\\integration\\teststatisticsintegration',
+        5 => 'tests\\integration\\testautocleanupintegration',
+        6 => 'tests\\integration\\testqueryfunctionsintegration',
+        7 => 'tests\\integration\\testerrorhandlingintegration',
+        8 => 'tests\\integration\\createtokenblacklisttable',
       ),
       3 => 
       array (

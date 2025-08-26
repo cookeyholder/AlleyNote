@@ -167,7 +167,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 將 token 加入黑名單
             $blacklistEntry = new TokenBlacklistEntry(
                 jti: $payload->getJti(),
-                tokenType: $payload->getCustomClaim('type', 'unknown'),
+                tokenType: $payload->getCustomClaim('type') ?? 'unknown',
                 expiresAt: $payload->getExpiresAt(),
                 blacklistedAt: new DateTimeImmutable(),
                 reason: $reason,

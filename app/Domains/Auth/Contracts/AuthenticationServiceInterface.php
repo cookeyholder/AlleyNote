@@ -11,6 +11,7 @@ use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
 use AlleyNote\Domains\Auth\DTOs\RefreshResponseDTO;
 use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
+use Exception;
 
 /**
  * 認證服務介面.
@@ -35,7 +36,7 @@ interface AuthenticationServiceInterface
      * @param LoginRequestDTO $request 登入請求資料
      * @param DeviceInfo $deviceInfo 裝置資訊
      * @return LoginResponseDTO 登入回應（包含權杖對）
-     * @throws AuthenticationException 認證失敗時拋出
+     * @throws Exception 認證失敗時拋出
      */
     public function login(LoginRequestDTO $request, DeviceInfo $deviceInfo): LoginResponseDTO;
 
@@ -48,7 +49,7 @@ interface AuthenticationServiceInterface
      * @param RefreshRequestDTO $request 重新整理請求
      * @param DeviceInfo $deviceInfo 裝置資訊
      * @return RefreshResponseDTO 重新整理回應（新權杖對）
-     * @throws AuthenticationException 權杖無效或重新整理失敗時拋出
+     * @throws Exception 權杖無效或重新整理失敗時拋出
      */
     public function refresh(RefreshRequestDTO $request, DeviceInfo $deviceInfo): RefreshResponseDTO;
 
@@ -59,7 +60,7 @@ interface AuthenticationServiceInterface
      *
      * @param LogoutRequestDTO $request 登出請求
      * @return bool 登出是否成功
-     * @throws AuthenticationException 登出失敗時拋出
+     * @throws Exception 登出失敗時拋出
      */
     public function logout(LogoutRequestDTO $request): bool;
 

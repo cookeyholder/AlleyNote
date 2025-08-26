@@ -267,4 +267,42 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return 0;
         }
     }
+
+    /**
+     * 從 access token 取得使用者資訊.
+     */
+    public function getUserFromToken(string $accessToken): ?array
+    {
+        try {
+            // 驗證 token
+            if (!$this->validateAccessToken($accessToken)) {
+                return null;
+            }
+
+            // 提取 payload
+            $payload = $this->jwtTokenService->extractPayload($accessToken);
+
+            // 從使用者 ID 查找使用者 (使用 UUID 查詢)
+            $userId = $payload->getUserId();
+            $user = $this->userRepository->findByUuid((string) $userId);
+
+            if (!$user) {
+                return null;
+            }
+
+            return [
+                'user' => $user,
+                'token_info' => [
+                    'user_id' => $payload->getUserId(),
+                    'subject' => $payload->getSubject(),
+                    'issued_at' => $payload->getIssuedAt()->getTimestamp(),
+                    'expires_at' => $payload->getExpiresAt()->getTimestamp(),
+                    'token_id' => $payload->getJti(),
+                    'custom_claims' => $payload->getCustomClaims(),
+                ],
+            ];
+        } catch (Throwable) {
+            return null;
+        }
+    }
 }

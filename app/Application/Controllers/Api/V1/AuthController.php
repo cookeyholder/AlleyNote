@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
+use AlleyNote\Domains\Auth\DTOs\LoginRequestDTO;
+use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
+use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
+use AlleyNote\Domains\Auth\Services\AuthenticationService;
+use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
@@ -16,12 +21,70 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ * JWT 認證 Controller.
+ *
+ * 處理 JWT 認證相關的 API 端點，包含登入、登出、token 刷新、使用者資訊等功能。
+ * 整合 DTO 驗證、例外處理、HTTP 回應格式。
+ *
+ * @author GitHub Copilot
+ * @since 1.0.0
+ */
 class AuthController extends BaseController
 {
     public function __construct(
         private AuthService $authService,
+        private AuthenticationService $authenticationService,
         private ValidatorInterface $validator,
     ) {}
+
+    /**
+     * 取得客戶端真實 IP 位址
+     */
+    private function getClientIpAddress(Request $request): string
+    {
+        // 檢查各種可能包含真實 IP 的標頭
+        $headers = [
+            'HTTP_CF_CONNECTING_IP',     // Cloudflare
+            'HTTP_CLIENT_IP',            // Proxy
+            'HTTP_X_FORWARDED_FOR',      // Load Balancer/Proxy
+            'HTTP_X_FORWARDED',          // Proxy
+            'HTTP_X_CLUSTER_CLIENT_IP',  // Cluster
+            'HTTP_FORWARDED_FOR',        // Proxy
+            'HTTP_FORWARDED',            // Proxy
+            'REMOTE_ADDR',               // Standard
+        ];
+
+        foreach ($headers as $header) {
+            if ($request->hasHeader($header)) {
+                $ip = $request->getHeaderLine($header);
+                // 處理多個 IP（以逗號分隔的情況）
+                $ip = trim(explode(',', $ip)[0]);
+
+                // 驗證 IP 格式
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return $ip;
+                }
+            }
+        }
+
+        // 從伺服器參數取得
+        $serverParams = $request->getServerParams();
+        foreach ($headers as $header) {
+            if (isset($serverParams[$header])) {
+                $ip = $serverParams[$header];
+                if (is_string($ip)) {
+                    $ip = trim(explode(',', $ip)[0]);
+                    if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                        return $ip;
+                    }
+                }
+            }
+        }
+
+        // 預設回傳 localhost（適用於開發環境）
+        return '127.0.0.1';
+    }
 
     #[OA\Post(
         path: '/auth/register',
@@ -265,15 +328,39 @@ class AuthController extends BaseController
     {
         try {
             $credentials = $request->getParsedBody();
-            $result = $this->authService->login($credentials);
 
-            if (!$result['success']) {
-                $response->getBody()->write(json_encode($result));
+            // 驗證輸入資料
+            if (!is_array($credentials) || !isset($credentials['email'], $credentials['password'])) {
+                $responseData = [
+                    'success' => false,
+                    'error' => '缺少必要的登入資料',
+                ];
+                $response->getBody()->write(json_encode($responseData));
 
                 return $response
-                    ->withStatus(401)
+                    ->withStatus(400)
                     ->withHeader('Content-Type', 'application/json');
             }
+
+            // 建立登入請求 DTO
+            $loginRequest = LoginRequestDTO::fromArray($credentials);
+
+            // 建立裝置資訊
+            $deviceInfo = DeviceInfo::fromUserAgent(
+                userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
+                ipAddress: $this->getClientIpAddress($request),
+                deviceName: $credentials['device_name'] ?? null,
+            );
+
+            // 執行 JWT 認證登入
+            $loginResponse = $this->authenticationService->login($loginRequest, $deviceInfo);
+
+            // 使用 DTO 內建的 toArray 方法
+            $result = [
+                'success' => true,
+                'message' => '登入成功',
+                ...$loginResponse->toArray(),
+            ];
 
             $response->getBody()->write(json_encode($result));
 
@@ -356,16 +443,93 @@ class AuthController extends BaseController
     )]
     public function logout(Request $request, Response $response): Response
     {
-        $responseData = [
-            'success' => true,
-            'message' => '登出成功',
-        ];
+        try {
+            $requestData = $request->getParsedBody();
 
-        $response->getBody()->write(json_encode($responseData));
+            // 從 Authorization header 或 request body 取得 access token
+            $accessToken = null;
+            $refreshToken = null;
 
-        return $response
-            ->withStatus(200)
-            ->withHeader('Content-Type', 'application/json');
+            // 先檢查 Authorization header
+            $authHeader = $request->getHeaderLine('Authorization');
+            if (!empty($authHeader) && str_starts_with($authHeader, 'Bearer ')) {
+                $accessToken = substr($authHeader, 7);
+            }
+
+            // 如果在 body 中有提供 tokens，優先使用
+            if (is_array($requestData)) {
+                $accessToken = $requestData['access_token'] ?? $accessToken;
+                $refreshToken = $requestData['refresh_token'] ?? null;
+            }
+
+            // 建立登出請求 DTO
+            $logoutRequest = LogoutRequestDTO::fromArray([
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
+                'revoke_all_tokens' => $requestData['logout_all_devices'] ?? false,
+            ]);
+
+            // 建立裝置資訊
+            $deviceInfo = DeviceInfo::fromUserAgent(
+                userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
+                ipAddress: $this->getClientIpAddress($request),
+                deviceName: $requestData['device_name'] ?? null,
+            );
+
+            // 執行登出
+            $this->authenticationService->logout($logoutRequest);
+
+            $responseData = [
+                'success' => true,
+                'message' => '登出成功',
+            ];
+
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (InvalidArgumentException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (NotFoundException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(404)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (ValidationException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '系統發生錯誤',
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(500)
+                ->withHeader('Content-Type', 'application/json');
+        }
     }
 
     #[OA\Get(
@@ -400,23 +564,102 @@ class AuthController extends BaseController
     )]
     public function me(Request $request, Response $response): Response
     {
-        // 這個方法需要實作獲取當前使用者的邏輯
-        $responseData = [
-            'success' => true,
-            'data' => [
-                'id' => 1,
-                'username' => 'admin',
-                'email' => 'admin@example.com',
-                'role' => 'admin',
-                'created_at' => '2025-01-15T10:30:00Z',
-            ],
-        ];
+        try {
+            // 從 Authorization header 取得 access token
+            $authHeader = $request->getHeaderLine('Authorization');
+            if (empty($authHeader) || !str_starts_with($authHeader, 'Bearer ')) {
+                $responseData = [
+                    'success' => false,
+                    'error' => '缺少有效的 Authorization header',
+                ];
+                $response->getBody()->write(json_encode($responseData));
 
-        $response->getBody()->write(json_encode($responseData));
+                return $response
+                    ->withStatus(401)
+                    ->withHeader('Content-Type', 'application/json');
+            }
 
-        return $response
-            ->withStatus(200)
-            ->withHeader('Content-Type', 'application/json');
+            $accessToken = substr($authHeader, 7);
+
+            // 從 token 取得使用者資訊
+            $userInfo = $this->authenticationService->getUserFromToken($accessToken);
+
+            if (!$userInfo) {
+                $responseData = [
+                    'success' => false,
+                    'error' => 'Token 無效或使用者不存在',
+                ];
+                $response->getBody()->write(json_encode($responseData));
+
+                return $response
+                    ->withStatus(401)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            $user = $userInfo['user'];
+            $tokenInfo = $userInfo['token_info'];
+
+            $responseData = [
+                'success' => true,
+                'data' => [
+                    'id' => $user['id'] ?? null,
+                    'uuid' => $user['uuid'] ?? null,
+                    'username' => $user['username'] ?? null,
+                    'email' => $user['email'] ?? null,
+                    'role' => $user['role'] ?? 'user',
+                    'created_at' => $user['created_at'] ?? null,
+                    'updated_at' => $user['updated_at'] ?? null,
+                    'last_login_at' => $user['last_login_at'] ?? null,
+                    'token_info' => $tokenInfo,
+                ],
+            ];
+
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (InvalidArgumentException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (NotFoundException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(404)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (ValidationException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '系統發生錯誤',
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(500)
+                ->withHeader('Content-Type', 'application/json');
+        }
     }
 
     #[OA\Post(
@@ -479,20 +722,86 @@ class AuthController extends BaseController
     )]
     public function refresh(Request $request, Response $response): Response
     {
-        // 這個方法需要實作 Token 刷新邏輯
-        $responseData = [
-            'success' => true,
-            'message' => 'Token 刷新成功',
-            'access_token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...',
-            'token_type' => 'Bearer',
-            'expires_in' => 3600,
-            'expires_at' => '2025-01-15T11:30:00Z',
-        ];
+        try {
+            $requestData = $request->getParsedBody();
 
-        $response->getBody()->write(json_encode($responseData));
+            // 驗證輸入資料
+            if (!is_array($requestData) || !isset($requestData['refresh_token'])) {
+                $responseData = [
+                    'success' => false,
+                    'error' => '缺少必要的 refresh_token',
+                ];
+                $response->getBody()->write(json_encode($responseData));
 
-        return $response
-            ->withStatus(200)
-            ->withHeader('Content-Type', 'application/json');
+                return $response
+                    ->withStatus(400)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            // 建立刷新請求 DTO
+            $refreshRequest = RefreshRequestDTO::fromArray($requestData);
+
+            // 建立裝置資訊
+            $deviceInfo = DeviceInfo::fromUserAgent(
+                userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
+                ipAddress: $this->getClientIpAddress($request),
+                deviceName: $requestData['device_name'] ?? null,
+            );
+
+            // 執行 JWT token 刷新
+            $refreshResponse = $this->authenticationService->refresh($refreshRequest, $deviceInfo);
+
+            $result = [
+                'success' => true,
+                'message' => 'Token 刷新成功',
+                ...$refreshResponse->toArray(),
+            ];
+
+            $response->getBody()->write(json_encode($result));
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (InvalidArgumentException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (NotFoundException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(404)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (ValidationException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '系統發生錯誤',
+            ];
+            $response->getBody()->write(json_encode($responseData));
+
+            return $response
+                ->withStatus(500)
+                ->withHeader('Content-Type', 'application/json');
+        }
     }
 }

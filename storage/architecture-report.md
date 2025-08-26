@@ -1,6 +1,6 @@
 # 專案架構分析報告
 
-**生成時間**: 2025-08-26 03:41:53
+**生成時間**: 2025-08-26 08:01:03
 
 ## 📁 目錄結構
 
@@ -428,6 +428,7 @@
 
 ### `AlleyNote\Domains\Auth\Services`
 - app/Domains/Auth/Services/AuthenticationService.php
+- app/Domains/Auth/Services/TokenBlacklistService.php
 - app/Domains/Auth/Services/JwtTokenService.php
 
 ### `AlleyNote\Domains\Auth\Entities`
@@ -535,6 +536,7 @@
 
 ### `AlleyNote\Infrastructure\Auth\Repositories`
 - app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php
+- app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php
 
 ### `App\Infrastructure\OpenApi`
 - app/Infrastructure/OpenApi/OpenApiSpec.php
@@ -606,11 +608,11 @@
 
 ### Domains 層
 **子目錄**: .., Post, Post/., Post/.., Post/Contracts, Post/Contracts/., Post/Contracts/.., Post/Enums, Post/Enums/., Post/Enums/.., Post/Repositories, Post/Repositories/., Post/Repositories/.., Post/Models, Post/Models/., Post/Models/.., Post/Exceptions, Post/Exceptions/., Post/Exceptions/.., Post/DTOs, Post/DTOs/., Post/DTOs/.., Post/Services, Post/Services/., Post/Services/.., Post/Validation, Post/Validation/., Post/Validation/.., Security, Security/., Security/.., Security/Contracts, Security/Contracts/., Security/Contracts/.., Security/Repositories, Security/Repositories/., Security/Repositories/.., Security/Models, Security/Models/., Security/Models/.., Security/DTOs, Security/DTOs/., Security/DTOs/.., Security/Services, Security/Services/., Security/Services/.., Security/Services/Advanced, Security/Services/Advanced/., Security/Services/Advanced/.., Security/Services/Core, Security/Services/Core/., Security/Services/Core/.., Security/Services/Secrets, Security/Services/Secrets/., Security/Services/Secrets/.., Security/Services/Content, Security/Services/Content/., Security/Services/Content/.., Security/Services/Headers, Security/Services/Headers/., Security/Services/Headers/.., Security/Services/Error, Security/Services/Error/., Security/Services/Error/.., Security/Services/Logging, Security/Services/Logging/., Security/Services/Logging/.., Auth, Auth/., Auth/.., Auth/Contracts, Auth/Contracts/., Auth/Contracts/.., Auth/Repositories, Auth/Repositories/., Auth/Repositories/.., Auth/Models, Auth/Models/., Auth/Models/.., Auth/Exceptions, Auth/Exceptions/., Auth/Exceptions/.., Auth/DTOs, Auth/DTOs/., Auth/DTOs/.., Auth/Services, Auth/Services/., Auth/Services/.., Auth/Services/Advanced, Auth/Services/Advanced/., Auth/Services/Advanced/.., Auth/Entities, Auth/Entities/., Auth/Entities/.., Auth/ValueObjects, Auth/ValueObjects/., Auth/ValueObjects/.., Attachment, Attachment/., Attachment/.., Attachment/Contracts, Attachment/Contracts/., Attachment/Contracts/.., Attachment/Enums, Attachment/Enums/., Attachment/Enums/.., Attachment/Repositories, Attachment/Repositories/., Attachment/Repositories/.., Attachment/Models, Attachment/Models/., Attachment/Models/.., Attachment/DTOs, Attachment/DTOs/., Attachment/DTOs/.., Attachment/Services, Attachment/Services/., Attachment/Services/.., storage, storage/., storage/.., storage/cache, storage/cache/., storage/cache/.., storage/cache/htmlpurifier, storage/cache/htmlpurifier/., storage/cache/htmlpurifier/..
-**檔案數量**: 85
+**檔案數量**: 86
 
 ### Infrastructure 層
 **子目錄**: .., Database, Database/., Database/.., Cache, Cache/., Cache/.., Config, Config/., Config/.., Auth, Auth/., Auth/.., Auth/Jwt, Auth/Jwt/., Auth/Jwt/.., Auth/Repositories, Auth/Repositories/., Auth/Repositories/.., OpenApi, OpenApi/., OpenApi/.., Http, Http/., Http/.., Routing, Routing/., Routing/.., Routing/Middleware, Routing/Middleware/., Routing/Middleware/.., Routing/Core, Routing/Core/., Routing/Core/.., Routing/Cache, Routing/Cache/., Routing/Cache/.., Routing/Contracts, Routing/Contracts/., Routing/Contracts/.., Routing/Providers, Routing/Providers/., Routing/Providers/.., Routing/Exceptions, Routing/Exceptions/., Routing/Exceptions/.., Services, Services/., Services/..
-**檔案數量**: 42
+**檔案數量**: 43
 
 ### Shared 層
 **子目錄**: .., Config, Config/., Config/.., Contracts, Contracts/., Contracts/.., Exceptions, Exceptions/., Exceptions/.., Exceptions/Validation, Exceptions/Validation/., Exceptions/Validation/.., Schemas, Schemas/., Schemas/.., DTOs, DTOs/., DTOs/.., Http, Http/., Http/.., Helpers, Helpers/., Helpers/.., Validation, Validation/., Validation/.., Validation/Factory, Validation/Factory/., Validation/Factory/..
@@ -619,7 +621,7 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 131
+- **類別總數**: 133
 - **介面總數**: 33
 - **Trait 總數**: 0
 
@@ -680,6 +682,8 @@
   - 實作: PasswordSecurityServiceInterface
 - **AuthorizationService**: `app/Domains/Auth/Services/AuthorizationService.php`
   - 實作: AuthorizationServiceInterface
+- **TokenBlacklistService**: `app/Domains/Auth/Services/TokenBlacklistService.php`
+  - 實作: 
 - **JwtTokenService**: `app/Domains/Auth/Services/JwtTokenService.php`
   - 實作: JwtTokenServiceInterface
 - **AttachmentRepository**: `app/Domains/Attachment/Repositories/AttachmentRepository.php`
@@ -708,6 +712,8 @@
   - 實作: 
 - **RefreshTokenRepository**: `app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php`
   - 實作: RefreshTokenRepositoryInterface
+- **TokenBlacklistRepository**: `app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php`
+  - 實作: TokenBlacklistRepositoryInterface
 - **RoutingServiceProvider**: `app/Infrastructure/Routing/Providers/RoutingServiceProvider.php`
   - 實作: 
 - **ControllerResolver**: `app/Infrastructure/Routing/ControllerResolver.php`
@@ -766,6 +772,7 @@
 - PwnedPasswordService (`app/Domains/Auth/Services/Advanced/PwnedPasswordService.php`)
 - AuthService (`app/Domains/Auth/Services/AuthService.php`)
 - PasswordManagementService (`app/Domains/Auth/Services/PasswordManagementService.php`)
+- TokenBlacklistService (`app/Domains/Auth/Services/TokenBlacklistService.php`)
 - FileRules (`app/Domains/Attachment/Enums/FileRules.php`)
 - AttachmentRepository (`app/Domains/Attachment/Repositories/AttachmentRepository.php`)
 - Attachment (`app/Domains/Attachment/Models/Attachment.php`)
@@ -881,6 +888,9 @@
 ### `RefreshTokenRepositoryInterface`
 - RefreshTokenRepository (`app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php`)
 
+### `TokenBlacklistRepositoryInterface`
+- TokenBlacklistRepository (`app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php`)
+
 ### `UriInterface`
 - Uri (`app/Infrastructure/Http/Uri.php`)
 
@@ -920,7 +930,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 131 個
+- **缺少測試的類別**: 133 個
 
 ### 缺少測試的重要類別
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
@@ -1020,4 +1030,4 @@
 
             // 準備資料
             $data = $this->prepareNewPostData($data) (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ... 還有 73 個
+- ... 還有 75 個

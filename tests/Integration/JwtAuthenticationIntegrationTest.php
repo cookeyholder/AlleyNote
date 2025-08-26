@@ -13,18 +13,14 @@ use AlleyNote\Domains\Auth\DTOs\LoginResponseDTO;
 use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
 use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
 use AlleyNote\Domains\Auth\DTOs\RefreshResponseDTO;
-use AlleyNote\Domains\Auth\Entities\RefreshToken;
 use AlleyNote\Domains\Auth\Exceptions\AuthenticationException;
-use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
 use AlleyNote\Domains\Auth\Services\AuthenticationService;
 use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
 use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
-use AlleyNote\Domains\Auth\ValueObjects\JwtClaims;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
 use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
 use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
-use AlleyNote\Domains\Auth\Services\JwtTokenService;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use DateTimeImmutable;
 use Mockery;
@@ -32,17 +28,22 @@ use Tests\TestCase;
 
 /**
  * JWT 認證系統整合測試
- * 驗證各元件間的協作與端到端流程
- * 
+ * 驗證各元件間的協作與端到端流程.
+ *
  * @group integration
  */
 class JwtAuthenticationIntegrationTest extends TestCase
 {
     private JwtTokenServiceInterface $jwtTokenService;
+
     private RefreshTokenRepositoryInterface $refreshTokenRepository;
+
     private TokenBlacklistRepositoryInterface $tokenBlacklistRepository;
+
     private UserRepositoryInterface $userRepository;
+
     private AuthenticationServiceInterface $authenticationService;
+
     private TokenBlacklistService $tokenBlacklistService;
 
     protected function setUp(): void
@@ -54,15 +55,15 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $this->refreshTokenRepository = new RefreshTokenRepository($this->db);
         $this->tokenBlacklistRepository = new TokenBlacklistRepository($this->db);
         $this->tokenBlacklistService = new TokenBlacklistService($this->tokenBlacklistRepository);
-        
+
         // Mock UserRepository for testing
         $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
         $this->setupUserRepositoryMock();
-        
+
         $this->authenticationService = new AuthenticationService(
             $this->jwtTokenService,
             $this->refreshTokenRepository,
-            $this->userRepository
+            $this->userRepository,
         );
 
         // 建立測試使用者
@@ -70,8 +71,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試完整的登入流程
-     * 
+     * 測試完整的登入流程.
+     *
      * @test
      */
     public function canPerformCompleteLoginFlow(): void
@@ -80,13 +81,13 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $loginRequest = new LoginRequestDTO(
             email: 'test@example.com',
             password: 'password123',
-            rememberMe: true
+            rememberMe: true,
         );
 
         $deviceInfo = DeviceInfo::fromUserAgent(
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
             '192.168.1.100',
-            'Test Device'
+            'Test Device',
         );
 
         // 執行登入
@@ -109,8 +110,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 Token 刷新流程
-     * 
+     * 測試 Token 刷新流程.
+     *
      * @test
      */
     public function canRefreshTokensSuccessfully(): void
@@ -118,23 +119,23 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 先進行登入獲取 Token
         $loginRequest = new LoginRequestDTO(
             email: 'test@example.com',
-            password: 'password123'
+            password: 'password123',
         );
 
         $deviceInfo = DeviceInfo::fromUserAgent(
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
             '192.168.1.100',
-            'Test Device'
+            'Test Device',
         );
 
         $originalLoginResponse = $this->authenticationService->login($loginRequest, $deviceInfo);
-        
+
         // 等待一秒確保新 Token 有不同的時間戳
         sleep(1);
 
         // 執行 Token 刷新
         $refreshRequest = new RefreshRequestDTO(
-            refreshToken: $originalLoginResponse->tokens->getRefreshToken()
+            refreshToken: $originalLoginResponse->tokens->getRefreshToken(),
         );
 
         $refreshResponse = $this->authenticationService->refresh($refreshRequest, $deviceInfo);
@@ -142,12 +143,12 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 驗證新 Token 與原 Token 不同
         $this->assertInstanceOf(RefreshResponseDTO::class, $refreshResponse);
         $this->assertNotEquals(
-            $originalLoginResponse->tokens->getAccessToken(), 
-            $refreshResponse->tokens->getAccessToken()
+            $originalLoginResponse->tokens->getAccessToken(),
+            $refreshResponse->tokens->getAccessToken(),
         );
         $this->assertNotEquals(
-            $originalLoginResponse->tokens->getRefreshToken(), 
-            $refreshResponse->tokens->getRefreshToken()
+            $originalLoginResponse->tokens->getRefreshToken(),
+            $refreshResponse->tokens->getRefreshToken(),
         );
 
         // 驗證新 Token 可以正常使用
@@ -156,8 +157,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試登出流程與 Token 黑名單
-     * 
+     * 測試登出流程與 Token 黑名單.
+     *
      * @test
      */
     public function canLogoutAndBlacklistTokens(): void
@@ -165,13 +166,13 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 進行登入
         $loginRequest = new LoginRequestDTO(
             email: 'test@example.com',
-            password: 'password123'
+            password: 'password123',
         );
 
         $deviceInfo = DeviceInfo::fromUserAgent(
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
             '192.168.1.100',
-            'Test Device'
+            'Test Device',
         );
 
         $loginResponse = $this->authenticationService->login($loginRequest, $deviceInfo);
@@ -179,10 +180,10 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 執行登出
         $logoutRequest = new LogoutRequestDTO(
             accessToken: $loginResponse->tokens->getAccessToken(),
-            refreshToken: $loginResponse->tokens->getRefreshToken()
+            refreshToken: $loginResponse->tokens->getRefreshToken(),
         );
 
-        $this->authenticationService->logout($logoutRequest, $deviceInfo);
+        $this->authenticationService->logout($logoutRequest);
 
         // 驗證 Refresh Token 已被移除
         $refreshTokens = $this->refreshTokenRepository->findByUserId(1);
@@ -195,22 +196,22 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試多設備登入管理
-     * 
+     * 測試多設備登入管理.
+     *
      * @test
      */
     public function canManageMultipleDeviceLogins(): void
     {
         $loginRequest = new LoginRequestDTO(
             email: 'test@example.com',
-            password: 'password123'
+            password: 'password123',
         );
 
         // 設備1登入
         $device1Info = DeviceInfo::fromUserAgent(
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
             '192.168.1.100',
-            'Device 1'
+            'Device 1',
         );
         $device1Response = $this->authenticationService->login($loginRequest, $device1Info);
 
@@ -218,14 +219,14 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $device2Info = DeviceInfo::fromUserAgent(
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             '192.168.1.101',
-            'Device 2'
+            'Device 2',
         );
         $device2Response = $this->authenticationService->login($loginRequest, $device2Info);
 
         // 驗證兩個設備都有有效的 Token
         $this->assertInstanceOf(TokenPair::class, $device1Response->tokens);
         $this->assertInstanceOf(TokenPair::class, $device2Response->tokens);
-        
+
         $this->assertEquals(1, $device1Response->userId);
         $this->assertEquals(1, $device2Response->userId);
 
@@ -236,9 +237,9 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 從設備1登出
         $logoutRequest = new LogoutRequestDTO(
             accessToken: $device1Response->tokens->getAccessToken(),
-            refreshToken: $device1Response->tokens->getRefreshToken()
+            refreshToken: $device1Response->tokens->getRefreshToken(),
         );
-        $this->authenticationService->logout($logoutRequest, $device1Info);
+        $this->authenticationService->logout($logoutRequest);
 
         // 驗證設備1的 Refresh Token 已被移除，設備2的仍存在
         $remainingTokens = $this->refreshTokenRepository->findByUserId(1);
@@ -246,21 +247,21 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試無效憑證登入
-     * 
+     * 測試無效憑證登入.
+     *
      * @test
      */
     public function canHandleInvalidCredentials(): void
     {
         $loginRequest = new LoginRequestDTO(
             email: 'test@example.com',
-            password: 'wrongpassword'
+            password: 'wrongpassword',
         );
 
         $deviceInfo = DeviceInfo::fromUserAgent(
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
             '192.168.1.100',
-            'Test Device'
+            'Test Device',
         );
 
         // 設定 UserRepository 回傳 null 表示認證失敗
@@ -277,7 +278,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $authService = new AuthenticationService(
             $this->jwtTokenService,
             $this->refreshTokenRepository,
-            $this->userRepository
+            $this->userRepository,
         );
 
         $this->expectException(AuthenticationException::class);
@@ -288,8 +289,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試黑名單自動清理功能
-     * 
+     * 測試黑名單自動清理功能.
+     *
      * @test
      */
     public function canCleanupExpiredBlacklistEntries(): void
@@ -301,7 +302,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
             expiresAt: new DateTimeImmutable('-1 hour'),
             blacklistedAt: new DateTimeImmutable('-2 hours'),
             reason: TokenBlacklistEntry::REASON_LOGOUT,
-            userId: 1
+            userId: 1,
         );
 
         $this->tokenBlacklistRepository->addToBlacklist($expiredEntry);
@@ -313,7 +314,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
             expiresAt: new DateTimeImmutable('+1 hour'),
             blacklistedAt: new DateTimeImmutable(),
             reason: TokenBlacklistEntry::REASON_LOGOUT,
-            userId: 1
+            userId: 1,
         );
 
         $this->tokenBlacklistRepository->addToBlacklist($activeEntry);
@@ -329,8 +330,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試系統健康檢查
-     * 
+     * 測試系統健康檢查.
+     *
      * @test
      */
     public function canPerformHealthCheck(): void
@@ -338,22 +339,22 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 建立一些測試資料
         $loginRequest = new LoginRequestDTO(
             email: 'test@example.com',
-            password: 'password123'
+            password: 'password123',
         );
 
         $deviceInfo = DeviceInfo::fromUserAgent(
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
             '192.168.1.100',
-            'Health Check Device'
+            'Health Check Device',
         );
 
         $loginResponse = $this->authenticationService->login($loginRequest, $deviceInfo);
-        
+
         $logoutRequest = new LogoutRequestDTO(
             accessToken: $loginResponse->tokens->getAccessToken(),
-            refreshToken: $loginResponse->tokens->getRefreshToken()
+            refreshToken: $loginResponse->tokens->getRefreshToken(),
         );
-        $this->authenticationService->logout($logoutRequest, $deviceInfo);
+        $this->authenticationService->logout($logoutRequest);
 
         // 執行健康檢查
         $healthStatus = $this->tokenBlacklistService->getHealthStatus();
@@ -369,29 +370,40 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 建立 JWT Token 服務 Mock
+     * 建立 JWT Token 服務 Mock.
      */
     private function createJwtTokenService(): JwtTokenServiceInterface
     {
         $mockService = Mockery::mock(JwtTokenServiceInterface::class);
-        
+
         // Mock generateTokenPair 方法
         $mockService->shouldReceive('generateTokenPair')
             ->andReturn(new TokenPair(
                 'mock.access.token',
                 'mock.refresh.token',
                 new DateTimeImmutable('+1 hour'),
-                new DateTimeImmutable('+30 days')
+                new DateTimeImmutable('+30 days'),
             ));
-            
+
         // Mock 其他需要的方法...
         $mockService->shouldReceive('validateToken')->andReturn(true);
-        
+        $mockService->shouldReceive('extractPayload')
+            ->andReturn(new \AlleyNote\Domains\Auth\ValueObjects\JwtPayload(
+                jti: 'mock-jti-' . uniqid(),
+                sub: '1',
+                iss: 'alleynote',
+                aud: ['alleynote'],
+                iat: new DateTimeImmutable(),
+                exp: new DateTimeImmutable('+1 hour'),
+                customClaims: ['type' => 'access']
+            ));
+        $mockService->shouldReceive('revokeToken')->andReturn(true);
+
         return $mockService;
     }
 
     /**
-     * 設定 UserRepository Mock
+     * 設定 UserRepository Mock.
      */
     private function setupUserRepositoryMock(): void
     {
@@ -399,13 +411,14 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $this->userRepository->shouldReceive('validateCredentials')
             ->andReturnUsing(function ($email, $password) {
                 if ($email === 'test@example.com' && $password === 'password123') {
-                    return (object) [
+                    return [
                         'id' => 1,
                         'email' => 'test@example.com',
                         'username' => 'testuser',
-                        'status' => 1
+                        'status' => 1,
                     ];
                 }
+
                 return null;
             });
 
@@ -413,19 +426,32 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $this->userRepository->shouldReceive('findById')
             ->andReturnUsing(function ($id) {
                 if ($id === 1) {
-                    return (object) [
+                    return [
                         'id' => 1,
                         'email' => 'test@example.com',
                         'username' => 'testuser',
-                        'status' => 1
+                        'status' => 1,
                     ];
                 }
+
                 return null;
+            });
+
+        // 支援 findByUuid 方法
+        $this->userRepository->shouldReceive('findByUuid')
+            ->andReturnUsing(function ($uuid) {
+                // 模擬根據 UUID 找到使用者
+                return [
+                    'id' => 1,
+                    'email' => 'test@example.com',
+                    'username' => 'testuser',
+                    'status' => 1,
+                ];
             });
     }
 
     /**
-     * 建立測試使用者
+     * 建立測試使用者.
      */
     private function createTestUser(): void
     {
@@ -436,11 +462,11 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 產生測試用私鑰
+     * 產生測試用私鑰.
      */
     private function generateTestPrivateKey(): string
     {
-        return "-----BEGIN RSA PRIVATE KEY-----
+        return '-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEA4f5wg5l2hKsTeNem/V41fGnJm6gOdrj8ym3rFkEjWT2btYEt
 YUDzWmNfflgKkZwSNgUVFm1JgqGnJkF7xT8w7ZQe2nrjT5e7xzp6UOpG6U3XdMnm
 CJc3g8g5x9x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
@@ -450,15 +476,15 @@ x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
------END RSA PRIVATE KEY-----";
+-----END RSA PRIVATE KEY-----';
     }
 
     /**
-     * 產生測試用公鑰
+     * 產生測試用公鑰.
      */
     private function generateTestPublicKey(): string
     {
-        return "-----BEGIN PUBLIC KEY-----
+        return '-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4f5wg5l2hKsTeNem/V41
 fGnJm6gOdrj8ym3rFkEjWT2btYEtYUDzWmNfflgKkZwSNgUVFm1JgqGnJkF7xT8w
 7ZQe2nrjT5e7xzp6UOpG6U3XdMnmCJc3g8g5x9x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
@@ -467,6 +493,6 @@ x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 QIDAQAB
------END PUBLIC KEY-----";
+-----END PUBLIC KEY-----';
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use AlleyNote\Domains\Auth\Entities\RefreshToken;
 use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
@@ -13,14 +14,16 @@ use Tests\TestCase;
 
 /**
  * JWT 認證系統整合測試 - 簡化版本
- * 專注於測試各 Repository 和 Service 間的協作
- * 
+ * 專注於測試各 Repository 和 Service 間的協作.
+ *
  * @group integration
  */
 class JwtAuthenticationIntegrationTest extends TestCase
 {
     private RefreshTokenRepository $refreshTokenRepository;
+
     private TokenBlacklistRepository $tokenBlacklistRepository;
+
     private TokenBlacklistService $tokenBlacklistService;
 
     protected function setUp(): void
@@ -37,8 +40,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 RefreshToken Repository 基本功能
-     * 
+     * 測試 RefreshToken Repository 基本功能.
+     *
      * @test
      */
     public function canManageRefreshTokens(): void
@@ -48,12 +51,12 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $this->assertEmpty($initialTokens);
 
         // 建立 Refresh Token
-        $refreshToken = new \AlleyNote\Domains\Auth\Entities\RefreshToken(
+        $refreshToken = new RefreshToken(
             jti: 'test-refresh-jti',
             userId: 1,
             expiresAt: new DateTimeImmutable('+30 days'),
             deviceId: 'test-device-123',
-            deviceName: 'Test Device'
+            deviceName: 'Test Device',
         );
 
         $success = $this->refreshTokenRepository->create($refreshToken);
@@ -78,8 +81,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 TokenBlacklist Repository 基本功能
-     * 
+     * 測試 TokenBlacklist Repository 基本功能.
+     *
      * @test
      */
     public function canManageTokenBlacklist(): void
@@ -91,7 +94,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
             expiresAt: new DateTimeImmutable('+1 hour'),
             blacklistedAt: new DateTimeImmutable(),
             reason: TokenBlacklistEntry::REASON_LOGOUT,
-            userId: 1
+            userId: 1,
         );
 
         $success = $this->tokenBlacklistRepository->addToBlacklist($blacklistEntry);
@@ -122,8 +125,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 TokenBlacklist Service 高層功能
-     * 
+     * 測試 TokenBlacklist Service 高層功能.
+     *
      * @test
      */
     public function canUseTokenBlacklistService(): void
@@ -135,7 +138,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
             userId: 1,
             expiresAt: new DateTimeImmutable('+1 hour'),
             reason: TokenBlacklistEntry::REASON_LOGOUT,
-            deviceId: 'test-device'
+            deviceId: 'test-device',
         );
 
         $this->assertTrue($success);
@@ -147,7 +150,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 測試批次檢查功能
         $checkResults = $this->tokenBlacklistService->batchCheckBlacklist([
             'service-test-jti',
-            'non-existent-jti'
+            'non-existent-jti',
         ]);
 
         $this->assertCount(2, $checkResults);
@@ -167,8 +170,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試自動清理功能
-     * 
+     * 測試自動清理功能.
+     *
      * @test
      */
     public function canAutoCleanupExpiredEntries(): void
@@ -180,7 +183,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
             expiresAt: new DateTimeImmutable('-1 hour'),
             blacklistedAt: new DateTimeImmutable('-2 hours'),
             reason: TokenBlacklistEntry::REASON_LOGOUT,
-            userId: 1
+            userId: 1,
         );
 
         $this->tokenBlacklistRepository->addToBlacklist($expiredEntry);
@@ -192,14 +195,14 @@ class JwtAuthenticationIntegrationTest extends TestCase
             expiresAt: new DateTimeImmutable('+1 hour'),
             blacklistedAt: new DateTimeImmutable(),
             reason: TokenBlacklistEntry::REASON_LOGOUT,
-            userId: 1
+            userId: 1,
         );
 
         $this->tokenBlacklistRepository->addToBlacklist($activeEntry);
 
         // 執行自動清理
         $cleanupResult = $this->tokenBlacklistService->autoCleanup();
-        
+
         $this->assertArrayHasKey('expired_cleaned', $cleanupResult);
         $this->assertGreaterThan(0, $cleanupResult['expired_cleaned']);
 
@@ -209,8 +212,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試批次操作功能
-     * 
+     * 測試批次操作功能.
+     *
      * @test
      */
     public function canPerformBatchOperations(): void
@@ -224,7 +227,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
                 expiresAt: new DateTimeImmutable('+1 hour'),
                 blacklistedAt: new DateTimeImmutable(),
                 reason: TokenBlacklistEntry::REASON_LOGOUT,
-                userId: 1
+                userId: 1,
             );
         }
 
@@ -237,7 +240,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
             'batch-test-jti-1',
             'batch-test-jti-2',
             'batch-test-jti-3',
-            'non-existent-jti'
+            'non-existent-jti',
         ]);
 
         $this->assertCount(4, $checkResults);
@@ -249,7 +252,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 測試批次移除
         $removedCount = $this->tokenBlacklistRepository->batchRemoveFromBlacklist([
             'batch-test-jti-1',
-            'batch-test-jti-2'
+            'batch-test-jti-2',
         ]);
 
         $this->assertEquals(2, $removedCount);
@@ -261,7 +264,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 建立測試使用者
+     * 建立測試使用者.
      */
     private function createTestUser(): void
     {

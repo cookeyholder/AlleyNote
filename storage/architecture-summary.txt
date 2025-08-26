@@ -1,14 +1,14 @@
-=== 專案架構快速摘要 (2025-08-26 03:41:53) ===
+=== 專案架構快速摘要 (2025-08-26 08:01:03) ===
 
 📊 統計資訊:
-- 類別: 131 個
+- 類別: 133 個
 - 介面: 33 個
 - 命名空間: 72 個
 
 🏗️ DDD 架構:
 - Application: 12 個檔案
-- Domains: 85 個檔案
-- Infrastructure: 42 個檔案
+- Domains: 86 個檔案
+- Infrastructure: 43 個檔案
 - Shared: 19 個檔案
 
 ❌ 架構問題 (4 個):
@@ -19,10 +19,10 @@
 
 🧪 測試覆蓋:
 - 有測試: 0 個類別
-- 缺少測試: 131 個類別
+- 缺少測試: 133 個類別
 
 🔌 介面實作:
-- : 90 個實作
+- : 91 個實作
 - PostRepositoryInterface: 1 個實作
 - JsonSerializable: 9 個實作
 - PostServiceInterface: 1 個實作
@@ -30,7 +30,7 @@
 
 💉 重依賴類別 (≥3個依賴): 11 個
 
-❓ 可能問題引用: 83 個
+❓ 可能問題引用: 85 個
 
 🔑 重點服務/控制器:
 - implements (app/Infrastructure/Routing/ControllerResolver.php)
