@@ -132,7 +132,7 @@ date.timezone = Asia/Taipei
 docker compose -f docker-compose.yml down
 
 # 備份資料
-./scripts/backup_db.sh
+./scripts/backup_sqlite.sh
 ./scripts/backup_files.sh
 
 # 更新程式碼
@@ -160,7 +160,7 @@ docker compose -f docker-compose.yml ps
 docker compose -f docker-compose.yml down
 
 # 還原備份
-./scripts/restore_db.sh
+./scripts/restore_sqlite.sh
 ./scripts/restore_files.sh
 
 # 切換到上一個版本
