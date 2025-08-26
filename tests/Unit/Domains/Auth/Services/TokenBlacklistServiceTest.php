@@ -63,12 +63,12 @@ final class TokenBlacklistServiceTest extends TestCase
             ->shouldReceive('info')
             ->zeroOrMoreTimes()
             ->with(Mockery::type('string'), Mockery::type('array'));
-        
+
         $this->logger
             ->shouldReceive('error')
             ->zeroOrMoreTimes()
             ->with(Mockery::type('string'), Mockery::type('array'));
-            
+
         $this->logger
             ->shouldReceive('warning')
             ->zeroOrMoreTimes()
@@ -110,7 +110,7 @@ final class TokenBlacklistServiceTest extends TestCase
             ->shouldReceive('warning')
             ->zeroOrMoreTimes()
             ->with(Mockery::type('string'), Mockery::type('array'));
-            
+
         $this->logger
             ->shouldReceive('error')
             ->zeroOrMoreTimes()
@@ -179,12 +179,12 @@ final class TokenBlacklistServiceTest extends TestCase
             ->shouldReceive('info')
             ->zeroOrMoreTimes()
             ->with(Mockery::type('string'), Mockery::type('array'));
-            
+
         $this->logger
             ->shouldReceive('error')
             ->zeroOrMoreTimes()
             ->with(Mockery::type('string'), Mockery::type('array'));
-            
+
         $this->logger
             ->shouldReceive('warning')
             ->zeroOrMoreTimes()
