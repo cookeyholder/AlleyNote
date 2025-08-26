@@ -8,11 +8,14 @@ use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
 use Exception;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RateLimitTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private RateLimitService $rateLimitService;
 
     private CacheService $cacheService;

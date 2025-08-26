@@ -365,12 +365,15 @@ final class FirebaseJwtProvider implements JwtProviderInterface
      */
     private function generateJti(): string
     {
-        // 使用微秒時間戳和隨機位元組來確保唯一性
-        $timestamp = number_format(microtime(true) * 10000, 0, '', '');
-        $randomBytes = bin2hex(random_bytes(12));
+        // 使用更精確的微秒時間戳和更多隨機位元組來確保唯一性
+        $timestamp = number_format(microtime(true) * 1000000, 0, '', ''); // 精確到微秒
+        $randomBytes = bin2hex(random_bytes(16)); // 增加隨機位元組
+        $processId = getmypid(); // 加入進程 ID
+        $uniqid = uniqid('', true); // 加入 PHP 的 uniqid
 
-        return $timestamp . $randomBytes;
+        return $timestamp . $processId . $randomBytes . $uniqid;
     }
+
     /**
      * 驗證必要欄位.
      *

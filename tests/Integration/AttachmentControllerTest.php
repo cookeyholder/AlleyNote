@@ -10,6 +10,7 @@ use App\Domains\Attachment\Services\AttachmentService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
@@ -20,6 +21,8 @@ use Tests\TestCase;
 
 class AttachmentControllerTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private AttachmentService&MockInterface $attachmentService;
 
     private ServerRequestInterface&MockInterface $request;

@@ -11,6 +11,7 @@ use App\Domains\Auth\Services\AuthService;
 use App\Shared\Contracts\ValidatorInterface;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
@@ -18,6 +19,8 @@ use Tests\TestCase;
 
 class PasswordHashingTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected AuthService $authService;
 
     protected UserRepository $userRepository;

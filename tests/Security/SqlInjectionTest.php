@@ -8,6 +8,7 @@ use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
@@ -15,6 +16,8 @@ use Tests\TestCase;
 
 class SqlInjectionTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected PostRepository $repository;
 
     protected PDO $db;

@@ -84,7 +84,7 @@ class DatabaseBackupTest extends TestCase
         $backupCmd = sprintf(
             'sqlite3 %s ".backup %s"',
             escapeshellarg($this->dbPath),
-            escapeshellarg($backupFile)
+            escapeshellarg($backupFile),
         );
 
         exec($backupCmd, $output, $returnVar);
@@ -122,7 +122,7 @@ class DatabaseBackupTest extends TestCase
         $restoreCmd = sprintf(
             'cp %s %s',
             escapeshellarg($backupFile),
-            escapeshellarg($this->dbPath)
+            escapeshellarg($this->dbPath),
         );
 
         exec($restoreCmd, $output, $returnVar);
@@ -151,7 +151,7 @@ class DatabaseBackupTest extends TestCase
         $backupCmd = sprintf(
             'sqlite3 %s ".backup %s" 2>&1',
             escapeshellarg($this->dbPath),
-            escapeshellarg($backupFile)
+            escapeshellarg($backupFile),
         );
 
         exec($backupCmd, $output, $returnVar);
@@ -159,7 +159,7 @@ class DatabaseBackupTest extends TestCase
         // 驗證備份過程完成
         $this->assertTrue(
             $returnVar === 0 || file_exists($backupFile),
-            '備份過程應該能夠處理並完成'
+            '備份過程應該能夠處理並完成',
         );
 
         // 清理
@@ -181,7 +181,7 @@ class DatabaseBackupTest extends TestCase
         $restoreCmd = sprintf(
             'cp %s %s 2>&1',
             escapeshellarg($nonExistentBackup),
-            escapeshellarg($this->dbPath)
+            escapeshellarg($this->dbPath),
         );
 
         exec($restoreCmd, $output, $returnVar);
@@ -191,10 +191,10 @@ class DatabaseBackupTest extends TestCase
         $outputStr = implode("\n", $output);
         // 檢查英文錯誤訊息
         $this->assertTrue(
-            strpos($outputStr, 'cannot stat') !== false ||
-                strpos($outputStr, 'No such file') !== false ||
-                !empty($outputStr),
-            '應該輸出錯誤訊息'
+            strpos($outputStr, 'cannot stat') !== false
+                || strpos($outputStr, 'No such file') !== false
+                || !empty($outputStr),
+            '應該輸出錯誤訊息',
         );
     }
 
@@ -210,7 +210,7 @@ class DatabaseBackupTest extends TestCase
         $backupCmd = sprintf(
             'sqlite3 %s ".backup %s"',
             escapeshellarg($this->dbPath),
-            escapeshellarg($backupFile)
+            escapeshellarg($backupFile),
         );
         exec($backupCmd);
 
@@ -222,7 +222,7 @@ class DatabaseBackupTest extends TestCase
         $restoreCmd = sprintf(
             'cp %s %s',
             escapeshellarg($backupFile),
-            escapeshellarg($this->dbPath)
+            escapeshellarg($this->dbPath),
         );
         exec($restoreCmd);
 

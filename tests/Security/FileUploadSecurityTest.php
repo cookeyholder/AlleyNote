@@ -12,6 +12,7 @@ use App\Domains\Post\Repositories\PostRepository;
 use App\Infrastructure\Services\CacheService;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
@@ -20,6 +21,8 @@ use Tests\TestCase;
 
 class FileUploadSecurityTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected AttachmentService $service;
 
     protected AuthorizationService|MockInterface $authService;

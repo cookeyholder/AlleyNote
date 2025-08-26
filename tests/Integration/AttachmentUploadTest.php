@@ -13,6 +13,7 @@ use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Shared\Exceptions\ValidationException;
 use Exception;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
@@ -25,6 +26,8 @@ use Tests\TestCase;
  */
 class AttachmentUploadTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected AttachmentService $attachmentService;
 
     protected \App\Domains\Auth\Services\AuthorizationService|MockInterface $authService;

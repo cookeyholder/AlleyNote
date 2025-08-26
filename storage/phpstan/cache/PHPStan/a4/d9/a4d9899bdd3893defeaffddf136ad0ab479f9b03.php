@@ -1047,7 +1047,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/DatabaseBackupTest.php' => 
     array (
-      0 => '4dc95ef4465286a59e39cdd199e811449ea6f920',
+      0 => '22663aaea7fa322e08370e260da0fb045df2c6e1',
       1 => 
       array (
         0 => 'tests\\integration\\databasebackuptest',
@@ -2976,7 +2976,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/JwtAuthenticationIntegrationTest.php' => 
     array (
-      0 => '9e384c0379f0c63cbf67b4fe9c34ecdd9dad18d7',
+      0 => 'e1835b64e9052c711a7bfc90569b32a0cf431577',
       1 => 
       array (
         0 => 'tests\\integration\\jwtauthenticationintegrationtest',

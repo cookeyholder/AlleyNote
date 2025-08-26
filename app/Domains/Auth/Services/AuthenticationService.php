@@ -75,34 +75,17 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 }
             }
 
-            // 5. 產生 JWT token 對
+            // 5. 產生 JWT token 對（包含儲存 refresh token）
             $tokenPair = $this->jwtTokenService->generateTokenPair($userId, $deviceInfo, [
                 'email' => $userEmail,
                 'scopes' => $request->scopes ?? [],
             ]);
 
-            // 6. 儲存 refresh token 到資料庫
-            $payload = $this->jwtTokenService->extractPayload($tokenPair->getRefreshToken());
-
-            $createResult = $this->refreshTokenRepository->create(
-                jti: $payload->getJti(),
-                userId: $userId,
-                tokenHash: hash('sha256', $tokenPair->getRefreshToken()),
-                expiresAt: new DateTime('@' . $payload->getExpiresAt()->getTimestamp()),
-                deviceInfo: $deviceInfo,
-            );
-
-            if (!$createResult) {
-                throw new AuthenticationException(
-                    AuthenticationException::REASON_TOKEN_REFRESH_FAILED,
-                    'Failed to save refresh token to database',
-                );
-            }
-
-            // 7. 更新使用者最後登入時間
+            // 6. 更新使用者最後登入時間
             $this->userRepository->updateLastLogin($userId);
 
-            // 8. 建立回應
+            // 7. 建立回應
+            $payload = $this->jwtTokenService->extractPayload($tokenPair->getRefreshToken());
             return new LoginResponseDTO(
                 tokens: $tokenPair,
                 userId: $userId,
@@ -124,28 +107,13 @@ final class AuthenticationService implements AuthenticationServiceInterface
     public function refresh(RefreshRequestDTO $request, DeviceInfo $deviceInfo): RefreshResponseDTO
     {
         try {
-            // 1. 驗證並取得新的 token pair
+            // 1. 驗證並取得新的 token pair（這個過程會自動撤銷舊 token 並創建新 token）
             $newTokenPair = $this->jwtTokenService->refreshTokens($request->refreshToken, $deviceInfo);
 
-            // 2. 取得舊 refresh token 的資訊
+            // 2. 建立回應
+            $newPayload = $this->jwtTokenService->extractPayload($newTokenPair->getRefreshToken());
             $oldPayload = $this->jwtTokenService->extractPayload($request->refreshToken);
 
-            // 3. 撤銷舊的 refresh token
-            $this->refreshTokenRepository->revoke($oldPayload->getJti(), 'token_refresh');
-
-            // 4. 儲存新的 refresh token
-            $newPayload = $this->jwtTokenService->extractPayload($newTokenPair->getRefreshToken());
-
-            $this->refreshTokenRepository->create(
-                jti: $newPayload->getJti(),
-                userId: $oldPayload->getUserId(),
-                tokenHash: hash('sha256', $newTokenPair->getRefreshToken()),
-                expiresAt: new DateTime('@' . $newPayload->getExpiresAt()->getTimestamp()),
-                deviceInfo: $deviceInfo,
-                parentTokenJti: $oldPayload->getJti(),
-            );
-
-            // 5. 建立回應
             return new RefreshResponseDTO(
                 tokens: $newTokenPair,
                 userId: $oldPayload->getUserId(),

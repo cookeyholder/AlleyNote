@@ -15,16 +15,20 @@ use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
 use AlleyNote\Domains\Auth\DTOs\RefreshResponseDTO;
 use AlleyNote\Domains\Auth\Exceptions\AuthenticationException;
 use AlleyNote\Domains\Auth\Services\AuthenticationService;
+use AlleyNote\Domains\Auth\Services\JwtTokenService;
 use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
 use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
-use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
 use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
 use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
+use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
+use App\Shared\Config\JwtConfig;
 use DateTimeImmutable;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 /**
@@ -35,7 +39,7 @@ use Tests\TestCase;
  */
 class JwtAuthenticationIntegrationTest extends TestCase
 {
-    use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+    use MockeryPHPUnitIntegration;
 
     private JwtTokenServiceInterface $jwtTokenService;
 
@@ -43,7 +47,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     private TokenBlacklistRepositoryInterface $tokenBlacklistRepository;
 
-    private UserRepositoryInterface|\Mockery\MockInterface $userRepository;
+    private UserRepositoryInterface|MockInterface $userRepository;
 
     private AuthenticationServiceInterface $authenticationService;
 
@@ -61,8 +65,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 然後建立真實的服務實例，模擬完整的系統行為
         $this->jwtTokenService = $this->createJwtTokenService();
 
-        // Mock UserRepository for testing  
-        /** @var UserRepositoryInterface|\Mockery\MockInterface $userRepository */
+        // Mock UserRepository for testing
+        /** @var UserRepositoryInterface|MockInterface $userRepository */
         $userRepository = Mockery::mock(UserRepositoryInterface::class)->shouldIgnoreMissing();
         $this->userRepository = $userRepository;
         $this->setupUserRepositoryMock();
@@ -75,6 +79,19 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
         // 建立測試使用者
         $this->createTestUser();
+    }
+
+    /**
+     * 清理測試資料.
+     */
+    protected function tearDown(): void
+    {
+        // 清理 refresh_tokens 表
+        $this->db->exec('DELETE FROM refresh_tokens');
+        // 清理 token_blacklist 表
+        $this->db->exec('DELETE FROM token_blacklist');
+
+        parent::tearDown();
     }
 
     /**
@@ -392,13 +409,13 @@ class JwtAuthenticationIntegrationTest extends TestCase
         }
 
         // 使用真實的 JwtTokenService
-        $config = new \App\Shared\Config\JwtConfig();
-        $jwtProvider = new \App\Infrastructure\Auth\Jwt\FirebaseJwtProvider($config);
+        $config = new JwtConfig();
+        $jwtProvider = new FirebaseJwtProvider($config);
 
-        return new \AlleyNote\Domains\Auth\Services\JwtTokenService(
+        return new JwtTokenService(
             $jwtProvider,
             $this->refreshTokenRepository, // 使用真實的 Repository
-            $this->tokenBlacklistRepository, // 使用真實的 Repository  
+            $this->tokenBlacklistRepository, // 使用真實的 Repository
             $config,
         );
     }

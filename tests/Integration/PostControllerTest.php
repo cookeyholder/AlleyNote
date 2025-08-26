@@ -18,6 +18,7 @@ use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
@@ -27,6 +28,8 @@ use Tests\TestCase;
 
 class PostControllerTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     /** @var PostServiceInterface&MockInterface */
     private PostServiceInterface $postService;
 

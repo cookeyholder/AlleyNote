@@ -12,6 +12,7 @@ use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,6 +21,8 @@ use Tests\TestCase;
 
 class XssPreventionTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private PostServiceInterface $postService;
 
     private ValidatorInterface $validator;

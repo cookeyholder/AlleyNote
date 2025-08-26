@@ -520,7 +520,7 @@ final class JwtTokenServiceTest extends TestCase
         // Arrange
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6ImFjY2VzcyJ9.fake-signature';
         $jti = 'token-jti';
-        $reason = 'test_revocation';
+        $reason = 'manual_revocation'; // 使用有效的 reason
         $now = time();
         $payload = [
             'jti' => $jti,

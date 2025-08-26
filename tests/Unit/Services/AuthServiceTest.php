@@ -96,9 +96,14 @@ class AuthServiceTest extends TestCase
         $result = $this->service->register($dto);
 
         // 驗證結果
-        $this->assertEquals('testuser', $result['username']);
-        $this->assertEquals('test@example.com', $result['email']);
-        $this->assertEquals(1, $result['status']);
+        $this->assertTrue($result['success']);
+        $this->assertEquals('註冊成功', $result['message']);
+        $this->assertArrayHasKey('user', $result);
+
+        $user = $result['user'];
+        $this->assertEquals('testuser', $user['username']);
+        $this->assertEquals('test@example.com', $user['email']);
+        $this->assertEquals(1, $user['status']);
     }
 
     #[Test]
