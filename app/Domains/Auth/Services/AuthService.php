@@ -138,4 +138,29 @@ class AuthService
             'user' => $user,
         ];
     }
+
+    public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): array
+    {
+        // 如果啟用 JWT 且有提供 JWT 服務和 access token
+        if ($this->jwtEnabled && $this->jwtTokenService !== null && $accessToken !== null) {
+            try {
+                // 撤銷 access token（將其加入黑名單）
+                $this->jwtTokenService->revokeToken($accessToken);
+
+                return [
+                    'success' => true,
+                    'message' => '登出成功',
+                ];
+            } catch (\Exception $e) {
+                // 如果撤銷失敗，記錄錯誤但仍然回傳成功（使用者體驗優先）
+                error_log('JWT token revocation failed during logout: ' . $e->getMessage());
+            }
+        }
+
+        // 傳統模式或 JWT 撤銷失敗時的回傳格式
+        return [
+            'success' => true,
+            'message' => '登出成功',
+        ];
+    }
 }

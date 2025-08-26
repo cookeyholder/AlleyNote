@@ -182,12 +182,12 @@ class AuthServiceTest extends TestCase
             ->once()
             ->withArgs(function ($userId, $deviceInfo, $customClaims) {
                 return $userId === 1
-                       && $deviceInfo instanceof DeviceInfo
-                       && $deviceInfo->getIpAddress() === '192.168.1.100'
-                       && is_array($customClaims)
-                       && $customClaims['type'] === 'registration'
-                       && $customClaims['username'] === 'testuser'
-                       && $customClaims['email'] === 'test@example.com';
+                    && $deviceInfo instanceof DeviceInfo
+                    && $deviceInfo->getIpAddress() === '192.168.1.100'
+                    && is_array($customClaims)
+                    && $customClaims['type'] === 'registration'
+                    && $customClaims['username'] === 'testuser'
+                    && $customClaims['email'] === 'test@example.com';
             })
             ->andReturn($tokenPair);
 
@@ -439,5 +439,77 @@ class AuthServiceTest extends TestCase
 
         $this->assertFalse($result['success']);
         $this->assertEquals('無效的認證資訊', $result['message']);
+    }
+
+    /**
+     * 測試傳統模式的登出.
+     */
+    public function test_logout_traditional_mode(): void
+    {
+        $service = new AuthService(
+            userRepository: $this->userRepository,
+            passwordService: $this->passwordService,
+            jwtTokenService: null,
+            jwtEnabled: false,
+        );
+
+        $result = $service->logout();
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals('登出成功', $result['message']);
+    }
+
+    /**
+     * 測試 JWT 模式的登出.
+     */
+    public function test_logout_jwt_mode_success(): void
+    {
+        $service = new AuthService(
+            userRepository: $this->userRepository,
+            passwordService: $this->passwordService,
+            jwtTokenService: $this->jwtTokenService,
+            jwtEnabled: true,
+        );
+
+        $accessToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.test.signature';
+        $deviceInfo = DeviceInfo::fromUserAgent('Test Browser', '192.168.1.1');
+
+        $this->jwtTokenService->shouldReceive('revokeToken')
+            ->once()
+            ->with($accessToken)
+            ->andReturn(true);
+
+        $result = $service->logout($accessToken, $deviceInfo);
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals('登出成功', $result['message']);
+    }
+
+    /**
+     * 測試 JWT 模式登出時撤銷失敗的情況.
+     */
+    public function test_logout_jwt_mode_revocation_failure(): void
+    {
+        $service = new AuthService(
+            userRepository: $this->userRepository,
+            passwordService: $this->passwordService,
+            jwtTokenService: $this->jwtTokenService,
+            jwtEnabled: true,
+        );
+
+        $accessToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.test.signature';
+        $deviceInfo = DeviceInfo::fromUserAgent('Test Browser', '192.168.1.1');
+
+        // 模擬撤銷失敗
+        $this->jwtTokenService->shouldReceive('revokeToken')
+            ->once()
+            ->with($accessToken)
+            ->andThrow(new \Exception('Revocation failed'));
+
+        $result = $service->logout($accessToken, $deviceInfo);
+
+        // 即使撤銷失敗，仍然回傳成功（使用者體驗優先）
+        $this->assertTrue($result['success']);
+        $this->assertEquals('登出成功', $result['message']);
     }
 }
