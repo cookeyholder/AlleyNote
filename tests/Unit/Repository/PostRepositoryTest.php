@@ -13,12 +13,15 @@ use DateTimeInterface;
 use Exception;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PDO;
 use Tests\Factory\PostFactory;
 
 class PostRepositoryTest extends MockeryTestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private PostRepository $repository;
 
     private PDO $db;

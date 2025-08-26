@@ -286,6 +286,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
         );
 
         // 設定 UserRepository 回傳 null 表示認證失敗
+        /** @var UserRepositoryInterface::class|\Mockery\MockInterface */
+        /** @var UserRepositoryInterface::class|\Mockery\MockInterface */
         $mockUserRepository = Mockery::mock(UserRepositoryInterface::class);
         $mockUserRepository->shouldReceive('validateCredentials')
             ->with('test@example.com', 'wrongpassword')

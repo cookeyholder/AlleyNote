@@ -1,6 +1,86 @@
-# 專案架構分析報告
+# 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-08-26 18:25:48
+**生成時間**: 2025-08-26 22:36:00
+
+## 📊 程式碼品質指標
+
+| 指標 | 數值 | 狀態 |
+|------|------|------|
+| 總類別數 | 139 | - |
+| 介面與類別比例 | 24.46% | ✅ 良好 |
+| 平均依賴數/類別 | 0.00 | ✅ 良好 |
+| 現代 PHP 採用率 | 58.99% | ✅ 良好 |
+| PSR-4 合規率 | 79.70% | ❌ 需修正 |
+| DDD 結構完整性 | 80.00% | ✅ 良好 |
+
+## 🎯 DDD 邊界上下文分析
+
+### Attachment 上下文
+
+| 組件類型 | 數量 | 項目 |
+|----------|------|------|
+| 實體 | 0 | - |
+| 值物件 | 0 | - |
+| 聚合 | 0 | - |
+| 儲存庫 | 2 | AttachmentRepository, AttachmentRepositoryInterface |
+| 領域服務 | 4 | FileSecurityService, AttachmentService, AttachmentServiceInterface... |
+| 領域事件 | 0 | - |
+
+### Auth 上下文
+
+| 組件類型 | 數量 | 項目 |
+|----------|------|------|
+| 實體 | 0 | - |
+| 值物件 | 16 | JwtPayload, TokenPair, TokenBlacklistEntry... |
+| 聚合 | 0 | - |
+| 儲存庫 | 2 | UserRepository, UserRepositoryInterface |
+| 領域服務 | 8 | SessionSecurityService, PasswordManagementService, AuthorizationService... |
+| 領域事件 | 0 | - |
+
+### Post 上下文
+
+| 組件類型 | 數量 | 項目 |
+|----------|------|------|
+| 實體 | 0 | - |
+| 值物件 | 0 | - |
+| 聚合 | 0 | - |
+| 儲存庫 | 3 | PostRepository, PostService, PostRepositoryInterface |
+| 領域服務 | 4 | PostCacheKeyService, ContentModerationService, RichTextProcessorService... |
+| 領域事件 | 0 | - |
+
+### Security 上下文
+
+| 組件類型 | 數量 | 項目 |
+|----------|------|------|
+| 實體 | 0 | - |
+| 值物件 | 0 | - |
+| 聚合 | 0 | - |
+| 儲存庫 | 3 | IpRepository, IpService, IpRepositoryInterface |
+| 領域服務 | 12 | LoggingSecurityService, ErrorHandlerService, SecurityHeaderService... |
+| 領域事件 | 0 | - |
+
+### storage 上下文
+
+| 組件類型 | 數量 | 項目 |
+|----------|------|------|
+| 實體 | 0 | - |
+| 值物件 | 0 | - |
+| 聚合 | 0 | - |
+| 儲存庫 | 0 | - |
+| 領域服務 | 0 | - |
+| 領域事件 | 0 | - |
+
+## 🚀 現代 PHP 特性使用情況
+
+| 特性 | 使用次數 | 描述 |
+|------|----------|------|
+| Match 表達式 (PHP 8.0+) | 145 | ✅ 更安全的條件分支 |
+| 屬性標籤 (PHP 8.0+) | 85 | ✅ 現代化 metadata |
+| 唯讀屬性 (PHP 8.1+) | 61 | ✅ 提升資料不變性 |
+| 空安全運算子 (PHP 8.0+) | 50 | ✅ 防止 null 指標異常 |
+| 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
+| 聯合型別 (PHP 8.0+) | 5 | ✅ 更靈活的型別定義 |
+| 列舉型別 (PHP 8.1+) | 1 | ✅ 型別安全的常數 |
 
 ## 📁 目錄結構
 
@@ -633,7 +713,7 @@
 
 - **類別總數**: 139
 - **介面總數**: 34
-- **Trait 總數**: 0
+- **Trait 總數**: 2
 
 ## ⚠️ 發現的架構問題
 
@@ -1073,4 +1153,4 @@
             if (!is_string($value)) {
                 return false (在 app/Domains/Auth/DTOs/RegisterUserDTO.php 中使用)
 - ❓ 找不到類別/介面: Throwable (在 app/Domains/Auth/Services/RefreshTokenService.php 中使用)
-- ... 還有 96 個
+- ... 還有 98 個

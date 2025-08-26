@@ -18,6 +18,7 @@ use Exception;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 /**
  * AuthService 單元測試.
@@ -30,6 +31,8 @@ use Tests\TestCase;
  */
 class AuthServiceTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private UserRepository|MockInterface $userRepository;
 
     private PasswordSecurityServiceInterface|MockInterface $passwordService;

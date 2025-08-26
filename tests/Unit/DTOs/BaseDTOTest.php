@@ -9,12 +9,15 @@ use App\Shared\DTOs\BaseDTO;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 /**
  * BaseDTO 測試類.
  */
 class BaseDTOTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private ValidatorInterface $validator;
 
     protected function setUp(): void
@@ -152,6 +155,8 @@ class BaseDTOTest extends TestCase
         $dto = $this->createTestDTO();
         $data = ['name' => '', 'age' => -1];
 
+        /** @var ValidationException::class|\Mockery\MockInterface */
+        /** @var ValidationException::class|\Mockery\MockInterface */
         $exception = Mockery::mock(ValidationException::class);
 
         $this->validator

@@ -10,9 +10,12 @@ use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use RuntimeException;
 use Tests\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class RateLimitServiceTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private RateLimitService $rateLimitService;
 
     private $cacheMock;

@@ -23,9 +23,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class PostControllerTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private PostServiceInterface|MockInterface $postService;
 
     private XssProtectionServiceInterface|MockInterface $xssProtection;

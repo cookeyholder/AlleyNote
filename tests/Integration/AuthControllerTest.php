@@ -94,6 +94,8 @@ class AuthControllerTest extends TestCase
 
         $this->response->shouldReceive('withHeader')->andReturnSelf();
 
+        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|\Mockery\MockInterface */
         $stream = Mockery::mock(StreamInterface::class);
         $writtenContent = '';
         $stream->shouldReceive('write')->andReturnUsing(function ($content) use (&$writtenContent) {

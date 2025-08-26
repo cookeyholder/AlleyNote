@@ -427,16 +427,16 @@ class ControllerResolver
                 if ($parameter->isDefaultValueAvailable()) {
                     $args[] = $parameter->getDefaultValue();
                 } else {
-                    throw new RuntimeException("無法解析參數: {$parameter->getName()}");
+                    throw new RuntimeException("無法解析參數: {($parameter instanceof \ReflectionNamedType ? ($parameter instanceof \ReflectionNamedType ? $parameter->getName() : (string)$parameter) : (string)$parameter)}");
                 }
                 continue;
             }
 
             if (!$type instanceof ReflectionNamedType) {
-                throw new RuntimeException("不支援的參數類型: {$parameter->getName()}");
+                throw new RuntimeException("不支援的參數類型: {($parameter instanceof \ReflectionNamedType ? ($parameter instanceof \ReflectionNamedType ? $parameter->getName() : (string)$parameter) : (string)$parameter)}");
             }
 
-            $typeName = $type->getName();
+            $typeName = ($type instanceof \ReflectionNamedType ? ($type instanceof \ReflectionNamedType ? $type->getName() : (string)$type) : (string)$type);
 
             if ($this->container->has($typeName)) {
                 $args[] = $this->container->get($typeName);
@@ -445,7 +445,7 @@ class ControllerResolver
             } elseif ($parameter->allowsNull()) {
                 $args[] = null;
             } else {
-                throw new RuntimeException("無法解析參數: {$parameter->getName()}，類型: {$typeName}");
+                throw new RuntimeException("無法解析參數: {($parameter instanceof \ReflectionNamedType ? ($parameter instanceof \ReflectionNamedType ? $parameter->getName() : (string)$parameter) : (string)$parameter)}，類型: {$typeName}");
             }
         }
 
@@ -470,11 +470,11 @@ class ControllerResolver
         $args = [];
 
         foreach ($reflection->getParameters() as $parameter) {
-            $paramName = $parameter->getName();
+            $paramName = ($parameter instanceof \ReflectionNamedType ? ($parameter instanceof \ReflectionNamedType ? $parameter->getName() : (string)$parameter) : (string)$parameter);
             $type = $parameter->getType();
 
             // 優先處理 PSR-7 請求物件
-            if ($type && $type instanceof ReflectionNamedType && $type->getName() === ServerRequestInterface::class) {
+            if ($type && $type instanceof ReflectionNamedType && ($type instanceof \ReflectionNamedType ? ($type instanceof \ReflectionNamedType ? $type->getName() : (string)$type) : (string)$type) === ServerRequestInterface::class) {
                 // 將路由參數注入到請求屬性中
                 $requestWithParams = $request;
                 foreach ($routeParameters as $key => $value) {
@@ -485,7 +485,7 @@ class ControllerResolver
             }
 
             // 處理 PSR-7 回應物件
-            if ($type && $type instanceof ReflectionNamedType && $type->getName() === ResponseInterface::class) {
+            if ($type && $type instanceof ReflectionNamedType && ($type instanceof \ReflectionNamedType ? ($type instanceof \ReflectionNamedType ? $type->getName() : (string)$type) : (string)$type) === ResponseInterface::class) {
                 $args[] = $this->createResponse();
                 continue;
             }
@@ -498,7 +498,7 @@ class ControllerResolver
 
             // 處理依賴注入
             if ($type && $type instanceof ReflectionNamedType && !$type->isBuiltin()) {
-                $typeName = $type->getName();
+                $typeName = ($type instanceof \ReflectionNamedType ? ($type instanceof \ReflectionNamedType ? $type->getName() : (string)$type) : (string)$type);
                 if ($this->container->has($typeName)) {
                     $args[] = $this->container->get($typeName);
                     continue;
@@ -532,7 +532,7 @@ class ControllerResolver
             return $value;
         }
 
-        return match ($type->getName()) {
+        return match (($type instanceof \ReflectionNamedType ? ($type instanceof \ReflectionNamedType ? $type->getName() : (string)$type) : (string)$type)) {
             'int' => (int) $value,
             'float' => (float) $value,
             'bool' => filter_var($value, FILTER_VALIDATE_BOOLEAN),

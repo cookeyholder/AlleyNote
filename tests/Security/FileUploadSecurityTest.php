@@ -278,7 +278,11 @@ class FileUploadSecurityTest extends TestCase
         int $error,
         string $content,
     ): UploadedFileInterface {
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
         $file = Mockery::mock(UploadedFileInterface::class);
+        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|\Mockery\MockInterface */
         $stream = Mockery::mock(StreamInterface::class);
 
         $file->shouldReceive('getClientFilename')->andReturn($filename);

@@ -256,6 +256,8 @@ abstract class TestCase extends BaseTestCase
      */
     protected function createResponseMock(): ResponseInterface
     {
+        /** @var ResponseInterface::class|\Mockery\MockInterface */
+        /** @var ResponseInterface::class|\Mockery\MockInterface */
         $response = Mockery::mock(ResponseInterface::class);
         $response->shouldReceive('withJson')
             ->andReturnUsing(function ($data) use ($response) {

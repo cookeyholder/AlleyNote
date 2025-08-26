@@ -19,9 +19,12 @@ use Psr\Http\Message\UploadedFileInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Tests\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class AttachmentServiceTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected AttachmentService $service;
 
     protected string $uploadDir;
@@ -101,6 +104,12 @@ class AttachmentServiceTest extends TestCase
             ->andReturn(false);
 
         // 模擬文章存在且用戶是文章擁有者
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
         $post = Mockery::mock(Post::class);
         $post->shouldReceive('getId')->andReturn($postId);
         $post->shouldReceive('getUserId')->andReturn(1); // 文章擁有者是 userId = 1
@@ -159,6 +168,12 @@ class AttachmentServiceTest extends TestCase
             ->andReturn(false);
 
         // 模擬文章存在且用戶是文章擁有者
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
         $post = Mockery::mock(Post::class);
         $post->shouldReceive('getId')->andReturn($postId);
         $post->shouldReceive('getUserId')->andReturn(1); // 文章擁有者是 userId = 1
@@ -195,6 +210,12 @@ class AttachmentServiceTest extends TestCase
             ->andReturn(false);
 
         // 模擬文章存在且用戶是文章擁有者
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
+        /** @var Post::class|\Mockery\MockInterface */
         $post = Mockery::mock(Post::class);
         $post->shouldReceive('getId')->andReturn($postId);
         $post->shouldReceive('getUserId')->andReturn(1); // 文章擁有者是 userId = 1
@@ -250,10 +271,14 @@ class AttachmentServiceTest extends TestCase
         int $size,
         int $error,
     ): UploadedFileInterface {
+        /** @var Psr\Http\Message\StreamInterface|\Mockery\MockInterface */
+        /** @var Psr\Http\Message\StreamInterface|\Mockery\MockInterface */
         $stream = Mockery::mock('Psr\Http\Message\StreamInterface');
         $stream->shouldReceive('getContents')->andReturn('test content');
         $stream->shouldReceive('rewind')->andReturnNull();
 
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn($filename);
         $file->shouldReceive('getClientMediaType')->andReturn($mimeType);

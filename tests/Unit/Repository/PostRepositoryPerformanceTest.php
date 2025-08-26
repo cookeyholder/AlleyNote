@@ -11,12 +11,15 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PDO;
 use Tests\Factory\PostFactory;
 
 class PostRepositoryPerformanceTest extends MockeryTestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private PostRepository $repository;
 
     private PDO $db;

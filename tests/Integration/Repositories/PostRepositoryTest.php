@@ -12,9 +12,12 @@ use App\Infrastructure\Services\CacheService;
 use Mockery;
 use PDO;
 use PHPUnit\Framework\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class PostRepositoryTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private PDO $pdo;
 
     private PostRepository $repository;

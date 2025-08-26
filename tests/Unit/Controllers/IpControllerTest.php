@@ -15,9 +15,12 @@ use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class IpControllerTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private IpService|MockInterface $service;
 
     private ValidatorInterface|MockInterface $validator;

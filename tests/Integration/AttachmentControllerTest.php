@@ -88,6 +88,10 @@ class AttachmentControllerTest extends TestCase
 
         // 準備測試資料
         $postId = 1;
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
         $file = Mockery::mock(UploadedFileInterface::class);
         $attachment = new Attachment([
             'id' => 1,
@@ -146,6 +150,10 @@ class AttachmentControllerTest extends TestCase
 
         // 準備測試資料
         $postId = 1;
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
         $file = Mockery::mock(UploadedFileInterface::class);
 
         // 設定請求

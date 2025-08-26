@@ -13,9 +13,12 @@ use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class AuthServiceTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private UserRepository|MockInterface $userRepository;
 
     private PasswordSecurityServiceInterface|MockInterface $passwordService;

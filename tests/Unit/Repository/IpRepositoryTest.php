@@ -10,9 +10,12 @@ use InvalidArgumentException;
 use Mockery;
 use PDO;
 use PHPUnit\Framework\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class IpRepositoryTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private PDO $db;
 
     private CacheService $cache;

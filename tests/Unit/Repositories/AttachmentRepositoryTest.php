@@ -11,9 +11,12 @@ use Mockery\MockInterface;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class AttachmentRepositoryTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected AttachmentRepository $repository;
 
     protected PDO $db;

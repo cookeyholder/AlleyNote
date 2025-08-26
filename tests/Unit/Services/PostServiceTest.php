@@ -19,11 +19,14 @@ use Exception;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use RuntimeException;
 
 class PostServiceTest extends MockeryTestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private PostRepositoryInterface|MockInterface $repository;
 
     private App\Shared\Contracts\ValidatorInterface|MockInterface $validator;
