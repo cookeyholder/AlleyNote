@@ -16,6 +16,8 @@ use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
  *
  * 定義JWT token的核心操作方法，包含token產生、驗證、解析等功能。
  * 採用RS256演算法進行token簽名，確保token的安全性和可驗證性。
+ *
+ * @package AlleyNote\Domains\Auth\Contracts
  */
 interface JwtTokenServiceInterface
 {
