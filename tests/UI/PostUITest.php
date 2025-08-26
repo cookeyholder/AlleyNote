@@ -4,7 +4,8 @@ namespace Tests\UI;
 
 class PostUITest extends UITestCase
 {
-    /** @test */
+    #[Test]
+
     public function shouldDisplayPostList(): void
     {
         // 使用 browserAction 工具來測試文章列表頁面
@@ -26,7 +27,9 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldCreateNewPost(): void
     {
         // 登入系統
@@ -67,7 +70,9 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldEditExistingPost(): void
     {
         // 登入系統
@@ -100,7 +105,9 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldDeletePost(): void
     {
         // 登入系統
@@ -128,7 +135,9 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldHandleResponsiveLayout(): void
     {
         // 測試不同螢幕尺寸下的版面配置
@@ -150,7 +159,9 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldSupportDarkMode(): void
     {
         // 測試深色模式切換

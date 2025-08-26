@@ -19,6 +19,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * @group integration
@@ -106,7 +107,9 @@ class AuthControllerTest extends TestCase
         Mockery::close();
     }
 
-    /** @test */
+    #[Test]
+
+
     public function registerUserSuccessfully(): void
     {
         $userData = [
@@ -142,7 +145,9 @@ class AuthControllerTest extends TestCase
         $this->assertEquals('註冊成功', $responseData['message']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function returnValidationErrorsForInvalidRegistrationData(): void
     {
         $invalidData = [
@@ -173,7 +178,9 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode()); // 驗證失敗應該返回400
     }
 
-    /** @test */
+    #[Test]
+
+
     public function loginUserSuccessfully(): void
     {
         $credentials = [
@@ -208,7 +215,9 @@ class AuthControllerTest extends TestCase
         $this->assertTrue($responseData['success']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function returnErrorForInvalidLogin(): void
     {
         $invalidCredentials = [
@@ -232,7 +241,9 @@ class AuthControllerTest extends TestCase
         $this->assertTrue($response->getStatusCode() >= 400); // 接受4xx或5xx錯誤狀態碼
     }
 
-    /** @test */
+    #[Test]
+
+
     public function logoutUserSuccessfully(): void
     {
         // logout 方法不需要調用 AuthService，直接返回成功響應
@@ -249,7 +260,9 @@ class AuthControllerTest extends TestCase
         $this->assertEquals('登出成功', $responseData['message']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function getUserInfoSuccessfully(): void
     {
         // getUserInfo 方法已經在 BaseController 中實現，此處測試直接使用默認行為

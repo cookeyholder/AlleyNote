@@ -8,6 +8,7 @@ use DateTime;
 use PDO;
 use PDOException;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class UserRepositoryTest extends TestCase
 {
@@ -39,7 +40,9 @@ class UserRepositoryTest extends TestCase
         ');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function createUserSuccessfully(): void
     {
         $userData = [
@@ -58,7 +61,9 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals(1, $result['status']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function updateUserSuccessfully(): void
     {
         $user = $this->repository->create([
@@ -79,7 +84,9 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($user['username'], $updated['username']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function deleteUserSuccessfully(): void
     {
         $user = $this->repository->create([
@@ -95,7 +102,9 @@ class UserRepositoryTest extends TestCase
         $this->assertNull($found);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function findUserByUuid(): void
     {
         $userData = [
@@ -112,7 +121,9 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['email'], $found['email']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function findUserByUsername(): void
     {
         $userData = [
@@ -128,7 +139,9 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['email'], $found['email']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function findUserByEmail(): void
     {
         $userData = [
@@ -144,7 +157,9 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['username'], $found['username']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function preventDuplicateUsername(): void
     {
         $userData = [
@@ -161,7 +176,9 @@ class UserRepositoryTest extends TestCase
         $this->repository->create($userData);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function preventDuplicateEmail(): void
     {
         $userData = [
@@ -178,7 +195,9 @@ class UserRepositoryTest extends TestCase
         $this->repository->create($userData);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function findUserById(): void
     {
         $userData = [
@@ -195,14 +214,18 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['email'], $found['email']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function returnNullWhenUserNotFound(): void
     {
         $result = $this->repository->findById('999');
         $this->assertNull($result);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function updateLastLoginTime(): void
     {
         $user = $this->repository->create([

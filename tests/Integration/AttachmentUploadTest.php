@@ -18,6 +18,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * @group failing
@@ -115,7 +116,9 @@ class AttachmentUploadTest extends TestCase
         return $file;
     }
 
-    /** @test */
+    #[Test]
+
+
     public function should_handle_concurrent_uploads(): void
     {
         $postId = 1;
@@ -141,7 +144,9 @@ class AttachmentUploadTest extends TestCase
         $this->assertEquals(3, $successfulUploads, '所有上傳應該成功完成');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function should_handle_large_file_upload(): void
     {
         $postId = 1;
@@ -159,7 +164,9 @@ class AttachmentUploadTest extends TestCase
         $this->assertEquals($fileSize, $attachment->getFileSize());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function should_validate_file_types(): void
     {
         $postId = 1;
@@ -182,7 +189,9 @@ class AttachmentUploadTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
+
+
     public function should_handle_disk_full_error(): void
     {
         $postId = 1;
@@ -206,7 +215,9 @@ class AttachmentUploadTest extends TestCase
         $this->attachmentService->upload($postId, $file, 1);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function should_handle_permission_error(): void
     {
         $postId = 1;

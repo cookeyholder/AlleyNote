@@ -4,6 +4,7 @@ namespace Tests\Unit\Services;
 
 use App\Infrastructure\Services\CacheService;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class CacheServiceTest extends TestCase
 {
@@ -15,7 +16,9 @@ class CacheServiceTest extends TestCase
         $this->cacheService = new CacheService();
     }
 
-    /** @test */
+    #[Test]
+
+
     public function storeAndRetrieveData(): void
     {
         $key = 'test_key';
@@ -29,7 +32,9 @@ class CacheServiceTest extends TestCase
         $this->assertEquals($value, $result);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function handleConnectionFailure(): void
     {
         $key = 'test_key';
@@ -42,7 +47,9 @@ class CacheServiceTest extends TestCase
         $this->assertEquals($value, $result);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function handleConcurrentRequests(): void
     {
         $key = 'test_key';
@@ -61,7 +68,9 @@ class CacheServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
+
+
     public function clearCache(): void
     {
         $result = $this->cacheService->clear();
@@ -69,7 +78,9 @@ class CacheServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function deleteSpecificKey(): void
     {
         $result = $this->cacheService->delete('test_key');

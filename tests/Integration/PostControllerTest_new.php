@@ -16,6 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class PostControllerTest extends TestCase
 {
@@ -90,7 +91,9 @@ class PostControllerTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
+
+
     public function indexShouldReturnPaginatedPosts(): void
     {
         // Mock user_id attribute
@@ -136,7 +139,9 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function showShouldReturnPostDetails(): void
     {
         // Mock user_id attribute
@@ -173,7 +178,9 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function storeShouldCreateNewPost(): void
     {
         // Mock user_id attribute
@@ -210,7 +217,9 @@ class PostControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function storeShouldReturn400WhenValidationFails(): void
     {
         // Mock user_id attribute
@@ -247,7 +256,9 @@ class PostControllerTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function updateShouldModifyExistingPost(): void
     {
         // Mock user_id attribute
@@ -276,7 +287,9 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function updateShouldReturn404WhenPostNotFound(): void
     {
         // Mock user_id attribute
@@ -313,7 +326,9 @@ class PostControllerTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function destroyShouldDeletePost(): void
     {
         // Mock user_id attribute
@@ -335,7 +350,9 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function destroyShouldReturn404WhenPostNotFound(): void
     {
         // Mock user_id attribute

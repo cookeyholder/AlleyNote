@@ -7,10 +7,12 @@ namespace Tests\Unit\Models;
 use App\Domains\Post\Models\Post;
 use Tests\Factory\PostFactory;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class PostTest extends TestCase
 {
-    /** @test */
+    #[Test]
+
     public function correctlyInitializesWithValidData(): void
     {
         $data = PostFactory::make([
@@ -32,7 +34,9 @@ class PostTest extends TestCase
         $this->assertEquals($data['user_ip'], $post->getUserIp());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function handlesNullableFieldsCorrectly(): void
     {
         $data = PostFactory::make([
@@ -49,7 +53,9 @@ class PostTest extends TestCase
         $this->assertNull($post->getPublishDate());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function setsDefaultValuesCorrectly(): void
     {
         $data = PostFactory::make([
@@ -72,7 +78,9 @@ class PostTest extends TestCase
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[\+\-]\d{2}:\d{2}$/', $post->getUpdatedAt());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function storesRawHtmlInTitleAndContent(): void
     {
         $data = PostFactory::make([

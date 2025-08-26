@@ -10,6 +10,7 @@ use Mockery;
 use Mockery\MockInterface;
 use PDO;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class AttachmentRepositoryTest extends TestCase
 {
@@ -66,7 +67,9 @@ class AttachmentRepositoryTest extends TestCase
         $this->db->exec('CREATE INDEX idx_attachments_uuid ON attachments(uuid)');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldCreateAttachmentSuccessfully(): void
     {
         // 準備測試資料
@@ -93,7 +96,9 @@ class AttachmentRepositoryTest extends TestCase
         $this->assertEquals($data['storage_path'], $attachment->getStoragePath());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldFindAttachmentById(): void
     {
         // 建立測試資料
@@ -115,7 +120,9 @@ class AttachmentRepositoryTest extends TestCase
         $this->assertEquals($created->getUuid(), $found->getUuid());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldFindAttachmentByUuid(): void
     {
         // 建立測試資料
@@ -137,19 +144,25 @@ class AttachmentRepositoryTest extends TestCase
         $this->assertEquals($created->getUuid(), $found->getUuid());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldReturnNullForNonExistentId(): void
     {
         $this->assertNull($this->repository->find(999));
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldReturnNullForNonExistentUuid(): void
     {
         $this->assertNull($this->repository->findByUuid('non-existent-uuid'));
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldGetAttachmentsByPostId(): void
     {
         // 建立多個附件
@@ -175,7 +188,9 @@ class AttachmentRepositoryTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldSoftDeleteAttachment(): void
     {
         // 建立測試資料

@@ -18,6 +18,7 @@ use Psr\Http\Message\UploadedFileInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class AttachmentServiceTest extends TestCase
 {
@@ -79,7 +80,9 @@ class AttachmentServiceTest extends TestCase
             ->byDefault();
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldUploadFileSuccessfully(): void
     {
         // 準備測試資料
@@ -139,7 +142,9 @@ class AttachmentServiceTest extends TestCase
         $this->assertNotNull($result);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldRejectInvalidFileType(): void
     {
         // 準備測試資料
@@ -175,7 +180,9 @@ class AttachmentServiceTest extends TestCase
         $this->service->upload($postId, $file, 1); // userId = 1
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldRejectOversizedFile(): void
     {
         // 準備測試資料
@@ -211,7 +218,9 @@ class AttachmentServiceTest extends TestCase
         $this->service->upload($postId, $file, 1); // userId = 1
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldRejectUploadToNonExistentPost(): void
     {
         // 準備測試資料

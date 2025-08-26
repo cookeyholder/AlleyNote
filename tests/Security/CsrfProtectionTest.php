@@ -16,6 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class CsrfProtectionTest extends TestCase
 {
@@ -136,7 +137,9 @@ class CsrfProtectionTest extends TestCase
             ->byDefault();
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldRejectRequestWithoutCsrfToken(): void
     {
         // 準備測試資料
@@ -185,7 +188,9 @@ class CsrfProtectionTest extends TestCase
         $this->assertTrue($response->getStatusCode() === 201 || $response->getStatusCode() === 403);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldRejectRequestWithInvalidCsrfToken(): void
     {
         // 準備測試資料
@@ -234,7 +239,9 @@ class CsrfProtectionTest extends TestCase
         $this->assertTrue($response->getStatusCode() === 201 || $response->getStatusCode() === 403);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldAcceptRequestWithValidCsrfToken(): void
     {
         // 準備測試資料

@@ -6,6 +6,7 @@ namespace Tests\Integration;
 
 use PDO;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class DatabaseBackupTest extends TestCase
 {
@@ -71,7 +72,9 @@ class DatabaseBackupTest extends TestCase
         ");
     }
 
-    /** @test */
+    #[Test]
+
+
     public function backupDatabaseSuccessfully(): void
     {
         // 執行備份腳本
@@ -100,7 +103,9 @@ class DatabaseBackupTest extends TestCase
         $this->assertEquals(3, $stmt->fetchColumn(), '備份的附件數量不正確');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function restoreDatabaseSuccessfully(): void
     {
         // 先建立備份
@@ -133,7 +138,9 @@ class DatabaseBackupTest extends TestCase
         $this->assertEquals(3, $stmt->fetchColumn(), '還原後的附件數量不正確');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function handleBackupErrorsGracefully(): void
     {
         // 使用不存在的來源資料庫
@@ -155,7 +162,9 @@ class DatabaseBackupTest extends TestCase
         $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function handleRestoreErrorsGracefully(): void
     {
         // 使用不存在的備份檔案
@@ -176,7 +185,9 @@ class DatabaseBackupTest extends TestCase
         $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function maintainDataIntegrityDuringBackupRestore(): void
     {
         // 記錄原始資料

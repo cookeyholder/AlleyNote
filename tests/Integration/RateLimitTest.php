@@ -9,6 +9,7 @@ use App\Infrastructure\Services\RateLimitService;
 use Exception;
 use Mockery;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class RateLimitTest extends TestCase
 {
@@ -38,7 +39,9 @@ class RateLimitTest extends TestCase
             ->byDefault();
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldLimitRateSuccessfully(): void
     {
         $ip = '192.168.1.1';
@@ -58,7 +61,9 @@ class RateLimitTest extends TestCase
         $this->assertTrue($result['allowed'], '正常請求應該被允許');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldResetLimitAfterTimeWindow(): void
     {
         $ip = '192.168.1.2';
@@ -93,7 +98,9 @@ class RateLimitTest extends TestCase
         $this->assertTrue($resetResult['allowed'], '重置後的請求應該被允許');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldHandleDifferentIpsIndependently(): void
     {
         $ip1 = '192.168.1.3';
@@ -125,7 +132,9 @@ class RateLimitTest extends TestCase
         $this->assertTrue($result2['allowed'], 'IP2 應該被允許');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldHandleServiceUnavailability(): void
     {
         $ip = '192.168.1.5';
@@ -141,7 +150,9 @@ class RateLimitTest extends TestCase
         $this->assertTrue($result['allowed'], '快取服務錯誤時應該允許請求');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldIncrementCounterCorrectly(): void
     {
         $ip = '192.168.1.6';
@@ -171,7 +182,9 @@ class RateLimitTest extends TestCase
         $this->assertTrue($result['allowed'], '計數器應該正確遞增');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldHandleMaxAttemptsReached(): void
     {
         $ip = '192.168.1.7';

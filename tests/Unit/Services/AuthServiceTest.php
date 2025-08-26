@@ -12,6 +12,7 @@ use App\Shared\Validation\ValidationResult;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class AuthServiceTest extends TestCase
 {
@@ -39,7 +40,9 @@ class AuthServiceTest extends TestCase
         Mockery::close();
     }
 
-    /** @test */
+    #[Test]
+
+
     public function it_should_register_new_user_successfully(): void
     {
         // 準備測試資料
@@ -100,7 +103,9 @@ class AuthServiceTest extends TestCase
         $this->assertEquals(1, $result['status']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function it_should_validate_registration_data(): void
     {
         // 準備無效的測試資料
@@ -131,7 +136,9 @@ class AuthServiceTest extends TestCase
         new RegisterUserDTO($this->validator, $invalidData);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function it_should_login_user_successfully(): void
     {
         // 準備測試資料
@@ -166,7 +173,9 @@ class AuthServiceTest extends TestCase
         $this->assertEquals('test@example.com', $result['user']['email']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function it_should_fail_login_with_invalid_credentials(): void
     {
         // 準備測試資料
@@ -196,7 +205,9 @@ class AuthServiceTest extends TestCase
         $this->assertEquals('無效的認證資訊', $result['message']);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function it_should_not_login_inactive_user(): void
     {
         // 準備測試資料

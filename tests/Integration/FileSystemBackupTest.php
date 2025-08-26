@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class FileSystemBackupTest extends TestCase
 {
@@ -51,7 +52,9 @@ class FileSystemBackupTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
+
+
     public function backupFilesSuccessfully(): void
     {
         // 執行備份腳本
@@ -97,7 +100,9 @@ class FileSystemBackupTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
+
+
     public function restoreFilesSuccessfully(): void
     {
         // 先建立備份
@@ -140,7 +145,9 @@ class FileSystemBackupTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
+
+
     public function handleBackupErrorsGracefully(): void
     {
         // 使用不存在的來源目錄
@@ -161,7 +168,9 @@ class FileSystemBackupTest extends TestCase
         $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function handleRestoreErrorsGracefully(): void
     {
         // 使用不存在的備份檔案
@@ -182,7 +191,9 @@ class FileSystemBackupTest extends TestCase
         $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function handlePermissionErrors(): void
     {
         // 使用不存在的備份檔案來測試錯誤處理
@@ -210,7 +221,9 @@ class FileSystemBackupTest extends TestCase
         $this->assertStringContainsString('找不到備份檔案', $outputString, '應該輸出檔案不存在錯誤訊息');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function maintainFileMetadataDuringBackupRestore(): void
     {
         // 記錄原始檔案的中繼資料

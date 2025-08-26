@@ -9,6 +9,7 @@ use App\Infrastructure\Services\RateLimitService;
 use Mockery;
 use RuntimeException;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class RateLimitServiceTest extends TestCase
 {
@@ -23,7 +24,9 @@ class RateLimitServiceTest extends TestCase
         $this->rateLimitService = new RateLimitService($this->cacheMock);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldAllowFirstRequest(): void
     {
         $ip = '127.0.0.1';
@@ -44,7 +47,9 @@ class RateLimitServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldRejectWhenLimitExceeded(): void
     {
         $ip = '127.0.0.1';
@@ -59,7 +64,9 @@ class RateLimitServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldHandleCacheFailureGracefully(): void
     {
         $ip = '127.0.0.1';
@@ -74,7 +81,9 @@ class RateLimitServiceTest extends TestCase
         $this->assertTrue($result, '當快取服務失敗時應該允許請求');
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldIncrementRequestCount(): void
     {
         $ip = '127.0.0.1';
@@ -94,7 +103,9 @@ class RateLimitServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
+
+
     public function shouldHandleSetFailure(): void
     {
         $ip = '127.0.0.1';

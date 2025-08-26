@@ -16,6 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class AttachmentControllerTest extends TestCase
 {
@@ -71,7 +72,9 @@ class AttachmentControllerTest extends TestCase
             ->byDefault();
     }
 
-    /** @test */
+    #[Test]
+
+
     public function uploadShouldStoreFileSuccessfully(): void
     {
         // Mock user_id attribute
@@ -121,7 +124,9 @@ class AttachmentControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function uploadShouldReturn400ForInvalidFile(): void
     {
         // Mock user_id attribute
@@ -171,7 +176,9 @@ class AttachmentControllerTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function listShouldReturnAttachments(): void
     {
         // Mock user_id attribute
@@ -236,7 +243,9 @@ class AttachmentControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function deleteShouldRemoveAttachment(): void
     {
         // Mock user_id attribute
@@ -273,7 +282,9 @@ class AttachmentControllerTest extends TestCase
         $this->assertEquals(204, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function deleteShouldReturn404ForNonexistentAttachment(): void
     {
         // Mock user_id attribute
@@ -318,7 +329,9 @@ class AttachmentControllerTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    /** @test */
+    #[Test]
+
+
     public function deleteShouldReturn400ForInvalidUuid(): void
     {
         // Mock user_id attribute
