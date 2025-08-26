@@ -12,6 +12,8 @@ use DateTime;
  *
  * 定義token黑名單的資料存取操作，包含新增、查詢、刪除等功能。
  * 負責管理被撤銷或無效token的黑名單記錄，確保token安全性。
+ *
+ * @package AlleyNote\Domains\Auth\Contracts
  */
 interface TokenBlacklistRepositoryInterface
 {

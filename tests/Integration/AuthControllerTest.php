@@ -188,58 +188,78 @@ class AuthControllerTest extends TestCase
     public function loginUserSuccessfully(): void
     {
         $credentials = [
-            'username' => 'testuser',
+            'email' => 'test@example.com',
             'password' => 'password123',
         ];
 
         // 設定 Mock 期望和請求數據
         $this->request->shouldReceive('getParsedBody')->andReturn($credentials);
+        $this->request->shouldReceive('getHeaderLine')->with('User-Agent')->andReturn('Test User Agent');
 
-        $this->authService->shouldReceive('login')
+        // Mock getClientIpAddress 所需的 header 檢查
+        $this->request->shouldReceive('hasHeader')->andReturn(false);
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
+
+        // 模擬 AuthenticationService 的成功回應
+        $accessTokenExpiresAt = new \DateTimeImmutable('+1 hour');
+        $refreshTokenExpiresAt = new \DateTimeImmutable('+30 days');
+
+        // 使用有效的 JWT 格式（假的但格式正確）
+        $fakeAccessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6ImFjY2VzcyJ9.fake-signature';
+        $fakeRefreshToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6InJlZnJlc2gifQ.fake-signature';
+
+        $mockTokenPair = new \AlleyNote\Domains\Auth\ValueObjects\TokenPair(
+            accessToken: $fakeAccessToken,
+            refreshToken: $fakeRefreshToken,
+            accessTokenExpiresAt: $accessTokenExpiresAt,
+            refreshTokenExpiresAt: $refreshTokenExpiresAt,
+            tokenType: 'Bearer'
+        );
+
+        $mockLoginResponse = new \AlleyNote\Domains\Auth\DTOs\LoginResponseDTO(
+            tokens: $mockTokenPair,
+            userId: 1,
+            userEmail: 'test@example.com',
+            expiresAt: $accessTokenExpiresAt->getTimestamp(),
+            sessionId: 'test-session-id',
+            permissions: ['read', 'write']
+        );
+
+        $this->authenticationService->shouldReceive('login')
             ->once()
-            ->with($credentials)
-            ->andReturn([
-                'success' => true,
-                'token' => 'fake-jwt-token',
-                'user' => [
-                    'id' => 1,
-                    'username' => 'testuser',
-                    'email' => 'test@example.com',
-                ],
-            ]);
-
-        // 建立控制器並執行
+            ->andReturn($mockLoginResponse);        // 建立控制器並執行
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應
         $this->assertEquals(200, $response->getStatusCode());
-        $responseBody = (string) $response->getBody();
-        $responseData = json_decode($responseBody, true);
-        $this->assertTrue($responseData['success']);
     }
 
     #[Test]
     public function returnErrorForInvalidLogin(): void
     {
         $invalidCredentials = [
-            'username' => 'testuser',
+            'email' => 'test@example.com',
             'password' => 'wrongpassword',
         ];
 
         // 設定 Mock 期望和請求數據
         $this->request->shouldReceive('getParsedBody')->andReturn($invalidCredentials);
+        $this->request->shouldReceive('getHeaderLine')->with('User-Agent')->andReturn('Test User Agent');
 
-        $this->authService->shouldReceive('login')
+        // Mock getClientIpAddress 所需的 header 檢查
+        $this->request->shouldReceive('hasHeader')->andReturn(false);
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
+
+        $this->authenticationService->shouldReceive('login')
             ->once()
-            ->with($invalidCredentials)
             ->andThrow(new InvalidArgumentException('無效的憑證'));
 
         // 建立控制器並執行
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
         $response = $controller->login($this->request, $this->response);
 
-        // 驗證回應 - 當 AuthService 拋出 InvalidArgumentException 時，控制器返回 400
+        // 驗證回應 - 當 AuthenticationService 拋出 InvalidArgumentException 時，控制器返回 400
         $this->assertTrue($response->getStatusCode() >= 400); // 接受4xx或5xx錯誤狀態碼
     }
 

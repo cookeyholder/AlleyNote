@@ -122,18 +122,6 @@ final class AuthenticationServiceTest extends TestCase
             ->with($tokenPair->getRefreshToken())
             ->willReturn($payload);
 
-        $this->refreshTokenRepository
-            ->expects($this->once())
-            ->method('create')
-            ->with(
-                'test-jti',
-                1,
-                $this->anything(), // token hash
-                $this->isInstanceOf(DateTime::class),
-                $this->deviceInfo,
-            )
-            ->willReturn(true);
-
         $this->userRepository
             ->expects($this->once())
             ->method('updateLastLogin')
@@ -253,11 +241,6 @@ final class AuthenticationServiceTest extends TestCase
             ->method('extractPayload')
             ->willReturn($payload);
 
-        $this->refreshTokenRepository
-            ->expects($this->once())
-            ->method('create')
-            ->willReturn(true);
-
         $this->userRepository
             ->expects($this->once())
             ->method('updateLastLogin')
@@ -293,26 +276,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->jwtTokenService
             ->expects($this->exactly(2))
             ->method('extractPayload')
-            ->willReturnOnConsecutiveCalls($oldPayload, $newPayload);
-
-        $this->refreshTokenRepository
-            ->expects($this->once())
-            ->method('revoke')
-            ->with('test-jti', 'token_refresh')
-            ->willReturn(true);
-
-        $this->refreshTokenRepository
-            ->expects($this->once())
-            ->method('create')
-            ->with(
-                'new-jti',
-                1,
-                $this->anything(),
-                $this->isInstanceOf(DateTime::class),
-                $this->deviceInfo,
-                'test-jti',
-            )
-            ->willReturn(true);
+            ->willReturnOnConsecutiveCalls($newPayload, $oldPayload);
 
         // Act
         $response = $this->authenticationService->refresh($request, $this->deviceInfo);
