@@ -119,8 +119,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
             $entries[] = new TokenBlacklistEntry(
                 jti: "batch-token-{$i}",
                 tokenType: 'access',
-                expiresAt: new DateTime('+2 hours'),
-                blacklistedAt: new DateTime(),
+                expiresAt: new DateTimeImmutable('+2 hours'),
+                blacklistedAt: new DateTimeImmutable(),
                 reason: TokenBlacklistEntry::REASON_LOGOUT,
                 userId: $i,
             );
@@ -173,8 +173,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
             $entry = new TokenBlacklistEntry(
                 jti: $data['jti'],
                 tokenType: 'access',
-                expiresAt: new DateTime($data['expires']),
-                blacklistedAt: new DateTime(),
+                expiresAt: new DateTimeImmutable($data['expires']),
+                blacklistedAt: new DateTimeImmutable(),
                 reason: TokenBlacklistEntry::REASON_LOGOUT,
                 userId: $data['user'],
             );
@@ -211,8 +211,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
         $expiredEntry = new TokenBlacklistEntry(
             jti: 'expired-cleanup-token',
             tokenType: 'access',
-            expiresAt: new DateTime('-1 hour'),
-            blacklistedAt: new DateTime('-2 hours'),
+            expiresAt: new DateTimeImmutable('-1 hour'),
+            blacklistedAt: new DateTimeImmutable('-2 hours'),
             reason: TokenBlacklistEntry::REASON_LOGOUT,
             userId: 1,
         );
@@ -220,8 +220,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
         $activeEntry = new TokenBlacklistEntry(
             jti: 'active-cleanup-token',
             tokenType: 'access',
-            expiresAt: new DateTime('+1 hour'),
-            blacklistedAt: new DateTime(),
+            expiresAt: new DateTimeImmutable('+1 hour'),
+            blacklistedAt: new DateTimeImmutable(),
             reason: TokenBlacklistEntry::REASON_LOGOUT,
             userId: 1,
         );
@@ -256,8 +256,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
             $entry = new TokenBlacklistEntry(
                 jti: $jti,
                 tokenType: 'access',
-                expiresAt: new DateTime('+1 hour'),
-                blacklistedAt: new DateTime(),
+                expiresAt: new DateTimeImmutable('+1 hour'),
+                blacklistedAt: new DateTimeImmutable(),
                 reason: TokenBlacklistEntry::REASON_LOGOUT,
                 userId: 1,
             );
@@ -268,8 +268,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
             $entry = new TokenBlacklistEntry(
                 jti: $jti,
                 tokenType: 'refresh',
-                expiresAt: new DateTime('+1 day'),
-                blacklistedAt: new DateTime(),
+                expiresAt: new DateTimeImmutable('+1 day'),
+                blacklistedAt: new DateTimeImmutable(),
                 reason: TokenBlacklistEntry::REASON_SECURITY_BREACH,
                 userId: 2,
             );
@@ -309,8 +309,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
         $entry1 = new TokenBlacklistEntry(
             jti: 'duplicate-jti-test',
             tokenType: 'access',
-            expiresAt: new DateTime('+1 hour'),
-            blacklistedAt: new DateTime(),
+            expiresAt: new DateTimeImmutable('+1 hour'),
+            blacklistedAt: new DateTimeImmutable(),
             reason: TokenBlacklistEntry::REASON_LOGOUT,
             userId: 1,
         );
@@ -318,8 +318,8 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
         $entry2 = new TokenBlacklistEntry(
             jti: 'duplicate-jti-test', // 同樣的 JTI
             tokenType: 'refresh',
-            expiresAt: new DateTime('+2 hours'),
-            blacklistedAt: new DateTime(),
+            expiresAt: new DateTimeImmutable('+2 hours'),
+            blacklistedAt: new DateTimeImmutable(),
             reason: TokenBlacklistEntry::REASON_SECURITY_BREACH,
             userId: 2,
         );

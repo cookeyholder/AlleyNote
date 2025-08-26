@@ -376,7 +376,13 @@ class ModernAutoFixTool
                 '/\?\s*([A-Z][a-zA-Z]+)/' => '?$1',
 
                 // 修復 union types
-                '/\|\s*null/' => '|null'
+                '/\|\s*null/' => '|null',
+
+                // 修復 DateTime vs DateTimeImmutable 型別不匹配
+                '/new DateTime\(/' => 'new DateTimeImmutable(',
+
+                // 修復 DateTime 類別宣告
+                '/DateTime\s+\$/' => 'DateTimeImmutable $'
             ];
 
             foreach ($fixes as $pattern => $replacement) {
@@ -392,6 +398,21 @@ class ModernAutoFixTool
                 );
             }
 
+            // 檢查是否需要添加 DateTimeImmutable 的 use 語句
+            if (
+                str_contains($content, 'new DateTimeImmutable(') &&
+                !str_contains($content, 'use DateTimeImmutable;') &&
+                !str_contains($content, 'use DateTime;')
+            ) {
+                // 在 namespace 後面添加 use 語句
+                $content = preg_replace(
+                    '/(namespace\s+[^;]+;)/',
+                    "$1\n\nuse DateTimeImmutable;",
+                    $content,
+                    1
+                );
+            }
+
             if ($content !== $originalContent) {
                 file_put_contents($testFile, $content);
                 $fixedFiles++;
@@ -401,11 +422,10 @@ class ModernAutoFixTool
 
         return [
             'success' => true,
-            'message' => $fixedFiles > 0 ? "已修復 {$fixedFiles} 個測試檔案" : '沒有發現需要修復的現代 PHP 型別錯誤',
+            'message' => $fixedFiles > 0 ? "已修復 {$fixedFiles} 個測試檔案的現代 PHP 型別錯誤" : '沒有發現需要修復的現代 PHP 型別錯誤',
             'actions' => $actions
         ];
     }
-
     /**
      * 更新文件標籤
      */

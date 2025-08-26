@@ -54,7 +54,7 @@ final class TokenBlacklistService
      * @param string $jti JWT ID
      * @param string $tokenType Token 類型
      * @param int $userId 使用者 ID
-     * @param DateTime $expiresAt 過期時間
+     * @param DateTimeImmutable $expiresAt 過期時間
      * @param string $reason 黑名單原因
      * @param string|null $deviceId 裝置 ID
      * @param array<string, mixed>|null $metadata 額外資料
@@ -65,7 +65,7 @@ final class TokenBlacklistService
         string $jti,
         string $tokenType,
         int $userId,
-        DateTime $expiresAt,
+        DateTimeImmutable $expiresAt,
         string $reason,
         ?string $deviceId = null,
         ?array $metadata = null,
@@ -78,7 +78,7 @@ final class TokenBlacklistService
                 jti: $jti,
                 tokenType: $tokenType,
                 userId: $userId,
-                expiresAt: DateTimeImmutable::createFromMutable($expiresAt),
+                expiresAt: $expiresAt,
                 blacklistedAt: new DateTimeImmutable(),
                 reason: $reason,
                 deviceId: $deviceId,
@@ -103,6 +103,7 @@ final class TokenBlacklistService
                 'reason' => $reason,
                 'user_id' => $userId,
                 'error' => $e->getMessage(),
+                'exception_class' => get_class($e),
             ]);
 
             return false;
