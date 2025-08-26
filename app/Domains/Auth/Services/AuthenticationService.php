@@ -146,7 +146,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 sessionId: $newPayload->getJti(),
                 permissions: $request->scopes,
             );
-        } catch (InvalidTokenException | TokenExpiredException $e) {
+        } catch (InvalidTokenException|TokenExpiredException $e) {
             throw new AuthenticationException(
                 AuthenticationException::REASON_INVALID_REFRESH_TOKEN,
                 'Invalid refresh token: ' . $e->getMessage(),

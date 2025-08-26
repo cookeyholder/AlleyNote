@@ -2975,7 +2975,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/JwtAuthenticationIntegrationTest.php' => 
     array (
-      0 => 'ce0c612b186ab3d58b3e881779df57bdd0a7ba33',
+      0 => '3ce87a55500e750bf24ff31f418d81dbae2bdb36',
       1 => 
       array (
         0 => 'tests\\integration\\jwtauthenticationintegrationtest',
@@ -3039,6 +3039,53 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         6 => 'tests\\integration\\testqueryfunctionsintegration',
         7 => 'tests\\integration\\testerrorhandlingintegration',
         8 => 'tests\\integration\\createtokenblacklisttable',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Services/AuthServiceTest.php' => 
+    array (
+      0 => 'c632517dca3a3fd77439edf9b7067483aa561ef5',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\services\\authservicetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\services\\setup',
+        1 => 'tests\\unit\\domains\\auth\\services\\teardown',
+        2 => 'tests\\unit\\domains\\auth\\services\\test_register_traditional_mode_without_jwt',
+        3 => 'tests\\unit\\domains\\auth\\services\\test_register_jwt_mode_with_tokens',
+        4 => 'tests\\unit\\domains\\auth\\services\\test_register_jwt_mode_token_generation_failure',
+        5 => 'tests\\unit\\domains\\auth\\services\\test_login_traditional_mode_success',
+        6 => 'tests\\unit\\domains\\auth\\services\\test_login_jwt_mode_success',
+        7 => 'tests\\unit\\domains\\auth\\services\\test_login_user_not_found',
+        8 => 'tests\\unit\\domains\\auth\\services\\test_login_user_disabled',
+        9 => 'tests\\unit\\domains\\auth\\services\\test_login_invalid_password',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Services/RefreshTokenServiceTest.php' => 
+    array (
+      0 => '24bfe5955becdbc39b4cae33648605a92fcea5be',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\services\\refreshtokenservicetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\services\\setup',
+        1 => 'tests\\unit\\domains\\auth\\services\\teardown',
+        2 => 'tests\\unit\\domains\\auth\\services\\testservicecanbeinstantiated',
+        3 => 'tests\\unit\\domains\\auth\\services\\testcleanupexpiredtokenssuccess',
+        4 => 'tests\\unit\\domains\\auth\\services\\testcleanupexpiredtokensexception',
+        5 => 'tests\\unit\\domains\\auth\\services\\testgetusertokenstatssuccess',
+        6 => 'tests\\unit\\domains\\auth\\services\\testgetusertokenstatsexception',
+        7 => 'tests\\unit\\domains\\auth\\services\\testrevoketokensuccess',
+        8 => 'tests\\unit\\domains\\auth\\services\\testrevoketokenexception',
       ),
       3 => 
       array (

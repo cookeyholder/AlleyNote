@@ -8,9 +8,9 @@
 
 總任務數: **24 項**  
 狀態統計:
-- ⏳ 未開始: 13 項
+- ⏳ 未開始: 12 項
 - 🔄 進行中: 0 項  
-- ✅ 已完成: 11 項
+- ✅ 已完成: 12 項
 
 ---
 
@@ -266,20 +266,23 @@
 ### 2.7 實作 RefreshTokenService
 - **優先級**: 高
 - **預估時間**: 90分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 建立 RefreshTokenService 領域服務
   - 實作 refresh token 的業務邏輯
   - 處理 token 輪轉和清理
   - 實作多裝置管理
+  - 建立完整的單元測試
 - **驗收標準**:
   - ✅ 可以建立和儲存 refresh token
   - ✅ 可以使用 refresh token 產生新的 access token
   - ✅ 可以撤銷單個或所有裝置的 token
   - ✅ 自動清理過期和無效的 token
-  - ✅ 包含完整的單元測試
+  - ✅ 包含完整的單元測試（7 個測試，100% 通過）
 - **相依任務**: 2.2, 2.3, 2.4, 2.6
-- **檔案異動**: `app/Domains/Auth/Services/RefreshTokenService.php`
+- **完成日期**: 2025-01-25
+- **檔案異動**: `app/Domains/Auth/Services/RefreshTokenService.php`, `tests/Unit/Domains/Auth/Services/RefreshTokenServiceTest.php`
+- **測試覆蓋率**: 7 個測試，7 個斷言，100% 通過
 
 ### 2.8 實作 TokenBlacklistService
 - **優先級**: 中
@@ -302,7 +305,7 @@
 ### 2.9 更新現有 AuthService
 - **優先級**: 高
 - **預估時間**: 120分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 修改 AuthService 整合 JWT 認證
   - 保持向後相容性
@@ -313,9 +316,11 @@
   - ✅ 保持現有介面不變
   - ✅ 支援新舊認證方式共存
   - ✅ 正確處理所有錯誤情況
-  - ✅ 包含完整的單元測試
+  - ✅ 包含完整的單元測試（8 個測試，100% 通過）
 - **相依任務**: 2.2, 2.7, 2.8
-- **檔案異動**: `app/Domains/Auth/Services/AuthService.php`
+- **完成日期**: 2025-08-26
+- **檔案異動**: `app/Domains/Auth/Services/AuthService.php`, `tests/Unit/Domains/Auth/Services/AuthServiceTest.php`
+- **測試覆蓋率**: 8 個測試，32 個斷言，100% 通過
 
 ---
 

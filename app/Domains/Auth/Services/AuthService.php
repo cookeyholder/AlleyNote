@@ -1,7 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domains\Auth\Services;
 
+use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use AlleyNote\Domains\Auth\Exceptions\TokenGenerationException;
+use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
@@ -11,9 +16,11 @@ class AuthService
     public function __construct(
         private UserRepository $userRepository,
         private PasswordSecurityServiceInterface $passwordService,
+        private ?JwtTokenServiceInterface $jwtTokenService = null,
+        private bool $jwtEnabled = false,
     ) {}
 
-    public function register(RegisterUserDTO $dto): array
+    public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): array
     {
         // DTO 已經在建構時進行基本驗證，這裡進行密碼安全性檢查
         $this->passwordService->validatePassword($dto->password);
@@ -22,10 +29,48 @@ class AuthService
         $data = $dto->toArray();
         $data['password'] = $this->passwordService->hashPassword($data['password']);
 
-        return $this->userRepository->create($data);
+        $user = $this->userRepository->create($data);
+
+        // 如果啟用 JWT 且有提供 JWT 服務和裝置資訊，則產生 JWT token
+        if ($this->jwtEnabled && $this->jwtTokenService !== null && $deviceInfo !== null) {
+            try {
+                $tokenPair = $this->jwtTokenService->generateTokenPair(
+                    userId: (int) $user['id'],
+                    deviceInfo: $deviceInfo,
+                    customClaims: [
+                        'type' => 'registration',
+                        'username' => $user['username'],
+                        'email' => $user['email'],
+                    ],
+                );
+
+                return [
+                    'success' => true,
+                    'message' => '註冊成功',
+                    'user' => $user,
+                    'tokens' => [
+                        'access_token' => $tokenPair->getAccessToken(),
+                        'refresh_token' => $tokenPair->getRefreshToken(),
+                        'token_type' => $tokenPair->getTokenType(),
+                        'expires_in' => $tokenPair->getAccessTokenExpiresIn(),
+                        'expires_at' => $tokenPair->getAccessTokenExpiresAt()->format('c'),
+                    ],
+                ];
+            } catch (TokenGenerationException $e) {
+                // 如果 JWT 產生失敗，回傳傳統格式但記錄錯誤
+                error_log('JWT token generation failed during registration: ' . $e->getMessage());
+            }
+        }
+
+        // 傳統回傳格式（向後相容）
+        return [
+            'success' => true,
+            'message' => '註冊成功',
+            'user' => $user,
+        ];
     }
 
-    public function login(array $credentials): array
+    public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
     {
         $user = $this->userRepository->findByEmail($credentials['email']);
 
@@ -50,10 +95,43 @@ class AuthService
             ];
         }
 
-        $this->userRepository->updateLastLogin($user['id']);
+        $this->userRepository->updateLastLogin((string) $user['id']);
 
         unset($user['password']); // 移除敏感資訊
 
+        // 如果啟用 JWT 且有提供 JWT 服務和裝置資訊，則產生 JWT token
+        if ($this->jwtEnabled && $this->jwtTokenService !== null && $deviceInfo !== null) {
+            try {
+                $tokenPair = $this->jwtTokenService->generateTokenPair(
+                    userId: (int) $user['id'],
+                    deviceInfo: $deviceInfo,
+                    customClaims: [
+                        'type' => 'access',
+                        'username' => $user['username'],
+                        'email' => $user['email'],
+                        'role' => $user['role'] ?? 'user',
+                    ],
+                );
+
+                return [
+                    'success' => true,
+                    'message' => '登入成功',
+                    'user' => $user,
+                    'tokens' => [
+                        'access_token' => $tokenPair->getAccessToken(),
+                        'refresh_token' => $tokenPair->getRefreshToken(),
+                        'token_type' => $tokenPair->getTokenType(),
+                        'expires_in' => $tokenPair->getAccessTokenExpiresIn(),
+                        'expires_at' => $tokenPair->getAccessTokenExpiresAt()->format('c'),
+                    ],
+                ];
+            } catch (TokenGenerationException $e) {
+                // 如果 JWT 產生失敗，回傳傳統格式但記錄錯誤
+                error_log('JWT token generation failed during login: ' . $e->getMessage());
+            }
+        }
+
+        // 傳統回傳格式（向後相容）
         return [
             'success' => true,
             'message' => '登入成功',

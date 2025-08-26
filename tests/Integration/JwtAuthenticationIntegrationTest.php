@@ -17,6 +17,7 @@ use AlleyNote\Domains\Auth\Exceptions\AuthenticationException;
 use AlleyNote\Domains\Auth\Services\AuthenticationService;
 use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
 use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
+use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
 use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
@@ -388,14 +389,14 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // Mock 其他需要的方法...
         $mockService->shouldReceive('validateToken')->andReturn(true);
         $mockService->shouldReceive('extractPayload')
-            ->andReturn(new \AlleyNote\Domains\Auth\ValueObjects\JwtPayload(
+            ->andReturn(new JwtPayload(
                 jti: 'mock-jti-' . uniqid(),
                 sub: '1',
                 iss: 'alleynote',
                 aud: ['alleynote'],
                 iat: new DateTimeImmutable(),
                 exp: new DateTimeImmutable('+1 hour'),
-                customClaims: ['type' => 'access']
+                customClaims: ['type' => 'access'],
             ));
         $mockService->shouldReceive('revokeToken')->andReturn(true);
 
