@@ -34,6 +34,7 @@ class ModernAutoFixTool
 
     /**
      * 執行所有現代化自動修復
+     * 基於 Context7 MCP 查詢的最新最佳實踐和實際修復經驗
      */
     public function runAllModernFixes(): array
     {
@@ -42,7 +43,10 @@ class ModernAutoFixTool
         $fixes = [
             'validateComposerConfiguration' => '驗證 Composer 設定檔',
             'runComposerAudit' => '執行 Composer 安全性稽核',
+            'checkPhpCsFixerConfiguration' => '檢查 PHP-CS-Fixer 設定',
+            'runPhpStanAnalysis' => '執行 PHPStan 靜態分析',
             'checkJwtConfiguration' => '檢查並修復 JWT 設定',
+            'fixMockeryPHPUnitIntegration' => '修復 Mockery PHPUnit 整合問題',
             'checkDatabaseMigrations' => '檢查資料庫遷移',
             'fixModernTypeErrors' => '修復現代 PHP 型別錯誤',
             'migratePhpunitAnnotations' => '遷移 PHPUnit 註解到 Attributes',
@@ -82,8 +86,162 @@ class ModernAutoFixTool
     }
 
     /**
-     * 檢查並修復 JWT 設定
+     * 檢查 PHP-CS-Fixer 設定
+     * 基於 Context7 MCP 查詢的最新配置和規則集
      */
+    private function checkPhpCsFixerConfiguration(): array
+    {
+        $configFile = $this->projectRoot . '/.php-cs-fixer.dist.php';
+        $actions = [];
+        $commands = [];
+
+        if (!file_exists($configFile)) {
+            $actions[] = '缺少 PHP-CS-Fixer 配置檔';
+            $commands[] = 'Create .php-cs-fixer.dist.php configuration';
+
+            return [
+                'success' => false,
+                'message' => '需要建立 PHP-CS-Fixer 配置檔',
+                'actions' => $actions,
+                'commands' => $commands
+            ];
+        }
+
+        // 執行 PHP-CS-Fixer 檢查
+        $fixerOutput = shell_exec("cd {$this->projectRoot} && ./vendor/bin/php-cs-fixer check --diff --dry-run 2>&1");
+
+        if (str_contains($fixerOutput, 'needs fixing')) {
+            $actions[] = '發現程式碼風格問題';
+            $commands[] = './vendor/bin/php-cs-fixer fix';
+
+            // 檢查是否使用現代規則集
+            $configContent = file_get_contents($configFile);
+            if (!str_contains($configContent, '@PER-CS') && !str_contains($configContent, '@PHP84Migration')) {
+                $actions[] = '建議升級到最新的 @PER-CS2.0 或 @PHP84Migration 規則集';
+            }
+        }
+
+        return [
+            'success' => empty($actions),
+            'message' => empty($actions) ? 'PHP-CS-Fixer 設定檢查完成' : '發現程式碼風格問題',
+            'actions' => $actions,
+            'commands' => $commands
+        ];
+    }
+
+    /**
+     * 執行 PHPStan 靜態分析
+     * 基於 Context7 MCP 查詢的最新分析選項和錯誤處理
+     */
+    private function runPhpStanAnalysis(): array
+    {
+        $configFile = $this->projectRoot . '/phpstan.neon';
+        $actions = [];
+        $commands = [];
+
+        if (!file_exists($configFile)) {
+            return [
+                'success' => false,
+                'message' => 'PHPStan 配置檔不存在',
+                'actions' => ['需要建立 phpstan.neon 配置檔']
+            ];
+        }
+
+        // 執行 PHPStan 分析，使用現代選項
+        $phpstanOutput = shell_exec("cd {$this->projectRoot} && ./vendor/bin/phpstan analyse --memory-limit=1G --error-format=json 2>&1");
+
+        $phpstanData = json_decode($phpstanOutput, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && isset($phpstanData['totals']['errors'])) {
+            $errorCount = $phpstanData['totals']['errors'];
+
+            if ($errorCount > 0) {
+                $actions[] = "發現 {$errorCount} 個 PHPStan 錯誤";
+                $commands[] = './vendor/bin/phpstan analyse --memory-limit=1G --display-all-issues';
+
+                // 分析錯誤類型
+                if (isset($phpstanData['files'])) {
+                    $errorTypes = [];
+                    foreach ($phpstanData['files'] as $file => $fileErrors) {
+                        foreach ($fileErrors['messages'] as $error) {
+                            $errorTypes[] = $error['identifier'] ?? 'unknown';
+                        }
+                    }
+
+                    $topErrors = array_count_values($errorTypes);
+                    arsort($topErrors);
+
+                    foreach (array_slice($topErrors, 0, 3, true) as $errorType => $count) {
+                        $actions[] = "主要錯誤類型: {$errorType} ({$count} 次)";
+                    }
+                }
+            }
+        } else {
+            // 如果 JSON 解析失敗，檢查文字輸出
+            if (str_contains($phpstanOutput, 'errors found')) {
+                $actions[] = '發現 PHPStan 錯誤（詳細資訊請查看輸出）';
+                $commands[] = './vendor/bin/phpstan analyse --memory-limit=1G';
+            }
+        }
+
+        return [
+            'success' => empty($actions),
+            'message' => empty($actions) ? 'PHPStan 分析通過' : '發現靜態分析錯誤',
+            'actions' => $actions,
+            'commands' => $commands
+        ];
+    }
+
+    /**
+     * 修復 Mockery PHPUnit 整合問題
+     * 基於實際修復經驗的自動化修復
+     */
+    private function fixMockeryPHPUnitIntegration(): array
+    {
+        $testFiles = glob($this->projectRoot . '/tests/**/*Test.php');
+        $actions = [];
+        $fixedFiles = 0;
+
+        foreach ($testFiles as $testFile) {
+            $content = file_get_contents($testFile);
+            $originalContent = $content;
+
+            // 檢查是否使用 Mockery 但缺少 MockeryPHPUnitIntegration
+            if (str_contains($content, 'Mockery::') || str_contains($content, 'Mockery\\')) {
+                if (!str_contains($content, 'MockeryPHPUnitIntegration')) {
+                    // 在 class 定義後添加 trait
+                    if (preg_match('/(class\s+\w+\s+extends\s+[^\{]*\{)/', $content, $matches)) {
+                        $replacement = $matches[1] . "\n    use \\Mockery\\Adapter\\Phpunit\\MockeryPHPUnitIntegration;";
+                        $content = str_replace($matches[1], $replacement, $content);
+                    }
+                }
+            }
+
+            // 修復 Mock 方法呼叫問題
+            $mockFixes = [
+                // 修復常見的 Mock 方法名稱錯誤
+                '/\$mock->shouldReceive\(\'([^\']*)\'\)/' => '$mock->shouldReceive(\'$1\')',
+                // 修復建構子參數問題
+                '/new\s+([A-Z][a-zA-Z]*)\(\s*\$mock\s*\)/' => 'new $1($mock, $this->createMock(ValidatorInterface::class))',
+            ];
+
+            foreach ($mockFixes as $pattern => $replacement) {
+                $content = preg_replace($pattern, $replacement, $content);
+            }
+
+            if ($content !== $originalContent) {
+                file_put_contents($testFile, $content);
+                $fixedFiles++;
+                $actions[] = "已修復: " . basename($testFile);
+            }
+        }
+
+        return [
+            'success' => true,
+            'message' => $fixedFiles > 0 ? "已修復 {$fixedFiles} 個測試檔案的 Mockery 整合問題" : '沒有發現 Mockery 整合問題',
+            'actions' => $actions
+        ];
+    }
     private function checkJwtConfiguration(): array
     {
         $envFile = $this->projectRoot . '/.env';

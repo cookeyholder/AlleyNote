@@ -55,21 +55,24 @@ class ModernTestFailureAnalyzer
 
     /**
      * 初始化現代化錯誤模式識別規則
+     * 基於 Context7 MCP 查詢的 PHPUnit 11.5+ 最新模式和最佳實踐
      */
     private function initializeModernPatterns(): void
     {
         $this->failurePatterns = [
-            // JWT 相關問題（更精確的模式）
+            // JWT 相關問題（基於實際修復經驗的更精確模式）
             'jwt_token_generation' => [
                 'patterns' => [
                     '/Failed to generate.*token.*encoding process failed/i',
                     '/TokenGenerationException.*encoding process failed/i',
                     '/OpenSSL unable to sign data/i',
-                    '/Invalid key supplied/i'
+                    '/Invalid key supplied/i',
+                    '/UNIQUE constraint failed.*refresh_tokens\.jti/i',
+                    '/Duplicate refresh token storage/i'
                 ],
                 'category' => 'JWT Configuration',
                 'priority' => 'HIGH',
-                'suggestion' => 'Check JWT private key format, ensure OpenSSL extension is loaded, and validate key permissions'
+                'suggestion' => 'Check JWT private key format, ensure OpenSSL extension is loaded, validate key permissions, and fix duplicate token storage issues'
             ],
 
             // 現代 PHPUnit Deprecations（區分 PHP 和 PHPUnit deprecations）
@@ -122,17 +125,18 @@ class ModernTestFailureAnalyzer
                 'suggestion' => 'Check method signatures, parameter types, use statements, and autoloader configuration'
             ],
 
-            // Mock 相關問題（更詳細的分類）
-            'mock_issues' => [
+            // Mockery 和 PHPUnit Integration 問題（基於實際經驗）
+            'mockery_phpunit_integration' => [
                 'patterns' => [
-                    '/Mockery.*given.*called in/i',
-                    '/Mock.*Interface.*given/i',
-                    '/No matching handler found/i',
-                    '/received unexpected.*call/i'
+                    '/MockeryPHPUnitIntegration.*should be used/i',
+                    '/Mockery.*expectations not satisfied/i',
+                    '/Method.*does not exist on this mock object/i',
+                    '/Mock.*verification failed/i',
+                    '/MockInterface.*not found/i'
                 ],
-                'category' => 'Mock Configuration',
-                'priority' => 'MEDIUM',
-                'suggestion' => 'Review mock object setup, constructor parameters, and expected method calls'
+                'category' => 'Mockery Integration',
+                'priority' => 'HIGH',
+                'suggestion' => 'Add "use MockeryPHPUnitIntegration;" trait to test classes, check mock method names, and verify constructor parameters'
             ],
 
             // 驗證錯誤（新增更多模式）
@@ -160,6 +164,34 @@ class ModernTestFailureAnalyzer
                 'category' => 'HTTP Client',
                 'priority' => 'HIGH',
                 'suggestion' => 'Check HTTP client configuration, authentication, and server availability'
+            ],
+
+            // 新增：PHP-CS-Fixer 整合問題
+            'code_quality_issues' => [
+                'patterns' => [
+                    '/PHP CS Fixer.*failed/i',
+                    '/Code style violations found/i',
+                    '/PHPStan.*errors? found/i',
+                    '/level \d+ of \d+.*errors/i',
+                    '/Rector.*errors/i'
+                ],
+                'category' => 'Code Quality',
+                'priority' => 'MEDIUM',
+                'suggestion' => 'Run php-cs-fixer fix, phpstan analyse --memory-limit=1G, and check coding standards compliance'
+            ],
+
+            // 新增：Docker 環境問題
+            'docker_environment_issues' => [
+                'patterns' => [
+                    '/Connection refused.*docker/i',
+                    '/Container.*not.*running/i',
+                    '/Permission denied.*docker/i',
+                    '/Port.*already in use/i',
+                    '/Docker.*timeout/i'
+                ],
+                'category' => 'Docker Environment',
+                'priority' => 'HIGH',
+                'suggestion' => 'Check Docker service status, verify container health, and resolve port conflicts'
             ],
 
             // 新增：記憶體和效能問題
@@ -366,6 +398,25 @@ class ModernTestFailureAnalyzer
                         'commands' => [
                             'docker compose exec -T web php vendor/bin/phinx status -e testing',
                             'docker compose exec -T web php vendor/bin/phinx migrate -e testing'
+                        ]
+                    ];
+                    break;
+
+                case 'mockery_phpunit_integration':
+                    $recommendations[] = [
+                        'priority' => 'HIGH',
+                        'title' => 'Fix Mockery PHPUnit Integration',
+                        'impact_score' => $this->calculateImpactScore($data),
+                        'actions' => [
+                            'Add "use MockeryPHPUnitIntegration;" trait to test classes',
+                            'Check mock method names and signatures match actual classes',
+                            'Verify constructor parameters order and types',
+                            'Review mock expectations and method calls',
+                            'Consider replacing Mockery with native PHPUnit mocks'
+                        ],
+                        'commands' => [
+                            'docker compose exec -T web ./vendor/bin/phpunit --testdox --filter="Mock"',
+                            'grep -r "MockeryPHPUnitIntegration" tests/'
                         ]
                     ];
                     break;
