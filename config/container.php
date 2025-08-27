@@ -8,11 +8,15 @@ declare(strict_types=1);
  * 定義應用程式所有服務的依賴注入配置
  */
 
+use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 
 return array_merge(
     // 路由系統服務
     RoutingServiceProvider::getDefinitions(),
+
+    // JWT 認證系統服務
+    SimpleAuthServiceProvider::getDefinitions(),
 
     // 基本應用程式服務
     [

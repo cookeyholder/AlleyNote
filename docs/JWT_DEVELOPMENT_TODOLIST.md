@@ -391,7 +391,7 @@
 ### 3.4 更新路由配置
 - **優先級**: 高
 - **預估時間**: 60分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 在需要認證的路由加入 JWT middleware
   - 配置不同權限等級的路由組
@@ -403,7 +403,9 @@
   - ✅ 公開路由不受 middleware 影響
   - ✅ 路由配置文件清楚易懂
 - **相依任務**: 3.1, 3.2
-- **檔案異動**: `config/routes.php`, 相關路由檔案
+- **完成日期**: 2025-08-27
+- **檔案異動**: `config/routes.php`, `config/container.php`, `app/Domains/Auth/Providers/SimpleAuthServiceProvider.php`, `scripts/test-routes.php`, `scripts/test-jwt-middleware.php`, `docs/ROUTE_JWT_CONFIGURATION.md`
+- **測試狀態**: 路由配置語法通過，DI 容器配置完成，中介軟體服務提供者建立，需要進一步整合測試
 
 ---
 
