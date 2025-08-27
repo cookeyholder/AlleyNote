@@ -21,7 +21,6 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -94,8 +93,8 @@ class AuthControllerTest extends TestCase
 
         $this->response->shouldReceive('withHeader')->andReturnSelf();
 
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $writtenContent = '';
         $stream->shouldReceive('write')->andReturnUsing(function ($content) use (&$writtenContent) {
@@ -115,8 +114,7 @@ class AuthControllerTest extends TestCase
         Mockery::close();
     }
 
-    #[Test]
-    public function registerUserSuccessfully(): void
+    public function testRegisterUserSuccessfully(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -151,8 +149,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals('註冊成功', $responseData['message']);
     }
 
-    #[Test]
-    public function returnValidationErrorsForInvalidRegistrationData(): void
+    public function testReturnValidationErrorsForInvalidRegistrationData(): void
     {
         $invalidData = [
             'username' => '', // 空白用戶名
@@ -189,8 +186,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode()); // 驗證失敗應該返回400
     }
 
-    #[Test]
-    public function loginUserSuccessfully(): void
+    public function testLoginUserSuccessfully(): void
     {
         $credentials = [
             'email' => 'test@example.com',
@@ -240,8 +236,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
-    public function returnErrorForInvalidLogin(): void
+    public function testReturnErrorForInvalidLogin(): void
     {
         $invalidCredentials = [
             'email' => 'test@example.com',
@@ -268,8 +263,7 @@ class AuthControllerTest extends TestCase
         $this->assertTrue($response->getStatusCode() >= 400); // 接受4xx或5xx錯誤狀態碼
     }
 
-    #[Test]
-    public function logoutUserSuccessfully(): void
+    public function testLogoutUserSuccessfully(): void
     {
         // 準備登出請求資料
         $logoutData = [
@@ -300,16 +294,50 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
-    public function getUserInfoSuccessfully(): void
+    public function testGetUserInfoSuccessfully(): void
     {
-        // 建立控制器實例
+        // Mock request with Authorization header
+        $this->request->shouldReceive('getHeaderLine')
+            ->with('Authorization')
+            ->andReturn('Bearer valid.jwt.token');
+
+        // 建立真實的 JwtPayload 物件 (因為是 final class 無法 mock)
+        $now = new \DateTimeImmutable();
+        $expiresAt = $now->modify('+1 hour');
+
+        $mockPayload = new \AlleyNote\Domains\Auth\ValueObjects\JwtPayload(
+            jti: 'test-jti-123',
+            sub: '1',
+            iss: 'test-issuer',
+            aud: ['test-app'],
+            iat: $now,
+            exp: $expiresAt,
+            customClaims: [
+                'email' => 'test@example.com',
+                'name' => 'Test User'
+            ]
+        );
+
+        $this->jwtTokenService->shouldReceive('validateAccessToken')
+            ->with('valid.jwt.token')
+            ->andReturn($mockPayload);
+
+        // Mock response body
+        $this->response->shouldReceive('getBody->write')
+            ->with(Mockery::type('string'))
+            ->andReturnSelf();
+        $this->response->shouldReceive('withStatus')
+            ->with(200)
+            ->andReturnSelf();
+        $this->response->shouldReceive('withHeader')
+            ->with('Content-Type', 'application/json')
+            ->andReturnSelf();
+
+        // 建立控制器並執行 me() 方法
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
+        $response = $controller->me($this->request, $this->response);
 
-        // 驗證控制器建立成功
-        $this->assertInstanceOf(AuthController::class, $controller);
-
-        // TODO: 實作 getUserInfo 方法後，應該加入完整的功能測試
-        $this->markTestIncomplete('getUserInfo 方法尚未實作，需要後續開發');
+        // 驗證回應狀態碼
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }

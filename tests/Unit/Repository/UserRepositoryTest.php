@@ -7,7 +7,6 @@ use App\Domains\Auth\Services\AuthService;
 use DateTime;
 use PDO;
 use PDOException;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class UserRepositoryTest extends TestCase
@@ -19,7 +18,16 @@ class UserRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->markTestSkipped('暫時跳過此測試類以解決依賴問題');
+
+        // 建立記憶體 SQLite 資料庫
+        $this->db = new PDO('sqlite::memory:');
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // 建立測試用 users 資料表
+        $this->setupTestDatabase();
+
+        // 建立 UserRepository 實例
+        $this->repository = new UserRepository($this->db);
     }
 
     private function setupTestDatabase(): void
@@ -40,8 +48,7 @@ class UserRepositoryTest extends TestCase
         ');
     }
 
-    #[Test]
-    public function createUserSuccessfully(): void
+    public function testCreateUserSuccessfully(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -59,8 +66,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals(1, $result['status']);
     }
 
-    #[Test]
-    public function updateUserSuccessfully(): void
+    public function testUpdateUserSuccessfully(): void
     {
         $user = $this->repository->create([
             'username' => 'testuser',
@@ -80,8 +86,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($user['username'], $updated['username']);
     }
 
-    #[Test]
-    public function deleteUserSuccessfully(): void
+    public function testDeleteUserSuccessfully(): void
     {
         $user = $this->repository->create([
             'username' => 'testuser',
@@ -96,8 +101,7 @@ class UserRepositoryTest extends TestCase
         $this->assertNull($found);
     }
 
-    #[Test]
-    public function findUserByUuid(): void
+    public function testFindUserByUuid(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -113,8 +117,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['email'], $found['email']);
     }
 
-    #[Test]
-    public function findUserByUsername(): void
+    public function testFindUserByUsername(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -129,8 +132,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['email'], $found['email']);
     }
 
-    #[Test]
-    public function findUserByEmail(): void
+    public function testFindUserByEmail(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -145,8 +147,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['username'], $found['username']);
     }
 
-    #[Test]
-    public function preventDuplicateUsername(): void
+    public function testPreventDuplicateUsername(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -162,8 +163,7 @@ class UserRepositoryTest extends TestCase
         $this->repository->create($userData);
     }
 
-    #[Test]
-    public function preventDuplicateEmail(): void
+    public function testPreventDuplicateEmail(): void
     {
         $userData = [
             'username' => 'testuser1',
@@ -179,8 +179,7 @@ class UserRepositoryTest extends TestCase
         $this->repository->create($userData);
     }
 
-    #[Test]
-    public function findUserById(): void
+    public function testFindUserById(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -196,15 +195,13 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['email'], $found['email']);
     }
 
-    #[Test]
-    public function returnNullWhenUserNotFound(): void
+    public function testReturnNullWhenUserNotFound(): void
     {
         $result = $this->repository->findById('999');
         $this->assertNull($result);
     }
 
-    #[Test]
-    public function updateLastLoginTime(): void
+    public function testUpdateLastLoginTime(): void
     {
         $user = $this->repository->create([
             'username' => 'testuser',
