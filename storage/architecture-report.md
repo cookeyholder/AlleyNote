@@ -1,16 +1,16 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-08-26 22:36:00
+**生成時間**: 2025-08-27 19:44:01
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 139 | - |
-| 介面與類別比例 | 24.46% | ✅ 良好 |
+| 總類別數 | 160 | - |
+| 介面與類別比例 | 21.25% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 58.99% | ✅ 良好 |
-| PSR-4 合規率 | 79.70% | ❌ 需修正 |
+| 現代 PHP 採用率 | 58.75% | ✅ 良好 |
+| PSR-4 合規率 | 73.54% | ❌ 需修正 |
 | DDD 結構完整性 | 80.00% | ✅ 良好 |
 
 ## 🎯 DDD 邊界上下文分析
@@ -74,12 +74,12 @@
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 145 | ✅ 更安全的條件分支 |
-| 屬性標籤 (PHP 8.0+) | 85 | ✅ 現代化 metadata |
+| Match 表達式 (PHP 8.0+) | 195 | ✅ 更安全的條件分支 |
+| 屬性標籤 (PHP 8.0+) | 88 | ✅ 現代化 metadata |
 | 唯讀屬性 (PHP 8.1+) | 61 | ✅ 提升資料不變性 |
 | 空安全運算子 (PHP 8.0+) | 50 | ✅ 防止 null 指標異常 |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
-| 聯合型別 (PHP 8.0+) | 5 | ✅ 更靈活的型別定義 |
+| 聯合型別 (PHP 8.0+) | 11 | ✅ 更靈活的型別定義 |
 | 列舉型別 (PHP 8.1+) | 1 | ✅ 型別安全的常數 |
 
 ## 📁 目錄結構
@@ -665,11 +665,19 @@
 ### `App\Application\Middleware`
 - app/Application/Middleware/AuthorizationMiddleware.php
 - app/Application/Middleware/RateLimitMiddleware.php
+- app/Application/Middleware/JwtAuthenticationMiddleware.php
 
 ### `後面添加 use 語句
                 $content = preg_replace(
                     '/(namespace\s+[^`
 - scripts/auto-fix-tool.php
+
+### `references'`
+- scripts/real-error-fixer.php
+
+### `Tests\Unit\DTOs`
+- scripts/core-error-fixer-v2.php
+- scripts/core-error-fixer.php
 
 ### `= trim($matches[1])`
 - scripts/scan-project-architecture.php
@@ -694,7 +702,7 @@
 
 ### Application 層
 **子目錄**: .., Controllers, Controllers/.., Controllers/Api, Controllers/Api/.., Controllers/Api/., Controllers/Api/V1, Controllers/Api/V1/.., Controllers/Api/V1/., Controllers/Health, Controllers/Health/.., Controllers/Health/., Controllers/., Controllers/Web, Controllers/Web/.., Controllers/Web/., Controllers/Security, Controllers/Security/.., Controllers/Security/., Middleware, Middleware/.., Middleware/.
-**檔案數量**: 12
+**檔案數量**: 13
 
 ### Domains 層
 **子目錄**: .., Attachment, Attachment/.., Attachment/Repositories, Attachment/Repositories/.., Attachment/Repositories/., Attachment/Enums, Attachment/Enums/.., Attachment/Enums/., Attachment/., Attachment/Models, Attachment/Models/.., Attachment/Models/., Attachment/DTOs, Attachment/DTOs/.., Attachment/DTOs/., Attachment/Services, Attachment/Services/.., Attachment/Services/., Attachment/Contracts, Attachment/Contracts/.., Attachment/Contracts/., storage, storage/.., storage/., storage/cache, storage/cache/.., storage/cache/htmlpurifier, storage/cache/htmlpurifier/.., storage/cache/htmlpurifier/., storage/cache/., Auth, Auth/.., Auth/ValueObjects, Auth/ValueObjects/.., Auth/ValueObjects/., Auth/Repositories, Auth/Repositories/.., Auth/Repositories/., Auth/., Auth/Exceptions, Auth/Exceptions/.., Auth/Exceptions/., Auth/Models, Auth/Models/.., Auth/Models/., Auth/DTOs, Auth/DTOs/.., Auth/DTOs/., Auth/Services, Auth/Services/.., Auth/Services/., Auth/Services/Advanced, Auth/Services/Advanced/.., Auth/Services/Advanced/., Auth/Entities, Auth/Entities/.., Auth/Entities/., Auth/Contracts, Auth/Contracts/.., Auth/Contracts/., Security, Security/.., Security/Repositories, Security/Repositories/.., Security/Repositories/., Security/., Security/Models, Security/Models/.., Security/Models/., Security/DTOs, Security/DTOs/.., Security/DTOs/., Security/Services, Security/Services/Logging, Security/Services/Logging/.., Security/Services/Logging/., Security/Services/.., Security/Services/Error, Security/Services/Error/.., Security/Services/Error/., Security/Services/Headers, Security/Services/Headers/.., Security/Services/Headers/., Security/Services/., Security/Services/Content, Security/Services/Content/.., Security/Services/Content/., Security/Services/Core, Security/Services/Core/.., Security/Services/Core/., Security/Services/Advanced, Security/Services/Advanced/.., Security/Services/Advanced/., Security/Services/Secrets, Security/Services/Secrets/.., Security/Services/Secrets/., Security/Contracts, Security/Contracts/.., Security/Contracts/., Post, Post/.., Post/Repositories, Post/Repositories/.., Post/Repositories/., Post/Enums, Post/Enums/.., Post/Enums/., Post/., Post/Exceptions, Post/Exceptions/.., Post/Exceptions/., Post/Models, Post/Models/.., Post/Models/., Post/DTOs, Post/DTOs/.., Post/DTOs/., Post/Services, Post/Services/.., Post/Services/., Post/Validation, Post/Validation/.., Post/Validation/., Post/Contracts, Post/Contracts/.., Post/Contracts/.
@@ -711,9 +719,9 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 139
+- **類別總數**: 160
 - **介面總數**: 34
-- **Trait 總數**: 2
+- **Trait 總數**: 3
 
 ## ⚠️ 發現的架構問題
 
@@ -775,8 +783,6 @@
   - 實作: PostRepositoryInterface
 - **PostCacheKeyService**: `app/Domains/Post/Services/PostCacheKeyService.php`
   - 實作: 
-- **PostService**: `app/Domains/Post/Services/PostService.php`
-  - 實作: PostServiceInterface
 - **ContentModerationService**: `app/Domains/Post/Services/ContentModerationService.php`
   - 實作: 
 - **RichTextProcessorService**: `app/Domains/Post/Services/RichTextProcessorService.php`
@@ -785,8 +791,6 @@
   - 實作: 
 - **TokenBlacklistRepository**: `app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php`
   - 實作: TokenBlacklistRepositoryInterface
-- **RefreshTokenRepository**: `app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php`
-  - 實作: RefreshTokenRepositoryInterface
 - **RateLimitService**: `app/Infrastructure/Services/RateLimitService.php`
   - 實作: 
 - **OutputSanitizer**: `app/Infrastructure/Services/OutputSanitizer.php`
@@ -861,6 +865,7 @@
 - CreatePostDTO (`app/Domains/Post/DTOs/CreatePostDTO.php`)
 - UpdatePostDTO (`app/Domains/Post/DTOs/UpdatePostDTO.php`)
 - PostCacheKeyService (`app/Domains/Post/Services/PostCacheKeyService.php`)
+- PostService (`scripts/core-error-fixer.php`)
 - ContentModerationService (`app/Domains/Post/Services/ContentModerationService.php`)
 - RichTextProcessorService (`app/Domains/Post/Services/RichTextProcessorService.php`)
 - PostValidator (`app/Domains/Post/Validation/PostValidator.php`)
@@ -870,6 +875,7 @@
 - CacheKeys (`app/Infrastructure/Cache/CacheKeys.php`)
 - ServerRequestFactory (`app/Infrastructure/Http/ServerRequestFactory.php`)
 - DatabaseConnection (`app/Infrastructure/Database/DatabaseConnection.php`)
+- RefreshTokenRepository (`scripts/core-error-fixer.php`)
 - OpenApiSpec (`app/Infrastructure/OpenApi/OpenApiSpec.php`)
 - RateLimitService (`app/Infrastructure/Services/RateLimitService.php`)
 - OutputSanitizer (`app/Infrastructure/Services/OutputSanitizer.php`)
@@ -909,12 +915,32 @@
 - AddMissingColumnsToRefreshTokens (`database/migrations/20250103000000_add_missing_columns_to_refresh_tokens.php`)
 - CreateRefreshTokensTable (`database/migrations/20250825165731_create_refresh_tokens_table.php`)
 - CreateTokenBlacklistTable (`database/migrations/20250825165750_create_token_blacklist_table.php`)
+- ZeroErrorFixer (`scripts/zero-error-fixer.php`)
+- RuthlessZeroErrorCleaner (`scripts/ruthless-zero-error-cleaner.php`)
+- BaseDTOTest (`scripts/core-error-fixer.php`)
 - ModernAutoFixTool (`scripts/auto-fix-tool.php`)
+- UltimateZeroErrorFixer (`scripts/ultimate-zero-error-fixer.php`)
+- RealErrorFixer (`scripts/real-error-fixer.php`)
+- Tests (`scripts/final-phpstan-fixer.php`)
+- SystematicErrorFixer (`scripts/systematic-error-fixer.php`)
+- structure (`scripts/fix-mockery-syntax-errors.php`)
+- FinalZeroErrorFixer (`scripts/final-zero-error-fixer.php`)
 - TestFixer (`scripts/test-fixer.php`)
 - ConsoleOutput (`scripts/lib/ConsoleOutput.php`)
+- RemainingErrorsFixer (`scripts/remaining-errors-fixer.php`)
+- MockerySyntaxErrorFixer (`scripts/fix-mockery-syntax-errors.php`)
+- TargetedErrorFixer (`scripts/targeted-error-fixer.php`)
+- CoreErrorFixer (`scripts/core-error-fixer.php`)
+- TestableDTO (`scripts/core-error-fixer-v2.php`)
 - ProjectArchitectureScanner (`scripts/scan-project-architecture.php`)
 - ModernTestFailureAnalyzer (`scripts/test-failure-analyzer.php`)
 - JwtSetupTool (`scripts/jwt-setup.php`)
+- PhpStanErrorFixer (`scripts/phpstan-error-fixer.php`)
+- with (`scripts/core-error-fixer.php`)
+- TestDTO (`scripts/core-error-fixer.php`)
+- MockeryPhpStanFixer (`scripts/mockery-phpstan-fixer.php`)
+- FinalPhpStanFixer (`scripts/final-phpstan-fixer.php`)
+- does (`scripts/final-phpstan-fixer.php`)
 - ImprovementShowcase (`scripts/show-improvements.php`)
 - DDDNamespaceUpdater (`scripts/ddd-namespace-updater.php`)
 
@@ -971,9 +997,6 @@
 ### `PostRepositoryInterface`
 - PostRepository (`app/Domains/Post/Repositories/PostRepository.php`)
 
-### `PostServiceInterface`
-- PostService (`app/Domains/Post/Services/PostService.php`)
-
 ### `ServerRequestInterface`
 - ServerRequest (`app/Infrastructure/Http/ServerRequest.php`)
 
@@ -985,9 +1008,6 @@
 
 ### `TokenBlacklistRepositoryInterface`
 - TokenBlacklistRepository (`app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php`)
-
-### `RefreshTokenRepositoryInterface`
-- RefreshTokenRepository (`app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php`)
 
 ### `OutputSanitizerInterface`
 - OutputSanitizerService (`app/Infrastructure/Services/OutputSanitizer.php`)
@@ -1018,6 +1038,7 @@
 ### `MiddlewareInterface`
 - AbstractMiddleware (`app/Infrastructure/Routing/Middleware/AbstractMiddleware.php`)
 - RateLimitMiddleware (`app/Application/Middleware/RateLimitMiddleware.php`)
+- JwtAuthenticationMiddleware (`app/Application/Middleware/JwtAuthenticationMiddleware.php`)
 
 ### `MiddlewareManagerInterface`
 - MiddlewareManager (`app/Infrastructure/Routing/Middleware/MiddlewareManager.php`)
@@ -1029,7 +1050,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 139 個
+- **缺少測試的類別**: 159 個
 
 ### 缺少測試的重要類別
 - **AttachmentRepository**: `app/Domains/Attachment/Repositories/AttachmentRepository.php`
@@ -1153,4 +1174,4 @@
             if (!is_string($value)) {
                 return false (在 app/Domains/Auth/DTOs/RegisterUserDTO.php 中使用)
 - ❓ 找不到類別/介面: Throwable (在 app/Domains/Auth/Services/RefreshTokenService.php 中使用)
-- ... 還有 98 個
+- ... 還有 125 個
