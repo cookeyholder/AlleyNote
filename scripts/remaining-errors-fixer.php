@@ -56,7 +56,7 @@ class RemainingErrorsFixer
                 foreach ($matches as $match) {
                     $varName = $match[1];
                     $className = trim($match[2], '\'"');
-                    
+
                     // 檢查是否已經有 @var 註解
                     $varPattern = '/\/\*\*\s*\n\s*\*\s*@var\s+.*?' . preg_quote($varName, '/') . '/s';
                     if (!preg_match($varPattern, $content)) {
@@ -98,7 +98,7 @@ class RemainingErrorsFixer
                 // 替換 ReflectionType::getName() 為兼容的版本
                 $pattern = '/(\$\w+)(?:->getName\(\))/';
                 $replacement = '($1 instanceof \\ReflectionNamedType ? $1->getName() : (string)$1)';
-                
+
                 if (preg_match($pattern, $content)) {
                     $content = preg_replace($pattern, $replacement, $content);
                     $fixes[] = 'Fixed ReflectionType::getName() compatibility';
@@ -147,12 +147,14 @@ class RemainingErrorsFixer
                 if ($inClass && preg_match('/private\s+([^|]+)\s+(\$\w+);/', $line, $matches)) {
                     $type = trim($matches[1]);
                     $varName = $matches[2];
-                    
+
                     // 如果是介面類型且在 setUp 中使用 Mockery::mock，添加 MockInterface
                     $setupContent = implode("\n", array_slice($lines, $i, 20));
-                    if (str_contains($setupContent, "{$varName} = Mockery::mock(") && 
-                        !str_contains($type, 'MockInterface')) {
-                        
+                    if (
+                        str_contains($setupContent, "{$varName} = Mockery::mock(") &&
+                        !str_contains($type, 'MockInterface')
+                    ) {
+
                         $newType = $type . '|\\Mockery\\MockInterface';
                         $newLine = str_replace($type . ' ' . $varName, $newType . ' ' . $varName, $line);
                         $newLines[] = $newLine;
@@ -229,7 +231,7 @@ class RemainingErrorsFixer
     public function updateIgnoreConfig(): array
     {
         $configPath = $this->projectRoot . '/phpstan-mockery-ignore.neon';
-        
+
         $additionalConfig = <<<NEON
 
         # 額外的 Mockery 方法忽略
@@ -256,7 +258,7 @@ NEON;
 
         if (file_exists($configPath)) {
             $currentConfig = file_get_contents($configPath);
-            
+
             // 檢查是否已經包含這些配置
             if (!str_contains($currentConfig, 'shouldReceive')) {
                 // 在 ignoreErrors 區段末尾添加新的規則
@@ -265,9 +267,9 @@ NEON;
                     $additionalConfig . '        # 其他 Mockery 相關問題',
                     $currentConfig
                 );
-                
+
                 file_put_contents($configPath, $updatedConfig);
-                
+
                 return [
                     'action' => 'Updated ignore configuration with additional Mockery rules'
                 ];
@@ -328,12 +330,12 @@ NEON;
 
         foreach ($results as $category => $categoryResults) {
             if (empty($categoryResults)) continue;
-            
+
             $categoryName = $this->getCategoryName($category);
             $count = count($categoryResults);
-            
-            echo $this->colorize($categoryName . ": ", 'yellow') . 
-                 $this->colorize((string)$count, 'green') . " 個檔案\n";
+
+            echo $this->colorize($categoryName . ": ", 'yellow') .
+                $this->colorize((string)$count, 'green') . " 個檔案\n";
 
             if ($count <= 10) {
                 foreach ($categoryResults as $result) {
@@ -408,17 +410,16 @@ if (!$fix) {
 
 try {
     $fixer = new RemainingErrorsFixer(__DIR__ . '/..');
-    
+
     echo "🔧 開始修復剩餘的高優先級錯誤...\n";
-    
+
     $results = $fixer->fixRemainingHighPriorityErrors();
     $configResult = $fixer->updateIgnoreConfig();
     $results['config_update'] = [$configResult];
-    
+
     $fixer->printSummary($results);
-    
+
     echo "\n✅ 剩餘錯誤修復完成！\n";
-    
 } catch (Exception $e) {
     echo "❌ 錯誤: " . $e->getMessage() . "\n";
     exit(1);
