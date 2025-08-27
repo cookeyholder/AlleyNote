@@ -13,9 +13,9 @@ use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use Tests\TestCase;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class IpControllerTest extends TestCase
 {

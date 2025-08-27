@@ -4,8 +4,7 @@ namespace Tests\UI;
 
 class PostUITest extends UITestCase
 {
-    #[Test]
-    public function shouldDisplayPostList(): void
+    public function testShouldDisplayPostList(): void
     {
         // 使用 browserAction 工具來測試文章列表頁面
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -26,8 +25,7 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    #[Test]
-    public function shouldCreateNewPost(): void
+    public function testShouldCreateNewPost(): void
     {
         // 登入系統
         $this->login();
@@ -67,8 +65,7 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    #[Test]
-    public function shouldEditExistingPost(): void
+    public function testShouldEditExistingPost(): void
     {
         // 登入系統
         $this->login();
@@ -100,8 +97,7 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    #[Test]
-    public function shouldDeletePost(): void
+    public function testShouldDeletePost(): void
     {
         // 登入系統
         $this->login();
@@ -128,8 +124,7 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    #[Test]
-    public function shouldHandleResponsiveLayout(): void
+    public function testShouldHandleResponsiveLayout(): void
     {
         // 測試不同螢幕尺寸下的版面配置
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -150,8 +145,7 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    #[Test]
-    public function shouldSupportDarkMode(): void
+    public function testShouldSupportDarkMode(): void
     {
         // 測試深色模式切換
         $this->browserAction('launch', 'http://localhost:8080/posts');

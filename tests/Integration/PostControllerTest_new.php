@@ -12,12 +12,11 @@ use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Exceptions\NotFoundException;
 use InvalidArgumentException;
 use Mockery;
-use PHPUnit\Framework\Attributes\Test;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class PostControllerTest extends TestCase
 {
@@ -94,7 +93,6 @@ class PostControllerTest extends TestCase
         parent::tearDown();
     }
 
-    #[Test]
     public function indexShouldReturnPaginatedPosts(): void
     {
         // Mock user_id attribute
@@ -140,7 +138,6 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
     public function showShouldReturnPostDetails(): void
     {
         // Mock user_id attribute
@@ -177,7 +174,6 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
     public function storeShouldCreateNewPost(): void
     {
         // Mock user_id attribute
@@ -214,7 +210,6 @@ class PostControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode());
     }
 
-    #[Test]
     public function storeShouldReturn400WhenValidationFails(): void
     {
         // Mock user_id attribute
@@ -251,7 +246,6 @@ class PostControllerTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    #[Test]
     public function updateShouldModifyExistingPost(): void
     {
         // Mock user_id attribute
@@ -280,7 +274,6 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
     public function updateShouldReturn404WhenPostNotFound(): void
     {
         // Mock user_id attribute
@@ -317,7 +310,6 @@ class PostControllerTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    #[Test]
     public function destroyShouldDeletePost(): void
     {
         // Mock user_id attribute
@@ -339,7 +331,6 @@ class PostControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
     public function destroyShouldReturn404WhenPostNotFound(): void
     {
         // Mock user_id attribute
@@ -362,7 +353,6 @@ class PostControllerTest extends TestCase
             ->once()
             ->with(999)
             ->andThrow(new NotFoundException('Post not found'));
-
         $controller = new PostController($this->postService, $this->xssProtection, $this->csrfProtection);
         $response = $controller->destroy($this->request, $this->response, ['id' => '999']);
 

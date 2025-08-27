@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Models;
 
 use App\Domains\Post\Models\Post;
-use PHPUnit\Framework\Attributes\Test;
 use Tests\Factory\PostFactory;
 use Tests\TestCase;
 
 class PostTest extends TestCase
 {
-    #[Test]
-    public function correctlyInitializesWithValidData(): void
+    public function testCorrectlyInitializesWithValidData(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
@@ -33,8 +31,7 @@ class PostTest extends TestCase
         $this->assertEquals($data['user_ip'], $post->getUserIp());
     }
 
-    #[Test]
-    public function handlesNullableFieldsCorrectly(): void
+    public function testHandlesNullableFieldsCorrectly(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
@@ -50,8 +47,7 @@ class PostTest extends TestCase
         $this->assertNull($post->getPublishDate());
     }
 
-    #[Test]
-    public function setsDefaultValuesCorrectly(): void
+    public function testSetsDefaultValuesCorrectly(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
@@ -73,8 +69,7 @@ class PostTest extends TestCase
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[\+\-]\d{2}:\d{2}$/', $post->getUpdatedAt());
     }
 
-    #[Test]
-    public function storesRawHtmlInTitleAndContent(): void
+    public function testStoresRawHtmlInTitleAndContent(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',

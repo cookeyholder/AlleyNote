@@ -13,7 +13,6 @@ use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -140,8 +139,7 @@ class CsrfProtectionTest extends TestCase
             ->byDefault();
     }
 
-    #[Test]
-    public function shouldRejectRequestWithoutCsrfToken(): void
+    public function testShouldRejectRequestWithoutCsrfToken(): void
     {
         // 準備測試資料
         $postData = [
@@ -189,8 +187,7 @@ class CsrfProtectionTest extends TestCase
         $this->assertTrue($response->getStatusCode() === 201 || $response->getStatusCode() === 403);
     }
 
-    #[Test]
-    public function shouldRejectRequestWithInvalidCsrfToken(): void
+    public function testShouldRejectRequestWithInvalidCsrfToken(): void
     {
         // 準備測試資料
         $postData = [
@@ -238,8 +235,7 @@ class CsrfProtectionTest extends TestCase
         $this->assertTrue($response->getStatusCode() === 201 || $response->getStatusCode() === 403);
     }
 
-    #[Test]
-    public function shouldAcceptRequestWithValidCsrfToken(): void
+    public function testShouldAcceptRequestWithValidCsrfToken(): void
     {
         // 準備測試資料
         $postData = [

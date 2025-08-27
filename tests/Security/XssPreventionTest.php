@@ -13,7 +13,6 @@ use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -133,8 +132,7 @@ class XssPreventionTest extends TestCase
             ->byDefault();
     }
 
-    #[Test]
-    public function shouldEscapeHtmlInPostTitle(): void
+    public function testShouldEscapeHtmlInPostTitle(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
         $maliciousTitle = '<script>alert("XSS");</script>惡意標題';
@@ -191,8 +189,7 @@ class XssPreventionTest extends TestCase
         $this->assertNotNull($responseData['data']['title']);
     }
 
-    #[Test]
-    public function shouldEscapeHtmlInPostContent(): void
+    public function testShouldEscapeHtmlInPostContent(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
         $maliciousContent = '<img src="x" onerror="alert(\'XSS\')">';
@@ -249,8 +246,7 @@ class XssPreventionTest extends TestCase
         $this->assertNotNull($responseData['data']['content']);
     }
 
-    #[Test]
-    public function shouldHandleEncodedXssAttempts(): void
+    public function testShouldHandleEncodedXssAttempts(): void
     {
         // 準備編碼的 XSS 攻擊程式碼
         $encodedXss = htmlentities('<script>alert("XSS");</script>', ENT_QUOTES, 'UTF-8');

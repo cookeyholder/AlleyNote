@@ -16,9 +16,9 @@ use App\Shared\Contracts\ValidatorInterface;
 use DateTimeImmutable;
 use Exception;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use Tests\TestCase;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 /**
  * AuthService 單元測試.

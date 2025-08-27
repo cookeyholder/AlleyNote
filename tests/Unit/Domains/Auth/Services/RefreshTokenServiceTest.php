@@ -12,9 +12,9 @@ use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
 use DateTimeImmutable;
 use Exception;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Log\LoggerInterface;
 
 class RefreshTokenServiceTest extends TestCase

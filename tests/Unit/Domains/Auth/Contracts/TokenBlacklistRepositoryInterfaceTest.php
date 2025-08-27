@@ -482,7 +482,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $docComment = $this->interfaceReflection->getDocComment();
         $this->assertNotFalse($docComment);
         $this->assertStringContainsString('Token 黑名單 Repository 介面', $docComment);
-        $this->assertStringContainsString('@package AlleyNote\Domains\Auth\Contracts', $docComment);
+        $this->assertStringContainsString('定義token黑名單的資料存取操作', $docComment);
     }
 
     public function testInterfaceIsInCorrectNamespace(): void

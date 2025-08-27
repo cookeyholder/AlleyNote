@@ -10,9 +10,9 @@ use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PDO;
 use PHPUnit\Framework\TestCase;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class PostRepositoryTest extends TestCase
 {

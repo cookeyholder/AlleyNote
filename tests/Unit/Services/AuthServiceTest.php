@@ -10,10 +10,9 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
-use Mockery\MockInterface;
-use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
+use Tests\TestCase;
 
 class AuthServiceTest extends TestCase
 {
@@ -43,8 +42,7 @@ class AuthServiceTest extends TestCase
         Mockery::close();
     }
 
-    #[Test]
-    public function it_should_register_new_user_successfully(): void
+    public function testIt_should_register_new_user_successfully(): void
     {
         // 準備測試資料
         $userData = [
@@ -109,8 +107,7 @@ class AuthServiceTest extends TestCase
         $this->assertEquals(1, $user['status']);
     }
 
-    #[Test]
-    public function it_should_validate_registration_data(): void
+    public function testIt_should_validate_registration_data(): void
     {
         // 準備無效的測試資料
         $invalidData = [
@@ -140,8 +137,7 @@ class AuthServiceTest extends TestCase
         new RegisterUserDTO($this->validator, $invalidData);
     }
 
-    #[Test]
-    public function it_should_login_user_successfully(): void
+    public function testIt_should_login_user_successfully(): void
     {
         // 準備測試資料
         $credentials = [
@@ -175,8 +171,7 @@ class AuthServiceTest extends TestCase
         $this->assertEquals('test@example.com', $result['user']['email']);
     }
 
-    #[Test]
-    public function it_should_fail_login_with_invalid_credentials(): void
+    public function testIt_should_fail_login_with_invalid_credentials(): void
     {
         // 準備測試資料
         $credentials = [
@@ -205,8 +200,7 @@ class AuthServiceTest extends TestCase
         $this->assertEquals('無效的認證資訊', $result['message']);
     }
 
-    #[Test]
-    public function it_should_not_login_inactive_user(): void
+    public function testIt_should_not_login_inactive_user(): void
     {
         // 準備測試資料
         $credentials = [

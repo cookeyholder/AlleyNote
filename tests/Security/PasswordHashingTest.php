@@ -14,7 +14,6 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PDO;
-use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PasswordHashingTest extends TestCase
@@ -99,8 +98,7 @@ class PasswordHashingTest extends TestCase
         ');
     }
 
-    #[Test]
-    public function shouldHashPasswordUsingArgon2id(): void
+    public function testShouldHashPasswordUsingArgon2id(): void
     {
         // 準備測試資料
         $userData = [
@@ -133,8 +131,7 @@ class PasswordHashingTest extends TestCase
         $this->assertTrue(password_verify($userData['password'], $hashedPassword));
     }
 
-    #[Test]
-    public function shouldUseAppropriateHashingOptions(): void
+    public function testShouldUseAppropriateHashingOptions(): void
     {
         // 準備測試資料
         $userData = [
@@ -170,8 +167,7 @@ class PasswordHashingTest extends TestCase
         $this->assertGreaterThan(50, strlen($hashedPassword));
     }
 
-    #[Test]
-    public function shouldRejectWeakPasswords(): void
+    public function testShouldRejectWeakPasswords(): void
     {
         // 準備測試資料（弱密碼）
         $userData = [
@@ -198,8 +194,7 @@ class PasswordHashingTest extends TestCase
         $this->authService->register($dto);
     }
 
-    #[Test]
-    public function shouldPreventPasswordReuse(): void
+    public function testShouldPreventPasswordReuse(): void
     {
         // 準備測試資料
         $userData = [

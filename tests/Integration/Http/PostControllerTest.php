@@ -18,12 +18,12 @@ use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class PostControllerTest extends TestCase
 {
@@ -674,9 +674,10 @@ class PostControllerTest extends TestCase
         $this->request->shouldReceive('getServerParams')
             ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
-        $this->validator->shouldReceive('validateOrFail')
-            ->once()
-            ->andReturn($pinData);
+        // 移除 validateOrFail 的期望，因為 togglePin 方法不使用它
+        // $this->validator->shouldReceive('validateOrFail')
+        //     ->once()
+        //     ->andReturn($pinData);
 
         $updatedPost = new Post([
             'id' => $postId,

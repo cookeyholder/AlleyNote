@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class FileSystemBackupTest extends TestCase
@@ -52,8 +51,7 @@ class FileSystemBackupTest extends TestCase
         }
     }
 
-    #[Test]
-    public function backupFilesSuccessfully(): void
+    public function testBackupFilesSuccessfully(): void
     {
         // 執行備份腳本
         $output = [];
@@ -98,8 +96,7 @@ class FileSystemBackupTest extends TestCase
         }
     }
 
-    #[Test]
-    public function restoreFilesSuccessfully(): void
+    public function testRestoreFilesSuccessfully(): void
     {
         // 先建立備份
         $backupFile = $this->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
@@ -141,8 +138,7 @@ class FileSystemBackupTest extends TestCase
         }
     }
 
-    #[Test]
-    public function handleBackupErrorsGracefully(): void
+    public function testHandleBackupErrorsGracefully(): void
     {
         // 使用不存在的來源目錄
         $nonExistentDir = $this->testDir . '/nonexistent';
@@ -162,8 +158,7 @@ class FileSystemBackupTest extends TestCase
         $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
-    #[Test]
-    public function handleRestoreErrorsGracefully(): void
+    public function testHandleRestoreErrorsGracefully(): void
     {
         // 使用不存在的備份檔案
         $nonExistentBackup = $this->backupDir . '/nonexistent_backup.tar.gz';
@@ -183,8 +178,7 @@ class FileSystemBackupTest extends TestCase
         $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
-    #[Test]
-    public function handlePermissionErrors(): void
+    public function testHandlePermissionErrors(): void
     {
         // 使用不存在的備份檔案來測試錯誤處理
         $nonExistentBackupFile = $this->backupDir . '/nonexistent_backup.tar.gz';
@@ -211,8 +205,7 @@ class FileSystemBackupTest extends TestCase
         $this->assertStringContainsString('找不到備份檔案', $outputString, '應該輸出檔案不存在錯誤訊息');
     }
 
-    #[Test]
-    public function maintainFileMetadataDuringBackupRestore(): void
+    public function testMaintainFileMetadataDuringBackupRestore(): void
     {
         // 記錄原始檔案的中繼資料
         $originalMetadata = [];

@@ -14,7 +14,6 @@ use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;
@@ -66,8 +65,7 @@ class FileUploadSecurityTest extends TestCase
         }
     }
 
-    #[Test]
-    public function shouldRejectExecutableFiles(): void
+    public function testShouldRejectExecutableFiles(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -103,8 +101,7 @@ class FileUploadSecurityTest extends TestCase
         $this->service->upload($postId, $file, 1);
     }
 
-    #[Test]
-    public function shouldRejectDoubleExtensionFiles(): void
+    public function testShouldRejectDoubleExtensionFiles(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -140,8 +137,7 @@ class FileUploadSecurityTest extends TestCase
         $this->service->upload($postId, $file, 1);
     }
 
-    #[Test]
-    public function shouldRejectOversizedFiles(): void
+    public function testShouldRejectOversizedFiles(): void
     {
         // 準備測試資料 - 檔案大小超過限制
         $postId = 1;
@@ -177,8 +173,7 @@ class FileUploadSecurityTest extends TestCase
         $this->service->upload($postId, $file, 1);
     }
 
-    #[Test]
-    public function shouldRejectMaliciousMimeTypes(): void
+    public function testShouldRejectMaliciousMimeTypes(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -214,8 +209,7 @@ class FileUploadSecurityTest extends TestCase
         $this->service->upload($postId, $file, 1);
     }
 
-    #[Test]
-    public function shouldPreventPathTraversal(): void
+    public function testShouldPreventPathTraversal(): void
     {
         // 準備測試資料 - 包含路徑遍歷攻擊的檔案名
         $postId = 1;
@@ -251,8 +245,7 @@ class FileUploadSecurityTest extends TestCase
         $this->service->upload($postId, $file, 1);
     }
 
-    #[Test]
-    public function shouldAcceptValidFiles(): void
+    public function testShouldAcceptValidFiles(): void
     {
         // 這個測試驗證的是安全驗證的邏輯，但由於涉及檔案系統操作，
         // 在單元測試環境中很難模擬完整的檔案上傳流程。
@@ -278,11 +271,11 @@ class FileUploadSecurityTest extends TestCase
         int $error,
         string $content,
     ): UploadedFileInterface {
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
 
         $file->shouldReceive('getClientFilename')->andReturn($filename);

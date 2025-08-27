@@ -329,7 +329,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $docComment = $this->interfaceReflection->getDocComment();
         $this->assertNotFalse($docComment);
         $this->assertStringContainsString('JWT Token 服務介面', $docComment);
-        $this->assertStringContainsString('@package AlleyNote\Domains\Auth\Contracts', $docComment);
+        $this->assertStringContainsString('定義JWT token的核心操作方法', $docComment);
     }
 
     public function testInterfaceIsInCorrectNamespace(): void

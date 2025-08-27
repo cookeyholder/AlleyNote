@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use PDO;
-use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class DatabaseBackupTest extends TestCase
@@ -72,8 +71,7 @@ class DatabaseBackupTest extends TestCase
         ");
     }
 
-    #[Test]
-    public function backupDatabaseSuccessfully(): void
+    public function testBackupDatabaseSuccessfully(): void
     {
         // 執行備份腳本
         $backupFile = $this->backupDir . '/backup.sqlite';
@@ -103,8 +101,7 @@ class DatabaseBackupTest extends TestCase
         $this->assertEquals(3, $stmt->fetchColumn(), '備份的附件數量不正確');
     }
 
-    #[Test]
-    public function restoreDatabaseSuccessfully(): void
+    public function testRestoreDatabaseSuccessfully(): void
     {
         // 先建立備份
         $backupFile = $this->backupDir . '/backup.sqlite';
@@ -138,8 +135,7 @@ class DatabaseBackupTest extends TestCase
         $this->assertEquals(3, $stmt->fetchColumn(), '還原後的附件數量不正確');
     }
 
-    #[Test]
-    public function handleBackupErrorsGracefully(): void
+    public function testHandleBackupErrorsGracefully(): void
     {
         // 簡化測試 - 只要確保備份過程能處理各種情況
         $backupFile = $this->backupDir . '/test_backup.sqlite';
@@ -168,8 +164,7 @@ class DatabaseBackupTest extends TestCase
         }
     }
 
-    #[Test]
-    public function handleRestoreErrorsGracefully(): void
+    public function testHandleRestoreErrorsGracefully(): void
     {
         // 使用不存在的備份檔案
         $nonExistentBackup = $this->backupDir . '/nonexistent_backup.sqlite';
@@ -198,8 +193,7 @@ class DatabaseBackupTest extends TestCase
         );
     }
 
-    #[Test]
-    public function maintainDataIntegrityDuringBackupRestore(): void
+    public function testMaintainDataIntegrityDuringBackupRestore(): void
     {
         // 記錄原始資料
         $originalPosts = $this->db->query('SELECT * FROM posts ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);

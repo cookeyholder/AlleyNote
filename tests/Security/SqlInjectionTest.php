@@ -11,7 +11,6 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PDO;
-use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SqlInjectionTest extends TestCase
@@ -85,8 +84,7 @@ class SqlInjectionTest extends TestCase
         ");
     }
 
-    #[Test]
-    public function shouldPreventSqlInjectionInTitleSearch(): void
+    public function testShouldPreventSqlInjectionInTitleSearch(): void
     {
         // 準備測試資料 - 嘗試 SQL 注入攻擊
         $maliciousTitle = "' OR '1'='1";
@@ -103,8 +101,7 @@ class SqlInjectionTest extends TestCase
         $this->assertEquals(3, $totalPosts['count'], '資料表應該保持完整');
     }
 
-    #[Test]
-    public function shouldHandleSpecialCharactersInContent(): void
+    public function testShouldHandleSpecialCharactersInContent(): void
     {
         // 準備含有特殊字元的測試資料
         $content = "Test's content with \"quotes\" and -- comments";
@@ -125,8 +122,7 @@ class SqlInjectionTest extends TestCase
         $this->assertEquals('Test Post with Special Chars', $post->getTitle());
     }
 
-    #[Test]
-    public function shouldPreventSqlInjectionInUserIdFilter(): void
+    public function testShouldPreventSqlInjectionInUserIdFilter(): void
     {
         // 準備測試資料 - 使用合法的整數 user_id
         $normalUserId = 1;
@@ -152,8 +148,7 @@ class SqlInjectionTest extends TestCase
         $this->assertEquals(3, $allPosts['count']); // 我們插入的 3 筆測試資料
     }
 
-    #[Test]
-    public function shouldSanitizeSearchInput(): void
+    public function testShouldSanitizeSearchInput(): void
     {
         // 測試各種可能的 SQL 注入嘗試
         $maliciousInputs = [

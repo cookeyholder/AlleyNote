@@ -16,7 +16,6 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
@@ -31,7 +30,7 @@ class AttachmentUploadTest extends TestCase
 
     protected \App\Domains\Auth\Services\AuthorizationService|MockInterface $authService;
 
-    protected \App\Domains\Security\Contracts\LoggingSecurityServiceInterface|MockInterface $logger;
+    protected LoggingSecurityServiceInterface|MockInterface $logger;
 
     protected string $uploadDir;
 
@@ -89,12 +88,12 @@ class AttachmentUploadTest extends TestCase
 
     protected function createUploadedFileMock(string $filename, string $mimeType, int $size): UploadedFileInterface
     {
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')
             ->andReturn($filename);
@@ -102,12 +101,12 @@ class AttachmentUploadTest extends TestCase
             ->andReturn($mimeType);
         $file->shouldReceive('getSize')
             ->andReturn($size);
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')
             ->andReturn(str_repeat('x', $size));
@@ -130,8 +129,7 @@ class AttachmentUploadTest extends TestCase
         return $file;
     }
 
-    #[Test]
-    public function should_handle_concurrent_uploads(): void
+    public function testShould_handle_concurrent_uploads(): void
     {
         $postId = 1;
 
@@ -156,8 +154,7 @@ class AttachmentUploadTest extends TestCase
         $this->assertEquals(3, $successfulUploads, '所有上傳應該成功完成');
     }
 
-    #[Test]
-    public function should_handle_large_file_upload(): void
+    public function testShould_handle_large_file_upload(): void
     {
         $postId = 1;
         $fileSize = 10 * 1024 * 1024; // 10MB
@@ -174,8 +171,7 @@ class AttachmentUploadTest extends TestCase
         $this->assertEquals($fileSize, $attachment->getFileSize());
     }
 
-    #[Test]
-    public function should_validate_file_types(): void
+    public function testShould_validate_file_types(): void
     {
         $postId = 1;
         $invalidTypes = [
@@ -197,27 +193,26 @@ class AttachmentUploadTest extends TestCase
         }
     }
 
-    #[Test]
-    public function should_handle_disk_full_error(): void
+    public function testShould_handle_disk_full_error(): void
     {
         $postId = 1;
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
 
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')->andReturn(true);
@@ -233,27 +228,26 @@ class AttachmentUploadTest extends TestCase
         $this->attachmentService->upload($postId, $file, 1);
     }
 
-    #[Test]
-    public function should_handle_permission_error(): void
+    public function testShould_handle_permission_error(): void
     {
         $postId = 1;
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
-        /** @var UploadedFileInterface::class|\Mockery\MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
 
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')->andReturn(true);

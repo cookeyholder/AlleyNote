@@ -59,7 +59,7 @@ abstract class TestCase extends BaseTestCase
         $this->cache = Mockery::mock(CacheService::class);
         $this->cache->shouldReceive('get')
             ->andReturnUsing(function ($key) use (&$storage) {
-                return $storage[$key] ?? null;
+                return array_key_exists($key, $storage) ? $storage[$key] : null;
             });
         $this->cache->shouldReceive('set')
             ->andReturnUsing(function ($key, $value, $ttl = null) use (&$storage) {
@@ -256,8 +256,8 @@ abstract class TestCase extends BaseTestCase
      */
     protected function createResponseMock(): ResponseInterface
     {
-        /** @var ResponseInterface::class|\Mockery\MockInterface */
-        /** @var ResponseInterface::class|\Mockery\MockInterface */
+        /** @var ResponseInterface::class|MockInterface */
+        /** @var mixed */
         $response = Mockery::mock(ResponseInterface::class);
         $response->shouldReceive('withJson')
             ->andReturnUsing(function ($data) use ($response) {

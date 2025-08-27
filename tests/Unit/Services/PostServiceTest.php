@@ -18,18 +18,15 @@ use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use RuntimeException;
+use Tests\TestCase;
 
-class PostServiceTest extends MockeryTestCase
+class PostServiceTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     private PostRepositoryInterface|MockInterface $repository;
 
-    private App\Shared\Contracts\ValidatorInterface|MockInterface $validator;
+    private ValidatorInterface|MockInterface $validator;
 
     private PostService $service;
 

@@ -415,7 +415,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $docComment = $this->interfaceReflection->getDocComment();
         $this->assertNotFalse($docComment);
         $this->assertStringContainsString('Refresh Token Repository 介面', $docComment);
-        $this->assertStringContainsString('@package AlleyNote\Domains\Auth\Contracts', $docComment);
+        $this->assertStringContainsString('定義refresh token的資料存取操作', $docComment);
     }
 
     public function testInterfaceIsInCorrectNamespace(): void

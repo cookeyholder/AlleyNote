@@ -10,23 +10,20 @@ use App\Infrastructure\Services\CacheService;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PDO;
 use Tests\Factory\PostFactory;
+use Tests\TestCase;
 
-class PostRepositoryPerformanceTest extends MockeryTestCase
+class PostRepositoryPerformanceTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     private PostRepository $repository;
 
-    private PDO $db;
+    protected PDO $db;
 
-    private CacheService|MockInterface $cache;
+    protected CacheService|MockInterface $cache;
 
-    private App\Domains\Security\Contracts\LoggingSecurityServiceInterface|MockInterface $loggingSecurityService;
+    private LoggingSecurityServiceInterface|MockInterface $loggingSecurityService;
 
     protected function setUp(): void
     {

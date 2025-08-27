@@ -10,7 +10,6 @@ use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use DateTimeImmutable;
 use PDO;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -46,7 +45,6 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     /**
      * 測試基本的黑名單功能整合.
      */
-    #[Test]
     public function testBasicBlacklistIntegration(): void
     {
         // 1. 建立黑名單項目
@@ -77,7 +75,6 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     /**
      * 測試透過 Service 的黑名單操作.
      */
-    #[Test]
     public function testServiceBlacklistOperations(): void
     {
         // 1. 透過 Service 將 token 加入黑名單
@@ -107,7 +104,6 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     /**
      * 測試批次操作整合.
      */
-    #[Test]
     public function testBatchOperationsIntegration(): void
     {
         // 1. 準備批次資料
@@ -153,7 +149,6 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     /**
      * 測試統計功能整合.
      */
-    #[Test]
     public function testStatisticsIntegration(): void
     {
         // 1. 建立測試資料：不同使用者、不同狀態的 token
@@ -198,7 +193,6 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     /**
      * 測試自動清理功能整合.
      */
-    #[Test]
     public function testAutoCleanupIntegration(): void
     {
         // 1. 建立過期和活躍的黑名單項目
@@ -238,7 +232,6 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     /**
      * 測試查詢功能整合.
      */
-    #[Test]
     public function testQueryFunctionsIntegration(): void
     {
         // 1. 建立不同使用者的 token
@@ -294,7 +287,6 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     /**
      * 測試錯誤處理和邊界情況
      */
-    #[Test]
     public function testErrorHandlingIntegration(): void
     {
         // 1. 測試重複新增同一個 JTI

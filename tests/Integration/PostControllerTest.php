@@ -20,7 +20,6 @@ use App\Shared\Validation\ValidationResult;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -105,8 +104,7 @@ class PostControllerTest extends TestCase
         $this->request = $this->createRequestMock();
     }
 
-    #[Test]
-    public function indexShouldReturnPaginatedPosts(): void
+    public function testIndexShouldReturnPaginatedPosts(): void
     {
         // 準備測試資料
         $filters = ['status' => 'published'];
@@ -151,8 +149,7 @@ class PostControllerTest extends TestCase
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
-    #[Test]
-    public function showShouldReturnPostDetails(): void
+    public function testShowShouldReturnPostDetails(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -198,8 +195,7 @@ class PostControllerTest extends TestCase
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
-    #[Test]
-    public function storeShouldCreateNewPost(): void
+    public function testStoreShouldCreateNewPost(): void
     {
         // 準備測試資料
         $postData = [
@@ -211,18 +207,18 @@ class PostControllerTest extends TestCase
 
         // 設定請求資料
         $requestBody = json_encode($postData);
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
@@ -249,26 +245,25 @@ class PostControllerTest extends TestCase
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
-    #[Test]
-    public function storeShouldReturn400WhenValidationFails(): void
+    public function testStoreShouldReturn400WhenValidationFails(): void
     {
         // 準備測試資料
         $invalidData = ['title' => ''];
 
         // 設定請求資料
         $requestBody = json_encode($invalidData);
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
@@ -299,8 +294,7 @@ class PostControllerTest extends TestCase
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
-    #[Test]
-    public function updateShouldModifyExistingPost(): void
+    public function testUpdateShouldModifyExistingPost(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -313,18 +307,18 @@ class PostControllerTest extends TestCase
 
         // 設定請求資料
         $requestBody = json_encode($updateData);
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
@@ -351,8 +345,7 @@ class PostControllerTest extends TestCase
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
-    #[Test]
-    public function updateShouldReturn404WhenPostNotFound(): void
+    public function testUpdateShouldReturn404WhenPostNotFound(): void
     {
         // 準備測試資料
         $postId = 999;
@@ -360,18 +353,18 @@ class PostControllerTest extends TestCase
 
         // 設定請求資料
         $requestBody = json_encode($updateData);
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
@@ -402,8 +395,7 @@ class PostControllerTest extends TestCase
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }
 
-    #[Test]
-    public function destroyShouldDeletePost(): void
+    public function testDestroyShouldDeletePost(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -430,8 +422,7 @@ class PostControllerTest extends TestCase
         $this->assertEquals(204, $response->getStatusCode());
     }
 
-    #[Test]
-    public function updatePinStatusShouldUpdatePinStatus(): void
+    public function testUpdatePinStatusShouldUpdatePinStatus(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -440,18 +431,18 @@ class PostControllerTest extends TestCase
 
         // 設定請求資料
         $requestBody = json_encode($pinData);
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
@@ -480,8 +471,7 @@ class PostControllerTest extends TestCase
         $this->assertEquals('貼文已設為置頂', $this->currentResponseData['message']);
     }
 
-    #[Test]
-    public function updatePinStatusShouldReturn422WhenInvalidStateTransition(): void
+    public function testUpdatePinStatusShouldReturn422WhenInvalidStateTransition(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -489,18 +479,18 @@ class PostControllerTest extends TestCase
 
         // 設定請求資料
         $requestBody = json_encode($pinData);
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
@@ -533,8 +523,8 @@ class PostControllerTest extends TestCase
 
     private function createRequestMock()
     {
-        /** @var ServerRequestInterface::class|\Mockery\MockInterface */
-        /** @var ServerRequestInterface::class|\Mockery\MockInterface */
+        /** @var ServerRequestInterface::class|MockInterface */
+        /** @var mixed */
         $request = Mockery::mock(ServerRequestInterface::class);
         $request->shouldReceive('getHeaderLine')
             ->with('X-CSRF-TOKEN')
@@ -559,8 +549,8 @@ class PostControllerTest extends TestCase
 
     private function createStreamMock()
     {
-        /** @var StreamInterface::class|\Mockery\MockInterface */
-        /** @var StreamInterface::class|\Mockery\MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $this->currentResponseData = null;
         $stream->shouldReceive('write')
@@ -582,8 +572,8 @@ class PostControllerTest extends TestCase
      */
     protected function createResponseMock(): ResponseInterface
     {
-        /** @var ResponseInterface::class|\Mockery\MockInterface */
-        /** @var ResponseInterface::class|\Mockery\MockInterface */
+        /** @var ResponseInterface::class|MockInterface */
+        /** @var mixed */
         $response = Mockery::mock(ResponseInterface::class);
         $response->shouldReceive('withHeader')
             ->andReturnSelf();

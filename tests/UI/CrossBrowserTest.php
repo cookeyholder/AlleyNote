@@ -22,8 +22,7 @@ class CrossBrowserTest extends UITestCase
         ],
     ];
 
-    #[Test]
-    public function browserAction(): void
+    public function testBrowserAction(): void
     {
         foreach ($this->browsers as $browser) {
             // 使用特定瀏覽器的 User Agent 啟動測試

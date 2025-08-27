@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Services\Security;
 
 use App\Domains\Security\Services\Core\XssProtectionService;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class XssProtectionServiceTest extends TestCase
@@ -17,8 +16,7 @@ class XssProtectionServiceTest extends TestCase
         $this->service = new XssProtectionService();
     }
 
-    #[Test]
-    public function escapesBasicHtml(): void
+    public function testEscapesBasicHtml(): void
     {
         $input = '<script>alert("XSS");</script>';
         $expected = '&lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;';
@@ -28,8 +26,7 @@ class XssProtectionServiceTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    #[Test]
-    public function escapesHtmlAttributes(): void
+    public function testEscapesHtmlAttributes(): void
     {
         $input = '<a href="javascript:alert(\'XSS\')" onclick="alert(\'XSS\')">Click me</a>';
         $expected = '&lt;a href=&quot;javascript:alert(&#039;XSS&#039;)&quot; onclick=&quot;alert(&#039;XSS&#039;)&quot;&gt;Click me&lt;/a&gt;';
@@ -39,15 +36,13 @@ class XssProtectionServiceTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    #[Test]
-    public function handlesNullInput(): void
+    public function testHandlesNullInput(): void
     {
         $result = $this->service->clean(null);
         $this->assertNull($result);
     }
 
-    #[Test]
-    public function cleansArrayOfStrings(): void
+    public function testCleansArrayOfStrings(): void
     {
         $input = [
             'title' => '<script>alert("XSS");</script>',

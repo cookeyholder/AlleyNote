@@ -8,8 +8,9 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * BaseDTO 測試類.
@@ -17,6 +18,12 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 class BaseDTOTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
+
+    public mixed $name;
+
+    public mixed $age;
+
+    public mixed $active;
 
     private ValidatorInterface $validator;
 
@@ -35,65 +42,9 @@ class BaseDTOTest extends TestCase
     /**
      * 測試用的具體 DTO 實作.
      */
-    private function createTestDTO(): BaseDTO
+    private function createTestDTO(): TestableBaseDTO
     {
-        return new class ($this->validator) extends BaseDTO {
-            public string $name = '';
-
-            public int $age = 0;
-
-            public bool $active = false;
-
-            protected function getValidationRules(): array
-            {
-                return [
-                    'name' => 'required|string|min_length:2|max_length:50',
-                    'age' => 'required|integer|min:0|max:120',
-                    'active' => 'boolean',
-                ];
-            }
-
-            public function toArray(): array
-            {
-                return [
-                    'name' => $this->name,
-                    'age' => $this->age,
-                    'active' => $this->active,
-                ];
-            }
-
-            // 公開 validate 方法用於測試
-            public function testValidate(array $data): array
-            {
-                return $this->validate($data);
-            }
-
-            // 公開 helper 方法用於測試
-            public function testGetString(array $data, string $key, ?string $default = null): ?string
-            {
-                return $this->getString($data, $key, $default);
-            }
-
-            public function testGetInt(array $data, string $key, ?int $default = null): ?int
-            {
-                return $this->getInt($data, $key, $default);
-            }
-
-            public function testGetBool(array $data, string $key, ?bool $default = null): ?bool
-            {
-                return $this->getBool($data, $key, $default);
-            }
-
-            public function testGetValue(array $data, string $key, mixed $default = null): mixed
-            {
-                return $this->getValue($data, $key, $default);
-            }
-
-            public function testGetValidationRules(): array
-            {
-                return $this->getValidationRules();
-            }
-        };
+        return new TestableBaseDTO($this->validator);
     }
 
     public function testConstructorAcceptsValidator(): void
@@ -155,8 +106,8 @@ class BaseDTOTest extends TestCase
         $dto = $this->createTestDTO();
         $data = ['name' => '', 'age' => -1];
 
-        /** @var ValidationException::class|\Mockery\MockInterface */
-        /** @var ValidationException::class|\Mockery\MockInterface */
+        /** @var ValidationException::class|MockInterface */
+        /** @var mixed */
         $exception = Mockery::mock(ValidationException::class);
 
         $this->validator
@@ -265,5 +216,67 @@ class BaseDTOTest extends TestCase
         $this->assertArrayHasKey('name', $rules);
         $this->assertArrayHasKey('age', $rules);
         $this->assertArrayHasKey('active', $rules);
+    }
+}
+
+/**
+ * 測試用的 BaseDTO 具體實作.
+ */
+class TestableBaseDTO extends BaseDTO
+{
+    public string $name = '';
+
+    public int $age = 0;
+
+    public bool $active = false;
+
+    protected function getValidationRules(): array
+    {
+        return [
+            'name' => 'required|string|min_length:2|max_length:50',
+            'age' => 'required|integer|min:0|max:120',
+            'active' => 'boolean',
+        ];
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'age' => $this->age,
+            'active' => $this->active,
+        ];
+    }
+
+    // 公開 validate 方法用於測試
+    public function testValidate(array $data): array
+    {
+        return $this->validate($data);
+    }
+
+    // 公開 helper 方法用於測試
+    public function testGetString(array $data, string $key, ?string $default = null): ?string
+    {
+        return $this->getString($data, $key, $default);
+    }
+
+    public function testGetInt(array $data, string $key, ?int $default = null): ?int
+    {
+        return $this->getInt($data, $key, $default);
+    }
+
+    public function testGetBool(array $data, string $key, ?bool $default = null): ?bool
+    {
+        return $this->getBool($data, $key, $default);
+    }
+
+    public function testGetValue(array $data, string $key, mixed $default = null): mixed
+    {
+        return $this->getValue($data, $key, $default);
+    }
+
+    public function testGetValidationRules(): array
+    {
+        return $this->getValidationRules();
     }
 }

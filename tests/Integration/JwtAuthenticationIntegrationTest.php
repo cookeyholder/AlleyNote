@@ -31,7 +31,6 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -99,8 +98,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
     /**
      * 測試完整的登入流程.
      */
-    #[Test]
-    public function canPerformCompleteLoginFlow(): void
+    public function testCanPerformCompleteLoginFlow(): void
     {
         // 準備登入請求
         $loginRequest = new LoginRequestDTO(
@@ -137,8 +135,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
     /**
      * 測試 Token 刷新流程.
      */
-    #[Test]
-    public function canRefreshTokensSuccessfully(): void
+    public function testCanRefreshTokensSuccessfully(): void
     {
         // 先進行登入獲取 Token
         $loginRequest = new LoginRequestDTO(
@@ -183,8 +180,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
     /**
      * 測試登出流程與 Token 黑名單.
      */
-    #[Test]
-    public function canLogoutAndBlacklistTokens(): void
+    public function testCanLogoutAndBlacklistTokens(): void
     {
         // 進行登入
         $loginRequest = new LoginRequestDTO(
@@ -221,8 +217,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
     /**
      * 測試多設備登入管理.
      */
-    #[Test]
-    public function canManageMultipleDeviceLogins(): void
+    public function testCanManageMultipleDeviceLogins(): void
     {
         $loginRequest = new LoginRequestDTO(
             email: 'test@example.com',
@@ -271,8 +266,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
     /**
      * 測試無效憑證登入.
      */
-    #[Test]
-    public function canHandleInvalidCredentials(): void
+    public function testCanHandleInvalidCredentials(): void
     {
         $loginRequest = new LoginRequestDTO(
             email: 'test@example.com',
@@ -286,8 +280,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
         );
 
         // 設定 UserRepository 回傳 null 表示認證失敗
-        /** @var UserRepositoryInterface::class|\Mockery\MockInterface */
-        /** @var UserRepositoryInterface::class|\Mockery\MockInterface */
+        /** @var UserRepositoryInterface::class|MockInterface */
+        /** @var mixed */
         $mockUserRepository = Mockery::mock(UserRepositoryInterface::class);
         $mockUserRepository->shouldReceive('validateCredentials')
             ->with('test@example.com', 'wrongpassword')
@@ -314,8 +308,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
     /**
      * 測試黑名單自動清理功能.
      */
-    #[Test]
-    public function canCleanupExpiredBlacklistEntries(): void
+    public function testCanCleanupExpiredBlacklistEntries(): void
     {
         // 建立已過期的黑名單條目
         $expiredEntry = new TokenBlacklistEntry(
@@ -354,8 +347,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
     /**
      * 測試系統健康檢查.
      */
-    #[Test]
-    public function canPerformHealthCheck(): void
+    public function testCanPerformHealthCheck(): void
     {
         // 建立一些測試資料
         $loginRequest = new LoginRequestDTO(
