@@ -292,6 +292,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      * @param DateTimeImmutable $expiresAt 過期時間
      *
      * @throws TokenGenerationException 當儲存失敗時
+     * @internal
      */
     private function storeRefreshToken(
         string $refreshToken,

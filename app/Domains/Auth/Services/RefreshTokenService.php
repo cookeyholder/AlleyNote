@@ -582,4 +582,28 @@ final class RefreshTokenService
         // 可以從配置中讀取，這裡先返回 true
         return true;
     }
+
+    /**
+     * 獲取清理批次大小.
+     */
+    public function getCleanupBatchSize(): int
+    {
+        return self::CLEANUP_BATCH_SIZE;
+    }
+
+    /**
+     * 取得最小清理間隔.
+     */
+    public function getMinCleanupInterval(): int
+    {
+        return self::MIN_CLEANUP_INTERVAL;
+    }
+
+    /**
+     * 取得輪換寬限期
+     */
+    public function getRotationGracePeriod(): int
+    {
+        return self::ROTATION_GRACE_PERIOD;
+    }
 }

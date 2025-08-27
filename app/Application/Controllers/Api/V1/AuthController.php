@@ -613,21 +613,18 @@ class AuthController extends BaseController
                     ->withHeader('Content-Type', 'application/json');
             }
 
-            $user = $userInfo['user'];
-            $tokenInfo = $userInfo['token_info'];
-
             $responseData = [
                 'success' => true,
                 'data' => [
-                    'id' => $user['id'] ?? null,
-                    'uuid' => $user['uuid'] ?? null,
-                    'username' => $user['username'] ?? null,
-                    'email' => $user['email'] ?? null,
-                    'role' => $user['role'] ?? 'user',
-                    'created_at' => $user['created_at'] ?? null,
-                    'updated_at' => $user['updated_at'] ?? null,
-                    'last_login_at' => $user['last_login_at'] ?? null,
-                    'token_info' => $tokenInfo,
+                    'user' => [
+                        'id' => $userInfo['user_id'],
+                        'email' => $userInfo['email'],
+                        'name' => $userInfo['name'],
+                    ],
+                    'token_info' => [
+                        'issued_at' => $userInfo['token_issued_at'],
+                        'expires_at' => $userInfo['token_expires_at'],
+                    ],
                 ],
             ];
 

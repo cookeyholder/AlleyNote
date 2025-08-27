@@ -51,7 +51,6 @@ class AttachmentService implements AttachmentServiceInterface
     public function __construct(
         private AttachmentRepository $attachmentRepo,
         private PostRepository $postRepo,
-        /** @phpstan-ignore-next-line Property is reserved for future cache implementation */
         private CacheServiceInterface $cache, // TODO: 實作附件快取功能
         private AuthorizationService $authService,
         private string $uploadDir,
