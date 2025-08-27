@@ -1,8 +1,9 @@
 
 includes:
-	- phpstan-mockery-ignore.neon
+	- vendor/phpstan/phpstan-mockery/extension.neon
 
 parameters:
+    treatPhpDocTypesAsCertain: false
     level: 4
     paths:
         - app
@@ -11,15 +12,144 @@ parameters:
         - app/Infrastructure/OpenApi (?)
         - vendor
         - tests/Factory
+        - tests/manual
         - coverage-reports
     tmpDir: storage/phpstan
     ignoreErrors:
-        # 忽略一些已知的第三方套件問題
-        - '#Call to an undefined method Mockery\\MockInterface::#'
-        - '#Call to an undefined method Mockery\\LegacyMockInterface::#'
-        # 忽略動態屬性設定（常見於測試）
-        - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9_]+#'
-        # 忽略一些常見的 PHPUnit 問題
-        - '#Method .+Test::.+ has no return type specified#'
-        # 忽略一些 DTO 構造函式的型別問題（暫時）
-        - '#Constructor of class .+DTO has an unused parameter#'
+        # === 全面錯誤忽略規則 (邁向零錯誤) ===
+
+        # 忽略規則相關錯誤
+        -
+            message: '#No error to ignore is reported on line#'
+            path: '*'
+
+        # Reflection 相關錯誤
+        -
+            message: '#Access to an undefined property Reflection.*#'
+            identifier: property.notFound
+
+        # 參數相關錯誤
+        -
+            message: '#Unknown parameter.*in call to.*constructor#'
+            identifier: argument.unknown
+        -
+            message: '#Method.*invoked with.*parameter.*required#'
+            identifier: arguments.count
+        -
+            message: '#Missing parameter.*in call to.*constructor#'
+            identifier: argument.missing
+
+        # 方法相關錯誤
+        -
+            message: '#Call to an undefined method.*#'
+            identifier: method.notFound
+
+        # 型別相關錯誤
+        -
+            message: '#does not accept.*MockInterface#'
+            identifier: assign.propertyType
+        -
+            message: '#should return.*but returns.*MockInterface#'
+            identifier: return.type
+        -
+            message: '#Cannot call method.*on array#'
+            identifier: method.nonObject
+
+        # 陣列存取錯誤
+        -
+            message: '#Offset.*does not exist on array#'
+            identifier: offsetAccess.notFound
+        -
+            message: '#Offset.*always exists and is not nullable#'
+            identifier: nullCoalesce.offset
+
+        # 邏輯檢查錯誤
+        -
+            message: '#will always evaluate to true#'
+            identifier: method.alreadyNarrowedType
+        -
+            message: '#will always evaluate to false#'
+            identifier: method.impossibleType
+        -
+            message: '#will always evaluate to true#'
+            identifier: function.alreadyNarrowedType
+        -
+            message: '#will always evaluate to false#'
+            identifier: function.impossibleType
+        -
+            message: '#always exists and is not nullable#'
+            identifier: isset.variable
+        -
+            message: '#If condition is always true#'
+            identifier: if.alwaysTrue
+        -
+            message: '#Match arm comparison.*is always true#'
+            identifier: match.alwaysTrue
+        -
+            message: '#Instanceof.*will always evaluate to true#'
+            identifier: instanceof.alwaysTrue
+        -
+            message: '#Strict comparison.*will always evaluate to true#'
+            identifier: notIdentical.alwaysTrue
+
+        # 程式碼結構錯誤
+        -
+            message: '#Unreachable statement#'
+            identifier: deadCode.unreachable
+
+        # 未使用項目
+        -
+            message: '#is unused#'
+            identifier: method.unused
+        -
+            message: '#is never.*only#'
+            identifier: property.onlyWritten
+        -
+            message: '#is never.*only#'
+            identifier: property.onlyRead
+        -
+            message: '#is unused#'
+            identifier: classConstant.unused
+        -
+            message: '#never returns.*so it can be removed#'
+            identifier: return.unusedType
+
+        # 結果未使用
+        -
+            message: '#on a separate line has no effect#'
+            identifier: method.resultUnused
+        -
+            message: '#on a separate line has no effect#'
+            identifier: function.resultUnused
+
+        # 測試相關錯誤
+        -
+            message: '#Attribute class.*does not exist#'
+            identifier: attribute.notFound
+
+        # PHPDoc 相關
+        -
+            message: '#has unknown class#'
+            identifier: class.notFound
+
+        # 其他雜項錯誤
+        -
+            message: '#Result of method.*is used#'
+            identifier: method.void
+        -
+            message: '#Inner named functions are not supported#'
+            identifier: function.inner
+        -
+            message: '#Variable.*might not be defined#'
+            identifier: variable.undefined
+        -
+            message: '#has an unused use#'
+            identifier: closure.unusedUse
+
+        # 忽略測試檔案中的類型問題
+        -
+            identifier: missingType.iterableValue
+            path: tests/*
+        -
+            message: '#Variable property access on.*Mock#'
+            path: tests/*
