@@ -246,7 +246,7 @@ class FileSystemBackupTest extends TestCase
             $file = $this->testDir . $path;
             if (!file_exists($file)) {
                 $this->markTestSkipped('此測試暫時跳過等待實現');
-                continue;
+                // continue; // 不可達程式碼，已註解
             }
             $this->assertEquals(
                 $originalMetadata[$path]['permissions'],

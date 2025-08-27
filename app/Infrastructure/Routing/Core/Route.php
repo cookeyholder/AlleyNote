@@ -229,7 +229,7 @@ class Route implements RouteInterface
     {
         preg_match_all('/\{([^}]+)\}/', $pattern, $matches);
 
-        return $matches[1] ?? [];
+        return $matches[1];
     }
 
     // HTTP 方法快捷方法

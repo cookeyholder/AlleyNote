@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Middleware;
 
-use PHPUnit\Framework\Attributes\Test;
 use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
 use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
@@ -17,8 +16,9 @@ use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
+use RuntimeException;
 use Tests\TestCase;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * JWT 認證中介軟體單元測試.
@@ -66,7 +66,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
 
             $this->assertFalse(
                 $this->middleware->shouldProcess($request),
-                "路徑 {$path} 應該被跳過"
+                "路徑 {$path} 應該被跳過",
             );
         }
     }
@@ -86,7 +86,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
 
             $this->assertTrue(
                 $this->middleware->shouldProcess($request),
-                "路徑 {$path} 應該需要認證"
+                "路徑 {$path} 應該需要認證",
             );
         }
     }
@@ -423,7 +423,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->jwtTokenService
             ->shouldReceive('validateAccessToken')
             ->once()
-            ->andThrow(new \RuntimeException('Unexpected error'));
+            ->andThrow(new RuntimeException('Unexpected error'));
 
         $response = $this->middleware->process($request, $this->handler);
 
@@ -495,7 +495,6 @@ class JwtAuthenticationMiddlewareTest extends TestCase
      * 建立有效的 JWT payload.
      *
      * @param array<string, mixed> $customClaims 自訂宣告
-     * @return JwtPayload
      */
     private function createValidPayload(array $customClaims = []): JwtPayload
     {

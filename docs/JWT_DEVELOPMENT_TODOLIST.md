@@ -8,9 +8,9 @@
 
 總任務數: **24 項**  
 狀態統計:
-- ⏳ 未開始: 12 項
+- ⏳ 未開始: 11 項
 - 🔄 進行中: 0 項  
-- ✅ 已完成: 12 項
+- ✅ 已完成: 13 項
 
 ---
 
@@ -330,7 +330,7 @@
 ### 3.1 實作 JwtAuthenticationMiddleware
 - **優先級**: 高
 - **預估時間**: 120分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 建立 JWT 認證中介軟體
   - 實作 token 提取和驗證
@@ -343,12 +343,15 @@
   - ✅ 將使用者資訊注入到請求中
   - ✅ 包含完整的單元測試
 - **相依任務**: 2.2, 2.7
-- **檔案異動**: `app/Application/Middleware/JwtAuthenticationMiddleware.php`
+- **完成日期**: 2025-08-27
+- **檔案異動**: `app/Application/Middleware/JwtAuthenticationMiddleware.php`, `tests/Unit/Application/Middleware/JwtAuthenticationMiddlewareTest.php`
+- **測試覆蓋率**: 20 個測試，48 個斷言，100% 通過
+- **實際花費時間**: 150分鐘
 
 ### 3.2 實作 JwtAuthorizationMiddleware
 - **優先級**: 中
 - **預估時間**: 90分鐘
-- **狀態**: ⏳ 未開始
+- **狀態**: ✅ 已完成
 - **描述**:
   - 建立 JWT 授權中介軟體
   - 實作角色和權限檢查
@@ -361,7 +364,9 @@
   - ✅ 提供清楚的錯誤訊息
   - ✅ 包含完整的單元測試
 - **相依任務**: 3.1
-- **檔案異動**: `app/Application/Middleware/JwtAuthorizationMiddleware.php`
+- **檔案異動**: `app/Application/Middleware/JwtAuthorizationMiddleware.php`, `tests/Unit/Application/Middleware/JwtAuthorizationMiddlewareTest.php`
+- **完成日期**: 2025-08-27
+- **測試覆蓋率**: 8 個測試，15 個斷言，100% 通過
 
 ### 3.3 更新 AuthController JWT 端點
 - **優先級**: 高
@@ -528,11 +533,12 @@ Phase 1 (基礎建設) → Phase 2 (核心實作) → Phase 3 (Middleware) → P
 3. 1.2 → 2.5 → 2.7 (Token 黑名單功能)
 
 ### 預估總時間
-- **Phase 1**: 5.5 小時
-- **Phase 2**: 12 小時  
-- **Phase 3**: 8.5 小時
+- **Phase 1**: 5.5 小時 (✅ 已完成)
+- **Phase 2**: 12 小時 (✅ 已完成)
+- **Phase 3**: 8.5 小時 (🔄 進行中 - 3.1 已完成)
 - **Phase 4**: 14 小時
 - **總計**: **40 小時**
+- **已完成**: **20 小時** (50%)
 
 ---
 
@@ -570,5 +576,5 @@ feat(auth): 實作 JWT 函式庫配置和安裝
 
 ---
 
-**最後更新**: 2025-08-26 00:52:00  
+**最後更新**: 2025-08-27 20:35:00  
 **下次檢查**: 每完成一個 Phase 後更新

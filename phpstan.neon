@@ -9,147 +9,54 @@ parameters:
         - app
         - tests
     excludePaths:
-        - app/Infrastructure/OpenApi (?)
+        - app/Infrastructure/OpenApi
         - vendor
         - tests/Factory
         - tests/manual
         - coverage-reports
     tmpDir: storage/phpstan
     ignoreErrors:
-        # === 全面錯誤忽略規則 (邁向零錯誤) ===
-
-        # 忽略規則相關錯誤
+        # === 核心業務邏輯零錯誤 ===
+        # 這裡不包含任何 app/ 目錄的忽略規則
+        
+        # === 測試程式碼特定忽略 ===
+        # 只忽略測試中不影響業務邏輯的問題
         -
-            message: '#No error to ignore is reported on line#'
-            path: '*'
-
-        # Reflection 相關錯誤
-        -
-            message: '#Access to an undefined property Reflection.*#'
-            identifier: property.notFound
-
-        # 參數相關錯誤
-        -
-            message: '#Unknown parameter.*in call to.*constructor#'
-            identifier: argument.unknown
-        -
-            message: '#Method.*invoked with.*parameter.*required#'
-            identifier: arguments.count
-        -
-            message: '#Missing parameter.*in call to.*constructor#'
-            identifier: argument.missing
-
-        # 方法相關錯誤
-        -
-            message: '#Call to an undefined method.*#'
-            identifier: method.notFound
-
-        # 型別相關錯誤
-        -
-            message: '#does not accept.*MockInterface#'
-            identifier: assign.propertyType
-        -
-            message: '#should return.*but returns.*MockInterface#'
-            identifier: return.type
-        -
-            message: '#Cannot call method.*on array#'
-            identifier: method.nonObject
-
-        # 陣列存取錯誤
-        -
-            message: '#Offset.*does not exist on array#'
-            identifier: offsetAccess.notFound
-        -
-            message: '#Offset.*always exists and is not nullable#'
-            identifier: nullCoalesce.offset
-
-        # 邏輯檢查錯誤
-        -
-            message: '#will always evaluate to true#'
+            message: '#Call to method.*assert.*with.*will always evaluate to true#'
             identifier: method.alreadyNarrowedType
+            paths:
+                - tests/*
+        
         -
-            message: '#will always evaluate to false#'
-            identifier: method.impossibleType
+            message: '#Call to an undefined method.*shouldReceive#'
+            identifier: method.notFound
+            paths:
+                - tests/*
+        
         -
-            message: '#will always evaluate to true#'
-            identifier: function.alreadyNarrowedType
-        -
-            message: '#will always evaluate to false#'
-            identifier: function.impossibleType
-        -
-            message: '#always exists and is not nullable#'
-            identifier: isset.variable
-        -
-            message: '#If condition is always true#'
-            identifier: if.alwaysTrue
-        -
-            message: '#Match arm comparison.*is always true#'
-            identifier: match.alwaysTrue
-        -
-            message: '#Instanceof.*will always evaluate to true#'
-            identifier: instanceof.alwaysTrue
-        -
-            message: '#Strict comparison.*will always evaluate to true#'
-            identifier: notIdentical.alwaysTrue
-
-        # 程式碼結構錯誤
-        -
-            message: '#Unreachable statement#'
-            identifier: deadCode.unreachable
-
-        # 未使用項目
-        -
-            message: '#is unused#'
-            identifier: method.unused
-        -
-            message: '#is never.*only#'
-            identifier: property.onlyWritten
-        -
-            message: '#is never.*only#'
-            identifier: property.onlyRead
-        -
-            message: '#is unused#'
-            identifier: classConstant.unused
-        -
-            message: '#never returns.*so it can be removed#'
-            identifier: return.unusedType
-
-        # 結果未使用
-        -
-            message: '#on a separate line has no effect#'
-            identifier: method.resultUnused
-        -
-            message: '#on a separate line has no effect#'
-            identifier: function.resultUnused
-
-        # 測試相關錯誤
-        -
-            message: '#Attribute class.*does not exist#'
-            identifier: attribute.notFound
-
-        # PHPDoc 相關
-        -
-            message: '#has unknown class#'
-            identifier: class.notFound
-
-        # 其他雜項錯誤
-        -
-            message: '#Result of method.*is used#'
-            identifier: method.void
+            message: '#Call to an undefined method.*browserAction#'
+            identifier: method.notFound
+            path: tests/UI/CrossBrowserTest.php
+        
         -
             message: '#Inner named functions are not supported#'
             identifier: function.inner
+            path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+        
         -
-            message: '#Variable.*might not be defined#'
-            identifier: variable.undefined
-        -
-            message: '#has an unused use#'
+            message: '#Anonymous function has an unused use#'
             identifier: closure.unusedUse
-
-        # 忽略測試檔案中的類型問題
+            paths:
+                - tests/*
+        
         -
-            identifier: missingType.iterableValue
-            path: tests/*
+            message: '#on a separate line has no effect#'
+            identifier: method.resultUnused
+            paths:
+                - tests/*
+        
         -
-            message: '#Variable property access on.*Mock#'
-            path: tests/*
+            message: '#on a separate line has no effect#'
+            identifier: function.resultUnused
+            paths:
+                - tests/*

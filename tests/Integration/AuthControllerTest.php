@@ -8,6 +8,7 @@ use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use AlleyNote\Domains\Auth\DTOs\LoginResponseDTO;
 use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
+use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
 use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
 use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
@@ -302,10 +303,10 @@ class AuthControllerTest extends TestCase
             ->andReturn('Bearer valid.jwt.token');
 
         // 建立真實的 JwtPayload 物件 (因為是 final class 無法 mock)
-        $now = new \DateTimeImmutable();
+        $now = new DateTimeImmutable();
         $expiresAt = $now->modify('+1 hour');
 
-        $mockPayload = new \AlleyNote\Domains\Auth\ValueObjects\JwtPayload(
+        $mockPayload = new JwtPayload(
             jti: 'test-jti-123',
             sub: '1',
             iss: 'test-issuer',
@@ -314,8 +315,8 @@ class AuthControllerTest extends TestCase
             exp: $expiresAt,
             customClaims: [
                 'email' => 'test@example.com',
-                'name' => 'Test User'
-            ]
+                'name' => 'Test User',
+            ],
         );
 
         $this->jwtTokenService->shouldReceive('validateAccessToken')

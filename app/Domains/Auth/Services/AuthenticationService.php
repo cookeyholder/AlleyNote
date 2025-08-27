@@ -52,7 +52,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             }
 
             // 2. 檢查使用者狀態（如果有軟刪除或停用欄位）
-            if (isset($user['deleted_at']) && $user['deleted_at'] !== null) {
+            if (isset($user['deleted_at']) && !empty($user['deleted_at'])) {
                 throw new AuthenticationException(
                     AuthenticationException::REASON_ACCOUNT_DISABLED,
                     'User account has been deactivated',

@@ -117,7 +117,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/PostRepositoryPerformanceTest.php' => 
     array (
-      0 => '383276b72d404440e3fe181581bc3567660d8a13',
+      0 => '97b095efd4d8105d133840e5c91479f1f7bec657',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\postrepositoryperformancetest',
@@ -165,7 +165,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/UserRepositoryTest.php' => 
     array (
-      0 => '0f3d7fa2fd78b75a24b3d5f9df0d0f5b776f122b',
+      0 => '71a530d54f65e1e4ae4477367632931c9b534e0b',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\userrepositorytest',
@@ -881,7 +881,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AuthControllerTest.php' => 
     array (
-      0 => 'bf69325c0a61cf21055ef3c98aa47b462de570a9',
+      0 => 'd7ea662bb819e08a2d5d01a1d17f07bda5434d1e',
       1 => 
       array (
         0 => 'tests\\integration\\authcontrollertest',
@@ -903,7 +903,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/Repositories/PostRepositoryTest.php' => 
     array (
-      0 => '22a4536944a19d36380223e16ca2d7ba3107fe59',
+      0 => '3e557b1e96a50ec1884738805048458c15240425',
       1 => 
       array (
         0 => 'tests\\integration\\repositories\\postrepositorytest',
@@ -1024,7 +1024,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/FileSystemBackupTest.php' => 
     array (
-      0 => '7e75a911078f41185404b2c1eca33f000cfbee85',
+      0 => 'bbf8b545afd880d5d62f5052d3e1236c9cb4ac03',
       1 => 
       array (
         0 => 'tests\\integration\\filesystembackuptest',
@@ -1344,7 +1344,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/PostControllerTest_new.php' => 
     array (
-      0 => '83686b530db58d9f9773110eac9f7a00594c8959',
+      0 => '29930d46c3d2203e913d063625aae44f87b0ece4',
       1 => 
       array (
         0 => 'tests\\integration\\postcontrollertest',
@@ -2540,6 +2540,99 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         6 => 'tests\\unit\\domains\\auth\\services\\testgetusertokenstatsexception',
         7 => 'tests\\unit\\domains\\auth\\services\\testrevoketokensuccess',
         8 => 'tests\\unit\\domains\\auth\\services\\testrevoketokenexception',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Application/Middleware/JwtAuthorizationMiddlewareTest.php' => 
+    array (
+      0 => '3fde280f9a6f8caa871513c82e5aa4049c9d1493',
+      1 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\jwtauthorizationmiddlewaretest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\setup',
+        1 => 'tests\\unit\\application\\middleware\\teardown',
+        2 => 'tests\\unit\\application\\middleware\\testmiddlewareisdisabledwhennotenabled',
+        3 => 'tests\\unit\\application\\middleware\\testskipsprocessingfornonapipaths',
+        4 => 'tests\\unit\\application\\middleware\\testreturns403whenusernotauthenticated',
+        5 => 'tests\\unit\\application\\middleware\\testallowssuperadminaccess',
+        6 => 'tests\\unit\\application\\middleware\\testallowsaccesswithvalidrolepermissions',
+        7 => 'tests\\unit\\application\\middleware\\testdeniesaccesswithinvalidrolepermissions',
+        8 => 'tests\\unit\\application\\middleware\\testallowsaccesswithvaliddirectpermissions',
+        9 => 'tests\\unit\\application\\middleware\\testmiddlewarepriorityandenabledsettings',
+        10 => 'tests\\unit\\application\\middleware\\createrequest',
+        11 => 'tests\\unit\\application\\middleware\\createauthenticatedrequest',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Application/Middleware/AuthorizationResultTest.php' => 
+    array (
+      0 => '9f955b4470242684a882c1dfe0327d9ff6d6ebfa',
+      1 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\authorizationresulttest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\testcancreateallowedresult',
+        1 => 'tests\\unit\\application\\middleware\\testcancreatedeniedresult',
+        2 => 'tests\\unit\\application\\middleware\\teststaticallowmethod',
+        3 => 'tests\\unit\\application\\middleware\\teststaticdenymethod',
+        4 => 'tests\\unit\\application\\middleware\\teststaticallowsuperadminmethod',
+        5 => 'tests\\unit\\application\\middleware\\teststaticdenyinsufficientpermissionsmethod',
+        6 => 'tests\\unit\\application\\middleware\\teststaticdenynotauthenticatedmethod',
+        7 => 'tests\\unit\\application\\middleware\\teststaticdenyiprestrictionmethod',
+        8 => 'tests\\unit\\application\\middleware\\teststaticdenytimerestrictionmethod',
+        9 => 'tests\\unit\\application\\middleware\\testhasrulemethod',
+        10 => 'tests\\unit\\application\\middleware\\testtoarraymethod',
+        11 => 'tests\\unit\\application\\middleware\\testjsonserializableinterface',
+        12 => 'tests\\unit\\application\\middleware\\testequalsmethod',
+        13 => 'tests\\unit\\application\\middleware\\testtostringmethod',
+        14 => 'tests\\unit\\application\\middleware\\testtostringmethodfordeniedresult',
+        15 => 'tests\\unit\\application\\middleware\\testdefaultparametersforstaticmethods',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Application/Middleware/JwtAuthenticationMiddlewareTest.php' => 
+    array (
+      0 => 'e89607b8c77d817346898b4bada04066338652b1',
+      1 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\jwtauthenticationmiddlewaretest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\setup',
+        1 => 'tests\\unit\\application\\middleware\\teardown',
+        2 => 'tests\\unit\\application\\middleware\\shouldskipprocessingforpublicpaths',
+        3 => 'tests\\unit\\application\\middleware\\shouldprocessauthenticatedpaths',
+        4 => 'tests\\unit\\application\\middleware\\shouldreturnunauthorizedwhennotokenprovided',
+        5 => 'tests\\unit\\application\\middleware\\shouldextracttokenfromauthorizationheader',
+        6 => 'tests\\unit\\application\\middleware\\shouldextracttokenfromqueryparameter',
+        7 => 'tests\\unit\\application\\middleware\\shouldextracttokenfromcookie',
+        8 => 'tests\\unit\\application\\middleware\\shouldinjectusercontextintorequest',
+        9 => 'tests\\unit\\application\\middleware\\shouldreturnunauthorizedwhentokenexpired',
+        10 => 'tests\\unit\\application\\middleware\\shouldreturnunauthorizedwhentokeninvalid',
+        11 => 'tests\\unit\\application\\middleware\\shouldvalidateipaddresswhenpresentintoken',
+        12 => 'tests\\unit\\application\\middleware\\shouldfailwhenipaddressmismatch',
+        13 => 'tests\\unit\\application\\middleware\\shouldrejectwhenipaddressmismatch',
+        14 => 'tests\\unit\\application\\middleware\\shouldvalidatedevicefingerprint',
+        15 => 'tests\\unit\\application\\middleware\\shouldrejectwhendevicefingerprintmismatch',
+        16 => 'tests\\unit\\application\\middleware\\shouldskipprocessingwhendisabled',
+        17 => 'tests\\unit\\application\\middleware\\shouldhandlegenericexceptiongracefully',
+        18 => 'tests\\unit\\application\\middleware\\shouldprioritizeauthorizationheaderoverothermethods',
+        19 => 'tests\\unit\\application\\middleware\\cangetandsetpriority',
+        20 => 'tests\\unit\\application\\middleware\\cangetname',
+        21 => 'tests\\unit\\application\\middleware\\cansetenabled',
+        22 => 'tests\\unit\\application\\middleware\\createvalidpayload',
       ),
       3 => 
       array (

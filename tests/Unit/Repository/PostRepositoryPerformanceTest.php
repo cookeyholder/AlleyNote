@@ -189,10 +189,10 @@ class PostRepositoryPerformanceTest extends TestCase
     {
         $this->markTestSkipped('暫時跳過：SQLite 事務狀態問題，待修復');
 
-        // 建立測試標籤
-        for ($i = 1; $i <= 10; $i++) {
-            $this->db->exec("INSERT INTO tags (id, name) VALUES ({$i}, '標籤 {$i}')");
-        }
+        // 建立測試標籤 - 已註解因為不可達
+        // for ($i = 1; $i <= 10; $i++) {
+        //     $this->db->exec("INSERT INTO tags (id, name) VALUES ({$i}, '標籤 {$i}')");
+        // }
 
         $data = PostFactory::make(['user_id' => 1]);
         $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
@@ -214,8 +214,9 @@ class PostRepositoryPerformanceTest extends TestCase
     {
         $this->markTestSkipped('暫時跳過：SQLite 事務狀態問題，待修復');
 
-        $data = PostFactory::make(['user_id' => 1]);
-        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        // 已註解因為不可達
+        // $data = PostFactory::make(['user_id' => 1]);
+        // $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);

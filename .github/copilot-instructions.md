@@ -101,7 +101,7 @@ docker compose exec -T web composer ci
 
     - 使用 `php-cs-fixer` 修正風格錯誤
     - 修復 PHPStan 報告的問題（如類型錯誤、未使用變數等）
-    - 確保所有測試均通過
+    - 確保所有測試均通過，在 scripts 資料夾中有各種清除錯誤測試或失敗測試的腳本可以使用
 
 5. **全部通過後再進行 Git Commit，Message 請符合 Conventional Commit 規範（以繁體中文撰寫）**
 

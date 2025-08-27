@@ -1,10 +1,10 @@
-=== 專案架構快速摘要 (2025-08-27 19:44:01) ===
+=== 專案架構快速摘要 (2025-08-27 22:57:10) ===
 
 📊 品質指標:
-- 總類別數: 160
-- 介面比例: 21.25%
-- 現代 PHP 採用率: 58.75%
-- PSR-4 合規率: 73.54%
+- 總類別數: 164
+- 介面比例: 20.73%
+- 現代 PHP 採用率: 59.76%
+- PSR-4 合規率: 72.81%
 
 🎯 邊界上下文: 5 個
 - Attachment: 6 個組件
@@ -14,15 +14,15 @@
 - storage: 0 個組件
 
 🚀 現代 PHP 特性: 7 種正在使用
-- 最常用: Match 表達式 (PHP 8.0+) (195 次)
+- 最常用: Match 表達式 (PHP 8.0+) (201 次)
 
 📊 統計資訊:
-- 類別: 160 個
+- 類別: 164 個
 - 介面: 34 個
-- 命名空間: 78 個
+- 命名空間: 79 個
 
 🏗️ DDD 架構:
-- Application: 13 個檔案
+- Application: 15 個檔案
 - Domains: 88 個檔案
 - Infrastructure: 43 個檔案
 - Shared: 19 個檔案
@@ -34,18 +34,18 @@
 
 🧪 測試覆蓋:
 - 有測試: 0 個類別
-- 缺少測試: 159 個類別
+- 缺少測試: 163 個類別
 
 🔌 介面實作:
-- : 118 個實作
+- : 120 個實作
 - FileSecurityServiceInterface: 1 個實作
 - AttachmentServiceInterface: 1 個實作
-- JsonSerializable: 9 個實作
+- JsonSerializable: 10 個實作
 - SessionSecurityServiceInterface: 1 個實作
 
 💉 重依賴類別 (≥3個依賴): 13 個
 
-❓ 可能問題引用: 135 個
+❓ 可能問題引用: 142 個
 
 🔑 重點服務/控制器:
 - AttachmentRepository (app/Domains/Attachment/Repositories/AttachmentRepository.php)

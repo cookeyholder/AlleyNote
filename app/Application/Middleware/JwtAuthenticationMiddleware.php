@@ -10,6 +10,7 @@ use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
 use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
+use Exception;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -79,7 +80,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             return $this->createUnauthorizedResponse('Token 已過期', 'TOKEN_EXPIRED');
         } catch (InvalidTokenException $e) {
             return $this->createUnauthorizedResponse('Token 無效', 'TOKEN_INVALID');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->createUnauthorizedResponse('認證驗證失敗', 'AUTH_FAILED');
         }
     }
@@ -326,7 +327,6 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
      * 設定中介軟體優先順序.
      *
      * @param int $priority 優先順序
-     * @return self
      */
     public function setPriority(int $priority): self
     {
@@ -339,7 +339,6 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
      * 設定中介軟體是否啟用.
      *
      * @param bool $enabled 是否啟用
-     * @return self
      */
     public function setEnabled(bool $enabled): self
     {

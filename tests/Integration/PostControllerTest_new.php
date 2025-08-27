@@ -50,11 +50,11 @@ class PostControllerTest extends TestCase
             ->byDefault()
             ->andReturnUsing(function ($data, $fields) {
                 return $data;
-                // 設定預設的 user_id 屬性
-                $this->request->shouldReceive('getAttribute')
-                    ->with('user_id')
-                    ->andReturn(1)
-                    ->byDefault();
+                // 設定預設的 user_id 屬性 - 已註解因為不可達
+                // $this->request->shouldReceive('getAttribute')
+                //     ->with('user_id')
+                //     ->andReturn(1)
+                //     ->byDefault();
             });
 
         $this->csrfProtection->shouldReceive('validateToken')
