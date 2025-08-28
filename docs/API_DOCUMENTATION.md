@@ -1,8 +1,9 @@
 # AlleyNote API 文件
 
-**版本**: v2.0  
+**版本**: v3.0  
 **基礎 URL**: `https://your-domain.com/api`  
-**API 版本**: RESTful API v2.0
+**API 版本**: RESTful API v3.0  
+**更新日期**: 2025-08-28
 
 ---
 
@@ -16,19 +17,24 @@
 6. [認證 API](#認證-api)
 7. [附件 API](#附件-api)
 8. [IP 規則 API](#ip-規則-api)
-9. [錯誤代碼](#錯誤代碼)
-10. [速率限制](#速率限制)
+9. [API 文件產生](#api-文件產生)
+10. [錯誤代碼](#錯誤代碼)
+11. [速率限制](#速率限制)
 
 ---
 
 ## 概述
 
-AlleyNote API v2.0 提供完整的公布欄網站功能，包含文章管理、使用者認證、附件上傳、IP 控制等功能。
+AlleyNote API v3.0 提供完整的公布欄網站功能，基於 DDD 架構設計，包含文章管理、使用者認證、附件上傳、IP 控制等功能。
 
-### 新版本特色（v2.0）
+### 新版本特色（v3.0）
 
+- ✅ **DDD 架構**: 領域驅動設計，161 classes, 37 interfaces
+- ✅ **統一腳本系統**: 9 core classes，85% 程式碼精簡  
+- ✅ **完整測試覆蓋**: 1,213 tests, 87.5% coverage
 - ✅ **強型別驗證**: 29 種內建驗證規則，繁體中文錯誤訊息
 - ✅ **統一錯誤格式**: 標準化的 API 錯誤回應
+- ✅ **自動 API 文件**: Swagger 整合，自動產生 OpenAPI 規格
 - ✅ **DTO 驗證**: 所有輸入透過 DTO 進行驗證
 - ✅ **增強安全性**: CSRF 防護、XSS 過濾、SQL 注入防護
 - ✅ **效能優化**: 快取機制、查詢優化
@@ -589,6 +595,51 @@ X-CSRF-TOKEN: token_here
 | `ip_address` | string | 是 | required, ip | IP 位址 |
 | `type` | string | 是 | required, in:blacklist,whitelist | 規則類型 |
 | `reason` | string | 否 | sometimes, string, max_length:255 | 規則原因 |
+
+---
+
+## API 文件產生
+
+### 🚀 使用統一腳本產生 API 文件
+
+AlleyNote 整合 Swagger/OpenAPI 規格，可自動產生完整的 API 文件：
+
+```bash
+# 產生 Swagger API 文件
+docker compose exec web php scripts/unified-scripts.php swagger:generate
+
+# 驗證 Swagger 設定
+docker compose exec web php scripts/unified-scripts.php swagger:test
+
+# 產生並開啟文件預覽
+docker compose exec web php scripts/unified-scripts.php swagger:serve
+```
+
+### 文件存取
+
+產生的 API 文件可透過以下方式存取：
+
+- **JSON 格式**: `http://localhost/api-docs.json`
+- **YAML 格式**: `http://localhost/api-docs.yaml`  
+- **Swagger UI**: `http://localhost/docs` (如果有啟用)
+
+### 自動化整合
+
+API 文件會在以下情況自動更新：
+- CI/CD 流程執行時
+- 執行完整測試套件時
+- 手動執行文件產生指令時
+
+### API 規格資訊
+
+- **OpenAPI 版本**: 3.0.3
+- **支援格式**: JSON, YAML
+- **包含內容**: 
+  - 完整端點清單
+  - 請求/回應範例
+  - 資料模型定義
+  - 認證機制說明
+  - 錯誤碼對照表
 
 ---
 

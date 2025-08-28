@@ -1,24 +1,30 @@
 # AlleyNote 公布欄網站部署指南
 
+**版本**: v3.0  
+**更新日期**: 2025-08-28  
+**適用環境**: 生產環境、預備環境  
+
 ## 1. 系統需求
 
 ### 1.1 硬體需求
-- CPU: 2 核心以上
-- 記憶體: 4GB 以上
-- 硬碟空間: 20GB 以上
+- CPU: 2 核心以上 (推薦 4 核心)
+- 記憶體: 4GB 以上 (推薦 8GB)  
+- 硬碟空間: 20GB 以上 (推薦 50GB)
+- 網路頻寬: 100Mbps 以上
 
 ### 1.2 軟體需求
-- Debian Linux 12
-- PHP 8.4.11
-- SQLite3
-- NGINX
-- Docker 24.0.0 以上
-- Docker Compose 2.20.0 以上
+- **作業系統**: Debian Linux 12 / Ubuntu 22.04 LTS
+- **PHP**: 8.4.11+ (Docker 容器內自動提供)
+- **資料庫**: SQLite3 (內建) / PostgreSQL (選用)
+- **Web Server**: NGINX (Docker 容器內自動提供)
+- **容器平台**: Docker 24.0.0+ & Docker Compose 2.20.0+
+- **統一腳本系統**: 內建 9 core classes，支援完整部署自動化
 
 ### 1.3 網路需求
-- 固定 IP 位址
+- 固定 IP 位址或 FQDN
 - 支援 HTTPS (443 埠)
-- 支援 HTTP (80 埠)
+- 支援 HTTP (80 埠)  
+- SSL 憑證 (Let's Encrypt 或自訂)
 
 ## 2. 安裝步驟
 
@@ -38,7 +44,8 @@ curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-comp
 chmod +x /usr/local/bin/docker-compose
 ```
 
-### 2.2 專案部署
+### 2.2 🚀 專案部署 (統一腳本系統)
+
 ```bash
 # 建立專案目錄
 mkdir -p /var/www/alleynote
@@ -50,20 +57,46 @@ git clone https://github.com/your-org/alleynote.git .
 # 設定環境變數
 cp .env.example .env
 # 編輯 .env 檔案，設定必要的環境變數：
+# - APP_ENV=production
 # - 管理員帳號密碼
 # - 資料庫設定
 # - 檔案上傳設定
 # - Telegram 通知設定
 
-# 啟動容器
-docker-compose up -d
+# 啟動 Docker 容器
+docker compose up -d
+
+# 🎯 使用統一腳本系統進行部署
+# 初始化生產環境
+docker compose exec web php scripts/unified-scripts.php deploy:init
 
 # 執行資料庫遷移
-docker-compose exec php php /var/www/html/vendor/bin/phinx migrate
+docker compose exec web php scripts/unified-scripts.php db:migrate
 
-# 設定目錄權限
-chown -R www-data:www-data storage
-chmod -R 755 storage
+# 預熱快取系統
+docker compose exec web php scripts/unified-scripts.php cache:warm
+
+# 產生 API 文件
+docker compose exec web php scripts/unified-scripts.php swagger:generate
+
+# 執行部署後健康檢查
+docker compose exec web php scripts/unified-scripts.php deploy:health-check
+
+# 執行完整測試套件確認部署
+docker compose exec web php scripts/unified-scripts.php test:production
+```
+
+### 2.3 SSL 憑證設定 (自動化)
+
+```bash
+# 自動設定 Let's Encrypt SSL 憑證
+docker compose exec web php scripts/unified-scripts.php ssl:setup --domain=your-domain.com
+
+# 設定自動續約
+docker compose exec web php scripts/unified-scripts.php ssl:auto-renew
+
+# 測試憑證設定
+docker compose exec web php scripts/unified-scripts.php ssl:test
 ```
 
 ## 3. 環境設定
