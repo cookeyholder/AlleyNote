@@ -31,12 +31,12 @@ class PhpUnitDeprecationFixer
     public function run(): void
     {
         $testFiles = $this->findTestFiles();
-        
+
         foreach ($testFiles as $file) {
             echo "處理檔案: {$file}\n";
             $this->processFile($file);
         }
-        
+
         echo "完成！共處理了 " . count($testFiles) . " 個檔案\n";
     }
 
@@ -44,23 +44,23 @@ class PhpUnitDeprecationFixer
     {
         $files = [];
         $directories = ['tests/Unit', 'tests/Integration', 'tests/Security', 'tests/UI'];
-        
+
         foreach ($directories as $dir) {
             if (!is_dir($dir)) {
                 continue;
             }
-            
+
             $iterator = new RecursiveIteratorIterator(
                 new RecursiveDirectoryIterator($dir)
             );
-            
+
             foreach ($iterator as $file) {
                 if ($file->isFile() && $file->getExtension() === 'php') {
                     $files[] = $file->getPathname();
                 }
             }
         }
-        
+
         return $files;
     }
 
@@ -73,32 +73,32 @@ class PhpUnitDeprecationFixer
         }
 
         $originalContent = $content;
-        
+
         // 檢查是否需要添加 use 語句
-        $needsTestAttribute = strpos($content, '/** @test */') !== false || 
-                             strpos($content, ' * @test') !== false;
+        $needsTestAttribute = strpos($content, '/** @test */') !== false ||
+            strpos($content, ' * @test') !== false;
         $needsCoversAttribute = strpos($content, '/** @covers') !== false;
         $needsGroupAttribute = strpos($content, '/** @group') !== false;
-        
+
         // 添加必要的 use 語句
         if ($needsTestAttribute && strpos($content, 'use PHPUnit\Framework\Attributes\Test;') === false) {
             $content = $this->addUseStatement($content, 'PHPUnit\Framework\Attributes\Test');
         }
-        
+
         if ($needsCoversAttribute && strpos($content, 'use PHPUnit\Framework\Attributes\CoversClass;') === false) {
             $content = $this->addUseStatement($content, 'PHPUnit\Framework\Attributes\CoversClass');
         }
-        
+
         if ($needsGroupAttribute && strpos($content, 'use PHPUnit\Framework\Attributes\Group;') === false) {
             $content = $this->addUseStatement($content, 'PHPUnit\Framework\Attributes\Group');
         }
 
         // 處理 @test 註解
         $content = $this->replaceTestAnnotations($content);
-        
+
         // 處理 @covers 註解 
         $content = $this->replaceCoversAnnotations($content);
-        
+
         // 處理其他註解
         $content = $this->replaceOtherAnnotations($content);
 
@@ -121,7 +121,7 @@ class PhpUnitDeprecationFixer
                 $content = substr_replace($content, "\n\nuse {$useStatement};", $namespacePos, 0);
             }
         }
-        
+
         return $content;
     }
 
@@ -129,13 +129,13 @@ class PhpUnitDeprecationFixer
     {
         // 處理單行 @test
         $content = preg_replace('/^(\s*)\/\*\* @test \*\/$/m', '$1#[Test]', $content);
-        
+
         // 處理 docblock 中的 @test
         $content = preg_replace('/^(\s*)\*\s*@test\s*$/m', '', $content);
-        
+
         // 清理空的 docblock
         $content = preg_replace('/\/\*\*\s*\*\/\s*\n/m', '', $content);
-        
+
         return $content;
     }
 
@@ -144,7 +144,7 @@ class PhpUnitDeprecationFixer
         // 處理 @covers ClassName
         $pattern = '/\/\*\* @covers\s+([^\s\*]+)\s*\*\//';
         $content = preg_replace($pattern, '#[CoversClass($1::class)]', $content);
-        
+
         return $content;
     }
 
@@ -156,11 +156,11 @@ class PhpUnitDeprecationFixer
             '/\/\*\* @depends\s+([^\s\*]+)\s*\*\//' => '#[Depends(\'$1\')]',
             '/\/\*\* @dataProvider\s+([^\s\*]+)\s*\*\//' => '#[DataProvider(\'$1\')]',
         ];
-        
+
         foreach ($patterns as $pattern => $replacement) {
             $content = preg_replace($pattern, $replacement, $content);
         }
-        
+
         return $content;
     }
 }

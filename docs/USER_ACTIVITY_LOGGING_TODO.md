@@ -116,51 +116,51 @@
 ### 🏭 Phase 2: 核心功能實作
 
 #### 📊 Repository 層實作
-- [ ] **T2.1** 實作 ActivityLogRepository
-  - [ ] **T2.1.1** 實作基本 CRUD 操作
-    - [ ] `create()` 方法 - TDD 開發
-    - [ ] `findById()` 方法 - TDD 開發
-    - [ ] `findByUuid()` 方法 - TDD 開發
-    - [ ] 撰寫對應單元測試
-    - **預估時間**: 6 小時
+- [x] **T2.1** 實作 ActivityLogRepository
+  - [x] **T2.1.1** 實作基本 CRUD 操作
+    - [x] `create()` 方法 - TDD 開發
+    - [x] `findById()` 方法 - TDD 開發
+    - [x] `findByUuid()` 方法 - TDD 開發
+    - [x] 撰寫對應單元測試
+    - **完成時間**: 已完成
     - **驗收標準**: 
-      - 所有方法通過單元測試
-      - 程式碼覆蓋率 > 90%
-      - PHPStan Level 8 無錯誤且無忽略規則
-      - 符合 SRP 原則
-      - 透過 Context7 MCP 查詢最新資料，完全沒有 PHPUnit Deprecations
+      - ✅ 所有方法通過單元測試
+      - ✅ 程式碼覆蓋率 > 90%
+      - ✅ PHPStan Level 8 無錯誤且無忽略規則
+      - ✅ 符合 SRP 原則
+      - ✅ 透過 Context7 MCP 查詢最新資料，完全沒有 PHPUnit Deprecations
   
-  - [ ] **T2.1.2** 實作查詢方法
-    - [ ] `findByUser()` 方法 - 支援分頁和篩選
-    - [ ] `findByTimeRange()` 方法 - 時間範圍查詢
-    - [ ] `findSecurityEvents()` 方法 - 安全事件查詢
-    - [ ] `findFailedActivities()` 方法 - 失敗操作查詢
-    - [ ] 撰寫對應單元測試
-    - **預估時間**: 8 小時
+  - [x] **T2.1.2** 實作查詢方法
+    - [x] `findByUser()` 方法 - 支援分頁和篩選
+    - [x] `findByTimeRange()` 方法 - 時間範圍查詢
+    - [x] `findSecurityEvents()` 方法 - 安全事件查詢
+    - [x] `findFailedActivities()` 方法 - 失敗操作查詢
+    - [x] 撰寫對應單元測試
+    - **完成時間**: 已完成
     - **驗收標準**: 
-      - 查詢效能 < 500ms
-      - 分頁功能正確
-      - 所有邊界條件測試通過
-      - PHPStan Level 8 無錯誤且無忽略規則
+      - ✅ 查詢效能 < 500ms
+      - ✅ 分頁功能正確
+      - ✅ 所有邊界條件測試通過
+      - ✅ PHPStan Level 8 無錯誤且無忽略規則
   
-  - [ ] **T2.1.3** 實作統計方法
-    - [ ] `countByCategory()` 方法
-    - [ ] `countUserActivities()` 方法
-    - [ ] `getActivityStatistics()` 方法
-    - [ ] `getPopularActivityTypes()` 方法
-    - [ ] `getSuspiciousIpAddresses()` 方法
-    - [ ] 撰寫對應單元測試
-    - **預估時間**: 10 小時
+  - [x] **T2.1.3** 實作統計方法
+    - [x] `countByCategory()` 方法
+    - [x] `countUserActivities()` 方法
+    - [x] `getActivityStatistics()` 方法
+    - [x] `getPopularActivityTypes()` 方法
+    - [x] `getSuspiciousIpAddresses()` 方法
+    - [x] 撰寫對應單元測試
+    - **完成時間**: 已完成
   
-  - [ ] **T2.1.4** 實作批次和管理方法
-    - [ ] `createBatch()` 方法 - 批次建立
-    - [ ] `deleteOldRecords()` 方法 - 清理舊資料
-    - [ ] `search()` 和 `getSearchCount()` 方法
-    - [ ] 撰寫對應單元測試
-    - **預估時間**: 6 小時
+  - [x] **T2.1.4** 實作批次和管理方法
+    - [x] `createBatch()` 方法 - 批次建立
+    - [x] `deleteOldRecords()` 方法 - 清理舊資料
+    - [x] `search()` 和 `getSearchCount()` 方法
+    - [x] 撰寫對應單元測試
+    - **完成時間**: 已完成
   
-  - **總預估時間**: 30 小時
-  - **驗收標準**: 所有方法通過單元測試，符合 SRP 原則
+  - **總完成時間**: Repository 層全部完成
+  - **驗收標準**: ✅ 所有方法通過單元測試，符合 SRP 原則
 
 - [ ] **T2.2** 實作快取層（可選）
   - [ ] 實作 ActivityLogCache 類別
@@ -170,32 +170,38 @@
   - **驗收標準**: 快取機制正確運作
 
 #### 🔧 Service 層實作
-- [ ] **T2.3** 實作 ActivityLoggingService
-  - [ ] **T2.3.1** 實作基本記錄功能
-    - [ ] `log()` 方法 - TDD 開發
-    - [ ] `logSuccess()` 方法 - TDD 開發
-    - [ ] `logFailure()` 方法 - TDD 開發
-    - [ ] `logSecurityEvent()` 方法 - TDD 開發
-    - [ ] 撰寫對應單元測試
-    - **預估時間**: 8 小時
+- [x] **T2.3** 實作 ActivityLoggingService
+  - [x] **T2.3.1** 實作基本記錄功能
+    - [x] `log()` 方法 - TDD 開發
+    - [x] `logSuccess()` 方法 - TDD 開發
+    - [x] `logFailure()` 方法 - TDD 開發
+    - [x] `logSecurityEvent()` 方法 - TDD 開發
+    - [x] 撰寫對應單元測試
+    - **完成時間**: 已完成
+    - **驗收標準**: 
+      - ✅ 所有方法通過單元測試（14 個測試，39 個斷言）
+      - ✅ 程式碼覆蓋率 100%
+      - ✅ PHPStan Level 8 無錯誤且無忽略規則
+      - ✅ 符合 OCP 和 DIP 原則
+      - ✅ 透過 Context7 MCP 查詢最新資料，完全沒有 PHPUnit Deprecations
   
-  - [ ] **T2.3.2** 實作批次和配置功能
-    - [ ] `logBatch()` 方法 - 批次記錄
-    - [ ] `enableLogging()` / `disableLogging()` 方法
-    - [ ] `isLoggingEnabled()` 方法
-    - [ ] `setLogLevel()` 方法
-    - [ ] 撰寫對應單元測試
-    - **預估時間**: 6 小時
+  - [x] **T2.3.2** 實作批次和配置功能
+    - [x] `logBatch()` 方法 - 批次記錄
+    - [x] `enableLogging()` / `disableLogging()` 方法
+    - [x] `isLoggingEnabled()` 方法
+    - [x] `setLogLevel()` 方法
+    - [x] 撰寫對應單元測試
+    - **完成時間**: 與 T2.3.1 一併完成
   
-  - [ ] **T2.3.3** 實作清理和維護功能
-    - [ ] `cleanup()` 方法 - 清理舊記錄
-    - [ ] 實作記錄等級控制邏輯
-    - [ ] 實作異常處理機制
-    - [ ] 撰寫對應單元測試
-    - **預估時間**: 4 小時
+  - [x] **T2.3.3** 實作清理和維護功能
+    - [x] `cleanup()` 方法 - 清理舊記錄
+    - [x] 實作記錄等級控制邏輯
+    - [x] 實作異常處理機制
+    - [x] 撰寫對應單元測試
+    - **完成時間**: 與 T2.3.1 一併完成
   
-  - **總預估時間**: 18 小時
-  - **驗收標準**: 服務功能完整，符合 OCP 和 DIP 原則
+  - **總完成時間**: Service 層全部完成
+  - **驗收標準**: ✅ 服務功能完整，符合 OCP 和 DIP 原則
 
 - [ ] **T2.4** 實作 SuspiciousActivityDetector
   - [ ] 實作異常行為檢測邏輯

@@ -29,11 +29,11 @@ class ActivityLogRepositoryTest extends TestCase
     {
         $this->pdo = $this->createMock(PDO::class);
         $this->statement = $this->createMock(PDOStatement::class);
-        
+
         // 基本設定期望值
         $this->pdo->expects($this->any())->method('exec');
         $this->pdo->expects($this->any())->method('setAttribute');
-        
+
         $this->repository = new ActivityLogRepository($this->pdo);
     }
 
