@@ -80,14 +80,12 @@ return function (RouterInterface $router): void {
     // 使用者登出 (需要認證)
     $authLogout = $router->post('/api/auth/logout', [AuthController::class, 'logout']);
     $authLogout->setName('auth.logout');
-    // 暫時註解掉中介軟體，等待 DI 容器整合完成
-    // $authLogout->middleware(['jwt.auth']);
+    $authLogout->middleware('jwt.auth');
 
     // 取得目前使用者資訊 (需要認證)
     $authMe = $router->get('/api/auth/me', [AuthController::class, 'me']);
     $authMe->setName('auth.me');
-    // 暫時註解掉中介軟體，等待 DI 容器整合完成
-    // $authMe->middleware(['jwt.auth']);
+    $authMe->middleware('jwt.auth');
 
     // =========================================
     // 貼文相關路由 (需要認證和授權)
@@ -104,20 +102,17 @@ return function (RouterInterface $router): void {
     // 建立新貼文 (需要認證和權限)
     $postsStore = $router->post('/api/posts', [PostController::class, 'store']);
     $postsStore->setName('posts.store');
-    // 註記：中介軟體將透過 DI 容器解析
-    // $postsStore->middleware(['jwt.auth', 'jwt.authorize']);
+    $postsStore->middleware(['jwt.auth']);
 
     // 更新貼文 (需要認證和權限 - 只有作者或管理員)
     $postsUpdate = $router->put('/api/posts/{id}', [PostController::class, 'update']);
     $postsUpdate->setName('posts.update');
-    // 註記：中介軟體將透過 DI 容器解析
-    // $postsUpdate->middleware(['jwt.auth', 'jwt.authorize']);
+    $postsUpdate->middleware(['jwt.auth', 'jwt.authorize']);
 
     // 刪除貼文 (需要認證和權限 - 只有作者或管理員)
     $postsDestroy = $router->delete('/api/posts/{id}', [PostController::class, 'destroy']);
     $postsDestroy->setName('posts.destroy');
-    // 註記：中介軟體將透過 DI 容器解析
-    // $postsDestroy->middleware(['jwt.auth', 'jwt.authorize']);
+    $postsDestroy->middleware(['jwt.auth', 'jwt.authorize']);
 
     // =========================================
     // 管理員路由 (需要管理員權限)

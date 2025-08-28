@@ -247,6 +247,7 @@ class Application
     private function isDebugMode(): bool
     {
         $debug = $_ENV['APP_DEBUG'] ?? 'false';
+
         return filter_var($debug, FILTER_VALIDATE_BOOLEAN);
     }
 

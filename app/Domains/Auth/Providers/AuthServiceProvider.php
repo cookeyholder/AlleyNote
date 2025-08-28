@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Providers;
 
-use App\Application\Middleware\JwtAuthenticationMiddleware;
-use App\Application\Middleware\JwtAuthorizationMiddleware;
 use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
@@ -14,10 +12,12 @@ use AlleyNote\Domains\Auth\Services\AuthenticationService;
 use AlleyNote\Domains\Auth\Services\JwtTokenService;
 use AlleyNote\Domains\Auth\Services\RefreshTokenService;
 use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
-use AlleyNote\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
 use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
-use AlleyNote\Shared\Config\JwtConfig;
+use App\Application\Middleware\JwtAuthenticationMiddleware;
+use App\Application\Middleware\JwtAuthorizationMiddleware;
+use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
+use App\Shared\Config\JwtConfig;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -81,6 +81,7 @@ class AuthServiceProvider
     public static function createFirebaseJwtProvider(ContainerInterface $container): FirebaseJwtProvider
     {
         $config = $container->get(JwtConfig::class);
+
         return new FirebaseJwtProvider($config);
     }
 

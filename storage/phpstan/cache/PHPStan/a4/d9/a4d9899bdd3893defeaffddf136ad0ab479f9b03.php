@@ -2638,5 +2638,48 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
       ),
     ),
+    '/var/www/html/tests/Integration/Api/V1/AuthEndpointTest.php' => 
+    array (
+      0 => '24029f5e2376ea6205735b7e662d651bfa5d9c01',
+      1 => 
+      array (
+        0 => 'tests\\integration\\api\\v1\\authendpointtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\integration\\api\\v1\\setup',
+        1 => 'tests\\integration\\api\\v1\\createrequest',
+        2 => 'tests\\integration\\api\\v1\\testloginendpointreturnsjwttokens',
+        3 => 'tests\\integration\\api\\v1\\testrefreshtokenendpoint',
+        4 => 'tests\\integration\\api\\v1\\testlogoutendpoint',
+        5 => 'tests\\integration\\api\\v1\\testprotectedendpointwithouttoken',
+        6 => 'tests\\integration\\api\\v1\\testprotectedendpointwithinvalidtoken',
+        7 => 'tests\\integration\\api\\v1\\testapplicationbootstrap',
+        8 => 'tests\\integration\\api\\v1\\teardown',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Performance/JwtPerformanceTest.php' => 
+    array (
+      0 => '5ce71fb06f8a6bdd70a56e18546d2bb876c17c0c',
+      1 => 
+      array (
+        0 => 'tests\\performance\\jwtperformancetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\performance\\setup',
+        1 => 'tests\\performance\\testjwttokengenerationperformance',
+        2 => 'tests\\performance\\testjwttokenvalidationperformance',
+        3 => 'tests\\performance\\testconcurrenttokengeneration',
+        4 => 'tests\\performance\\testmemoryusage',
+        5 => 'tests\\performance\\testtokensize',
+      ),
+      3 => 
+      array (
+      ),
+    ),
   ),
 ));

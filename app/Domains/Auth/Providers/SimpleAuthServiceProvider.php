@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Providers;
 
-use App\Application\Middleware\JwtAuthenticationMiddleware;
-use App\Application\Middleware\JwtAuthorizationMiddleware;
 use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use AlleyNote\Domains\Auth\Services\JwtTokenService;
 use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
-use AlleyNote\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
 use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
-use AlleyNote\Shared\Config\JwtConfig;
+use App\Application\Middleware\JwtAuthenticationMiddleware;
+use App\Application\Middleware\JwtAuthorizationMiddleware;
+use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
+use App\Shared\Config\JwtConfig;
+use PDO;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -33,14 +34,14 @@ class SimpleAuthServiceProvider
             // 基本配置和服務
             JwtConfig::class => \DI\factory([self::class, 'createJwtConfig']),
             FirebaseJwtProvider::class => \DI\factory([self::class, 'createFirebaseJwtProvider']),
-            
-            // Repository (簡單建立)
-            RefreshTokenRepositoryInterface::class => \DI\create(RefreshTokenRepository::class),
-            TokenBlacklistRepositoryInterface::class => \DI\create(TokenBlacklistRepository::class),
-            
+
+            // Repository (明確建立並注入依賴)
+            RefreshTokenRepositoryInterface::class => \DI\factory([self::class, 'createRefreshTokenRepository']),
+            TokenBlacklistRepositoryInterface::class => \DI\factory([self::class, 'createTokenBlacklistRepository']),
+
             // Token Service (簡化版本)
             JwtTokenServiceInterface::class => \DI\factory([self::class, 'createJwtTokenService']),
-            
+
             // Blacklist Service
             TokenBlacklistService::class => \DI\factory([self::class, 'createTokenBlacklistService']),
 
@@ -63,11 +64,32 @@ class SimpleAuthServiceProvider
     }
 
     /**
+     * 建立 RefreshToken Repository 實例.
+     */
+    public static function createRefreshTokenRepository(ContainerInterface $container): RefreshTokenRepository
+    {
+        $pdo = $container->get(PDO::class);
+
+        return new RefreshTokenRepository($pdo);
+    }
+
+    /**
+     * 建立 TokenBlacklist Repository 實例.
+     */
+    public static function createTokenBlacklistRepository(ContainerInterface $container): TokenBlacklistRepository
+    {
+        $pdo = $container->get(PDO::class);
+
+        return new TokenBlacklistRepository($pdo);
+    }
+
+    /**
      * 建立 Firebase JWT Provider 實例.
      */
     public static function createFirebaseJwtProvider(ContainerInterface $container): FirebaseJwtProvider
     {
         $config = $container->get(JwtConfig::class);
+
         return new FirebaseJwtProvider($config);
     }
 
@@ -90,6 +112,7 @@ class SimpleAuthServiceProvider
     public static function createTokenBlacklistService(ContainerInterface $container): TokenBlacklistService
     {
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+
         return new TokenBlacklistService($blacklistRepository);
     }
 
@@ -99,9 +122,8 @@ class SimpleAuthServiceProvider
     public static function createJwtAuthenticationMiddleware(ContainerInterface $container): JwtAuthenticationMiddleware
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
-        $blacklistService = $container->get(TokenBlacklistService::class);
 
-        return new JwtAuthenticationMiddleware($jwtTokenService, $blacklistService);
+        return new JwtAuthenticationMiddleware($jwtTokenService);
     }
 
     /**
