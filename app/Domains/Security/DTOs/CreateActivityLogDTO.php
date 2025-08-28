@@ -21,6 +21,7 @@ final class CreateActivityLogDTO implements JsonSerializable
         private ?string $targetType = null,
         private ?string $targetId = null,
         private ?string $description = null,
+        /** @var array<string, mixed>|null */
         private ?array $metadata = null,
         private ?string $ipAddress = null,
         private ?string $userAgent = null,
@@ -29,13 +30,16 @@ final class CreateActivityLogDTO implements JsonSerializable
         private ?\DateTimeImmutable $occurredAt = null
     ) {
         $this->occurredAt ??= new \DateTimeImmutable();
-        
+
         // 驗證 metadata 只能包含可序列化的資料
         if ($this->metadata !== null) {
             $this->validateMetadata($this->metadata);
         }
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -51,14 +55,16 @@ final class CreateActivityLogDTO implements JsonSerializable
             userAgent: $data['user_agent'] ?? null,
             requestMethod: $data['request_method'] ?? null,
             requestPath: $data['request_path'] ?? null,
-            occurredAt: isset($data['occurred_at']) 
-                ? new \DateTimeImmutable($data['occurred_at']) 
+            occurredAt: isset($data['occurred_at'])
+                ? new \DateTimeImmutable($data['occurred_at'])
                 : new \DateTimeImmutable()
         );
     }
 
     /**
      * 快速建立成功操作的記錄
+     * 
+     * @param array<string, mixed>|null $metadata
      */
     public static function success(
         ActivityType $actionType,
@@ -81,6 +87,8 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 快速建立失敗操作的記錄
+     * 
+     * @param array<string, mixed>|null $metadata
      */
     public static function failure(
         ActivityType $actionType,
@@ -103,6 +111,8 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 快速建立安全事件的記錄
+     * 
+     * @param array<string, mixed>|null $metadata
      */
     public static function securityEvent(
         ActivityType $actionType,
@@ -158,6 +168,9 @@ final class CreateActivityLogDTO implements JsonSerializable
         return $this->description;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getMetadata(): ?array
     {
         return $this->metadata;
@@ -185,7 +198,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     public function getOccurredAt(): \DateTimeImmutable
     {
-        return $this->occurredAt;
+        return $this->occurredAt ?? new \DateTimeImmutable();
     }
 
     // === Fluent Setters ===
@@ -220,6 +233,9 @@ final class CreateActivityLogDTO implements JsonSerializable
         return $new;
     }
 
+    /**
+     * @param array<string, mixed> $metadata
+     */
     public function withMetadata(array $metadata): self
     {
         $this->validateMetadata($metadata);
@@ -239,6 +255,8 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 轉換為資料庫儲存格式
+     * 
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -256,11 +274,14 @@ final class CreateActivityLogDTO implements JsonSerializable
             'user_agent' => $this->userAgent,
             'request_method' => $this->requestMethod,
             'request_path' => $this->requestPath,
-            'occurred_at' => $this->occurredAt->format('Y-m-d H:i:s'),
+            'occurred_at' => $this->getOccurredAt()->format('Y-m-d H:i:s'),
             'created_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return $this->toArray();
@@ -268,6 +289,8 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 驗證 metadata 是否可序列化
+     * 
+     * @param array<string, mixed> $metadata
      */
     private function validateMetadata(array $metadata): void
     {
@@ -280,7 +303,8 @@ final class CreateActivityLogDTO implements JsonSerializable
         }
 
         // 檢查 metadata 大小不超過 64KB（MySQL TEXT 欄位限制）
-        $jsonSize = strlen(json_encode($metadata));
+        $json = json_encode($metadata);
+        $jsonSize = $json !== false ? strlen($json) : 0;
         if ($jsonSize > 65535) {
             throw new \InvalidArgumentException(
                 "Metadata size ({$jsonSize} bytes) exceeds maximum limit (65535 bytes)"

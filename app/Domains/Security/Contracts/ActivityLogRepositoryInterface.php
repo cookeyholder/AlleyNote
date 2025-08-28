@@ -37,8 +37,8 @@ interface ActivityLogRepositoryInterface
      * 查詢使用者的活動記錄
      */
     public function findByUser(
-        int $userId, 
-        int $limit = 50, 
+        int $userId,
+        int $limit = 50,
         int $offset = 0,
         ?ActivityCategory $category = null,
         ?ActivityType $actionType = null
