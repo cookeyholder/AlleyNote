@@ -281,12 +281,12 @@ class XssProtectionExtensionService
         $cleaned = $this->cleanJsonRecursively($decoded);
 
         return [
-            'protected_content' => json_encode($cleaned, JSON_UNESCAPED_UNICODE),
+            'protected_content' => (json_encode($cleaned, JSON_UNESCAPED_UNICODE) ?? ''),
             'context' => 'json_data',
             'protection_level' => 'enhanced',
             'modifications' => $decoded !== $cleaned ? [['type' => 'json_sanitization', 'description' => 'JSON 資料已清理']] : [],
             'warnings' => [],
-            'security_score' => $this->calculateSecurityScore($input, json_encode($cleaned)),
+            'security_score' => $this->calculateSecurityScore($input, (json_encode($cleaned) ?? '')),
         ];
     }
 

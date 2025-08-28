@@ -278,7 +278,7 @@ final class CreateActivityLogDTO implements JsonSerializable
             'target_type' => $this->targetType,
             'target_id' => $this->targetId,
             'description' => $this->description ?? $this->actionType->getDescription(),
-            'metadata' => $this->metadata ? json_encode($this->metadata, JSON_UNESCAPED_UNICODE) : null,
+            'metadata' => $this->metadata ? (json_encode($this->metadata, JSON_UNESCAPED_UNICODE) ?? '') : null,
             'ip_address' => $this->ipAddress,
             'user_agent' => $this->userAgent,
             'request_method' => $this->requestMethod,
@@ -304,7 +304,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     private function validateMetadata(array $metadata): void
     {
         try {
-            json_encode($metadata, JSON_THROW_ON_ERROR);
+            (json_encode($metadata, JSON_THROW_ON_ERROR) ?? '');
         } catch (JsonException $e) {
             throw new InvalidArgumentException(
                 'Metadata must be JSON serializable: ' . $e->getMessage(),
@@ -312,7 +312,7 @@ final class CreateActivityLogDTO implements JsonSerializable
         }
 
         // 檢查 metadata 大小不超過 64KB（MySQL TEXT 欄位限制）
-        $json = json_encode($metadata) ?: '';
+        $json = (json_encode($metadata) ?? '') ?: '';
         $jsonSize = $json !== false ? strlen($json) : 0;
         if ($jsonSize > 65535) {
             throw new InvalidArgumentException(

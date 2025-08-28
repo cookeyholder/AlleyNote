@@ -81,7 +81,7 @@ class ActivityLog
         $this->targetType = $targetType;
         $this->targetId = $targetId;
         $this->description = $description ?? $actionType->getDescription();
-        $this->metadata = $metadata ? json_encode($metadata, JSON_UNESCAPED_UNICODE) : null;
+        $this->metadata = $metadata ? (json_encode($metadata, JSON_UNESCAPED_UNICODE) ?? '') : null;
         $this->ipAddress = $ipAddress;
         $this->userAgent = $userAgent;
         $this->requestMethod = $requestMethod;

@@ -458,7 +458,7 @@ class PostRepository implements PostRepositoryInterface
                 'posts:page:%d:per:%d:%s',
                 $page,
                 $perPage,
-                md5(json_encode($conditions)),
+                md5((json_encode($conditions) ?? '')),
             );
         }
 

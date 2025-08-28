@@ -1,0 +1,516 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App;
+
+use App\Infrastructure\Routing\Contracts\RouterInterface;
+use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
+use App\Infrastructure\Routing\RouteDispatcher;
+use DI\ContainerBuilder;
+use Exception;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+/**
+ * 應用程式核心類別.
+ *
+ * 負責初始化和配置整個應用程式
+ */
+class Application
+{
+    private ContainerInterface $container;
+
+    private RouterInterface $router;
+
+    private RouteDispatcher $routeDispatcher;
+
+    public function __construct()
+    {
+        $this->initializeContainer();
+        $this->initializeRouter();
+        $this->initializeRouteDispatcher();
+        $this->loadRoutes();
+    }
+
+    /**
+     * 執行應用程式.
+     */
+    public function run(ServerRequestInterface $request): ResponseInterface
+    {
+        try {
+            return $this->handleRequest($request);
+        } catch (Exception $e) {
+            return $this->handleException($e);
+        }
+    }
+
+    /**
+     * 初始化 DI 容器.
+     */
+    private function initializeContainer(): void
+    {
+        $builder = new ContainerBuilder();
+
+        // 載入容器配置檔案
+        $containerConfig = require __DIR__ . '/../config/container.php';
+        $builder->addDefinitions($containerConfig);
+
+        $this->container = $builder->build();
+    }
+
+    /**
+     * 初始化路由器.
+     */
+    private function initializeRouter(): void
+    {
+        $this->router = $this->container->get(RouterInterface::class);
+    }
+
+    /**
+     * 初始化路由分派器.
+     */
+    private function initializeRouteDispatcher(): void
+    {
+        $this->routeDispatcher = $this->container->get(RouteDispatcher::class);
+    }
+
+    /**
+     * 載入路由配置.
+     */
+    private function loadRoutes(): void
+    {
+        // 使用路由服務提供者載入路由
+        RoutingServiceProvider::loadRoutes($this->container);
+    }
+
+    /**
+     * 處理 HTTP 請求
+     */
+    public function handleRequest(ServerRequestInterface $request): ResponseInterface
+    {
+        return $this->routeDispatcher->dispatch($request);
+    }
+
+    /**
+     * 處理例外狀況.
+     */
+    private function handleException(Exception $e): ResponseInterface
+    {
+        // 建立基本的錯誤回應（使用匿名類別實作）
+        $response = new class implements StreamInterface {
+    private string $content = '';
+    private int $position = 0;
+
+    public function __toString(): string
+    {
+        return $this->content;
+    }
+
+    public function close(): void
+    {
+        // 實作關閉流
+    }
+
+    public function detach()
+    {
+        return null;
+    }
+
+    public function getSize(): ?int
+    {
+        return strlen($this->content);
+    }
+
+    public function tell(): int
+    {
+        return $this->position;
+    }
+
+    public function eof(): bool
+    {
+        return $this->position >= strlen($this->content);
+    }
+
+    public function isSeekable(): bool
+    {
+        return true;
+    }
+
+    public function seek(int $offset, int $whence = SEEK_SET): void
+    {
+        switch ($whence) {
+            case SEEK_SET:
+                $this->position = $offset;
+                break;
+            case SEEK_CUR:
+                $this->position += $offset;
+                break;
+            case SEEK_END:
+                $this->position = strlen($this->content) + $offset;
+                break;
+        }
+    }
+
+    public function rewind(): void
+    {
+        $this->position = 0;
+    }
+
+    public function isWritable(): bool
+    {
+        return true;
+    }
+
+    public function write(string $string): int
+    {
+        $this->content .= $string;
+        $this->position += strlen($string);
+        return strlen($string);
+    }
+
+    public function isReadable(): bool
+    {
+        return true;
+    }
+
+    public function read(int $length): string
+    {
+        $result = substr($this->content, $this->position, $length);
+        $this->position += strlen($result);
+        return $result;
+    }
+
+    public function getContents(): string
+    {
+        return substr($this->content, $this->position);
+    }
+
+    /** @return array<string, mixed> */
+    public function getMetadata(?string $key = null): array
+    {
+        return [];
+    }
+}
+
+            public function close(): void
+            {
+                // 實作關閉流
+            }
+
+            public function detach()
+            {
+                return null;
+            }
+
+            public function getSize(): ?int
+            {
+                return strlen($this->content);
+            }
+
+            public function tell(): int
+            {
+                return $this->position;
+            }
+
+            public function eof(): bool
+            {
+                return $this->position >= strlen($this->content);
+            }
+
+            public function isSeekable(): bool
+            {
+                return true;
+            }
+
+            public function seek(int $offset, int $whence = SEEK_SET): void
+            {
+                switch ($whence) {
+                    case SEEK_SET:
+                        $this->position = $offset;
+                        break;
+                    case SEEK_CUR:
+                        $this->position += $offset;
+                        break;
+                    case SEEK_END:
+                        $this->position = strlen($this->content) + $offset;
+                        break;
+                }
+            }
+
+            public function rewind(): void
+            {
+                $this->position = 0;
+            }
+
+            public function isWritable(): bool
+            {
+                return true;
+            }
+
+            public function write(string $string): int
+            {
+                $this->content .= $string;
+                $this->position += strlen($string);
+                return strlen($string);
+            }
+
+            public function isReadable(): bool
+            {
+                return true;
+            }
+
+            public function read(int $length): string
+            {
+                $result = substr($this->content, $this->position, $length);
+                $this->position += strlen($result);
+                return $result;
+            }
+
+            public function getContents(): string
+            {
+                return substr($this->content, $this->position);
+            }
+
+            /** @return array<string, mixed> */
+            public function getMetadata(?string $key = null): array
+            {
+                return [];
+            }
+        };
+    }
+
+    public function getProtocolVersion(): string
+    {
+        return $this->protocolVersion;
+    }
+
+    public function withProtocolVersion(string $version): ResponseInterface
+    {
+        $new = clone $this;
+        $new->protocolVersion = $version;
+        return $new;
+    }
+
+    /** @return array<string, array<string>> */
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function hasHeader(string $name): bool
+    {
+        return isset($this->headers[strtolower($name)]);
+    }
+
+    /** @return array<string> */
+    public function getHeader(string $name): array
+    {
+        return $this->headers[strtolower($name)] ?? [];
+    }
+
+    public function getHeaderLine(string $name): string
+    {
+        return implode(', ', $this->getHeader($name));
+    }
+
+    public function withHeader(string $name, $value): ResponseInterface
+    {
+        $new = clone $this;
+        $new->headers[strtolower($name)] = is_array($value) ? $value : [$value];
+        return $new;
+    }
+
+    public function withAddedHeader(string $name, $value): ResponseInterface
+    {
+        $new = clone $this;
+        $headerName = strtolower($name);
+        $new->headers[$headerName] = array_merge(
+            $this->headers[$headerName] ?? [],
+            is_array($value) ? $value : [$value]
+        );
+        return $new;
+    }
+
+    public function withoutHeader(string $name): ResponseInterface
+    {
+        $new = clone $this;
+        unset($new->headers[strtolower($name)]);
+        return $new;
+    }
+
+    public function getBody(): StreamInterface
+    {
+        return $this->body;
+    }
+
+    public function withBody(StreamInterface $body): ResponseInterface
+    {
+        $new = clone $this;
+        $new->body = $body;
+        return $new;
+    }
+
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
+    }
+
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
+    {
+        $new = clone $this;
+        $new->statusCode = $code;
+        $new->reasonPhrase = $reasonPhrase;
+        return $new;
+    }
+
+    public function getReasonPhrase(): string
+    {
+        return $this->reasonPhrase;
+    }
+}
+
+                    public function __toString(): string
+                    {
+                        return $this->content;
+                    }
+                };
+            }
+
+            public function getStatusCode(): int
+            {
+                return $this->statusCode;
+            }
+
+            public function withStatus($code, $reasonPhrase = ''): self
+            {
+                $new = clone $this;
+                $new->statusCode = $code;
+                if ($reasonPhrase) {
+                    $new->reasonPhrase = $reasonPhrase;
+                }
+
+                return $new;
+            }
+
+            public function getReasonPhrase(): string
+            {
+                return $this->reasonPhrase;
+            }
+
+            public function getProtocolVersion(): string
+            {
+                return $this->protocolVersion;
+            }
+
+            public function withProtocolVersion($version): self
+            {
+                $new = clone $this;
+                $new->protocolVersion = $version;
+
+                return $new;
+            }
+
+            public function getHeaders(): array
+            {
+                return $this->headers;
+            }
+
+            public function hasHeader($name): bool
+            {
+                return isset($this->headers[$name]);
+            }
+
+            public function getHeader($name): array
+            {
+                return $this->headers[$name] ?? [];
+            }
+
+            public function getHeaderLine($name): string
+            {
+                return implode(', ', $this->getHeader($name));
+            }
+
+            public function withHeader($name, $value): self
+            {
+                $new = clone $this;
+                $new->headers[$name] = is_array($value) ? $value : [$value];
+
+                return $new;
+            }
+
+            public function withAddedHeader($name, $value): self
+            {
+                $new = clone $this;
+                $new->headers[$name] = array_merge($this->getHeader($name), is_array($value) ? $value : [$value]);
+
+                return $new;
+            }
+
+            public function withoutHeader($name): self
+            {
+                $new = clone $this;
+                unset($new->headers[$name]);
+
+                return $new;
+            }
+
+            public function getBody()
+            {
+                return $this->body;
+            }
+
+            public function withBody($body): self
+            {
+                $new = clone $this;
+                $new->body = $body;
+
+                return $new;
+            }
+        };
+
+        $errorData = [
+            'error' => true,
+            'message' => $e->getMessage(),
+            'code' => $e->getCode(),
+        ];
+
+        // 在除錯模式下提供詳細資訊
+        if ($this->isDebugMode()) {
+            $errorData['debug'] = [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ];
+        }
+
+        $response->getBody()->write((json_encode($errorData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?? ''));
+
+        return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+    }
+
+    /**
+     * 檢查是否為除錯模式.
+     */
+    private function isDebugMode(): bool
+    {
+        return $_ENV['APP_DEBUG'] ?? false;
+    }
+
+    /**
+     * 取得容器實例.
+     */
+    public function getContainer(): ContainerInterface
+    {
+        return $this->container;
+    }
+
+    /**
+     * 取得路由器實例.
+     */
+    public function getRouter(): RouterInterface
+    {
+        return $this->router;
+    }
+}

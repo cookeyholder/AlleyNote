@@ -109,7 +109,7 @@ interface UserRepositoryInterface
      *
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
-     * @param array $filters 篩選條件
+     * @param array<string, mixed> $filters 篩選條件
      */
     public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array;
 
@@ -125,7 +125,7 @@ interface UserRepositoryInterface
      * 搜尋使用者.
      *
      * @param string $keyword 關鍵字
-     * @param array $fields 搜尋欄位
+     * @param array<string, mixed> $fields 搜尋欄位
      * @param int $limit 限制筆數
      */
     public function search(string $keyword, array $fields = ['username', 'email'], int $limit = 10): array;
@@ -133,7 +133,7 @@ interface UserRepositoryInterface
     /**
      * 統計使用者數量.
      *
-     * @param array $conditions 統計條件
+     * @param array<string, mixed> $conditions 統計條件
      */
     public function getStats(array $conditions = []): array;
 }

@@ -17,7 +17,7 @@ abstract class BaseController
         http_response_code($httpCode);
         header('Content-Type: application/json; charset=utf-8');
 
-        return json_encode($data, JSON_UNESCAPED_UNICODE) ?: '{}';
+        return (json_encode($data, JSON_UNESCAPED_UNICODE) ?? '') ?: '{}';
     }
 
     protected function successResponse(mixed $data = null, string $message = 'Success'): string

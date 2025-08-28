@@ -235,7 +235,7 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 覆寫驗證方法以支援跨欄位驗證.
      *
-     * @param array $data 輸入資料
+     * @param array<string, mixed> $data 輸入資料
      * @return array 驗證通過的資料
      * @throws ValidationException 當驗證失敗時
      */

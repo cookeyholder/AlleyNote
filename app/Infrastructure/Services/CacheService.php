@@ -74,7 +74,7 @@ class CacheService implements CacheServiceInterface
             'data' => $value,
         ];
 
-        $result = file_put_contents($filename, json_encode($cacheData)) !== false;
+        $result = file_put_contents($filename, (json_encode($cacheData) ?? '')) !== false;
         if ($result) {
             $this->updateCacheSize();
         }

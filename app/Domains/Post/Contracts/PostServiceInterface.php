@@ -46,7 +46,7 @@ interface PostServiceInterface
      * 取得文章列表（含分頁）.
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
-     * @param array $filters 篩選條件
+     * @param array<string, mixed> $filters 篩選條件
      * @return array{
      *     items: Post[],
      *     total: int,
@@ -75,7 +75,7 @@ interface PostServiceInterface
     /**
      * 設定文章標籤.
      * @param int $id 文章 ID
-     * @param array $tagIds 標籤 ID 陣列
+     * @param array<string, mixed> $tagIds 標籤 ID 陣列
      * @throws NotFoundException
      */
     public function setTags(int $id, array $tagIds): bool;

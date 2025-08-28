@@ -48,7 +48,7 @@ interface SecretsManagerInterface
     /**
      * 驗證必需的秘密設定.
      *
-     * @param array $requiredKeys 必需的設定鍵名陣列
+     * @param array<string, mixed> $requiredKeys 必需的設定鍵名陣列
      * @throws ValidationException 如果有缺少的設定
      */
     public function validateRequiredSecrets(array $requiredKeys): void;

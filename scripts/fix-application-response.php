@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 簡單修復 Application.php 的 ResponseInterface 實作
  */

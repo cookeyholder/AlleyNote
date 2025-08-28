@@ -25,7 +25,7 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array $data 輸入資料
+     * @param array<string, mixed> $data 輸入資料
      *                    * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)

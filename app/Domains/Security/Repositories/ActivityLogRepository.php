@@ -724,7 +724,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $stmt->execute();
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         return array_map([$this, 'mapToArray'], $results);
     }
 }

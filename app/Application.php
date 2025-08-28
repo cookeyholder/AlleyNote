@@ -12,6 +12,7 @@ use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * 應用程式核心類別.
@@ -100,9 +101,10 @@ class Application
     {
         // 建立基本的錯誤回應（使用匿名類別實作）
         $response = new class implements ResponseInterface {
+            /** @var array<string, array<string>> */
             private array $headers = ['Content-Type' => ['application/json']];
 
-            private $body;
+            private StreamInterface $body;
 
             private int $statusCode = 500;
 
@@ -112,19 +114,98 @@ class Application
 
             public function __construct()
             {
-                $this->body = new class {
+                $this->body = new class implements StreamInterface {
                     private string $content = '';
-
-                    public function write(string $string): int
-                    {
-                        $this->content .= $string;
-
-                        return strlen($string);
-                    }
+                    private int $position = 0;
 
                     public function __toString(): string
                     {
                         return $this->content;
+                    }
+
+                    public function close(): void
+                    {
+                        // 實作關閉流
+                    }
+
+                    public function detach()
+                    {
+                        return null;
+                    }
+
+                    public function getSize(): ?int
+                    {
+                        return strlen($this->content);
+                    }
+
+                    public function tell(): int
+                    {
+                        return $this->position;
+                    }
+
+                    public function eof(): bool
+                    {
+                        return $this->position >= strlen($this->content);
+                    }
+
+                    public function isSeekable(): bool
+                    {
+                        return true;
+                    }
+
+                    public function seek(int $offset, int $whence = SEEK_SET): void
+                    {
+                        switch ($whence) {
+                            case SEEK_SET:
+                                $this->position = $offset;
+                                break;
+                            case SEEK_CUR:
+                                $this->position += $offset;
+                                break;
+                            case SEEK_END:
+                                $this->position = strlen($this->content) + $offset;
+                                break;
+                        }
+                    }
+
+                    public function rewind(): void
+                    {
+                        $this->position = 0;
+                    }
+
+                    public function isWritable(): bool
+                    {
+                        return true;
+                    }
+
+                    public function write(string $string): int
+                    {
+                        $this->content .= $string;
+                        $this->position += strlen($string);
+                        return strlen($string);
+                    }
+
+                    public function isReadable(): bool
+                    {
+                        return true;
+                    }
+
+                    public function read(int $length): string
+                    {
+                        $result = substr($this->content, $this->position, $length);
+                        $this->position += strlen($result);
+                        return $result;
+                    }
+
+                    public function getContents(): string
+                    {
+                        return substr($this->content, $this->position);
+                    }
+
+                    /** @return array<string, mixed> */
+                    public function getMetadata(?string $key = null): array
+                    {
+                        return [];
                     }
                 };
             }
@@ -134,7 +215,7 @@ class Application
                 return $this->statusCode;
             }
 
-            public function withStatus($code, $reasonPhrase = ''): self
+            public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
             {
                 $new = clone $this;
                 $new->statusCode = $code;
@@ -155,7 +236,7 @@ class Application
                 return $this->protocolVersion;
             }
 
-            public function withProtocolVersion($version): self
+            public function withProtocolVersion(string $version): ResponseInterface
             {
                 $new = clone $this;
                 $new->protocolVersion = $version;
@@ -163,27 +244,29 @@ class Application
                 return $new;
             }
 
+            /** @return array<string, array<string>> */
             public function getHeaders(): array
             {
                 return $this->headers;
             }
 
-            public function hasHeader($name): bool
+            public function hasHeader(string $name): bool
             {
                 return isset($this->headers[$name]);
             }
 
-            public function getHeader($name): array
+            /** @return array<string> */
+            public function getHeader(string $name): array
             {
                 return $this->headers[$name] ?? [];
             }
 
-            public function getHeaderLine($name): string
+            public function getHeaderLine(string $name): string
             {
                 return implode(', ', $this->getHeader($name));
             }
 
-            public function withHeader($name, $value): self
+            public function withHeader(string $name, $value): ResponseInterface
             {
                 $new = clone $this;
                 $new->headers[$name] = is_array($value) ? $value : [$value];
@@ -191,7 +274,7 @@ class Application
                 return $new;
             }
 
-            public function withAddedHeader($name, $value): self
+            public function withAddedHeader(string $name, $value): ResponseInterface
             {
                 $new = clone $this;
                 $new->headers[$name] = array_merge($this->getHeader($name), is_array($value) ? $value : [$value]);
@@ -199,7 +282,7 @@ class Application
                 return $new;
             }
 
-            public function withoutHeader($name): self
+            public function withoutHeader(string $name): ResponseInterface
             {
                 $new = clone $this;
                 unset($new->headers[$name]);
@@ -207,12 +290,12 @@ class Application
                 return $new;
             }
 
-            public function getBody()
+            public function getBody(): StreamInterface
             {
                 return $this->body;
             }
 
-            public function withBody($body): self
+            public function withBody(StreamInterface $body): ResponseInterface
             {
                 $new = clone $this;
                 $new->body = $body;

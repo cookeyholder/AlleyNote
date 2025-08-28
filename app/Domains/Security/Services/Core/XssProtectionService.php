@@ -119,7 +119,7 @@ class XssProtectionService
         // 使用 json_encode 是最安全、最標準的方式來將字串傳遞給 JavaScript
         // 它會處理所有引號、反斜線和控制字元
         // JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT 提供了額外的保護層，防止 XSS
-        return json_encode($input, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?: '';
+        return (json_encode($input, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?? '') ?: '';
     }
 
     /**
