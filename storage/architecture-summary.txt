@@ -1,0 +1,67 @@
+=== 專案架構快速摘要 (2025-08-29 01:43:11) ===
+
+📊 品質指標:
+- 總類別數: 181
+- 介面比例: 21.55%
+- 現代 PHP 採用率: 55.25%
+- PSR-4 合規率: 82.33%
+
+🎯 邊界上下文: 4 個
+- Attachment: 6 個組件
+- Auth: 28 個組件
+- Post: 7 個組件
+- Security: 20 個組件
+
+🚀 現代 PHP 特性: 7 種正在使用
+- 最常用: Match 表達式 (PHP 8.0+) (149 次)
+
+📊 統計資訊:
+- 類別: 181 個
+- 介面: 39 個
+- 命名空間: 77 個
+
+🏗️ DDD 架構:
+- Application: 16 個檔案
+- Domains: 102 個檔案
+- Infrastructure: 46 個檔案
+- Shared: 20 個檔案
+
+❌ 架構問題 (6 個):
+- 可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
+- 可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
+- 可能的循環依賴: app/Application/Controllers/Api/V1/ActivityLogController.php -> App\Application\Controllers\BaseController
+- 可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
+- Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
+- Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
+
+🧪 測試覆蓋:
+- 有測試: 0 個類別
+- 缺少測試: 181 個類別
+
+🔌 介面實作:
+- : 127 個實作
+- MiddlewareInterface: 4 個實作
+- JsonSerializable: 11 個實作
+- ValidatorInterface: 1 個實作
+- AttachmentServiceInterface: 1 個實作
+
+💉 重依賴類別 (≥3個依賴): 28 個
+
+❓ 可能問題引用: 128 個
+
+🔑 重點服務/控制器:
+- CSPReportController (app/Application/Controllers/Security/CSPReportController.php)
+- PostController (app/Application/Controllers/Api/V1/PostController.php)
+- SwaggerController (app/Application/Controllers/Web/SwaggerController.php)
+- BaseController (app/Application/Controllers/BaseController.php)
+- IpController (app/Application/Controllers/Api/V1/IpController.php)
+- ActivityLogController (app/Application/Controllers/Api/V1/ActivityLogController.php)
+- AuthController (app/Application/Controllers/Api/V1/AuthController.php)
+- AttachmentController (app/Application/Controllers/Api/V1/AttachmentController.php)
+- AttachmentService (app/Domains/Attachment/Services/AttachmentService.php)
+- FileSecurityService (app/Domains/Attachment/Services/FileSecurityService.php)
+- AttachmentRepository (app/Domains/Attachment/Repositories/AttachmentRepository.php)
+- SecurityHeaderService (app/Domains/Security/Services/Headers/SecurityHeaderService.php)
+- CsrfProtectionService (app/Domains/Security/Services/Core/CsrfProtectionService.php)
+- XssProtectionService (app/Domains/Security/Services/Core/XssProtectionService.php)
+- ErrorHandlerService (app/Domains/Security/Services/Error/ErrorHandlerService.php)

@@ -192,7 +192,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             'timestamp' => date('c'),
         ];
 
-        $body = json_encode($responseData, JSON_UNESCAPED_UNICODE);
+        $body = (json_encode($responseData, JSON_UNESCAPED_UNICODE) ?? '');
 
         return new Response(
             status: 401,

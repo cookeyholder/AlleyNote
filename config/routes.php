@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Application\Controllers\PostController;
 use App\Application\Controllers\Api\V1\AuthController;
+use App\Application\Controllers\Api\V1\ActivityLogController;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 
 /**
@@ -113,6 +114,30 @@ return function (RouterInterface $router): void {
     $postsDestroy = $router->delete('/api/posts/{id}', [PostController::class, 'destroy']);
     $postsDestroy->setName('posts.destroy');
     $postsDestroy->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // =========================================
+    // 活動記錄 API 路由 (需要認證)
+    // =========================================
+
+    // 記錄使用者活動 (POST /api/v1/activity-logs)
+    $activityLogStore = $router->post('/api/v1/activity-logs', [ActivityLogController::class, 'store']);
+    $activityLogStore->setName('activity_logs.store');
+    $activityLogStore->middleware('jwt.auth');
+
+    // 查詢活動記錄 (GET /api/v1/activity-logs)
+    $activityLogIndex = $router->get('/api/v1/activity-logs', [ActivityLogController::class, 'index']);
+    $activityLogIndex->setName('activity_logs.index');
+    $activityLogIndex->middleware('jwt.auth');
+
+    // 取得活動記錄統計 (GET /api/v1/activity-logs/stats)
+    $activityLogStats = $router->get('/api/v1/activity-logs/stats', [ActivityLogController::class, 'getStats']);
+    $activityLogStats->setName('activity_logs.stats');
+    $activityLogStats->middleware('jwt.auth');
+
+    // 取得目前使用者的活動記錄 (GET /api/v1/activity-logs/me)
+    $activityLogMe = $router->get('/api/v1/activity-logs/me', [ActivityLogController::class, 'getCurrentUserLogs']);
+    $activityLogMe->setName('activity_logs.me');
+    $activityLogMe->middleware('jwt.auth');
 
     // =========================================
     // 管理員路由 (需要管理員權限)

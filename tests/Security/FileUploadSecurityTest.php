@@ -48,7 +48,6 @@ class FileUploadSecurityTest extends TestCase
         $this->service = new AttachmentService(
             $this->attachmentRepo,
             $this->postRepo,
-            $this->cacheService,
             $this->authService,
             $this->uploadDir,
         );

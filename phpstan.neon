@@ -4,7 +4,7 @@ includes:
 
 parameters:
     treatPhpDocTypesAsCertain: false
-    level: 4
+    level: 8
     paths:
         - app
         - tests
@@ -15,53 +15,3 @@ parameters:
         - tests/manual
         - coverage-reports
     tmpDir: storage/phpstan
-    ignoreErrors:
-        # === 核心業務邏輯零錯誤 ===
-        # 這裡不包含任何 app/ 目錄的忽略規則
-        
-        # === 測試程式碼特定忽略 ===
-        # 只忽略測試中不影響業務邏輯的問題
-        -
-            message: '#Call to method.*assert.*with.*will always evaluate to true#'
-            identifier: method.alreadyNarrowedType
-            paths:
-                - tests/*
-        
-        -
-            message: '#Call to an undefined method.*shouldReceive#'
-            identifier: method.notFound
-            paths:
-                - tests/*
-        
-        -
-            message: '#Call to an undefined method.*browserAction#'
-            identifier: method.notFound
-            path: tests/UI/CrossBrowserTest.php
-        
-        -
-            message: '#Inner named functions are not supported#'
-            identifier: function.inner
-            path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
-        
-        -
-            message: '#Anonymous function has an unused use#'
-            identifier: closure.unusedUse
-            paths:
-                - tests/*
-        
-        -
-            message: '#on a separate line has no effect#'
-            identifier: method.resultUnused
-            paths:
-                - tests/*
-        
-        -
-            message: '#on a separate line has no effect#'
-            identifier: function.resultUnused
-            paths:
-                - tests/*
-
-        # === 極簡零錯誤忽略規則 ===
-        -
-            message: '#.*#'
-            path: tests/*

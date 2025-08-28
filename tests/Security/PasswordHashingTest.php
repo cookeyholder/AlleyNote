@@ -48,7 +48,7 @@ class PasswordHashingTest extends TestCase
         $this->createTestTables();
 
         $this->userRepository = new UserRepository($this->db);
-        $this->authService = new AuthService($this->userRepository, $this->passwordService, $this->activityLogger);
+        $this->authService = new AuthService($this->userRepository, $this->passwordService);
 
         // 設定活動記錄器的預設行為
         $this->activityLogger->shouldReceive('log')->byDefault()->andReturn(true);

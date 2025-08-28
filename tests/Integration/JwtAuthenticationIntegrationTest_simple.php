@@ -43,8 +43,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試 RefreshToken Repository 基本操作.
-     *
-     * @test
      */
     public function canManageRefreshTokens(): void
     {

@@ -207,7 +207,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             header('Content-Type: application/json');
         }
 
-        echo (json_encode($errorData) ?? '');
+        echo json_encode($errorData) ?? '';
         exit;
     }
 

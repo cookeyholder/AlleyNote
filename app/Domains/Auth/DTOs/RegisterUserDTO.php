@@ -272,7 +272,7 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 取得用於密碼雜湊的資料.
-     * 
+     *
      * @return array<string, mixed>
      */
     public function getPasswordData(): array

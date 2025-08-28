@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
@@ -23,9 +26,15 @@ use Tests\TestCase;
 #[Group('integration')]
 class AuthControllerTest extends TestCase
 {
-    private App\Domains\Auth\Services\AuthService|MockInterface $authService;
+    private AuthService|MockInterface $authService;
 
-    private App\Shared\Contracts\ValidatorInterface|MockInterface $validator;
+    private AuthenticationServiceInterface|MockInterface $authenticationService;
+
+    private JwtTokenServiceInterface|MockInterface $jwtTokenService;
+
+    private ValidatorInterface|MockInterface $validator;
+
+    private ActivityLoggingServiceInterface|MockInterface $activityLoggingService;
 
     private ServerRequestInterface|MockInterface $request;
 
@@ -37,7 +46,10 @@ class AuthControllerTest extends TestCase
     {
         parent::setUp();
         $this->authService = Mockery::mock(AuthService::class);
+        $this->authenticationService = Mockery::mock(AuthenticationServiceInterface::class);
+        $this->jwtTokenService = Mockery::mock(JwtTokenServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
+        $this->activityLoggingService = Mockery::mock(ActivityLoggingServiceInterface::class);
 
         // 設置 Request Mock
         $this->request = Mockery::mock(ServerRequestInterface::class);

@@ -40,7 +40,6 @@ class AuthServiceTest extends TestCase
         $this->service = new AuthService(
             $this->userRepository,
             $this->passwordService,
-            $this->activityLogger,
         );
     }
 
@@ -118,8 +117,8 @@ class AuthServiceTest extends TestCase
                 return true;
             });
 
-        // 執行測試
-        $result = $this->service->register($dto, '192.168.1.1');
+        // 執行註冊
+        $result = $this->service->register($dto, null);
 
         // 驗證結果
         $this->assertEquals('testuser', $result['username']);
@@ -200,7 +199,7 @@ class AuthServiceTest extends TestCase
             });
 
         // 執行測試
-        $result = $this->service->login($credentials, '192.168.1.1');
+        $result = $this->service->login($credentials, null);
 
         // 驗證結果
         $this->assertTrue($result['success']);
@@ -245,7 +244,7 @@ class AuthServiceTest extends TestCase
             });
 
         // 執行測試
-        $result = $this->service->login($credentials, '192.168.1.1');
+        $result = $this->service->login($credentials, null);
 
         // 驗證結果
         $this->assertFalse($result['success']);
@@ -290,7 +289,7 @@ class AuthServiceTest extends TestCase
             });
 
         // 執行測試
-        $result = $this->service->login($credentials, '192.168.1.1');
+        $result = $this->service->login($credentials, null);
 
         // 驗證結果
         $this->assertFalse($result['success']);
