@@ -11,6 +11,8 @@ use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Enums\ActivityType;
 use App\Domains\Security\Services\SuspiciousActivityDetector;
 use DateTimeImmutable;
+use Exception;
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -21,10 +23,13 @@ use Psr\Log\LoggerInterface;
 class SuspiciousActivityDetectorTest extends TestCase
 {
     private SuspiciousActivityDetector $detector;
+
     /** @var ActivityLogRepositoryInterface&MockInterface */
     private ActivityLogRepositoryInterface $mockRepository;
+
     /** @var ActivityLoggingServiceInterface&MockInterface */
     private ActivityLoggingServiceInterface $mockActivityLogger;
+
     /** @var LoggerInterface&MockInterface */
     private LoggerInterface $mockLogger;
 
@@ -32,9 +37,9 @@ class SuspiciousActivityDetectorTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockRepository = \Mockery::mock(ActivityLogRepositoryInterface::class);
-        $this->mockActivityLogger = \Mockery::mock(ActivityLoggingServiceInterface::class);
-        $this->mockLogger = \Mockery::mock(LoggerInterface::class);
+        $this->mockRepository = Mockery::mock(ActivityLogRepositoryInterface::class);
+        $this->mockActivityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->mockLogger = Mockery::mock(LoggerInterface::class);
 
         $this->detector = new SuspiciousActivityDetector(
             $this->mockRepository,
@@ -45,7 +50,7 @@ class SuspiciousActivityDetectorTest extends TestCase
 
     protected function tearDown(): void
     {
-        \Mockery::close();
+        Mockery::close();
         parent::tearDown();
     }
 
@@ -55,16 +60,17 @@ class SuspiciousActivityDetectorTest extends TestCase
         $userId = 123;
         // 使用預設時間窗口 60 分鐘
         $timeWindow = 60;
+        $now = new DateTimeImmutable();
 
         // 模擬高失敗率的活動記錄（確保超過預設閾值 5）
         $activities = [
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1'],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1'],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1'],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1'],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1'],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1'],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1'],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s')],
         ];
 
         $this->mockRepository
@@ -83,7 +89,7 @@ class SuspiciousActivityDetectorTest extends TestCase
 
         $this->assertInstanceOf(SuspiciousActivityAnalysisDTO::class, $result);
         $this->assertTrue($result->isSuspicious());
-        $this->assertSame($userId, $result->getTargetId());
+        $this->assertSame((string) $userId, $result->getTargetId());
         $this->assertSame('user', $result->getTargetType());
     }
 
@@ -93,15 +99,16 @@ class SuspiciousActivityDetectorTest extends TestCase
         $ipAddress = '192.168.1.100';
         // 使用預設時間窗口
         $timeWindow = 60;
+        $now = new DateTimeImmutable();
 
         // 模擬可疑IP活動（確保超過閾值）
         $activities = [
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 1],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 2],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 3],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 4],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 5],
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 6],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 1, 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 2, 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 3, 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 4, 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 5, 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 6, 'occurred_at' => $now->format('Y-m-d H:i:s')],
         ];
 
         $this->mockRepository
@@ -271,7 +278,7 @@ class SuspiciousActivityDetectorTest extends TestCase
 
         $this->mockRepository
             ->shouldReceive('findByUserAndTimeRange')
-            ->andThrow(new \Exception('Database error'));
+            ->andThrow(new Exception('Database error'));
 
         $this->mockLogger
             ->shouldReceive('error')
@@ -291,7 +298,7 @@ class SuspiciousActivityDetectorTest extends TestCase
 
         $this->mockRepository
             ->shouldReceive('findByIpAddressAndTimeRange')
-            ->andThrow(new \Exception('Database error'));
+            ->andThrow(new Exception('Database error'));
 
         $this->mockLogger
             ->shouldReceive('error')
@@ -309,7 +316,7 @@ class SuspiciousActivityDetectorTest extends TestCase
     {
         $this->mockRepository
             ->shouldReceive('getActivityStatistics')
-            ->andThrow(new \Exception('Database error'));
+            ->andThrow(new Exception('Database error'));
 
         $this->mockLogger
             ->shouldReceive('error')
