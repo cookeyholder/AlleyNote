@@ -57,6 +57,7 @@ enum ActivityType: string
 
     // === 系統安全行為 ===
     case SUSPICIOUS_ACTIVITY_DETECTED = 'security.suspicious_activity';
+    case SECURITY_ACTIVITY_SCAN_COMPLETED = 'security.scan.completed';
     case BRUTE_FORCE_ATTEMPT = 'security.brute_force';
     case IP_BLOCKED = 'security.ip.blocked';
     case IP_UNBLOCKED = 'security.ip.unblocked';
@@ -113,9 +114,10 @@ enum ActivityType: string
             self::PERMISSION_GRANTED, self::PERMISSION_REVOKED,
             self::PERMISSION_DENIED => ActivityCategory::AUTHORIZATION,
 
-            self::SUSPICIOUS_ACTIVITY_DETECTED, self::BRUTE_FORCE_ATTEMPT,
-            self::IP_BLOCKED, self::IP_UNBLOCKED, self::CSRF_ATTACK_BLOCKED,
-            self::XSS_ATTACK_BLOCKED, self::SQL_INJECTION_BLOCKED => ActivityCategory::SECURITY,
+            self::SUSPICIOUS_ACTIVITY_DETECTED, self::SECURITY_ACTIVITY_SCAN_COMPLETED,
+            self::BRUTE_FORCE_ATTEMPT, self::IP_BLOCKED, self::IP_UNBLOCKED,
+            self::CSRF_ATTACK_BLOCKED, self::XSS_ATTACK_BLOCKED,
+            self::SQL_INJECTION_BLOCKED => ActivityCategory::SECURITY,
 
             self::ADMIN_LOGIN, self::ADMIN_LOGOUT, self::SYSTEM_SETTINGS_CHANGED,
             self::USER_IMPERSONATED, self::CACHE_CLEARED, self::BACKUP_CREATED,
@@ -147,7 +149,8 @@ enum ActivityType: string
             self::USER_EMAIL_VERIFIED, self::PASSWORD_RESET_REQUESTED,
             self::PASSWORD_RESET_COMPLETED, self::DATA_EXPORTED, self::DATA_IMPORTED,
             self::API_KEY_CREATED, self::API_KEY_DELETED, self::CACHE_CLEARED,
-            self::BACKUP_CREATED, self::BACKUP_RESTORED => ActivitySeverity::NORMAL,
+            self::BACKUP_CREATED, self::BACKUP_RESTORED,
+            self::SECURITY_ACTIVITY_SCAN_COMPLETED => ActivitySeverity::NORMAL,
 
             // MEDIUM 等級：中等重要操作
             self::POST_DELETED, self::USER_BANNED, self::USER_UNBANNED,
@@ -207,6 +210,7 @@ enum ActivityType: string
             self::POST_DELETED => '刪除文章',
             self::ATTACHMENT_UPLOADED => '上傳附件',
             self::SUSPICIOUS_ACTIVITY_DETECTED => '檢測到可疑活動',
+            self::SECURITY_ACTIVITY_SCAN_COMPLETED => '安全掃描完成',
             // ... 可以繼續添加更多描述
             default => $this->value,
         };

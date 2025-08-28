@@ -57,6 +57,28 @@ interface ActivityLogRepositoryInterface
     ): array;
 
     /**
+     * 查詢使用者在指定時間範圍的活動記錄.
+     */
+    public function findByUserAndTimeRange(
+        int $userId,
+        DateTimeInterface $startTime,
+        DateTimeInterface $endTime,
+        int $limit = 1000,
+        int $offset = 0,
+    ): array;
+
+    /**
+     * 查詢指定 IP 在指定時間範圍的活動記錄.
+     */
+    public function findByIpAddressAndTimeRange(
+        string $ipAddress,
+        DateTimeInterface $startTime,
+        DateTimeInterface $endTime,
+        int $limit = 1000,
+        int $offset = 0,
+    ): array;
+
+    /**
      * 查詢安全相關的活動記錄.
      */
     public function findSecurityEvents(

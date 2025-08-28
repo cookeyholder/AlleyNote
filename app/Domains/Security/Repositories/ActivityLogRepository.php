@@ -735,4 +735,82 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         return array_map([$this, 'mapToArray'], $results);
     }
+
+    /**
+     * 查詢使用者在指定時間範圍的活動記錄.
+     */
+    public function findByUserAndTimeRange(
+        int $userId,
+        DateTimeInterface $startTime,
+        DateTimeInterface $endTime,
+        int $limit = 1000,
+        int $offset = 0,
+    ): array {
+        $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
+                WHERE user_id = :user_id 
+                AND occurred_at BETWEEN :start_time AND :end_time
+                ORDER BY occurred_at DESC 
+                LIMIT :limit OFFSET :offset';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':start_time', $startTime->format('Y-m-d H:i:s'));
+        $stmt->bindValue(':end_time', $endTime->format('Y-m-d H:i:s'));
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        $results = [];
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $entity = ActivityLog::fromDatabaseRow($data);
+            $results[] = $entity->toArray();
+        }
+
+        return $results;
+    }
+
+    /**
+     * 查詢指定 IP 在指定時間範圍的活動記錄.
+     */
+    public function findByIpAddressAndTimeRange(
+        string $ipAddress,
+        DateTimeInterface $startTime,
+        DateTimeInterface $endTime,
+        int $limit = 1000,
+        int $offset = 0,
+    ): array {
+        $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
+                WHERE ip_address = :ip_address 
+                AND occurred_at BETWEEN :start_time AND :end_time
+                ORDER BY occurred_at DESC 
+                LIMIT :limit OFFSET :offset';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':ip_address', $ipAddress);
+        $stmt->bindValue(':start_time', $startTime->format('Y-m-d H:i:s'));
+        $stmt->bindValue(':end_time', $endTime->format('Y-m-d H:i:s'));
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        $results = [];
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $entity = ActivityLog::fromDatabaseRow($data);
+            $results[] = $entity->toArray();
+        }
+
+        return $results;
+    }
+
+    /**
+     * Helper method to map database row to array.
+     */
+    private function mapToArray(array $data): array
+    {
+        $entity = ActivityLog::fromDatabaseRow($data);
+
+        return $entity->toArray();
+    }
 }
