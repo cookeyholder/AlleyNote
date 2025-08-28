@@ -1,16 +1,16 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-08-28 07:29:57
+**生成時間**: 2025-08-28 09:27:04
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 169 | - |
-| 介面與類別比例 | 20.12% | ✅ 良好 |
+| 總類別數 | 170 | - |
+| 介面與類別比例 | 20.00% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 58.58% | ✅ 良好 |
-| PSR-4 合規率 | 72.15% | ❌ 需修正 |
+| 現代 PHP 採用率 | 58.82% | ✅ 良好 |
+| PSR-4 合規率 | 71.85% | ❌ 需修正 |
 | DDD 結構完整性 | 80.00% | ✅ 良好 |
 
 ## 🎯 DDD 邊界上下文分析
@@ -74,10 +74,10 @@
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 201 | ✅ 更安全的條件分支 |
-| 屬性標籤 (PHP 8.0+) | 91 | ✅ 現代化 metadata |
+| Match 表達式 (PHP 8.0+) | 200 | ✅ 更安全的條件分支 |
+| 屬性標籤 (PHP 8.0+) | 107 | ✅ 現代化 metadata |
 | 唯讀屬性 (PHP 8.1+) | 63 | ✅ 提升資料不變性 |
-| 空安全運算子 (PHP 8.0+) | 50 | ✅ 防止 null 指標異常 |
+| 空安全運算子 (PHP 8.0+) | 49 | ✅ 防止 null 指標異常 |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
 | 聯合型別 (PHP 8.0+) | 11 | ✅ 更靈活的型別定義 |
 | 列舉型別 (PHP 8.1+) | 1 | ✅ 型別安全的常數 |
@@ -283,6 +283,9 @@
 - `app/Shared/Exceptions/Validation`
 - `app/Shared/Exceptions/Validation/..`
 - `app/Shared/Exceptions/Validation/.`
+- `app/Shared/OpenApi`
+- `app/Shared/OpenApi/..`
+- `app/Shared/OpenApi/.`
 - `app/Shared/DTOs`
 - `app/Shared/DTOs/..`
 - `app/Shared/DTOs/.`
@@ -729,18 +732,19 @@
 **檔案數量**: 46
 
 ### Shared 層
-**子目錄**: .., Http, Http/.., Http/., Exceptions, Exceptions/.., Exceptions/., Exceptions/Validation, Exceptions/Validation/.., Exceptions/Validation/., DTOs, DTOs/.., DTOs/., Helpers, Helpers/.., Helpers/., Schemas, Schemas/.., Schemas/., Validation, Validation/.., Validation/., Validation/Factory, Validation/Factory/.., Validation/Factory/., Config, Config/.., Config/., Contracts, Contracts/.., Contracts/.
-**檔案數量**: 19
+**子目錄**: .., Http, Http/.., Http/., Exceptions, Exceptions/.., Exceptions/., Exceptions/Validation, Exceptions/Validation/.., Exceptions/Validation/., OpenApi, OpenApi/.., OpenApi/., DTOs, DTOs/.., DTOs/., Helpers, Helpers/.., Helpers/., Schemas, Schemas/.., Schemas/., Validation, Validation/.., Validation/., Validation/Factory, Validation/Factory/.., Validation/Factory/., Config, Config/.., Config/., Contracts, Contracts/.., Contracts/.
+**檔案數量**: 20
 
 
 ## 📊 類別統計
 
-- **類別總數**: 169
+- **類別總數**: 170
 - **介面總數**: 34
 - **Trait 總數**: 3
 
 ## ⚠️ 發現的架構問題
 
+- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
 - ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
 - ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
 - ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
@@ -920,6 +924,7 @@
 - CsrfTokenException (`app/Shared/Exceptions/CsrfTokenException.php`)
 - StateTransitionException (`app/Shared/Exceptions/StateTransitionException.php`)
 - RequestValidationException (`app/Shared/Exceptions/Validation/RequestValidationException.php`)
+- OpenApiConfig (`app/Shared/OpenApi/OpenApiConfig.php`)
 - PostRequestSchema (`app/Shared/Schemas/PostRequestSchema.php`)
 - PostSchema (`app/Shared/Schemas/PostSchema.php`)
 - AuthSchema (`app/Shared/Schemas/AuthSchema.php`)
@@ -1084,7 +1089,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 168 個
+- **缺少測試的類別**: 169 個
 
 ### 缺少測試的重要類別
 - **AttachmentRepository**: `app/Domains/Attachment/Repositories/AttachmentRepository.php`
@@ -1096,10 +1101,9 @@
 ## 💉 依賴注入分析
 
 ### 依賴較多的類別 (≥3個依賴)
-- **AttachmentService** (4 個依賴)
+- **AttachmentService** (3 個依賴)
   - `AttachmentRepository` $attachmentRepo
   - `PostRepository` $postRepo
-  - `CacheServiceInterface` $cache
   - `AuthorizationService` $authService
 
 - **JwtPayload** (3 個依賴)

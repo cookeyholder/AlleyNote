@@ -1,10 +1,10 @@
-=== 專案架構快速摘要 (2025-08-28 07:29:57) ===
+=== 專案架構快速摘要 (2025-08-28 09:27:04) ===
 
 📊 品質指標:
-- 總類別數: 169
-- 介面比例: 20.12%
-- 現代 PHP 採用率: 58.58%
-- PSR-4 合規率: 72.15%
+- 總類別數: 170
+- 介面比例: 20%
+- 現代 PHP 採用率: 58.82%
+- PSR-4 合規率: 71.85%
 
 🎯 邊界上下文: 5 個
 - Attachment: 6 個組件
@@ -14,10 +14,10 @@
 - storage: 0 個組件
 
 🚀 現代 PHP 特性: 7 種正在使用
-- 最常用: Match 表達式 (PHP 8.0+) (201 次)
+- 最常用: Match 表達式 (PHP 8.0+) (200 次)
 
 📊 統計資訊:
-- 類別: 169 個
+- 類別: 170 個
 - 介面: 34 個
 - 命名空間: 80 個
 
@@ -25,9 +25,10 @@
 - Application: 15 個檔案
 - Domains: 90 個檔案
 - Infrastructure: 46 個檔案
-- Shared: 19 個檔案
+- Shared: 20 個檔案
 
-❌ 架構問題 (4 個):
+❌ 架構問題 (5 個):
+- Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
 - Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
 - 可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
 - 可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
@@ -35,10 +36,10 @@
 
 🧪 測試覆蓋:
 - 有測試: 0 個類別
-- 缺少測試: 168 個類別
+- 缺少測試: 169 個類別
 
 🔌 介面實作:
-- : 123 個實作
+- : 124 個實作
 - FileSecurityServiceInterface: 1 個實作
 - AttachmentServiceInterface: 1 個實作
 - JsonSerializable: 10 個實作
