@@ -284,42 +284,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
     }
 
     /**
-     * 將 refresh token 儲存到資料庫.
-     *
-     * @param string $refreshToken JWT refresh token
-     * @param int $userId 使用者 ID
-     * @param DeviceInfo $deviceInfo 裝置資訊
-     * @param DateTimeImmutable $expiresAt 過期時間
-     *
-     * @throws TokenGenerationException 當儲存失敗時
-     * @internal
-     */
-    private function storeRefreshToken(
-        string $refreshToken,
-        int $userId,
-        DeviceInfo $deviceInfo,
-        DateTimeImmutable $expiresAt,
-    ): void {
-        try {
-            $payload = $this->jwtProvider->parseTokenUnsafe($refreshToken);
-
-            $this->refreshTokenRepository->create(
-                jti: $payload['jti'],
-                userId: $userId,
-                tokenHash: hash('sha256', $refreshToken),
-                expiresAt: new DateTime($expiresAt->format('Y-m-d H:i:s')),
-                deviceInfo: $deviceInfo,
-            );
-        } catch (Throwable $e) {
-            throw new TokenGenerationException(
-                TokenGenerationException::REASON_RESOURCE_EXHAUSTED,
-                TokenGenerationException::REFRESH_TOKEN,
-                'Failed to store refresh token: ' . $e->getMessage(),
-            );
-        }
-    }
-
-    /**
      * 從陣列建立 JwtPayload 物件.
      *
      * @param array<string, mixed> $payload 原始 payload 資料

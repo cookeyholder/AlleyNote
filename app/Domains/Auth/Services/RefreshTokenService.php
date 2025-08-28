@@ -198,7 +198,7 @@ final class RefreshTokenService
             ]);
 
             return $newTokenPair;
-        } catch (InvalidTokenException|TokenExpiredException|AuthenticationException $e) {
+        } catch (InvalidTokenException | TokenExpiredException | AuthenticationException $e) {
             throw $e;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to refresh access token', [
@@ -418,37 +418,6 @@ final class RefreshTokenService
     }
 
     /**
-     * 執行 token 輪轉.
-     */
-    private function performTokenRotation(RefreshToken $currentToken, DeviceInfo $deviceInfo): RefreshToken
-    {
-        try {
-            // 1. 建立新的 refresh token
-            $newToken = $this->createRefreshToken(
-                $currentToken->getUserId(),
-                $deviceInfo,
-                $currentToken->getJti(), // 設定父 token JTI
-            );
-
-            // 2. 撤銷舊的 token（但給予寬限期）
-            $this->refreshTokenRepository->revoke(
-                $currentToken->getJti(),
-                RefreshToken::REVOKE_REASON_TOKEN_ROTATION,
-            );
-
-            return $newToken;
-        } catch (Throwable $e) {
-            $this->logger?->error('Token rotation failed', [
-                'current_jti' => $currentToken->getJti(),
-                'user_id' => $currentToken->getUserId(),
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
-
-    /**
      * 強制執行 token 數量限制.
      */
     private function enforceTokenLimits(int $userId): void
@@ -505,17 +474,6 @@ final class RefreshTokenService
 
             throw $e;
         }
-    }
-
-    /**
-     * 驗證裝置匹配.
-     */
-    private function verifyDeviceMatch(RefreshToken $token, DeviceInfo $currentDevice): bool
-    {
-        $tokenDevice = $token->getDeviceInfo();
-
-        return $tokenDevice->getDeviceId() === $currentDevice->getDeviceId()
-            && $tokenDevice->getIpAddress() === $currentDevice->getIpAddress();
     }
 
     /**

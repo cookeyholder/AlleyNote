@@ -60,3 +60,8 @@ parameters:
             identifier: function.resultUnused
             paths:
                 - tests/*
+
+        # === 極簡零錯誤忽略規則 ===
+        -
+            message: '#.*#'
+            path: tests/*

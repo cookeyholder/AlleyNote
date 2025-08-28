@@ -355,7 +355,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         return in_array($userRole, self::ADMIN_ROLES, true)
-               || in_array($userRole, $this->config['admin_roles'] ?? [], true);
+            || in_array($userRole, $this->config['admin_roles'] ?? [], true);
     }
 
     /**
@@ -855,7 +855,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         int $userId,
         ?string $userRole,
         ServerRequestInterface $request,
-    ): ?AuthorizationResult {
+    ): AuthorizationResult {
         // 這裡可以實作複雜的條件邏輯
         // 例如：時間、IP、請求參數、資料庫查詢等
 

@@ -52,7 +52,6 @@ class AttachmentServiceTest extends TestCase
         $this->service = new AttachmentService(
             $this->attachmentRepo,
             $this->postRepo,
-            $this->attachmentCache,
             $this->authService,
             $this->uploadDir,
         );

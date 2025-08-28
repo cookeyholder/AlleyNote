@@ -61,7 +61,7 @@ class AttachmentUploadTest extends TestCase
         $this->postRepo = new PostRepository($this->db, $this->cache, $this->logger);
 
         // 初始化測試對象
-        $this->attachmentService = new AttachmentService($this->attachmentRepo, $this->postRepo, $this->cache, $this->authService, $this->uploadDir);
+        $this->attachmentService = new AttachmentService($this->attachmentRepo, $this->postRepo, $this->authService, $this->uploadDir);
 
         $this->createTestTables();
 

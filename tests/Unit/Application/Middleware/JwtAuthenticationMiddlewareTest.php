@@ -16,7 +16,6 @@ use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\Attributes\Test;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -49,8 +48,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         parent::tearDown();
     }
 
-    #[Test]
-    public function shouldSkipProcessingForPublicPaths(): void
+    public function testShouldSkipProcessingForPublicPaths(): void
     {
         $publicPaths = [
             '/auth/login',
@@ -71,8 +69,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         }
     }
 
-    #[Test]
-    public function shouldProcessAuthenticatedPaths(): void
+    public function testShouldProcessAuthenticatedPaths(): void
     {
         $authenticatedPaths = [
             '/api/posts',
@@ -91,8 +88,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         }
     }
 
-    #[Test]
-    public function shouldReturnUnauthorizedWhenNoTokenProvided(): void
+    public function testShouldReturnUnauthorizedWhenNoTokenProvided(): void
     {
         $request = new ServerRequest('GET', new Uri('/api/posts'));
 
@@ -108,8 +104,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals('UNAUTHORIZED', $body['code']);
     }
 
-    #[Test]
-    public function shouldExtractTokenFromAuthorizationHeader(): void
+    public function testShouldExtractTokenFromAuthorizationHeader(): void
     {
         $token = 'valid.jwt.token';
         $payload = $this->createValidPayload();
@@ -134,8 +129,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
-    public function shouldExtractTokenFromQueryParameter(): void
+    public function testShouldExtractTokenFromQueryParameter(): void
     {
         $token = 'valid.jwt.token';
         $payload = $this->createValidPayload();
@@ -166,8 +160,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
-    public function shouldExtractTokenFromCookie(): void
+    public function testShouldExtractTokenFromCookie(): void
     {
         $token = 'valid.jwt.token';
         $payload = $this->createValidPayload();
@@ -191,8 +184,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
-    public function shouldInjectUserContextIntoRequest(): void
+    public function testShouldInjectUserContextIntoRequest(): void
     {
         $token = 'valid.jwt.token';
         $payload = $this->createValidPayload(); // 使用預設 payload，不加 custom claims
@@ -217,8 +209,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
-    public function shouldReturnUnauthorizedWhenTokenExpired(): void
+    public function testShouldReturnUnauthorizedWhenTokenExpired(): void
     {
         $token = 'expired.jwt.token';
         $request = new ServerRequest('GET', new Uri('/api/posts'), [
@@ -240,8 +231,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals('TOKEN_EXPIRED', $body['code']);
     }
 
-    #[Test]
-    public function shouldReturnUnauthorizedWhenTokenInvalid(): void
+    public function testShouldReturnUnauthorizedWhenTokenInvalid(): void
     {
         $token = 'invalid.jwt.token';
         $request = new ServerRequest('GET', new Uri('/api/posts'), [
@@ -263,8 +253,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals('TOKEN_INVALID', $body['code']);
     }
 
-    #[Test]
-    public function shouldValidateIpAddressWhenPresentInToken(): void
+    public function testShouldValidateIpAddressWhenPresentInToken(): void
     {
         // 這個測試僅驗證沒有 IP claim 時通過
         $token = 'valid.jwt.token';
@@ -289,8 +278,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
-    public function shouldFailWhenIpAddressMismatch(): void
+    public function testShouldFailWhenIpAddressMismatch(): void
     {
         // 測試 IP 不匹配的情況
         $token = 'valid.jwt.token';
@@ -318,8 +306,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals('TOKEN_INVALID', $body['code']);
     }
 
-    #[Test]
-    public function shouldRejectWhenIpAddressMismatch(): void
+    public function testShouldRejectWhenIpAddressMismatch(): void
     {
         $token = 'valid.jwt.token';
         $payload = $this->createValidPayload(['ip_address' => '192.168.1.100']);
@@ -342,8 +329,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals('TOKEN_INVALID', $body['code']);
     }
 
-    #[Test]
-    public function shouldValidateDeviceFingerprint(): void
+    public function testShouldValidateDeviceFingerprint(): void
     {
         $token = 'valid.jwt.token';
         $deviceId = 'device-fingerprint-123';
@@ -369,8 +355,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
-    public function shouldRejectWhenDeviceFingerprintMismatch(): void
+    public function testShouldRejectWhenDeviceFingerprintMismatch(): void
     {
         $token = 'valid.jwt.token';
         $payload = $this->createValidPayload(['device_id' => 'device-fingerprint-123']);
@@ -394,8 +379,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals('TOKEN_INVALID', $body['code']);
     }
 
-    #[Test]
-    public function shouldSkipProcessingWhenDisabled(): void
+    public function testShouldSkipProcessingWhenDisabled(): void
     {
         $middleware = new JwtAuthenticationMiddleware($this->jwtTokenService, 10, false);
 
@@ -412,8 +396,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
-    public function shouldHandleGenericExceptionGracefully(): void
+    public function testShouldHandleGenericExceptionGracefully(): void
     {
         $token = 'valid.jwt.token';
         $request = new ServerRequest('GET', new Uri('/api/posts'), [
@@ -434,8 +417,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals('AUTH_FAILED', $body['code']);
     }
 
-    #[Test]
-    public function shouldPrioritizeAuthorizationHeaderOverOtherMethods(): void
+    public function testShouldPrioritizeAuthorizationHeaderOverOtherMethods(): void
     {
         $headerToken = 'header.jwt.token';
         $queryToken = 'query.jwt.token';
@@ -464,8 +446,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    #[Test]
-    public function canGetAndSetPriority(): void
+    public function testCanGetAndSetPriority(): void
     {
         $this->assertEquals(10, $this->middleware->getPriority());
 
@@ -473,14 +454,12 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(5, $this->middleware->getPriority());
     }
 
-    #[Test]
-    public function canGetName(): void
+    public function testCanGetName(): void
     {
         $this->assertEquals('jwt-auth', $this->middleware->getName());
     }
 
-    #[Test]
-    public function canSetEnabled(): void
+    public function testCanSetEnabled(): void
     {
         $this->assertTrue($this->middleware->isEnabled());
 

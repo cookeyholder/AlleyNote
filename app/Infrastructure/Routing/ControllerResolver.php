@@ -432,11 +432,11 @@ class ControllerResolver
                 continue;
             }
 
-            if (!$type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type)) {
+            if (!$type instanceof ReflectionNamedType) {
                 throw new RuntimeException("不支援的參數類型: {$parameter->getName()}");
             }
 
-            $typeName = ($type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) ? ($type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) ? ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) : (string) $type) : (string) $type);
+            $typeName = $type->getName();
 
             if ($this->container->has($typeName)) {
                 $args[] = $this->container->get($typeName);
@@ -474,7 +474,7 @@ class ControllerResolver
             $type = $parameter->getType();
 
             // 優先處理 PSR-7 請求物件
-            if ($type && $type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) && ($type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) ? ($type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) ? ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) : (string) $type) : (string) $type) === ServerRequestInterface::class) {
+            if ($type && $type instanceof ReflectionNamedType && $type->getName() === ServerRequestInterface::class) {
                 // 將路由參數注入到請求屬性中
                 $requestWithParams = $request;
                 foreach ($routeParameters as $key => $value) {
@@ -485,7 +485,7 @@ class ControllerResolver
             }
 
             // 處理 PSR-7 回應物件
-            if ($type && $type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) && ($type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) ? ($type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) ? ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) : (string) $type) : (string) $type) === ResponseInterface::class) {
+            if ($type && $type instanceof ReflectionNamedType && $type->getName() === ResponseInterface::class) {
                 $args[] = $this->createResponse();
                 continue;
             }
@@ -497,8 +497,8 @@ class ControllerResolver
             }
 
             // 處理依賴注入
-            if ($type && $type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) && !$type->isBuiltin()) {
-                $typeName = ($type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) ? ($type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) ? ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) : (string) $type) : (string) $type);
+            if ($type && $type instanceof ReflectionNamedType && !$type->isBuiltin()) {
+                $typeName = $type->getName();
                 if ($this->container->has($typeName)) {
                     $args[] = $this->container->get($typeName);
                     continue;
@@ -528,11 +528,11 @@ class ControllerResolver
      */
     private function convertParameter(string $value, ?ReflectionType $type): mixed
     {
-        if ($type === null || !$type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type)) {
+        if ($type === null || !$type instanceof ReflectionNamedType) {
             return $value;
         }
 
-        return match (($type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) ? ($type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) ? ($type instanceof ReflectionNamedType ? $type->getName() : (string) $type) : (string) $type) : (string) $type)) {
+        return match ($type->getName()) {
             'int' => (int) $value,
             'float' => (float) $value,
             'bool' => filter_var($value, FILTER_VALIDATE_BOOLEAN),

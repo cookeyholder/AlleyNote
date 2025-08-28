@@ -690,7 +690,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/AttachmentServiceTest.php' => 
     array (
-      0 => '46c4ddb3094a418de2b65711ff454659fe1a6923',
+      0 => 'e0e85089350cb3ccac54d61cdf6e9935bf9a58cd',
       1 => 
       array (
         0 => 'tests\\unit\\services\\attachmentservicetest',
@@ -814,7 +814,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/FileUploadSecurityTest.php' => 
     array (
-      0 => '09a688443b3c3bab0331a2529ac9e58d923bc6ee',
+      0 => 'db77950348d618c530088740a3f5e8de3dfbdb64',
       1 => 
       array (
         0 => 'tests\\security\\fileuploadsecuritytest',
@@ -1070,7 +1070,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AttachmentUploadTest.php' => 
     array (
-      0 => 'f447babbe79b26eb106d55bd9e313664cd0c4d14',
+      0 => 'ebee3d313ef901738947ddae938feb607830ad23',
       1 => 
       array (
         0 => 'tests\\integration\\attachmentuploadtest',
@@ -2603,7 +2603,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Application/Middleware/JwtAuthenticationMiddlewareTest.php' => 
     array (
-      0 => 'e89607b8c77d817346898b4bada04066338652b1',
+      0 => 'ea0118b1f7fc4874d2e590609900f26e6be1c986',
       1 => 
       array (
         0 => 'tests\\unit\\application\\middleware\\jwtauthenticationmiddlewaretest',
@@ -2612,26 +2612,26 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\unit\\application\\middleware\\setup',
         1 => 'tests\\unit\\application\\middleware\\teardown',
-        2 => 'tests\\unit\\application\\middleware\\shouldskipprocessingforpublicpaths',
-        3 => 'tests\\unit\\application\\middleware\\shouldprocessauthenticatedpaths',
-        4 => 'tests\\unit\\application\\middleware\\shouldreturnunauthorizedwhennotokenprovided',
-        5 => 'tests\\unit\\application\\middleware\\shouldextracttokenfromauthorizationheader',
-        6 => 'tests\\unit\\application\\middleware\\shouldextracttokenfromqueryparameter',
-        7 => 'tests\\unit\\application\\middleware\\shouldextracttokenfromcookie',
-        8 => 'tests\\unit\\application\\middleware\\shouldinjectusercontextintorequest',
-        9 => 'tests\\unit\\application\\middleware\\shouldreturnunauthorizedwhentokenexpired',
-        10 => 'tests\\unit\\application\\middleware\\shouldreturnunauthorizedwhentokeninvalid',
-        11 => 'tests\\unit\\application\\middleware\\shouldvalidateipaddresswhenpresentintoken',
-        12 => 'tests\\unit\\application\\middleware\\shouldfailwhenipaddressmismatch',
-        13 => 'tests\\unit\\application\\middleware\\shouldrejectwhenipaddressmismatch',
-        14 => 'tests\\unit\\application\\middleware\\shouldvalidatedevicefingerprint',
-        15 => 'tests\\unit\\application\\middleware\\shouldrejectwhendevicefingerprintmismatch',
-        16 => 'tests\\unit\\application\\middleware\\shouldskipprocessingwhendisabled',
-        17 => 'tests\\unit\\application\\middleware\\shouldhandlegenericexceptiongracefully',
-        18 => 'tests\\unit\\application\\middleware\\shouldprioritizeauthorizationheaderoverothermethods',
-        19 => 'tests\\unit\\application\\middleware\\cangetandsetpriority',
-        20 => 'tests\\unit\\application\\middleware\\cangetname',
-        21 => 'tests\\unit\\application\\middleware\\cansetenabled',
+        2 => 'tests\\unit\\application\\middleware\\testshouldskipprocessingforpublicpaths',
+        3 => 'tests\\unit\\application\\middleware\\testshouldprocessauthenticatedpaths',
+        4 => 'tests\\unit\\application\\middleware\\testshouldreturnunauthorizedwhennotokenprovided',
+        5 => 'tests\\unit\\application\\middleware\\testshouldextracttokenfromauthorizationheader',
+        6 => 'tests\\unit\\application\\middleware\\testshouldextracttokenfromqueryparameter',
+        7 => 'tests\\unit\\application\\middleware\\testshouldextracttokenfromcookie',
+        8 => 'tests\\unit\\application\\middleware\\testshouldinjectusercontextintorequest',
+        9 => 'tests\\unit\\application\\middleware\\testshouldreturnunauthorizedwhentokenexpired',
+        10 => 'tests\\unit\\application\\middleware\\testshouldreturnunauthorizedwhentokeninvalid',
+        11 => 'tests\\unit\\application\\middleware\\testshouldvalidateipaddresswhenpresentintoken',
+        12 => 'tests\\unit\\application\\middleware\\testshouldfailwhenipaddressmismatch',
+        13 => 'tests\\unit\\application\\middleware\\testshouldrejectwhenipaddressmismatch',
+        14 => 'tests\\unit\\application\\middleware\\testshouldvalidatedevicefingerprint',
+        15 => 'tests\\unit\\application\\middleware\\testshouldrejectwhendevicefingerprintmismatch',
+        16 => 'tests\\unit\\application\\middleware\\testshouldskipprocessingwhendisabled',
+        17 => 'tests\\unit\\application\\middleware\\testshouldhandlegenericexceptiongracefully',
+        18 => 'tests\\unit\\application\\middleware\\testshouldprioritizeauthorizationheaderoverothermethods',
+        19 => 'tests\\unit\\application\\middleware\\testcangetandsetpriority',
+        20 => 'tests\\unit\\application\\middleware\\testcangetname',
+        21 => 'tests\\unit\\application\\middleware\\testcansetenabled',
         22 => 'tests\\unit\\application\\middleware\\createvalidpayload',
       ),
       3 => 
