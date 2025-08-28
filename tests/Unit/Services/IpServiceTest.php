@@ -12,10 +12,13 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
 class IpServiceTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private IpRepositoryInterface $repository;
 
     private ValidatorInterface $validator;
