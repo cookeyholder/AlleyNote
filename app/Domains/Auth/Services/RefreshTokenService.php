@@ -198,7 +198,7 @@ final class RefreshTokenService
             ]);
 
             return $newTokenPair;
-        } catch (InvalidTokenException | TokenExpiredException | AuthenticationException $e) {
+        } catch (InvalidTokenException|TokenExpiredException|AuthenticationException $e) {
             throw $e;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to refresh access token', [
