@@ -10,6 +10,8 @@ use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Exceptions\PostStatusException;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
@@ -26,6 +28,7 @@ class PostController extends BaseController
         private readonly PostServiceInterface $postService,
         private readonly ValidatorInterface $validator,
         private readonly OutputSanitizerInterface $sanitizer,
+        private readonly ActivityLoggingServiceInterface $activityLogger,
     ) {}
 
     #[OA\Get(
@@ -122,15 +125,51 @@ class PostController extends BaseController
                 $result['per_page'],
             );
 
+            // 記錄成功的文章列表查看活動
+            $userId = $request->getAttribute('user_id');
+            $this->activityLogger->logSuccess(
+                actionType: ActivityType::POST_VIEWED,
+                userId: $userId,
+                targetType: 'post_list',
+                metadata: [
+                    'page' => $page,
+                    'limit' => $limit,
+                    'filters' => $filters,
+                    'total_results' => $result['total'],
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $response->getBody()->write(($responseData ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (RequestValidationException $e) {
+            // 記錄驗證失敗活動
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_VIEWED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Request validation failed: ' . $e->getMessage(),
+                metadata: [
+                    'errors' => $e->getErrors(),
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->errorResponse($e->getMessage(), 422, $e->getErrors());
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         } catch (Exception $e) {
+            // 記錄一般錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_VIEWED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Internal server error: ' . $e->getMessage(),
+                metadata: [
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->handleException($e);
             $response->getBody()->write(($errorResponse ?: ''));
 
@@ -194,6 +233,14 @@ class PostController extends BaseController
             $data = json_decode($body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
+                // 記錄 JSON 格式錯誤
+                $this->activityLogger->logFailure(
+                    actionType: ActivityType::POST_CREATED,
+                    userId: $request->getAttribute('user_id'),
+                    reason: 'Invalid JSON format',
+                    metadata: ['ip_address' => $this->getUserIp($request)],
+                );
+
                 $errorResponse = $this->errorResponse('Invalid JSON format', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
@@ -201,22 +248,55 @@ class PostController extends BaseController
             }
 
             // 添加必需的欄位
-            $data['user_id'] = $request->getAttribute('user_id') ?? 1; // 從認證中間件取得
+            $userId = $request->getAttribute('user_id') ?? 1;
+            $data['user_id'] = $userId;
             $data['user_ip'] = $this->getUserIp($request);
 
             $dto = new CreatePostDTO($this->validator, $data);
             $post = $this->postService->createPost($dto);
+
+            // 記錄成功建立文章的活動
+            $this->activityLogger->logSuccess(
+                actionType: ActivityType::POST_CREATED,
+                userId: $userId,
+                targetType: 'post',
+                targetId: (string) $post->getId(),
+                metadata: [
+                    'title' => $post->getTitle(),
+                    'status' => $post->getStatus(),
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
 
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '貼文建立成功');
             $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (ValidationException $e) {
+            // 記錄驗證失敗
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_CREATED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Validation failed: ' . $e->getMessage(),
+                metadata: [
+                    'errors' => $e->getErrors(),
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
+            // 記錄一般錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_CREATED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Internal server error: ' . $e->getMessage(),
+                metadata: ['ip_address' => $this->getUserIp($request)],
+            );
+
             $errorResponse = $this->handleException($e);
             $response->getBody()->write(($errorResponse ?: ''));
 
@@ -264,6 +344,14 @@ class PostController extends BaseController
             $id = (int) $args['id'];
 
             if ($id <= 0) {
+                // 記錄無效 ID 錯誤
+                $this->activityLogger->logFailure(
+                    actionType: ActivityType::POST_VIEWED,
+                    userId: $request->getAttribute('user_id'),
+                    reason: 'Invalid post ID: ' . $args['id'],
+                    metadata: ['ip_address' => $this->getUserIp($request)],
+                );
+
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
@@ -278,16 +366,51 @@ class PostController extends BaseController
                 $this->postService->recordView($id, $userIp);
             }
 
+            // 記錄文章查看活動
+            $this->activityLogger->logSuccess(
+                actionType: ActivityType::POST_VIEWED,
+                userId: $request->getAttribute('user_id'),
+                targetType: 'post',
+                targetId: (string) $id,
+                metadata: [
+                    'title' => $post->getTitle(),
+                    'status' => $post->getStatus(),
+                    'ip_address' => $userIp,
+                ],
+            );
+
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '成功取得貼文');
             $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (PostNotFoundException $e) {
+            // 記錄文章未找到錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_VIEWED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Post not found: ' . $e->getMessage(),
+                metadata: [
+                    'requested_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (Exception $e) {
+            // 記錄一般錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_VIEWED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Internal server error: ' . $e->getMessage(),
+                metadata: [
+                    'requested_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->handleException($e);
             $response->getBody()->write(($errorResponse ?: ''));
 
@@ -366,6 +489,14 @@ class PostController extends BaseController
             $id = (int) $args['id'];
 
             if ($id <= 0) {
+                // 記錄無效 ID 錯誤
+                $this->activityLogger->logFailure(
+                    actionType: ActivityType::POST_UPDATED,
+                    userId: $request->getAttribute('user_id'),
+                    reason: 'Invalid post ID: ' . $args['id'],
+                    metadata: ['ip_address' => $this->getUserIp($request)],
+                );
+
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
@@ -376,6 +507,17 @@ class PostController extends BaseController
             $data = json_decode($body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
+                // 記錄 JSON 格式錯誤
+                $this->activityLogger->logFailure(
+                    actionType: ActivityType::POST_UPDATED,
+                    userId: $request->getAttribute('user_id'),
+                    reason: 'Invalid JSON format',
+                    metadata: [
+                        'post_id' => $id,
+                        'ip_address' => $this->getUserIp($request),
+                    ],
+                );
+
                 $errorResponse = $this->errorResponse('Invalid JSON format', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
@@ -385,21 +527,69 @@ class PostController extends BaseController
             $dto = new UpdatePostDTO($this->validator, $data);
             $post = $this->postService->updatePost($id, $dto);
 
+            // 記錄成功更新文章的活動
+            $this->activityLogger->logSuccess(
+                actionType: ActivityType::POST_UPDATED,
+                userId: $request->getAttribute('user_id'),
+                targetType: 'post',
+                targetId: (string) $id,
+                metadata: [
+                    'title' => $post->getTitle(),
+                    'status' => $post->getStatus(),
+                    'changes' => $data, // 記錄變更的欄位
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '貼文更新成功');
             $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (ValidationException $e) {
+            // 記錄驗證失敗
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_UPDATED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Validation failed: ' . $e->getMessage(),
+                metadata: [
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'errors' => $e->getErrors(),
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (PostNotFoundException $e) {
+            // 記錄文章未找到錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_UPDATED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Post not found: ' . $e->getMessage(),
+                metadata: [
+                    'requested_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (Exception $e) {
+            // 記錄一般錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_UPDATED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Internal server error: ' . $e->getMessage(),
+                metadata: [
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->handleException($e);
             $response->getBody()->write(($errorResponse ?: ''));
 
@@ -461,32 +651,103 @@ class PostController extends BaseController
             $id = (int) $args['id'];
 
             if ($id <= 0) {
+                // 記錄無效 ID 錯誤
+                $this->activityLogger->logFailure(
+                    actionType: ActivityType::POST_DELETED,
+                    userId: $request->getAttribute('user_id'),
+                    reason: 'Invalid post ID: ' . $args['id'],
+                    metadata: ['ip_address' => $this->getUserIp($request)],
+                );
+
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
+            // 在刪除前取得文章資訊以供記錄
+            $post = $this->postService->findById($id);
+            $postTitle = $post->getTitle();
+            $postStatus = $post->getStatus();
+
             $this->postService->deletePost($id);
+
+            // 記錄成功刪除文章的活動
+            $this->activityLogger->logSuccess(
+                actionType: ActivityType::POST_DELETED,
+                userId: $request->getAttribute('user_id'),
+                targetType: 'post',
+                targetId: (string) $id,
+                metadata: [
+                    'title' => $postTitle,
+                    'status' => $postStatus,
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
 
             // 刪除成功回傳 204 No Content
             return $response->withStatus(204);
         } catch (ValidationException $e) {
+            // 記錄驗證失敗
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_DELETED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Validation failed: ' . $e->getMessage(),
+                metadata: [
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'errors' => $e->getErrors(),
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (PostNotFoundException $e) {
+            // 記錄文章未找到錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_DELETED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Post not found: ' . $e->getMessage(),
+                metadata: [
+                    'requested_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (PostStatusException $e) {
+            // 記錄狀態轉換錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_DELETED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Post status error: ' . $e->getMessage(),
+                metadata: [
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->errorResponse($e->getMessage(), 422);
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         } catch (Exception $e) {
+            // 記錄一般錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_DELETED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Internal server error: ' . $e->getMessage(),
+                metadata: [
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->handleException($e);
             $response->getBody()->write(($errorResponse ?: ''));
 
@@ -576,6 +837,14 @@ class PostController extends BaseController
             $id = (int) $args['id'];
 
             if ($id <= 0) {
+                // 記錄無效 ID 錯誤
+                $this->activityLogger->logFailure(
+                    actionType: ActivityType::POST_PINNED,
+                    userId: $request->getAttribute('user_id'),
+                    reason: 'Invalid post ID: ' . $args['id'],
+                    metadata: ['ip_address' => $this->getUserIp($request)],
+                );
+
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
@@ -586,6 +855,17 @@ class PostController extends BaseController
             $data = json_decode($body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
+                // 記錄 JSON 格式錯誤
+                $this->activityLogger->logFailure(
+                    actionType: ActivityType::POST_PINNED,
+                    userId: $request->getAttribute('user_id'),
+                    reason: 'Invalid JSON format',
+                    metadata: [
+                        'post_id' => $id,
+                        'ip_address' => $this->getUserIp($request),
+                    ],
+                );
+
                 $errorResponse = $this->errorResponse('Invalid JSON format', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
@@ -593,6 +873,18 @@ class PostController extends BaseController
             }
 
             if (!isset($data['pinned']) || !is_bool($data['pinned'])) {
+                // 記錄參數錯誤
+                $this->activityLogger->logFailure(
+                    actionType: ActivityType::POST_PINNED,
+                    userId: $request->getAttribute('user_id'),
+                    reason: 'Missing or invalid pinned parameter',
+                    metadata: [
+                        'post_id' => $id,
+                        'received_data' => $data,
+                        'ip_address' => $this->getUserIp($request),
+                    ],
+                );
+
                 $errorResponse = $this->errorResponse('Missing or invalid pinned parameter', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
@@ -602,22 +894,69 @@ class PostController extends BaseController
             $this->postService->setPinned($id, $data['pinned']);
             $post = $this->postService->findById($id);
 
+            // 記錄置頂狀態變更活動
+            $actionType = $data['pinned'] ? ActivityType::POST_PINNED : ActivityType::POST_UNPINNED;
+            $this->activityLogger->logSuccess(
+                actionType: $actionType,
+                userId: $request->getAttribute('user_id'),
+                targetType: 'post',
+                targetId: (string) $id,
+                metadata: [
+                    'title' => $post->getTitle(),
+                    'pinned' => $data['pinned'],
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $message = $data['pinned'] ? '貼文已設為置頂' : '貼文已取消置頂';
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), $message);
             $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (PostNotFoundException $e) {
+            // 記錄文章未找到錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_PINNED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Post not found: ' . $e->getMessage(),
+                metadata: [
+                    'requested_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (StateTransitionException $e) {
+            // 記錄狀態轉換錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_PINNED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'State transition error: ' . $e->getMessage(),
+                metadata: [
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->errorResponse($e->getMessage(), 422);
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         } catch (Exception $e) {
+            // 記錄一般錯誤
+            $this->activityLogger->logFailure(
+                actionType: ActivityType::POST_PINNED,
+                userId: $request->getAttribute('user_id'),
+                reason: 'Internal server error: ' . $e->getMessage(),
+                metadata: [
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
+                ],
+            );
+
             $errorResponse = $this->handleException($e);
             $response->getBody()->write(($errorResponse ?: ''));
 

@@ -39,6 +39,7 @@ enum ActivityType: string
     case ATTACHMENT_DELETED = 'attachment.deleted';
     case ATTACHMENT_VIRUS_DETECTED = 'attachment.virus_detected';
     case ATTACHMENT_SIZE_EXCEEDED = 'attachment.size_exceeded';
+    case ATTACHMENT_PERMISSION_DENIED = 'attachment.permission_denied';
 
     // === 使用者管理行為 ===
     case USER_REGISTERED = 'user.registered';
@@ -104,7 +105,7 @@ enum ActivityType: string
 
             self::ATTACHMENT_UPLOADED, self::ATTACHMENT_DOWNLOADED,
             self::ATTACHMENT_DELETED, self::ATTACHMENT_VIRUS_DETECTED,
-            self::ATTACHMENT_SIZE_EXCEEDED => ActivityCategory::FILE,
+            self::ATTACHMENT_SIZE_EXCEEDED, self::ATTACHMENT_PERMISSION_DENIED => ActivityCategory::FILE,
 
             self::USER_REGISTERED, self::USER_PROFILE_UPDATED,
             self::USER_AVATAR_CHANGED, self::USER_EMAIL_VERIFIED,
@@ -166,7 +167,8 @@ enum ActivityType: string
             // HIGH 等級：高重要性操作
             self::LOGIN_FAILED, self::BRUTE_FORCE_ATTEMPT,
             self::SUSPICIOUS_ACTIVITY_DETECTED, self::PERMISSION_DENIED,
-            self::API_UNAUTHORIZED_ACCESS, self::API_RATE_LIMIT_EXCEEDED => ActivitySeverity::HIGH,
+            self::API_UNAUTHORIZED_ACCESS, self::API_RATE_LIMIT_EXCEEDED,
+            self::ATTACHMENT_PERMISSION_DENIED => ActivitySeverity::HIGH,
 
             // CRITICAL 等級：關鍵安全事件
             self::CSRF_ATTACK_BLOCKED, self::XSS_ATTACK_BLOCKED,
@@ -182,7 +184,7 @@ enum ActivityType: string
         return match ($this) {
             self::LOGIN_FAILED, self::PERMISSION_DENIED,
             self::API_UNAUTHORIZED_ACCESS, self::ATTACHMENT_SIZE_EXCEEDED,
-            self::API_RATE_LIMIT_EXCEEDED => true,
+            self::API_RATE_LIMIT_EXCEEDED, self::ATTACHMENT_PERMISSION_DENIED => true,
             default => false,
         };
     }
@@ -209,6 +211,11 @@ enum ActivityType: string
             self::POST_UPDATED => '更新文章',
             self::POST_DELETED => '刪除文章',
             self::ATTACHMENT_UPLOADED => '上傳附件',
+            self::ATTACHMENT_DOWNLOADED => '下載附件',
+            self::ATTACHMENT_DELETED => '刪除附件',
+            self::ATTACHMENT_VIRUS_DETECTED => '附件病毒檢測',
+            self::ATTACHMENT_SIZE_EXCEEDED => '附件大小超限',
+            self::ATTACHMENT_PERMISSION_DENIED => '附件權限被拒',
             self::SUSPICIOUS_ACTIVITY_DETECTED => '檢測到可疑活動',
             self::SECURITY_ACTIVITY_SCAN_COMPLETED => '安全掃描完成',
             // ... 可以繼續添加更多描述

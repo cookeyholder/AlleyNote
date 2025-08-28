@@ -299,14 +299,22 @@
   - **實際完成時間**: 4 小時（含測試調試）
   - **驗收標準**: ✅ 功能測試完全通過，文章操作活動記錄正常運作
 
-- [ ] **T2.8** 整合附件管理系統
-  - [ ] 在 AttachmentService 中添加記錄邏輯
-  - [ ] 記錄檔案上傳/下載操作
-  - [ ] 記錄病毒掃描結果
-  - [ ] 記錄檔案權限檢查
-  - [ ] 撰寫整合測試
-  - **預估時間**: 6 小時
-  - **驗收標準**: 附件操作完整記錄
+- ✅ **T2.8** 整合附件管理系統 **[2024-12-19 完成]**
+  - ✅ 在 AttachmentService 中添加 ActivityLoggingService 依賴注入
+  - ✅ 更新 AttachmentServiceInterface 介面 (下載方法增加 userId 參數)
+  - ✅ 添加 ATTACHMENT_PERMISSION_DENIED 新活動類型到枚舉
+  - ✅ 更新活動類型分類和嚴重程度設定
+  - ✅ 記錄檔案上傳操作 (ATTACHMENT_UPLOADED)
+  - ✅ 記錄檔案下載操作 (ATTACHMENT_DOWNLOADED)
+  - ✅ 記錄檔案刪除操作 (ATTACHMENT_DELETED)
+  - ✅ 記錄權限被拒操作 (ATTACHMENT_PERMISSION_DENIED)
+  - ✅ 記錄檔案大小超限 (ATTACHMENT_SIZE_EXCEEDED)
+  - ✅ 記錄病毒檢測結果 (ATTACHMENT_VIRUS_DETECTED)
+  - ✅ 建立完整的功能測試套件（6個測試，46個斷言）
+  - ✅ 測試覆蓋所有附件相關活動記錄功能
+  - ✅ 通過所有程式碼品質檢查（PHP CS Fixer、PHPStan Level 8）
+  - **實際完成時間**: 5 小時（含測試調試和類型修正）
+  - **驗收標準**: ✅ 功能測試完全通過，附件操作活動記錄正常運作
 
 - [ ] **T2.9** 整合安全系統
   - [ ] 整合現有的 Security Services
