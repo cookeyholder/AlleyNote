@@ -15,7 +15,7 @@ class RateLimitServiceTest extends TestCase
 {
     private RateLimitService $rateLimitService;
 
-    private $cacheMock;
+    private mixed $cacheMock;
 
     protected function setUp(): void
     {

@@ -136,9 +136,9 @@ class AttachmentController
             $files = $request->getUploadedFiles();
 
             if (!isset($files['file'])) {
-                $response->getBody()->write(json_encode([
+                $response->getBody()->write((json_encode([
                     'error' => '缺少上傳檔案',
-                ]));
+                ]) ?: ''));
 
                 return $response
                     ->withStatus(400)
@@ -267,9 +267,9 @@ class AttachmentController
             // 2. 檢查檔案權限
             // 3. 讀取檔案並回傳
 
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => '檔案下載功能尚未實作',
-            ]));
+            ]) ?: ''));
 
             return $response
                 ->withStatus(501)

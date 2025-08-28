@@ -20,7 +20,7 @@ interface SecretsManagerInterface
      * @param mixed $default 預設值
      * @return mixed
      */
-    public function get(string $key, $default = null);
+    public function get(string $key, mixed $default = null);
 
     /**
      * 設定秘密值

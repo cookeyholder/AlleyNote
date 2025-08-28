@@ -122,17 +122,17 @@ class PostController extends BaseController
                 $result['per_page'],
             );
 
-            $response->getBody()->write($responseData);
+            $response->getBody()->write(($responseData ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (RequestValidationException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 422, $e->getErrors());
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -195,7 +195,7 @@ class PostController extends BaseController
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $errorResponse = $this->errorResponse('Invalid JSON format', 400);
-                $response->getBody()->write($errorResponse);
+                $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -208,17 +208,17 @@ class PostController extends BaseController
             $post = $this->postService->createPost($dto);
 
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '貼文建立成功');
-            $response->getBody()->write($successResponse);
+            $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (ValidationException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -265,7 +265,7 @@ class PostController extends BaseController
 
             if ($id <= 0) {
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
-                $response->getBody()->write($errorResponse);
+                $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -279,17 +279,17 @@ class PostController extends BaseController
             }
 
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '成功取得貼文');
-            $response->getBody()->write($successResponse);
+            $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (PostNotFoundException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -367,7 +367,7 @@ class PostController extends BaseController
 
             if ($id <= 0) {
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
-                $response->getBody()->write($errorResponse);
+                $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -377,7 +377,7 @@ class PostController extends BaseController
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $errorResponse = $this->errorResponse('Invalid JSON format', 400);
-                $response->getBody()->write($errorResponse);
+                $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -386,22 +386,22 @@ class PostController extends BaseController
             $post = $this->postService->updatePost($id, $dto);
 
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '貼文更新成功');
-            $response->getBody()->write($successResponse);
+            $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (ValidationException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (PostNotFoundException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -462,7 +462,7 @@ class PostController extends BaseController
 
             if ($id <= 0) {
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
-                $response->getBody()->write($errorResponse);
+                $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -473,22 +473,22 @@ class PostController extends BaseController
             return $response->withStatus(204);
         } catch (ValidationException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (PostNotFoundException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (PostStatusException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 422);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -577,7 +577,7 @@ class PostController extends BaseController
 
             if ($id <= 0) {
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
-                $response->getBody()->write($errorResponse);
+                $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -587,14 +587,14 @@ class PostController extends BaseController
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $errorResponse = $this->errorResponse('Invalid JSON format', 400);
-                $response->getBody()->write($errorResponse);
+                $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
             if (!isset($data['pinned']) || !is_bool($data['pinned'])) {
                 $errorResponse = $this->errorResponse('Missing or invalid pinned parameter', 400);
-                $response->getBody()->write($errorResponse);
+                $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -604,22 +604,22 @@ class PostController extends BaseController
 
             $message = $data['pinned'] ? '貼文已設為置頂' : '貼文已取消置頂';
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), $message);
-            $response->getBody()->write($successResponse);
+            $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (PostNotFoundException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (StateTransitionException $e) {
             $errorResponse = $this->errorResponse($e->getMessage(), 422);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }

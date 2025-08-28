@@ -42,15 +42,15 @@ class PostControllerTest extends TestCase
     /** @var OutputSanitizerInterface&MockInterface */
     private OutputSanitizerInterface $sanitizer;
 
-    private $request;
+    private mixed $request;
 
-    private $response;
+    private mixed $response;
 
-    private $stream;
+    private mixed $stream;
 
-    private $responseStatus;
+    private mixed $responseStatus;
 
-    private $currentResponseData;
+    private mixed $currentResponseData;
 
     protected function setUp(): void
     {

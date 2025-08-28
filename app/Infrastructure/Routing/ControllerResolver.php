@@ -332,7 +332,7 @@ class ControllerResolver
         };
 
         // 將資料編碼為 JSON
-        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?: '';
         $response->getBody()->write($json ?: '{}');
 
         return $response->withStatus($status)->withHeader('Content-Type', 'application/json');

@@ -343,7 +343,7 @@ class XssProtectionExtensionService
     /**
      * 遞迴清理 JSON 資料.
      */
-    private function cleanJsonRecursively($data)
+    private function cleanJsonRecursively(mixed $data)
     {
         if (is_array($data)) {
             return array_map([$this, 'cleanJsonRecursively'], $data);

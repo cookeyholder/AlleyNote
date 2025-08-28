@@ -249,6 +249,19 @@
   - **完成時間**: 4 小時
   - **驗收標準**: ✅ 認證相關操作完整記錄，所有測試通過
 
+- 🔧 **T2.6+** PHPStan Level 8 類型修復 (進行中)
+  - ✅ 修復 BaseController 的類型問題 (json_encode 返回值、array 類型)
+  - ✅ 修復 Post 模型的所有方法類型註解 (建構子、toArray、fromArray)
+  - ✅ 修復 AuthService 的方法參數和返回類型
+  - ✅ 修復 UserRepositoryInterface 的所有方法類型註解
+  - ✅ 建立自動化修復腳本工具 (bulk-phpstan-fixer.php, enhanced-phpstan-fixer.php)
+  - ✅ 批量修復約 55 個常見類型問題
+  - [ ] 修復剩餘 1942 個 PHPStan Level 8 錯誤
+  - **目前進展**: 55/1997 個錯誤已修復，主要問題類型已識別
+  - **剩餘錯誤模式**: StreamInterface::write(), 陣列類型規範, 匿名類別屬性, json_encode 返回值
+  - **預估時間**: 15 小時 (系統性批量修復 + 架構調整)
+  - **驗收標準**: 100% PHPStan Level 8 通過，無忽略規則
+
 - [ ] **T2.7** 整合文章管理系統
   - [ ] 在 PostService 中添加記錄邏輯
   - [ ] 記錄文章 CRUD 操作

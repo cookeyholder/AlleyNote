@@ -118,7 +118,7 @@ class RateLimitMiddleware implements MiddlewareInterface
                 'remaining' => $result['remaining'],
                 'reset' => $result['reset'],
                 'retry_after' => $result['reset'] - time(),
-            ]);
+            ]) ?: '';
 
             $response = new Response(429, ['Content-Type' => 'application/json'], $body);
         } else {

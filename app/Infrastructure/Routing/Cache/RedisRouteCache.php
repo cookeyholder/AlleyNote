@@ -206,7 +206,7 @@ class RedisRouteCache implements RouteCacheInterface
     private function saveStats(): void
     {
         try {
-            $content = json_encode($this->stats);
+            $content = json_encode($this->stats) ?: '';
             $this->redis->set(self::STATS_KEY, $content);
         } catch (RedisException) {
             // 忽略儲存錯誤
