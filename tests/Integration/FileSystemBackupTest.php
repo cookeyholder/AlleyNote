@@ -51,8 +51,7 @@ class FileSystemBackupTest extends TestCase
         }
     }
 
-    /** @test */
-    public function backupFilesSuccessfully(): void
+    public function testBackupFilesSuccessfully(): void
     {
         // 執行備份腳本
         $output = [];
@@ -97,8 +96,7 @@ class FileSystemBackupTest extends TestCase
         }
     }
 
-    /** @test */
-    public function restoreFilesSuccessfully(): void
+    public function testRestoreFilesSuccessfully(): void
     {
         // 先建立備份
         $backupFile = $this->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
@@ -140,8 +138,7 @@ class FileSystemBackupTest extends TestCase
         }
     }
 
-    /** @test */
-    public function handleBackupErrorsGracefully(): void
+    public function testHandleBackupErrorsGracefully(): void
     {
         // 使用不存在的來源目錄
         $nonExistentDir = $this->testDir . '/nonexistent';
@@ -161,8 +158,7 @@ class FileSystemBackupTest extends TestCase
         $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
-    /** @test */
-    public function handleRestoreErrorsGracefully(): void
+    public function testHandleRestoreErrorsGracefully(): void
     {
         // 使用不存在的備份檔案
         $nonExistentBackup = $this->backupDir . '/nonexistent_backup.tar.gz';
@@ -182,8 +178,7 @@ class FileSystemBackupTest extends TestCase
         $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
-    /** @test */
-    public function handlePermissionErrors(): void
+    public function testHandlePermissionErrors(): void
     {
         // 使用不存在的備份檔案來測試錯誤處理
         $nonExistentBackupFile = $this->backupDir . '/nonexistent_backup.tar.gz';
@@ -210,8 +205,7 @@ class FileSystemBackupTest extends TestCase
         $this->assertStringContainsString('找不到備份檔案', $outputString, '應該輸出檔案不存在錯誤訊息');
     }
 
-    /** @test */
-    public function maintainFileMetadataDuringBackupRestore(): void
+    public function testMaintainFileMetadataDuringBackupRestore(): void
     {
         // 記錄原始檔案的中繼資料
         $originalMetadata = [];
@@ -252,7 +246,7 @@ class FileSystemBackupTest extends TestCase
             $file = $this->testDir . $path;
             if (!file_exists($file)) {
                 $this->markTestSkipped('此測試暫時跳過等待實現');
-                continue;
+                // continue; // 不可達程式碼，已註解
             }
             $this->assertEquals(
                 $originalMetadata[$path]['permissions'],

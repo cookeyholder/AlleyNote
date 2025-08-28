@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AlleyNote\Domains\Auth\Services;
 
+use AlleyNote\Domains\Auth\Contracts\JwtProviderInterface;
 use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
@@ -13,10 +14,10 @@ use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
-use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use App\Shared\Config\JwtConfig;
 use DateTime;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Throwable;
 
 /**
@@ -28,7 +29,7 @@ use Throwable;
 final class JwtTokenService implements JwtTokenServiceInterface
 {
     public function __construct(
-        private readonly FirebaseJwtProvider $jwtProvider,
+        private readonly JwtProviderInterface $jwtProvider,
         private readonly RefreshTokenRepositoryInterface $refreshTokenRepository,
         private readonly TokenBlacklistRepositoryInterface $blacklistRepository,
         private readonly JwtConfig $config,
@@ -62,12 +63,31 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $accessToken = $this->jwtProvider->generateAccessToken($accessTokenPayload);
             $refreshToken = $this->jwtProvider->generateRefreshToken($refreshTokenPayload);
 
+            // 解析 refresh token 以獲取 JTI
+            $refreshTokenData = $this->jwtProvider->parseTokenUnsafe($refreshToken);
+            $jti = $refreshTokenData['jti'] ?? null;
+
+            if (!$jti) {
+                throw new TokenGenerationException(
+                    TokenGenerationException::REASON_CLAIMS_INVALID,
+                    TokenGenerationException::REFRESH_TOKEN,
+                    'Refresh token missing JTI',
+                );
+            }
+
+            // 將 refresh token 儲存到資料庫
+            $refreshTokenExpiresAt = $now->modify('+' . $this->config->getRefreshTokenTtl() . ' seconds');
+            $this->refreshTokenRepository->create(
+                jti: $jti,
+                userId: $userId,
+                tokenHash: hash('sha256', $refreshToken),
+                deviceInfo: $deviceInfo,
+                expiresAt: DateTime::createFromImmutable($refreshTokenExpiresAt),
+            );
+
             // 計算過期時間
             $accessTokenExpiresAt = $now->modify('+' . $this->config->getAccessTokenTtl() . ' seconds');
             $refreshTokenExpiresAt = $now->modify('+' . $this->config->getRefreshTokenTtl() . ' seconds');
-
-            // 將 refresh token 儲存到資料庫
-            $this->storeRefreshToken($refreshToken, $userId, $deviceInfo, $refreshTokenExpiresAt);
 
             return new TokenPair(
                 accessToken: $accessToken,
@@ -182,7 +202,9 @@ final class JwtTokenService implements JwtTokenServiceInterface
             }
 
             return true;
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            error_log("JWT token revocation failed during {$reason}: " . $e->getMessage());
+
             return false;
         }
     }
@@ -262,41 +284,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
     }
 
     /**
-     * 將 refresh token 儲存到資料庫.
-     *
-     * @param string $refreshToken JWT refresh token
-     * @param int $userId 使用者 ID
-     * @param DeviceInfo $deviceInfo 裝置資訊
-     * @param DateTimeImmutable $expiresAt 過期時間
-     *
-     * @throws TokenGenerationException 當儲存失敗時
-     */
-    private function storeRefreshToken(
-        string $refreshToken,
-        int $userId,
-        DeviceInfo $deviceInfo,
-        DateTimeImmutable $expiresAt,
-    ): void {
-        try {
-            $payload = $this->jwtProvider->parseTokenUnsafe($refreshToken);
-
-            $this->refreshTokenRepository->create(
-                jti: $payload['jti'],
-                userId: $userId,
-                tokenHash: hash('sha256', $refreshToken),
-                expiresAt: new DateTime($expiresAt->format('Y-m-d H:i:s')),
-                deviceInfo: $deviceInfo,
-            );
-        } catch (Throwable $e) {
-            throw new TokenGenerationException(
-                TokenGenerationException::REASON_RESOURCE_EXHAUSTED,
-                TokenGenerationException::REFRESH_TOKEN,
-                'Failed to store refresh token: ' . $e->getMessage(),
-            );
-        }
-    }
-
-    /**
      * 從陣列建立 JwtPayload 物件.
      *
      * @param array<string, mixed> $payload 原始 payload 資料
@@ -308,14 +295,41 @@ final class JwtTokenService implements JwtTokenServiceInterface
     private function createJwtPayloadFromArray(array $payload): JwtPayload
     {
         try {
+            // 確保必要的鍵存在
+            $requiredKeys = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp'];
+            foreach ($requiredKeys as $key) {
+                if (!isset($payload[$key])) {
+                    throw new InvalidArgumentException("Missing required payload key: {$key}");
+                }
+            }
+
+            // 安全地建立 DateTimeImmutable 物件
+            $iat = DateTimeImmutable::createFromFormat('U', (string) $payload['iat']);
+            if ($iat === false) {
+                throw new InvalidArgumentException("Invalid iat timestamp: {$payload['iat']}");
+            }
+
+            $exp = DateTimeImmutable::createFromFormat('U', (string) $payload['exp']);
+            if ($exp === false) {
+                throw new InvalidArgumentException("Invalid exp timestamp: {$payload['exp']}");
+            }
+
+            $nbf = null;
+            if (isset($payload['nbf'])) {
+                $nbf = DateTimeImmutable::createFromFormat('U', (string) $payload['nbf']);
+                if ($nbf === false) {
+                    throw new InvalidArgumentException("Invalid nbf timestamp: {$payload['nbf']}");
+                }
+            }
+
             return new JwtPayload(
                 jti: $payload['jti'],
                 sub: $payload['sub'],
                 iss: $payload['iss'],
                 aud: [$payload['aud']],
-                iat: DateTimeImmutable::createFromFormat('U', (string) $payload['iat']),
-                exp: DateTimeImmutable::createFromFormat('U', (string) $payload['exp']),
-                nbf: isset($payload['nbf']) ? DateTimeImmutable::createFromFormat('U', (string) $payload['nbf']) : null,
+                iat: $iat,
+                exp: $exp,
+                nbf: $nbf,
                 customClaims: array_filter($payload, fn($key) => !in_array($key, [
                     'jti',
                     'sub',

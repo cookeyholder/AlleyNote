@@ -8,11 +8,14 @@ use App\Domains\Security\Repositories\IpRepository;
 use App\Infrastructure\Services\CacheService;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
 class IpRepositoryTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private PDO $db;
 
     private CacheService $cache;

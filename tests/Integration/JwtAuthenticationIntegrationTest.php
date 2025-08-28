@@ -15,6 +15,7 @@ use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
 use AlleyNote\Domains\Auth\DTOs\RefreshResponseDTO;
 use AlleyNote\Domains\Auth\Exceptions\AuthenticationException;
 use AlleyNote\Domains\Auth\Services\AuthenticationService;
+use AlleyNote\Domains\Auth\Services\JwtTokenService;
 use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
 use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
@@ -22,25 +23,32 @@ use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
 use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
 use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
+use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
+use App\Shared\Config\JwtConfig;
+use DateTime;
 use DateTimeImmutable;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 /**
  * JWT 認證系統整合測試
  * 驗證各元件間的協作與端到端流程.
- *
- * @group integration
  */
+#[Group('integration')]
 class JwtAuthenticationIntegrationTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private JwtTokenServiceInterface $jwtTokenService;
 
     private RefreshTokenRepositoryInterface $refreshTokenRepository;
 
     private TokenBlacklistRepositoryInterface $tokenBlacklistRepository;
 
-    private UserRepositoryInterface $userRepository;
+    private UserRepositoryInterface|MockInterface $userRepository;
 
     private AuthenticationServiceInterface $authenticationService;
 
@@ -50,14 +58,18 @@ class JwtAuthenticationIntegrationTest extends TestCase
     {
         parent::setUp();
 
-        // 建立真實的服務實例，模擬完整的系統行為
-        $this->jwtTokenService = $this->createJwtTokenService();
+        // 先建立 Repository 實例
         $this->refreshTokenRepository = new RefreshTokenRepository($this->db);
         $this->tokenBlacklistRepository = new TokenBlacklistRepository($this->db);
         $this->tokenBlacklistService = new TokenBlacklistService($this->tokenBlacklistRepository);
 
+        // 然後建立真實的服務實例，模擬完整的系統行為
+        $this->jwtTokenService = $this->createJwtTokenService();
+
         // Mock UserRepository for testing
-        $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
+        /** @var UserRepositoryInterface|MockInterface $userRepository */
+        $userRepository = Mockery::mock(UserRepositoryInterface::class)->shouldIgnoreMissing();
+        $this->userRepository = $userRepository;
         $this->setupUserRepositoryMock();
 
         $this->authenticationService = new AuthenticationService(
@@ -71,11 +83,22 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試完整的登入流程.
-     *
-     * @test
+     * 清理測試資料.
      */
-    public function canPerformCompleteLoginFlow(): void
+    protected function tearDown(): void
+    {
+        // 清理 refresh_tokens 表
+        $this->db->exec('DELETE FROM refresh_tokens');
+        // 清理 token_blacklist 表
+        $this->db->exec('DELETE FROM token_blacklist');
+
+        parent::tearDown();
+    }
+
+    /**
+     * 測試完整的登入流程.
+     */
+    public function testCanPerformCompleteLoginFlow(): void
     {
         // 準備登入請求
         $loginRequest = new LoginRequestDTO(
@@ -111,10 +134,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試 Token 刷新流程.
-     *
-     * @test
      */
-    public function canRefreshTokensSuccessfully(): void
+    public function testCanRefreshTokensSuccessfully(): void
     {
         // 先進行登入獲取 Token
         $loginRequest = new LoginRequestDTO(
@@ -158,10 +179,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試登出流程與 Token 黑名單.
-     *
-     * @test
      */
-    public function canLogoutAndBlacklistTokens(): void
+    public function testCanLogoutAndBlacklistTokens(): void
     {
         // 進行登入
         $loginRequest = new LoginRequestDTO(
@@ -197,10 +216,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試多設備登入管理.
-     *
-     * @test
      */
-    public function canManageMultipleDeviceLogins(): void
+    public function testCanManageMultipleDeviceLogins(): void
     {
         $loginRequest = new LoginRequestDTO(
             email: 'test@example.com',
@@ -248,10 +265,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試無效憑證登入.
-     *
-     * @test
      */
-    public function canHandleInvalidCredentials(): void
+    public function testCanHandleInvalidCredentials(): void
     {
         $loginRequest = new LoginRequestDTO(
             email: 'test@example.com',
@@ -265,6 +280,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
         );
 
         // 設定 UserRepository 回傳 null 表示認證失敗
+        /** @var UserRepositoryInterface::class|MockInterface */
+        /** @var mixed */
         $mockUserRepository = Mockery::mock(UserRepositoryInterface::class);
         $mockUserRepository->shouldReceive('validateCredentials')
             ->with('test@example.com', 'wrongpassword')
@@ -290,10 +307,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試黑名單自動清理功能.
-     *
-     * @test
      */
-    public function canCleanupExpiredBlacklistEntries(): void
+    public function testCanCleanupExpiredBlacklistEntries(): void
     {
         // 建立已過期的黑名單條目
         $expiredEntry = new TokenBlacklistEntry(
@@ -331,10 +346,8 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試系統健康檢查.
-     *
-     * @test
      */
-    public function canPerformHealthCheck(): void
+    public function testCanPerformHealthCheck(): void
     {
         // 建立一些測試資料
         $loginRequest = new LoginRequestDTO(
@@ -360,13 +373,12 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $healthStatus = $this->tokenBlacklistService->getHealthStatus();
 
         // 驗證健康狀態包含預期資訊
-        $this->assertArrayHasKey('totalBlacklisted', $healthStatus);
-        $this->assertArrayHasKey('expiredCount', $healthStatus);
-        $this->assertArrayHasKey('activeCount', $healthStatus);
-        $this->assertArrayHasKey('oldestEntry', $healthStatus);
-        $this->assertArrayHasKey('newestEntry', $healthStatus);
+        $this->assertArrayHasKey('total_entries', $healthStatus);
+        $this->assertArrayHasKey('expired_entries', $healthStatus);
+        $this->assertArrayHasKey('active_entries', $healthStatus);
+        $this->assertArrayHasKey('healthy', $healthStatus);
 
-        $this->assertGreaterThanOrEqual(1, $healthStatus['totalBlacklisted']);
+        $this->assertGreaterThanOrEqual(1, $healthStatus['total_entries']);
     }
 
     /**
@@ -374,32 +386,26 @@ class JwtAuthenticationIntegrationTest extends TestCase
      */
     private function createJwtTokenService(): JwtTokenServiceInterface
     {
-        $mockService = Mockery::mock(JwtTokenServiceInterface::class);
+        // 設定測試用的環境變數 (如果還沒設定)
+        if (!isset($_ENV['JWT_PRIVATE_KEY'])) {
+            $_ENV['JWT_PRIVATE_KEY'] = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCEd1LvGZVBEKkp\npJV2aGLBoTGvxSHhCQ3ZRGDwVUPv8w7Y0l/xBLhSbh2/iQGfX/bu7kA3kBvY2uH6\nHF1LPTbmF4EtWITExDkM/A3r6nuizYdVBNYM72yriDQPUveg6PAjataamKliexDF\naBAW8d+es9fFDgRtWj4qbO+WUs2vuffjI6SPuHXt1pdggu/NGBBMSv96W5Y6lmA+\ng4Qif4GAQn8nKS+5nvp/e80Rq6YKIr5mFyjgpICDu3RrAATmPKhKej6FgDZp69j3\nZiQWcywCWt3rwMC2Tz9DfdhKdwDzwKL4gnt1k55HZt9xAegWUroEtXzNnHL7tJ9I\nI1CyUDaTAgMBAAECggEAChYDzIzIHoIkPzV24+Mi0ddyLw31fGryEP7x2prDZ3u8\nP6oVAAb5+dzEixbldrsZ1Ctz3Ecut55C4oZSXC43BeH4RfmdclX2ehSfAr2B2G2J\nxmFt4uJABfeC7z/D9w6FakzyNic1jngMWNuJjhWwjybmYOymTaU3YoeU3n9DhgOo\n3zjNj573K5dLyFkAP+9YWQ8HaT/PHgJxDCpTVxEzQsyMxNQYVPZKrYFN/ZyY8oPL\nb9RfYDYeEel4/KOCgvOXPMJ32AcAdH2WwbyAzlt8Dhn6L+x0xIUTVdHlUng0DLp5\nsWqZmEzc81VAFijfo9aKFobsLoA5rJWSCcQ70ukuEQKBgQC4LLp993TOHi99BzJw\ncJNC2A5uq9kSwrXv/emOY2HXmJ6+J8SNksfr3BG94ukgZhJvUNA/n5LyJ3cpgNUm\nEKqK+PMk7S0CT6fbbBRXnnJijsQxyOqFAg7jYmMiYlTWyemPNXKpWCclMUgmSbNG\nJH/trXuLraDs7nnsgWM7k2CUVQKBgQC4IDag+yYQiuIiEAOdlPjv6J9z9dj9ri1w\n1jtiIPk41Xz9xZUA55pvnFXfOBEWxSrIlkLzR48HIA+cLB38XGOFpmW46l2k/o9X\nW7+pOyStdibrp16ppZY/NN6gwFjTnpPzpu7VJZvP+6M3Y2JyGBYCJ1xHPYMOX1oq\njPg6g1XHRwKBgEbQs/hhYKEsTBgn30YKkyTdjFcTbojfIzOfDuG35tQOE+OLyPCi\noopW+N9pUzgo5ye0DA6andbMQ+5KYiqbt+dtp5foNikwVZtx6DR0cQjiWh/GYB46\nV10o5HNBGdvokQyGgYsJoSuU0mgeaHcs65+I1/syDLFtVKYSbgRnO3htAoGBAKNw\nhM104h8BCSXvTSZOHILo3NGUQ187gz6MC/5ZAqC+cMra3h8FdwLnpRoVrKWnswiG\nyTsmJAHRJcodJyjh4b27LMRt1V4mUJrc6E6SH0aSgI3h7ZdtUuccSRosYyzFsNMx\nNQOi9KIz3nfGEpbwZmjXA4SBR5o0bdcjdxyJhFT1AoGAQb3Kw59mlGkDRf6aAmUE\nZ9JBfelirgrQ69ZKCKCVvZG/4mEDmU9E+6kHrf9Hbk1xOuGhY0+tSokLZQVY0+YS\nTcRRp/F1/kf6XHPlpHsaRn0phSKHSXxxXZ23w4Jqc9cDhTpfYZMsAQGacxKg/nNy\nmo0TtZZCNgLlXOCjt0o4Fpc=\n-----END PRIVATE KEY-----";
+            $_ENV['JWT_PUBLIC_KEY'] = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhHdS7xmVQRCpKaSVdmhi\nwaExr8Uh4QkN2URg8FVD7/MO2NJf8QS4Um4dv4kBn1/27u5AN5Ab2Nrh+hxdSz02\n5heBLViExMQ5DPwN6+p7os2HVQTWDO9sq4g0D1L3oOjwI2rWmpipYnsQxWgQFvHf\nnrPXxQ4EbVo+KmzvllLNr7n34yOkj7h17daXYILvzRgQTEr/eluWOpZgPoOEIn+B\ngEJ/JykvuZ76f3vNEaumCiK+Zhco4KSAg7t0awAE5jyoSno+hYA2aevY92YkFnMs\nAlrd68DAtk8/Q33YSncA88Ci+IJ7dZOeR2bfcQHoFlK6BLV8zZxy+7SfSCNQslA2\nkwIDAQAB\n-----END PUBLIC KEY-----";
+            $_ENV['JWT_ISSUER'] = 'alleynote-api';
+            $_ENV['JWT_AUDIENCE'] = 'alleynote-client';
+            $_ENV['JWT_ACCESS_TOKEN_TTL'] = '3600';
+            $_ENV['JWT_REFRESH_TOKEN_TTL'] = '7200';
+        }
 
-        // Mock generateTokenPair 方法
-        $mockService->shouldReceive('generateTokenPair')
-            ->andReturn(new TokenPair(
-                'mock.access.token',
-                'mock.refresh.token',
-                new DateTimeImmutable('+1 hour'),
-                new DateTimeImmutable('+30 days'),
-            ));
+        // 使用真實的 JwtTokenService
+        $config = new JwtConfig();
+        $jwtProvider = new FirebaseJwtProvider($config);
 
-        // Mock 其他需要的方法...
-        $mockService->shouldReceive('validateToken')->andReturn(true);
-        $mockService->shouldReceive('extractPayload')
-            ->andReturn(new \AlleyNote\Domains\Auth\ValueObjects\JwtPayload(
-                jti: 'mock-jti-' . uniqid(),
-                sub: '1',
-                iss: 'alleynote',
-                aud: ['alleynote'],
-                iat: new DateTimeImmutable(),
-                exp: new DateTimeImmutable('+1 hour'),
-                customClaims: ['type' => 'access']
-            ));
-        $mockService->shouldReceive('revokeToken')->andReturn(true);
-
-        return $mockService;
+        return new JwtTokenService(
+            $jwtProvider,
+            $this->refreshTokenRepository, // 使用真實的 Repository
+            $this->tokenBlacklistRepository, // 使用真實的 Repository
+            $config,
+        );
     }
 
     /**
@@ -421,6 +427,11 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
                 return null;
             });
+
+        // 設定更新最後登入時間
+        $this->userRepository->shouldReceive('updateLastLogin')
+            ->with(1)
+            ->andReturn(true);
 
         // 其他可能需要的方法
         $this->userRepository->shouldReceive('findById')
@@ -455,10 +466,15 @@ class JwtAuthenticationIntegrationTest extends TestCase
      */
     private function createTestUser(): void
     {
-        $this->db->exec("
+        $now = new DateTime()->format('Y-m-d H:i:s');
+        $stmt = $this->db->prepare("
             INSERT INTO users (id, username, email, password, status, created_at, updated_at)
-            VALUES (1, 'testuser', 'test@example.com', 'password123', 1, datetime('now'), datetime('now'))
+            VALUES (1, 'testuser', 'test@example.com', 'password123', 1, :created_at, :updated_at)
         ");
+        $stmt->execute([
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
     }
 
     /**

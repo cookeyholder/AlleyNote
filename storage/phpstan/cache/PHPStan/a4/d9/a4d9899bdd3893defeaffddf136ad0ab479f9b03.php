@@ -7,19 +7,19 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
   array (
     '/var/www/html/tests/UI/PostUITest.php' => 
     array (
-      0 => 'df80b6e869261308c16e875f6fa41f2f9e25dfb6',
+      0 => 'd2bb56c4bbd32fee2b00292991b9c09db1c6c9ae',
       1 => 
       array (
         0 => 'tests\\ui\\postuitest',
       ),
       2 => 
       array (
-        0 => 'tests\\ui\\shoulddisplaypostlist',
-        1 => 'tests\\ui\\shouldcreatenewpost',
-        2 => 'tests\\ui\\shouldeditexistingpost',
-        3 => 'tests\\ui\\shoulddeletepost',
-        4 => 'tests\\ui\\shouldhandleresponsivelayout',
-        5 => 'tests\\ui\\shouldsupportdarkmode',
+        0 => 'tests\\ui\\testshoulddisplaypostlist',
+        1 => 'tests\\ui\\testshouldcreatenewpost',
+        2 => 'tests\\ui\\testshouldeditexistingpost',
+        3 => 'tests\\ui\\testshoulddeletepost',
+        4 => 'tests\\ui\\testshouldhandleresponsivelayout',
+        5 => 'tests\\ui\\testshouldsupportdarkmode',
         6 => 'tests\\ui\\login',
         7 => 'tests\\ui\\browseraction',
       ),
@@ -50,14 +50,14 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/UI/CrossBrowserTest.php' => 
     array (
-      0 => '0bd4920423b10b1043f49cea34f1991ef0e9f918',
+      0 => '44d5ff1a8620d4800f3ebbe1079064d68aacae43',
       1 => 
       array (
         0 => 'tests\\ui\\crossbrowsertest',
       ),
       2 => 
       array (
-        0 => 'tests\\ui\\browseraction',
+        0 => 'tests\\ui\\testbrowseraction',
         1 => 'tests\\ui\\testbrowsercompatibility',
         2 => 'tests\\ui\\testbasicfunctionality',
         3 => 'tests\\ui\\testcssstyles',
@@ -71,17 +71,17 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/UI/UserExperienceTest.php' => 
     array (
-      0 => 'dfd5a3dd7b2028edf311e251f5da36fa0e537a43',
+      0 => '7c6dac566aef52d638054f5b384b01bf399e57f2',
       1 => 
       array (
         0 => 'tests\\ui\\userexperiencetest',
       ),
       2 => 
       array (
-        0 => 'tests\\ui\\shouldmeetaccessibilitystandards',
-        1 => 'tests\\ui\\shouldprovidegooduserinteraction',
-        2 => 'tests\\ui\\shouldperformwell',
-        3 => 'tests\\ui\\shouldhandleerrors',
+        0 => 'tests\\ui\\testshouldmeetaccessibilitystandards',
+        1 => 'tests\\ui\\testshouldprovidegooduserinteraction',
+        2 => 'tests\\ui\\testshouldperformwell',
+        3 => 'tests\\ui\\testshouldhandleerrors',
         4 => 'tests\\ui\\testforminteraction',
         5 => 'tests\\ui\\testerrorhandling',
         6 => 'tests\\ui\\testloadingstates',
@@ -99,7 +99,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Database/DatabaseConnectionTest.php' => 
     array (
-      0 => 'e4b9c399594011e4959747d54bf103212a07fba5',
+      0 => 'd93ce77f736e225c567b688c0d9d9ce1cc2f6b14',
       1 => 
       array (
         0 => 'tests\\unit\\database\\databaseconnectiontest',
@@ -107,8 +107,8 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\unit\\database\\setup',
-        1 => 'tests\\unit\\database\\createssingletonpdoinstance',
-        2 => 'tests\\unit\\database\\executesquerysuccessfully',
+        1 => 'tests\\unit\\database\\testcreatessingletonpdoinstance',
+        2 => 'tests\\unit\\database\\testexecutesquerysuccessfully',
         3 => 'tests\\unit\\database\\teardown',
       ),
       3 => 
@@ -117,7 +117,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/PostRepositoryPerformanceTest.php' => 
     array (
-      0 => '7aa3e4a7458ef45c29f055dc12f54fe913f728c5',
+      0 => '97b095efd4d8105d133840e5c91479f1f7bec657',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\postrepositoryperformancetest',
@@ -138,7 +138,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/PostRepositoryTest.php' => 
     array (
-      0 => '5fa833e1686278a987caad522268c1bc5893d372',
+      0 => 'd7882f44fc2403a504e90b89e453c9dd7ec6ed60',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\postrepositorytest',
@@ -165,7 +165,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/UserRepositoryTest.php' => 
     array (
-      0 => '9a583ae431abee438e77269285a0a0d668115332',
+      0 => '71a530d54f65e1e4ae4477367632931c9b534e0b',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\userrepositorytest',
@@ -174,17 +174,17 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\unit\\repository\\setup',
         1 => 'tests\\unit\\repository\\setuptestdatabase',
-        2 => 'tests\\unit\\repository\\createusersuccessfully',
-        3 => 'tests\\unit\\repository\\updateusersuccessfully',
-        4 => 'tests\\unit\\repository\\deleteusersuccessfully',
-        5 => 'tests\\unit\\repository\\finduserbyuuid',
-        6 => 'tests\\unit\\repository\\finduserbyusername',
-        7 => 'tests\\unit\\repository\\finduserbyemail',
-        8 => 'tests\\unit\\repository\\preventduplicateusername',
-        9 => 'tests\\unit\\repository\\preventduplicateemail',
-        10 => 'tests\\unit\\repository\\finduserbyid',
-        11 => 'tests\\unit\\repository\\returnnullwhenusernotfound',
-        12 => 'tests\\unit\\repository\\updatelastlogintime',
+        2 => 'tests\\unit\\repository\\testcreateusersuccessfully',
+        3 => 'tests\\unit\\repository\\testupdateusersuccessfully',
+        4 => 'tests\\unit\\repository\\testdeleteusersuccessfully',
+        5 => 'tests\\unit\\repository\\testfinduserbyuuid',
+        6 => 'tests\\unit\\repository\\testfinduserbyusername',
+        7 => 'tests\\unit\\repository\\testfinduserbyemail',
+        8 => 'tests\\unit\\repository\\testpreventduplicateusername',
+        9 => 'tests\\unit\\repository\\testpreventduplicateemail',
+        10 => 'tests\\unit\\repository\\testfinduserbyid',
+        11 => 'tests\\unit\\repository\\testreturnnullwhenusernotfound',
+        12 => 'tests\\unit\\repository\\testupdatelastlogintime',
       ),
       3 => 
       array (
@@ -192,7 +192,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repository/IpRepositoryTest.php' => 
     array (
-      0 => 'fb0d66f89a70cd9e00659e2109a359fcf973e0d8',
+      0 => '45196beca358356e3222eb6af64806d0879aac2e',
       1 => 
       array (
         0 => 'tests\\unit\\repository\\iprepositorytest',
@@ -292,7 +292,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/ExampleTest.php' => 
     array (
-      0 => '70bcefac6518229d96177306687e327f43d3d3f3',
+      0 => '67675a2fa2772457d1e07fb9900cbd985c2f0ba2',
       1 => 
       array (
         0 => 'tests\\unit\\exampletest',
@@ -307,7 +307,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Repositories/AttachmentRepositoryTest.php' => 
     array (
-      0 => 'e7dd819c0dc7fc13b1176b022cba16372aa8df8f',
+      0 => '8c7f77678c47e1dee378120b87fd44128255c18d',
       1 => 
       array (
         0 => 'tests\\unit\\repositories\\attachmentrepositorytest',
@@ -316,13 +316,13 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\unit\\repositories\\setup',
         1 => 'tests\\unit\\repositories\\createtesttables',
-        2 => 'tests\\unit\\repositories\\shouldcreateattachmentsuccessfully',
-        3 => 'tests\\unit\\repositories\\shouldfindattachmentbyid',
-        4 => 'tests\\unit\\repositories\\shouldfindattachmentbyuuid',
-        5 => 'tests\\unit\\repositories\\shouldreturnnullfornonexistentid',
-        6 => 'tests\\unit\\repositories\\shouldreturnnullfornonexistentuuid',
-        7 => 'tests\\unit\\repositories\\shouldgetattachmentsbypostid',
-        8 => 'tests\\unit\\repositories\\shouldsoftdeleteattachment',
+        2 => 'tests\\unit\\repositories\\testshouldcreateattachmentsuccessfully',
+        3 => 'tests\\unit\\repositories\\testshouldfindattachmentbyid',
+        4 => 'tests\\unit\\repositories\\testshouldfindattachmentbyuuid',
+        5 => 'tests\\unit\\repositories\\testshouldreturnnullfornonexistentid',
+        6 => 'tests\\unit\\repositories\\testshouldreturnnullfornonexistentuuid',
+        7 => 'tests\\unit\\repositories\\testshouldgetattachmentsbypostid',
+        8 => 'tests\\unit\\repositories\\testshouldsoftdeleteattachment',
         9 => 'tests\\unit\\repositories\\teardown',
       ),
       3 => 
@@ -331,17 +331,17 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Models/PostTest.php' => 
     array (
-      0 => '99ea4b54f03e99e1d007d800c5183c3c5fa70dcc',
+      0 => 'd36b7b46106375e1d03b36e04165dca891bbcb58',
       1 => 
       array (
         0 => 'tests\\unit\\models\\posttest',
       ),
       2 => 
       array (
-        0 => 'tests\\unit\\models\\correctlyinitializeswithvaliddata',
-        1 => 'tests\\unit\\models\\handlesnullablefieldscorrectly',
-        2 => 'tests\\unit\\models\\setsdefaultvaluescorrectly',
-        3 => 'tests\\unit\\models\\storesrawhtmlintitleandcontent',
+        0 => 'tests\\unit\\models\\testcorrectlyinitializeswithvaliddata',
+        1 => 'tests\\unit\\models\\testhandlesnullablefieldscorrectly',
+        2 => 'tests\\unit\\models\\testsetsdefaultvaluescorrectly',
+        3 => 'tests\\unit\\models\\teststoresrawhtmlintitleandcontent',
       ),
       3 => 
       array (
@@ -429,7 +429,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Controllers/IpControllerTest.php' => 
     array (
-      0 => '69514de4a65f08d70f2a27f46086cd13594a3349',
+      0 => 'a44acd9b30c2985db2a0afcae8fff6fbcfd05c7e',
       1 => 
       array (
         0 => 'tests\\unit\\controllers\\ipcontrollertest',
@@ -467,7 +467,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/XssProtectionServiceTest.php' => 
     array (
-      0 => 'f0916640cacf0cee017aa2911fa6f37fe85b045c',
+      0 => 'dfda63305336d9699cfef908453a3448ecac7df5',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\xssprotectionservicetest',
@@ -475,10 +475,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\unit\\services\\security\\setup',
-        1 => 'tests\\unit\\services\\security\\escapesbasichtml',
-        2 => 'tests\\unit\\services\\security\\escapeshtmlattributes',
-        3 => 'tests\\unit\\services\\security\\handlesnullinput',
-        4 => 'tests\\unit\\services\\security\\cleansarrayofstrings',
+        1 => 'tests\\unit\\services\\security\\testescapesbasichtml',
+        2 => 'tests\\unit\\services\\security\\testescapeshtmlattributes',
+        3 => 'tests\\unit\\services\\security\\testhandlesnullinput',
+        4 => 'tests\\unit\\services\\security\\testcleansarrayofstrings',
       ),
       3 => 
       array (
@@ -486,7 +486,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/SessionSecurityServiceTest.php' => 
     array (
-      0 => 'bb6d39fcd4cfc0e85403033fdce873c55bb2c025',
+      0 => '0478364a7b2769b9fc9a28b349348a4266a22578',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\sessionsecurityservicetest',
@@ -495,21 +495,21 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\unit\\services\\security\\setup',
         1 => 'tests\\unit\\services\\security\\teardown',
-        2 => 'tests\\unit\\services\\security\\initializessecuresessioninproduction',
-        3 => 'tests\\unit\\services\\security\\initializessecuresessionindevelopment',
-        4 => 'tests\\unit\\services\\security\\setsusersessionwithuseragentbinding',
-        5 => 'tests\\unit\\services\\security\\validatesuseragentcorrectly',
-        6 => 'tests\\unit\\services\\security\\validatessessionipcorrectly',
-        7 => 'tests\\unit\\services\\security\\performscomprehensivesecuritycheck',
-        8 => 'tests\\unit\\services\\security\\detectsuseragentchange',
-        9 => 'tests\\unit\\services\\security\\detectsipchange',
-        10 => 'tests\\unit\\services\\security\\handlesipverificationflow',
-        11 => 'tests\\unit\\services\\security\\detectsexpiredsession',
-        12 => 'tests\\unit\\services\\security\\updatesactivitytime',
-        13 => 'tests\\unit\\services\\security\\destroyssessionsecurely',
-        14 => 'tests\\unit\\services\\security\\regeneratessessionid',
-        15 => 'tests\\unit\\services\\security\\handlesmissingsessiondata',
-        16 => 'tests\\unit\\services\\security\\handlesipverificationtimeout',
+        2 => 'tests\\unit\\services\\security\\testinitializessecuresessioninproduction',
+        3 => 'tests\\unit\\services\\security\\testinitializessecuresessionindevelopment',
+        4 => 'tests\\unit\\services\\security\\testsetsusersessionwithuseragentbinding',
+        5 => 'tests\\unit\\services\\security\\testvalidatesuseragentcorrectly',
+        6 => 'tests\\unit\\services\\security\\testvalidatessessionipcorrectly',
+        7 => 'tests\\unit\\services\\security\\testperformscomprehensivesecuritycheck',
+        8 => 'tests\\unit\\services\\security\\testdetectsuseragentchange',
+        9 => 'tests\\unit\\services\\security\\testdetectsipchange',
+        10 => 'tests\\unit\\services\\security\\testhandlesipverificationflow',
+        11 => 'tests\\unit\\services\\security\\testdetectsexpiredsession',
+        12 => 'tests\\unit\\services\\security\\testupdatesactivitytime',
+        13 => 'tests\\unit\\services\\security\\testdestroyssessionsecurely',
+        14 => 'tests\\unit\\services\\security\\testregeneratessessionid',
+        15 => 'tests\\unit\\services\\security\\testhandlesmissingsessiondata',
+        16 => 'tests\\unit\\services\\security\\testhandlesipverificationtimeout',
       ),
       3 => 
       array (
@@ -517,7 +517,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/LoggingSecurityServiceTest.php' => 
     array (
-      0 => '3872d457bf7a2a91e5a04eb6dda45e443721161b',
+      0 => 'a8df81445c3d2c72d68d48d6178a9c59a145e017',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\loggingsecurityservicetest',
@@ -528,16 +528,16 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         1 => 'tests\\unit\\services\\security\\storage_path',
         2 => 'tests\\unit\\services\\security\\teardown',
         3 => 'tests\\unit\\services\\security\\recursivedelete',
-        4 => 'tests\\unit\\services\\security\\sanitizescontextdatacorrectly',
-        5 => 'tests\\unit\\services\\security\\appliesrequestwhitelistcorrectly',
-        6 => 'tests\\unit\\services\\security\\truncateslongstrings',
-        7 => 'tests\\unit\\services\\security\\enrichessecuritycontext',
-        8 => 'tests\\unit\\services\\security\\enrichesrequestcontext',
-        9 => 'tests\\unit\\services\\security\\logssecurityeventscorrectly',
-        10 => 'tests\\unit\\services\\security\\logsrequestswithwhitelist',
-        11 => 'tests\\unit\\services\\security\\handlessensitivefieldvariations',
-        12 => 'tests\\unit\\services\\security\\handlesemptyandnullvalues',
-        13 => 'tests\\unit\\services\\security\\returnslogstatistics',
+        4 => 'tests\\unit\\services\\security\\testsanitizescontextdatacorrectly',
+        5 => 'tests\\unit\\services\\security\\testappliesrequestwhitelistcorrectly',
+        6 => 'tests\\unit\\services\\security\\testtruncateslongstrings',
+        7 => 'tests\\unit\\services\\security\\testenrichessecuritycontext',
+        8 => 'tests\\unit\\services\\security\\testenrichesrequestcontext',
+        9 => 'tests\\unit\\services\\security\\testlogssecurityeventscorrectly',
+        10 => 'tests\\unit\\services\\security\\testlogsrequestswithwhitelist',
+        11 => 'tests\\unit\\services\\security\\testhandlessensitivefieldvariations',
+        12 => 'tests\\unit\\services\\security\\testhandlesemptyandnullvalues',
+        13 => 'tests\\unit\\services\\security\\testreturnslogstatistics',
       ),
       3 => 
       array (
@@ -567,7 +567,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/Security/CsrfProtectionServiceTest.php' => 
     array (
-      0 => 'b54edfdd3c1213c751f79e0f4e97305de2e903e8',
+      0 => '80b5c99c8bc7caa74cb8496aee570915ee17cf60',
       1 => 
       array (
         0 => 'tests\\unit\\services\\security\\csrfprotectionservicetest',
@@ -576,21 +576,21 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\unit\\services\\security\\setup',
         1 => 'tests\\unit\\services\\security\\teardown',
-        2 => 'tests\\unit\\services\\security\\generatesvalidtoken',
-        3 => 'tests\\unit\\services\\security\\validatescorrecttoken',
-        4 => 'tests\\unit\\services\\security\\throwsexceptionforemptytoken',
-        5 => 'tests\\unit\\services\\security\\throwsexceptionforinvalidtoken',
-        6 => 'tests\\unit\\services\\security\\throwsexceptionforexpiredtoken',
-        7 => 'tests\\unit\\services\\security\\updatestokenaftersuccessfulvalidation',
-        8 => 'tests\\unit\\services\\security\\initializestokenpool',
-        9 => 'tests\\unit\\services\\security\\supportsmultiplevalidtokensinpool',
-        10 => 'tests\\unit\\services\\security\\validatestokenfrompoolwithconstanttimecomparison',
-        11 => 'tests\\unit\\services\\security\\removestokenfrompoolafteruse',
-        12 => 'tests\\unit\\services\\security\\cleansexpiredtokensfrompool',
-        13 => 'tests\\unit\\services\\security\\limitstokenpoolsize',
-        14 => 'tests\\unit\\services\\security\\gettokenpoolstatusreturnscorrectinfo',
-        15 => 'tests\\unit\\services\\security\\fallsbacktosingletokenmodewhenpoolnotinitialized',
-        16 => 'tests\\unit\\services\\security\\istokenvalidreturnsfalseforinvalidtoken',
+        2 => 'tests\\unit\\services\\security\\testgeneratesvalidtoken',
+        3 => 'tests\\unit\\services\\security\\testvalidatescorrecttoken',
+        4 => 'tests\\unit\\services\\security\\testthrowsexceptionforemptytoken',
+        5 => 'tests\\unit\\services\\security\\testthrowsexceptionforinvalidtoken',
+        6 => 'tests\\unit\\services\\security\\testthrowsexceptionforexpiredtoken',
+        7 => 'tests\\unit\\services\\security\\testupdatestokenaftersuccessfulvalidation',
+        8 => 'tests\\unit\\services\\security\\testinitializestokenpool',
+        9 => 'tests\\unit\\services\\security\\testsupportsmultiplevalidtokensinpool',
+        10 => 'tests\\unit\\services\\security\\testvalidatestokenfrompoolwithconstanttimecomparison',
+        11 => 'tests\\unit\\services\\security\\testremovestokenfrompoolafteruse',
+        12 => 'tests\\unit\\services\\security\\testcleansexpiredtokensfrompool',
+        13 => 'tests\\unit\\services\\security\\testlimitstokenpoolsize',
+        14 => 'tests\\unit\\services\\security\\testgettokenpoolstatusreturnscorrectinfo',
+        15 => 'tests\\unit\\services\\security\\testfallsbacktosingletokenmodewhenpoolnotinitialized',
+        16 => 'tests\\unit\\services\\security\\testistokenvalidreturnsfalseforinvalidtoken',
       ),
       3 => 
       array (
@@ -598,7 +598,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/PostServiceTest.php' => 
     array (
-      0 => 'cc5e8202cb855560ee68cced864fdf59e41f0abc',
+      0 => '6b39dc7093321c96d6fdae00102cf1a4e8508e02',
       1 => 
       array (
         0 => 'tests\\unit\\services\\postservicetest',
@@ -649,7 +649,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/CacheServiceTest.php' => 
     array (
-      0 => 'f8544f77cb87d0645cd35026ff9eb18e8c18263b',
+      0 => '4cca3878bb193c019d41380eddaf6d9796a6189b',
       1 => 
       array (
         0 => 'tests\\unit\\services\\cacheservicetest',
@@ -657,11 +657,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\unit\\services\\setup',
-        1 => 'tests\\unit\\services\\storeandretrievedata',
-        2 => 'tests\\unit\\services\\handleconnectionfailure',
-        3 => 'tests\\unit\\services\\handleconcurrentrequests',
-        4 => 'tests\\unit\\services\\clearcache',
-        5 => 'tests\\unit\\services\\deletespecifickey',
+        1 => 'tests\\unit\\services\\teststoreandretrievedata',
+        2 => 'tests\\unit\\services\\testhandleconnectionfailure',
+        3 => 'tests\\unit\\services\\testhandleconcurrentrequests',
+        4 => 'tests\\unit\\services\\testclearcache',
+        5 => 'tests\\unit\\services\\testdeletespecifickey',
       ),
       3 => 
       array (
@@ -669,7 +669,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/AuthServiceTest.php' => 
     array (
-      0 => 'adb3caa02630ef8e9d21f2db7535a52e706ebe19',
+      0 => 'd8ced8922cb6c4cb9f09500a56f6ab964e502316',
       1 => 
       array (
         0 => 'tests\\unit\\services\\authservicetest',
@@ -678,11 +678,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\unit\\services\\setup',
         1 => 'tests\\unit\\services\\teardown',
-        2 => 'tests\\unit\\services\\it_should_register_new_user_successfully',
-        3 => 'tests\\unit\\services\\it_should_validate_registration_data',
-        4 => 'tests\\unit\\services\\it_should_login_user_successfully',
-        5 => 'tests\\unit\\services\\it_should_fail_login_with_invalid_credentials',
-        6 => 'tests\\unit\\services\\it_should_not_login_inactive_user',
+        2 => 'tests\\unit\\services\\testit_should_register_new_user_successfully',
+        3 => 'tests\\unit\\services\\testit_should_validate_registration_data',
+        4 => 'tests\\unit\\services\\testit_should_login_user_successfully',
+        5 => 'tests\\unit\\services\\testit_should_fail_login_with_invalid_credentials',
+        6 => 'tests\\unit\\services\\testit_should_not_login_inactive_user',
       ),
       3 => 
       array (
@@ -690,7 +690,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/AttachmentServiceTest.php' => 
     array (
-      0 => 'd85707aad5b414f118a9ac6b23669c01a010a2df',
+      0 => 'e0e85089350cb3ccac54d61cdf6e9935bf9a58cd',
       1 => 
       array (
         0 => 'tests\\unit\\services\\attachmentservicetest',
@@ -698,10 +698,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\unit\\services\\setup',
-        1 => 'tests\\unit\\services\\shoulduploadfilesuccessfully',
-        2 => 'tests\\unit\\services\\shouldrejectinvalidfiletype',
-        3 => 'tests\\unit\\services\\shouldrejectoversizedfile',
-        4 => 'tests\\unit\\services\\shouldrejectuploadtononexistentpost',
+        1 => 'tests\\unit\\services\\testshoulduploadfilesuccessfully',
+        2 => 'tests\\unit\\services\\testshouldrejectinvalidfiletype',
+        3 => 'tests\\unit\\services\\testshouldrejectoversizedfile',
+        4 => 'tests\\unit\\services\\testshouldrejectuploadtononexistentpost',
         5 => 'tests\\unit\\services\\createuploadedfilemock',
         6 => 'tests\\unit\\services\\teardown',
         7 => 'tests\\unit\\services\\recursiveremovedirectory',
@@ -712,7 +712,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/IpServiceTest.php' => 
     array (
-      0 => '6b9c1119410f076276d8d6a9b8a7c5bb00bd021f',
+      0 => 'aa0ddd6a41cad571c64a8728864f6328b26057f4',
       1 => 
       array (
         0 => 'tests\\unit\\services\\ipservicetest',
@@ -734,7 +734,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Services/RateLimitServiceTest.php' => 
     array (
-      0 => 'c3c1820cf82ed45b0f83ce5f8b38d5b05852f436',
+      0 => '06c392ee893ca0e3f59b17f44e02f3e743f9907f',
       1 => 
       array (
         0 => 'tests\\unit\\services\\ratelimitservicetest',
@@ -742,11 +742,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\unit\\services\\setup',
-        1 => 'tests\\unit\\services\\shouldallowfirstrequest',
-        2 => 'tests\\unit\\services\\shouldrejectwhenlimitexceeded',
-        3 => 'tests\\unit\\services\\shouldhandlecachefailuregracefully',
-        4 => 'tests\\unit\\services\\shouldincrementrequestcount',
-        5 => 'tests\\unit\\services\\shouldhandlesetfailure',
+        1 => 'tests\\unit\\services\\testshouldallowfirstrequest',
+        2 => 'tests\\unit\\services\\testshouldrejectwhenlimitexceeded',
+        3 => 'tests\\unit\\services\\testshouldhandlecachefailuregracefully',
+        4 => 'tests\\unit\\services\\testshouldincrementrequestcount',
+        5 => 'tests\\unit\\services\\testshouldhandlesetfailure',
         6 => 'tests\\unit\\services\\teardown',
       ),
       3 => 
@@ -755,7 +755,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/CsrfProtectionTest.php' => 
     array (
-      0 => 'f51cb212ad5f3873f3908d2c3739f149680d7bef',
+      0 => '01ebd2b23543f7ea749fa8b1ae5b22dda893da02',
       1 => 
       array (
         0 => 'tests\\security\\csrfprotectiontest',
@@ -763,9 +763,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\security\\setup',
-        1 => 'tests\\security\\shouldrejectrequestwithoutcsrftoken',
-        2 => 'tests\\security\\shouldrejectrequestwithinvalidcsrftoken',
-        3 => 'tests\\security\\shouldacceptrequestwithvalidcsrftoken',
+        1 => 'tests\\security\\testshouldrejectrequestwithoutcsrftoken',
+        2 => 'tests\\security\\testshouldrejectrequestwithinvalidcsrftoken',
+        3 => 'tests\\security\\testshouldacceptrequestwithvalidcsrftoken',
         4 => 'tests\\security\\teardown',
       ),
       3 => 
@@ -774,7 +774,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/SqlInjectionTest.php' => 
     array (
-      0 => 'd7be013afe0d9155cccc0c14a080785c230179c3',
+      0 => '7db235e24d9c8f56111fd8297380b9ef81240008',
       1 => 
       array (
         0 => 'tests\\security\\sqlinjectiontest',
@@ -783,10 +783,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\security\\setup',
         1 => 'tests\\security\\createtesttables',
-        2 => 'tests\\security\\shouldpreventsqlinjectionintitlesearch',
-        3 => 'tests\\security\\shouldhandlespecialcharactersincontent',
-        4 => 'tests\\security\\shouldpreventsqlinjectioninuseridfilter',
-        5 => 'tests\\security\\shouldsanitizesearchinput',
+        2 => 'tests\\security\\testshouldpreventsqlinjectionintitlesearch',
+        3 => 'tests\\security\\testshouldhandlespecialcharactersincontent',
+        4 => 'tests\\security\\testshouldpreventsqlinjectioninuseridfilter',
+        5 => 'tests\\security\\testshouldsanitizesearchinput',
         6 => 'tests\\security\\teardown',
       ),
       3 => 
@@ -795,7 +795,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/XssPreventionTest.php' => 
     array (
-      0 => '5a411aeddbc25241fd874ed9a15920f1b7601108',
+      0 => '71c6a6c2d12374218a7fc5f3c2e7d4506c381b36',
       1 => 
       array (
         0 => 'tests\\security\\xsspreventiontest',
@@ -803,9 +803,9 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\security\\setup',
-        1 => 'tests\\security\\shouldescapehtmlinposttitle',
-        2 => 'tests\\security\\shouldescapehtmlinpostcontent',
-        3 => 'tests\\security\\shouldhandleencodedxssattempts',
+        1 => 'tests\\security\\testshouldescapehtmlinposttitle',
+        2 => 'tests\\security\\testshouldescapehtmlinpostcontent',
+        3 => 'tests\\security\\testshouldhandleencodedxssattempts',
         4 => 'tests\\security\\teardown',
       ),
       3 => 
@@ -814,7 +814,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/FileUploadSecurityTest.php' => 
     array (
-      0 => '4906bc3903f20c95b1166aa3e4218afb41be1646',
+      0 => 'db77950348d618c530088740a3f5e8de3dfbdb64',
       1 => 
       array (
         0 => 'tests\\security\\fileuploadsecuritytest',
@@ -822,12 +822,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\security\\setup',
-        1 => 'tests\\security\\shouldrejectexecutablefiles',
-        2 => 'tests\\security\\shouldrejectdoubleextensionfiles',
-        3 => 'tests\\security\\shouldrejectoversizedfiles',
-        4 => 'tests\\security\\shouldrejectmaliciousmimetypes',
-        5 => 'tests\\security\\shouldpreventpathtraversal',
-        6 => 'tests\\security\\shouldacceptvalidfiles',
+        1 => 'tests\\security\\testshouldrejectexecutablefiles',
+        2 => 'tests\\security\\testshouldrejectdoubleextensionfiles',
+        3 => 'tests\\security\\testshouldrejectoversizedfiles',
+        4 => 'tests\\security\\testshouldrejectmaliciousmimetypes',
+        5 => 'tests\\security\\testshouldpreventpathtraversal',
+        6 => 'tests\\security\\testshouldacceptvalidfiles',
         7 => 'tests\\security\\createuploadedfilemock',
         8 => 'tests\\security\\teardown',
         9 => 'tests\\security\\removedirectory',
@@ -838,7 +838,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Security/PasswordHashingTest.php' => 
     array (
-      0 => 'f09fb63cd1955bdf8f62bdff23a859a55d9ff971',
+      0 => '5f87f7236d3bb7f61984f6674650b8befbfd35cd',
       1 => 
       array (
         0 => 'tests\\security\\passwordhashingtest',
@@ -847,10 +847,10 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\security\\setup',
         1 => 'tests\\security\\createtesttables',
-        2 => 'tests\\security\\shouldhashpasswordusingargon2id',
-        3 => 'tests\\security\\shoulduseappropriatehashingoptions',
-        4 => 'tests\\security\\shouldrejectweakpasswords',
-        5 => 'tests\\security\\shouldpreventpasswordreuse',
+        2 => 'tests\\security\\testshouldhashpasswordusingargon2id',
+        3 => 'tests\\security\\testshoulduseappropriatehashingoptions',
+        4 => 'tests\\security\\testshouldrejectweakpasswords',
+        5 => 'tests\\security\\testshouldpreventpasswordreuse',
         6 => 'tests\\security\\teardown',
       ),
       3 => 
@@ -859,7 +859,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/RateLimitTest.php' => 
     array (
-      0 => 'd252b0abc6f01a3398d8293b81e0ec4e27165c5d',
+      0 => '5734ee0c15fc2c4d3a6861dd142363b75d4a49e1',
       1 => 
       array (
         0 => 'tests\\integration\\ratelimittest',
@@ -867,12 +867,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\integration\\setup',
-        1 => 'tests\\integration\\shouldlimitratesuccessfully',
-        2 => 'tests\\integration\\shouldresetlimitaftertimewindow',
-        3 => 'tests\\integration\\shouldhandledifferentipsindependently',
-        4 => 'tests\\integration\\shouldhandleserviceunavailability',
-        5 => 'tests\\integration\\shouldincrementcountercorrectly',
-        6 => 'tests\\integration\\shouldhandlemaxattemptsreached',
+        1 => 'tests\\integration\\testshouldlimitratesuccessfully',
+        2 => 'tests\\integration\\testshouldresetlimitaftertimewindow',
+        3 => 'tests\\integration\\testshouldhandledifferentipsindependently',
+        4 => 'tests\\integration\\testshouldhandleserviceunavailability',
+        5 => 'tests\\integration\\testshouldincrementcountercorrectly',
+        6 => 'tests\\integration\\testshouldhandlemaxattemptsreached',
         7 => 'tests\\integration\\teardown',
       ),
       3 => 
@@ -881,7 +881,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AuthControllerTest.php' => 
     array (
-      0 => '65b88b7285ecc4eda9bcf04a2cf1985389a130b2',
+      0 => 'd7ea662bb819e08a2d5d01a1d17f07bda5434d1e',
       1 => 
       array (
         0 => 'tests\\integration\\authcontrollertest',
@@ -890,11 +890,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\integration\\setup',
         1 => 'tests\\integration\\teardown',
-        2 => 'tests\\integration\\registerusersuccessfully',
-        3 => 'tests\\integration\\returnvalidationerrorsforinvalidregistrationdata',
-        4 => 'tests\\integration\\loginusersuccessfully',
-        5 => 'tests\\integration\\returnerrorforinvalidlogin',
-        6 => 'tests\\integration\\logoutusersuccessfully',
+        2 => 'tests\\integration\\testregisterusersuccessfully',
+        3 => 'tests\\integration\\testreturnvalidationerrorsforinvalidregistrationdata',
+        4 => 'tests\\integration\\testloginusersuccessfully',
+        5 => 'tests\\integration\\testreturnerrorforinvalidlogin',
+        6 => 'tests\\integration\\testlogoutusersuccessfully',
+        7 => 'tests\\integration\\testgetuserinfosuccessfully',
       ),
       3 => 
       array (
@@ -902,7 +903,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/Repositories/PostRepositoryTest.php' => 
     array (
-      0 => 'e0e2ace5a8c4aeb8da68f26ee0ea455aeb6c73d6',
+      0 => '3e557b1e96a50ec1884738805048458c15240425',
       1 => 
       array (
         0 => 'tests\\integration\\repositories\\postrepositorytest',
@@ -937,7 +938,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AttachmentControllerTest.php' => 
     array (
-      0 => '7740e5a4e94a21022d7505b0dfae8241cac8f8dc',
+      0 => '55cd2f6660ce3a88f2bbafe3e5a0b5088fb0da47',
       1 => 
       array (
         0 => 'tests\\integration\\attachmentcontrollertest',
@@ -945,12 +946,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\integration\\setup',
-        1 => 'tests\\integration\\uploadshouldstorefilesuccessfully',
-        2 => 'tests\\integration\\uploadshouldreturn400forinvalidfile',
-        3 => 'tests\\integration\\listshouldreturnattachments',
-        4 => 'tests\\integration\\deleteshouldremoveattachment',
-        5 => 'tests\\integration\\deleteshouldreturn404fornonexistentattachment',
-        6 => 'tests\\integration\\deleteshouldreturn400forinvaliduuid',
+        1 => 'tests\\integration\\testuploadshouldstorefilesuccessfully',
+        2 => 'tests\\integration\\testuploadshouldreturn400forinvalidfile',
+        3 => 'tests\\integration\\testlistshouldreturnattachments',
+        4 => 'tests\\integration\\testdeleteshouldremoveattachment',
+        5 => 'tests\\integration\\testdeleteshouldreturn404fornonexistentattachment',
+        6 => 'tests\\integration\\testdeleteshouldreturn400forinvaliduuid',
         7 => 'tests\\integration\\teardown',
       ),
       3 => 
@@ -959,7 +960,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/PostControllerTest.php' => 
     array (
-      0 => '47bc0515641aeb78becec76c4791410b9a5ddb99',
+      0 => '825ecd3f8362f738835c9c1132507b3ab21f4c0e',
       1 => 
       array (
         0 => 'tests\\integration\\postcontrollertest',
@@ -967,15 +968,15 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\integration\\setup',
-        1 => 'tests\\integration\\indexshouldreturnpaginatedposts',
-        2 => 'tests\\integration\\showshouldreturnpostdetails',
-        3 => 'tests\\integration\\storeshouldcreatenewpost',
-        4 => 'tests\\integration\\storeshouldreturn400whenvalidationfails',
-        5 => 'tests\\integration\\updateshouldmodifyexistingpost',
-        6 => 'tests\\integration\\updateshouldreturn404whenpostnotfound',
-        7 => 'tests\\integration\\destroyshoulddeletepost',
-        8 => 'tests\\integration\\updatepinstatusshouldupdatepinstatus',
-        9 => 'tests\\integration\\updatepinstatusshouldreturn422wheninvalidstatetransition',
+        1 => 'tests\\integration\\testindexshouldreturnpaginatedposts',
+        2 => 'tests\\integration\\testshowshouldreturnpostdetails',
+        3 => 'tests\\integration\\teststoreshouldcreatenewpost',
+        4 => 'tests\\integration\\teststoreshouldreturn400whenvalidationfails',
+        5 => 'tests\\integration\\testupdateshouldmodifyexistingpost',
+        6 => 'tests\\integration\\testupdateshouldreturn404whenpostnotfound',
+        7 => 'tests\\integration\\testdestroyshoulddeletepost',
+        8 => 'tests\\integration\\testupdatepinstatusshouldupdatepinstatus',
+        9 => 'tests\\integration\\testupdatepinstatusshouldreturn422wheninvalidstatetransition',
         10 => 'tests\\integration\\teardown',
         11 => 'tests\\integration\\createrequestmock',
         12 => 'tests\\integration\\createstreammock',
@@ -987,7 +988,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/Http/PostControllerTest.php' => 
     array (
-      0 => '59546ed67acafb919db54b680163fa716c90e350',
+      0 => '313500b5ae5c6612ecf871852b902b8f8c91ea07',
       1 => 
       array (
         0 => 'tests\\integration\\http\\postcontrollertest',
@@ -1023,7 +1024,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/FileSystemBackupTest.php' => 
     array (
-      0 => '819d46a7f08233d9a464c5c36cca8d9b682297c3',
+      0 => 'bbf8b545afd880d5d62f5052d3e1236c9cb4ac03',
       1 => 
       array (
         0 => 'tests\\integration\\filesystembackuptest',
@@ -1032,12 +1033,12 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\integration\\setup',
         1 => 'tests\\integration\\createtestfiles',
-        2 => 'tests\\integration\\backupfilessuccessfully',
-        3 => 'tests\\integration\\restorefilessuccessfully',
-        4 => 'tests\\integration\\handlebackuperrorsgracefully',
-        5 => 'tests\\integration\\handlerestoreerrorsgracefully',
-        6 => 'tests\\integration\\handlepermissionerrors',
-        7 => 'tests\\integration\\maintainfilemetadataduringbackuprestore',
+        2 => 'tests\\integration\\testbackupfilessuccessfully',
+        3 => 'tests\\integration\\testrestorefilessuccessfully',
+        4 => 'tests\\integration\\testhandlebackuperrorsgracefully',
+        5 => 'tests\\integration\\testhandlerestoreerrorsgracefully',
+        6 => 'tests\\integration\\testhandlepermissionerrors',
+        7 => 'tests\\integration\\testmaintainfilemetadataduringbackuprestore',
         8 => 'tests\\integration\\teardown',
       ),
       3 => 
@@ -1046,7 +1047,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/DatabaseBackupTest.php' => 
     array (
-      0 => 'f6f7684823a6ed3c654a3f2da9eb934170389305',
+      0 => 'e76c1bc0e62adbc786f30dcdca25ca1799eec4e2',
       1 => 
       array (
         0 => 'tests\\integration\\databasebackuptest',
@@ -1056,11 +1057,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         0 => 'tests\\integration\\setup',
         1 => 'tests\\integration\\createtesttables',
         2 => 'tests\\integration\\inserttestdata',
-        3 => 'tests\\integration\\backupdatabasesuccessfully',
-        4 => 'tests\\integration\\restoredatabasesuccessfully',
-        5 => 'tests\\integration\\handlebackuperrorsgracefully',
-        6 => 'tests\\integration\\handlerestoreerrorsgracefully',
-        7 => 'tests\\integration\\maintaindataintegrityduringbackuprestore',
+        3 => 'tests\\integration\\testbackupdatabasesuccessfully',
+        4 => 'tests\\integration\\testrestoredatabasesuccessfully',
+        5 => 'tests\\integration\\testhandlebackuperrorsgracefully',
+        6 => 'tests\\integration\\testhandlerestoreerrorsgracefully',
+        7 => 'tests\\integration\\testmaintaindataintegrityduringbackuprestore',
         8 => 'tests\\integration\\teardown',
       ),
       3 => 
@@ -1069,7 +1070,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/AttachmentUploadTest.php' => 
     array (
-      0 => '2c8cd306d5641a8691184fd69209c83d474d06c3',
+      0 => 'ebee3d313ef901738947ddae938feb607830ad23',
       1 => 
       array (
         0 => 'tests\\integration\\attachmentuploadtest',
@@ -1078,11 +1079,11 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       array (
         0 => 'tests\\integration\\setup',
         1 => 'tests\\integration\\createuploadedfilemock',
-        2 => 'tests\\integration\\should_handle_concurrent_uploads',
-        3 => 'tests\\integration\\should_handle_large_file_upload',
-        4 => 'tests\\integration\\should_validate_file_types',
-        5 => 'tests\\integration\\should_handle_disk_full_error',
-        6 => 'tests\\integration\\should_handle_permission_error',
+        2 => 'tests\\integration\\testshould_handle_concurrent_uploads',
+        3 => 'tests\\integration\\testshould_handle_large_file_upload',
+        4 => 'tests\\integration\\testshould_validate_file_types',
+        5 => 'tests\\integration\\testshould_handle_disk_full_error',
+        6 => 'tests\\integration\\testshould_handle_permission_error',
         7 => 'tests\\integration\\teardown',
         8 => 'tests\\integration\\createtesttables',
       ),
@@ -1092,7 +1093,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/TestCase.php' => 
     array (
-      0 => 'bba23e8568307bc719078467928b5b819a743fa7',
+      0 => 'd9625aabbf7dc1cdc9de48347877174e9da73d6e',
       1 => 
       array (
         0 => 'tests\\testcase',
@@ -1156,34 +1157,35 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/DTOs/BaseDTOTest.php' => 
     array (
-      0 => '54872a8719c4255f43f792cf3eabb74262684169',
+      0 => 'f63fbbc03b8526c4340b0a7a3a0a6a3e0d1aad6e',
       1 => 
       array (
         0 => 'tests\\unit\\dtos\\basedtotest',
+        1 => 'tests\\unit\\dtos\\testablebasedto',
       ),
       2 => 
       array (
         0 => 'tests\\unit\\dtos\\setup',
         1 => 'tests\\unit\\dtos\\teardown',
         2 => 'tests\\unit\\dtos\\createtestdto',
-        3 => 'tests\\unit\\dtos\\getvalidationrules',
-        4 => 'tests\\unit\\dtos\\toarray',
-        5 => 'tests\\unit\\dtos\\testvalidate',
-        6 => 'tests\\unit\\dtos\\testgetstring',
-        7 => 'tests\\unit\\dtos\\testgetint',
-        8 => 'tests\\unit\\dtos\\testgetbool',
-        9 => 'tests\\unit\\dtos\\testgetvalue',
-        10 => 'tests\\unit\\dtos\\testgetvalidationrules',
-        11 => 'tests\\unit\\dtos\\testconstructoracceptsvalidator',
-        12 => 'tests\\unit\\dtos\\testtoarrayisimplemented',
-        13 => 'tests\\unit\\dtos\\testjsonserializeusestoarray',
-        14 => 'tests\\unit\\dtos\\testvalidatecallsvalidatorwithcorrectdata',
-        15 => 'tests\\unit\\dtos\\testvalidatethrowsexceptiononvalidationfailure',
-        16 => 'tests\\unit\\dtos\\testgetstringreturnscorrectvalue',
-        17 => 'tests\\unit\\dtos\\testgetintreturnscorrectvalue',
-        18 => 'tests\\unit\\dtos\\testgetboolreturnscorrectvalue',
-        19 => 'tests\\unit\\dtos\\testgetvaluereturnscorrectvalue',
-        20 => 'tests\\unit\\dtos\\testvalidationrulesareabstract',
+        3 => 'tests\\unit\\dtos\\testconstructoracceptsvalidator',
+        4 => 'tests\\unit\\dtos\\testtoarrayisimplemented',
+        5 => 'tests\\unit\\dtos\\testjsonserializeusestoarray',
+        6 => 'tests\\unit\\dtos\\testvalidatecallsvalidatorwithcorrectdata',
+        7 => 'tests\\unit\\dtos\\testvalidatethrowsexceptiononvalidationfailure',
+        8 => 'tests\\unit\\dtos\\testgetstringreturnscorrectvalue',
+        9 => 'tests\\unit\\dtos\\testgetintreturnscorrectvalue',
+        10 => 'tests\\unit\\dtos\\testgetboolreturnscorrectvalue',
+        11 => 'tests\\unit\\dtos\\testgetvaluereturnscorrectvalue',
+        12 => 'tests\\unit\\dtos\\testvalidationrulesareabstract',
+        13 => 'tests\\unit\\dtos\\getvalidationrules',
+        14 => 'tests\\unit\\dtos\\toarray',
+        15 => 'tests\\unit\\dtos\\testvalidate',
+        16 => 'tests\\unit\\dtos\\testgetstring',
+        17 => 'tests\\unit\\dtos\\testgetint',
+        18 => 'tests\\unit\\dtos\\testgetbool',
+        19 => 'tests\\unit\\dtos\\testgetvalue',
+        20 => 'tests\\unit\\dtos\\testgetvalidationrules',
       ),
       3 => 
       array (
@@ -1227,7 +1229,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Validation/ValidationExceptionTest.php' => 
     array (
-      0 => 'ec349770e9350c88a24c5c02e866acf40a279d47',
+      0 => 'a1dcb57fe7fb74d8f398f16dcf3b761a09241822',
       1 => 
       array (
         0 => 'tests\\unit\\validation\\validationexceptiontest',
@@ -1342,7 +1344,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/PostControllerTest_new.php' => 
     array (
-      0 => '0479b4156139402066695c883f2c0f5be601d86a',
+      0 => '29930d46c3d2203e913d063625aae44f87b0ece4',
       1 => 
       array (
         0 => 'tests\\integration\\postcontrollertest',
@@ -1432,558 +1434,6 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         8 => 'tests\\integration\\test_validator_error_message_localization',
         9 => 'tests\\integration\\test_validator_performance_and_memory',
         10 => 'tests\\integration\\test_simplified_validation_scenarios',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/manual/test_routing_system.php' => 
-    array (
-      0 => 'e091ee6e3f571778a0819c9a2581d24d3af5f873',
-      1 => 
-      array (
-        0 => 'mockserverrequest',
-        1 => 'mockuri',
-      ),
-      2 => 
-      array (
-        0 => '__construct',
-        1 => 'getmethod',
-        2 => 'geturi',
-        3 => '__construct',
-        4 => 'getpath',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/manual/test_route_cache.php' => 
-    array (
-      0 => 'd766fe630d6a76ddfcee63d7cdb44bd4e4d1c1f6',
-      1 => 
-      array (
-      ),
-      2 => 
-      array (
-        0 => 'createtestroutes',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/manual/test_middleware_system.php' => 
-    array (
-      0 => '46c3efafd9241643364adde9a866d0ec0f580bad',
-      1 => 
-      array (
-        0 => 'loggingmiddleware',
-        1 => 'authmiddleware',
-      ),
-      2 => 
-      array (
-        0 => 'getmethod',
-        1 => 'geturi',
-        2 => 'getpath',
-        3 => 'withattribute',
-        4 => 'getattribute',
-        5 => 'getattributes',
-        6 => 'getprotocolversion',
-        7 => 'withprotocolversion',
-        8 => 'getheaders',
-        9 => 'hasheader',
-        10 => 'getheader',
-        11 => 'getheaderline',
-        12 => 'withheader',
-        13 => 'withaddedheader',
-        14 => 'withoutheader',
-        15 => 'getbody',
-        16 => '__tostring',
-        17 => 'withbody',
-        18 => 'getrequesttarget',
-        19 => 'withrequesttarget',
-        20 => 'withmethod',
-        21 => 'withuri',
-        22 => 'getserverparams',
-        23 => 'getcookieparams',
-        24 => 'withcookieparams',
-        25 => 'getqueryparams',
-        26 => 'withqueryparams',
-        27 => 'getuploadedfiles',
-        28 => 'withuploadedfiles',
-        29 => 'getparsedbody',
-        30 => 'withparsedbody',
-        31 => 'withoutattribute',
-        32 => '__construct',
-        33 => 'getbody',
-        34 => '__construct',
-        35 => '__tostring',
-        36 => 'getstatuscode',
-        37 => 'withstatus',
-        38 => 'getreasonphrase',
-        39 => 'getprotocolversion',
-        40 => 'withprotocolversion',
-        41 => 'getheaders',
-        42 => 'hasheader',
-        43 => 'getheader',
-        44 => 'getheaderline',
-        45 => 'withheader',
-        46 => 'withaddedheader',
-        47 => 'withoutheader',
-        48 => 'withbody',
-        49 => '__construct',
-        50 => 'execute',
-        51 => '__construct',
-        52 => 'execute',
-        53 => 'handle',
-        54 => 'getbody',
-        55 => '__tostring',
-        56 => 'getstatuscode',
-        57 => 'withstatus',
-        58 => 'getreasonphrase',
-        59 => 'getprotocolversion',
-        60 => 'withprotocolversion',
-        61 => 'getheaders',
-        62 => 'hasheader',
-        63 => 'getheader',
-        64 => 'getheaderline',
-        65 => 'withheader',
-        66 => 'withaddedheader',
-        67 => 'withoutheader',
-        68 => 'withbody',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/manual/test_controller_integration.php' => 
-    array (
-      0 => '85ffc7604c1795c20c262d4e1ece377e0c0a4873',
-      1 => 
-      array (
-        0 => 'mockstream',
-        1 => 'mockuri',
-        2 => 'mockresponse',
-        3 => 'mockrequest',
-      ),
-      2 => 
-      array (
-        0 => '__tostring',
-        1 => 'close',
-        2 => 'detach',
-        3 => 'getsize',
-        4 => 'tell',
-        5 => 'eof',
-        6 => 'isseekable',
-        7 => 'seek',
-        8 => 'rewind',
-        9 => 'iswritable',
-        10 => 'write',
-        11 => 'isreadable',
-        12 => 'read',
-        13 => 'getcontents',
-        14 => 'getmetadata',
-        15 => '__construct',
-        16 => 'getscheme',
-        17 => 'getauthority',
-        18 => 'getuserinfo',
-        19 => 'gethost',
-        20 => 'getport',
-        21 => 'getpath',
-        22 => 'getquery',
-        23 => 'getfragment',
-        24 => 'withscheme',
-        25 => 'withuserinfo',
-        26 => 'withhost',
-        27 => 'withport',
-        28 => 'withpath',
-        29 => 'withquery',
-        30 => 'withfragment',
-        31 => '__tostring',
-        32 => '__construct',
-        33 => 'getprotocolversion',
-        34 => 'withprotocolversion',
-        35 => 'getheaders',
-        36 => 'hasheader',
-        37 => 'getheader',
-        38 => 'getheaderline',
-        39 => 'withheader',
-        40 => 'withaddedheader',
-        41 => 'withoutheader',
-        42 => 'getbody',
-        43 => 'withbody',
-        44 => 'getstatuscode',
-        45 => 'withstatus',
-        46 => 'getreasonphrase',
-        47 => '__construct',
-        48 => 'getrequesttarget',
-        49 => 'withrequesttarget',
-        50 => 'getmethod',
-        51 => 'withmethod',
-        52 => 'geturi',
-        53 => 'withuri',
-        54 => 'getprotocolversion',
-        55 => 'withprotocolversion',
-        56 => 'getheaders',
-        57 => 'hasheader',
-        58 => 'getheader',
-        59 => 'getheaderline',
-        60 => 'withheader',
-        61 => 'withaddedheader',
-        62 => 'withoutheader',
-        63 => 'getbody',
-        64 => 'withbody',
-        65 => 'getserverparams',
-        66 => 'getcookieparams',
-        67 => 'withcookieparams',
-        68 => 'getqueryparams',
-        69 => 'withqueryparams',
-        70 => 'getuploadedfiles',
-        71 => 'withuploadedfiles',
-        72 => 'getparsedbody',
-        73 => 'withparsedbody',
-        74 => 'getattributes',
-        75 => 'getattribute',
-        76 => 'withattribute',
-        77 => 'withoutattribute',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/manual/test_multiple_routes.php' => 
-    array (
-      0 => '7d121ab21c629f3d1caa8a2d9f2a7b0740fdcabb',
-      1 => 
-      array (
-      ),
-      2 => 
-      array (
-        0 => '__construct',
-        1 => 'getserverparams',
-        2 => 'getcookieparams',
-        3 => 'withcookieparams',
-        4 => 'getqueryparams',
-        5 => 'withqueryparams',
-        6 => 'getuploadedfiles',
-        7 => 'withuploadedfiles',
-        8 => 'getparsedbody',
-        9 => 'withparsedbody',
-        10 => 'getattributes',
-        11 => 'getattribute',
-        12 => 'withattribute',
-        13 => 'withoutattribute',
-        14 => 'getrequesttarget',
-        15 => 'withrequesttarget',
-        16 => 'getmethod',
-        17 => 'withmethod',
-        18 => 'geturi',
-        19 => '__construct',
-        20 => '__tostring',
-        21 => 'getscheme',
-        22 => 'getauthority',
-        23 => 'getuserinfo',
-        24 => 'gethost',
-        25 => 'getport',
-        26 => 'getpath',
-        27 => 'getquery',
-        28 => 'getfragment',
-        29 => 'withscheme',
-        30 => 'withuserinfo',
-        31 => 'withhost',
-        32 => 'withport',
-        33 => 'withpath',
-        34 => 'withquery',
-        35 => 'withfragment',
-        36 => 'withuri',
-        37 => 'getprotocolversion',
-        38 => 'withprotocolversion',
-        39 => 'getheaders',
-        40 => 'hasheader',
-        41 => 'getheader',
-        42 => 'getheaderline',
-        43 => 'withheader',
-        44 => 'withaddedheader',
-        45 => 'withoutheader',
-        46 => 'getbody',
-        47 => '__tostring',
-        48 => 'close',
-        49 => 'detach',
-        50 => 'getsize',
-        51 => 'tell',
-        52 => 'eof',
-        53 => 'isseekable',
-        54 => 'seek',
-        55 => 'rewind',
-        56 => 'iswritable',
-        57 => 'write',
-        58 => 'isreadable',
-        59 => 'read',
-        60 => 'getcontents',
-        61 => 'getmetadata',
-        62 => 'withbody',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/manual/test_di_container.php' => 
-    array (
-      0 => 'e7cfd954a7b70415cc97b8460004a250e0bec615',
-      1 => 
-      array (
-      ),
-      2 => 
-      array (
-        0 => 'getserverparams',
-        1 => 'getcookieparams',
-        2 => 'withcookieparams',
-        3 => 'getqueryparams',
-        4 => 'withqueryparams',
-        5 => 'getuploadedfiles',
-        6 => 'withuploadedfiles',
-        7 => 'getparsedbody',
-        8 => 'withparsedbody',
-        9 => 'getattributes',
-        10 => 'getattribute',
-        11 => 'withattribute',
-        12 => 'withoutattribute',
-        13 => 'getrequesttarget',
-        14 => 'withrequesttarget',
-        15 => 'getmethod',
-        16 => 'withmethod',
-        17 => 'geturi',
-        18 => '__construct',
-        19 => '__tostring',
-        20 => 'getscheme',
-        21 => 'getauthority',
-        22 => 'getuserinfo',
-        23 => 'gethost',
-        24 => 'getport',
-        25 => 'getpath',
-        26 => 'getquery',
-        27 => 'getfragment',
-        28 => 'withscheme',
-        29 => 'withuserinfo',
-        30 => 'withhost',
-        31 => 'withport',
-        32 => 'withpath',
-        33 => 'withquery',
-        34 => 'withfragment',
-        35 => 'withuri',
-        36 => 'getprotocolversion',
-        37 => 'withprotocolversion',
-        38 => 'getheaders',
-        39 => 'hasheader',
-        40 => 'getheader',
-        41 => 'getheaderline',
-        42 => 'withheader',
-        43 => 'withaddedheader',
-        44 => 'withoutheader',
-        45 => 'getbody',
-        46 => '__tostring',
-        47 => 'close',
-        48 => 'detach',
-        49 => 'getsize',
-        50 => 'tell',
-        51 => 'eof',
-        52 => 'isseekable',
-        53 => 'seek',
-        54 => 'rewind',
-        55 => 'iswritable',
-        56 => 'write',
-        57 => 'isreadable',
-        58 => 'read',
-        59 => 'getcontents',
-        60 => 'getmetadata',
-        61 => 'withbody',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/manual/test_controller_simple.php' => 
-    array (
-      0 => '40bc113a14a1762e6cbb7054ec535742177c3067',
-      1 => 
-      array (
-        0 => 'mockstream',
-        1 => 'mockresponse',
-        2 => 'mockrequest',
-      ),
-      2 => 
-      array (
-        0 => '__tostring',
-        1 => 'close',
-        2 => 'detach',
-        3 => 'getsize',
-        4 => 'tell',
-        5 => 'eof',
-        6 => 'isseekable',
-        7 => 'seek',
-        8 => 'rewind',
-        9 => 'iswritable',
-        10 => 'write',
-        11 => 'isreadable',
-        12 => 'read',
-        13 => 'getcontents',
-        14 => 'getmetadata',
-        15 => '__construct',
-        16 => 'getprotocolversion',
-        17 => 'withprotocolversion',
-        18 => 'getheaders',
-        19 => 'hasheader',
-        20 => 'getheader',
-        21 => 'getheaderline',
-        22 => 'withheader',
-        23 => 'withaddedheader',
-        24 => 'withoutheader',
-        25 => 'getbody',
-        26 => 'withbody',
-        27 => 'getstatuscode',
-        28 => 'withstatus',
-        29 => 'getreasonphrase',
-        30 => '__construct',
-        31 => 'getrequesttarget',
-        32 => 'withrequesttarget',
-        33 => 'getmethod',
-        34 => 'withmethod',
-        35 => 'geturi',
-        36 => '__construct',
-        37 => 'getpath',
-        38 => 'withuri',
-        39 => 'getprotocolversion',
-        40 => 'withprotocolversion',
-        41 => 'getheaders',
-        42 => 'hasheader',
-        43 => 'getheader',
-        44 => 'getheaderline',
-        45 => 'withheader',
-        46 => 'withaddedheader',
-        47 => 'withoutheader',
-        48 => 'getbody',
-        49 => 'withbody',
-        50 => 'getserverparams',
-        51 => 'getcookieparams',
-        52 => 'withcookieparams',
-        53 => 'getqueryparams',
-        54 => 'withqueryparams',
-        55 => 'getuploadedfiles',
-        56 => 'withuploadedfiles',
-        57 => 'getparsedbody',
-        58 => 'withparsedbody',
-        59 => 'getattributes',
-        60 => 'getattribute',
-        61 => 'withattribute',
-        62 => 'withoutattribute',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/manual/test_route_configuration.php' => 
-    array (
-      0 => 'a5e8838e9f5af394d8dd6637ac9d6b37d23f98be',
-      1 => 
-      array (
-      ),
-      2 => 
-      array (
-        0 => 'map',
-        1 => 'setname',
-        2 => 'middleware',
-        3 => 'getname',
-        4 => 'getmiddlewares',
-        5 => 'map',
-        6 => 'setname',
-        7 => 'middleware',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/manual/test_route_loader_integration.php' => 
-    array (
-      0 => 'f1106840acf64cee74659c89ff34aa9f2654ec16',
-      1 => 
-      array (
-      ),
-      2 => 
-      array (
-        0 => 'getserverparams',
-        1 => 'getcookieparams',
-        2 => 'withcookieparams',
-        3 => 'getqueryparams',
-        4 => 'withqueryparams',
-        5 => 'getuploadedfiles',
-        6 => 'withuploadedfiles',
-        7 => 'getparsedbody',
-        8 => 'withparsedbody',
-        9 => 'getattributes',
-        10 => 'getattribute',
-        11 => 'withattribute',
-        12 => 'withoutattribute',
-        13 => 'getrequesttarget',
-        14 => 'withrequesttarget',
-        15 => 'getmethod',
-        16 => 'withmethod',
-        17 => 'geturi',
-        18 => '__construct',
-        19 => '__tostring',
-        20 => 'getscheme',
-        21 => 'getauthority',
-        22 => 'getuserinfo',
-        23 => 'gethost',
-        24 => 'getport',
-        25 => 'getpath',
-        26 => 'getquery',
-        27 => 'getfragment',
-        28 => 'withscheme',
-        29 => 'withuserinfo',
-        30 => 'withhost',
-        31 => 'withport',
-        32 => 'withpath',
-        33 => 'withquery',
-        34 => 'withfragment',
-        35 => 'withuri',
-        36 => 'getprotocolversion',
-        37 => 'withprotocolversion',
-        38 => 'getheaders',
-        39 => 'hasheader',
-        40 => 'getheader',
-        41 => 'getheaderline',
-        42 => 'withheader',
-        43 => 'withaddedheader',
-        44 => 'withoutheader',
-        45 => 'getbody',
-        46 => '__tostring',
-        47 => 'close',
-        48 => 'detach',
-        49 => 'getsize',
-        50 => 'tell',
-        51 => 'eof',
-        52 => 'isseekable',
-        53 => 'seek',
-        54 => 'rewind',
-        55 => 'iswritable',
-        56 => 'write',
-        57 => 'isreadable',
-        58 => 'read',
-        59 => 'getcontents',
-        60 => 'getmetadata',
-        61 => 'withbody',
-      ),
-      3 => 
-      array (
-      ),
-    ),
-    '/var/www/html/tests/manual/test_routing_performance.php' => 
-    array (
-      0 => '8fb1c1db89ff1c3f1cb5a296b0280daa91fcb911',
-      1 => 
-      array (
-      ),
-      2 => 
-      array (
       ),
       3 => 
       array (
@@ -2456,7 +1906,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Contracts/JwtTokenServiceInterfaceTest.php' => 
     array (
-      0 => '2be79d985bdd38abad1e1bb7b3fa509f2573f236',
+      0 => '0116047e36f7e576ceabd36ee82ce6ac49e290aa',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\contracts\\jwttokenserviceinterfacetest',
@@ -2490,7 +1940,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Contracts/RefreshTokenRepositoryInterfaceTest.php' => 
     array (
-      0 => 'b71dba47089e1e1eb5fd9a7f3e2cd240793a27e8',
+      0 => 'b28a3f89ea34936b748839400b9d80a5f0837db9',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\contracts\\refreshtokenrepositoryinterfacetest',
@@ -2527,7 +1977,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Contracts/TokenBlacklistRepositoryInterfaceTest.php' => 
     array (
-      0 => '3ca1312a56765674986b42191f1711f45f6ee3bd',
+      0 => 'e1f26b6797ac997cebadd129b8d3649153676f39',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\contracts\\tokenblacklistrepositoryinterfacetest',
@@ -2575,7 +2025,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php' => 
     array (
-      0 => 'd6bb0a3118b816e1bb0573197c7f2ad5cee78d78',
+      0 => '2d6d962ce05081b9d248fef79d9ae5a3817ce6f3',
       1 => 
       array (
         0 => 'tests\\unit\\infrastructure\\auth\\jwt\\firebasejwtprovidertest',
@@ -2619,7 +2069,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Services/JwtTokenServiceSimpleTest.php' => 
     array (
-      0 => 'e07872e704bdee812b794f6fb14d8c0015ae626c',
+      0 => '19e7ecc6f25838332b5e00eb615330bcdb48a856',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\services\\jwttokenservicesimpletest',
@@ -2649,7 +2099,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Services/JwtTokenServiceTest.php' => 
     array (
-      0 => '6354547575fa5530da7f3a33fb366777136a4605',
+      0 => 'f4a3e35c3912ed49be8bf33f2490a19231f02b5a',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\services\\jwttokenservicetest',
@@ -2748,7 +2198,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php' => 
     array (
-      0 => '07bbca8b50ad448ed4a061afedd366a0eda38092',
+      0 => '83999ba516e91e52d3f9898b2bd8d390bbfbe936',
       1 => 
       array (
         0 => 'tests\\unit\\infrastructure\\auth\\repositories\\refreshtokenrepositorytest',
@@ -2813,7 +2263,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Services/AuthenticationServiceTest.php' => 
     array (
-      0 => '1629e36f52e87397ad86cc321b0bc56ba4a63bd7',
+      0 => '8e048ee70e77f543594510508ef3e551fdada2e3',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\services\\authenticationservicetest',
@@ -2821,31 +2271,31 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\services\\setup',
-        1 => 'tests\\unit\\domains\\auth\\services\\login_成功登入_應該返回登入回應',
-        2 => 'tests\\unit\\domains\\auth\\services\\login_使用者不存在_應該拋出認證例外',
-        3 => 'tests\\unit\\domains\\auth\\services\\login_使用者已被軟刪除_應該拋出認證例外',
-        4 => 'tests\\unit\\domains\\auth\\services\\login_超過最大token數量限制_應該撤銷最舊的token',
-        5 => 'tests\\unit\\domains\\auth\\services\\refresh_成功重新整理_應該返回新的token對',
-        6 => 'tests\\unit\\domains\\auth\\services\\refresh_無效的refreshtoken_應該拋出認證例外',
-        7 => 'tests\\unit\\domains\\auth\\services\\refresh_過期的refreshtoken_應該拋出認證例外',
-        8 => 'tests\\unit\\domains\\auth\\services\\logout_單一token登出_應該成功撤銷token',
-        9 => 'tests\\unit\\domains\\auth\\services\\logout_全部token登出_應該撤銷使用者所有token',
-        10 => 'tests\\unit\\domains\\auth\\services\\logout_沒有refreshtoken_應該仍然成功',
-        11 => 'tests\\unit\\domains\\auth\\services\\validateaccesstoken_有效的token_應該返回true',
-        12 => 'tests\\unit\\domains\\auth\\services\\validateaccesstoken_無效的token_應該返回false',
-        13 => 'tests\\unit\\domains\\auth\\services\\validaterefreshtoken_有效的token_應該返回true',
-        14 => 'tests\\unit\\domains\\auth\\services\\validaterefreshtoken_無效的token_應該返回false',
-        15 => 'tests\\unit\\domains\\auth\\services\\validaterefreshtoken_token已被撤銷_應該返回false',
-        16 => 'tests\\unit\\domains\\auth\\services\\revokerefreshtoken_成功撤銷_應該返回true',
-        17 => 'tests\\unit\\domains\\auth\\services\\revokerefreshtoken_撤銷失敗_應該返回false',
-        18 => 'tests\\unit\\domains\\auth\\services\\revokeallusertokens_成功撤銷_應該返回撤銷數量',
-        19 => 'tests\\unit\\domains\\auth\\services\\revokedevicetokens_成功撤銷_應該返回撤銷數量',
-        20 => 'tests\\unit\\domains\\auth\\services\\getusertokenstats_成功取得統計_應該返回統計資料',
-        21 => 'tests\\unit\\domains\\auth\\services\\getusertokenstats_發生例外_應該返回預設統計',
-        22 => 'tests\\unit\\domains\\auth\\services\\cleanupexpiredtokens_成功清理_應該返回清理數量',
-        23 => 'tests\\unit\\domains\\auth\\services\\cleanupexpiredtokens_沒有指定日期_應該使用預設日期',
-        24 => 'tests\\unit\\domains\\auth\\services\\cleanuprevokedtokens_成功清理_應該返回清理數量',
-        25 => 'tests\\unit\\domains\\auth\\services\\cleanuprevokedtokens_使用預設天數_應該清理30天前的記錄',
+        1 => 'tests\\unit\\domains\\auth\\services\\testlogin_成功登入_應該返回登入回應',
+        2 => 'tests\\unit\\domains\\auth\\services\\testlogin_使用者不存在_應該拋出認證例外',
+        3 => 'tests\\unit\\domains\\auth\\services\\testlogin_使用者已被軟刪除_應該拋出認證例外',
+        4 => 'tests\\unit\\domains\\auth\\services\\testlogin_超過最大token數量限制_應該撤銷最舊的token',
+        5 => 'tests\\unit\\domains\\auth\\services\\testrefresh_成功重新整理_應該返回新的token對',
+        6 => 'tests\\unit\\domains\\auth\\services\\testrefresh_無效的refreshtoken_應該拋出認證例外',
+        7 => 'tests\\unit\\domains\\auth\\services\\testrefresh_過期的refreshtoken_應該拋出認證例外',
+        8 => 'tests\\unit\\domains\\auth\\services\\testlogout_單一token登出_應該成功撤銷token',
+        9 => 'tests\\unit\\domains\\auth\\services\\testlogout_全部token登出_應該撤銷使用者所有token',
+        10 => 'tests\\unit\\domains\\auth\\services\\testlogout_沒有refreshtoken_應該仍然成功',
+        11 => 'tests\\unit\\domains\\auth\\services\\testvalidateaccesstoken_有效的token_應該返回true',
+        12 => 'tests\\unit\\domains\\auth\\services\\testvalidateaccesstoken_無效的token_應該返回false',
+        13 => 'tests\\unit\\domains\\auth\\services\\testvalidaterefreshtoken_有效的token_應該返回true',
+        14 => 'tests\\unit\\domains\\auth\\services\\testvalidaterefreshtoken_無效的token_應該返回false',
+        15 => 'tests\\unit\\domains\\auth\\services\\testvalidaterefreshtoken_token已被撤銷_應該返回false',
+        16 => 'tests\\unit\\domains\\auth\\services\\testrevokerefreshtoken_成功撤銷_應該返回true',
+        17 => 'tests\\unit\\domains\\auth\\services\\testrevokerefreshtoken_撤銷失敗_應該返回false',
+        18 => 'tests\\unit\\domains\\auth\\services\\testrevokeallusertokens_成功撤銷_應該返回撤銷數量',
+        19 => 'tests\\unit\\domains\\auth\\services\\testrevokedevicetokens_成功撤銷_應該返回撤銷數量',
+        20 => 'tests\\unit\\domains\\auth\\services\\testgetusertokenstats_成功取得統計_應該返回統計資料',
+        21 => 'tests\\unit\\domains\\auth\\services\\testgetusertokenstats_發生例外_應該返回預設統計',
+        22 => 'tests\\unit\\domains\\auth\\services\\testcleanupexpiredtokens_成功清理_應該返回清理數量',
+        23 => 'tests\\unit\\domains\\auth\\services\\testcleanupexpiredtokens_沒有指定日期_應該使用預設日期',
+        24 => 'tests\\unit\\domains\\auth\\services\\testcleanuprevokedtokens_成功清理_應該返回清理數量',
+        25 => 'tests\\unit\\domains\\auth\\services\\testcleanuprevokedtokens_使用預設天數_應該清理30天前的記錄',
         26 => 'tests\\unit\\domains\\auth\\services\\createmocktokenpair',
         27 => 'tests\\unit\\domains\\auth\\services\\createmockjwtpayload',
       ),
@@ -2855,7 +2305,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php' => 
     array (
-      0 => '71a24601e8a21ba0de19c16ff59b394efe9f2985',
+      0 => 'da3d6a72636272895dc381df6a243c1f2a430722',
       1 => 
       array (
         0 => 'tests\\unit\\infrastructure\\auth\\repositories\\tokenblacklistrepositorytest',
@@ -2914,7 +2364,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Unit/Domains/Auth/Services/TokenBlacklistServiceTest.php' => 
     array (
-      0 => '53897dc946332fe93611cd3730c5b79b2a6c1828',
+      0 => 'c88951a72b2baca0e370537fb1703c197256eecf',
       1 => 
       array (
         0 => 'tests\\unit\\domains\\auth\\services\\tokenblacklistservicetest',
@@ -2975,7 +2425,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/JwtAuthenticationIntegrationTest.php' => 
     array (
-      0 => 'ce0c612b186ab3d58b3e881779df57bdd0a7ba33',
+      0 => '598901c7bf8cd01c16ff24437bce9ff591be8d35',
       1 => 
       array (
         0 => 'tests\\integration\\jwtauthenticationintegrationtest',
@@ -2983,18 +2433,19 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
       2 => 
       array (
         0 => 'tests\\integration\\setup',
-        1 => 'tests\\integration\\canperformcompleteloginflow',
-        2 => 'tests\\integration\\canrefreshtokenssuccessfully',
-        3 => 'tests\\integration\\canlogoutandblacklisttokens',
-        4 => 'tests\\integration\\canmanagemultipledevicelogins',
-        5 => 'tests\\integration\\canhandleinvalidcredentials',
-        6 => 'tests\\integration\\cancleanupexpiredblacklistentries',
-        7 => 'tests\\integration\\canperformhealthcheck',
-        8 => 'tests\\integration\\createjwttokenservice',
-        9 => 'tests\\integration\\setupuserrepositorymock',
-        10 => 'tests\\integration\\createtestuser',
-        11 => 'tests\\integration\\generatetestprivatekey',
-        12 => 'tests\\integration\\generatetestpublickey',
+        1 => 'tests\\integration\\teardown',
+        2 => 'tests\\integration\\testcanperformcompleteloginflow',
+        3 => 'tests\\integration\\testcanrefreshtokenssuccessfully',
+        4 => 'tests\\integration\\testcanlogoutandblacklisttokens',
+        5 => 'tests\\integration\\testcanmanagemultipledevicelogins',
+        6 => 'tests\\integration\\testcanhandleinvalidcredentials',
+        7 => 'tests\\integration\\testcancleanupexpiredblacklistentries',
+        8 => 'tests\\integration\\testcanperformhealthcheck',
+        9 => 'tests\\integration\\createjwttokenservice',
+        10 => 'tests\\integration\\setupuserrepositorymock',
+        11 => 'tests\\integration\\createtestuser',
+        12 => 'tests\\integration\\generatetestprivatekey',
+        13 => 'tests\\integration\\generatetestpublickey',
       ),
       3 => 
       array (
@@ -3002,7 +2453,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/JwtAuthenticationIntegrationTest_simple.php' => 
     array (
-      0 => 'f6307ea56938319630903f59bbde322c78e1c2df',
+      0 => 'dbf8cea580141ca1ff80c929bc01119fa168c125',
       1 => 
       array (
         0 => 'tests\\integration\\jwtauthenticationintegrationtest',
@@ -3023,7 +2474,7 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
     ),
     '/var/www/html/tests/Integration/JwtTokenBlacklistIntegrationTest.php' => 
     array (
-      0 => '1ac5cdc0e5e0c43be14555b7498debe30c76a12f',
+      0 => 'af9789a2af6f7ad9c01a68cb3fef697ac4817f8c',
       1 => 
       array (
         0 => 'tests\\integration\\jwttokenblacklistintegrationtest',
@@ -3039,6 +2490,192 @@ return \PHPStan\Cache\CacheItem::__set_state(array(
         6 => 'tests\\integration\\testqueryfunctionsintegration',
         7 => 'tests\\integration\\testerrorhandlingintegration',
         8 => 'tests\\integration\\createtokenblacklisttable',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Services/AuthServiceTest.php' => 
+    array (
+      0 => 'ebe538048944a708ba67b228566385805aa377df',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\services\\authservicetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\services\\setup',
+        1 => 'tests\\unit\\domains\\auth\\services\\teardown',
+        2 => 'tests\\unit\\domains\\auth\\services\\test_register_traditional_mode_without_jwt',
+        3 => 'tests\\unit\\domains\\auth\\services\\test_register_jwt_mode_with_tokens',
+        4 => 'tests\\unit\\domains\\auth\\services\\test_register_jwt_mode_token_generation_failure',
+        5 => 'tests\\unit\\domains\\auth\\services\\test_login_traditional_mode_success',
+        6 => 'tests\\unit\\domains\\auth\\services\\test_login_jwt_mode_success',
+        7 => 'tests\\unit\\domains\\auth\\services\\test_login_user_not_found',
+        8 => 'tests\\unit\\domains\\auth\\services\\test_login_user_disabled',
+        9 => 'tests\\unit\\domains\\auth\\services\\test_login_invalid_password',
+        10 => 'tests\\unit\\domains\\auth\\services\\test_logout_traditional_mode',
+        11 => 'tests\\unit\\domains\\auth\\services\\test_logout_jwt_mode_success',
+        12 => 'tests\\unit\\domains\\auth\\services\\test_logout_jwt_mode_revocation_failure',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Domains/Auth/Services/RefreshTokenServiceTest.php' => 
+    array (
+      0 => 'b20aee0749cd1c4bf8ead4e92a48046b8d957d65',
+      1 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\services\\refreshtokenservicetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\domains\\auth\\services\\setup',
+        1 => 'tests\\unit\\domains\\auth\\services\\teardown',
+        2 => 'tests\\unit\\domains\\auth\\services\\testservicecanbeinstantiated',
+        3 => 'tests\\unit\\domains\\auth\\services\\testcleanupexpiredtokenssuccess',
+        4 => 'tests\\unit\\domains\\auth\\services\\testcleanupexpiredtokensexception',
+        5 => 'tests\\unit\\domains\\auth\\services\\testgetusertokenstatssuccess',
+        6 => 'tests\\unit\\domains\\auth\\services\\testgetusertokenstatsexception',
+        7 => 'tests\\unit\\domains\\auth\\services\\testrevoketokensuccess',
+        8 => 'tests\\unit\\domains\\auth\\services\\testrevoketokenexception',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Application/Middleware/JwtAuthorizationMiddlewareTest.php' => 
+    array (
+      0 => '3fde280f9a6f8caa871513c82e5aa4049c9d1493',
+      1 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\jwtauthorizationmiddlewaretest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\setup',
+        1 => 'tests\\unit\\application\\middleware\\teardown',
+        2 => 'tests\\unit\\application\\middleware\\testmiddlewareisdisabledwhennotenabled',
+        3 => 'tests\\unit\\application\\middleware\\testskipsprocessingfornonapipaths',
+        4 => 'tests\\unit\\application\\middleware\\testreturns403whenusernotauthenticated',
+        5 => 'tests\\unit\\application\\middleware\\testallowssuperadminaccess',
+        6 => 'tests\\unit\\application\\middleware\\testallowsaccesswithvalidrolepermissions',
+        7 => 'tests\\unit\\application\\middleware\\testdeniesaccesswithinvalidrolepermissions',
+        8 => 'tests\\unit\\application\\middleware\\testallowsaccesswithvaliddirectpermissions',
+        9 => 'tests\\unit\\application\\middleware\\testmiddlewarepriorityandenabledsettings',
+        10 => 'tests\\unit\\application\\middleware\\createrequest',
+        11 => 'tests\\unit\\application\\middleware\\createauthenticatedrequest',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Application/Middleware/AuthorizationResultTest.php' => 
+    array (
+      0 => '9f955b4470242684a882c1dfe0327d9ff6d6ebfa',
+      1 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\authorizationresulttest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\testcancreateallowedresult',
+        1 => 'tests\\unit\\application\\middleware\\testcancreatedeniedresult',
+        2 => 'tests\\unit\\application\\middleware\\teststaticallowmethod',
+        3 => 'tests\\unit\\application\\middleware\\teststaticdenymethod',
+        4 => 'tests\\unit\\application\\middleware\\teststaticallowsuperadminmethod',
+        5 => 'tests\\unit\\application\\middleware\\teststaticdenyinsufficientpermissionsmethod',
+        6 => 'tests\\unit\\application\\middleware\\teststaticdenynotauthenticatedmethod',
+        7 => 'tests\\unit\\application\\middleware\\teststaticdenyiprestrictionmethod',
+        8 => 'tests\\unit\\application\\middleware\\teststaticdenytimerestrictionmethod',
+        9 => 'tests\\unit\\application\\middleware\\testhasrulemethod',
+        10 => 'tests\\unit\\application\\middleware\\testtoarraymethod',
+        11 => 'tests\\unit\\application\\middleware\\testjsonserializableinterface',
+        12 => 'tests\\unit\\application\\middleware\\testequalsmethod',
+        13 => 'tests\\unit\\application\\middleware\\testtostringmethod',
+        14 => 'tests\\unit\\application\\middleware\\testtostringmethodfordeniedresult',
+        15 => 'tests\\unit\\application\\middleware\\testdefaultparametersforstaticmethods',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Unit/Application/Middleware/JwtAuthenticationMiddlewareTest.php' => 
+    array (
+      0 => 'ea0118b1f7fc4874d2e590609900f26e6be1c986',
+      1 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\jwtauthenticationmiddlewaretest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\unit\\application\\middleware\\setup',
+        1 => 'tests\\unit\\application\\middleware\\teardown',
+        2 => 'tests\\unit\\application\\middleware\\testshouldskipprocessingforpublicpaths',
+        3 => 'tests\\unit\\application\\middleware\\testshouldprocessauthenticatedpaths',
+        4 => 'tests\\unit\\application\\middleware\\testshouldreturnunauthorizedwhennotokenprovided',
+        5 => 'tests\\unit\\application\\middleware\\testshouldextracttokenfromauthorizationheader',
+        6 => 'tests\\unit\\application\\middleware\\testshouldextracttokenfromqueryparameter',
+        7 => 'tests\\unit\\application\\middleware\\testshouldextracttokenfromcookie',
+        8 => 'tests\\unit\\application\\middleware\\testshouldinjectusercontextintorequest',
+        9 => 'tests\\unit\\application\\middleware\\testshouldreturnunauthorizedwhentokenexpired',
+        10 => 'tests\\unit\\application\\middleware\\testshouldreturnunauthorizedwhentokeninvalid',
+        11 => 'tests\\unit\\application\\middleware\\testshouldvalidateipaddresswhenpresentintoken',
+        12 => 'tests\\unit\\application\\middleware\\testshouldfailwhenipaddressmismatch',
+        13 => 'tests\\unit\\application\\middleware\\testshouldrejectwhenipaddressmismatch',
+        14 => 'tests\\unit\\application\\middleware\\testshouldvalidatedevicefingerprint',
+        15 => 'tests\\unit\\application\\middleware\\testshouldrejectwhendevicefingerprintmismatch',
+        16 => 'tests\\unit\\application\\middleware\\testshouldskipprocessingwhendisabled',
+        17 => 'tests\\unit\\application\\middleware\\testshouldhandlegenericexceptiongracefully',
+        18 => 'tests\\unit\\application\\middleware\\testshouldprioritizeauthorizationheaderoverothermethods',
+        19 => 'tests\\unit\\application\\middleware\\testcangetandsetpriority',
+        20 => 'tests\\unit\\application\\middleware\\testcangetname',
+        21 => 'tests\\unit\\application\\middleware\\testcansetenabled',
+        22 => 'tests\\unit\\application\\middleware\\createvalidpayload',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Integration/Api/V1/AuthEndpointTest.php' => 
+    array (
+      0 => '24029f5e2376ea6205735b7e662d651bfa5d9c01',
+      1 => 
+      array (
+        0 => 'tests\\integration\\api\\v1\\authendpointtest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\integration\\api\\v1\\setup',
+        1 => 'tests\\integration\\api\\v1\\createrequest',
+        2 => 'tests\\integration\\api\\v1\\testloginendpointreturnsjwttokens',
+        3 => 'tests\\integration\\api\\v1\\testrefreshtokenendpoint',
+        4 => 'tests\\integration\\api\\v1\\testlogoutendpoint',
+        5 => 'tests\\integration\\api\\v1\\testprotectedendpointwithouttoken',
+        6 => 'tests\\integration\\api\\v1\\testprotectedendpointwithinvalidtoken',
+        7 => 'tests\\integration\\api\\v1\\testapplicationbootstrap',
+        8 => 'tests\\integration\\api\\v1\\teardown',
+      ),
+      3 => 
+      array (
+      ),
+    ),
+    '/var/www/html/tests/Performance/JwtPerformanceTest.php' => 
+    array (
+      0 => '5ce71fb06f8a6bdd70a56e18546d2bb876c17c0c',
+      1 => 
+      array (
+        0 => 'tests\\performance\\jwtperformancetest',
+      ),
+      2 => 
+      array (
+        0 => 'tests\\performance\\setup',
+        1 => 'tests\\performance\\testjwttokengenerationperformance',
+        2 => 'tests\\performance\\testjwttokenvalidationperformance',
+        3 => 'tests\\performance\\testconcurrenttokengeneration',
+        4 => 'tests\\performance\\testmemoryusage',
+        5 => 'tests\\performance\\testtokensize',
       ),
       3 => 
       array (

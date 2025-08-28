@@ -5,7 +5,6 @@ declare(strict_types=1);
 /**
  * 測試 DI 容器整合 (Task 3.1).
  */
-
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Application;

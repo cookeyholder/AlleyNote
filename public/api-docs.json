@@ -2,37 +2,9 @@
     "openapi": "3.0.0",
     "info": {
         "title": "AlleyNote API",
-        "description": "AlleyNote 公布欄系統 RESTful API 文件。提供文章管理、使用者認證、IP 管理等功能的完整 API 介面。\n\n## API 版本控制\n\n本 API 支援版本控制，透過以下方式指定版本：\n- URL 路徑：`/api/v1/posts`\n- Accept 標頭：`Accept: application/vnd.alleynote.v1+json`\n\n## 版本歷史\n\n- **v1.0.0** (2025-01-15): 初始版本，包含基本的貼文管理和認證功能\n- **v1.1.0** (規劃中): 新增留言系統和檔案管理\n- **v2.0.0** (規劃中): API 結構重構和效能優化",
-        "termsOfService": "https://alleynote.example.com/terms",
-        "contact": {
-            "name": "AlleyNote 開發團隊",
-            "url": "https://github.com/alleynote/alleynote",
-            "email": "dev@alleynote.example.com"
-        },
-        "license": {
-            "name": "MIT",
-            "url": "https://opensource.org/licenses/MIT"
-        },
+        "description": "AlleyNote 公布欄系統 API 文件",
         "version": "1.0.0"
     },
-    "servers": [
-        {
-            "url": "http://localhost/api/v1",
-            "description": "開發環境 API 伺服器 (v1.0)"
-        },
-        {
-            "url": "https://api.alleynote.example.com/v1",
-            "description": "正式環境 API 伺服器 (v1.0)"
-        },
-        {
-            "url": "http://localhost/api",
-            "description": "開發環境 API 伺服器 (最新版本)"
-        },
-        {
-            "url": "https://api.alleynote.example.com",
-            "description": "正式環境 API 伺服器 (最新版本)"
-        }
-    ],
     "paths": {
         "/posts/{post_id}/attachments": {
             "get": {
@@ -1488,26 +1460,16 @@
                 ]
             }
         },
-        "/test": {
+        "/health": {
             "get": {
                 "tags": [
-                    "test"
+                    "health"
                 ],
-                "operationId": "12ba09fbc5d7a076bc954517921b2485",
+                "summary": "健康檢查端點",
+                "operationId": "158a1389adf0d693d528c07a8f30136f",
                 "responses": {
                     "200": {
-                        "description": "Test endpoint"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "test"
-                ],
-                "operationId": "8a558414ab4307ae10a3e1a3a9ac398c",
-                "responses": {
-                    "201": {
-                        "description": "Test post endpoint"
+                        "description": "系統正常運行"
                     }
                 }
             }
@@ -2237,56 +2199,24 @@
                 },
                 "type": "object"
             }
-        },
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "description": "使用 JWT Token 進行 Bearer 認證",
-                "bearerFormat": "JWT",
-                "scheme": "bearer"
-            },
-            "sessionAuth": {
-                "type": "apiKey",
-                "description": "使用 Session Cookie 進行認證",
-                "name": "PHPSESSID",
-                "in": "cookie"
-            },
-            "csrfToken": {
-                "type": "apiKey",
-                "description": "CSRF 保護令牌，用於防止跨站請求偽造攻擊",
-                "name": "X-CSRF-TOKEN",
-                "in": "header"
-            }
         }
     },
     "tags": [
         {
-            "name": "posts",
-            "description": "文章管理相關 API - 建立、讀取、更新、刪除文章\n\n支援的功能：\n- 分頁查詢和搜尋\n- 分類和優先級管理\n- 置頂和過期設定\n- 標籤系統",
-            "externalDocs": {
-                "description": "了解更多文章管理功能",
-                "url": "https://docs.alleynote.example.com/v1/posts"
-            }
+            "name": "attachments",
+            "description": "attachments"
         },
         {
             "name": "auth",
-            "description": "身份驗證相關 API - 登入、登出、註冊、密碼重設\n\n支援的認證方式：\n- JWT Bearer Token\n- Session Cookie\n- API Key (管理員功能)",
-            "externalDocs": {
-                "description": "認證機制說明",
-                "url": "https://docs.alleynote.example.com/v1/auth"
-            }
+            "description": "auth"
         },
         {
-            "name": "attachments",
-            "description": "附件管理相關 API - 檔案上傳、下載、刪除\n\n支援的檔案類型：\n- 圖片：PNG, JPG, GIF, WebP\n- 文件：PDF, DOC, DOCX, TXT\n- 壓縮檔：ZIP, RAR\n\n檔案大小限制：最大 10MB",
-            "externalDocs": {
-                "description": "檔案管理說明",
-                "url": "https://docs.alleynote.example.com/v1/attachments"
-            }
+            "name": "posts",
+            "description": "posts"
         },
         {
-            "name": "test",
-            "description": "test"
+            "name": "health",
+            "description": "health"
         }
     ]
 }

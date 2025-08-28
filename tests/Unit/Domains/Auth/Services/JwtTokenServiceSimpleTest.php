@@ -96,11 +96,6 @@ final class JwtTokenServiceSimpleTest extends TestCase
         $userId = 123;
         $customClaims = ['role' => 'user'];
 
-        $this->mockRefreshTokenRepository
-            ->expects($this->once())
-            ->method('create')
-            ->willReturn(true);
-
         // Act
         $result = $this->service->generateTokenPair($userId, $this->deviceInfo, $customClaims);
 

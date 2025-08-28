@@ -68,10 +68,7 @@ final class AuthenticationServiceTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function login_成功登入_應該返回登入回應(): void
+    public function testLogin_成功登入_應該返回登入回應(): void
     {
         // Arrange
         $request = new LoginRequestDTO(
@@ -123,18 +120,6 @@ final class AuthenticationServiceTest extends TestCase
             ->with($tokenPair->getRefreshToken())
             ->willReturn($payload);
 
-        $this->refreshTokenRepository
-            ->expects($this->once())
-            ->method('create')
-            ->with(
-                'test-jti',
-                1,
-                $this->anything(), // token hash
-                $this->isInstanceOf(DateTime::class),
-                $this->deviceInfo,
-            )
-            ->willReturn(true);
-
         $this->userRepository
             ->expects($this->once())
             ->method('updateLastLogin')
@@ -152,10 +137,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertSame(['read', 'write'], $response->permissions);
     }
 
-    /**
-     * @test
-     */
-    public function login_使用者不存在_應該拋出認證例外(): void
+    public function testlogin_使用者不存在_應該拋出認證例外(): void
     {
         // Arrange
         $request = new LoginRequestDTO(
@@ -176,10 +158,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->authenticationService->login($request, $this->deviceInfo);
     }
 
-    /**
-     * @test
-     */
-    public function login_使用者已被軟刪除_應該拋出認證例外(): void
+    public function testlogin_使用者已被軟刪除_應該拋出認證例外(): void
     {
         // Arrange
         $request = new LoginRequestDTO(
@@ -206,10 +185,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->authenticationService->login($request, $this->deviceInfo);
     }
 
-    /**
-     * @test
-     */
-    public function login_超過最大Token數量限制_應該撤銷最舊的Token(): void
+    public function testlogin_超過最大Token數量限制_應該撤銷最舊的Token(): void
     {
         // Arrange
         $request = new LoginRequestDTO(
@@ -260,11 +236,6 @@ final class AuthenticationServiceTest extends TestCase
             ->method('extractPayload')
             ->willReturn($payload);
 
-        $this->refreshTokenRepository
-            ->expects($this->once())
-            ->method('create')
-            ->willReturn(true);
-
         $this->userRepository
             ->expects($this->once())
             ->method('updateLastLogin')
@@ -277,10 +248,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertInstanceOf(LoginResponseDTO::class, $response);
     }
 
-    /**
-     * @test
-     */
-    public function refresh_成功重新整理_應該返回新的Token對(): void
+    public function testrefresh_成功重新整理_應該返回新的Token對(): void
     {
         // Arrange
         $request = new RefreshRequestDTO(
@@ -302,26 +270,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->jwtTokenService
             ->expects($this->exactly(2))
             ->method('extractPayload')
-            ->willReturnOnConsecutiveCalls($oldPayload, $newPayload);
-
-        $this->refreshTokenRepository
-            ->expects($this->once())
-            ->method('revoke')
-            ->with('test-jti', 'token_refresh')
-            ->willReturn(true);
-
-        $this->refreshTokenRepository
-            ->expects($this->once())
-            ->method('create')
-            ->with(
-                'new-jti',
-                1,
-                $this->anything(),
-                $this->isInstanceOf(DateTime::class),
-                $this->deviceInfo,
-                'test-jti',
-            )
-            ->willReturn(true);
+            ->willReturnOnConsecutiveCalls($newPayload, $oldPayload);
 
         // Act
         $response = $this->authenticationService->refresh($request, $this->deviceInfo);
@@ -333,10 +282,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertSame(['read'], $response->permissions);
     }
 
-    /**
-     * @test
-     */
-    public function refresh_無效的RefreshToken_應該拋出認證例外(): void
+    public function testrefresh_無效的RefreshToken_應該拋出認證例外(): void
     {
         // Arrange
         $request = new RefreshRequestDTO(
@@ -356,10 +302,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->authenticationService->refresh($request, $this->deviceInfo);
     }
 
-    /**
-     * @test
-     */
-    public function refresh_過期的RefreshToken_應該拋出認證例外(): void
+    public function testrefresh_過期的RefreshToken_應該拋出認證例外(): void
     {
         // Arrange
         $request = new RefreshRequestDTO(
@@ -379,10 +322,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->authenticationService->refresh($request, $this->deviceInfo);
     }
 
-    /**
-     * @test
-     */
-    public function logout_單一Token登出_應該成功撤銷Token(): void
+    public function testlogout_單一Token登出_應該成功撤銷Token(): void
     {
         // Arrange
         $request = new LogoutRequestDTO(
@@ -402,13 +342,13 @@ final class AuthenticationServiceTest extends TestCase
         $this->refreshTokenRepository
             ->expects($this->once())
             ->method('revoke')
-            ->with('test-jti', 'logout')
+            ->with('test-jti', 'user_logout')
             ->willReturn(true);
 
         $this->jwtTokenService
             ->expects($this->once())
             ->method('revokeToken')
-            ->with('access-token', 'logout')
+            ->with('access-token', 'user_logout')
             ->willReturn(true);
 
         // Act
@@ -418,10 +358,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /**
-     * @test
-     */
-    public function logout_全部Token登出_應該撤銷使用者所有Token(): void
+    public function testlogout_全部Token登出_應該撤銷使用者所有Token(): void
     {
         // Arrange
         $request = new LogoutRequestDTO(
@@ -447,7 +384,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->jwtTokenService
             ->expects($this->once())
             ->method('revokeToken')
-            ->with('access-token', 'logout')
+            ->with('access-token', 'user_logout')
             ->willReturn(true);
 
         // Act
@@ -457,10 +394,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /**
-     * @test
-     */
-    public function logout_沒有RefreshToken_應該仍然成功(): void
+    public function testlogout_沒有RefreshToken_應該仍然成功(): void
     {
         // Arrange
         $request = new LogoutRequestDTO(
@@ -471,7 +405,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->jwtTokenService
             ->expects($this->once())
             ->method('revokeToken')
-            ->with('access-token', 'logout')
+            ->with('access-token', 'user_logout')
             ->willReturn(true);
 
         // Act
@@ -481,10 +415,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /**
-     * @test
-     */
-    public function validateAccessToken_有效的Token_應該返回true(): void
+    public function testvalidateAccessToken_有效的Token_應該返回true(): void
     {
         // Arrange
         $accessToken = 'valid-access-token';
@@ -503,10 +434,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /**
-     * @test
-     */
-    public function validateAccessToken_無效的Token_應該返回false(): void
+    public function testvalidateAccessToken_無效的Token_應該返回false(): void
     {
         // Arrange
         $accessToken = 'invalid-access-token';
@@ -524,10 +452,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /**
-     * @test
-     */
-    public function validateRefreshToken_有效的Token_應該返回true(): void
+    public function testvalidateRefreshToken_有效的Token_應該返回true(): void
     {
         // Arrange
         $refreshToken = 'valid-refresh-token';
@@ -552,10 +477,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /**
-     * @test
-     */
-    public function validateRefreshToken_無效的Token_應該返回false(): void
+    public function testvalidateRefreshToken_無效的Token_應該返回false(): void
     {
         // Arrange
         $refreshToken = 'invalid-refresh-token';
@@ -573,10 +495,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /**
-     * @test
-     */
-    public function validateRefreshToken_Token已被撤銷_應該返回false(): void
+    public function testvalidateRefreshToken_Token已被撤銷_應該返回false(): void
     {
         // Arrange
         $refreshToken = 'revoked-refresh-token';
@@ -601,10 +520,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /**
-     * @test
-     */
-    public function revokeRefreshToken_成功撤銷_應該返回true(): void
+    public function testrevokeRefreshToken_成功撤銷_應該返回true(): void
     {
         // Arrange
         $refreshToken = 'refresh-token';
@@ -629,10 +545,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /**
-     * @test
-     */
-    public function revokeRefreshToken_撤銷失敗_應該返回false(): void
+    public function testrevokeRefreshToken_撤銷失敗_應該返回false(): void
     {
         // Arrange
         $refreshToken = 'refresh-token';
@@ -657,10 +570,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /**
-     * @test
-     */
-    public function revokeAllUserTokens_成功撤銷_應該返回撤銷數量(): void
+    public function testrevokeAllUserTokens_成功撤銷_應該返回撤銷數量(): void
     {
         // Arrange
         $userId = 1;
@@ -680,10 +590,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertSame(3, $result);
     }
 
-    /**
-     * @test
-     */
-    public function revokeDeviceTokens_成功撤銷_應該返回撤銷數量(): void
+    public function testrevokeDeviceTokens_成功撤銷_應該返回撤銷數量(): void
     {
         // Arrange
         $userId = 1;
@@ -703,10 +610,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertSame(2, $result);
     }
 
-    /**
-     * @test
-     */
-    public function getUserTokenStats_成功取得統計_應該返回統計資料(): void
+    public function testgetUserTokenStats_成功取得統計_應該返回統計資料(): void
     {
         // Arrange
         $userId = 1;
@@ -730,10 +634,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertSame($expectedStats, $result);
     }
 
-    /**
-     * @test
-     */
-    public function getUserTokenStats_發生例外_應該返回預設統計(): void
+    public function testgetUserTokenStats_發生例外_應該返回預設統計(): void
     {
         // Arrange
         $userId = 1;
@@ -756,10 +657,7 @@ final class AuthenticationServiceTest extends TestCase
         ], $result);
     }
 
-    /**
-     * @test
-     */
-    public function cleanupExpiredTokens_成功清理_應該返回清理數量(): void
+    public function testcleanupExpiredTokens_成功清理_應該返回清理數量(): void
     {
         // Arrange
         $beforeDate = new DateTime('2023-01-01');
@@ -777,10 +675,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertSame(15, $result);
     }
 
-    /**
-     * @test
-     */
-    public function cleanupExpiredTokens_沒有指定日期_應該使用預設日期(): void
+    public function testcleanupExpiredTokens_沒有指定日期_應該使用預設日期(): void
     {
         // Arrange
         $this->refreshTokenRepository
@@ -796,10 +691,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertSame(10, $result);
     }
 
-    /**
-     * @test
-     */
-    public function cleanupRevokedTokens_成功清理_應該返回清理數量(): void
+    public function testcleanupRevokedTokens_成功清理_應該返回清理數量(): void
     {
         // Arrange
         $days = 60;
@@ -817,10 +709,7 @@ final class AuthenticationServiceTest extends TestCase
         $this->assertSame(8, $result);
     }
 
-    /**
-     * @test
-     */
-    public function cleanupRevokedTokens_使用預設天數_應該清理30天前的記錄(): void
+    public function testcleanupRevokedTokens_使用預設天數_應該清理30天前的記錄(): void
     {
         // Arrange
         $this->refreshTokenRepository

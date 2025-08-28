@@ -210,7 +210,7 @@ class ValidationExceptionTest extends TestCase
         $exception = ValidationException::fromErrors($errors);
 
         // Act & Assert
-        $firstError = $exception->getValidationResult()->getFirstError();
+        $firstError = $exception->getFirstError();
         $this->assertNotNull($firstError);
         $this->assertContains($firstError, ['第一個錯誤', '第三個錯誤']);
     }

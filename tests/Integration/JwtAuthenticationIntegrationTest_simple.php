@@ -6,18 +6,20 @@ namespace Tests\Integration;
 
 use AlleyNote\Domains\Auth\Entities\RefreshToken;
 use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
+use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
 use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
+use DateTime;
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 /**
  * JWT 認證系統整合測試 - 簡化版本
  * 專注於測試各 Repository 和 Service 間的協作.
- *
- * @group integration
  */
+#[Group('integration')]
 class JwtAuthenticationIntegrationTest extends TestCase
 {
     private RefreshTokenRepository $refreshTokenRepository;
@@ -40,7 +42,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
     }
 
     /**
-     * 測試 RefreshToken Repository 基本功能.
+     * 測試 RefreshToken Repository 基本操作.
      *
      * @test
      */
@@ -50,29 +52,37 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $initialTokens = $this->refreshTokenRepository->findByUserId(1);
         $this->assertEmpty($initialTokens);
 
-        // 建立 Refresh Token
-        $refreshToken = new RefreshToken(
-            jti: 'test-refresh-jti',
-            userId: 1,
-            expiresAt: new DateTimeImmutable('+30 days'),
+        // 建立 DeviceInfo
+        $deviceInfo = new DeviceInfo(
             deviceId: 'test-device-123',
             deviceName: 'Test Device',
+            userAgent: 'Mozilla/5.0 Test Browser',
+            ipAddress: '127.0.0.1',
+            platform: 'web',
         );
 
-        $success = $this->refreshTokenRepository->create($refreshToken);
+        // 建立 Refresh Token
+        $success = $this->refreshTokenRepository->create(
+            jti: 'test-refresh-jti',
+            userId: 1,
+            tokenHash: hash('sha256', 'test-token-value'),
+            expiresAt: new DateTime('+30 days'),
+            deviceInfo: $deviceInfo,
+        );
         $this->assertTrue($success);
 
         // 驗證 Token 已建立
         $tokens = $this->refreshTokenRepository->findByUserId(1);
         $this->assertCount(1, $tokens);
-        $this->assertEquals('test-refresh-jti', $tokens[0]->getJti());
+        $this->assertEquals('test-refresh-jti', $tokens[0]['jti']);
 
-        // 測試查詢功能
-        $existsResult = $this->refreshTokenRepository->existsByJti('test-refresh-jti');
-        $this->assertTrue($existsResult);
+        // 測試查詢功能（使用正確的方法）
+        $foundToken = $this->refreshTokenRepository->findByJti('test-refresh-jti');
+        $this->assertNotNull($foundToken);
+        $this->assertEquals('test-refresh-jti', $foundToken['jti']);
 
         // 測試刪除功能
-        $deleteSuccess = $this->refreshTokenRepository->deleteByJti('test-refresh-jti');
+        $deleteSuccess = $this->refreshTokenRepository->delete('test-refresh-jti');
         $this->assertTrue($deleteSuccess);
 
         // 驗證已刪除
@@ -82,8 +92,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試 TokenBlacklist Repository 基本功能.
-     *
-     * @test
      */
     public function canManageTokenBlacklist(): void
     {
@@ -126,8 +134,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試 TokenBlacklist Service 高層功能.
-     *
-     * @test
      */
     public function canUseTokenBlacklistService(): void
     {
@@ -171,8 +177,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試自動清理功能.
-     *
-     * @test
      */
     public function canAutoCleanupExpiredEntries(): void
     {
@@ -213,8 +217,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試批次操作功能.
-     *
-     * @test
      */
     public function canPerformBatchOperations(): void
     {
@@ -268,9 +270,14 @@ class JwtAuthenticationIntegrationTest extends TestCase
      */
     private function createTestUser(): void
     {
-        $this->db->exec("
+        $now = new DateTime()->format('Y-m-d H:i:s');
+        $stmt = $this->db->prepare("
             INSERT INTO users (id, username, email, password, status, created_at, updated_at)
-            VALUES (1, 'testuser', 'test@example.com', 'password123', 1, datetime('now'), datetime('now'))
+            VALUES (1, 'testuser', 'test@example.com', 'password123', 1, :created_at, :updated_at)
         ");
+        $stmt->execute([
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
     }
 }

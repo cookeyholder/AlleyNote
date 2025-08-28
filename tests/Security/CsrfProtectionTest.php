@@ -12,6 +12,7 @@ use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -19,6 +20,8 @@ use Tests\TestCase;
 
 class CsrfProtectionTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private PostServiceInterface $postService;
 
     private ValidatorInterface $validator;
@@ -136,8 +139,7 @@ class CsrfProtectionTest extends TestCase
             ->byDefault();
     }
 
-    /** @test */
-    public function shouldRejectRequestWithoutCsrfToken(): void
+    public function testShouldRejectRequestWithoutCsrfToken(): void
     {
         // 準備測試資料
         $postData = [
@@ -185,8 +187,7 @@ class CsrfProtectionTest extends TestCase
         $this->assertTrue($response->getStatusCode() === 201 || $response->getStatusCode() === 403);
     }
 
-    /** @test */
-    public function shouldRejectRequestWithInvalidCsrfToken(): void
+    public function testShouldRejectRequestWithInvalidCsrfToken(): void
     {
         // 準備測試資料
         $postData = [
@@ -234,8 +235,7 @@ class CsrfProtectionTest extends TestCase
         $this->assertTrue($response->getStatusCode() === 201 || $response->getStatusCode() === 403);
     }
 
-    /** @test */
-    public function shouldAcceptRequestWithValidCsrfToken(): void
+    public function testShouldAcceptRequestWithValidCsrfToken(): void
     {
         // 準備測試資料
         $postData = [

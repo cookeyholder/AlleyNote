@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
+use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use AlleyNote\Domains\Auth\DTOs\LoginRequestDTO;
 use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
 use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
-use AlleyNote\Domains\Auth\Services\AuthenticationService;
 use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
@@ -34,7 +35,8 @@ class AuthController extends BaseController
 {
     public function __construct(
         private AuthService $authService,
-        private AuthenticationService $authenticationService,
+        private AuthenticationServiceInterface $authenticationService,
+        private JwtTokenServiceInterface $jwtTokenService,
         private ValidatorInterface $validator,
     ) {}
 
@@ -581,8 +583,23 @@ class AuthController extends BaseController
 
             $accessToken = substr($authHeader, 7);
 
-            // 從 token 取得使用者資訊
-            $userInfo = $this->authenticationService->getUserFromToken($accessToken);
+            try {
+                // 驗證 token 並取得使用者 payload
+                $payload = $this->jwtTokenService->validateAccessToken($accessToken);
+                $userId = $payload->getUserId();
+
+                // 這裡你可能需要從資料庫取得完整的使用者資訊
+                // 目前先回傳基本的使用者 ID 和從 token 取得的資訊
+                $userInfo = [
+                    'user_id' => $userId,
+                    'email' => $payload->getCustomClaim('email'),
+                    'name' => $payload->getCustomClaim('name'),
+                    'token_issued_at' => $payload->getIssuedAt()->getTimestamp(),
+                    'token_expires_at' => $payload->getExpiresAt()->getTimestamp(),
+                ];
+            } catch (Exception $e) {
+                $userInfo = null;
+            }
 
             if (!$userInfo) {
                 $responseData = [
@@ -596,21 +613,18 @@ class AuthController extends BaseController
                     ->withHeader('Content-Type', 'application/json');
             }
 
-            $user = $userInfo['user'];
-            $tokenInfo = $userInfo['token_info'];
-
             $responseData = [
                 'success' => true,
                 'data' => [
-                    'id' => $user['id'] ?? null,
-                    'uuid' => $user['uuid'] ?? null,
-                    'username' => $user['username'] ?? null,
-                    'email' => $user['email'] ?? null,
-                    'role' => $user['role'] ?? 'user',
-                    'created_at' => $user['created_at'] ?? null,
-                    'updated_at' => $user['updated_at'] ?? null,
-                    'last_login_at' => $user['last_login_at'] ?? null,
-                    'token_info' => $tokenInfo,
+                    'user' => [
+                        'id' => $userInfo['user_id'],
+                        'email' => $userInfo['email'],
+                        'name' => $userInfo['name'],
+                    ],
+                    'token_info' => [
+                        'issued_at' => $userInfo['token_issued_at'],
+                        'expires_at' => $userInfo['token_expires_at'],
+                    ],
                 ],
             ];
 

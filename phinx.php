@@ -10,18 +10,21 @@ return [
         'default_environment' => 'development',
         'development' => [
             'adapter' => 'sqlite',
-            'name' => 'database/alleynote',
-            'charset' => 'utf8'
+            'name' => 'database/alleynote.sqlite3',
+            'charset' => 'utf8',
+            'suffix' => ''
         ],
         'testing' => [
             'adapter' => 'sqlite',
-            'name' => 'database/test',
-            'charset' => 'utf8'
+            'name' => 'database/test.sqlite3',
+            'charset' => 'utf8',
+            'suffix' => ''
         ],
         'production' => [
             'adapter' => 'sqlite',
-            'name' => 'database/alleynote',
-            'charset' => 'utf8'
+            'name' => 'database/alleynote.sqlite3',
+            'charset' => 'utf8',
+            'suffix' => ''
         ]
     ],
     'version_order' => 'creation',

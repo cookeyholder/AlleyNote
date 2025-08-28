@@ -10,11 +10,14 @@ use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
 class PostRepositoryTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private PDO $pdo;
 
     private PostRepository $repository;
@@ -42,10 +45,10 @@ class PostRepositoryTest extends TestCase
         $this->cacheService->shouldReceive('remember')
             ->andReturnUsing(function ($key, $callback, $ttl = null) {
                 return $callback();
-                // 設置寬鬆的LoggingSecurityService Mock期望
-                $this->logger->shouldReceive('logSecurityEvent')
-                    ->andReturn(true)
-                    ->zeroOrMoreTimes();
+                // 設置寬鬆的LoggingSecurityService Mock期望 - 已註解因為不可達
+                // $this->logger->shouldReceive('logSecurityEvent')
+                //     ->andReturn(true)
+                //     ->zeroOrMoreTimes();
 
                 $this->logger->shouldReceive('logFailedLogin')
                     ->andReturn(true)

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Auth\Jwt;
 
+use AlleyNote\Domains\Auth\Contracts\JwtProviderInterface;
 use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
 use AlleyNote\Domains\Auth\Exceptions\JwtConfigurationException;
 use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
@@ -24,7 +25,7 @@ use UnexpectedValueException;
  *
  * 封裝 Firebase JWT 函式庫，提供 RS256 演算法的 JWT token 產生、驗證、解析功能
  */
-final class FirebaseJwtProvider
+final class FirebaseJwtProvider implements JwtProviderInterface
 {
     private JwtConfig $config;
 
@@ -364,7 +365,13 @@ final class FirebaseJwtProvider
      */
     private function generateJti(): string
     {
-        return bin2hex(random_bytes(16));
+        // 使用更精確的微秒時間戳和更多隨機位元組來確保唯一性
+        $timestamp = number_format(microtime(true) * 1000000, 0, '', ''); // 精確到微秒
+        $randomBytes = bin2hex(random_bytes(16)); // 增加隨機位元組
+        $processId = getmypid(); // 加入進程 ID
+        $uniqid = uniqid('', true); // 加入 PHP 的 uniqid
+
+        return $timestamp . $processId . $randomBytes . $uniqid;
     }
 
     /**

@@ -7,7 +7,6 @@ declare(strict_types=1);
  *
  * 這個腳本用於在沒有 Docker 環境的情況下測試路由系統的基本功能
  */
-
 // 自動載入 Composer 依賴
 require_once __DIR__ . '/../../vendor/autoload.php';
 
