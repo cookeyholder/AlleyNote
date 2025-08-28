@@ -14,8 +14,7 @@ class DatabaseConnectionTest extends TestCase
         DatabaseConnection::reset();
     }
 
-    /** @test */
-    public function createsSingletonPdoInstance(): void
+    public function testCreatesSingletonPdoInstance(): void
     {
         $connection1 = DatabaseConnection::getInstance();
         $connection2 = DatabaseConnection::getInstance();
@@ -24,8 +23,7 @@ class DatabaseConnectionTest extends TestCase
         $this->assertSame($connection1, $connection2);
     }
 
-    /** @test */
-    public function executesQuerySuccessfully(): void
+    public function testExecutesQuerySuccessfully(): void
     {
         $pdo = DatabaseConnection::getInstance();
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 /**
  * 測試完整應用程式與路由載入系統 (Task 2.2).
  */
-
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Application;

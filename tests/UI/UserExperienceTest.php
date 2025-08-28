@@ -4,8 +4,7 @@ namespace Tests\UI;
 
 class UserExperienceTest extends UITestCase
 {
-    /** @test */
-    public function shouldMeetAccessibilityStandards(): void
+    public function testShouldMeetAccessibilityStandards(): void
     {
         // 啟動瀏覽器
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -41,8 +40,7 @@ class UserExperienceTest extends UITestCase
         $this->browserAction('close');
     }
 
-    /** @test */
-    public function shouldProvideGoodUserInteraction(): void
+    public function testShouldProvideGoodUserInteraction(): void
     {
         // 啟動瀏覽器
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -63,8 +61,7 @@ class UserExperienceTest extends UITestCase
         $this->browserAction('close');
     }
 
-    /** @test */
-    public function shouldPerformWell(): void
+    public function testShouldPerformWell(): void
     {
         // 啟動瀏覽器
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -82,8 +79,7 @@ class UserExperienceTest extends UITestCase
         $this->browserAction('close');
     }
 
-    /** @test */
-    public function shouldHandleErrors(): void
+    public function testShouldHandleErrors(): void
     {
         // 啟動瀏覽器
         $this->browserAction('launch', 'http://localhost:8080/posts');

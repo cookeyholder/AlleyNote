@@ -68,6 +68,14 @@ class ValidationException extends Exception
     }
 
     /**
+     * 取得第一個錯誤訊息.
+     */
+    public function getFirstError(): ?string
+    {
+        return $this->validationResult->getFirstError();
+    }
+
+    /**
      * 轉換為 API 回應格式.
      */
     public function toApiResponse(): array

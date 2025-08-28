@@ -59,7 +59,7 @@ abstract class TestCase extends BaseTestCase
         $this->cache = Mockery::mock(CacheService::class);
         $this->cache->shouldReceive('get')
             ->andReturnUsing(function ($key) use (&$storage) {
-                return $storage[$key] ?? null;
+                return array_key_exists($key, $storage) ? $storage[$key] : null;
             });
         $this->cache->shouldReceive('set')
             ->andReturnUsing(function ($key, $value, $ttl = null) use (&$storage) {
@@ -163,6 +163,61 @@ abstract class TestCase extends BaseTestCase
             )
         ');
 
+        // 建立使用者資料表
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                email TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL,
+                status INTEGER NOT NULL DEFAULT 1,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+        ');
+
+        // 建立 Refresh Token 資料表
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS refresh_tokens (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                jti TEXT NOT NULL UNIQUE,
+                user_id INTEGER NOT NULL,
+                device_id TEXT,
+                device_name TEXT,
+                device_type TEXT,
+                user_agent TEXT,
+                ip_address TEXT,
+                platform TEXT,
+                browser TEXT,
+                expires_at TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                token_hash TEXT,
+                status TEXT NOT NULL DEFAULT "active",
+                revoked_at TEXT,
+                revoked_reason TEXT,
+                last_used_at TEXT,
+                parent_token_jti TEXT,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ');
+
+        // 建立 Token Blacklist 資料表
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS token_blacklist (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                jti TEXT NOT NULL UNIQUE,
+                token_type TEXT NOT NULL,
+                user_id INTEGER,
+                expires_at TEXT NOT NULL,
+                blacklisted_at TEXT NOT NULL,
+                reason TEXT,
+                device_id TEXT,
+                metadata TEXT,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+            )
+        ');
+
         // 建立所需的索引
         $this->createIndices();
     }
@@ -201,6 +256,8 @@ abstract class TestCase extends BaseTestCase
      */
     protected function createResponseMock(): ResponseInterface
     {
+        /** @var ResponseInterface::class|MockInterface */
+        /** @var mixed */
         $response = Mockery::mock(ResponseInterface::class);
         $response->shouldReceive('withJson')
             ->andReturnUsing(function ($data) use ($response) {

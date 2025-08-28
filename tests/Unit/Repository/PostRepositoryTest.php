@@ -12,20 +12,20 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PDO;
 use Tests\Factory\PostFactory;
+use Tests\TestCase;
 
-class PostRepositoryTest extends MockeryTestCase
+class PostRepositoryTest extends TestCase
 {
     private PostRepository $repository;
 
-    private PDO $db;
+    protected PDO $db;
 
-    private CacheService|MockInterface $cache;
+    protected CacheService|MockInterface $cache;
 
-    private \App\Domains\Security\Contracts\App\Domains\Security\Contracts\LoggingSecurityServiceInterface|MockInterface $logger;
+    protected LoggingSecurityServiceInterface|MockInterface $logger;
 
     protected function setUp(): void
     {

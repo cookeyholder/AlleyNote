@@ -13,11 +13,14 @@ use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
 class IpControllerTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private IpService|MockInterface $service;
 
     private ValidatorInterface|MockInterface $validator;

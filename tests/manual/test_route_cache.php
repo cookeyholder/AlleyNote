@@ -7,7 +7,6 @@ declare(strict_types=1);
  * 
  * 測試各種快取實作的功能
  */
-
 // 自動載入 Composer 依賴
 require_once __DIR__ . '/../../vendor/autoload.php';
 
