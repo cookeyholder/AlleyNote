@@ -13,22 +13,24 @@ use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Shared\Exceptions\ValidationException;
 use Exception;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 use Tests\TestCase;
 
-/**
- * @group failing
- */
+#[Group('failing')]
 class AttachmentUploadTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected AttachmentService $attachmentService;
 
     protected \App\Domains\Auth\Services\AuthorizationService|MockInterface $authService;
 
-    protected \App\Domains\Security\Contracts\LoggingSecurityServiceInterface|MockInterface $logger;
+    protected LoggingSecurityServiceInterface|MockInterface $logger;
 
     protected string $uploadDir;
 
@@ -59,7 +61,7 @@ class AttachmentUploadTest extends TestCase
         $this->postRepo = new PostRepository($this->db, $this->cache, $this->logger);
 
         // 初始化測試對象
-        $this->attachmentService = new AttachmentService($this->attachmentRepo, $this->postRepo, $this->cache, $this->authService, $this->uploadDir);
+        $this->attachmentService = new AttachmentService($this->attachmentRepo, $this->postRepo, $this->authService, $this->uploadDir);
 
         $this->createTestTables();
 
@@ -86,6 +88,12 @@ class AttachmentUploadTest extends TestCase
 
     protected function createUploadedFileMock(string $filename, string $mimeType, int $size): UploadedFileInterface
     {
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')
             ->andReturn($filename);
@@ -93,6 +101,12 @@ class AttachmentUploadTest extends TestCase
             ->andReturn($mimeType);
         $file->shouldReceive('getSize')
             ->andReturn($size);
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')
             ->andReturn(str_repeat('x', $size));
@@ -115,8 +129,7 @@ class AttachmentUploadTest extends TestCase
         return $file;
     }
 
-    /** @test */
-    public function should_handle_concurrent_uploads(): void
+    public function testShould_handle_concurrent_uploads(): void
     {
         $postId = 1;
 
@@ -141,8 +154,7 @@ class AttachmentUploadTest extends TestCase
         $this->assertEquals(3, $successfulUploads, '所有上傳應該成功完成');
     }
 
-    /** @test */
-    public function should_handle_large_file_upload(): void
+    public function testShould_handle_large_file_upload(): void
     {
         $postId = 1;
         $fileSize = 10 * 1024 * 1024; // 10MB
@@ -159,8 +171,7 @@ class AttachmentUploadTest extends TestCase
         $this->assertEquals($fileSize, $attachment->getFileSize());
     }
 
-    /** @test */
-    public function should_validate_file_types(): void
+    public function testShould_validate_file_types(): void
     {
         $postId = 1;
         $invalidTypes = [
@@ -182,15 +193,26 @@ class AttachmentUploadTest extends TestCase
         }
     }
 
-    /** @test */
-    public function should_handle_disk_full_error(): void
+    public function testShould_handle_disk_full_error(): void
     {
         $postId = 1;
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
 
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')->andReturn(true);
@@ -206,15 +228,26 @@ class AttachmentUploadTest extends TestCase
         $this->attachmentService->upload($postId, $file, 1);
     }
 
-    /** @test */
-    public function should_handle_permission_error(): void
+    public function testShould_handle_permission_error(): void
     {
         $postId = 1;
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var UploadedFileInterface::class|MockInterface */
+        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
 
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var StreamInterface::class|MockInterface */
+        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')->andReturn(true);

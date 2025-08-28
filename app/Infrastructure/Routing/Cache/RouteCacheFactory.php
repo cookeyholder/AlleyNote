@@ -43,7 +43,6 @@ class RouteCacheFactory
             'file' => $this->createFileCache($config),
             'memory' => $this->createMemoryCache($config),
             // 'redis' => $this->createRedisCache($config),
-            default => throw new InvalidArgumentException("Unknown cache driver: {$driver}")
         };
     }
 

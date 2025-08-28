@@ -19,7 +19,7 @@ class Route implements RouteInterface
 {
     private ?string $name = null;
 
-    /** @var MiddlewareInterface[] */
+    /** @var MiddlewareInterface[]|string[] */
     private array $middlewares = [];
 
     private ?string $compiledPattern = null;
@@ -71,6 +71,9 @@ class Route implements RouteInterface
     {
         foreach ($middlewares as $middleware) {
             if ($middleware instanceof MiddlewareInterface) {
+                $this->middlewares[] = $middleware;
+            } elseif (is_string($middleware)) {
+                // 支援字串別名
                 $this->middlewares[] = $middleware;
             }
         }
@@ -175,9 +178,17 @@ class Route implements RouteInterface
         return $this;
     }
 
+    /**
+     * 添加中介軟體（支援字串別名、實例和陣列）.
+     *
+     * @param MiddlewareInterface|string|array $middleware
+     */
     public function middleware($middleware): self
     {
         if ($middleware instanceof MiddlewareInterface) {
+            $this->middlewares[] = $middleware;
+        } elseif (is_string($middleware)) {
+            // 支援字串別名
             $this->middlewares[] = $middleware;
         } elseif (is_array($middleware)) {
             $this->addMiddlewares($middleware);
@@ -229,7 +240,7 @@ class Route implements RouteInterface
     {
         preg_match_all('/\{([^}]+)\}/', $pattern, $matches);
 
-        return $matches[1] ?? [];
+        return $matches[1];
     }
 
     // HTTP 方法快捷方法

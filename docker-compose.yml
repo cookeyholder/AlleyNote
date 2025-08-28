@@ -12,8 +12,18 @@ services:
             - ./database:/var/www/html/database
         environment:
             APP_ENV: ${APP_ENV:-development}
+            APP_DEBUG: ${APP_DEBUG:-true}
             DB_CONNECTION: sqlite
-            DB_DATABASE: /var/www/html/database/alleynote.db
+            DB_DATABASE: /var/www/html/database/alleynote.sqlite3
+            # JWT 設定
+            JWT_ALGORITHM: ${JWT_ALGORITHM:-RS256}
+            JWT_ISSUER: ${JWT_ISSUER:-alleynote-api}
+            JWT_AUDIENCE: ${JWT_AUDIENCE:-alleynote-client}
+            JWT_ACCESS_TOKEN_TTL: ${JWT_ACCESS_TOKEN_TTL:-3600}
+            JWT_REFRESH_TOKEN_TTL: ${JWT_REFRESH_TOKEN_TTL:-2592000}
+            JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+            JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+            # SSL 設定
             SSL_DOMAIN: ${SSL_DOMAIN:-localhost}
             SSL_EMAIL: ${SSL_EMAIL:-admin@localhost}
             CERTBOT_STAGING: ${CERTBOT_STAGING:-true}

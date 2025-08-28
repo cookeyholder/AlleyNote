@@ -7,7 +7,6 @@ declare(strict_types=1);
  *
  * 測試中介軟體管理器、執行器和路由整合
  */
-
 // 自動載入 Composer 依賴
 require_once __DIR__ . '/../../vendor/autoload.php';
 

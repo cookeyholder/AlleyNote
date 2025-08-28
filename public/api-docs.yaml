@@ -1,23 +1,8 @@
 openapi: 3.0.0
 info:
   title: 'AlleyNote API'
-  description: 'AlleyNote 公布欄系統 RESTful API 文件。提供文章管理、使用者認證、IP 管理等功能的完整 API 介面。'
-  termsOfService: 'https://alleynote.example.com/terms'
-  contact:
-    name: 'AlleyNote 開發團隊'
-    url: 'https://github.com/alleynote/alleynote'
-    email: dev@alleynote.example.com
-  license:
-    name: MIT
-    url: 'https://opensource.org/licenses/MIT'
+  description: 'AlleyNote 公布欄系統 API 文件'
   version: 1.0.0
-servers:
-  -
-    url: 'http://localhost/api'
-    description: '開發環境 API 伺服器'
-  -
-    url: 'https://api.alleynote.example.com'
-    description: '正式環境 API 伺服器'
 paths:
   '/posts/{post_id}/attachments':
     get:
@@ -142,7 +127,22 @@ paths:
       responses:
         '200':
           description: 檔案下載成功
-          headers: {  }
+          headers:
+            Content-Disposition:
+              description: 檔案下載標頭
+              schema:
+                type: string
+                example: 'attachment; filename="document.pdf"'
+            Content-Type:
+              description: '檔案 MIME 類型'
+              schema:
+                type: string
+                example: application/pdf
+            Content-Length:
+              description: 檔案大小
+              schema:
+                type: integer
+                example: 1024000
           content:
             application/octet-stream:
               schema:
@@ -785,21 +785,15 @@ paths:
       security:
         -
           csrfToken: []
-  /test:
+  /health:
     get:
       tags:
-        - test
-      operationId: 12ba09fbc5d7a076bc954517921b2485
+        - health
+      summary: 健康檢查端點
+      operationId: 158a1389adf0d693d528c07a8f30136f
       responses:
         '200':
-          description: 'Test endpoint'
-    post:
-      tags:
-        - test
-      operationId: 8a558414ab4307ae10a3e1a3a9ac398c
-      responses:
-        '201':
-          description: 'Test post endpoint'
+          description: 系統正常運行
 components:
   schemas:
     User:
@@ -881,22 +875,25 @@ components:
       type: object
     CreatePostRequest:
       title: 建立貼文請求
-      description: 建立新貼文的請求資料
+      description: 建立新貼文的請求資料結構，包含標題、內容、分類等必要資訊
       required:
         - title
         - content
       properties:
         title:
-          description: 貼文標題
+          description: 貼文標題，用於簡要描述貼文主題
           type: string
           maxLength: 255
-          example: 重要公告
+          minLength: 1
+          example: '系統維護通知 - 2025年1月20日'
         content:
-          description: 貼文內容
+          description: '貼文內容，支援 Markdown 格式'
           type: string
-          example: 這是一則重要公告內容
+          maxLength: 10000
+          minLength: 1
+          example: "親愛的使用者，\n\n系統將於 **2025年1月20日 02:00-04:00** 進行維護，期間服務可能暫時中斷。\n\n維護內容：\n- 資料庫效能優化\n- 安全性更新\n- 新功能部署\n\n造成不便敬請見諒。\n\n---\n技術團隊"
         category:
-          description: 貼文分類
+          description: 貼文分類，用於組織和篩選貼文
           type: string
           default: general
           enum:
@@ -906,7 +903,7 @@ components:
             - notice
           example: announcement
         priority:
-          description: 優先級
+          description: 優先級，影響貼文在列表中的排序和顯示樣式
           type: string
           default: normal
           enum:
@@ -914,38 +911,74 @@ components:
             - normal
             - high
             - urgent
-          example: normal
+          example: high
         expires_at:
-          description: 過期時間（可選）
+          description: '過期時間（ISO 8601 格式），過期後貼文將自動隱藏'
           type: string
           format: date-time
-          example: '2025-12-31T23:59:59Z'
+          example: '2025-12-31T23:59:59+08:00'
           nullable: true
+        tags:
+          description: 標籤列表，用於標記和搜尋
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 10
+          example:
+            - 維護
+            - 系統更新
+            - 重要通知
+        is_pinned:
+          description: 是否置頂顯示
+          type: boolean
+          default: false
+          example: true
+        allow_comments:
+          description: 是否允許留言
+          type: boolean
+          default: true
+          example: false
       type: object
+      example:
+        title: '系統維護通知 - 2025年1月20日'
+        content: "親愛的使用者，\n\n系統將於 **2025年1月20日 02:00-04:00** 進行維護..."
+        category: announcement
+        priority: high
+        expires_at: '2025-12-31T23:59:59+08:00'
+        tags:
+          - 維護
+          - 系統更新
+          - 重要通知
+        is_pinned: true
+        allow_comments: false
     UpdatePostRequest:
       title: 更新貼文請求
-      description: 更新貼文的請求資料
+      description: 更新既有貼文的請求資料，所有欄位皆為可選，僅更新提供的欄位
       properties:
         title:
-          description: 貼文標題
+          description: 更新貼文標題
           type: string
           maxLength: 255
-          example: 更新後的標題
+          minLength: 1
+          example: 【更新】系統維護延期通知
         content:
-          description: 貼文內容
+          description: 更新貼文內容
           type: string
-          example: 更新後的內容
+          maxLength: 10000
+          minLength: 1
+          example: "**重要更新**\n\n原定於 2025年1月20日 的系統維護將延期至 **2025年1月25日**。\n\n詳細資訊請參考最新公告。"
         category:
-          description: 貼文分類
+          description: 更新貼文分類
           type: string
           enum:
             - general
             - announcement
             - urgent
             - notice
-          example: announcement
+          example: urgent
         status:
-          description: 貼文狀態
+          description: 更新貼文狀態
           type: string
           enum:
             - draft
@@ -953,35 +986,69 @@ components:
             - archived
           example: published
         priority:
-          description: 優先級
+          description: 更新優先級
           type: string
           enum:
             - low
             - normal
             - high
             - urgent
-          example: normal
+          example: urgent
         expires_at:
-          description: 過期時間
+          description: 更新過期時間
           type: string
           format: date-time
-          example: '2025-12-31T23:59:59Z'
+          example: '2025-02-28T23:59:59+08:00'
           nullable: true
+        tags:
+          description: 更新標籤列表
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 10
+          example:
+            - 維護延期
+            - 重要更新
+            - 緊急通知
+        is_pinned:
+          description: 更新置頂狀態
+          type: boolean
+          example: true
+        allow_comments:
+          description: 更新留言允許狀態
+          type: boolean
+          example: true
       type: object
+      example:
+        title: 【更新】系統維護延期通知
+        content: "**重要更新**\n\n原定於 2025年1月20日 的系統維護將延期..."
+        category: urgent
+        status: published
+        priority: urgent
+        expires_at: '2025-02-28T23:59:59+08:00'
+        tags:
+          - 維護延期
+          - 重要更新
+          - 緊急通知
+        is_pinned: true
+        allow_comments: true
     ApiResponse:
       title: 'API 回應'
-      description: '標準 API 回應格式'
+      description: '標準 API 回應格式，用於包裝所有 API 的成功回應'
+      required:
+        - success
       properties:
         success:
           description: 操作是否成功
           type: boolean
           example: true
         message:
-          description: 回應訊息
+          description: 操作結果訊息
           type: string
-          example: 操作成功
+          example: 貼文建立成功
         data:
-          description: 回應資料
+          description: '回應資料內容，根據不同 API 會有不同結構'
           oneOf:
             -
               $ref: '#/components/schemas/Post'
@@ -990,40 +1057,158 @@ components:
               items:
                 $ref: '#/components/schemas/Post'
             -
+              description: 其他類型的資料
               type: object
+        meta:
+          description: 額外的元資料
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+              example: '2025-01-15T10:30:00+08:00'
+            request_id:
+              type: string
+              example: req_550e8400e29b41d4a716446655440000
+            version:
+              type: string
+              example: 1.0.0
+          type: object
       type: object
+      example:
+        success: true
+        message: 貼文建立成功
+        data:
+          id: 123
+          title: 新的貼文標題
+          content: 貼文內容...
+          status: published
+          created_at: '2025-01-15T10:30:00+08:00'
+        meta:
+          timestamp: '2025-01-15T10:30:00+08:00'
+          request_id: req_550e8400e29b41d4a716446655440000
+          version: 1.0.0
     PaginatedResponse:
       title: 分頁回應
-      description: 分頁資料回應格式
+      description: 分頁資料的標準回應格式，包含資料項目和詳細的分頁資訊
+      required:
+        - data
+        - pagination
       properties:
+        success:
+          description: 請求是否成功
+          type: boolean
+          example: true
         data:
-          description: 資料項目
+          description: 當前頁的資料項目清單
           type: array
           items:
             $ref: '#/components/schemas/Post'
         pagination:
-          description: 分頁資訊
+          description: 詳細的分頁資訊
+          required:
+            - current_page
+            - per_page
+            - total
+            - total_pages
           properties:
             current_page:
+              description: '目前頁碼（從 1 開始）'
               type: integer
-              example: 1
+              minimum: 1
+              example: 2
             per_page:
+              description: 每頁顯示筆數
               type: integer
+              maximum: 100
+              minimum: 1
               example: 10
             total:
+              description: 總資料筆數
               type: integer
-              example: 50
+              minimum: 0
+              example: 157
             total_pages:
+              description: 總頁數
               type: integer
-              example: 5
+              minimum: 0
+              example: 16
             has_next:
+              description: 是否有下一頁
               type: boolean
               example: true
             has_prev:
+              description: 是否有上一頁
               type: boolean
-              example: false
+              example: true
+            first_page:
+              description: 第一頁頁碼
+              type: integer
+              example: 1
+            last_page:
+              description: 最後一頁頁碼
+              type: integer
+              example: 16
+            from:
+              description: 當前頁第一筆資料的序號
+              type: integer
+              example: 11
+            to:
+              description: 當前頁最後一筆資料的序號
+              type: integer
+              example: 20
+          type: object
+        links:
+          description: 分頁導航連結
+          properties:
+            first:
+              type: string
+              example: '/api/posts?page=1&limit=10'
+              nullable: true
+            last:
+              type: string
+              example: '/api/posts?page=16&limit=10'
+              nullable: true
+            prev:
+              type: string
+              example: '/api/posts?page=1&limit=10'
+              nullable: true
+            next:
+              type: string
+              example: '/api/posts?page=3&limit=10'
+              nullable: true
+            self:
+              type: string
+              example: '/api/posts?page=2&limit=10'
           type: object
       type: object
+      example:
+        success: true
+        data:
+          -
+            id: 11
+            title: '範例貼文標題 11'
+            content: 貼文內容...
+            category: general
+            status: published
+            priority: normal
+            created_at: '2025-01-15T10:30:00+08:00'
+        pagination:
+          current_page: 2
+          per_page: 10
+          total: 157
+          total_pages: 16
+          has_next: true
+          has_prev: true
+          first_page: 1
+          last_page: 16
+          from: 11
+          to: 20
+        links:
+          first: '/api/posts?page=1&limit=10'
+          last: '/api/posts?page=16&limit=10'
+          prev: '/api/posts?page=1&limit=10'
+          next: '/api/posts?page=3&limit=10'
+          self: '/api/posts?page=2&limit=10'
     PostRequest:
       title: 貼文請求
       description: 建立或更新貼文的通用請求資料
@@ -1033,26 +1218,83 @@ components:
           $ref: '#/components/schemas/CreatePostRequest'
     ValidationError:
       title: 驗證錯誤
-      description: 資料驗證失敗時的錯誤格式
+      description: '表單或 API 請求資料驗證失敗時的詳細錯誤回應格式'
+      required:
+        - success
+        - error
       properties:
-        status:
-          type: string
-          example: error
-        message:
+        success:
+          description: 請求是否成功
+          type: boolean
+          example: false
+        error:
+          description: 主要錯誤訊息
           type: string
           example: 資料驗證失敗
+        message:
+          description: 詳細錯誤描述
+          type: string
+          example: 提交的資料包含驗證錯誤，請檢查以下欄位並重新提交
         errors:
+          description: 各欄位的具體驗證錯誤訊息
           type: object
           example:
             title:
               - 標題不能為空
+              - '標題長度不能超過 255 字元'
             content:
+              - 內容不能為空
               - '內容長度不能超過 10000 字元'
+            email:
+              - 電子郵件格式不正確
+            password:
+              - '密碼長度至少需要 8 字元'
+              - 密碼必須包含至少一個數字
+            category:
+              - '分類必須是以下值之一：general, announcement, urgent, notice'
           additionalProperties:
+            description: 該欄位的所有錯誤訊息列表
             type: array
             items:
               type: string
+        code:
+          description: 'HTTP 狀態碼'
+          type: integer
+          example: 400
+        meta:
+          description: 額外的錯誤資訊
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+              example: '2025-01-15T10:30:00+08:00'
+            request_id:
+              type: string
+              example: req_550e8400e29b41d4a716446655440000
+            validation_rules:
+              description: 驗證規則參考
+              type: object
+          type: object
       type: object
+      example:
+        success: false
+        error: 資料驗證失敗
+        message: 提交的資料包含驗證錯誤，請檢查以下欄位並重新提交
+        errors:
+          title:
+            - 標題不能為空
+            - '標題長度不能超過 255 字元'
+          content:
+            - 內容不能為空
+          email:
+            - 電子郵件格式不正確
+          password:
+            - '密碼長度至少需要 8 字元'
+            - 密碼必須包含至少一個數字
+        code: 400
+        meta:
+          timestamp: '2025-01-15T10:30:00+08:00'
+          request_id: req_550e8400e29b41d4a716446655440000
     Post:
       title: 貼文
       description: 貼文資料結構
@@ -1123,41 +1365,16 @@ components:
           example: '2025-12-31T23:59:59Z'
           nullable: true
       type: object
-  securitySchemes:
-    bearerAuth:
-      type: http
-      description: '使用 JWT Token 進行 Bearer 認證'
-      bearerFormat: JWT
-      scheme: bearer
-    sessionAuth:
-      type: apiKey
-      description: '使用 Session Cookie 進行認證'
-      name: PHPSESSID
-      in: cookie
-    csrfToken:
-      type: apiKey
-      description: 'CSRF 保護令牌，用於防止跨站請求偽造攻擊'
-      name: X-CSRF-TOKEN
-      in: header
 tags:
   -
-    name: posts
-    description: '文章管理相關 API - 建立、讀取、更新、刪除文章'
-    externalDocs:
-      description: 了解更多文章管理功能
-      url: 'https://docs.alleynote.example.com/posts'
+    name: attachments
+    description: attachments
   -
     name: auth
-    description: '身份驗證相關 API - 登入、登出、註冊、密碼重設'
-    externalDocs:
-      description: 'AlleyNote 完整文件'
-      url: 'https://docs.alleynote.example.com'
+    description: auth
   -
-    name: attachments
-    description: '附件管理相關 API - 檔案上傳、下載、刪除'
-    externalDocs:
-      description: 'AlleyNote 完整文件'
-      url: 'https://docs.alleynote.example.com'
+    name: posts
+    description: posts
   -
-    name: test
-    description: test
+    name: health
+    description: health

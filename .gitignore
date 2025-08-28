@@ -18,13 +18,16 @@ coverage/
 .idea/
 .vscode/
 *.sqlite
+*.sqlite3
 *.sqlite-journal
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
+/database/*.sqlite3
 /database/*.db
 /database/backups/*.db*
+/database/backups/*.sqlite3*
 
 # PHPStan cache
 /storage/phpstan/

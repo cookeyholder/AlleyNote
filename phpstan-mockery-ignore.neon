@@ -1,0 +1,99 @@
+# Mockery PHPStan 忽略配置
+# 基於 Context7 MCP 查詢的 Mockery 最新知識
+parameters:
+    ignoreErrors:
+        # Mockery ExpectationInterface 方法
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::andReturnSelf\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::andReturnUsing\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::byDefault\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::andReturn\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::andThrow\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::times\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::once\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::twice\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::never\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::zeroOrMoreTimes\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::with\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::withArgs\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::withAnyArgs\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface.*::withNoArgs\(\)#'
+            identifier: method.notFound
+
+        # Mockery HigherOrderMessage 方法
+        -
+            message: '#Call to an undefined method Mockery\\HigherOrderMessage.*::andReturnSelf\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\HigherOrderMessage.*::andReturnUsing\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\HigherOrderMessage.*::byDefault\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\HigherOrderMessage.*::andReturn\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method Mockery\\HigherOrderMessage.*::andThrow\(\)#'
+            identifier: method.notFound
+
+        # Mockery 型別問題
+        -
+            message: '#Parameter .* expects .*, Mockery\\.*Mock.* given#'
+            identifier: argument.type
+        -
+            message: '#expects .*, Mockery\\.*Mock.* given#'
+        
+
+        # 額外的 Mockery 方法忽略
+        -
+            message: '#Call to an undefined method.*::shouldReceive\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method.*::andReturnNull\(\)#'
+            identifier: method.notFound
+        -
+            message: '#Call to an undefined method.*::willReturn\(\)#'
+            identifier: method.notFound
+        -
+            message: '#does not accept Mockery\\MockInterface#'
+            identifier: assign.propertyType
+        -
+            message: '#should return.*but returns Mockery\\MockInterface#'
+            identifier: return.type
+        -
+            message: '#Call to an undefined method ReflectionType::getName\(\)#'
+            identifier: method.notFound
+        # 其他 Mockery 相關問題
+        -
+            identifier: missingType.iterableValue
+            path: tests/*
+        -
+            message: '#Variable property access on.*Mock#'
+            path: tests/*

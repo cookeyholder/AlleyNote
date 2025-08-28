@@ -26,7 +26,8 @@ use OpenApi\Generator;
 /**
  * 解析命令列參數
  */
-function parseArguments(array $argv): array {
+function parseArguments(array $argv): array
+{
     $options = [
         'output' => __DIR__ . '/../public',
         'format' => 'both',
@@ -69,7 +70,8 @@ function parseArguments(array $argv): array {
 /**
  * 顯示幫助訊息
  */
-function showHelp(): void {
+function showHelp(): void
+{
     echo <<<'EOF'
 AlleyNote API 文件產生工具
 
@@ -106,7 +108,8 @@ EOF;
 /**
  * 驗證 API 文件
  */
-function validateApiDoc(array $apiDoc, ConsoleOutput $output): bool {
+function validateApiDoc(array $apiDoc, ConsoleOutput $output): bool
+{
     $errors = [];
 
     // 檢查必要的頂層欄位
@@ -175,7 +178,8 @@ function validateApiDoc(array $apiDoc, ConsoleOutput $output): bool {
 /**
  * 取得檔案統計資訊
  */
-function getFileStats(string $file): array {
+function getFileStats(string $file): array
+{
     if (!file_exists($file)) {
         return ['size' => 0, 'lines' => 0];
     }
@@ -189,7 +193,8 @@ function getFileStats(string $file): array {
 /**
  * 格式化檔案大小
  */
-function formatFileSize(int $bytes): string {
+function formatFileSize(int $bytes): string
+{
     if ($bytes < 1024) {
         return $bytes . ' B';
     } elseif ($bytes < 1024 * 1024) {
@@ -202,13 +207,13 @@ function formatFileSize(int $bytes): string {
 /**
  * 主程式
  */
-function main(array $argv): void {
+function main(array $argv): void
+{
     // 解析參數
     $options = parseArguments($argv);
 
     // 設定輸出物件
-    $verbosity = $options['quiet'] ? ConsoleOutput::VERBOSITY_QUIET :
-                ($options['verbose'] ? ConsoleOutput::VERBOSITY_VERBOSE : ConsoleOutput::VERBOSITY_NORMAL);
+    $verbosity = $options['quiet'] ? ConsoleOutput::VERBOSITY_QUIET : ($options['verbose'] ? ConsoleOutput::VERBOSITY_VERBOSE : ConsoleOutput::VERBOSITY_NORMAL);
     $output = new ConsoleOutput($verbosity);
 
     try {
@@ -224,12 +229,13 @@ function main(array $argv): void {
         $_ENV['APP_ENV'] = $options['env'];
 
         // 設定要掃描的目錄
+        // 掃描路徑
         $scanPaths = [
-            __DIR__ . '/../src/Controllers',
-            __DIR__ . '/../src/Schemas',
-            __DIR__ . '/../src/OpenApi'
+            dirname(__DIR__) . '/app/Application/Controllers',
+            dirname(__DIR__) . '/app/Shared/DTOs',
+            dirname(__DIR__) . '/app/Shared/Schemas',
+            dirname(__DIR__) . '/app/Shared/OpenApi',
         ];
-
         $output->info("正在掃描控制器和 Schema 檔案...");
         $totalFiles = 0;
         foreach ($scanPaths as $path) {
@@ -251,6 +257,15 @@ function main(array $argv): void {
         // 生成 OpenAPI 文件
         $output->info("產生 OpenAPI 規格...");
         $openapi = Generator::scan($scanPaths);
+
+        // 如果沒有 Info，添加預設 Info
+        if (!$openapi->info || !$openapi->info->title) {
+            $openapi->info = new \OpenApi\Annotations\Info([
+                'title' => 'AlleyNote API',
+                'version' => '1.0.0',
+                'description' => 'AlleyNote 公布欄系統 API 文件'
+            ]);
+        }
 
         // 確保輸出目錄存在
         $outputDir = realpath($options['output']) ?: $options['output'];
@@ -376,7 +391,6 @@ function main(array $argv): void {
 
         $output->newLine();
         $output->success("API 文件產生完成！");
-
     } catch (Exception $e) {
         $output->error("無法產生 API 文件");
         $output->error("錯誤訊息：{$e->getMessage()}");

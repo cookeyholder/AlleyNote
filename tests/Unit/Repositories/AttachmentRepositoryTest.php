@@ -7,12 +7,15 @@ namespace Tests\Unit\Repositories;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Infrastructure\Services\CacheService;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PDO;
 use Tests\TestCase;
 
 class AttachmentRepositoryTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected AttachmentRepository $repository;
 
     protected PDO $db;
@@ -66,8 +69,7 @@ class AttachmentRepositoryTest extends TestCase
         $this->db->exec('CREATE INDEX idx_attachments_uuid ON attachments(uuid)');
     }
 
-    /** @test */
-    public function shouldCreateAttachmentSuccessfully(): void
+    public function testShouldCreateAttachmentSuccessfully(): void
     {
         // 準備測試資料
         $data = [
@@ -93,8 +95,7 @@ class AttachmentRepositoryTest extends TestCase
         $this->assertEquals($data['storage_path'], $attachment->getStoragePath());
     }
 
-    /** @test */
-    public function shouldFindAttachmentById(): void
+    public function testShouldFindAttachmentById(): void
     {
         // 建立測試資料
         $data = [
@@ -115,8 +116,7 @@ class AttachmentRepositoryTest extends TestCase
         $this->assertEquals($created->getUuid(), $found->getUuid());
     }
 
-    /** @test */
-    public function shouldFindAttachmentByUuid(): void
+    public function testShouldFindAttachmentByUuid(): void
     {
         // 建立測試資料
         $data = [
@@ -137,20 +137,17 @@ class AttachmentRepositoryTest extends TestCase
         $this->assertEquals($created->getUuid(), $found->getUuid());
     }
 
-    /** @test */
-    public function shouldReturnNullForNonExistentId(): void
+    public function testShouldReturnNullForNonExistentId(): void
     {
         $this->assertNull($this->repository->find(999));
     }
 
-    /** @test */
-    public function shouldReturnNullForNonExistentUuid(): void
+    public function testShouldReturnNullForNonExistentUuid(): void
     {
         $this->assertNull($this->repository->findByUuid('non-existent-uuid'));
     }
 
-    /** @test */
-    public function shouldGetAttachmentsByPostId(): void
+    public function testShouldGetAttachmentsByPostId(): void
     {
         // 建立多個附件
         $postId = 1;
@@ -175,8 +172,7 @@ class AttachmentRepositoryTest extends TestCase
         }
     }
 
-    /** @test */
-    public function shouldSoftDeleteAttachment(): void
+    public function testShouldSoftDeleteAttachment(): void
     {
         // 建立測試資料
         $data = [

@@ -8,6 +8,7 @@ use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\ControllerResolver;
 use App\Infrastructure\Routing\Core\Router;
 use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
+use App\Infrastructure\Routing\Middleware\MiddlewareResolver;
 use App\Infrastructure\Routing\RouteDispatcher;
 use App\Infrastructure\Routing\RouteLoader;
 use App\Infrastructure\Routing\RouteValidator;
@@ -41,6 +42,9 @@ class RoutingServiceProvider
             // 控制器解析器
             ControllerResolver::class => \DI\factory([self::class, 'createControllerResolver']),
 
+            // 中間件解析器
+            MiddlewareResolver::class => \DI\factory([self::class, 'createMiddlewareResolver']),
+
             // 中間件分派器
             MiddlewareDispatcher::class => \DI\create(MiddlewareDispatcher::class),
 
@@ -68,6 +72,14 @@ class RoutingServiceProvider
     }
 
     /**
+     * 建立中介軟體解析器實例.
+     */
+    public static function createMiddlewareResolver(ContainerInterface $container): MiddlewareResolver
+    {
+        return new MiddlewareResolver($container);
+    }
+
+    /**
      * 建立路由分派器實例.
      */
     public static function createRouteDispatcher(ContainerInterface $container): RouteDispatcher
@@ -75,6 +87,7 @@ class RoutingServiceProvider
         $router = $container->get(RouterInterface::class);
         $controllerResolver = $container->get(ControllerResolver::class);
         $middlewareDispatcher = $container->get(MiddlewareDispatcher::class);
+        $middlewareResolver = $container->get(MiddlewareResolver::class);
 
         return new RouteDispatcher(
             $router,

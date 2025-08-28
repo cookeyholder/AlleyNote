@@ -11,7 +11,6 @@ declare(strict_types=1);
  * 3. 快取效能
  * 4. 記憶體使用量
  */
-
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Infrastructure\Routing\Cache\FileRouteCache;

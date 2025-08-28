@@ -7,11 +7,14 @@ namespace Tests\Unit\Services;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use RuntimeException;
 use Tests\TestCase;
 
 class RateLimitServiceTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private RateLimitService $rateLimitService;
 
     private $cacheMock;
@@ -23,8 +26,7 @@ class RateLimitServiceTest extends TestCase
         $this->rateLimitService = new RateLimitService($this->cacheMock);
     }
 
-    /** @test */
-    public function shouldAllowFirstRequest(): void
+    public function testShouldAllowFirstRequest(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();
@@ -44,8 +46,7 @@ class RateLimitServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
-    public function shouldRejectWhenLimitExceeded(): void
+    public function testShouldRejectWhenLimitExceeded(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();
@@ -59,8 +60,7 @@ class RateLimitServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
-    public function shouldHandleCacheFailureGracefully(): void
+    public function testShouldHandleCacheFailureGracefully(): void
     {
         $ip = '127.0.0.1';
         $this->cacheMock->shouldReceive('get')
@@ -74,8 +74,7 @@ class RateLimitServiceTest extends TestCase
         $this->assertTrue($result, '當快取服務失敗時應該允許請求');
     }
 
-    /** @test */
-    public function shouldIncrementRequestCount(): void
+    public function testShouldIncrementRequestCount(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();
@@ -94,8 +93,7 @@ class RateLimitServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
-    public function shouldHandleSetFailure(): void
+    public function testShouldHandleSetFailure(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();

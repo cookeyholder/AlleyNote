@@ -11,18 +11,22 @@ use App\Domains\Auth\Services\AuthService;
 use App\Shared\Contracts\ValidatorInterface;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PDO;
 use Tests\TestCase;
 
 class PasswordHashingTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected AuthService $authService;
 
     protected UserRepository $userRepository;
 
-    protected PasswordSecurityServiceInterface $passwordService;
+    protected PasswordSecurityServiceInterface|MockInterface $passwordService;
 
-    protected ValidatorInterface $validator;
+    protected ValidatorInterface|MockInterface $validator;
 
     protected PDO $db;
 
@@ -94,8 +98,7 @@ class PasswordHashingTest extends TestCase
         ');
     }
 
-    /** @test */
-    public function shouldHashPasswordUsingArgon2id(): void
+    public function testShouldHashPasswordUsingArgon2id(): void
     {
         // 準備測試資料
         $userData = [
@@ -110,7 +113,11 @@ class PasswordHashingTest extends TestCase
         $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
-        $user = $this->authService->register($dto);
+        $result = $this->authService->register($dto);
+
+        // 確認註冊成功並取得用戶資料
+        $this->assertTrue($result['success']);
+        $user = $result['user'];
 
         // 從資料庫取得雜湊後的密碼
         $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
@@ -124,8 +131,7 @@ class PasswordHashingTest extends TestCase
         $this->assertTrue(password_verify($userData['password'], $hashedPassword));
     }
 
-    /** @test */
-    public function shouldUseAppropriateHashingOptions(): void
+    public function testShouldUseAppropriateHashingOptions(): void
     {
         // 準備測試資料
         $userData = [
@@ -140,7 +146,11 @@ class PasswordHashingTest extends TestCase
         $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
-        $user = $this->authService->register($dto);
+        $result = $this->authService->register($dto);
+
+        // 確認註冊成功並取得用戶資料
+        $this->assertTrue($result['success']);
+        $user = $result['user'];
 
         // 從資料庫取得雜湊後的密碼
         $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
@@ -157,8 +167,7 @@ class PasswordHashingTest extends TestCase
         $this->assertGreaterThan(50, strlen($hashedPassword));
     }
 
-    /** @test */
-    public function shouldRejectWeakPasswords(): void
+    public function testShouldRejectWeakPasswords(): void
     {
         // 準備測試資料（弱密碼）
         $userData = [
@@ -185,8 +194,7 @@ class PasswordHashingTest extends TestCase
         $this->authService->register($dto);
     }
 
-    /** @test */
-    public function shouldPreventPasswordReuse(): void
+    public function testShouldPreventPasswordReuse(): void
     {
         // 準備測試資料
         $userData = [
@@ -201,7 +209,11 @@ class PasswordHashingTest extends TestCase
         $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
-        $user = $this->authService->register($dto);
+        $result = $this->authService->register($dto);
+
+        // 確認註冊成功並取得用戶資料
+        $this->assertTrue($result['success']);
+        $user = $result['user'];
 
         // 模擬使用者嘗試更新密碼為相同的密碼
         $this->expectException(InvalidArgumentException::class);

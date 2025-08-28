@@ -1,0 +1,22 @@
+includes:
+	- vendor/phpstan/phpstan-mockery/extension.neon
+
+parameters:
+    treatPhpDocTypesAsCertain: false
+    level: 4
+    paths:
+        - app
+        - tests
+    excludePaths:
+        - app/Infrastructure/OpenApi (?)
+        - vendor
+        - tests/Factory
+        - coverage-reports
+    tmpDir: storage/phpstan
+    ignoreErrors:
+        # 只保留真正必要的忽略規則
+        
+        # 開發中的已知暫時問題
+        -
+            message: '#No error to ignore is reported on line#'
+            path: '*'

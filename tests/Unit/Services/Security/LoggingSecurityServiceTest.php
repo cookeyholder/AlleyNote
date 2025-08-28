@@ -70,8 +70,7 @@ class LoggingSecurityServiceTest extends TestCase
         rmdir($dir);
     }
 
-    /** @test */
-    public function sanitizesContextDataCorrectly(): void
+    public function testSanitizesContextDataCorrectly(): void
     {
         $sensitiveData = [
             'username' => 'testuser',
@@ -99,8 +98,7 @@ class LoggingSecurityServiceTest extends TestCase
         $this->assertEquals('public', $result['nested']['public_info']);
     }
 
-    /** @test */
-    public function appliesRequestWhitelistCorrectly(): void
+    public function testAppliesRequestWhitelistCorrectly(): void
     {
         $requestData = [
             'method' => 'POST',
@@ -125,8 +123,7 @@ class LoggingSecurityServiceTest extends TestCase
         $this->assertArrayNotHasKey('sensitive_param', $result);
     }
 
-    /** @test */
-    public function truncatesLongStrings(): void
+    public function testTruncatesLongStrings(): void
     {
         $longString = str_repeat('A', 1500);
         $data = ['long_field' => $longString];
@@ -141,8 +138,7 @@ class LoggingSecurityServiceTest extends TestCase
         $this->assertLessThan(1500, strlen($result['long_field']));
     }
 
-    /** @test */
-    public function enrichesSecurityContext(): void
+    public function testEnrichesSecurityContext(): void
     {
         $_SESSION['user_id'] = 123;
         session_id('test_session_id');
@@ -161,8 +157,7 @@ class LoggingSecurityServiceTest extends TestCase
         $this->assertEquals(123, $result['user_id']);
     }
 
-    /** @test */
-    public function enrichesRequestContext(): void
+    public function testEnrichesRequestContext(): void
     {
         $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 Test Browser';
 
@@ -183,8 +178,7 @@ class LoggingSecurityServiceTest extends TestCase
         );
     }
 
-    /** @test */
-    public function logsSecurityEventsCorrectly(): void
+    public function testLogsSecurityEventsCorrectly(): void
     {
         $this->expectNotToPerformAssertions();
 
@@ -195,8 +189,7 @@ class LoggingSecurityServiceTest extends TestCase
         $this->service->logAuthorizationFailure('posts', 'delete', ['user_id' => 123]);
     }
 
-    /** @test */
-    public function logsRequestsWithWhitelist(): void
+    public function testLogsRequestsWithWhitelist(): void
     {
         $requestData = [
             'method' => 'POST',
@@ -210,8 +203,7 @@ class LoggingSecurityServiceTest extends TestCase
         $this->service->logRequest($requestData);
     }
 
-    /** @test */
-    public function handlesSensitiveFieldVariations(): void
+    public function testHandlesSensitiveFieldVariations(): void
     {
         $data = [
             'Password' => 'secret1',
@@ -234,8 +226,7 @@ class LoggingSecurityServiceTest extends TestCase
         $this->assertEquals('public', $result['safe_field']);
     }
 
-    /** @test */
-    public function handlesEmptyAndNullValues(): void
+    public function testHandlesEmptyAndNullValues(): void
     {
         $data = [
             'empty_string' => '',
@@ -258,8 +249,7 @@ class LoggingSecurityServiceTest extends TestCase
         $this->assertEquals('[REDACTED]', $result['password']);
     }
 
-    /** @test */
-    public function returnsLogStatistics(): void
+    public function testReturnsLogStatistics(): void
     {
         $stats = $this->service->getLogStatistics();
 

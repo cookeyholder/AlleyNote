@@ -15,8 +15,7 @@ class CacheServiceTest extends TestCase
         $this->cacheService = new CacheService();
     }
 
-    /** @test */
-    public function storeAndRetrieveData(): void
+    public function testStoreAndRetrieveData(): void
     {
         $key = 'test_key';
         $value = ['id' => 1, 'name' => '測試資料'];
@@ -29,8 +28,7 @@ class CacheServiceTest extends TestCase
         $this->assertEquals($value, $result);
     }
 
-    /** @test */
-    public function handleConnectionFailure(): void
+    public function testHandleConnectionFailure(): void
     {
         $key = 'test_key';
         $value = ['id' => 1, 'name' => '測試資料'];
@@ -42,8 +40,7 @@ class CacheServiceTest extends TestCase
         $this->assertEquals($value, $result);
     }
 
-    /** @test */
-    public function handleConcurrentRequests(): void
+    public function testHandleConcurrentRequests(): void
     {
         $key = 'test_key';
         $value = ['id' => 1, 'name' => '測試資料'];
@@ -61,16 +58,14 @@ class CacheServiceTest extends TestCase
         }
     }
 
-    /** @test */
-    public function clearCache(): void
+    public function testClearCache(): void
     {
         $result = $this->cacheService->clear();
 
         $this->assertTrue($result);
     }
 
-    /** @test */
-    public function deleteSpecificKey(): void
+    public function testDeleteSpecificKey(): void
     {
         $result = $this->cacheService->delete('test_key');
 

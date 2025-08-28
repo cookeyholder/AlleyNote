@@ -6,6 +6,8 @@ namespace App\Infrastructure\Routing;
 
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
+use App\Infrastructure\Routing\Middleware\MiddlewareResolver;
+use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,12 +19,16 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class RouteDispatcher
 {
+    private MiddlewareResolver $middlewareResolver;
+
     public function __construct(
         private RouterInterface $router,
         private ControllerResolver $controllerResolver,
         private MiddlewareDispatcher $middlewareDispatcher,
         private ContainerInterface $container,
-    ) {}
+    ) {
+        $this->middlewareResolver = new MiddlewareResolver($container);
+    }
 
     /**
      * 分派請求到對應的路由處理器.
@@ -39,8 +45,24 @@ class RouteDispatcher
         $route = $matchResult->getRoute();
         $parameters = $matchResult->getParameters();
 
-        // 2. 準備中間件鏈
+        // 2. 準備中間件鏈（解析字串別名）
         $middlewares = $route->getMiddlewares();
+        $resolvedMiddlewares = [];
+
+        foreach ($middlewares as $middleware) {
+            try {
+                if (is_string($middleware)) {
+                    // 解析字串別名
+                    $resolvedMiddlewares[] = $this->middlewareResolver->resolve($middleware);
+                } else {
+                    // 已經是實例，直接使用
+                    $resolvedMiddlewares[] = $middleware;
+                }
+            } catch (Exception $e) {
+                // 記錄錯誤但繼續執行，避免因為中介軟體問題導致整個請求失敗
+                error_log("Failed to resolve middleware '{$middleware}': " . $e->getMessage());
+            }
+        }
 
         // 3. 建立最終處理器 (控制器)
         $finalHandler = new ClosureRequestHandler(
@@ -49,8 +71,8 @@ class RouteDispatcher
             },
         );
 
-        // 4. 執行中間件鏈
-        return $this->middlewareDispatcher->dispatch($request, $middlewares, $finalHandler);
+        // 4. 執行中間件鏈（使用解析後的中介軟體）
+        return $this->middlewareDispatcher->dispatch($request, $resolvedMiddlewares, $finalHandler);
     }
 
     /**

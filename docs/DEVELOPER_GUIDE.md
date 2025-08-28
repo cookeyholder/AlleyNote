@@ -1,23 +1,25 @@
 # AlleyNote 開發者指南
 
-**版本**: v2.0  
-**日期**: 2025-01-15  
+**版本**: v3.0  
+**日期**: 2025-08-28  
 **適用範圍**: AlleyNote 專案新手與進階開發者  
+**更新**: 包含統一腳本管理系統指南
 
 ---
 
 ## 📋 目錄
 
 1. [快速開始](#快速開始)
-2. [開發環境設定](#開發環境設定)
-3. [專案架構概覽](#專案架構概覽)
-4. [編碼規範](#編碼規範)
-5. [新功能開發流程](#新功能開發流程)
-6. [測試指南](#測試指南)
-7. [除錯與故障排除](#除錯與故障排除)
-8. [部署與維運](#部署與維運)
-9. [進階主題](#進階主題)
-10. [FAQ 常見問題](#faq-常見問題)
+2. [統一腳本管理系統](#統一腳本管理系統)
+3. [開發環境設定](#開發環境設定)
+4. [專案架構概覽](#專案架構概覽)
+5. [編碼規範](#編碼規範)
+6. [新功能開發流程](#新功能開發流程)
+7. [測試指南](#測試指南)
+8. [除錯與故障排除](#除錯與故障排除)
+9. [部署與維運](#部署與維運)
+10. [進階主題](#進階主題)
+11. [FAQ 常見問題](#faq-常見問題)
 
 ---
 
@@ -27,12 +29,12 @@
 
 ```bash
 # 系統需求
-- PHP 8.4+
+- PHP 8.4.11+
 - Docker & Docker Compose
 - Git
 - Composer
 
-# 克隆專案
+# 複製專案
 git clone https://github.com/your-org/alleynote.git
 cd alleynote
 
@@ -47,33 +49,250 @@ cp .env.example .env
 # 啟動 Docker 容器
 docker compose up -d
 
-# 安裝依賴
-docker compose exec php composer install
+# 安裝依賴套件
+docker compose exec web composer install
 
 # 初始化資料庫
-docker compose exec php php scripts/init-sqlite.sh
+docker compose exec web php scripts/unified-scripts.php db:init
 
-# 運行測試確認環境
-docker compose exec php vendor/bin/phpunit
+# 執行完整測試套件 (1,213 tests, 87.5% coverage)
+docker compose exec web php scripts/unified-scripts.php test:run
 ```
 
-### 3. 第一次提交
+### 3. 🚀 統一腳本管理系統
+
+AlleyNote 採用現代化的統一腳本管理系統，取代傳統的 58+ 個獨立腳本，實現 85% 程式碼精簡：
 
 ```bash
-# 建立新分支
+# 統一腳本入口點
+docker compose exec web php scripts/unified-scripts.php
+
+# 查看所有可用指令和說明
+docker compose exec web php scripts/unified-scripts.php --help
+
+# 核心開發工具
+docker compose exec web php scripts/unified-scripts.php test:run           # 執行測試套件
+docker compose exec web php scripts/unified-scripts.php quality:check      # 程式碼品質檢查
+docker compose exec web php scripts/unified-scripts.php db:migrate         # 資料庫遷移
+docker compose exec web php scripts/unified-scripts.php swagger:generate   # API 文件產生
+docker compose exec web php scripts/unified-scripts.php cache:warm         # 快取預熱
+
+# 維運工具
+docker compose exec web php scripts/unified-scripts.php backup:db          # 資料庫備份
+docker compose exec web php scripts/unified-scripts.php security:scan      # 安全性掃描
+docker compose exec web php scripts/unified-scripts.php project:status     # 專案狀態檢查
+```
+
+### 4. 第一次開發提交
+
+### 4. 第一次開發提交
+
+```bash
+# 建立新功能分支
 git checkout -b feature/my-first-feature
 
-# 進行開發...
+# 開發過程中，使用統一腳本進行測試與檢查
+docker compose exec web php scripts/unified-scripts.php test:unit         # 單元測試
+docker compose exec web php scripts/unified-scripts.php quality:fix       # 自動修正程式碼風格
 
-# 運行測試和靜態分析
-composer test
-composer analyse
+# 提交前的完整檢查
+docker compose exec web php scripts/unified-scripts.php ci:check          # CI 檢查
 
-# 提交變更
+# 提交變更 (遵循 Conventional Commit 規範)
 git add .
 git commit -m "feat: 新增我的第一個功能"
 git push origin feature/my-first-feature
 ```
+
+### 5. 專案狀態概覽
+
+當前專案統計資訊 (最新更新)：
+- **測試套件**: 1,213 tests, 5,714 assertions (100% 通過率)
+- **程式碼覆蓋率**: 87.5%
+- **靜態分析**: 0 errors (PHPStan Level 8)
+- **類別架構**: 161 classes, 37 interfaces
+- **統一腳本**: 9 core classes (取代 58+ legacy scripts)
+
+---
+
+## 統一腳本管理系統
+
+### 系統概述
+
+AlleyNote 採用現代化的統一腳本管理系統，將原本分散的 58+ 個腳本整合為單一入口點，實現：
+
+- **85% 程式碼精簡**: 從 58+ 個獨立腳本精簡為 9 個核心類別
+- **統一介面**: 所有開發工具透過單一指令執行
+- **自動發現**: 動態載入和註冊指令，無需手動維護
+- **類型安全**: 完整 PHP 8.4 類型宣告與 PHPStan Level 8 合規
+- **擴展性**: 模組化設計，容易新增自訂指令
+
+### 核心架構
+
+```
+scripts/
+├── unified-scripts.php          # 主要入口點
+├── lib/
+│   ├── UnifiedScriptManager.php     # 核心管理器
+│   ├── Command/
+│   │   ├── AbstractCommand.php         # 抽象基礎指令類別
+│   │   ├── TestCommand.php            # 測試相關指令
+│   │   ├── QualityCommand.php         # 程式碼品質指令
+│   │   ├── DatabaseCommand.php        # 資料庫操作指令
+│   │   ├── SwaggerCommand.php         # API 文件產生指令
+│   │   ├── CacheCommand.php           # 快取管理指令
+│   │   ├── BackupCommand.php          # 備份相關指令
+│   │   ├── SecurityCommand.php        # 安全性掃描指令
+│   │   └── ProjectCommand.php         # 專案狀態指令
+│   └── CommandRegistry.php        # 指令註冊器
+```
+
+### 基本用法
+
+```bash
+# 顯示所有可用指令
+docker compose exec web php scripts/unified-scripts.php --help
+
+# 執行特定指令類別的說明
+docker compose exec web php scripts/unified-scripts.php test --help
+docker compose exec web php scripts/unified-scripts.php quality --help
+```
+
+### 測試相關指令
+
+```bash
+# 執行所有測試 (1,213 tests)
+docker compose exec web php scripts/unified-scripts.php test:run
+
+# 執行單元測試
+docker compose exec web php scripts/unified-scripts.php test:unit
+
+# 執行整合測試
+docker compose exec web php scripts/unified-scripts.php test:integration
+
+# 產生測試覆蓋率報告 (87.5% coverage)
+docker compose exec web php scripts/unified-scripts.php test:coverage
+
+# 執行安全性測試
+docker compose exec web php scripts/unified-scripts.php test:security
+```
+
+### 程式碼品質指令
+
+```bash
+# 執行完整程式碼品質檢查
+docker compose exec web php scripts/unified-scripts.php quality:check
+
+# 自動修正程式碼風格問題
+docker compose exec web php scripts/unified-scripts.php quality:fix
+
+# 執行 PHPStan 靜態分析 (Level 8)
+docker compose exec web php scripts/unified-scripts.php quality:analyse
+
+# CI 環境的完整檢查
+docker compose exec web php scripts/unified-scripts.php ci:check
+```
+
+### 資料庫管理指令
+
+```bash
+# 初始化資料庫
+docker compose exec web php scripts/unified-scripts.php db:init
+
+# 執行資料庫遷移
+docker compose exec web php scripts/unified-scripts.php db:migrate
+
+# 資料庫回滾
+docker compose exec web php scripts/unified-scripts.php db:rollback
+
+# 檢查資料庫效能
+docker compose exec web php scripts/unified-scripts.php db:performance
+```
+
+### 開發工具指令
+
+```bash
+# 產生 Swagger API 文件
+docker compose exec web php scripts/unified-scripts.php swagger:generate
+
+# 測試 Swagger 設定
+docker compose exec web php scripts/unified-scripts.php swagger:test
+
+# 快取管理
+docker compose exec web php scripts/unified-scripts.php cache:clear
+docker compose exec web php scripts/unified-scripts.php cache:warm
+
+# 專案狀態檢查
+docker compose exec web php scripts/unified-scripts.php project:status
+```
+
+### 備份與維運指令
+
+```bash
+# 資料庫備份
+docker compose exec web php scripts/unified-scripts.php backup:db
+
+# 檔案備份
+docker compose exec web php scripts/unified-scripts.php backup:files
+
+# 安全性掃描
+docker compose exec web php scripts/unified-scripts.php security:scan
+
+# SSL 憑證管理 (生產環境)
+docker compose exec web php scripts/unified-scripts.php ssl:setup
+docker compose exec web php scripts/unified-scripts.php ssl:renew
+```
+
+### 自訂指令開發
+
+要新增自訂指令，請遵循以下步驟：
+
+1. **建立指令類別**:
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace AlleyNote\Scripts\Command;
+
+class MyCustomCommand extends AbstractCommand
+{
+    protected function getCommands(): array
+    {
+        return [
+            'my:custom' => 'Execute my custom functionality',
+        ];
+    }
+    
+    protected function executeCommand(string $command, array $args): int
+    {
+        match ($command) {
+            'my:custom' => $this->executeMyCustom($args),
+            default => throw new \InvalidArgumentException("Unknown command: {$command}")
+        };
+        
+        return 0;
+    }
+    
+    private function executeMyCustom(array $args): void
+    {
+        echo "Executing my custom command...\n";
+        // 實作自訂功能
+    }
+}
+```
+
+2. **註冊指令** (自動發現，無需手動註冊):
+指令會在 `UnifiedScriptManager` 啟動時自動發現並註冊。
+
+### 效能優化
+
+統一腳本系統採用以下優化策略：
+
+- **Lazy Loading**: 指令類別僅在需要時載入
+- **快取機制**: 指令清單和metadata會被快取
+- **記憶體優化**: 避免載入不必要的依賴
+- **並行執行**: 部分指令支援並行處理
 
 ---
 
@@ -142,53 +361,104 @@ chmod +x .git/hooks/pre-commit
 
 ## 專案架構概覽
 
-### 目錄結構
+### 目錄結構 (DDD 架構)
 
 ```
-AlleyNote/
-├── src/                    # 核心程式碼
-│   ├── Controller/         # 控制器層
-│   ├── Service/           # 業務邏輯層
-│   ├── Repository/        # 資料存取層
-│   ├── DTO/              # 資料傳輸物件
-│   ├── Model/            # 資料模型
-│   ├── Validation/       # 驗證層
-│   ├── Infrastructure/   # 基礎設施層
-│   ├── Security/         # 安全相關
-│   └── Helper/           # 輔助工具
-├── tests/                 # 測試
-│   ├── Unit/             # 單元測試
-│   ├── Integration/      # 整合測試
-│   ├── Security/         # 安全測試
-│   └── UI/              # UI 測試
-├── public/               # 公開檔案
-├── database/             # 資料庫檔案
-├── scripts/              # 維運腳本
-├── docker/               # Docker 設定
-└── docs/                 # 文件
+AlleyNote/                          # 根目錄
+├── app/                           # 應用程式核心 (DDD 架構)
+│   ├── Application/               # 應用層
+│   │   ├── Controllers/          # HTTP 控制器
+│   │   └── Middleware/           # 中介軟體
+│   ├── Domains/                  # 領域層 (核心業務邏輯)
+│   │   ├── Auth/                 # 身份驗證領域
+│   │   ├── Post/                 # 文章管理領域
+│   │   ├── Attachment/           # 附件管理領域
+│   │   └── Security/             # 安全性領域
+│   ├── Infrastructure/           # 基礎設施層
+│   │   ├── Repositories/         # 資料存取實作
+│   │   ├── Services/             # 外部服務整合
+│   │   └── Cache/               # 快取機制
+│   ├── Services/                 # 應用服務
+│   └── Shared/                   # 共用元件
+├── tests/                        # 測試套件 (1,213 tests)
+│   ├── Unit/                     # 單元測試
+│   ├── Integration/              # 整合測試
+│   ├── Security/                 # 安全性測試
+│   └── UI/                      # 使用者介面測試
+├── scripts/                      # 統一腳本管理系統
+│   ├── unified-scripts.php       # 主入口點
+│   └── lib/                     # 腳本核心類別庫 (9 classes)
+├── database/                     # 資料庫相關
+│   ├── alleynote.sqlite3         # SQLite 資料庫
+│   └── migrations/               # 資料庫遷移
+├── public/                       # 公開存取檔案
+│   ├── index.php                 # 應用程式入口
+│   ├── api-docs.json            # Swagger API 文件
+│   └── api-docs.yaml            # Swagger YAML 格式
+├── docker/                       # Docker 容器設定
+│   ├── php/                     # PHP-FPM 設定
+│   └── nginx/                   # Nginx 設定
+├── docs/                        # 專案文件 (37 documents)
+└── coverage_report/             # 測試覆蓋率報告 (87.5%)
 ```
 
-### 分層架構
+### DDD 分層架構
 
 ```
-┌─────────────────┐
-│   Controller    │ ← HTTP 請求處理
-├─────────────────┤
-│     Service     │ ← 業務邏輯
-├─────────────────┤
-│   Repository    │ ← 資料存取
-├─────────────────┤
-│     Model       │ ← 資料模型
-└─────────────────┘
+┌──────────────────────────┐
+│     Presentation         │ ← HTTP Controllers, API Routes
+├──────────────────────────┤
+│     Application          │ ← Application Services, DTOs
+├──────────────────────────┤
+│       Domain             │ ← Business Logic, Entities, Value Objects
+├──────────────────────────┤
+│    Infrastructure        │ ← Repositories, External Services
+└──────────────────────────┘
 ```
 
-### 資料流
+### 領域模型 (Bounded Contexts)
 
 ```
-HTTP Request → Router → Controller → DTO → Service → Repository → Database
-                                      ↓
-HTTP Response ← View ← Controller ← Result ← Service ← Model ← Database
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│    Auth     │  │    Post     │  │ Attachment  │
+│   Domain    │  │   Domain    │  │   Domain    │
+│             │  │             │  │             │
+│ - User      │  │ - Post      │  │ - File      │
+│ - Session   │  │ - Comment   │  │ - Image     │
+│ - Token     │  │ - Category  │  │ - Upload    │
+└─────────────┘  └─────────────┘  └─────────────┘
+
+┌─────────────┐  ┌─────────────┐
+│  Security   │  │   Shared    │
+│   Domain    │  │  Elements   │
+│             │  │             │
+│ - Audit     │  │ - Common    │
+│ - Log       │  │ - Utils     │
+│ - Firewall  │  │ - Events    │
+└─────────────┘  └─────────────┘
 ```
+
+### 資料流 (DDD + 統一腳本)
+
+```
+HTTP Request → Router → Controller → Application Service → Domain Service → Repository
+                                           ↓
+HTTP Response ← View ← Controller ← DTO ← Application Service ← Domain Entity ← Database
+
+統一腳本系統:
+CLI Input → unified-scripts.php → CommandRegistry → Specific Command → Domain/Infrastructure
+```
+
+### 專案統計 (最新)
+
+- **總類別數**: 161 classes
+- **介面數**: 37 interfaces  
+- **命名空間**: 73 namespaces
+- **測試套件**: 1,213 tests (100% 通過)
+- **程式碼覆蓋率**: 87.5%
+- **統一腳本**: 9 core classes (取代 58+ legacy scripts)
+- **PHPStan 等級**: Level 8 (0 errors)
+- **PHP 版本**: 8.4.11
 
 ---
 
@@ -497,17 +767,56 @@ git push origin feature/user-comments
 
 ## 測試指南
 
-### 測試策略
+### 測試策略與覆蓋率
 
 ```
-測試金字塔：
-    ┌─────────┐
-    │ UI 測試  │ 10%
-    ├─────────┤
-    │ 整合測試 │ 20%
-    ├─────────┤
-    │ 單元測試 │ 70%
-    └─────────┘
+測試金字塔 (AlleyNote 實際分布)：
+    ┌─────────────┐
+    │  UI 測試     │ ~8% (97 tests)
+    ├─────────────┤  
+    │  整合測試    │ ~22% (267 tests) 
+    ├─────────────┤
+    │  單元測試    │ ~70% (849 tests)
+    └─────────────┘
+
+總計: 1,213 tests, 5,714 assertions
+覆蓋率: 87.5% (目標: >85%)
+執行時間: ~20.4 秒
+```
+
+### 🚀 使用統一腳本執行測試
+
+```bash
+# 執行所有測試套件 (推薦)
+docker compose exec web php scripts/unified-scripts.php test:run
+
+# 執行特定類型測試
+docker compose exec web php scripts/unified-scripts.php test:unit         # 單元測試
+docker compose exec web php scripts/unified-scripts.php test:integration  # 整合測試
+docker compose exec web php scripts/unified-scripts.php test:security     # 安全性測試
+docker compose exec web php scripts/unified-scripts.php test:ui           # UI 測試
+
+# 測試覆蓋率報告
+docker compose exec web php scripts/unified-scripts.php test:coverage
+
+# 並行執行測試 (加速執行)
+docker compose exec web php scripts/unified-scripts.php test:parallel
+
+# CI 環境測試 (包含所有檢查)
+docker compose exec web php scripts/unified-scripts.php ci:check
+```
+
+### 測試環境管理
+
+```bash
+# 測試資料庫初始化
+docker compose exec web php scripts/unified-scripts.php db:test-setup
+
+# 清理測試資料
+docker compose exec web php scripts/unified-scripts.php test:cleanup
+
+# 重設測試環境
+docker compose exec web php scripts/unified-scripts.php test:reset
 ```
 
 ### 單元測試
@@ -671,6 +980,47 @@ class PostFactory
 ---
 
 ## 除錯與故障排除
+
+### 🛠️ 統一腳本除錯工具
+
+```bash
+# 專案整體狀態檢查
+docker compose exec web php scripts/unified-scripts.php project:status
+
+# 系統健康檢查
+docker compose exec web php scripts/unified-scripts.php system:health
+
+# 快取狀態診斷
+docker compose exec web php scripts/unified-scripts.php cache:status
+
+# 資料庫連線檢查
+docker compose exec web php scripts/unified-scripts.php db:test-connection
+
+# 權限問題診斷
+docker compose exec web php scripts/unified-scripts.php system:permissions
+
+# 效能分析
+docker compose exec web php scripts/unified-scripts.php performance:analyze
+```
+
+### 常見問題快速修復
+
+```bash
+# 快取問題
+docker compose exec web php scripts/unified-scripts.php cache:clear
+docker compose exec web php scripts/unified-scripts.php cache:warm
+
+# 權限問題  
+docker compose exec web php scripts/unified-scripts.php fix:permissions
+
+# 測試失敗清理
+docker compose exec web php scripts/unified-scripts.php test:cleanup
+docker compose exec web php scripts/unified-scripts.php test:reset
+
+# 資料庫問題
+docker compose exec web php scripts/unified-scripts.php db:repair
+docker compose exec web php scripts/unified-scripts.php db:optimize
+```
 
 ### 日誌系統
 

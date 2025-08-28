@@ -18,7 +18,16 @@ class UserRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->markTestSkipped('暫時跳過此測試類以解決依賴問題');
+
+        // 建立記憶體 SQLite 資料庫
+        $this->db = new PDO('sqlite::memory:');
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // 建立測試用 users 資料表
+        $this->setupTestDatabase();
+
+        // 建立 UserRepository 實例
+        $this->repository = new UserRepository($this->db);
     }
 
     private function setupTestDatabase(): void
@@ -39,8 +48,7 @@ class UserRepositoryTest extends TestCase
         ');
     }
 
-    /** @test */
-    public function createUserSuccessfully(): void
+    public function testCreateUserSuccessfully(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -58,8 +66,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals(1, $result['status']);
     }
 
-    /** @test */
-    public function updateUserSuccessfully(): void
+    public function testUpdateUserSuccessfully(): void
     {
         $user = $this->repository->create([
             'username' => 'testuser',
@@ -79,8 +86,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($user['username'], $updated['username']);
     }
 
-    /** @test */
-    public function deleteUserSuccessfully(): void
+    public function testDeleteUserSuccessfully(): void
     {
         $user = $this->repository->create([
             'username' => 'testuser',
@@ -95,8 +101,7 @@ class UserRepositoryTest extends TestCase
         $this->assertNull($found);
     }
 
-    /** @test */
-    public function findUserByUuid(): void
+    public function testFindUserByUuid(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -112,8 +117,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['email'], $found['email']);
     }
 
-    /** @test */
-    public function findUserByUsername(): void
+    public function testFindUserByUsername(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -128,8 +132,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['email'], $found['email']);
     }
 
-    /** @test */
-    public function findUserByEmail(): void
+    public function testFindUserByEmail(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -144,8 +147,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['username'], $found['username']);
     }
 
-    /** @test */
-    public function preventDuplicateUsername(): void
+    public function testPreventDuplicateUsername(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -161,8 +163,7 @@ class UserRepositoryTest extends TestCase
         $this->repository->create($userData);
     }
 
-    /** @test */
-    public function preventDuplicateEmail(): void
+    public function testPreventDuplicateEmail(): void
     {
         $userData = [
             'username' => 'testuser1',
@@ -178,8 +179,7 @@ class UserRepositoryTest extends TestCase
         $this->repository->create($userData);
     }
 
-    /** @test */
-    public function findUserById(): void
+    public function testFindUserById(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -195,15 +195,13 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($created['email'], $found['email']);
     }
 
-    /** @test */
-    public function returnNullWhenUserNotFound(): void
+    public function testReturnNullWhenUserNotFound(): void
     {
         $result = $this->repository->findById('999');
         $this->assertNull($result);
     }
 
-    /** @test */
-    public function updateLastLoginTime(): void
+    public function testUpdateLastLoginTime(): void
     {
         $user = $this->repository->create([
             'username' => 'testuser',

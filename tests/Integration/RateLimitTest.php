@@ -8,10 +8,13 @@ use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
 use Exception;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Tests\TestCase;
 
 class RateLimitTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     private RateLimitService $rateLimitService;
 
     private CacheService $cacheService;
@@ -38,8 +41,7 @@ class RateLimitTest extends TestCase
             ->byDefault();
     }
 
-    /** @test */
-    public function shouldLimitRateSuccessfully(): void
+    public function testShouldLimitRateSuccessfully(): void
     {
         $ip = '192.168.1.1';
         $maxAttempts = 60;
@@ -58,8 +60,7 @@ class RateLimitTest extends TestCase
         $this->assertTrue($result['allowed'], '正常請求應該被允許');
     }
 
-    /** @test */
-    public function shouldResetLimitAfterTimeWindow(): void
+    public function testShouldResetLimitAfterTimeWindow(): void
     {
         $ip = '192.168.1.2';
 
@@ -93,8 +94,7 @@ class RateLimitTest extends TestCase
         $this->assertTrue($resetResult['allowed'], '重置後的請求應該被允許');
     }
 
-    /** @test */
-    public function shouldHandleDifferentIpsIndependently(): void
+    public function testShouldHandleDifferentIpsIndependently(): void
     {
         $ip1 = '192.168.1.3';
         $ip2 = '192.168.1.4';
@@ -125,8 +125,7 @@ class RateLimitTest extends TestCase
         $this->assertTrue($result2['allowed'], 'IP2 應該被允許');
     }
 
-    /** @test */
-    public function shouldHandleServiceUnavailability(): void
+    public function testShouldHandleServiceUnavailability(): void
     {
         $ip = '192.168.1.5';
 
@@ -141,8 +140,7 @@ class RateLimitTest extends TestCase
         $this->assertTrue($result['allowed'], '快取服務錯誤時應該允許請求');
     }
 
-    /** @test */
-    public function shouldIncrementCounterCorrectly(): void
+    public function testShouldIncrementCounterCorrectly(): void
     {
         $ip = '192.168.1.6';
 
@@ -171,8 +169,7 @@ class RateLimitTest extends TestCase
         $this->assertTrue($result['allowed'], '計數器應該正確遞增');
     }
 
-    /** @test */
-    public function shouldHandleMaxAttemptsReached(): void
+    public function testShouldHandleMaxAttemptsReached(): void
     {
         $ip = '192.168.1.7';
         $maxAttempts = 60;

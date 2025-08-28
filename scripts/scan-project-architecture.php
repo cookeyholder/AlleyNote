@@ -3,8 +3,17 @@
 /**
  * 專案架構快速掃描腳本
  * 用於分析整個專案的結構、命名空間、類別關係等
+ * 基於 Context7 MCP 查詢的最新分析技術和 DDD 最佳實踐
  * 
  * 使用方法: php scripts/scan-project-architecture.php
+ * 
+ * 新增功能（基於 Context7 MCP）:
+ * - 現代 PHP 語法檢查
+ * - 型別宣告一致性分析
+ * - PSR-4 自動載入驗證
+ * - 測試覆蓋率品質評估
+ * - 相依性注入模式分析
+ * - DDD 邊界上下文檢查
  */
 
 class ProjectArchitectureScanner
@@ -22,7 +31,12 @@ class ProjectArchitectureScanner
         'test_coverage' => [],
         'constructor_dependencies' => [],
         'missing_imports' => [],
-        'namespace_mismatches' => []
+        'namespace_mismatches' => [],
+        'type_declarations' => [],      // 新增：型別宣告分析
+        'psr4_compliance' => [],        // 新增：PSR-4 合規性
+        'modern_syntax_usage' => [],    // 新增：現代 PHP 語法使用情況
+        'boundary_contexts' => [],      // 新增：DDD 邊界上下文分析
+        'quality_metrics' => []         // 新增：程式碼品質指標
     ];
 
     private string $projectRoot;
@@ -38,6 +52,18 @@ class ProjectArchitectureScanner
         'docker'
     ];
 
+    // 新增：現代 PHP 特性檢查清單
+    private array $modernPhpFeatures = [
+        'readonly_properties' => '/readonly\s+[a-zA-Z_]/i',
+        'enum_usage' => '/enum\s+[A-Z]\w*/i',
+        'union_types' => '/:\s*[a-zA-Z_\\\\|]+\|[a-zA-Z_\\\\|]+/',
+        'intersection_types' => '/:\s*[a-zA-Z_\\\\&]+&[a-zA-Z_\\\\&]+/',
+        'constructor_promotion' => '/public\s+readonly\s+[a-zA-Z_]/i',
+        'match_expression' => '/match\s*\(/i',
+        'attributes' => '/#\[[\w\\\\]+/i',
+        'nullsafe_operator' => '/\?\->/i',
+    ];
+
     public function __construct(string $projectRoot)
     {
         $this->projectRoot = realpath($projectRoot);
@@ -45,7 +71,7 @@ class ProjectArchitectureScanner
 
     public function scan(): void
     {
-        echo "🔍 掃描專案架構...\n";
+        echo "🔍 掃描專案架構（使用最新分析技術）...\n";
 
         // 掃描目錄結構
         $this->scanDirectories();
@@ -97,6 +123,13 @@ class ProjectArchitectureScanner
         foreach ($phpFiles as $file) {
             $this->analyzePhpFile($file);
         }
+
+        // 執行新的分析功能
+        echo "  📊 執行現代 PHP 特性分析...\n";
+        $this->analyzeBoundaryContexts();
+
+        echo "  📏 計算程式碼品質指標...\n";
+        $this->calculateQualityMetrics();
     }
 
     private function findPhpFiles(): array
@@ -131,6 +164,10 @@ class ProjectArchitectureScanner
 
         // 提取 use 語句
         $this->extractUseStatements($content, $relativePath);
+
+        // 新的分析功能（基於 Context7 MCP）
+        $this->analyzeModernPhpFeatures($filePath, $content);
+        $this->checkPsr4Compliance($filePath, $content);
     }
 
     private function extractClassInfo(string $content, string $filePath): void
@@ -409,12 +446,144 @@ class ProjectArchitectureScanner
         $reportPath = $this->projectRoot . '/storage/architecture-report.md';
         $summaryPath = $this->projectRoot . '/storage/architecture-summary.txt';
 
+        // 確保 storage 目錄存在
+        $storageDir = dirname($reportPath);
+        if (!is_dir($storageDir)) {
+            mkdir($storageDir, 0755, true);
+        }
+
         // 生成詳細報告
-        $report = "# 專案架構分析報告\n\n";
+        $report = "# 專案架構分析報告（基於 Context7 MCP 最新技術）\n\n";
         $report .= "**生成時間**: $timestamp\n\n";
 
         // 生成快速摘要
         $summary = "=== 專案架構快速摘要 ($timestamp) ===\n\n";
+
+        // 程式碼品質指標（新增）
+        if (!empty($this->analysis['quality_metrics'])) {
+            $metrics = $this->analysis['quality_metrics'];
+            $report .= "## 📊 程式碼品質指標\n\n";
+            $report .= "| 指標 | 數值 | 狀態 |\n";
+            $report .= "|------|------|------|\n";
+            $report .= sprintf("| 總類別數 | %d | - |\n", $metrics['total_classes']);
+            $report .= sprintf(
+                "| 介面與類別比例 | %.2f%% | %s |\n",
+                $metrics['interface_to_class_ratio'],
+                $metrics['interface_to_class_ratio'] >= 20 ? '✅ 良好' : '⚠️ 可改善'
+            );
+            $report .= sprintf(
+                "| 平均依賴數/類別 | %.2f | %s |\n",
+                $metrics['average_dependencies_per_class'],
+                $metrics['average_dependencies_per_class'] <= 5 ? '✅ 良好' : '⚠️ 過多'
+            );
+            $report .= sprintf(
+                "| 現代 PHP 採用率 | %.2f%% | %s |\n",
+                $metrics['modern_php_adoption_rate'],
+                $metrics['modern_php_adoption_rate'] >= 50 ? '✅ 良好' : '⚠️ 待升級'
+            );
+            $report .= sprintf(
+                "| PSR-4 合規率 | %.2f%% | %s |\n",
+                $metrics['psr4_compliance_rate'],
+                $metrics['psr4_compliance_rate'] >= 90 ? '✅ 良好' : '❌ 需修正'
+            );
+            $report .= sprintf(
+                "| DDD 結構完整性 | %.2f%% | %s |\n",
+                $metrics['ddd_structure_completeness'],
+                $metrics['ddd_structure_completeness'] >= 70 ? '✅ 良好' : '⚠️ 可改善'
+            );
+            $report .= "\n";
+
+            // 添加到摘要
+            $summary .= "📊 品質指標:\n";
+            $summary .= "- 總類別數: {$metrics['total_classes']}\n";
+            $summary .= "- 介面比例: {$metrics['interface_to_class_ratio']}%\n";
+            $summary .= "- 現代 PHP 採用率: {$metrics['modern_php_adoption_rate']}%\n";
+            $summary .= "- PSR-4 合規率: {$metrics['psr4_compliance_rate']}%\n\n";
+        }
+
+        // DDD 邊界上下文分析（新增）
+        if (!empty($this->analysis['boundary_contexts'])) {
+            $report .= "## 🎯 DDD 邊界上下文分析\n\n";
+
+            foreach ($this->analysis['boundary_contexts'] as $contextName => $components) {
+                $report .= "### $contextName 上下文\n\n";
+                $report .= "| 組件類型 | 數量 | 項目 |\n";
+                $report .= "|----------|------|------|\n";
+
+                foreach ($components as $type => $items) {
+                    $typeName = match ($type) {
+                        'entities' => '實體',
+                        'value_objects' => '值物件',
+                        'aggregates' => '聚合',
+                        'repositories' => '儲存庫',
+                        'services' => '領域服務',
+                        'events' => '領域事件',
+                        default => $type
+                    };
+
+                    $report .= sprintf(
+                        "| %s | %d | %s |\n",
+                        $typeName,
+                        count($items),
+                        count($items) > 0 ? implode(', ', array_slice($items, 0, 3)) . (count($items) > 3 ? '...' : '') : '-'
+                    );
+                }
+
+                $report .= "\n";
+            }
+
+            // 添加到摘要
+            $summary .= "🎯 邊界上下文: " . count($this->analysis['boundary_contexts']) . " 個\n";
+            foreach ($this->analysis['boundary_contexts'] as $contextName => $components) {
+                $totalComponents = array_sum(array_map('count', $components));
+                $summary .= "- {$contextName}: {$totalComponents} 個組件\n";
+            }
+            $summary .= "\n";
+        }
+
+        // 現代 PHP 特性使用情況（新增）
+        if (!empty($this->analysis['modern_syntax_usage'])) {
+            $report .= "## 🚀 現代 PHP 特性使用情況\n\n";
+
+            // 統計特性使用頻率
+            $featureStats = [];
+            foreach ($this->analysis['modern_syntax_usage'] as $class => $features) {
+                foreach ($features as $feature => $count) {
+                    $featureStats[$feature] = ($featureStats[$feature] ?? 0) + $count;
+                }
+            }
+
+            arsort($featureStats);
+
+            $report .= "| 特性 | 使用次數 | 描述 |\n";
+            $report .= "|------|----------|------|\n";
+
+            $featureDescriptions = [
+                'readonly_properties' => '唯讀屬性 (PHP 8.1+)',
+                'enum_usage' => '列舉型別 (PHP 8.1+)',
+                'union_types' => '聯合型別 (PHP 8.0+)',
+                'intersection_types' => '交集型別 (PHP 8.1+)',
+                'constructor_promotion' => '建構子屬性提升 (PHP 8.0+)',
+                'match_expression' => 'Match 表達式 (PHP 8.0+)',
+                'attributes' => '屬性標籤 (PHP 8.0+)',
+                'nullsafe_operator' => '空安全運算子 (PHP 8.0+)',
+            ];
+
+            foreach ($featureStats as $feature => $count) {
+                $description = $featureDescriptions[$feature] ?? $feature;
+                $recommendation = $this->getFeatureRecommendation($feature);
+                $report .= "| $description | $count | $recommendation |\n";
+            }
+            $report .= "\n";
+
+            // 添加到摘要
+            $summary .= "🚀 現代 PHP 特性: " . count($featureStats) . " 種正在使用\n";
+            if (!empty($featureStats)) {
+                $topFeature = array_key_first($featureStats);
+                $summary .= "- 最常用: " . ($featureDescriptions[$topFeature] ?? $topFeature) . " ({$featureStats[$topFeature]} 次)\n";
+            }
+            $summary .= "\n";
+        }
 
         // 目錄結構
         $report .= "## 📁 目錄結構\n\n";
@@ -616,6 +785,217 @@ class ProjectArchitectureScanner
         echo "\n" . $summary;
         echo "\n📝 詳細報告: $reportPath\n";
         echo "⚡ 快速摘要: $summaryPath\n";
+    }
+
+    /**
+     * 分析現代 PHP 特性使用情況
+     * 基於 Context7 MCP 查詢的 PHP 8.x 最新特性
+     */
+    private function analyzeModernPhpFeatures(string $filePath, string $content): void
+    {
+        $className = basename($filePath, '.php');
+        $featureUsage = [];
+
+        foreach ($this->modernPhpFeatures as $feature => $pattern) {
+            if (preg_match_all($pattern, $content, $matches)) {
+                $featureUsage[$feature] = count($matches[0]);
+            }
+        }
+
+        if (!empty($featureUsage)) {
+            $this->analysis['modern_syntax_usage'][$className] = $featureUsage;
+        }
+    }
+
+    /**
+     * 檢查 PSR-4 自動載入合規性
+     * 基於最新的 PSR-4 規範
+     */
+    private function checkPsr4Compliance(string $filePath, string $content): void
+    {
+        // 檢查 namespace 宣告
+        if (!preg_match('/^namespace\s+([a-zA-Z_\\\\][a-zA-Z0-9_\\\\]*);/m', $content, $namespaceMatch)) {
+            $this->analysis['psr4_compliance'][$filePath] = ['error' => '缺少 namespace 宣告'];
+            return;
+        }
+
+        $declaredNamespace = $namespaceMatch[1];
+
+        // 檢查是否有 strict_types 宣告
+        if (!str_contains($content, 'declare(strict_types=1)')) {
+            $this->analysis['psr4_compliance'][$filePath]['warnings'][] = '缺少 strict_types 宣告';
+        }
+
+        // 檢查檔案名稱與類別名稱一致性
+        if (preg_match('/^(class|interface|trait)\s+([a-zA-Z_][a-zA-Z0-9_]*)/m', $content, $classMatch)) {
+            $className = $classMatch[2];
+            $fileName = basename($filePath, '.php');
+
+            if ($className !== $fileName) {
+                $this->analysis['psr4_compliance'][$filePath]['warnings'][] =
+                    "類別名稱 {$className} 與檔案名稱 {$fileName} 不一致";
+            }
+        }
+
+        $this->analysis['psr4_compliance'][$filePath]['namespace'] = $declaredNamespace;
+    }
+
+    /**
+     * 分析 DDD 邊界上下文
+     * 基於 Context7 MCP 查詢的 DDD 最佳實踐
+     */
+    private function analyzeBoundaryContexts(): void
+    {
+        // 分析 Domains 目錄下的邊界上下文
+        $domainsPath = $this->projectRoot . '/app/Domains';
+
+        if (is_dir($domainsPath)) {
+            $contexts = [];
+
+            foreach (scandir($domainsPath) as $item) {
+                if ($item === '.' || $item === '..') continue;
+
+                $contextPath = $domainsPath . '/' . $item;
+                if (is_dir($contextPath)) {
+                    $contexts[$item] = [
+                        'entities' => [],
+                        'value_objects' => [],
+                        'aggregates' => [],
+                        'repositories' => [],
+                        'services' => [],
+                        'events' => []
+                    ];
+
+                    // 掃描每個上下文的組件
+                    $this->scanBoundaryContext($contextPath, $contexts[$item]);
+                }
+            }
+
+            $this->analysis['boundary_contexts'] = $contexts;
+        }
+    }
+
+    /**
+     * 掃描單一邊界上下文
+     */
+    private function scanBoundaryContext(string $contextPath, array &$context): void
+    {
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($contextPath)
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                $content = file_get_contents($file->getPathname());
+                $fileName = $file->getBasename('.php');
+
+                // 根據命名慣例分類 DDD 組件
+                if (str_contains($fileName, 'Entity') || str_contains($content, 'implements EntityInterface')) {
+                    $context['entities'][] = $fileName;
+                } elseif (str_contains($fileName, 'ValueObject') || str_contains($content, 'ValueObject')) {
+                    $context['value_objects'][] = $fileName;
+                } elseif (str_contains($fileName, 'Aggregate') || str_contains($content, 'AggregateRoot')) {
+                    $context['aggregates'][] = $fileName;
+                } elseif (str_contains($fileName, 'Repository') || str_contains($content, 'RepositoryInterface')) {
+                    $context['repositories'][] = $fileName;
+                } elseif (str_contains($fileName, 'Service') || str_contains($content, 'DomainService')) {
+                    $context['services'][] = $fileName;
+                } elseif (str_contains($fileName, 'Event') || str_contains($content, 'DomainEvent')) {
+                    $context['events'][] = $fileName;
+                }
+            }
+        }
+    }
+
+    /**
+     * 計算程式碼品質指標
+     * 基於 Context7 MCP 查詢的品質標準
+     */
+    private function calculateQualityMetrics(): void
+    {
+        $metrics = [
+            'total_classes' => count($this->analysis['classes']),
+            'total_interfaces' => count($this->analysis['interfaces']),
+            'total_traits' => count($this->analysis['traits']),
+            'interface_to_class_ratio' => 0,
+            'average_dependencies_per_class' => 0,
+            'modern_php_adoption_rate' => 0,
+            'psr4_compliance_rate' => 0,
+            'ddd_structure_completeness' => 0
+        ];
+
+        // 計算介面與類別比例
+        if ($metrics['total_classes'] > 0) {
+            $metrics['interface_to_class_ratio'] = round(
+                ($metrics['total_interfaces'] / $metrics['total_classes']) * 100,
+                2
+            );
+        }
+
+        // 計算平均依賴數量
+        if (!empty($this->analysis['constructor_dependencies'])) {
+            $totalDeps = array_sum(
+                array_map(fn($deps) => count($deps['dependencies']), $this->analysis['constructor_dependencies'])
+            );
+            $metrics['average_dependencies_per_class'] = round(
+                $totalDeps / count($this->analysis['constructor_dependencies']),
+                2
+            );
+        }
+
+        // 計算現代 PHP 特性採用率
+        if (!empty($this->analysis['modern_syntax_usage'])) {
+            $classesWithModernFeatures = count($this->analysis['modern_syntax_usage']);
+            $metrics['modern_php_adoption_rate'] = round(
+                ($classesWithModernFeatures / max($metrics['total_classes'], 1)) * 100,
+                2
+            );
+        }
+
+        // 計算 PSR-4 合規率
+        if (!empty($this->analysis['psr4_compliance'])) {
+            $compliantFiles = array_filter(
+                $this->analysis['psr4_compliance'],
+                fn($compliance) => !isset($compliance['error'])
+            );
+            $metrics['psr4_compliance_rate'] = round(
+                (count($compliantFiles) / count($this->analysis['psr4_compliance'])) * 100,
+                2
+            );
+        }
+
+        // 計算 DDD 結構完整性
+        if (!empty($this->analysis['boundary_contexts'])) {
+            $completeness = 0;
+            foreach ($this->analysis['boundary_contexts'] as $context) {
+                $componentCount = array_sum(array_map('count', $context));
+                if ($componentCount >= 3) $completeness++; // 至少有3種DDD組件
+            }
+            $metrics['ddd_structure_completeness'] = round(
+                ($completeness / count($this->analysis['boundary_contexts'])) * 100,
+                2
+            );
+        }
+
+        $this->analysis['quality_metrics'] = $metrics;
+    }
+
+    /**
+     * 獲取 PHP 特性建議
+     */
+    private function getFeatureRecommendation(string $feature): string
+    {
+        return match ($feature) {
+            'readonly_properties' => '✅ 提升資料不變性',
+            'enum_usage' => '✅ 型別安全的常數',
+            'union_types' => '✅ 更靈活的型別定義',
+            'intersection_types' => '✅ 嚴格的型別約束',
+            'constructor_promotion' => '✅ 減少樣板程式碼',
+            'match_expression' => '✅ 更安全的條件分支',
+            'attributes' => '✅ 現代化 metadata',
+            'nullsafe_operator' => '✅ 防止 null 指標異常',
+            default => '建議採用'
+        };
     }
 
     private function shouldExclude(string $path): bool
