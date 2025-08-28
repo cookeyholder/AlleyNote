@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Infrastructure\Services\CacheService;
-use PHPUnit\Framework\Attributes\Test;
 use App\Infrastructure\Services\RateLimitService;
 use Exception;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RateLimitTest extends TestCase

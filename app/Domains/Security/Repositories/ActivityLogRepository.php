@@ -678,4 +678,53 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         return (int) $stmt->fetchColumn();
     }
+
+    /**
+     * 取得可疑 IP 清單（基於失敗嘗試次數）
+     */
+    public function getSuspiciousIPs(int $minFailedAttempts = 5): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT 
+                ip_address,
+                COUNT(*) as failed_attempts,
+                MAX(occurred_at) as latest_attempt
+            FROM " . self::TABLE_NAME . " 
+            WHERE action_type IN ('login_failed', 'auth_failed')
+            GROUP BY ip_address 
+            HAVING COUNT(*) >= :min_failed_attempts
+            ORDER BY failed_attempts DESC
+        ");
+
+        $stmt->bindValue(':min_failed_attempts', $minFailedAttempts, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Find activity logs by user ID within time window
+     */
+    public function findByUserIdAndTimeWindow(int $userId, ?\DateTimeInterface $timeWindow = null): array
+    {
+        if ($timeWindow === null) {
+            return $this->findByUser($userId);
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT " . self::SELECT_FIELDS . " 
+            FROM " . self::TABLE_NAME . "
+            WHERE user_id = :user_id 
+                AND occurred_at >= :time_window 
+            ORDER BY occurred_at DESC
+        ");
+
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':time_window', $timeWindow->format('Y-m-d H:i:s'));
+        $stmt->execute();
+
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return array_map([$this, 'mapToArray'], $results);
+    }
 }

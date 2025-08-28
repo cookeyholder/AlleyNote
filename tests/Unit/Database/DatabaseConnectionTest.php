@@ -3,8 +3,8 @@
 namespace Tests\Unit\Database;
 
 use App\Infrastructure\Database\DatabaseConnection;
-use PHPUnit\Framework\Attributes\Test;
 use PDO;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseConnectionTest extends TestCase

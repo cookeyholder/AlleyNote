@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\AuthController;
-use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
 use App\Shared\Contracts\ValidatorInterface;
@@ -14,10 +13,11 @@ use App\Shared\Validation\ValidationResult;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[Group('integration')]

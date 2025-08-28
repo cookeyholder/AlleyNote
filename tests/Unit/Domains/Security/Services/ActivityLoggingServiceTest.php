@@ -4,31 +4,35 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Security\Services;
 
-use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
-use App\Domains\Security\Enums\ActivityCategory;
 use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivityType;
 use App\Domains\Security\Services\ActivityLoggingService;
+use DateTimeImmutable;
+use DateTimeInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 #[CoversClass(ActivityLoggingService::class)]
 class ActivityLoggingServiceTest extends TestCase
 {
     private ActivityLogRepositoryInterface|MockObject $repository;
+
     private LoggerInterface|MockObject $logger;
+
     private ActivityLoggingServiceInterface $service;
 
     protected function setUp(): void
     {
         $this->repository = $this->createMock(ActivityLogRepositoryInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        
+
         $this->service = new ActivityLoggingService($this->repository, $this->logger);
     }
 
@@ -45,7 +49,7 @@ class ActivityLoggingServiceTest extends TestCase
         $dto = CreateActivityLogDTO::success(
             actionType: ActivityType::LOGIN_SUCCESS,
             userId: 1,
-            description: 'User login successful'
+            description: 'User login successful',
         );
 
         $this->repository->expects($this->once())
@@ -78,12 +82,12 @@ class ActivityLoggingServiceTest extends TestCase
         $this->repository->expects($this->once())
             ->method('create')
             ->with($this->callback(function (CreateActivityLogDTO $dto) use ($actionType, $userId, $targetType, $targetId, $metadata) {
-                return $dto->getActionType() === $actionType &&
-                       $dto->getUserId() === $userId &&
-                       $dto->getTargetType() === $targetType &&
-                       $dto->getTargetId() === $targetId &&
-                       $dto->getMetadata() === $metadata &&
-                       $dto->getStatus() === ActivityStatus::SUCCESS;
+                return $dto->getActionType() === $actionType
+                    && $dto->getUserId() === $userId
+                    && $dto->getTargetType() === $targetType
+                    && $dto->getTargetId() === $targetId
+                    && $dto->getMetadata() === $metadata
+                    && $dto->getStatus() === ActivityStatus::SUCCESS;
             }))
             ->willReturn([
                 'id' => 1,
@@ -109,11 +113,11 @@ class ActivityLoggingServiceTest extends TestCase
         $this->repository->expects($this->once())
             ->method('create')
             ->with($this->callback(function (CreateActivityLogDTO $dto) use ($actionType, $userId, $reason, $metadata) {
-                return $dto->getActionType() === $actionType &&
-                       $dto->getUserId() === $userId &&
-                       $dto->getDescription() === $reason &&
-                       $dto->getMetadata() === $metadata &&
-                       $dto->getStatus() === ActivityStatus::FAILED;
+                return $dto->getActionType() === $actionType
+                    && $dto->getUserId() === $userId
+                    && $dto->getDescription() === $reason
+                    && $dto->getMetadata() === $metadata
+                    && $dto->getStatus() === ActivityStatus::FAILED;
             }))
             ->willReturn([
                 'id' => 1,
@@ -138,10 +142,10 @@ class ActivityLoggingServiceTest extends TestCase
         $this->repository->expects($this->once())
             ->method('create')
             ->with($this->callback(function (CreateActivityLogDTO $dto) use ($actionType, $description, $metadata) {
-                return $dto->getActionType() === $actionType &&
-                       $dto->getDescription() === $description &&
-                       $dto->getMetadata() === $metadata &&
-                       $dto->getStatus() === ActivityStatus::BLOCKED;
+                return $dto->getActionType() === $actionType
+                    && $dto->getDescription() === $description
+                    && $dto->getMetadata() === $metadata
+                    && $dto->getStatus() === ActivityStatus::BLOCKED;
             }))
             ->willReturn([
                 'id' => 1,
@@ -185,16 +189,16 @@ class ActivityLoggingServiceTest extends TestCase
         $this->repository->expects($this->once())
             ->method('create')
             ->with($this->equalTo($dto))
-            ->willThrowException(new \RuntimeException('Database error'));
+            ->willThrowException(new RuntimeException('Database error'));
 
         $this->logger->expects($this->once())
             ->method('error')
             ->with(
                 $this->stringContains('Failed to log activity'),
                 $this->callback(function (array $context) {
-                    return isset($context['action_type']) &&
-                           isset($context['error']);
-                })
+                    return isset($context['action_type'])
+                        && isset($context['error']);
+                }),
             );
 
         // Act
@@ -238,12 +242,12 @@ class ActivityLoggingServiceTest extends TestCase
 
         $highSeverityDto = CreateActivityLogDTO::success(
             actionType: ActivityType::LOGIN_FAILED, // HIGH severity
-            userId: 1
+            userId: 1,
         );
-        
+
         $lowSeverityDto = CreateActivityLogDTO::success(
             actionType: ActivityType::LOGIN_SUCCESS, // LOW severity
-            userId: 1
+            userId: 1,
         );
 
         // High severity should be logged
@@ -261,11 +265,11 @@ class ActivityLoggingServiceTest extends TestCase
     public function it_can_cleanup_old_records(): void
     {
         // Arrange
-        $cleanupDate = new \DateTimeImmutable('-30 days');
-        
+        $cleanupDate = new DateTimeImmutable('-30 days');
+
         $this->repository->expects($this->once())
             ->method('deleteOldRecords')
-            ->with($this->callback(function (\DateTimeInterface $date) use ($cleanupDate) {
+            ->with($this->callback(function (DateTimeInterface $date) use ($cleanupDate) {
                 return $date->format('Y-m-d') === $cleanupDate->format('Y-m-d');
             }))
             ->willReturn(150);
@@ -311,7 +315,7 @@ class ActivityLoggingServiceTest extends TestCase
                 $this->stringContains('Logging disabled for action type'),
                 $this->callback(function (array $context) use ($actionType) {
                     return $context['action_type'] === $actionType->value;
-                })
+                }),
             );
 
         // Act

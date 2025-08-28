@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Services\Security;
 
 use App\Domains\Security\Services\Core\CsrfProtectionService;
-use PHPUnit\Framework\Attributes\Test;
 use App\Shared\Exceptions\CsrfTokenException;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class CsrfProtectionServiceTest extends TestCase

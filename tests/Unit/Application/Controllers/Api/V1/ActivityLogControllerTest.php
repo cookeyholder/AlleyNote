@@ -17,13 +17,17 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 #[CoversClass(ActivityLogController::class)]
 class ActivityLogControllerTest extends TestCase
 {
     private ActivityLoggingServiceInterface&MockInterface $loggingService;
+
     private ActivityLogRepositoryInterface&MockInterface $repository;
+
     private ValidatorInterface&MockInterface $validator;
+
     private ActivityLogController $controller;
 
     protected function setUp(): void
@@ -43,7 +47,7 @@ class ActivityLogControllerTest extends TestCase
         $this->controller = new ActivityLogController(
             $this->loggingService,
             $this->repository,
-            $this->validator
+            $this->validator,
         );
     }
 
@@ -107,7 +111,7 @@ class ActivityLogControllerTest extends TestCase
                     'target_type' => 'post',
                     'target_id' => '123',
                 ],
-            ]
+            ],
         ];
 
         /** @var ServerRequestInterface&MockInterface $request */
@@ -179,7 +183,7 @@ class ActivityLogControllerTest extends TestCase
         // Arrange
         $userId = 1;
         $queryParams = ['limit' => '20'];
-        $args = ['id' => (string)$userId];
+        $args = ['id' => (string) $userId];
 
         /** @var ServerRequestInterface&MockInterface $request */
         $request = Mockery::mock(ServerRequestInterface::class);
@@ -335,7 +339,7 @@ class ActivityLogControllerTest extends TestCase
         $validationResult = ValidationResult::success($requestBody);
         $this->validator->shouldReceive('validate')->andReturn($validationResult);
 
-        $this->loggingService->shouldReceive('log')->andThrow(new \RuntimeException('Database connection failed'));
+        $this->loggingService->shouldReceive('log')->andThrow(new RuntimeException('Database connection failed'));
 
         // Act
         $result = $this->controller->store($request, $response);

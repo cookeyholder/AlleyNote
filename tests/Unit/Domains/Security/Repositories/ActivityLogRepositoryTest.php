@@ -6,11 +6,11 @@ namespace Tests\Unit\Domains\Security\Repositories;
 
 use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
-use App\Domains\Security\Entities\ActivityLog;
 use App\Domains\Security\Enums\ActivityCategory;
 use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivityType;
 use App\Domains\Security\Repositories\ActivityLogRepository;
+use DateTimeImmutable;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -22,7 +22,9 @@ use PHPUnit\Framework\TestCase;
 class ActivityLogRepositoryTest extends TestCase
 {
     private PDO|MockObject $pdo;
+
     private PDOStatement|MockObject $statement;
+
     private ActivityLogRepositoryInterface $repository;
 
     protected function setUp(): void
@@ -50,7 +52,7 @@ class ActivityLogRepositoryTest extends TestCase
         $dto = CreateActivityLogDTO::success(
             actionType: ActivityType::LOGIN_SUCCESS,
             userId: 1,
-            description: 'User login successful'
+            description: 'User login successful',
         );
 
         // Mock successful database transaction
@@ -100,6 +102,7 @@ class ActivityLogRepositoryTest extends TestCase
                 if (str_contains($sql, 'SELECT')) {
                     return $selectStatement;
                 }
+
                 return false;
             });
 
@@ -263,6 +266,7 @@ class ActivityLogRepositoryTest extends TestCase
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
                 $this->assertContains($param, [':user_id', ':limit', ':offset']);
+
                 return true;
             });
 
@@ -332,7 +336,7 @@ class ActivityLogRepositoryTest extends TestCase
     public function it_can_delete_old_records(): void
     {
         // Arrange
-        $before = new \DateTimeImmutable('2023-01-01');
+        $before = new DateTimeImmutable('2023-01-01');
 
         $this->pdo->expects($this->once())
             ->method('prepare')
@@ -357,8 +361,8 @@ class ActivityLogRepositoryTest extends TestCase
     public function it_can_find_activity_logs_by_time_range(): void
     {
         // Arrange
-        $startTime = new \DateTimeImmutable('2024-01-01 00:00:00');
-        $endTime = new \DateTimeImmutable('2024-01-31 23:59:59');
+        $startTime = new DateTimeImmutable('2024-01-01 00:00:00');
+        $endTime = new DateTimeImmutable('2024-01-31 23:59:59');
         $mockData = [
             'id' => 1,
             'uuid' => '550e8400-e29b-41d4-a716-446655440000',
@@ -387,6 +391,7 @@ class ActivityLogRepositoryTest extends TestCase
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
                 $this->assertContains($param, [':start_time', ':end_time', ':limit', ':offset']);
+
                 return true;
             });
 
@@ -437,6 +442,7 @@ class ActivityLogRepositoryTest extends TestCase
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
                 $this->assertContains($param, [':limit', ':offset']);
+
                 return true;
             });
 
@@ -487,6 +493,7 @@ class ActivityLogRepositoryTest extends TestCase
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
                 $this->assertContains($param, [':limit', ':offset']);
+
                 return true;
             });
 
@@ -510,8 +517,8 @@ class ActivityLogRepositoryTest extends TestCase
     {
         // Arrange
         $userId = 1;
-        $startTime = new \DateTimeImmutable('2024-01-01 00:00:00');
-        $endTime = new \DateTimeImmutable('2024-01-31 23:59:59');
+        $startTime = new DateTimeImmutable('2024-01-01 00:00:00');
+        $endTime = new DateTimeImmutable('2024-01-31 23:59:59');
 
         $this->pdo->expects($this->once())
             ->method('prepare')
@@ -540,8 +547,8 @@ class ActivityLogRepositoryTest extends TestCase
     public function it_can_get_activity_statistics(): void
     {
         // Arrange
-        $startTime = new \DateTimeImmutable('2024-01-01 00:00:00');
-        $endTime = new \DateTimeImmutable('2024-01-31 23:59:59');
+        $startTime = new DateTimeImmutable('2024-01-01 00:00:00');
+        $endTime = new DateTimeImmutable('2024-01-31 23:59:59');
 
         $mockStats = [
             ['action_category' => 'authentication', 'action_type' => 'login_success', 'count' => 150],
@@ -679,6 +686,7 @@ class ActivityLogRepositoryTest extends TestCase
                 } else {
                     $this->assertContains($param, [':limit', ':offset']);
                 }
+
                 return true;
             });
 

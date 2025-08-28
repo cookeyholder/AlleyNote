@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Domains\Post\Repositories\PostRepository;
-use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use Mockery;
 use Mockery\MockInterface;
 use PDO;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SqlInjectionTest extends TestCase

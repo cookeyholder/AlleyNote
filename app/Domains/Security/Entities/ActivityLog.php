@@ -8,33 +8,53 @@ use App\Domains\Security\Enums\ActivityCategory;
 use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivityType;
+use DateTime;
+use DateTimeImmutable;
 use Ramsey\Uuid\Uuid;
+use ReflectionObject;
 
 /**
- * 活動記錄實體
- * 
+ * 活動記錄實體.
+ *
  * 記錄使用者和系統的各種活動，用於安全審計和行為分析
  */
 class ActivityLog
 {
     private ?int $id = null;
+
     private string $uuid;
+
     private ActivityType $actionType;
+
     private ActivityCategory $actionCategory;
+
     private ActivitySeverity $severity;
+
     private ?int $userId = null;
+
     private ?string $sessionId = null;
+
     private ActivityStatus $status;
+
     private ?string $targetType = null;
+
     private ?string $targetId = null;
+
     private ?string $description = null;
+
     private ?string $metadata = null;
+
     private ?string $ipAddress = null;
+
     private ?string $userAgent = null;
+
     private ?string $requestMethod = null;
+
     private ?string $requestPath = null;
-    private \DateTimeImmutable $occurredAt;
-    private \DateTimeImmutable $createdAt;
+
+    private DateTimeImmutable $occurredAt;
+
+    private DateTimeImmutable $createdAt;
 
     public function __construct(
         ActivityType $actionType,
@@ -49,7 +69,7 @@ class ActivityLog
         ?string $userAgent = null,
         ?string $requestMethod = null,
         ?string $requestPath = null,
-        ?\DateTimeImmutable $occurredAt = null
+        ?DateTimeImmutable $occurredAt = null,
     ) {
         $this->uuid = Uuid::uuid4()->toString();
         $this->actionType = $actionType;
@@ -66,8 +86,8 @@ class ActivityLog
         $this->userAgent = $userAgent;
         $this->requestMethod = $requestMethod;
         $this->requestPath = $requestPath;
-        $this->occurredAt = $occurredAt ?? new \DateTimeImmutable();
-        $this->createdAt = new \DateTimeImmutable();
+        $this->occurredAt = $occurredAt ?? new DateTimeImmutable();
+        $this->createdAt = new DateTimeImmutable();
     }
 
     // === Getters ===
@@ -134,6 +154,7 @@ class ActivityLog
         }
 
         $decoded = json_decode($this->metadata, true);
+
         return is_array($decoded) ? $decoded : null;
     }
 
@@ -162,12 +183,12 @@ class ActivityLog
         return $this->requestPath;
     }
 
-    public function getOccurredAt(): \DateTimeImmutable
+    public function getOccurredAt(): DateTimeImmutable
     {
         return $this->occurredAt;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -175,7 +196,7 @@ class ActivityLog
     // === Business Methods ===
 
     /**
-     * 判斷是否為失敗的活動
+     * 判斷是否為失敗的活動.
      */
     public function isFailure(): bool
     {
@@ -183,16 +204,16 @@ class ActivityLog
     }
 
     /**
-     * 判斷是否為安全相關活動
+     * 判斷是否為安全相關活動.
      */
     public function isSecurityRelated(): bool
     {
-        return $this->actionType->isSecurityRelated() ||
-            $this->actionCategory === ActivityCategory::SECURITY;
+        return $this->actionType->isSecurityRelated()
+            || $this->actionCategory === ActivityCategory::SECURITY;
     }
 
     /**
-     * 判斷是否為高嚴重程度活動
+     * 判斷是否為高嚴重程度活動.
      */
     public function isHighSeverity(): bool
     {
@@ -200,8 +221,8 @@ class ActivityLog
     }
 
     /**
-     * 取得活動的上下文資訊
-     * 
+     * 取得活動的上下文資訊.
+     *
      * @return array<string, mixed>
      */
     public function getContext(): array
@@ -224,8 +245,8 @@ class ActivityLog
     }
 
     /**
-     * 轉換為陣列格式
-     * 
+     * 轉換為陣列格式.
+     *
      * @return array<string, mixed>
      */
     public function toArray(): array
@@ -253,8 +274,8 @@ class ActivityLog
     }
 
     /**
-     * 轉換為用於日誌記錄的格式
-     * 
+     * 轉換為用於日誌記錄的格式.
+     *
      * @return array<string, mixed>
      */
     public function toLogFormat(): array
@@ -270,7 +291,7 @@ class ActivityLog
                 ? "{$this->targetType}:{$this->targetId}"
                 : null,
             'ip' => $this->ipAddress,
-            'timestamp' => $this->occurredAt->format(\DateTime::ISO8601),
+            'timestamp' => $this->occurredAt->format(DateTime::ISO8601),
             'description' => $this->description,
         ];
     }
@@ -278,8 +299,8 @@ class ActivityLog
     // === Factory Methods ===
 
     /**
-     * 從資料庫資料建立 ActivityLog 實體
-     * 
+     * 從資料庫資料建立 ActivityLog 實體.
+     *
      * @param array<string, mixed> $data
      */
     public static function fromDatabaseRow(array $data): self
@@ -297,11 +318,11 @@ class ActivityLog
             userAgent: $data['user_agent'],
             requestMethod: $data['request_method'],
             requestPath: $data['request_path'],
-            occurredAt: new \DateTimeImmutable($data['occurred_at'])
+            occurredAt: new DateTimeImmutable($data['occurred_at']),
         );
 
         // 設定從資料庫來的資料
-        $reflection = new \ReflectionObject($entity);
+        $reflection = new ReflectionObject($entity);
 
         $idProperty = $reflection->getProperty('id');
         $idProperty->setAccessible(true);
@@ -313,13 +334,13 @@ class ActivityLog
 
         $createdAtProperty = $reflection->getProperty('createdAt');
         $createdAtProperty->setAccessible(true);
-        $createdAtProperty->setValue($entity, new \DateTimeImmutable($data['created_at']));
+        $createdAtProperty->setValue($entity, new DateTimeImmutable($data['created_at']));
 
         return $entity;
     }
 
     /**
-     * 從 DTO 建立 ActivityLog 實體
+     * 從 DTO 建立 ActivityLog 實體.
      */
     public static function fromDTO(
         ActivityType $actionType,
@@ -334,7 +355,7 @@ class ActivityLog
         ?string $userAgent = null,
         ?string $requestMethod = null,
         ?string $requestPath = null,
-        ?\DateTimeImmutable $occurredAt = null
+        ?DateTimeImmutable $occurredAt = null,
     ): self {
         return new self(
             actionType: $actionType,
@@ -349,7 +370,7 @@ class ActivityLog
             userAgent: $userAgent,
             requestMethod: $requestMethod,
             requestPath: $requestPath,
-            occurredAt: $occurredAt
+            occurredAt: $occurredAt,
         );
     }
 }

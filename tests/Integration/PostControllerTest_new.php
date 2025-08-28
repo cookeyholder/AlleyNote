@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\PostController;
-use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
@@ -13,6 +12,7 @@ use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Exceptions\NotFoundException;
 use InvalidArgumentException;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;

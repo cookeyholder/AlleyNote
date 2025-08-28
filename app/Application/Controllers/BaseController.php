@@ -9,20 +9,23 @@ use Exception;
 
 abstract class BaseController
 {
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function jsonResponse(array $data, int $httpCode = 200): string
     {
         http_response_code($httpCode);
         header('Content-Type: application/json; charset=utf-8');
 
-        return json_encode($data, JSON_UNESCAPED_UNICODE);
+        return json_encode($data, JSON_UNESCAPED_UNICODE) ?: '{}';
     }
 
-    protected function successResponse($data = null, string $message = 'Success'): string
+    protected function successResponse(mixed $data = null, string $message = 'Success'): string
     {
         return $this->jsonResponse(ApiResponse::success($data, $message));
     }
 
-    protected function errorResponse(string $message, int $httpCode = 400, $errors = null): string
+    protected function errorResponse(string $message, int $httpCode = 400, mixed $errors = null): string
     {
         return $this->jsonResponse(
             ApiResponse::error($message, $httpCode, $errors),
@@ -30,6 +33,9 @@ abstract class BaseController
         );
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function paginatedResponse(array $data, int $total, int $page, int $perPage): string
     {
         return $this->jsonResponse(ApiResponse::paginated($data, $total, $page, $perPage));

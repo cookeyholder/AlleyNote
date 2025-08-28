@@ -3,11 +3,11 @@
 namespace Tests\Unit\Repository;
 
 use App\Domains\Auth\Repositories\UserRepository;
-use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Auth\Services\AuthService;
 use DateTime;
 use PDO;
 use PDOException;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class UserRepositoryTest extends TestCase

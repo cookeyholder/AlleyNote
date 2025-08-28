@@ -6,7 +6,7 @@ namespace App\Domains\Security\Enums;
 
 /**
  * 活動狀態枚舉
- * 定義使用者行為記錄的執行狀態
+ * 定義使用者行為記錄的執行狀態.
  */
 enum ActivityStatus: string
 {
@@ -17,7 +17,7 @@ enum ActivityStatus: string
     case PENDING = 'pending';
 
     /**
-     * 取得狀態顯示名稱
+     * 取得狀態顯示名稱.
      */
     public function getDisplayName(): string
     {
@@ -31,7 +31,7 @@ enum ActivityStatus: string
     }
 
     /**
-     * 判斷是否為成功狀態
+     * 判斷是否為成功狀態.
      */
     public function isSuccess(): bool
     {
@@ -39,7 +39,7 @@ enum ActivityStatus: string
     }
 
     /**
-     * 判斷是否為失敗狀態
+     * 判斷是否為失敗狀態.
      */
     public function isFailure(): bool
     {
@@ -47,7 +47,7 @@ enum ActivityStatus: string
     }
 
     /**
-     * 判斷是否為待處理狀態
+     * 判斷是否為待處理狀態.
      */
     public function isPending(): bool
     {
@@ -55,7 +55,7 @@ enum ActivityStatus: string
     }
 
     /**
-     * 判斷是否為終結狀態（不會再改變）
+     * 判斷是否為終結狀態（不會再改變）.
      */
     public function isFinal(): bool
     {
@@ -63,8 +63,8 @@ enum ActivityStatus: string
     }
 
     /**
-     * 取得所有可用狀態
-     * 
+     * 取得所有可用狀態.
+     *
      * @return array<string>
      */
     public static function getAvailableStatuses(): array

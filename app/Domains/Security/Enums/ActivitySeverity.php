@@ -6,7 +6,7 @@ namespace App\Domains\Security\Enums;
 
 /**
  * 活動嚴重程度枚舉
- * 定義使用者行為的重要性和嚴重程度等級
+ * 定義使用者行為的重要性和嚴重程度等級.
  */
 enum ActivitySeverity: int
 {
@@ -17,7 +17,7 @@ enum ActivitySeverity: int
     case CRITICAL = 5;   // 關鍵操作，如系統設定變更
 
     /**
-     * 取得嚴重程度顯示名稱
+     * 取得嚴重程度顯示名稱.
      */
     public function getDisplayName(): string
     {
@@ -31,7 +31,7 @@ enum ActivitySeverity: int
     }
 
     /**
-     * 取得嚴重程度描述
+     * 取得嚴重程度描述.
      */
     public function getDescription(): string
     {
@@ -45,7 +45,7 @@ enum ActivitySeverity: int
     }
 
     /**
-     * 比較嚴重程度是否大於等於指定等級
+     * 比較嚴重程度是否大於等於指定等級.
      */
     public function isAtLeast(self $level): bool
     {
@@ -53,7 +53,7 @@ enum ActivitySeverity: int
     }
 
     /**
-     * 比較嚴重程度是否小於等於指定等級
+     * 比較嚴重程度是否小於等於指定等級.
      */
     public function isAtMost(self $level): bool
     {
@@ -61,7 +61,7 @@ enum ActivitySeverity: int
     }
 
     /**
-     * 判斷是否為高風險等級（HIGH 或 CRITICAL）
+     * 判斷是否為高風險等級（HIGH 或 CRITICAL）.
      */
     public function isHighRisk(): bool
     {
@@ -69,7 +69,7 @@ enum ActivitySeverity: int
     }
 
     /**
-     * 判斷是否為低風險等級（LOW 或 NORMAL）
+     * 判斷是否為低風險等級（LOW 或 NORMAL）.
      */
     public function isLowRisk(): bool
     {
@@ -77,8 +77,8 @@ enum ActivitySeverity: int
     }
 
     /**
-     * 取得所有嚴重程度等級
-     * 
+     * 取得所有嚴重程度等級.
+     *
      * @return array<self>
      */
     public static function getAllLevels(): array
@@ -87,7 +87,7 @@ enum ActivitySeverity: int
     }
 
     /**
-     * 根據數值取得對應的嚴重程度
+     * 根據數值取得對應的嚴重程度.
      */
     public static function fromValue(int $value): ?self
     {
@@ -96,6 +96,7 @@ enum ActivitySeverity: int
                 return $case;
             }
         }
+
         return null;
     }
 }

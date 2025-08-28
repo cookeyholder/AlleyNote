@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Repositories;
 
 use App\Domains\Attachment\Repositories\AttachmentRepository;
-use PHPUnit\Framework\Attributes\Test;
 use App\Infrastructure\Services\CacheService;
 use Mockery;
 use Mockery\MockInterface;
 use PDO;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AttachmentRepositoryTest extends TestCase

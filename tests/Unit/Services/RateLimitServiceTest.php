@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Services;
 
 use App\Infrastructure\Services\CacheService;
-use PHPUnit\Framework\Attributes\Test;
 use App\Infrastructure\Services\RateLimitService;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use RuntimeException;
 use Tests\TestCase;
 

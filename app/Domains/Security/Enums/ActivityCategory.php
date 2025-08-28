@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Security\Enums;
 
 /**
- * 活動分類枚舉
+ * 活動分類枚舉.
  */
 enum ActivityCategory: string
 {

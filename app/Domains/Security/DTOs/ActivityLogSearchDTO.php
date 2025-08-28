@@ -4,23 +4,27 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\DTOs;
 
-use App\Domains\Security\Enums\ActivityType;
 use App\Domains\Security\Enums\ActivityCategory;
-use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivitySeverity;
+use App\Domains\Security\Enums\ActivityStatus;
+use App\Domains\Security\Enums\ActivityType;
 use DateTime;
 use InvalidArgumentException;
 
 /**
  * 活動記錄搜尋條件 DTO
- * 封裝搜尋活動記錄的各種條件參數
+ * 封裝搜尋活動記錄的各種條件參數.
  */
 class ActivityLogSearchDTO
 {
     private const DEFAULT_PAGE = 1;
+
     private const DEFAULT_PER_PAGE = 20;
+
     private const MAX_PER_PAGE = 100;
+
     private const DEFAULT_SORT_BY = 'created_at';
+
     private const DEFAULT_SORT_ORDER = 'desc';
 
     public function __construct(
@@ -39,13 +43,13 @@ class ActivityLogSearchDTO
         private readonly int $page = self::DEFAULT_PAGE,
         private readonly int $perPage = self::DEFAULT_PER_PAGE,
         private readonly string $sortBy = self::DEFAULT_SORT_BY,
-        private readonly string $sortOrder = self::DEFAULT_SORT_ORDER
+        private readonly string $sortOrder = self::DEFAULT_SORT_ORDER,
     ) {
         $this->validateSearchConditions();
     }
 
     /**
-     * 建立搜尋 DTO 的 Builder
+     * 建立搜尋 DTO 的 Builder.
      */
     public static function create(): self
     {
@@ -53,7 +57,7 @@ class ActivityLogSearchDTO
     }
 
     /**
-     * 設定使用者 ID
+     * 設定使用者 ID.
      */
     public function withUserId(int $userId): self
     {
@@ -73,12 +77,12 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
     /**
-     * 設定 Session ID
+     * 設定 Session ID.
      */
     public function withSessionId(string $sessionId): self
     {
@@ -98,12 +102,12 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
     /**
-     * 設定行為類型
+     * 設定行為類型.
      */
     public function withActionType(ActivityType $actionType): self
     {
@@ -123,12 +127,12 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
     /**
-     * 設定行為分類
+     * 設定行為分類.
      */
     public function withActionCategory(ActivityCategory $actionCategory): self
     {
@@ -148,12 +152,12 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
     /**
-     * 設定狀態
+     * 設定狀態.
      */
     public function withStatus(ActivityStatus $status): self
     {
@@ -173,12 +177,12 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
     /**
-     * 設定最小嚴重程度
+     * 設定最小嚴重程度.
      */
     public function withMinSeverity(ActivitySeverity $minSeverity): self
     {
@@ -198,12 +202,12 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
     /**
-     * 設定目標類型和 ID
+     * 設定目標類型和 ID.
      */
     public function withTarget(string $targetType, string $targetId): self
     {
@@ -223,7 +227,7 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
@@ -248,12 +252,12 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
     /**
-     * 設定時間範圍
+     * 設定時間範圍.
      */
     public function withTimeRange(DateTime $startDate, DateTime $endDate): self
     {
@@ -277,12 +281,12 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
     /**
-     * 設定搜尋關鍵字
+     * 設定搜尋關鍵字.
      */
     public function withSearchKeyword(string $searchKeyword): self
     {
@@ -302,12 +306,12 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
     /**
-     * 設定分頁參數
+     * 設定分頁參數.
      */
     public function withPagination(int $page, int $perPage): self
     {
@@ -335,12 +339,12 @@ class ActivityLogSearchDTO
             page: $page,
             perPage: $perPage,
             sortBy: $this->sortBy,
-            sortOrder: $this->sortOrder
+            sortOrder: $this->sortOrder,
         );
     }
 
     /**
-     * 設定排序參數
+     * 設定排序參數.
      */
     public function withSort(string $sortBy, string $sortOrder = 'desc'): self
     {
@@ -351,7 +355,7 @@ class ActivityLogSearchDTO
             'action_type',
             'action_category',
             'status',
-            'ip_address'
+            'ip_address',
         ];
 
         if (!in_array($sortBy, $validSortFields, true)) {
@@ -378,7 +382,7 @@ class ActivityLogSearchDTO
             page: $this->page,
             perPage: $this->perPage,
             sortBy: $sortBy,
-            sortOrder: $sortOrder
+            sortOrder: $sortOrder,
         );
     }
 
@@ -387,69 +391,84 @@ class ActivityLogSearchDTO
     {
         return $this->userId;
     }
+
     public function getSessionId(): ?string
     {
         return $this->sessionId;
     }
+
     public function getActionType(): ?ActivityType
     {
         return $this->actionType;
     }
+
     public function getActionCategory(): ?ActivityCategory
     {
         return $this->actionCategory;
     }
+
     public function getStatus(): ?ActivityStatus
     {
         return $this->status;
     }
+
     public function getMinSeverity(): ?ActivitySeverity
     {
         return $this->minSeverity;
     }
+
     public function getTargetType(): ?string
     {
         return $this->targetType;
     }
+
     public function getTargetId(): ?string
     {
         return $this->targetId;
     }
+
     public function getIpAddress(): ?string
     {
         return $this->ipAddress;
     }
+
     public function getStartDate(): ?DateTime
     {
         return $this->startDate;
     }
+
     public function getEndDate(): ?DateTime
     {
         return $this->endDate;
     }
+
     public function getSearchKeyword(): ?string
     {
         return $this->searchKeyword;
     }
+
     public function getPage(): int
     {
         return $this->page;
     }
+
     public function getPerPage(): int
     {
         return $this->perPage;
     }
+
     public function getSortBy(): string
     {
         return $this->sortBy;
     }
+
     public function getSortOrder(): string
     {
         return $this->sortOrder;
     }
 
     /**
-     * 取得查詢偏移量
+     * 取得查詢偏移量.
      */
     public function getOffset(): int
     {
@@ -457,7 +476,7 @@ class ActivityLogSearchDTO
     }
 
     /**
-     * 判斷是否有搜尋條件
+     * 判斷是否有搜尋條件.
      */
     public function hasFilters(): bool
     {
@@ -476,8 +495,8 @@ class ActivityLogSearchDTO
     }
 
     /**
-     * 轉換為陣列格式
-     * 
+     * 轉換為陣列格式.
+     *
      * @return array<string, mixed>
      */
     public function toArray(): array
@@ -503,7 +522,7 @@ class ActivityLogSearchDTO
     }
 
     /**
-     * 驗證搜尋條件
+     * 驗證搜尋條件.
      */
     private function validateSearchConditions(): void
     {

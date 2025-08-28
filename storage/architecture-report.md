@@ -1,6 +1,6 @@
 # 專案架構分析報告
 
-**生成時間**: 2025-08-28 16:00:03
+**生成時間**: 2025-08-28 19:16:12
 
 ## 📁 目錄結構
 
@@ -110,6 +110,9 @@
 - `app/Domains/Security/Services/Content`
 - `app/Domains/Security/Services/Content/.`
 - `app/Domains/Security/Services/Content/..`
+- `app/Domains/Security/Entities`
+- `app/Domains/Security/Entities/.`
+- `app/Domains/Security/Entities/..`
 - `app/Domains/Security/Repositories`
 - `app/Domains/Security/Repositories/.`
 - `app/Domains/Security/Repositories/..`
@@ -284,6 +287,7 @@
 ### `App\Application\Controllers\Api\V1`
 - app/Application/Controllers/Api/V1/IpController.php
 - app/Application/Controllers/Api/V1/PostController.php
+- app/Application/Controllers/Api/V1/ActivityLogController.php
 - app/Application/Controllers/Api/V1/AuthController.php
 - app/Application/Controllers/Api/V1/AttachmentController.php
 
@@ -364,6 +368,10 @@
 ### `App\Domains\Security\Services\Error`
 - app/Domains/Security/Services/Error/ErrorHandlerService.php
 
+### `App\Domains\Security\Services`
+- app/Domains/Security/Services/ActivityLoggingService.php
+- app/Domains/Security/Services/IpService.php
+
 ### `App\Domains\Security\Services\Logging`
 - app/Domains/Security/Services/Logging/LoggingSecurityService.php
 
@@ -373,11 +381,12 @@
 ### `App\Domains\Security\Services\Content`
 - app/Domains/Security/Services/Content/XssProtectionExtensionService.php
 
-### `App\Domains\Security\Services`
-- app/Domains/Security/Services/IpService.php
+### `App\Domains\Security\Entities`
+- app/Domains/Security/Entities/ActivityLog.php
 
 ### `App\Domains\Security\Repositories`
 - app/Domains/Security/Repositories/IpRepository.php
+- app/Domains/Security/Repositories/ActivityLogRepository.php
 
 ### `App\Domains\Security\DTOs`
 - app/Domains/Security/DTOs/CreateActivityLogDTO.php
@@ -528,6 +537,10 @@
 - app/Infrastructure/Http/Uri.php
 - app/Infrastructure/Http/ServerRequestFactory.php
 
+### `後添加
+            if (preg_match('/^namespace [^`
+- scripts/fix-phpunit-deprecations.php
+
 ### `$new`
 - scripts/ddd-namespace-updater.php
 
@@ -539,11 +552,11 @@
 
 ### Application 層
 **子目錄**: Controllers, Controllers/Health, Controllers/Health/., Controllers/Health/.., Controllers/Security, Controllers/Security/., Controllers/Security/.., Controllers/., Controllers/Web, Controllers/Web/., Controllers/Web/.., Controllers/.., Controllers/Api, Controllers/Api/V1, Controllers/Api/V1/., Controllers/Api/V1/.., Controllers/Api/., Controllers/Api/.., .., Middleware, Middleware/., Middleware/..
-**檔案數量**: 12
+**檔案數量**: 13
 
 ### Domains 層
-**子目錄**: Attachment, Attachment/Models, Attachment/Models/., Attachment/Models/.., Attachment/Services, Attachment/Services/., Attachment/Services/.., Attachment/Repositories, Attachment/Repositories/., Attachment/Repositories/.., Attachment/., Attachment/.., Attachment/DTOs, Attachment/DTOs/., Attachment/DTOs/.., Attachment/Contracts, Attachment/Contracts/., Attachment/Contracts/.., Attachment/Enums, Attachment/Enums/., Attachment/Enums/.., Security, Security/Models, Security/Models/., Security/Models/.., Security/Services, Security/Services/Advanced, Security/Services/Advanced/., Security/Services/Advanced/.., Security/Services/Headers, Security/Services/Headers/., Security/Services/Headers/.., Security/Services/Core, Security/Services/Core/., Security/Services/Core/.., Security/Services/Error, Security/Services/Error/., Security/Services/Error/.., Security/Services/Logging, Security/Services/Logging/., Security/Services/Logging/.., Security/Services/., Security/Services/.., Security/Services/Secrets, Security/Services/Secrets/., Security/Services/Secrets/.., Security/Services/Content, Security/Services/Content/., Security/Services/Content/.., Security/Repositories, Security/Repositories/., Security/Repositories/.., Security/., Security/.., Security/DTOs, Security/DTOs/., Security/DTOs/.., Security/Contracts, Security/Contracts/., Security/Contracts/.., Security/Enums, Security/Enums/., Security/Enums/.., Post, Post/Models, Post/Models/., Post/Models/.., Post/Services, Post/Services/., Post/Services/.., Post/Repositories, Post/Repositories/., Post/Repositories/.., Post/., Post/Exceptions, Post/Exceptions/., Post/Exceptions/.., Post/.., Post/DTOs, Post/DTOs/., Post/DTOs/.., Post/Contracts, Post/Contracts/., Post/Contracts/.., Post/Enums, Post/Enums/., Post/Enums/.., Post/Validation, Post/Validation/., Post/Validation/.., .., Auth, Auth/Models, Auth/Models/., Auth/Models/.., Auth/Services, Auth/Services/Advanced, Auth/Services/Advanced/., Auth/Services/Advanced/.., Auth/Services/., Auth/Services/.., Auth/Repositories, Auth/Repositories/., Auth/Repositories/.., Auth/., Auth/Exceptions, Auth/Exceptions/., Auth/Exceptions/.., Auth/.., Auth/DTOs, Auth/DTOs/., Auth/DTOs/.., Auth/Contracts, Auth/Contracts/., Auth/Contracts/..
-**檔案數量**: 68
+**子目錄**: Attachment, Attachment/Models, Attachment/Models/., Attachment/Models/.., Attachment/Services, Attachment/Services/., Attachment/Services/.., Attachment/Repositories, Attachment/Repositories/., Attachment/Repositories/.., Attachment/., Attachment/.., Attachment/DTOs, Attachment/DTOs/., Attachment/DTOs/.., Attachment/Contracts, Attachment/Contracts/., Attachment/Contracts/.., Attachment/Enums, Attachment/Enums/., Attachment/Enums/.., Security, Security/Models, Security/Models/., Security/Models/.., Security/Services, Security/Services/Advanced, Security/Services/Advanced/., Security/Services/Advanced/.., Security/Services/Headers, Security/Services/Headers/., Security/Services/Headers/.., Security/Services/Core, Security/Services/Core/., Security/Services/Core/.., Security/Services/Error, Security/Services/Error/., Security/Services/Error/.., Security/Services/Logging, Security/Services/Logging/., Security/Services/Logging/.., Security/Services/., Security/Services/.., Security/Services/Secrets, Security/Services/Secrets/., Security/Services/Secrets/.., Security/Services/Content, Security/Services/Content/., Security/Services/Content/.., Security/Entities, Security/Entities/., Security/Entities/.., Security/Repositories, Security/Repositories/., Security/Repositories/.., Security/., Security/.., Security/DTOs, Security/DTOs/., Security/DTOs/.., Security/Contracts, Security/Contracts/., Security/Contracts/.., Security/Enums, Security/Enums/., Security/Enums/.., Post, Post/Models, Post/Models/., Post/Models/.., Post/Services, Post/Services/., Post/Services/.., Post/Repositories, Post/Repositories/., Post/Repositories/.., Post/., Post/Exceptions, Post/Exceptions/., Post/Exceptions/.., Post/.., Post/DTOs, Post/DTOs/., Post/DTOs/.., Post/Contracts, Post/Contracts/., Post/Contracts/.., Post/Enums, Post/Enums/., Post/Enums/.., Post/Validation, Post/Validation/., Post/Validation/.., .., Auth, Auth/Models, Auth/Models/., Auth/Models/.., Auth/Services, Auth/Services/Advanced, Auth/Services/Advanced/., Auth/Services/Advanced/.., Auth/Services/., Auth/Services/.., Auth/Repositories, Auth/Repositories/., Auth/Repositories/.., Auth/., Auth/Exceptions, Auth/Exceptions/., Auth/Exceptions/.., Auth/.., Auth/DTOs, Auth/DTOs/., Auth/DTOs/.., Auth/Contracts, Auth/Contracts/., Auth/Contracts/.., storage, storage/., storage/.., storage/cache, storage/cache/htmlpurifier, storage/cache/htmlpurifier/., storage/cache/htmlpurifier/.., storage/cache/., storage/cache/..
+**檔案數量**: 71
 
 ### Infrastructure 層
 **子目錄**: Services, Services/., Services/.., Cache, Cache/., Cache/.., OpenApi, OpenApi/., OpenApi/.., Database, Database/., Database/.., Config, Config/., Config/.., .., Routing, Routing/Cache, Routing/Cache/., Routing/Cache/.., Routing/Core, Routing/Core/., Routing/Core/.., Routing/Providers, Routing/Providers/., Routing/Providers/.., Routing/., Routing/Exceptions, Routing/Exceptions/., Routing/Exceptions/.., Routing/.., Routing/Contracts, Routing/Contracts/., Routing/Contracts/.., Routing/Middleware, Routing/Middleware/., Routing/Middleware/.., Http, Http/., Http/..
@@ -556,7 +569,7 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 109
+- **類別總數**: 114
 - **介面總數**: 31
 - **Trait 總數**: 0
 
@@ -564,6 +577,7 @@
 
 - ⚠️  可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
 - ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
+- ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/ActivityLogController.php -> App\Application\Controllers\BaseController
 - ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
 
 ## 🔑 重要類別清單
@@ -580,6 +594,9 @@
 - **BaseController**: `app/Application/Controllers/BaseController.php`
   - 實作: 
 - **IpController**: `app/Application/Controllers/Api/V1/IpController.php`
+  - 實作: 
+- **ActivityLogController**: `app/Application/Controllers/Api/V1/ActivityLogController.php`
+  - 繼承: BaseController
   - 實作: 
 - **AuthController**: `app/Application/Controllers/Api/V1/AuthController.php`
   - 繼承: BaseController
@@ -604,6 +621,8 @@
   - 實作: 
 - **ErrorHandlerService**: `app/Domains/Security/Services/Error/ErrorHandlerService.php`
   - 實作: ErrorHandlerServiceInterface
+- **ActivityLoggingService**: `app/Domains/Security/Services/ActivityLoggingService.php`
+  - 實作: ActivityLoggingServiceInterface
 - **LoggingSecurityService**: `app/Domains/Security/Services/Logging/LoggingSecurityService.php`
   - 實作: LoggingSecurityServiceInterface
 - **SecretsManager**: `app/Domains/Security/Services/Secrets/SecretsManager.php`
@@ -614,6 +633,8 @@
   - 實作: 
 - **IpRepository**: `app/Domains/Security/Repositories/IpRepository.php`
   - 實作: IpRepositoryInterface
+- **ActivityLogRepository**: `app/Domains/Security/Repositories/ActivityLogRepository.php`
+  - 實作: ActivityLogRepositoryInterface
 - **RichTextProcessorService**: `app/Domains/Post/Services/RichTextProcessorService.php`
   - 實作: 
 - **PostService**: `app/Domains/Post/Services/PostService.php`
@@ -660,6 +681,7 @@
 - SwaggerController (`app/Application/Controllers/Web/SwaggerController.php`)
 - BaseController (`app/Application/Controllers/BaseController.php`)
 - IpController (`app/Application/Controllers/Api/V1/IpController.php`)
+- ActivityLogController (`app/Application/Controllers/Api/V1/ActivityLogController.php`)
 - AuthController (`app/Application/Controllers/Api/V1/AuthController.php`)
 - AttachmentController (`app/Application/Controllers/Api/V1/AttachmentController.php`)
 - AuthorizationMiddleware (`app/Application/Middleware/AuthorizationMiddleware.php`)
@@ -683,6 +705,7 @@
 - XssProtectionService (`app/Domains/Security/Services/Core/XssProtectionService.php`)
 - XssProtectionExtensionService (`app/Domains/Security/Services/Content/XssProtectionExtensionService.php`)
 - IpService (`app/Domains/Security/Services/IpService.php`)
+- ActivityLog (`app/Domains/Security/Entities/ActivityLog.php`)
 - ActivityLogSearchDTO (`app/Domains/Security/DTOs/ActivityLogSearchDTO.php`)
 - CreateIpRuleDTO (`app/Domains/Security/DTOs/CreateIpRuleDTO.php`)
 - RichTextProcessorService (`app/Domains/Post/Services/RichTextProcessorService.php`)
@@ -721,6 +744,7 @@
 - RouteInfoMiddleware (`app/Infrastructure/Routing/Middleware/RouteInfoMiddleware.php`)
 - RouteValidator (`app/Infrastructure/Routing/RouteValidator.php`)
 - ServerRequestFactory (`app/Infrastructure/Http/ServerRequestFactory.php`)
+- PhpUnitDeprecationFixer (`scripts/fix-phpunit-deprecations.php`)
 - DDDNamespaceUpdater (`scripts/ddd-namespace-updater.php`)
 - ProjectArchitectureScanner (`scripts/scan-project-architecture.php`)
 - TestFixer (`scripts/test-fixer.php`)
@@ -759,6 +783,9 @@
 ### `ErrorHandlerServiceInterface`
 - ErrorHandlerService (`app/Domains/Security/Services/Error/ErrorHandlerService.php`)
 
+### `ActivityLoggingServiceInterface`
+- ActivityLoggingService (`app/Domains/Security/Services/ActivityLoggingService.php`)
+
 ### `LoggingSecurityServiceInterface`
 - LoggingSecurityService (`app/Domains/Security/Services/Logging/LoggingSecurityService.php`)
 
@@ -767,6 +794,9 @@
 
 ### `IpRepositoryInterface`
 - IpRepository (`app/Domains/Security/Repositories/IpRepository.php`)
+
+### `ActivityLogRepositoryInterface`
+- ActivityLogRepository (`app/Domains/Security/Repositories/ActivityLogRepository.php`)
 
 ### `PostServiceInterface`
 - PostService (`app/Domains/Post/Services/PostService.php`)
@@ -822,7 +852,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 109 個
+- **缺少測試的類別**: 114 個
 
 ### 缺少測試的重要類別
 
@@ -860,6 +890,11 @@
   - `RichTextProcessorService` $richTextProcessor
   - `ContentModerationService` $contentModerator
 
+- **ActivityLog** (3 個依賴)
+  - `ActivityType` $actionType
+  - `ActivityStatus` $status
+  - `DateTimeImmutable` $occurredAt
+
 - **CreateActivityLogDTO** (3 個依賴)
   - `ActivityType` $actionType
   - `ActivityStatus` $status
@@ -887,6 +922,8 @@
 
 ## ❓ 可能的問題引用
 
+- ❓ 找不到類別/介面: App\Domains\Security\Enums\ActivityCategory (在 app/Application/Controllers/Api/V1/ActivityLogController.php 中使用)
+- ❓ 找不到類別/介面: App\Domains\Security\Enums\ActivityType (在 app/Application/Controllers/Api/V1/ActivityLogController.php 中使用)
 - ❓ 找不到類別/介面: GuzzleHttp\Psr7\Response (在 app/Application/Middleware/RateLimitMiddleware.php 中使用)
 - ❓ 找不到類別/介面: DI\ContainerBuilder (在 app/Application.php 中使用)
 - ❓ 找不到類別/介面: Throwable (在 app/Shared/Exceptions/ValidationException.php 中使用)
@@ -914,6 +951,4 @@
                 ORDER BY created_at DESC
             ' (在 app/Domains/Attachment/Repositories/AttachmentRepository.php 中使用)
 - ❓ 找不到類別/介面: HTMLPurifier (在 app/Domains/Security/Services/Core/XssProtectionService.php 中使用)
-- ❓ 找不到類別/介面: HTMLPurifier_Config (在 app/Domains/Security/Services/Core/XssProtectionService.php 中使用)
-- ❓ 找不到類別/介面: Monolog\Formatter\LineFormatter (在 app/Domains/Security/Services/Error/ErrorHandlerService.php 中使用)
-- ... 還有 74 個
+- ... 還有 93 個

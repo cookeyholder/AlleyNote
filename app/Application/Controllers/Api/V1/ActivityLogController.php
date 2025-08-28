@@ -11,20 +11,23 @@ use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityCategory;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Http\ApiResponse;
+use DateTime;
+use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use ValueError;
 
 /**
- * ActivityLogController
- * 
+ * ActivityLogController.
+ *
  * 處理系統活動記錄的 API 請求
  */
 class ActivityLogController extends BaseController
 {
     public function __construct(
         private readonly ActivityLoggingServiceInterface $loggingService,
-        private readonly ActivityLogRepositoryInterface $repository
+        private readonly ActivityLogRepositoryInterface $repository,
     ) {
         // No parent constructor to call
     }
@@ -43,9 +46,9 @@ class ActivityLogController extends BaseController
                     new OA\Property(property: 'resource_id', type: 'integer', nullable: true, example: 123),
                     new OA\Property(property: 'ip_address', type: 'string', nullable: true, example: '192.168.1.1'),
                     new OA\Property(property: 'user_agent', type: 'string', nullable: true, example: 'Mozilla/5.0'),
-                    new OA\Property(property: 'additional_data', type: 'object', nullable: true)
-                ]
-            )
+                    new OA\Property(property: 'additional_data', type: 'object', nullable: true),
+                ],
+            ),
         ),
         responses: [
             new OA\Response(
@@ -55,9 +58,9 @@ class ActivityLogController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
                         new OA\Property(property: 'message', type: 'string', example: 'Activity log created successfully'),
-                        new OA\Property(property: 'data', type: 'object')
-                    ]
-                )
+                        new OA\Property(property: 'data', type: 'object'),
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 422,
@@ -66,12 +69,12 @@ class ActivityLogController extends BaseController
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
                         new OA\Property(property: 'message', type: 'string', example: 'Validation failed'),
-                        new OA\Property(property: 'errors', type: 'object')
-                    ]
-                )
-            )
+                        new OA\Property(property: 'errors', type: 'object'),
+                    ],
+                ),
+            ),
         ],
-        tags: ['Activity Logs']
+        tags: ['Activity Logs'],
     )]
     public function store(ServerRequestInterface $request, ResponseInterface $response): string
     {
@@ -89,9 +92,9 @@ class ActivityLogController extends BaseController
             // 驗證枚舉值
             try {
                 ActivityType::from($data['action_type']);
-            } catch (\ValueError $e) {
+            } catch (ValueError $e) {
                 return $this->errorResponse('Validation failed', 422, [
-                    'action_type' => ['Invalid action type']
+                    'action_type' => ['Invalid action type'],
                 ]);
             }
 
@@ -103,7 +106,7 @@ class ActivityLogController extends BaseController
                 targetId: $data['resource_id'] ?? null,
                 ipAddress: $data['ip_address'] ?? null,
                 userAgent: $data['user_agent'] ?? null,
-                metadata: $data['additional_data'] ?? null
+                metadata: $data['additional_data'] ?? null,
             );
 
             // 建立活動記錄
@@ -111,9 +114,9 @@ class ActivityLogController extends BaseController
 
             return $this->jsonResponse(
                 ApiResponse::success($result, 'Activity logged successfully'),
-                201
+                201,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->errorResponse('Internal server error', 500);
         }
     }
@@ -138,12 +141,12 @@ class ActivityLogController extends BaseController
                                 new OA\Property(property: 'resource_id', type: 'integer', nullable: true),
                                 new OA\Property(property: 'ip_address', type: 'string', nullable: true),
                                 new OA\Property(property: 'user_agent', type: 'string', nullable: true),
-                                new OA\Property(property: 'additional_data', type: 'object', nullable: true)
-                            ]
-                        )
-                    )
-                ]
-            )
+                                new OA\Property(property: 'additional_data', type: 'object', nullable: true),
+                            ],
+                        ),
+                    ),
+                ],
+            ),
         ),
         responses: [
             new OA\Response(
@@ -154,13 +157,13 @@ class ActivityLogController extends BaseController
                         new OA\Property(property: 'success', type: 'boolean', example: true),
                         new OA\Property(property: 'message', type: 'string', example: 'Activity logs created successfully'),
                         new OA\Property(property: 'data', properties: [
-                            new OA\Property(property: 'created_count', type: 'integer', example: 5)
-                        ])
-                    ]
-                )
-            )
+                            new OA\Property(property: 'created_count', type: 'integer', example: 5),
+                        ]),
+                    ],
+                ),
+            ),
         ],
-        tags: ['Activity Logs']
+        tags: ['Activity Logs'],
     )]
     public function storeBatch(ServerRequestInterface $request, ResponseInterface $response): string
     {
@@ -189,7 +192,7 @@ class ActivityLogController extends BaseController
                     targetId: $logData['resource_id'] ?? null,
                     ipAddress: $logData['ip_address'] ?? null,
                     userAgent: $logData['user_agent'] ?? null,
-                    metadata: $logData['additional_data'] ?? null
+                    metadata: $logData['additional_data'] ?? null,
                 );
             }
 
@@ -198,9 +201,9 @@ class ActivityLogController extends BaseController
 
             return $this->successResponse(
                 ['logged_count' => $count],
-                "{$count} activities logged successfully"
+                "{$count} activities logged successfully",
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->errorResponse('Internal server error', 500);
         }
     }
@@ -215,7 +218,7 @@ class ActivityLogController extends BaseController
             new OA\Parameter(name: 'type', in: 'query', description: 'Activity type', schema: new OA\Schema(type: 'string')),
             new OA\Parameter(name: 'user_id', in: 'query', description: 'User ID', schema: new OA\Schema(type: 'integer')),
             new OA\Parameter(name: 'start_time', in: 'query', description: 'Start time (ISO 8601)', schema: new OA\Schema(type: 'string', format: 'date-time')),
-            new OA\Parameter(name: 'end_time', in: 'query', description: 'End time (ISO 8601)', schema: new OA\Schema(type: 'string', format: 'date-time'))
+            new OA\Parameter(name: 'end_time', in: 'query', description: 'End time (ISO 8601)', schema: new OA\Schema(type: 'string', format: 'date-time')),
         ],
         responses: [
             new OA\Response(
@@ -231,30 +234,30 @@ class ActivityLogController extends BaseController
                                 new OA\Property(property: 'total', type: 'integer', example: 100),
                                 new OA\Property(property: 'page', type: 'integer', example: 1),
                                 new OA\Property(property: 'limit', type: 'integer', example: 20),
-                                new OA\Property(property: 'pages', type: 'integer', example: 5)
-                            ]
-                        )
-                    ]
-                )
-            )
+                                new OA\Property(property: 'pages', type: 'integer', example: 5),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
         ],
-        tags: ['Activity Logs']
+        tags: ['Activity Logs'],
     )]
     public function index(ServerRequestInterface $request, ResponseInterface $response): string
     {
         try {
             $params = $request->getQueryParams();
 
-            $page = (int)($params['page'] ?? 1);
-            $limit = (int)($params['limit'] ?? 20);
+            $page = (int) ($params['page'] ?? 1);
+            $limit = (int) ($params['limit'] ?? 20);
             $offset = ($page - 1) * $limit;
 
             // 準備搜尋參數
             $category = isset($params['category']) ? ActivityCategory::from($params['category']) : null;
             $actionType = isset($params['type']) ? ActivityType::from($params['type']) : null;
-            $userId = isset($params['user_id']) ? (int)$params['user_id'] : null;
-            $startTime = isset($params['start_time']) ? new \DateTime($params['start_time']) : null;
-            $endTime = isset($params['end_time']) ? new \DateTime($params['end_time']) : null;
+            $userId = isset($params['user_id']) ? (int) $params['user_id'] : null;
+            $startTime = isset($params['start_time']) ? new DateTime($params['start_time']) : null;
+            $endTime = isset($params['end_time']) ? new DateTime($params['end_time']) : null;
 
             $logs = $this->repository->search(
                 null, // searchTerm
@@ -264,7 +267,7 @@ class ActivityLogController extends BaseController
                 $startTime,
                 $endTime,
                 $limit,
-                $offset
+                $offset,
             );
             $total = $this->repository->getSearchCount(
                 null, // searchTerm
@@ -272,18 +275,18 @@ class ActivityLogController extends BaseController
                 $category,
                 $actionType,
                 $startTime,
-                $endTime
+                $endTime,
             );
 
             $pagination = [
                 'total' => $total,
                 'page' => $page,
                 'limit' => $limit,
-                'pages' => (int)ceil($total / $limit)
+                'pages' => (int) ceil($total / $limit),
             ];
 
             return $this->paginatedResponse($logs, $total, $page, $limit);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->errorResponse('Internal server error', 500);
         }
     }
@@ -300,7 +303,7 @@ class ActivityLogController extends BaseController
             new OA\Parameter(name: 'limit', in: 'query', description: 'Items per page', schema: new OA\Schema(type: 'integer', default: 20)),
             new OA\Parameter(name: 'offset', in: 'query', description: 'Offset', schema: new OA\Schema(type: 'integer', default: 0)),
             new OA\Parameter(name: 'category', in: 'query', description: 'Activity category', schema: new OA\Schema(type: 'string')),
-            new OA\Parameter(name: 'action_type', in: 'query', description: 'Activity type', schema: new OA\Schema(type: 'string'))
+            new OA\Parameter(name: 'action_type', in: 'query', description: 'Activity type', schema: new OA\Schema(type: 'string')),
         ],
         responses: [
             new OA\Response(
@@ -309,27 +312,27 @@ class ActivityLogController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'data', type: 'array', items: new OA\Items())
-                    ]
-                )
-            )
-        ]
+                        new OA\Property(property: 'data', type: 'array', items: new OA\Items()),
+                    ],
+                ),
+            ),
+        ],
     )]
     public function getUserActivities(ServerRequestInterface $request, ResponseInterface $response, array $args): string
     {
         try {
-            $userId = (int)$args['id'];
+            $userId = (int) $args['id'];
             $params = $request->getQueryParams();
 
-            $limit = (int)($params['limit'] ?? 20);
-            $offset = (int)($params['offset'] ?? 0);
+            $limit = (int) ($params['limit'] ?? 20);
+            $offset = (int) ($params['offset'] ?? 0);
             $category = isset($params['category']) ? ActivityCategory::from($params['category']) : null;
             $actionType = isset($params['action_type']) ? ActivityType::from($params['action_type']) : null;
 
             $logs = $this->repository->findByUser($userId, $limit, $offset, $category, $actionType);
 
             return $this->successResponse($logs, 'User activity logs retrieved successfully');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->errorResponse('Internal server error', 500);
         }
     }
@@ -342,7 +345,7 @@ class ActivityLogController extends BaseController
             new OA\Parameter(name: 'limit', in: 'query', description: 'Items per page', schema: new OA\Schema(type: 'integer', default: 50)),
             new OA\Parameter(name: 'offset', in: 'query', description: 'Offset', schema: new OA\Schema(type: 'integer', default: 0)),
             new OA\Parameter(name: 'start_time', in: 'query', description: 'Start time (ISO 8601)', schema: new OA\Schema(type: 'string', format: 'date-time')),
-            new OA\Parameter(name: 'end_time', in: 'query', description: 'End time (ISO 8601)', schema: new OA\Schema(type: 'string', format: 'date-time'))
+            new OA\Parameter(name: 'end_time', in: 'query', description: 'End time (ISO 8601)', schema: new OA\Schema(type: 'string', format: 'date-time')),
         ],
         responses: [
             new OA\Response(
@@ -353,13 +356,13 @@ class ActivityLogController extends BaseController
                         new OA\Property(property: 'success', type: 'boolean', example: true),
                         new OA\Property(property: 'data', properties: [
                             new OA\Property(property: 'logs', type: 'array', items: new OA\Items()),
-                            new OA\Property(property: 'total', type: 'integer', example: 42)
-                        ])
-                    ]
-                )
-            )
+                            new OA\Property(property: 'total', type: 'integer', example: 42),
+                        ]),
+                    ],
+                ),
+            ),
         ],
-        tags: ['Activity Logs']
+        tags: ['Activity Logs'],
     )]
     public function search(ServerRequestInterface $request, ResponseInterface $response): string
     {
@@ -371,12 +374,12 @@ class ActivityLogController extends BaseController
                 return $this->errorResponse('Search query is required', 400);
             }
 
-            $limit = (int)($params['limit'] ?? 50);
-            $offset = (int)($params['offset'] ?? 0);
+            $limit = (int) ($params['limit'] ?? 50);
+            $offset = (int) ($params['offset'] ?? 0);
 
             // 準備搜尋參數
-            $startTime = isset($params['start_time']) ? new \DateTime($params['start_time']) : null;
-            $endTime = isset($params['end_time']) ? new \DateTime($params['end_time']) : null;
+            $startTime = isset($params['start_time']) ? new DateTime($params['start_time']) : null;
+            $endTime = isset($params['end_time']) ? new DateTime($params['end_time']) : null;
 
             $logs = $this->repository->search(
                 $query, // searchTerm
@@ -386,7 +389,7 @@ class ActivityLogController extends BaseController
                 $startTime,
                 $endTime,
                 $limit,
-                $offset
+                $offset,
             );
             $total = $this->repository->getSearchCount(
                 $query, // searchTerm
@@ -394,16 +397,16 @@ class ActivityLogController extends BaseController
                 null, // category
                 null, // actionType
                 $startTime,
-                $endTime
+                $endTime,
             );
 
             $data = [
                 'logs' => $logs,
-                'total' => $total
+                'total' => $total,
             ];
 
             return $this->successResponse($data, 'Search results retrieved successfully');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->errorResponse('Internal server error', 500);
         }
     }
@@ -413,7 +416,7 @@ class ActivityLogController extends BaseController
         summary: 'Get activity statistics',
         parameters: [
             new OA\Parameter(name: 'start_time', in: 'query', description: 'Start time (ISO 8601)', schema: new OA\Schema(type: 'string', format: 'date-time')),
-            new OA\Parameter(name: 'end_time', in: 'query', description: 'End time (ISO 8601)', schema: new OA\Schema(type: 'string', format: 'date-time'))
+            new OA\Parameter(name: 'end_time', in: 'query', description: 'End time (ISO 8601)', schema: new OA\Schema(type: 'string', format: 'date-time')),
         ],
         responses: [
             new OA\Response(
@@ -426,13 +429,13 @@ class ActivityLogController extends BaseController
                             new OA\Property(property: 'total_activities', type: 'integer', example: 1250),
                             new OA\Property(property: 'by_category', type: 'object'),
                             new OA\Property(property: 'by_type', type: 'object'),
-                            new OA\Property(property: 'popular_types', type: 'array', items: new OA\Items())
-                        ])
-                    ]
-                )
-            )
+                            new OA\Property(property: 'popular_types', type: 'array', items: new OA\Items()),
+                        ]),
+                    ],
+                ),
+            ),
         ],
-        tags: ['Activity Logs']
+        tags: ['Activity Logs'],
     )]
     public function statistics(ServerRequestInterface $request, ResponseInterface $response): string
     {
@@ -440,20 +443,20 @@ class ActivityLogController extends BaseController
             $params = $request->getQueryParams();
 
             $startTime = isset($params['start_time'])
-                ? new \DateTime($params['start_time'])
-                : new \DateTime('-30 days');
+                ? new DateTime($params['start_time'])
+                : new DateTime('-30 days');
             $endTime = isset($params['end_time'])
-                ? new \DateTime($params['end_time'])
-                : new \DateTime();
+                ? new DateTime($params['end_time'])
+                : new DateTime();
 
             $statistics = $this->repository->getActivityStatistics($startTime, $endTime);
 
             $data = [
-                'statistics' => $statistics
+                'statistics' => $statistics,
             ];
 
             return $this->successResponse($data, 'Activity statistics retrieved successfully');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->errorResponse('Internal server error', 500);
         }
     }

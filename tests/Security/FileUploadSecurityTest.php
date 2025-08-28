@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Domains\Attachment\Repositories\AttachmentRepository;
-use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Models\Post;
@@ -14,6 +13,7 @@ use App\Infrastructure\Services\CacheService;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;

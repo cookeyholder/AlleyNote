@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
-use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\MockInterface;
 use PDO;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PasswordHashingTest extends TestCase
@@ -21,9 +23,11 @@ class PasswordHashingTest extends TestCase
 
     protected UserRepository $userRepository;
 
-    protected PasswordSecurityServiceInterface $passwordService;
+    protected PasswordSecurityServiceInterface|MockInterface $passwordService;
 
-    protected ValidatorInterface $validator;
+    protected ActivityLoggingServiceInterface|MockInterface $activityLogger;
+
+    protected ValidatorInterface|MockInterface $validator;
 
     protected PDO $db;
 
@@ -33,6 +37,7 @@ class PasswordHashingTest extends TestCase
 
         // 初始化mock對象
         $this->passwordService = Mockery::mock(PasswordSecurityServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
 
         // 使用 SQLite 記憶體資料庫進行測試
@@ -43,7 +48,10 @@ class PasswordHashingTest extends TestCase
         $this->createTestTables();
 
         $this->userRepository = new UserRepository($this->db);
-        $this->authService = new AuthService($this->userRepository, $this->passwordService);
+        $this->authService = new AuthService($this->userRepository, $this->passwordService, $this->activityLogger);
+
+        // 設定活動記錄器的預設行為
+        $this->activityLogger->shouldReceive('log')->byDefault()->andReturn(true);
 
         // 設定 validator 的預設行為
         $this->validator->shouldReceive('addRule')
