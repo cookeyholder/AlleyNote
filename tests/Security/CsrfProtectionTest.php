@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Application\Controllers\Api\V1\PostController;
+use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
@@ -12,7 +13,6 @@ use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -20,8 +20,6 @@ use Tests\TestCase;
 
 class CsrfProtectionTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     private PostServiceInterface $postService;
 
     private ValidatorInterface $validator;
@@ -139,7 +137,8 @@ class CsrfProtectionTest extends TestCase
             ->byDefault();
     }
 
-    public function testShouldRejectRequestWithoutCsrfToken(): void
+    #[Test]
+    public function shouldRejectRequestWithoutCsrfToken(): void
     {
         // 準備測試資料
         $postData = [
@@ -187,7 +186,8 @@ class CsrfProtectionTest extends TestCase
         $this->assertTrue($response->getStatusCode() === 201 || $response->getStatusCode() === 403);
     }
 
-    public function testShouldRejectRequestWithInvalidCsrfToken(): void
+    #[Test]
+    public function shouldRejectRequestWithInvalidCsrfToken(): void
     {
         // 準備測試資料
         $postData = [
@@ -235,7 +235,8 @@ class CsrfProtectionTest extends TestCase
         $this->assertTrue($response->getStatusCode() === 201 || $response->getStatusCode() === 403);
     }
 
-    public function testShouldAcceptRequestWithValidCsrfToken(): void
+    #[Test]
+    public function shouldAcceptRequestWithValidCsrfToken(): void
     {
         // 準備測試資料
         $postData = [

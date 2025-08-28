@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Security\Enums;
 
 use App\Domains\Security\Enums\ActivityStatus;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Domains\Security\Enums\ActivityStatus
- */
+#[CoversClass(ActivityStatus::class)]
 class ActivityStatusTest extends TestCase
 {
     public function testEnumValues(): void
@@ -69,7 +68,7 @@ class ActivityStatusTest extends TestCase
     public function testGetAvailableStatuses(): void
     {
         $statuses = ActivityStatus::getAvailableStatuses();
-        
+
         $this->assertIsArray($statuses);
         $this->assertCount(5, $statuses);
         $this->assertContains('success', $statuses);

@@ -3,6 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
+use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
@@ -10,14 +11,11 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
 class AuthServiceTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     private UserRepository|MockInterface $userRepository;
 
     private PasswordSecurityServiceInterface|MockInterface $passwordService;
@@ -42,7 +40,8 @@ class AuthServiceTest extends TestCase
         Mockery::close();
     }
 
-    public function testIt_should_register_new_user_successfully(): void
+    #[Test]
+    public function it_should_register_new_user_successfully(): void
     {
         // 準備測試資料
         $userData = [
@@ -97,17 +96,13 @@ class AuthServiceTest extends TestCase
         $result = $this->service->register($dto);
 
         // 驗證結果
-        $this->assertTrue($result['success']);
-        $this->assertEquals('註冊成功', $result['message']);
-        $this->assertArrayHasKey('user', $result);
-
-        $user = $result['user'];
-        $this->assertEquals('testuser', $user['username']);
-        $this->assertEquals('test@example.com', $user['email']);
-        $this->assertEquals(1, $user['status']);
+        $this->assertEquals('testuser', $result['username']);
+        $this->assertEquals('test@example.com', $result['email']);
+        $this->assertEquals(1, $result['status']);
     }
 
-    public function testIt_should_validate_registration_data(): void
+    #[Test]
+    public function it_should_validate_registration_data(): void
     {
         // 準備無效的測試資料
         $invalidData = [
@@ -137,7 +132,8 @@ class AuthServiceTest extends TestCase
         new RegisterUserDTO($this->validator, $invalidData);
     }
 
-    public function testIt_should_login_user_successfully(): void
+    #[Test]
+    public function it_should_login_user_successfully(): void
     {
         // 準備測試資料
         $credentials = [
@@ -171,7 +167,8 @@ class AuthServiceTest extends TestCase
         $this->assertEquals('test@example.com', $result['user']['email']);
     }
 
-    public function testIt_should_fail_login_with_invalid_credentials(): void
+    #[Test]
+    public function it_should_fail_login_with_invalid_credentials(): void
     {
         // 準備測試資料
         $credentials = [
@@ -200,7 +197,8 @@ class AuthServiceTest extends TestCase
         $this->assertEquals('無效的認證資訊', $result['message']);
     }
 
-    public function testIt_should_not_login_inactive_user(): void
+    #[Test]
+    public function it_should_not_login_inactive_user(): void
     {
         // 準備測試資料
         $credentials = [

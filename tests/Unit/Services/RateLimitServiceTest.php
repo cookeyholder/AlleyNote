@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace Tests\Unit\Services;
 
 use App\Infrastructure\Services\CacheService;
+use PHPUnit\Framework\Attributes\Test;
 use App\Infrastructure\Services\RateLimitService;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use RuntimeException;
 use Tests\TestCase;
 
 class RateLimitServiceTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     private RateLimitService $rateLimitService;
 
     private $cacheMock;
@@ -26,7 +24,8 @@ class RateLimitServiceTest extends TestCase
         $this->rateLimitService = new RateLimitService($this->cacheMock);
     }
 
-    public function testShouldAllowFirstRequest(): void
+    #[Test]
+    public function shouldAllowFirstRequest(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();
@@ -46,7 +45,8 @@ class RateLimitServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testShouldRejectWhenLimitExceeded(): void
+    #[Test]
+    public function shouldRejectWhenLimitExceeded(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();
@@ -60,7 +60,8 @@ class RateLimitServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testShouldHandleCacheFailureGracefully(): void
+    #[Test]
+    public function shouldHandleCacheFailureGracefully(): void
     {
         $ip = '127.0.0.1';
         $this->cacheMock->shouldReceive('get')
@@ -74,7 +75,8 @@ class RateLimitServiceTest extends TestCase
         $this->assertTrue($result, '當快取服務失敗時應該允許請求');
     }
 
-    public function testShouldIncrementRequestCount(): void
+    #[Test]
+    public function shouldIncrementRequestCount(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();
@@ -93,7 +95,8 @@ class RateLimitServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testShouldHandleSetFailure(): void
+    #[Test]
+    public function shouldHandleSetFailure(): void
     {
         $ip = '127.0.0.1';
         $timeNow = time();

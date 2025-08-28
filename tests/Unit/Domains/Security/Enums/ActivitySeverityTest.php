@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Security\Enums;
 
 use App\Domains\Security\Enums\ActivitySeverity;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Domains\Security\Enums\ActivitySeverity
- */
+#[CoversClass(ActivitySeverity::class)]
 class ActivitySeverityTest extends TestCase
 {
     public function testEnumValues(): void
@@ -76,7 +75,7 @@ class ActivitySeverityTest extends TestCase
     public function testGetAllLevels(): void
     {
         $levels = ActivitySeverity::getAllLevels();
-        
+
         $this->assertIsArray($levels);
         $this->assertCount(5, $levels);
         $this->assertContains(ActivitySeverity::LOW, $levels);

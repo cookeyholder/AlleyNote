@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Application\Controllers\Api\V1\PostController;
+use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
@@ -12,7 +13,6 @@ use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -20,8 +20,6 @@ use Tests\TestCase;
 
 class XssPreventionTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     private PostServiceInterface $postService;
 
     private ValidatorInterface $validator;
@@ -132,7 +130,8 @@ class XssPreventionTest extends TestCase
             ->byDefault();
     }
 
-    public function testShouldEscapeHtmlInPostTitle(): void
+    #[Test]
+    public function shouldEscapeHtmlInPostTitle(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
         $maliciousTitle = '<script>alert("XSS");</script>惡意標題';
@@ -189,7 +188,8 @@ class XssPreventionTest extends TestCase
         $this->assertNotNull($responseData['data']['title']);
     }
 
-    public function testShouldEscapeHtmlInPostContent(): void
+    #[Test]
+    public function shouldEscapeHtmlInPostContent(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
         $maliciousContent = '<img src="x" onerror="alert(\'XSS\')">';
@@ -246,7 +246,8 @@ class XssPreventionTest extends TestCase
         $this->assertNotNull($responseData['data']['content']);
     }
 
-    public function testShouldHandleEncodedXssAttempts(): void
+    #[Test]
+    public function shouldHandleEncodedXssAttempts(): void
     {
         // 準備編碼的 XSS 攻擊程式碼
         $encodedXss = htmlentities('<script>alert("XSS");</script>', ENT_QUOTES, 'UTF-8');

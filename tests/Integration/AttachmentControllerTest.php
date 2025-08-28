@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\AttachmentController;
+use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,8 +20,6 @@ use Tests\TestCase;
 
 class AttachmentControllerTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     private AttachmentService&MockInterface $attachmentService;
 
     private ServerRequestInterface&MockInterface $request;
@@ -74,7 +72,8 @@ class AttachmentControllerTest extends TestCase
             ->byDefault();
     }
 
-    public function testUploadShouldStoreFileSuccessfully(): void
+    #[Test]
+    public function uploadShouldStoreFileSuccessfully(): void
     {
         // Mock user_id attribute
 
@@ -86,10 +85,6 @@ class AttachmentControllerTest extends TestCase
 
         // 準備測試資料
         $postId = 1;
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
         $attachment = new Attachment([
             'id' => 1,
@@ -127,7 +122,8 @@ class AttachmentControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode());
     }
 
-    public function testUploadShouldReturn400ForInvalidFile(): void
+    #[Test]
+    public function uploadShouldReturn400ForInvalidFile(): void
     {
         // Mock user_id attribute
 
@@ -147,10 +143,6 @@ class AttachmentControllerTest extends TestCase
 
         // 準備測試資料
         $postId = 1;
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
 
         // 設定請求
@@ -180,7 +172,8 @@ class AttachmentControllerTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    public function testListShouldReturnAttachments(): void
+    #[Test]
+    public function listShouldReturnAttachments(): void
     {
         // Mock user_id attribute
 
@@ -244,7 +237,8 @@ class AttachmentControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testDeleteShouldRemoveAttachment(): void
+    #[Test]
+    public function deleteShouldRemoveAttachment(): void
     {
         // Mock user_id attribute
 
@@ -280,7 +274,8 @@ class AttachmentControllerTest extends TestCase
         $this->assertEquals(204, $response->getStatusCode());
     }
 
-    public function testDeleteShouldReturn404ForNonexistentAttachment(): void
+    #[Test]
+    public function deleteShouldReturn404ForNonexistentAttachment(): void
     {
         // Mock user_id attribute
 
@@ -324,7 +319,8 @@ class AttachmentControllerTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testDeleteShouldReturn400ForInvalidUuid(): void
+    #[Test]
+    public function deleteShouldReturn400ForInvalidUuid(): void
     {
         // Mock user_id attribute
 
