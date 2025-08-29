@@ -9,27 +9,13 @@ declare(strict_types=1);
 
 class PhpUnitDeprecationFixer
 {
-    private array $replacements = [
-        '/** @test */' => '#[Test]',
-        '    /** @test */' => '    #[Test]',
-        '     * @test' => '',  // 移除 docblock 內的 @test
-        ' @test' => '',       // 移除簡單的 @test
-        '/** @covers' => '#[CoversClass(',
-        '/** @group' => '#[Group(',
-        '/** @depends' => '#[Depends(',
-        '/** @dataProvider' => '#[DataProvider(',
-    ];
-
-    private array $imports = [
-        'PHPUnit\Framework\Attributes\Test',
-        'PHPUnit\Framework\Attributes\CoversClass',
-        'PHPUnit\Framework\Attributes\Group',
-        'PHPUnit\Framework\Attributes\Depends',
-        'PHPUnit\Framework\Attributes\DataProvider',
-    ];
+    private int $fixCount = 0;
+    private array $processedFiles = [];
 
     public function run(): void
     {
+        echo "開始修復 PHPUnit Deprecations...\n";
+        
         $testFiles = $this->findTestFiles();
 
         foreach ($testFiles as $file) {
@@ -37,13 +23,22 @@ class PhpUnitDeprecationFixer
             $this->processFile($file);
         }
 
-        echo "完成！共處理了 " . count($testFiles) . " 個檔案\n";
+        echo "\n修復完成！\n";
+        echo "總修復次數: {$this->fixCount}\n";
+        echo "修復的檔案數: " . count($this->processedFiles) . "\n";
+
+        if (!empty($this->processedFiles)) {
+            echo "已修復的檔案:\n";
+            foreach ($this->processedFiles as $file) {
+                echo "  - $file\n";
+            }
+        }
     }
 
     private function findTestFiles(): array
     {
         $files = [];
-        $directories = ['tests/Unit', 'tests/Integration', 'tests/Security', 'tests/UI'];
+        $directories = ['tests'];  // 搜尋整個 tests 目錄
 
         foreach ($directories as $dir) {
             if (!is_dir($dir)) {
@@ -51,7 +46,7 @@ class PhpUnitDeprecationFixer
             }
 
             $iterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($dir)
+                new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS)
             );
 
             foreach ($iterator as $file) {
@@ -68,7 +63,7 @@ class PhpUnitDeprecationFixer
     {
         $content = file_get_contents($filePath);
         if ($content === false) {
-            echo "無法讀取檔案: {$filePath}\n";
+            echo "  無法讀取檔案: {$filePath}\n";
             return;
         }
 
@@ -76,35 +71,25 @@ class PhpUnitDeprecationFixer
 
         // 檢查是否需要添加 use 語句
         $needsTestAttribute = strpos($content, '/** @test */') !== false ||
-            strpos($content, ' * @test') !== false;
-        $needsCoversAttribute = strpos($content, '/** @covers') !== false;
-        $needsGroupAttribute = strpos($content, '/** @group') !== false;
+            preg_match('/^\s*\*\s*@test\s*$/m', $content);
 
-        // 添加必要的 use 語句
+        // 添加 Test attribute import
         if ($needsTestAttribute && strpos($content, 'use PHPUnit\Framework\Attributes\Test;') === false) {
             $content = $this->addUseStatement($content, 'PHPUnit\Framework\Attributes\Test');
-        }
-
-        if ($needsCoversAttribute && strpos($content, 'use PHPUnit\Framework\Attributes\CoversClass;') === false) {
-            $content = $this->addUseStatement($content, 'PHPUnit\Framework\Attributes\CoversClass');
-        }
-
-        if ($needsGroupAttribute && strpos($content, 'use PHPUnit\Framework\Attributes\Group;') === false) {
-            $content = $this->addUseStatement($content, 'PHPUnit\Framework\Attributes\Group');
         }
 
         // 處理 @test 註解
         $content = $this->replaceTestAnnotations($content);
 
-        // 處理 @covers 註解 
-        $content = $this->replaceCoversAnnotations($content);
-
         // 處理其他註解
         $content = $this->replaceOtherAnnotations($content);
 
-        if ($content !== $originalContent) {
+        if ($content !== $originalContent && $this->isValidPhp($content)) {
             file_put_contents($filePath, $content);
-            echo "已修正: {$filePath}\n";
+            $relativePath = str_replace(getcwd() . '/', '', $filePath);
+            $this->processedFiles[] = $relativePath;
+            $this->fixCount++;
+            echo "  ✓ 已修復: {$relativePath}\n";
         }
     }
 
@@ -127,23 +112,17 @@ class PhpUnitDeprecationFixer
 
     private function replaceTestAnnotations(string $content): string
     {
-        // 處理單行 @test
-        $content = preg_replace('/^(\s*)\/\*\* @test \*\/$/m', '$1#[Test]', $content);
+        // 處理單行 /** @test */ 註解
+        $content = preg_replace('/^(\s*)\/\*\* @test \*\/\s*$/m', '$1#[Test]', $content);
 
         // 處理 docblock 中的 @test
-        $content = preg_replace('/^(\s*)\*\s*@test\s*$/m', '', $content);
+        $content = preg_replace('/^\s*\*\s*@test\s*$/m', '', $content);
 
         // 清理空的 docblock
-        $content = preg_replace('/\/\*\*\s*\*\/\s*\n/m', '', $content);
-
-        return $content;
-    }
-
-    private function replaceCoversAnnotations(string $content): string
-    {
-        // 處理 @covers ClassName
-        $pattern = '/\/\*\* @covers\s+([^\s\*]+)\s*\*\//';
-        $content = preg_replace($pattern, '#[CoversClass($1::class)]', $content);
+        $content = preg_replace('/\/\*\*\s*\n\s*\*\/\s*\n/m', '', $content);
+        
+        // 清理只剩空格的 docblock 
+        $content = preg_replace('/\/\*\*\s*\n(\s*\*\s*\n)*\s*\*\/\s*\n/m', '', $content);
 
         return $content;
     }
@@ -155,6 +134,7 @@ class PhpUnitDeprecationFixer
             '/\/\*\* @group\s+([^\s\*]+)\s*\*\//' => '#[Group(\'$1\')]',
             '/\/\*\* @depends\s+([^\s\*]+)\s*\*\//' => '#[Depends(\'$1\')]',
             '/\/\*\* @dataProvider\s+([^\s\*]+)\s*\*\//' => '#[DataProvider(\'$1\')]',
+            '/\/\*\* @covers\s+([^\s\*]+)\s*\*\//' => '#[CoversClass($1::class)]',
         ];
 
         foreach ($patterns as $pattern => $replacement) {
@@ -162,6 +142,17 @@ class PhpUnitDeprecationFixer
         }
 
         return $content;
+    }
+
+    private function isValidPhp(string $code): bool
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'phpunit_fix_');
+        file_put_contents($tempFile, $code);
+
+        $result = shell_exec("php -l $tempFile 2>&1");
+        unlink($tempFile);
+
+        return strpos($result, 'No syntax errors detected') !== false;
     }
 }
 

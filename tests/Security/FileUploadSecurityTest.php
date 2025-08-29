@@ -17,12 +17,15 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 
 class FileUploadSecurityTest extends TestCase
 {
     protected AttachmentService $service;
 
     protected AuthorizationService|MockInterface $authService;
+
+    protected ActivityLoggingServiceInterface|MockInterface $activityLogger;
 
     protected AttachmentRepository|MockInterface $attachmentRepo;
 
@@ -38,6 +41,8 @@ class FileUploadSecurityTest extends TestCase
 
         // 初始化mock對象
         $this->authService = Mockery::mock(AuthorizationService::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->attachmentRepo = Mockery::mock(AttachmentRepository::class);
         $this->postRepo = Mockery::mock(PostRepository::class);
         $this->cacheService = Mockery::mock(CacheService::class);
@@ -49,6 +54,7 @@ class FileUploadSecurityTest extends TestCase
             $this->attachmentRepo,
             $this->postRepo,
             $this->authService,
+            $this->activityLogger,
             $this->uploadDir,
         );
 

@@ -18,11 +18,11 @@ class HealthController
     )]
     public function check(Request $request, Response $response): Response
     {
-        $response->getBody()->write(json_encode([
+        $response->getBody()->write((json_encode([
             'status' => 'ok',
             'timestamp' => date('c'),
             'service' => 'AlleyNote API',
-        ]));
+        ]) ?: '{"error": "JSON encoding failed"}'));
 
         return $response->withHeader('Content-Type', 'application/json');
     }

@@ -147,25 +147,26 @@ class AttachmentController
 
             $attachment = $this->attachmentService->upload($postId, $files['file'], $currentUserId);
 
-            $response->getBody()->write(json_encode([
+            $jsonResponse = json_encode([
                 'data' => $attachment->toArray(),
-            ]));
+            ]);
+            $response->getBody()->write($jsonResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -275,17 +276,17 @@ class AttachmentController
                 ->withStatus(501)
                 ->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -348,12 +349,12 @@ class AttachmentController
         $postId = (int) $request->getAttribute('post_id');
         $attachments = $this->attachmentService->getByPostId($postId);
 
-        $response->getBody()->write(json_encode([
+        $response->getBody()->write((json_encode([
             'data' => array_map(
                 fn($attachment) => $attachment->toArray(),
                 $attachments,
             ),
-        ]));
+        ]) ?: '{"error": "JSON encoding failed"}'));
 
         return $response
             ->withStatus(200)
@@ -430,17 +431,17 @@ class AttachmentController
 
             return $response->withStatus(204);
         } catch (ValidationException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)

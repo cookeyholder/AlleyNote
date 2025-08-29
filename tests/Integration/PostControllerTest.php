@@ -24,6 +24,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 
 class PostControllerTest extends TestCase
 {
@@ -60,6 +61,8 @@ class PostControllerTest extends TestCase
         $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
 
         // 設定預設行為
         $this->xssProtection->shouldReceive('cleanArray')
@@ -78,6 +81,10 @@ class PostControllerTest extends TestCase
         $this->sanitizer->shouldReceive('sanitizeHtml')
             ->andReturnUsing(function ($input) {
                 return $input;
+
+        // 設置 ActivityLoggingService mock 期望
+        $this->activityLogger->shouldReceive('log')
+            ->andReturn();
             })
             ->byDefault();
 
@@ -137,6 +144,7 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger,
         );
         $response = $controller->index($this->request, $this->response);
 
@@ -184,6 +192,7 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger,
         );
         $response = $controller->show($this->request, $this->response, ['id' => $postId]);
 
@@ -223,6 +232,7 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger,
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -260,6 +270,7 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger,
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -301,6 +312,7 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger,
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -340,6 +352,7 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger,
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -372,6 +385,7 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger,
         );
         $response = $controller->delete($this->request, $this->response, ['id' => '1']);
 
@@ -408,6 +422,7 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger,
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 
@@ -441,6 +456,7 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger,
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 

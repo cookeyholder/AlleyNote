@@ -29,12 +29,12 @@ return function (RouterInterface $router): void {
 
     // 健康檢查
     $healthCheck = $router->get('/api/health', function ($request, $response) {
-        $response->getBody()->write(json_encode([
+        $response->getBody()->write((json_encode([
             'status' => 'ok',
             'timestamp' => date('c'),
             'service' => 'AlleyNote API',
             'version' => '1.0.0',
-        ]));
+        ]) ?: '{"error": "JSON encoding failed"}'));
         return $response->withHeader('Content-Type', 'application/json');
     });
     $healthCheck->setName('api.health');
@@ -48,7 +48,7 @@ return function (RouterInterface $router): void {
 
     $router->get('/api/docs', function ($request, $response) {
         // TODO: 實作 Swagger 文檔生成
-        $response->getBody()->write(json_encode(['message' => 'API Documentation']));
+        $response->getBody()->write((json_encode(['message' => 'API Documentation']) ?: '{"error": "JSON encoding failed"}'));
         return $response->withHeader('Content-Type', 'application/json');
     })->setName('api.docs');
 

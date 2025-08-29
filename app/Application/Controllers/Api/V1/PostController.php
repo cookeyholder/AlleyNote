@@ -831,7 +831,7 @@ class PostController extends BaseController
             ),
         ],
     )]
-    public function togglePin(Request $request, Response $response, array $args): Response
+    public function togglePin(Request $request, Response $response, array $args): Response: Response
     {
         try {
             $id = (int) $args['id'];
@@ -999,7 +999,7 @@ class PostController extends BaseController
     /**
      * 刪除貼文.
      */
-    public function destroy(Request $request, Response $response, array $args): Response
+    public function destroy(Request $request, Response $response, array $args): Response: Response
     {
         try {
             $postId = (int) $args['id'];
@@ -1010,7 +1010,7 @@ class PostController extends BaseController
                 'message' => '貼文已成功刪除',
             ];
 
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
@@ -1019,7 +1019,7 @@ class PostController extends BaseController
                 'error' => '刪除貼文失敗: ' . $e->getMessage(),
             ];
 
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }

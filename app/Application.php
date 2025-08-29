@@ -199,11 +199,12 @@ class Application
         };
 
         // 寫入錯誤訊息
-        $stream->write(json_encode([
+        $errorJson = json_encode([
             'error' => 'Internal Server Error',
             'message' => $e->getMessage(),
             'code' => $e->getCode(),
-        ]));
+        ]);
+        $stream->write($errorJson ?: '{"error": "JSON encoding failed"}');
 
         // 建立並返回 Response
         $response = new class ($stream) implements ResponseInterface {

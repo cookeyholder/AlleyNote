@@ -41,6 +41,8 @@ class AttachmentUploadTest extends TestCase
         parent::setUp();
         // Mock authService
         $this->authService = Mockery::mock(AuthorizationService::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->authService->shouldReceive('canUploadAttachment')->byDefault()->andReturn(true);
         $this->authService->shouldReceive('canDeleteAttachment')->byDefault()->andReturn(true);
         $this->authService->shouldReceive('isSuperAdmin')->byDefault()->andReturn(false);
@@ -59,7 +61,8 @@ class AttachmentUploadTest extends TestCase
         $this->postRepo = new PostRepository($this->db, $this->cache, $this->logger);
 
         // 初始化測試對象
-        $this->attachmentService = new AttachmentService($this->attachmentRepo, $this->postRepo, $this->authService, $this->uploadDir);
+        $this->attachmentService = new AttachmentService($this->attachmentRepo, $this->postRepo, $this->authService,
+            $this->activityLogger, $this->uploadDir);
 
         $this->createTestTables();
 

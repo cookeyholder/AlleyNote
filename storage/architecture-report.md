@@ -1,6 +1,6 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-08-29 07:40:27
+**生成時間**: 2025-08-29 22:41:12
 
 ## 📊 程式碼品質指標
 
@@ -1254,10 +1254,11 @@
   - `DateTimeImmutable` $exp
   - `DateTimeImmutable` $nbf
 
-- **AttachmentService** (3 個依賴)
+- **AttachmentService** (4 個依賴)
   - `AttachmentRepository` $attachmentRepo
   - `PostRepository` $postRepo
   - `AuthorizationService` $authService
+  - `ActivityLoggingServiceInterface` $activityLogger
 
 - **PostController** (4 個依賴)
   - `PostServiceInterface` $postService
@@ -1353,4 +1354,4 @@
             $sql = $this->buildSelectQuery('id = ?') (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
 - ❓ 找不到類別/介面: ($uuid) {
             $sql = $this->buildSelectQuery('uuid = ?') (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ... 還有 124 個
+- ... 還有 125 個

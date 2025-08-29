@@ -2,22 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Controllers\Api\V1;
+/**
+ * 完全重構 ActivityLogController 以修復所有 PHPStan 錯誤
+ */
 
-use App\Application\Controllers\BaseController;
-use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
-use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
-use App\Domains\Security\DTOs\CreateActivityLogDTO;
-use App\Domains\Security\Enums\ActivityCategory;
-use App\Domains\Security\Enums\ActivityType;
-use App\Shared\Http\ApiResponse;
+$content = '<?php
+
+declare(strict_types=1);
+
+namespace App\\Application\\Controllers\\Api\\V1;
+
+use App\\Application\\Controllers\\BaseController;
+use App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface;
+use App\\Domains\\Security\\Contracts\\ActivityLogRepositoryInterface;
+use App\\Domains\\Security\\DTOs\\CreateActivityLogDTO;
+use App\\Domains\\Security\\Enums\\ActivityCategory;
+use App\\Domains\\Security\\Enums\\ActivityType;
+use App\\Shared\\Http\\ApiResponse;
 use DateTime;
 use Exception;
-use OpenApi\Attributes as OA;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use OpenApi\\Attributes as OA;
+use Psr\\Http\\Message\\ResponseInterface as Response;
+use Psr\\Http\\Message\\ServerRequestInterface as Request;
 
-#[OA\Tag(
+#[OA\\Tag(
     name: "Activity Log",
     description: "Activity logging and retrieval endpoints",
 )]
@@ -30,18 +38,18 @@ class ActivityLogController extends BaseController
         parent::__construct();
     }
 
-    #[OA\Post(
+    #[OA\\Post(
         path: "/api/v1/activity-logs",
         operationId: "storeActivityLog",
         summary: "Log a new activity",
         tags: ["Activity Log"],
-        requestBody: new OA\RequestBody(
+        requestBody: new OA\\RequestBody(
             required: true,
-            content: new OA\JsonContent(
+            content: new OA\\JsonContent(
                 properties: [
-                    new OA\Property(property: "action_type", type: "string"),
-                    new OA\Property(property: "user_id", type: "integer"),
-                    new OA\Property(property: "metadata", type: "object"),
+                    new OA\\Property(property: "action_type", type: "string"),
+                    new OA\\Property(property: "user_id", type: "integer"),
+                    new OA\\Property(property: "metadata", type: "object"),
                 ],
                 example: [
                     "action_type" => "USER_LOGIN",
@@ -51,9 +59,9 @@ class ActivityLogController extends BaseController
             ),
         ),
         responses: [
-            new OA\Response(response: 201, description: "Activity logged successfully"),
-            new OA\Response(response: 400, description: "Invalid request"),
-            new OA\Response(response: 422, description: "Validation failed"),
+            new OA\\Response(response: 201, description: "Activity logged successfully"),
+            new OA\\Response(response: 400, description: "Invalid request"),
+            new OA\\Response(response: 422, description: "Validation failed"),
         ],
     )]
     public function store(Request $request, Response $response): Response
@@ -67,7 +75,7 @@ class ActivityLogController extends BaseController
                     "message" => "Invalid request data",
                     "error_code" => 400,
                 ]);
-                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+                $response->getBody()->write($errorResponse ?: \'{"error": "JSON encoding failed"}\');
                 return $response->withHeader("Content-Type", "application/json")->withStatus(400);
             }
 
@@ -84,7 +92,7 @@ class ActivityLogController extends BaseController
                 "data" => $result,
                 "message" => "Activity logged successfully",
             ]);
-            $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write($successResponse ?: \'{"error": "JSON encoding failed"}\');
             return $response->withHeader("Content-Type", "application/json")->withStatus(201);
 
         } catch (Exception $e) {
@@ -93,23 +101,23 @@ class ActivityLogController extends BaseController
                 "message" => "Internal server error",
                 "error_code" => 500,
             ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write($errorResponse ?: \'{"error": "JSON encoding failed"}\');
             return $response->withHeader("Content-Type", "application/json")->withStatus(500);
         }
     }
 
-    #[OA\Get(
+    #[OA\\Get(
         path: "/api/v1/activity-logs",
         operationId: "getActivityLogs",
         summary: "Get activity logs",
         tags: ["Activity Log"],
         parameters: [
-            new OA\Parameter(name: "limit", in: "query", schema: new OA\Schema(type: "integer", default: 20)),
-            new OA\Parameter(name: "offset", in: "query", schema: new OA\Schema(type: "integer", default: 0)),
+            new OA\\Parameter(name: "limit", in: "query", schema: new OA\\Schema(type: "integer", default: 20)),
+            new OA\\Parameter(name: "offset", in: "query", schema: new OA\\Schema(type: "integer", default: 0)),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Activity logs retrieved successfully"),
-            new OA\Response(response: 500, description: "Internal server error"),
+            new OA\\Response(response: 200, description: "Activity logs retrieved successfully"),
+            new OA\\Response(response: 500, description: "Internal server error"),
         ],
     )]
     public function index(Request $request, Response $response): Response
@@ -126,7 +134,7 @@ class ActivityLogController extends BaseController
                 "data" => $logs,
                 "message" => "Activity logs retrieved successfully",
             ]);
-            $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write($successResponse ?: \'{"error": "JSON encoding failed"}\');
             return $response->withHeader("Content-Type", "application/json");
 
         } catch (Exception $e) {
@@ -135,8 +143,14 @@ class ActivityLogController extends BaseController
                 "message" => "Internal server error",
                 "error_code" => 500,
             ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write($errorResponse ?: \'{"error": "JSON encoding failed"}\');
             return $response->withHeader("Content-Type", "application/json")->withStatus(500);
         }
     }
 }
+';
+
+// 寫入檔案
+file_put_contents('/var/www/html/app/Application/Controllers/Api/V1/ActivityLogController.php', $content);
+
+echo "ActivityLogController 已重構完成！\n";
