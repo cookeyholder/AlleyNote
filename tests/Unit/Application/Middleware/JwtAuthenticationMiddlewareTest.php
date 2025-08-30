@@ -99,9 +99,9 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals('Bearer realm="API"', $response->getHeaderLine('WWW-Authenticate'));
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertFalse($body['success']);
-        $this->assertEquals('缺少有效的認證 Token', $body['error']);
-        $this->assertEquals('UNAUTHORIZED', $body['code']);
+        $this->assertFalse((is_array($body) && isset((is_array($body) ? $body['success'] : (is_object($body) ? $body->success : null)))) ? (is_array($body) ? $body['success'] : (is_object($body) ? $body->success : null)) : null);
+        $this->assertEquals('缺少有效的認證 Token', (is_array($body) && isset((is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)))) ? (is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)) : null);
+        $this->assertEquals('UNAUTHORIZED', (is_array($body) && isset((is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)))) ? (is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)) : null);
     }
 
     public function testShouldExtractTokenFromAuthorizationHeader(): void
@@ -227,8 +227,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 已過期', $body['error']);
-        $this->assertEquals('TOKEN_EXPIRED', $body['code']);
+        $this->assertEquals('Token 已過期', (is_array($body) && isset((is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)))) ? (is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)) : null);
+        $this->assertEquals('TOKEN_EXPIRED', (is_array($body) && isset((is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)))) ? (is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)) : null);
     }
 
     public function testShouldReturnUnauthorizedWhenTokenInvalid(): void
@@ -249,8 +249,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error']);
-        $this->assertEquals('TOKEN_INVALID', $body['code']);
+        $this->assertEquals('Token 無效', (is_array($body) && isset((is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)))) ? (is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)) : null);
+        $this->assertEquals('TOKEN_INVALID', (is_array($body) && isset((is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)))) ? (is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)) : null);
     }
 
     public function testShouldValidateIpAddressWhenPresentInToken(): void
@@ -302,8 +302,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error']);
-        $this->assertEquals('TOKEN_INVALID', $body['code']);
+        $this->assertEquals('Token 無效', (is_array($body) && isset((is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)))) ? (is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)) : null);
+        $this->assertEquals('TOKEN_INVALID', (is_array($body) && isset((is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)))) ? (is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)) : null);
     }
 
     public function testShouldRejectWhenIpAddressMismatch(): void
@@ -325,8 +325,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error']);
-        $this->assertEquals('TOKEN_INVALID', $body['code']);
+        $this->assertEquals('Token 無效', (is_array($body) && isset((is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)))) ? (is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)) : null);
+        $this->assertEquals('TOKEN_INVALID', (is_array($body) && isset((is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)))) ? (is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)) : null);
     }
 
     public function testShouldValidateDeviceFingerprint(): void
@@ -375,8 +375,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error']);
-        $this->assertEquals('TOKEN_INVALID', $body['code']);
+        $this->assertEquals('Token 無效', (is_array($body) && isset((is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)))) ? (is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)) : null);
+        $this->assertEquals('TOKEN_INVALID', (is_array($body) && isset((is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)))) ? (is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)) : null);
     }
 
     public function testShouldSkipProcessingWhenDisabled(): void
@@ -413,8 +413,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('認證驗證失敗', $body['error']);
-        $this->assertEquals('AUTH_FAILED', $body['code']);
+        $this->assertEquals('認證驗證失敗', (is_array($body) && isset((is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)))) ? (is_array($body) ? $body['error'] : (is_object($body) ? $body->error : null)) : null);
+        $this->assertEquals('AUTH_FAILED', (is_array($body) && isset((is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)))) ? (is_array($body) ? $body['code'] : (is_object($body) ? $body->code : null)) : null);
     }
 
     public function testShouldPrioritizeAuthorizationHeaderOverOtherMethods(): void
@@ -473,9 +473,9 @@ class JwtAuthenticationMiddlewareTest extends TestCase
     /**
      * 建立有效的 JWT payload.
      *
-     * @param array<string, mixed> $customClaims 自訂宣告
+     * @param array<mixed> $customClaims 自訂宣告
      */
-    private function createValidPayload(array $customClaims = []): JwtPayload
+    private function createValidPayload(array<mixed> $customClaims = []): JwtPayload
     {
         $now = new DateTimeImmutable();
         $exp = $now->modify('+1 hour');

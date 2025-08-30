@@ -349,7 +349,7 @@ class CreatePostDTOTest extends TestCase
         ];
 
         $dto = new CreatePostDTO($this->validator, $data);
-        $array = $dto->toArray();
+        $array<mixed> = $dto->toArray();
 
         $expected = [
             'title' => '測試文章',
@@ -361,7 +361,7 @@ class CreatePostDTOTest extends TestCase
             'publish_date' => null,
         ];
 
-        $this->assertEquals($expected, $array);
+        $this->assertEquals($expected, $array<mixed>);
     }
 
     public function testJsonSerializationWorks(): void

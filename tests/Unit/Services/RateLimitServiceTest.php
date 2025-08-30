@@ -38,7 +38,7 @@ class RateLimitServiceTest extends TestCase
         $this->cacheMock->shouldReceive('set')
             ->once()
             ->with("rate_limit:{$ip}", Mockery::on(function ($data) use ($timeNow) {
-                return $data['count'] === 1 && $data['reset'] >= $timeNow;
+                return (is_array($data) ? $data['count'] : (is_object($data) ? $data->count : null)) === 1 && (is_array($data) ? $data['reset'] : (is_object($data) ? $data->reset : null)) >= $timeNow;
             }), 60);
 
         $result = $this->rateLimitService->isAllowed($ip);
@@ -88,7 +88,7 @@ class RateLimitServiceTest extends TestCase
         $this->cacheMock->shouldReceive('set')
             ->once()
             ->with("rate_limit:{$ip}", Mockery::on(function ($data) use ($timeNow) {
-                return $data['count'] === 6 && $data['reset'] >= $timeNow;
+                return (is_array($data) ? $data['count'] : (is_object($data) ? $data->count : null)) === 6 && (is_array($data) ? $data['reset'] : (is_object($data) ? $data->reset : null)) >= $timeNow;
             }), 60);
 
         $result = $this->rateLimitService->isAllowed($ip);

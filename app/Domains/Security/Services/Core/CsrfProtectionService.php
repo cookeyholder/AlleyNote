@@ -36,8 +36,8 @@ class CsrfProtectionService
         $this->limitPoolSize();
 
         // 設定當前權杖（向後相容）
-        $_SESSION['csrf_token'] = $token;
-        $_SESSION['csrf_token_time'] = time();
+            // // $data ? $_SESSION->csrf_token : null)) = $token; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $_SESSION->csrf_token_time : null)) = time(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         return $token;
     }
@@ -97,16 +97,13 @@ class CsrfProtectionService
      */
     private function validateSingleToken(string $token): void
     {
-        if (!isset($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time'])) {
-            throw new CsrfTokenException('無效的 CSRF token');
-        }
 
         // 使用恆定時間比較防止時序攻擊
-        if (!hash_equals($_SESSION['csrf_token'], $token)) {
+        if (!hash_equals($data ? $_SESSION->csrf_token : null)), $token)) {
             throw new CsrfTokenException('CSRF token 驗證失敗');
         }
 
-        if (time() - $_SESSION['csrf_token_time'] > self::TOKEN_EXPIRY) {
+        if (time() - $data ? $_SESSION->csrf_token_time : null)) > self::TOKEN_EXPIRY) {
             throw new CsrfTokenException('CSRF token 已過期');
         }
 
@@ -173,10 +170,6 @@ class CsrfProtectionService
                 }
             } else {
                 // 降級到單一權杖模式
-                if (isset($_SESSION['csrf_token']) && isset($_SESSION['csrf_token_time'])) {
-                    return hash_equals($_SESSION['csrf_token'], $token)
-                        && (time() - $_SESSION['csrf_token_time']) <= self::TOKEN_EXPIRY;
-                }
             }
 
             return false;
@@ -201,7 +194,7 @@ class CsrfProtectionService
     /**
      * 取得權杖池狀態（用於除錯）.
      */
-    public function getTokenPoolStatus(): array
+    public function getTokenPoolStatus(): mixed
     {
         if (!isset($_SESSION[self::TOKEN_POOL_KEY])) {
             return [

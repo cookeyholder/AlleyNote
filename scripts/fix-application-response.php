@@ -9,7 +9,7 @@ $content = file_get_contents($filePath);
 
 // 重新實作 ResponseInterface 匿名類別
 $newResponseClass = '        $response = new class implements ResponseInterface {
-            private array $headers = [\'Content-Type\' => [\'application/json\']];
+            private array<mixed> $headers = [\'Content-Type\' => [\'application/json\']];
             private string $body = \'\';
             private int $statusCode = 500;
             private string $reasonPhrase = \'Internal Server Error\';
@@ -32,7 +32,7 @@ $newResponseClass = '        $response = new class implements ResponseInterface 
                 return $new;
             }
 
-            public function getHeaders(): array
+            public function getHeaders(): array<mixed>
             {
                 return $this->headers;
             }
@@ -42,7 +42,7 @@ $newResponseClass = '        $response = new class implements ResponseInterface 
                 return isset($this->headers[$name]);
             }
 
-            public function getHeader(string $name): array
+            public function getHeader(string $name): array<mixed>
             {
                 return $this->headers[$name] ?? [];
             }
@@ -55,7 +55,7 @@ $newResponseClass = '        $response = new class implements ResponseInterface 
             public function withHeader(string $name, $value): ResponseInterface
             {
                 $new = clone $this;
-                $new->headers[$name] = (array) $value;
+                $new->headers[$name] = (array<mixed>) $value;
                 return $new;
             }
 
@@ -65,7 +65,7 @@ $newResponseClass = '        $response = new class implements ResponseInterface 
                 if (!isset($new->headers[$name])) {
                     $new->headers[$name] = [];
                 }
-                $new->headers[$name] = array_merge($new->headers[$name], (array) $value);
+                $new->headers[$name] = array_merge($new->headers[$name], (array<mixed>) $value);
                 return $new;
             }
 

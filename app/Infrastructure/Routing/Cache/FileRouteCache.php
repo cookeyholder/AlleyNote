@@ -139,7 +139,7 @@ class FileRouteCache implements RouteCacheInterface
         return $this->ttl;
     }
 
-    public function getStats(): array
+    public function getStats(): mixed
     {
         return $this->stats;
     }
@@ -180,7 +180,7 @@ class FileRouteCache implements RouteCacheInterface
             $content = file_get_contents($statsFile);
             if ($content !== false) {
                 $stats = json_decode($content, true);
-                if (is_array($stats)) {
+                if (is_array($stats) && !empty($stats)) {
                     $this->stats = array_merge($this->stats, $stats);
                 }
             }

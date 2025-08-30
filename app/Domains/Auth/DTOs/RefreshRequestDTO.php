@@ -22,15 +22,15 @@ final readonly class RefreshRequestDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            refreshToken: $data['refresh_token'] ?? '',
-            scopes: $data['scopes'] ?? null,
+            refreshToken: '',
+            scopes: $data ? $data->scopes : null) ?? null,
         );
     }
 
     /**
      * 轉換為陣列.
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'refresh_token' => '[REDACTED]', // 不記錄 token

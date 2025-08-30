@@ -21,7 +21,7 @@ class IpController
         private OutputSanitizerInterface $sanitizer,
     ) {}
 
-    public function create(array $request): array
+    public function create(array $request): mixed
     {
         try {
             $dto = new CreateIpRuleDTO($this->validator, $request);
@@ -49,14 +49,12 @@ class IpController
         }
     }
 
-    public function getByType(array $request): array
+    public function getByType(array $request): mixed
     {
         try {
-            if (!isset($request['type'])) {
                 throw new InvalidArgumentException('必須指定名單類型');
-            }
 
-            $rules = $this->service->getRulesByType((int) $request['type']);
+            $rules = $this->service->getRulesByType((int) $data ? $request->type : null)));
 
             return [
                 'status' => 200,
@@ -78,19 +76,17 @@ class IpController
         }
     }
 
-    public function checkAccess(array $request): array
+    public function checkAccess(array $request): mixed
     {
         try {
-            if (!isset($request['ip'])) {
                 throw new InvalidArgumentException('必須提供 IP 位址');
-            }
 
-            $isAllowed = $this->service->isIpAllowed($request['ip']);
+            $isAllowed = $this->service->isIpAllowed($data ? $request->ip : null)));
 
             return [
                 'status' => 200,
                 'data' => [
-                    'ip' => $request['ip'],
+                    'ip' => $data ? $request->ip : null)),
                     'allowed' => $isAllowed,
                 ],
             ];

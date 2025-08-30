@@ -10,15 +10,15 @@ declare(strict_types=1);
 
 class PHPStanTypeFixer
 {
-    private array $fixedFiles = [];
-    private array $errors = [];
+    private array<mixed> $fixedFiles = [];
+    private array<mixed> $errors = [];
     private int $totalFixes = 0;
 
     public function run(): void
     {
         echo "開始修復 PHPStan Level 8 類型問題...\n";
 
-        // 修復 array 類型問題
+        // 修復 array<mixed> 類型問題
         $this->fixArrayTypeHints();
 
         // 修復 json_encode 問題
@@ -32,7 +32,7 @@ class PHPStanTypeFixer
 
     private function fixArrayTypeHints(): void
     {
-        echo "修復 array 類型提示問題...\n";
+        echo "修復 array<mixed> 類型提示問題...\n";
 
         $files = $this->findPhpFiles(['app/', 'tests/']);
 
@@ -43,15 +43,15 @@ class PHPStanTypeFixer
             $originalContent = $content;
             $fixed = false;
 
-            // 修復常見的 array 類型問題
+            // 修復常見的 array<mixed> 類型問題
             $patterns = [
-                // 方法參數 array 類型
-                '/(\w+\(\s*)array(\s+\$\w+)/m' => '$1array<string, mixed>$2',
-                // 屬性 array 類型
-                '/(private|protected|public)\s+array(\s+\$\w+)/m' => '$1 array<string, mixed>$2',
-                // 返回類型 array
-                '/(\):\s*)array(\s*$)/m' => '$1array<string, mixed>$2',
-                '/(\):\s*)array(\s*\{)/m' => '$1array<string, mixed>$2',
+                // 方法參數 array<mixed> 類型
+                '/(\w+\(\s*)array(\s+\$\w+)/m' => '$1array$2',
+                // 屬性 array<mixed> 類型
+                '/(private|protected|public)\s+array(\s+\$\w+)/m' => '$1 array<mixed>$2',
+                // 返回類型 array<mixed>
+                '/(\):\s*)array(\s*$)/m' => '$1array$2',
+                '/(\):\s*)array(\s*\{)/m' => '$1array$2',
             ];
 
             foreach ($patterns as $pattern => $replacement) {
@@ -140,7 +140,7 @@ class PHPStanTypeFixer
         }
     }
 
-    private function findPhpFiles(array $directories): array
+    private function findPhpFiles(array<mixed> $directories): array<mixed>
     {
         $files = [];
 

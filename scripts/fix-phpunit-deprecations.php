@@ -10,7 +10,7 @@ declare(strict_types=1);
 class PhpUnitDeprecationFixer
 {
     private int $fixCount = 0;
-    private array $processedFiles = [];
+    private array<mixed> $processedFiles = [];
 
     public function run(): void
     {
@@ -35,7 +35,7 @@ class PhpUnitDeprecationFixer
         }
     }
 
-    private function findTestFiles(): array
+    private function findTestFiles(): array<mixed>
     {
         $files = [];
         $directories = ['tests'];  // 搜尋整個 tests 目錄

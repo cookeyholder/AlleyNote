@@ -195,9 +195,9 @@ class ActivityLoggingServiceTest extends TestCase
             ->method('error')
             ->with(
                 $this->stringContains('Failed to log activity'),
-                $this->callback(function (array $context) {
-                    return isset($context['action_type'])
-                        && isset($context['error']);
+                $this->callback(function (array<mixed> $context) {
+                    return isset((is_array($context) ? $context['action_type'] : (is_object($context) ? $context->action_type : null)))
+                        && isset((is_array($context) ? $context['error'] : (is_object($context) ? $context->error : null)));
                 }),
             );
 
@@ -313,8 +313,8 @@ class ActivityLoggingServiceTest extends TestCase
             ->method('warning')
             ->with(
                 $this->stringContains('Logging disabled for action type'),
-                $this->callback(function (array $context) use ($actionType) {
-                    return $context['action_type'] === $actionType->value;
+                $this->callback(function (array<mixed> $context) use ($actionType) {
+                    return (is_array($context) ? $context['action_type'] : (is_object($context) ? $context->action_type : null)) === $actionType->value;
                 }),
             );
 

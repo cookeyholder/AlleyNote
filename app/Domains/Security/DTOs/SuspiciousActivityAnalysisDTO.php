@@ -184,27 +184,27 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         return $this->severityLevel;
     }
 
-    public function getActivityCounts(): array
+    public function getActivityCounts(): mixed
     {
         return $this->activityCounts;
     }
 
-    public function getFailureCounts(): array
+    public function getFailureCounts(): mixed
     {
         return $this->failureCounts;
     }
 
-    public function getAnomalyScores(): array
+    public function getAnomalyScores(): mixed
     {
         return $this->anomalyScores;
     }
 
-    public function getDetectionRules(): array
+    public function getDetectionRules(): mixed
     {
         return $this->detectionRules;
     }
 
-    public function getMetadata(): array
+    public function getMetadata(): mixed
     {
         return $this->metadata;
     }
@@ -306,7 +306,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * 轉換為陣列.
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'analysis_id' => $this->analysisId,
@@ -336,7 +336,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * JSON 序列化.
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }

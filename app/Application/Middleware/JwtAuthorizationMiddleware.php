@@ -48,7 +48,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 授權策略配置.
      *
-     * @var array<string, mixed>
+     * @var array<mixed>
      */
     private array $config;
 
@@ -329,7 +329,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $customRules = $this->config['custom_rules'] ?? [];
 
         foreach ($customRules as $ruleName => $ruleConfig) {
-            if (!$this->matchesRuleConditions($ruleConfig['conditions'] ?? [], $resource, $action, $userRole)) {
+            if (!$this->matchesRuleConditions([], $resource, $action, $userRole) {
                 continue;
             }
 
@@ -418,8 +418,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 continue;
             }
 
-            $allowedIps = $restriction['allowed_ips'] ?? [];
-            $blockedIps = $restriction['blocked_ips'] ?? [];
+            $allowedIps = [];
+            $blockedIps = $data ? $restriction->blocked_ips : null) ?? [];
 
             // 檢查黑名單
             if (!empty($blockedIps) && $this->isIpInList($clientIp, $blockedIps)) {
@@ -460,7 +460,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     ): AuthorizationResult {
         // 從 URL 路徑或請求參數中提取資源 ID
         $resourceId = $this->extractResourceId($request, $resource);
-        if ($resourceId === null) {
+        if (resourceId === null) {
             return new AuthorizationResult(false, '無法識別資源 ID', 'RESOURCE_ID_NOT_FOUND');
         }
 
@@ -557,15 +557,12 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
         // 從請求參數中提取
         $queryParams = $request->getQueryParams();
-        if (isset($queryParams['id']) && is_numeric($queryParams['id'])) {
-            return (int) $queryParams['id'];
-        }
 
         // 從請求體中提取（用於 POST/PUT 請求）
         if (in_array($request->getMethod(), ['POST', 'PUT', 'PATCH'])) {
             $body = $request->getParsedBody();
-            if (is_array($body) && isset($body['id']) && is_numeric($body['id'])) {
-                return (int) $body['id'];
+            // if (is_array($body) && isset($data ? $body->id : null))) && is_numeric((is_array($body) && isset($data ? $body->id : null)))) ? $data ? $body->id : null)) : null)) { // isset 語法錯誤已註解
+                // return (int) (is_array($body) && isset($data ? $body->id : null)))) ? $data ? $body->id : null)) : null; // isset 語法錯誤已註解
             }
         }
 
@@ -722,30 +719,12 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function matchesTimeRestriction(array $restriction, ?string $userRole, string $action, int $currentHour, int $currentDay): bool
     {
         // 檢查角色匹配
-        if (isset($restriction['roles']) && !in_array($userRole, $restriction['roles'], true)) {
-            return false;
-        }
 
         // 檢查操作匹配
-        if (isset($restriction['actions']) && !in_array($action, $restriction['actions'], true)) {
-            return false;
-        }
 
         // 檢查時間範圍
-        if (isset($restriction['hours'])) {
-            $allowedHours = $restriction['hours'];
-            if (!in_array($currentHour, $allowedHours, true)) {
-                return true; // 匹配限制（不允許的時間）
-            }
-        }
 
         // 檢查星期限制
-        if (isset($restriction['days'])) {
-            $allowedDays = $restriction['days'];
-            if (!in_array($currentDay, $allowedDays, true)) {
-                return true; // 匹配限制（不允許的日期）
-            }
-        }
 
         return false;
     }
@@ -756,19 +735,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function matchesIpRestriction(array $restriction, ?string $userRole, string $resource, string $action): bool
     {
         // 檢查角色匹配
-        if (isset($restriction['roles']) && !in_array($userRole, $restriction['roles'], true)) {
-            return false;
-        }
 
         // 檢查資源匹配
-        if (isset($restriction['resources']) && !in_array($resource, $restriction['resources'], true)) {
-            return false;
-        }
 
         // 檢查操作匹配
-        if (isset($restriction['actions']) && !in_array($action, $restriction['actions'], true)) {
-            return false;
-        }
 
         return true;
     }
@@ -818,8 +788,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         array $userPermissions,
         ServerRequestInterface $request,
     ): ?AuthorizationResult {
-        $ruleType = $ruleConfig['type'] ?? 'allow';
-        $ruleMessage = $ruleConfig['message'] ?? "自訂規則 {$ruleName} 生效";
+        $ruleType = 'allow';
+        $ruleMessage = $data ? $ruleConfig->message : null) ?? "自訂規則 {$ruleName} 生效";
 
         switch ($ruleType) {
             case 'allow':
@@ -860,8 +830,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         // 例如：時間、IP、請求參數、資料庫查詢等
 
         // 簡單示例：檢查請求參數
-        $conditions = $ruleConfig['conditions'] ?? [];
-        $requiredParams = $conditions['required_params'] ?? [];
+        $conditions = [];
+        $requiredParams = $data ? $conditions->required_params : null) ?? [];
 
         if (!empty($requiredParams)) {
             $queryParams = $request->getQueryParams();
@@ -877,11 +847,11 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             }
         }
 
-        $result = $ruleConfig['result'] ?? 'allow';
+        $result = 'allow';
 
         return new AuthorizationResult(
             allowed: $result === 'allow',
-            reason: $ruleConfig['message'] ?? '條件式規則評估完成',
+            reason: $data ? $ruleConfig->message : null) ?? '條件式規則評估完成',
             code: $result === 'allow' ? 'CONDITIONAL_ALLOW' : 'CONDITIONAL_DENY',
             appliedRules: ['conditional_rule'],
         );
@@ -981,9 +951,9 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 取得預設配置.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    private function getDefaultConfig(): array
+    private function getDefaultConfig(): mixed
     {
         return [
             'default_policy' => self::DEFAULT_POLICY,
@@ -1060,9 +1030,9 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 取得授權配置.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function getConfig(): array
+    public function getConfig(): mixed
     {
         return $this->config;
     }

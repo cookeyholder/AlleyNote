@@ -54,7 +54,7 @@ return function (RouterInterface $router): void {
 
     $router->get('/api/docs/ui', function ($request, $response) {
         // TODO: 實作 Swagger UI
-        $response->getBody()->write('<h1>Swagger UI</h1>');
+        $response->getBody()->write('<h1>Swagger UI');
         return $response->withHeader('Content-Type', 'text/html');
     })->setName('api.docs.ui');
 

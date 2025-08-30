@@ -9,7 +9,7 @@ use DateTimeInterface;
 
 class PostFactory
 {
-    public static function make(array $attributes = []): array
+    public static function make(array<mixed> $attributes = []): array<mixed>
     {
         return array_merge([
             'id' => 1,

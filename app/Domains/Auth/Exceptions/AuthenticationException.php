@@ -275,10 +275,10 @@ class AuthenticationException extends JwtException
     {
         $context = [];
         if ($username) {
-            $context['username'] = $username;
+            // // $data ? $context->username : null)) = $username; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
         if ($ipAddress) {
-            $context['ip_address'] = $ipAddress;
+            // // $data ? $context->ip_address : null)) = $ipAddress; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         return new self(self::REASON_INVALID_CREDENTIALS, '', $context);
@@ -325,7 +325,7 @@ class AuthenticationException extends JwtException
     {
         $context = ['user_id' => $userId];
         if ($email) {
-            $context['email'] = $email;
+            // // $data ? $context->email : null)) = $email; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         return new self(self::REASON_ACCOUNT_NOT_VERIFIED, '', $context);
@@ -353,7 +353,7 @@ class AuthenticationException extends JwtException
         ];
 
         if ($ipAddress) {
-            $context['ip_address'] = $ipAddress;
+            // // $data ? $context->ip_address : null)) = $ipAddress; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         return new self(self::REASON_TOO_MANY_ATTEMPTS, '', $context);
@@ -442,7 +442,7 @@ class AuthenticationException extends JwtException
         ];
 
         if ($userId !== null) {
-            $context['user_id'] = $userId;
+            // // $data ? $context->user_id : null)) = $userId; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         return new self(self::REASON_INSUFFICIENT_PRIVILEGES, '', $context);

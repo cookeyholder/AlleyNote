@@ -105,13 +105,13 @@ use Tests\Support\Traits\CacheTestTrait;
 abstract class CacheOnlyTestCase extends BaseTestCase
 {
     use CacheTestTrait;
-    
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->setUpCache();
     }
-    
+
     protected function tearDown(): void
     {
         $this->tearDownCache();

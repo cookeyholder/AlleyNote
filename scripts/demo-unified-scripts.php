@@ -31,39 +31,39 @@ function displayWelcome(): void
     echo "基於零錯誤修復成功經驗和現代 PHP 最佳實務\n\n";
 }
 
-function displayProjectStatus(array $status): void
+function displayProjectStatus(array<mixed> $status): void
 {
     echo "🔍 專案健康狀況報告:\n";
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 
     // PHPStan 狀態
-    $errorIcon = $status['phpstan_errors'] === 0 ? '✅' : '❌';
-    echo "  {$errorIcon} PHPStan 錯誤: {$status['phpstan_errors']}\n";
+    $errorIcon = (is_array($status) ? $status['phpstan_errors'] : (is_object($status) ? $status->phpstan_errors : null)) === 0 ? '✅' : '❌';
+    echo "  {$errorIcon} PHPStan 錯誤: {(is_array($status) ? $status['phpstan_errors'] : (is_object($status) ? $status->phpstan_errors : null))}\n";
 
     // 測試狀態
-    $testIcon = $status['failing_tests'] === 0 ? '✅' : '❌';
-    echo "  {$testIcon} 測試狀態: {$status['passing_tests']}/{$status['total_tests']} 通過";
-    echo " (覆蓋率: {$status['coverage']}%)\n";
+    $testIcon = (is_array($status) ? $status['failing_tests'] : (is_object($status) ? $status->failing_tests : null)) === 0 ? '✅' : '❌';
+    echo "  {$testIcon} 測試狀態: {(is_array($status) ? $status['passing_tests'] : (is_object($status) ? $status->passing_tests : null))}/{(is_array($status) ? $status['total_tests'] : (is_object($status) ? $status->total_tests : null))} 通過";
+    echo " (覆蓋率: {(is_array($status) ? $status['coverage'] : (is_object($status) ? $status->coverage : null))}%)\n";
 
     // 架構指標
     echo "  📐 架構指標:\n";
-    echo "    • 總類別數: {$status['total_classes']}\n";
-    echo "    • 介面數: {$status['total_interfaces']}\n";
-    echo "    • DDD 限界上下文: {$status['ddd_contexts']}\n";
-    echo "    • PSR-4 合規性: {$status['psr_compliance']}%\n";
+    echo "    • 總類別數: {(is_array($status) ? $status['total_classes'] : (is_object($status) ? $status->total_classes : null))}\n";
+    echo "    • 介面數: {(is_array($status) ? $status['total_interfaces'] : (is_object($status) ? $status->total_interfaces : null))}\n";
+    echo "    • DDD 限界上下文: {(is_array($status) ? $status['ddd_contexts'] : (is_object($status) ? $status->ddd_contexts : null))}\n";
+    echo "    • PSR-4 合規性: {(is_array($status) ? $status['psr_compliance'] : (is_object($status) ? $status->psr_compliance : null))}%\n";
 
     // 現代 PHP 採用程度
-    $modernIcon = $status['modern_php_adoption'] >= 60 ? '✅' : '⚠️';
-    echo "  {$modernIcon} 現代 PHP 採用率: {$status['modern_php_adoption']}%\n";
+    $modernIcon = (is_array($status) ? $status['modern_php_adoption'] : (is_object($status) ? $status->modern_php_adoption : null)) >= 60 ? '✅' : '⚠️';
+    echo "  {$modernIcon} 現代 PHP 採用率: {(is_array($status) ? $status['modern_php_adoption'] : (is_object($status) ? $status->modern_php_adoption : null))}%\n";
 
     // 腳本整合狀況
-    echo "  🔧 原有腳本數量: {$status['available_scripts']}+ → 統一為 1 個入口點\n";
+    echo "  🔧 原有腳本數量: {(is_array($status) ? $status['available_scripts'] : (is_object($status) ? $status->available_scripts : null))}+ → 統一為 1 個入口點\n";
     echo "  📉 程式碼減少: ~85% (維護負擔大幅降低)\n";
 
     // 整體健康狀況
-    $isHealthy = $status['phpstan_errors'] === 0 &&
-        $status['failing_tests'] === 0 &&
-        $status['modern_php_adoption'] >= 50;
+    $isHealthy = (is_array($status) ? $status['phpstan_errors'] : (is_object($status) ? $status->phpstan_errors : null)) === 0 &&
+        (is_array($status) ? $status['failing_tests'] : (is_object($status) ? $status->failing_tests : null)) === 0 &&
+        (is_array($status) ? $status['modern_php_adoption'] : (is_object($status) ? $status->modern_php_adoption : null)) >= 50;
 
     $overallIcon = $isHealthy ? '🎉' : '⚠️';
     $overallStatus = $isHealthy ? '優秀 - 達到零錯誤狀態！' : '需要改進';
@@ -170,11 +170,11 @@ function simulateScriptExecution(string $command): void
         'details' => []
     ];
 
-    echo "{$result['message']}\n\n";
+    echo "{(is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null))}\n\n";
 
-    if (!empty($result['details'])) {
+    if (!empty((is_array($result) ? $result['details'] : (is_object($result) ? $result->details : null)))) {
         echo "📋 執行詳情:\n";
-        foreach ($result['details'] as $key => $value) {
+        foreach ((is_array($result) ? $result['details'] : (is_object($result) ? $result->details : null)) as $key => $value) {
             echo "  • {$key}: {$value}\n";
         }
         echo "\n";
@@ -185,7 +185,7 @@ function simulateScriptExecution(string $command): void
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 }
 
-function main(array $argv): void
+function main(array<mixed> $argv): void
 {
     global $projectStatus;
 

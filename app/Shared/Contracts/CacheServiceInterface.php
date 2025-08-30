@@ -56,7 +56,7 @@ interface CacheServiceInterface
      * 批次取得多個快取.
      *
      * @param array $keys 快取鍵陣列
-     * @return array 快取資料陣列，格式為 [key => value]
+     * @return array<mixed> 快取資料陣列，格式為 [key => value]
      */
     public function getMultiple(array $keys): array;
 
@@ -88,7 +88,7 @@ interface CacheServiceInterface
     /**
      * 取得快取統計資訊.
      *
-     * @return array 包含命中率、快取數量等統計資訊
+     * @return array<mixed> 包含命中率、快取數量等統計資訊
      */
     public function getStats(): array;
 

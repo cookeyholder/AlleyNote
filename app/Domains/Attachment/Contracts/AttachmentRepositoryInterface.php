@@ -125,7 +125,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * 統計附件資訊.
      *
      * @param array $conditions 統計條件
-     * @return array 包含總數、總大小、各類型數量等
+     * @return array<mixed> 包含總數、總大小、各類型數量等
      */
     public function getStats(array $conditions = []): array;
 

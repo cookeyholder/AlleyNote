@@ -10,7 +10,7 @@ declare(strict_types=1);
 class JsonEncodeIssueFixer
 {
     private int $fixCount = 0;
-    private array $processedFiles = [];
+    private array<mixed> $processedFiles = [];
 
     public function run(): void
     {
@@ -35,7 +35,7 @@ class JsonEncodeIssueFixer
         }
     }
 
-    private function getAllPhpFiles(): array
+    private function getAllPhpFiles(): array<mixed>
     {
         $files = [];
         $directories = [
@@ -103,7 +103,7 @@ class JsonEncodeIssueFixer
 
         // 修復陣列參數類型問題
         $content = preg_replace(
-            '/public function (\w+)\([^)]*array \$args[^)]*\)/',
+            '/public function (\w+)\([^)]*array<mixed> \$args[^)]*\)/',
             'public function $1(...$args): mixed',
             $content
         );

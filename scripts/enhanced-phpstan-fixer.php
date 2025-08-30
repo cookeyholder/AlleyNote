@@ -8,7 +8,7 @@
 class EnhancedPhpstanFixer
 {
     private int $fixCount = 0;
-    private array $processedFiles = [];
+    private array<mixed> $processedFiles = [];
 
     public function run(): void
     {
@@ -34,7 +34,7 @@ class EnhancedPhpstanFixer
         }
     }
 
-    private function getPhpFiles(): array
+    private function getPhpFiles(): array<mixed>
     {
         $files = [];
 
@@ -132,13 +132,12 @@ class EnhancedPhpstanFixer
 
     private function fixArrayParameterTypes(string $content, bool &$hasChanges): string
     {
-        // 修復方法參數中的 array 類型
+        // 修復方法參數中的 array<mixed> 類型
         $patterns = [
             // 公開方法參數
             '/public function ([a-zA-Z_][a-zA-Z0-9_]*)\(([^)]*\barray\b[^)]*)\)/' => function ($matches) use (&$hasChanges) {
                 $params = $matches[2];
-                if (strpos($params, 'array<') === false && strpos($params, '/** @var') === false) {
-                    $newParams = str_replace('array $', 'array<string, mixed> $', $params);
+                if (strpos($params, 'array<mixed> $', $params);
                     if ($newParams !== $params) {
                         $hasChanges = true;
                         $this->fixCount++;
@@ -151,8 +150,7 @@ class EnhancedPhpstanFixer
             // 私有方法參數
             '/private function ([a-zA-Z_][a-zA-Z0-9_]*)\(([^)]*\barray\b[^)]*)\)/' => function ($matches) use (&$hasChanges) {
                 $params = $matches[2];
-                if (strpos($params, 'array<') === false) {
-                    $newParams = str_replace('array $', 'array<string, mixed> $', $params);
+                if (strpos($params, 'array<mixed> $', $params);
                     if ($newParams !== $params) {
                         $hasChanges = true;
                         $this->fixCount++;
@@ -165,8 +163,7 @@ class EnhancedPhpstanFixer
             // 受保護的方法參數
             '/protected function ([a-zA-Z_][a-zA-Z0-9_]*)\(([^)]*\barray\b[^)]*)\)/' => function ($matches) use (&$hasChanges) {
                 $params = $matches[2];
-                if (strpos($params, 'array<') === false) {
-                    $newParams = str_replace('array $', 'array<string, mixed> $', $params);
+                if (strpos($params, 'array<mixed> $', $params);
                     if ($newParams !== $params) {
                         $hasChanges = true;
                         $this->fixCount++;
@@ -192,10 +189,10 @@ class EnhancedPhpstanFixer
             $originalClassBody = $classBody;
 
             // 修復 headers 屬性
-            if (strpos($classBody, 'private $headers') !== false && strpos($classBody, 'array<string, mixed>') === false) {
+            if (strpos($classBody, 'private $headers') !== false && strpos($classBody, 'array<mixed>') === false) {
                 $classBody = preg_replace(
                     '/private \$headers([^;]*);/',
-                    'private array $headers$1;',
+                    'private array<mixed> $headers$1;',
                     $classBody
                 );
             }
@@ -224,22 +221,22 @@ class EnhancedPhpstanFixer
         // 修復 iterableValue 問題
         $patterns = [
             // 屬性宣告
-            '/private array \$([a-zA-Z_][a-zA-Z0-9_]*);/' => function ($matches) use (&$hasChanges) {
+            '/private array<mixed> \$([a-zA-Z_][a-zA-Z0-9_]*);/' => function ($matches) use (&$hasChanges) {
                 $propName = $matches[1];
                 // 常見的陣列屬性類型推斷
                 $commonTypes = [
-                    'headers' => 'array<string, string>',
-                    'config' => 'array<string, mixed>',
-                    'data' => 'array<string, mixed>',
-                    'params' => 'array<string, mixed>',
-                    'options' => 'array<string, mixed>',
-                    'attributes' => 'array<string, mixed>',
-                    'metadata' => 'array<string, mixed>',
-                    'rules' => 'array<string, mixed>',
-                    'filters' => 'array<string, mixed>',
+                    'headers' => 'array<mixed>',
+                    'config' => 'array<mixed>',
+                    'data' => 'array<mixed>',
+                    'params' => 'array<mixed>',
+                    'options' => 'array<mixed>',
+                    'attributes' => 'array<mixed>',
+                    'metadata' => 'array<mixed>',
+                    'rules' => 'array<mixed>',
+                    'filters' => 'array<mixed>',
                 ];
 
-                $type = $commonTypes[$propName] ?? 'array<string, mixed>';
+                $type = $commonTypes[$propName] ?? 'array<mixed>';
                 $hasChanges = true;
                 $this->fixCount++;
                 return "private {$type} \${$propName};";
@@ -331,9 +328,9 @@ class EnhancedPhpstanFixer
                 'count' => ': int',
                 'size' => ': int',
                 'length' => ': int',
-                'toArray' => ': array',
-                'getAll' => ': array',
-                'getList' => ': array',
+                'toArray' => ': array<mixed>',
+                'getAll' => ': array<mixed>',
+                'getList' => ': array<mixed>',
             ];
 
             if (isset($returnTypes[$methodName])) {
@@ -354,12 +351,12 @@ class EnhancedPhpstanFixer
         // 修復未初始化的屬性
         $patterns = [
             // 陣列屬性初始化
-            '/private array<([^>]+)> \$([a-zA-Z_][a-zA-Z0-9_]*);/' => function ($matches) use (&$hasChanges) {
+            '/private array<mixed>]+)> \$([a-zA-Z_][a-zA-Z0-9_]*);/' => function ($matches) use (&$hasChanges) {
                 $type = $matches[1];
                 $propName = $matches[2];
                 $hasChanges = true;
                 $this->fixCount++;
-                return "private array \${$propName} = [];";
+                return "private array<mixed> \${$propName} = [];";
             }
         ];
 

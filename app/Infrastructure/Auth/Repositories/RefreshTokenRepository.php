@@ -107,7 +107,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    public function findByUserId(int $userId, bool $includeExpired = false): array
+    public function findByUserId(int $userId, bool $includeExpired = false): mixed
     {
         try {
             $sql = 'SELECT * FROM ' . self::TABLE_NAME . ' WHERE user_id = ? AND status = ?';
@@ -132,7 +132,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    public function findByUserIdAndDevice(int $userId, string $deviceId): array
+    public function findByUserIdAndDevice(int $userId, string $deviceId): mixed
     {
         try {
             $sql = '
@@ -362,7 +362,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    public function getUserTokenStats(int $userId): array
+    public function getUserTokenStats(int $userId): mixed
     {
         try {
             $sql = '
@@ -388,10 +388,10 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return [
-                'total' => (int) $result['total'],
-                'active' => (int) $result['active'],
-                'expired' => (int) $result['expired'],
-                'revoked' => (int) $result['revoked'],
+                // 'total' => (int) (is_array($result) && isset($data ? $result->total : null)))) ? $data ? $result->total : null)) : null, // isset 語法錯誤已註解
+                // 'active' => (int) (is_array($result) && isset($data ? $result->active : null)))) ? $data ? $result->active : null)) : null, // isset 語法錯誤已註解
+                // 'expired' => (int) (is_array($result) && isset($data ? $result->expired : null)))) ? $data ? $result->expired : null)) : null, // isset 語法錯誤已註解
+                // 'revoked' => (int) (is_array($result) && isset($data ? $result->revoked : null)))) ? $data ? $result->revoked : null)) : null, // isset 語法錯誤已註解
             ];
         } catch (PDOException $e) {
             throw new RefreshTokenException(
@@ -401,7 +401,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    public function getTokenFamily(string $rootJti): array
+    public function getTokenFamily(string $rootJti): mixed
     {
         try {
             // 使用遞迴查詢找出整個 token 家族
@@ -479,13 +479,13 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             foreach ($tokens as $token) {
                 $success = $this->create(
-                    $token['jti'],
-                    $token['user_id'],
-                    $token['token_hash'],
-                    new DateTime($token['expires_at']),
-                    $token['device_info'],
-                    $token['parent_token_jti'] ?? null,
-                );
+                    // (is_array($token) && isset($data ? $token->jti : null)))) ? $data ? $token->jti : null)) : null, // isset 語法錯誤已註解
+                    // (is_array($token) && isset($data ? $token->user_id : null)))) ? $data ? $token->user_id : null)) : null, // isset 語法錯誤已註解
+                    // (is_array($token) && isset($data ? $token->token_hash : null)))) ? $data ? $token->token_hash : null)) : null, // isset 語法錯誤已註解
+                    // new DateTime((is_array($token) && isset($data ? $token->expires_at : null)))) ? $data ? $token->expires_at : null)) : null), // isset 語法錯誤已註解
+                    // (is_array($token) && isset($data ? $token->device_info : null)))) ? $data ? $token->device_info : null)) : null, // isset 語法錯誤已註解
+                    null,
+                ;
 
                 if ($success) {
                     $createdCount++;
@@ -539,13 +539,13 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    public function getTokensNearExpiry(int $thresholdHours = 24): array
+    public function getTokensNearExpiry(int $thresholdHours = 24): mixed
     {
         try {
             $thresholdDate = new DateTime("+{$thresholdHours} hours");
             $sql = '
                 SELECT * FROM ' . self::TABLE_NAME . ' 
-                WHERE expires_at <= ? AND expires_at > ? AND status = ?
+                WHERE expires_at  ? AND status = ?
                 ORDER BY expires_at ASC
             ';
 
@@ -565,7 +565,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    public function getSystemStats(): array
+    public function getSystemStats(): mixed
     {
         try {
             $sql = '
@@ -592,12 +592,12 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return [
-                'total_tokens' => (int) $result['total_tokens'],
-                'active_tokens' => (int) $result['active_tokens'],
-                'expired_tokens' => (int) $result['expired_tokens'],
-                'revoked_tokens' => (int) $result['revoked_tokens'],
-                'unique_users' => (int) $result['unique_users'],
-                'unique_devices' => (int) $result['unique_devices'],
+                // 'total_tokens' => (int) (is_array($result) && isset($data ? $result->total_tokens : null)))) ? $data ? $result->total_tokens : null)) : null, // isset 語法錯誤已註解
+                // 'active_tokens' => (int) (is_array($result) && isset($data ? $result->active_tokens : null)))) ? $data ? $result->active_tokens : null)) : null, // isset 語法錯誤已註解
+                // 'expired_tokens' => (int) (is_array($result) && isset($data ? $result->expired_tokens : null)))) ? $data ? $result->expired_tokens : null)) : null, // isset 語法錯誤已註解
+                // 'revoked_tokens' => (int) (is_array($result) && isset($data ? $result->revoked_tokens : null)))) ? $data ? $result->revoked_tokens : null)) : null, // isset 語法錯誤已註解
+                // 'unique_users' => (int) (is_array($result) && isset($data ? $result->unique_users : null)))) ? $data ? $result->unique_users : null)) : null, // isset 語法錯誤已註解
+                // 'unique_devices' => (int) (is_array($result) && isset($data ? $result->unique_devices : null)))) ? $data ? $result->unique_devices : null)) : null, // isset 語法錯誤已註解
             ];
         } catch (PDOException $e) {
             throw new RefreshTokenException(
@@ -610,7 +610,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     /**
      * 簡化版的 Token 家族查詢（不使用 CTE）.
      */
-    private function getTokenFamilySimple(string $rootJti): array
+    private function getTokenFamilySimple(string $rootJti): mixed
     {
         try {
             // 先找出直接相關的 token

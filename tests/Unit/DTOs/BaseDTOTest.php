@@ -195,13 +195,13 @@ class BaseDTOTest extends TestCase
         $data = [
             'string' => 'value',
             'number' => 42,
-            'array' => [1, 2, 3],
+            'array<mixed>' => [1, 2, 3],
             'null_value' => null,
         ];
 
         $this->assertEquals('value', $dto->testGetValue($data, 'string'));
         $this->assertEquals(42, $dto->testGetValue($data, 'number'));
-        $this->assertEquals([1, 2, 3], $dto->testGetValue($data, 'array'));
+        $this->assertEquals([1, 2, 3], $dto->testGetValue($data, 'array<mixed>'));
         $this->assertNull($dto->testGetValue($data, 'null_value'));
         $this->assertEquals('default', $dto->testGetValue($data, 'missing', 'default'));
         $this->assertNull($dto->testGetValue($data, 'missing'));
@@ -230,7 +230,7 @@ class TestableBaseDTO extends BaseDTO
 
     public bool $active = false;
 
-    protected function getValidationRules(): array
+    protected function getValidationRules(): array<mixed>
     {
         return [
             'name' => 'required|string|min_length:2|max_length:50',
@@ -239,7 +239,7 @@ class TestableBaseDTO extends BaseDTO
         ];
     }
 
-    public function toArray(): array
+    public function toArray(): array<mixed>
     {
         return [
             'name' => $this->name,
@@ -249,33 +249,33 @@ class TestableBaseDTO extends BaseDTO
     }
 
     // 公開 validate 方法用於測試
-    public function testValidate(array $data): array
+    public function testValidate(array<mixed> $data): array<mixed>
     {
         return $this->validate($data);
     }
 
     // 公開 helper 方法用於測試
-    public function testGetString(array $data, string $key, ?string $default = null): ?string
+    public function testGetString(array<mixed> $data, string $key, ?string $default = null): ?string
     {
         return $this->getString($data, $key, $default);
     }
 
-    public function testGetInt(array $data, string $key, ?int $default = null): ?int
+    public function testGetInt(array<mixed> $data, string $key, ?int $default = null): ?int
     {
         return $this->getInt($data, $key, $default);
     }
 
-    public function testGetBool(array $data, string $key, ?bool $default = null): ?bool
+    public function testGetBool(array<mixed> $data, string $key, ?bool $default = null): ?bool
     {
         return $this->getBool($data, $key, $default);
     }
 
-    public function testGetValue(array $data, string $key, mixed $default = null): mixed
+    public function testGetValue(array<mixed> $data, string $key, mixed $default = null): mixed
     {
         return $this->getValue($data, $key, $default);
     }
 
-    public function testGetValidationRules(): array
+    public function testGetValidationRules(): array<mixed>
     {
         return $this->getValidationRules();
     }

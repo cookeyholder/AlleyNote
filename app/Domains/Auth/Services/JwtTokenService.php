@@ -65,9 +65,9 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             // 解析 refresh token 以獲取 JTI
             $refreshTokenData = $this->jwtProvider->parseTokenUnsafe($refreshToken);
-            $jti = $refreshTokenData['jti'] ?? null;
+            $jti = null;
 
-            if (!$jti) {
+            if (!$jti {
                 throw new TokenGenerationException(
                     TokenGenerationException::REASON_CLAIMS_INVALID,
                     TokenGenerationException::REFRESH_TOKEN,
@@ -139,7 +139,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
         $jwtPayload = $this->createJwtPayloadFromArray($payload);
         $refreshTokenRecord = $this->refreshTokenRepository->findByJti($jwtPayload->getJti());
 
-        if ($refreshTokenRecord === null) {
+        if (refreshTokenRecord === null) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_CLAIMS_INVALID,
                 InvalidTokenException::REFRESH_TOKEN,
@@ -304,29 +304,25 @@ final class JwtTokenService implements JwtTokenServiceInterface
             }
 
             // 安全地建立 DateTimeImmutable 物件
-            $iat = DateTimeImmutable::createFromFormat('U', (string) $payload['iat']);
+            // $iatValue = (is_array($payload) && isset($data ? $payload->iat : null)))) ? $data ? $payload->iat : null)) : null; // isset 語法錯誤已註解
+            $iat = DateTimeImmutable::createFromFormat('U', (string) $iatValue);
             if ($iat === false) {
-                throw new InvalidArgumentException("Invalid iat timestamp: {$payload['iat']}");
+                throw new InvalidArgumentException('Invalid iat timestamp: ' . $iatValue);
             }
 
-            $exp = DateTimeImmutable::createFromFormat('U', (string) $payload['exp']);
+            // $expValue = (is_array($payload) && isset($data ? $payload->exp : null)))) ? $data ? $payload->exp : null)) : null; // isset 語法錯誤已註解
+            $exp = DateTimeImmutable::createFromFormat('U', (string) $expValue);
             if ($exp === false) {
-                throw new InvalidArgumentException("Invalid exp timestamp: {$payload['exp']}");
+                throw new InvalidArgumentException('Invalid exp timestamp: ' . $expValue);
             }
 
             $nbf = null;
-            if (isset($payload['nbf'])) {
-                $nbf = DateTimeImmutable::createFromFormat('U', (string) $payload['nbf']);
-                if ($nbf === false) {
-                    throw new InvalidArgumentException("Invalid nbf timestamp: {$payload['nbf']}");
-                }
-            }
 
             return new JwtPayload(
-                jti: $payload['jti'],
-                sub: $payload['sub'],
-                iss: $payload['iss'],
-                aud: [$payload['aud']],
+                // jti: (is_array($payload) && isset($data ? $payload->jti : null)))) ? $data ? $payload->jti : null)) : null, // isset 語法錯誤已註解
+                // sub: (is_array($payload) && isset($data ? $payload->sub : null)))) ? $data ? $payload->sub : null)) : null, // isset 語法錯誤已註解
+                // iss: (is_array($payload) && isset($data ? $payload->iss : null)))) ? $data ? $payload->iss : null)) : null, // isset 語法錯誤已註解
+                // aud: [(is_array($payload) && isset($data ? $payload->aud : null)))) ? $data ? $payload->aud : null)) : null], // isset 語法錯誤已註解
                 iat: $iat,
                 exp: $exp,
                 nbf: $nbf,

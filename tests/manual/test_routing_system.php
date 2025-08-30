@@ -55,7 +55,7 @@ try {
     echo "   ✓ 路由建立成功\n";
     echo '   ✓ HTTP 方法: ' . implode(', ', $route->getMethods()) . "\n";
     echo '   ✓ 路由模式: ' . $route->getPattern() . "\n";
-    echo '   ✓ 路由名稱: ' . ($route->getName() ?? '無') . "\n\n";
+    echo '   ✓ 路由名稱: ' . (($route instanceof ReflectionNamedType ? $route->getName() : (string) $route) ?? '無') . "\n\n";
 
     // 2. 測試參數路由
     echo "2. 測試參數路由...\n";
@@ -132,7 +132,7 @@ try {
         }
 
         if ($matched) {
-            $routeName = $matchedRoute?->getName() ?? '無名稱';
+            $routeName = ($matchedRoute instanceof ReflectionNamedType ? $matchedRoute->getName() : (string) $matchedRoute) ?? '無名稱';
             echo "   ✓ {$method} {$path}: 匹配路由 '{$routeName}'";
             if (!empty($parameters)) {
                 echo ', 參數: ' . json_encode($parameters);

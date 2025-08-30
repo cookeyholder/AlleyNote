@@ -79,7 +79,7 @@ interface SecretsManagerInterface
      * 驗證 .env 檔案的安全性.
      *
      * @param string $filePath .env 檔案路徑
-     * @return array 發現的問題陣列
+     * @return array<mixed> 發現的問題陣列
      */
     public function validateEnvFile(string $filePath = ''): array;
 }

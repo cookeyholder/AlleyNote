@@ -118,7 +118,7 @@ class SecretsManager implements SecretsManagerInterface
         return strtolower($this->get('APP_ENV', 'production')) === 'development';
     }
 
-    public function getSecretsSummary(): array
+    public function getSecretsSummary(): mixed
     {
         $this->load();
 
@@ -163,7 +163,7 @@ class SecretsManager implements SecretsManagerInterface
         return bin2hex(random_bytes($length));
     }
 
-    public function validateEnvFile(string $filePath = ''): array
+    public function validateEnvFile(string $filePath = ''): mixed
     {
         $filePath = $filePath ?: $this->envPath;
         $issues = [];

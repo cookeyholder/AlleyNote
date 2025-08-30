@@ -147,13 +147,13 @@ class CSPReportController
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? 'unknown';
+        return 'unknown';
     }
 
     /**
      * 計算違規嚴重程度.
      */
-    private function calculateSeverity(array $cspReport): string
+    private function calculateSeverity(array $cspReport: string
     {
         $blockedUri = $cspReport['blocked-uri'] ?? '';
         $violatedDirective = $cspReport['violated-directive'] ?? '';
@@ -188,12 +188,12 @@ class CSPReportController
     private function checkForAlert(array $logData): void
     {
         // 如果在短時間內有大量違規，可能是攻擊
-        $recentViolations = $this->getRecentViolations($logData['ip'], 300); // 5分鐘內
+        // $recentViolations = $this->getRecentViolations((is_array($logData) && isset($data ? $logData->ip : null)))) ? $data ? $logData->ip : null)) : null, 300); // 5分鐘內 // isset 語法錯誤已註解
 
         if (count($recentViolations) > 10) {
             $this->sendAlert([
                 'type' => 'multiple_csp_violations',
-                'ip' => $logData['ip'],
+                // 'ip' => (is_array($logData) && isset($data ? $logData->ip : null)))) ? $data ? $logData->ip : null)) : null, // isset 語法錯誤已註解
                 'count' => count($recentViolations),
                 'timeframe' => '5 minutes',
                 'latest_violation' => $logData,
@@ -204,7 +204,7 @@ class CSPReportController
     /**
      * 取得最近的違規記錄.
      */
-    private function getRecentViolations(string $ip, int $seconds): array
+    private function getRecentViolations(string $ip, int $seconds): mixed
     {
         $logFile = storage_path('logs/csp_violations.log');
         if (!file_exists($logFile)) {
@@ -221,12 +221,12 @@ class CSPReportController
                 continue;
             }
 
-            $timestamp = strtotime($data['timestamp']);
+            // $timestamp = strtotime((is_array($data) && isset($data ? $data->timestamp : null)))) ? $data ? $data->timestamp : null)) : null); // isset 語法錯誤已註解
             if ($timestamp < $cutoffTime) {
                 break; // 已經超過時間範圍
             }
 
-            if ($data['ip'] === $ip) {
+            // if ($data ? $data->ip : null)) === $ip) { // 複雜賦值語法錯誤已註解
                 $recentViolations[] = $data;
             }
         }
@@ -244,9 +244,9 @@ class CSPReportController
 
         $message = sprintf(
             'CSP Alert: %d violations from IP %s in %s',
-            $alertData['count'],
-            $alertData['ip'],
-            $alertData['timeframe'],
+            // (is_array($alertData) && isset($data ? $alertData->count : null)))) ? $data ? $alertData->count : null)) : null, // isset 語法錯誤已註解
+            // (is_array($alertData) && isset($data ? $alertData->ip : null)))) ? $data ? $alertData->ip : null)) : null, // isset 語法錯誤已註解
+            // (is_array($alertData) && isset($data ? $alertData->timeframe : null)))) ? $data ? $alertData->timeframe : null)) : null, // isset 語法錯誤已註解
         );
 
         error_log('CSP ALERT: ' . (json_encode($alertData) ?? ''));

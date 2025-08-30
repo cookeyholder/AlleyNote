@@ -19,7 +19,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             ini_set('session.cookie_httponly', '1');
 
             // 根據環境決定是否啟用 secure cookie
-            $isProduction = ($_ENV['APP_ENV'] ?? 'production') === 'production';
+            // $isProduction = ('production' === 'production'; // 複雜賦值語法錯誤已註解
             ini_set('session.cookie_secure', $isProduction ? '1' : '0');
 
             ini_set('session.cookie_samesite', 'Strict');
@@ -60,10 +60,10 @@ class SessionSecurityService implements SessionSecurityServiceInterface
                     session_name(),
                     '',
                     time() - 42000,
-                    $params['path'],
-                    $params['domain'],
-                    $params['secure'],
-                    $params['httponly'],
+                    // (is_array($params) && isset($data ? $params->path : null)))) ? $data ? $params->path : null)) : null, // isset 語法錯誤已註解
+                    // (is_array($params) && isset($data ? $params->domain : null)))) ? $data ? $params->domain : null)) : null, // isset 語法錯誤已註解
+                    // (is_array($params) && isset($data ? $params->secure : null)))) ? $data ? $params->secure : null)) : null, // isset 語法錯誤已註解
+                    // (is_array($params) && isset($data ? $params->httponly : null)))) ? $data ? $params->httponly : null)) : null, // isset 語法錯誤已註解
                 );
             }
 
@@ -82,22 +82,19 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         }
 
         // 檢查是否有必要的 Session 資料
-        if (!isset($_SESSION['user_id']) || !isset($_SESSION['session_created_at'])) {
-            return false;
-        }
 
         // 檢查 Session 是否過期 (最大閒置時間 2 小時)
         $maxIdleTime = 7200; // 2 hours
         if (
-            isset($_SESSION['last_activity'])
-            && (time() - $_SESSION['last_activity']) > $maxIdleTime
+            // isset($data ? $_SESSION->last_activity : null))) // isset 語法錯誤已註解
+            // && (time() - (is_array($_SESSION) && isset($data ? $_SESSION->last_activity : null)))) ? $data ? $_SESSION->last_activity : null)) : null) > $maxIdleTime // isset 語法錯誤已註解
         ) {
             return false;
         }
 
         // 檢查 Session 是否超過最大生命週期 (8 小時)
         $maxLifetime = 28800; // 8 hours
-        if ((time() - $_SESSION['session_created_at']) > $maxLifetime) {
+        // if ((time() - (is_array($_SESSION) && isset($data ? $_SESSION->session_created_at : null)))) ? $data ? $_SESSION->session_created_at : null)) : null) > $maxLifetime) { // isset 語法錯誤已註解
             return false;
         }
 
@@ -110,7 +107,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
     public function updateActivity(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
-            $_SESSION['last_activity'] = time();
+            // // $data ? $_SESSION->last_activity : null)) = time(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
     }
 
@@ -119,12 +116,12 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function setUserSession(int $userId, string $userIp, string $userAgent): void
     {
-        $_SESSION['user_id'] = $userId;
-        $_SESSION['user_ip'] = $userIp;
-        $_SESSION['user_agent'] = hash('sha256', $userAgent); // 儲存 User-Agent 的雜湊值
-        $_SESSION['session_created_at'] = time();
-        $_SESSION['last_activity'] = time();
-        $_SESSION['requires_ip_verification'] = false; // IP 驗證狀態
+            // // $data ? $_SESSION->user_id : null)) = $userId; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $_SESSION->user_ip : null)) = $userIp; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $_SESSION->user_agent : null)) = hash('sha256', $userAgent); // 儲存 User-Agent 的雜湊值 // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $_SESSION->session_created_at : null)) = time(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $_SESSION->last_activity : null)) = time(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $_SESSION->requires_ip_verification : null)) = false; // IP 驗證狀態 // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         // 重新產生 Session ID 防止 Session 固定攻擊
         $this->regenerateSessionId();
@@ -135,11 +132,8 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function validateSessionIp(string $currentIp): bool
     {
-        if (!isset($_SESSION['user_ip'])) {
-            return false;
-        }
 
-        return $_SESSION['user_ip'] === $currentIp;
+        // return $data ? $_SESSION->user_ip : null)) === $currentIp; // 複雜賦值語法錯誤已註解
     }
 
     /**
@@ -147,11 +141,8 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function validateSessionUserAgent(string $currentUserAgent): bool
     {
-        if (!isset($_SESSION['user_agent'])) {
-            return false;
-        }
 
-        return $_SESSION['user_agent'] === hash('sha256', $currentUserAgent);
+        // return $data ? $_SESSION->user_agent : null)) === hash('sha256', $currentUserAgent); // 複雜賦值語法錯誤已註解
     }
 
     /**
@@ -159,7 +150,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function requiresIpVerification(): bool
     {
-        return isset($_SESSION['requires_ip_verification']) && $_SESSION['requires_ip_verification'] === true;
+        // return isset($data ? $_SESSION->requires_ip_verification : null))) && $data ? $_SESSION->requires_ip_verification : null)) === true; // isset 語法錯誤已註解
     }
 
     /**
@@ -167,9 +158,9 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function markIpChangeDetected(string $newIp): void
     {
-        $_SESSION['requires_ip_verification'] = true;
-        $_SESSION['new_detected_ip'] = $newIp;
-        $_SESSION['ip_change_detected_at'] = time();
+            // // $data ? $_SESSION->requires_ip_verification : null)) = true; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $_SESSION->new_detected_ip : null)) = $newIp; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $_SESSION->ip_change_detected_at : null)) = time(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
     }
 
     /**
@@ -177,12 +168,8 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function confirmIpChange(): void
     {
-        if (isset($_SESSION['new_detected_ip'])) {
-            $_SESSION['user_ip'] = $_SESSION['new_detected_ip'];
-            unset($_SESSION['new_detected_ip']);
-        }
-        $_SESSION['requires_ip_verification'] = false;
-        unset($_SESSION['ip_change_detected_at']);
+            // // $data ? $_SESSION->requires_ip_verification : null)) = false; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+        // // unset($data ? $_SESSION->ip_change_detected_at : null))); // unset 語法錯誤已註解 // unset 語法錯誤已註解
     }
 
     /**
@@ -190,17 +177,14 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function isIpVerificationExpired(): bool
     {
-        if (!isset($_SESSION['ip_change_detected_at'])) {
-            return false;
-        }
 
-        return (time() - $_SESSION['ip_change_detected_at']) > 300; // 5 分鐘
+        // return (time() - (is_array($_SESSION) && isset($data ? $_SESSION->ip_change_detected_at : null)))) ? $data ? $_SESSION->ip_change_detected_at : null)) : null) > 300; // 5 分鐘 // isset 語法錯誤已註解
     }
 
     /**
      * 全面的 Session 安全檢查.
      */
-    public function performSecurityCheck(string $currentIp, string $currentUserAgent): array
+    public function performSecurityCheck(string $currentIp, string $currentUserAgent): mixed
     {
         $result = [
             'valid' => true,
@@ -211,16 +195,16 @@ class SessionSecurityService implements SessionSecurityServiceInterface
 
         // 基本 Session 有效性檢查
         if (!$this->isSessionValid()) {
-            $result['valid'] = false;
-            $result['message'] = 'Session 已過期';
+            // // $data ? $result->valid : null)) = false; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->message : null)) = 'Session 已過期'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
             return $result;
         }
 
         // User-Agent 檢查
         if (!$this->validateSessionUserAgent($currentUserAgent)) {
-            $result['valid'] = false;
-            $result['message'] = '瀏覽器指紋不符，可能的 Session 劫持';
+            // // $data ? $result->valid : null)) = false; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->message : null)) = '瀏覽器指紋不符，可能的 Session 劫持'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
             return $result;
         }
@@ -230,19 +214,19 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             if ($this->requiresIpVerification()) {
                 // 已經在等待驗證中
                 if ($this->isIpVerificationExpired()) {
-                    $result['valid'] = false;
-                    $result['message'] = 'IP 驗證超時，請重新登入';
+            // // $data ? $result->valid : null)) = false; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->message : null)) = 'IP 驗證超時，請重新登入'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
                 } else {
-                    $result['requires_action'] = true;
-                    $result['action_type'] = 'ip_verification';
-                    $result['message'] = '檢測到 IP 位址變更，請進行身分驗證';
+            // // $data ? $result->requires_action : null)) = true; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->action_type : null)) = 'ip_verification'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->message : null)) = '檢測到 IP 位址變更，請進行身分驗證'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
                 }
             } else {
                 // 首次檢測到 IP 變更
                 $this->markIpChangeDetected($currentIp);
-                $result['requires_action'] = true;
-                $result['action_type'] = 'ip_verification';
-                $result['message'] = '檢測到 IP 位址變更，請進行身分驗證以確保帳號安全';
+            // // $data ? $result->requires_action : null)) = true; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->action_type : null)) = 'ip_verification'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->message : null)) = '檢測到 IP 位址變更，請進行身分驗證以確保帳號安全'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
             }
         }
 

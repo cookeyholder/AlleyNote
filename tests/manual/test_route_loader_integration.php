@@ -31,39 +31,39 @@ try {
 
         private string $uri = '/api/health';
 
-        private array $headers = [];
+        private array<mixed> $headers = [];
 
-        public function getServerParams(): array
+        public function getServerParams(): array<mixed>
         {
             return [];
         }
 
-        public function getCookieParams(): array
+        public function getCookieParams(): array<mixed>
         {
             return [];
         }
 
-        public function withCookieParams(array $cookies): self
+        public function withCookieParams(array<mixed> $cookies): self
         {
             return $this;
         }
 
-        public function getQueryParams(): array
+        public function getQueryParams(): array<mixed>
         {
             return [];
         }
 
-        public function withQueryParams(array $query): self
+        public function withQueryParams(array<mixed> $query): self
         {
             return $this;
         }
 
-        public function getUploadedFiles(): array
+        public function getUploadedFiles(): array<mixed>
         {
             return [];
         }
 
-        public function withUploadedFiles(array $uploadedFiles): self
+        public function withUploadedFiles(array<mixed> $uploadedFiles): self
         {
             return $this;
         }
@@ -78,7 +78,7 @@ try {
             return $this;
         }
 
-        public function getAttributes(): array
+        public function getAttributes(): array<mixed>
         {
             return [];
         }
@@ -231,7 +231,7 @@ try {
             return $this;
         }
 
-        public function getHeaders(): array
+        public function getHeaders(): array<mixed>
         {
             return $this->headers;
         }
@@ -241,7 +241,7 @@ try {
             return isset($this->headers[$name]);
         }
 
-        public function getHeader($name): array
+        public function getHeader($name): array<mixed>
         {
             return $this->headers[$name] ?? [];
         }

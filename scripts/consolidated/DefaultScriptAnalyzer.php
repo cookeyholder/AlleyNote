@@ -15,7 +15,7 @@ final readonly class DefaultScriptAnalyzer implements ScriptAnalyzerInterface
         private string $projectRoot
     ) {}
 
-    public function scanAvailableScripts(): array
+    public function scanAvailableScripts(): array<mixed>
     {
         $scriptsDir = $this->projectRoot . '/scripts';
         $scripts = [];
@@ -48,13 +48,13 @@ final readonly class DefaultScriptAnalyzer implements ScriptAnalyzerInterface
         $command = "cd {$this->projectRoot} && ./vendor/bin/phpstan analyse --error-format=json --no-progress 2>/dev/null";
         $output = shell_exec($command);
 
-        if ($output === null) {
+        if (output === null) {
             return -1; // 無法執行分析
         }
 
         try {
             $result = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
-            return $result['totals']['errors'] ?? 0;
+            return (is_array($result) ? $result['totals'] : (is_object($result) ? $result->totals : null))['errors'] ?? 0;
         } catch (\JsonException) {
             return -1;
         }
@@ -77,11 +77,11 @@ final readonly class DefaultScriptAnalyzer implements ScriptAnalyzerInterface
         try {
             $result = json_decode($lastLine, true, 512, JSON_THROW_ON_ERROR);
 
-            if ($result['event'] === 'testRunEnded') {
+            if ((is_array($result) ? $result['event'] : (is_object($result) ? $result->event : null)) === 'testRunEnded') {
                 return new TestStatus(
-                    totalTests: $result['data']['totalTests'] ?? 0,
-                    passingTests: $result['data']['successful'] ?? 0,
-                    failingTests: $result['data']['failed'] ?? 0,
+                    totalTests: (is_array($result) ? $result['data'] : (is_object($result) ? $result->data : null))['totalTests'] ?? 0,
+                    passingTests: (is_array($result) ? $result['data'] : (is_object($result) ? $result->data : null))['successful'] ?? 0,
+                    failingTests: (is_array($result) ? $result['data'] : (is_object($result) ? $result->data : null))['failed'] ?? 0,
                     coverage: 0.0 // 需要從覆蓋率報告中提取
                 );
             }
@@ -98,7 +98,7 @@ final readonly class DefaultScriptAnalyzer implements ScriptAnalyzerInterface
         $command = "cd {$this->projectRoot} && php scripts/scan-project-architecture.php 2>/dev/null";
         $output = shell_exec($command);
 
-        if ($output === null) {
+        if (output === null) {
             return new ArchitectureMetrics(0, 0, 0, 0.0);
         }
 
@@ -122,7 +122,7 @@ final readonly class DefaultScriptAnalyzer implements ScriptAnalyzerInterface
         $command = "cd {$this->projectRoot} && php scripts/scan-project-architecture.php 2>/dev/null";
         $output = shell_exec($command);
 
-        if ($output === null) {
+        if (output === null) {
             return new ModernPhpAdoption(0.0, [], []);
         }
 

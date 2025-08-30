@@ -60,7 +60,7 @@ interface TokenBlacklistRepositoryInterface
      *
      * @param int $userId 使用者ID
      * @param int|null $limit 限制數量，null時不限制
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<mixed> 黑名單項目陣列
      */
     public function findByUserId(int $userId, ?int $limit = null): array;
 
@@ -69,7 +69,7 @@ interface TokenBlacklistRepositoryInterface
      *
      * @param string $deviceId 裝置ID
      * @param int|null $limit 限制數量，null時不限制
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<mixed> 黑名單項目陣列
      */
     public function findByDeviceId(string $deviceId, ?int $limit = null): array;
 
@@ -78,7 +78,7 @@ interface TokenBlacklistRepositoryInterface
      *
      * @param string $reason 黑名單原因
      * @param int|null $limit 限制數量，null時不限制
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<mixed> 黑名單項目陣列
      */
     public function findByReason(string $reason, ?int $limit = null): array;
 
@@ -94,7 +94,7 @@ interface TokenBlacklistRepositoryInterface
      * 批次檢查token是否在黑名單中.
      *
      * @param array $jtis JTI陣列
-     * @return array<string, bool> JTI為key，是否在黑名單為值的陣列
+     * @return array<mixed> JTI為key，是否在黑名單為值的陣列
      */
     public function batchIsBlacklisted(array $jtis): array;
 
@@ -151,13 +151,13 @@ interface TokenBlacklistRepositoryInterface
     /**
      * 取得黑名單統計資訊.
      *
-     * @return array<string, mixed> 統計資訊
-     *                              - total: 總項目數
-     *                              - by_token_type: 按token類型分組的統計
-     *                              - by_reason: 按原因分組的統計
-     *                              - security_related: 與安全相關的項目數
-     *                              - user_initiated: 使用者主動的項目數
-     *                              - system_initiated: 系統主動的項目數
+     * @return array<mixed> 統計資訊
+     *                      - total: 總項目數
+     *                      - by_token_type: 按token類型分組的統計
+     *                      - by_reason: 按原因分組的統計
+     *                      - security_related: 與安全相關的項目數
+     *                      - user_initiated: 使用者主動的項目數
+     *                      - system_initiated: 系統主動的項目數
      */
     public function getBlacklistStats(): array;
 
@@ -165,7 +165,7 @@ interface TokenBlacklistRepositoryInterface
      * 取得特定使用者的黑名單統計.
      *
      * @param int $userId 使用者ID
-     * @return array<string, mixed> 使用者統計資訊
+     * @return array<mixed> 使用者統計資訊
      */
     public function getUserBlacklistStats(int $userId): array;
 
@@ -174,7 +174,7 @@ interface TokenBlacklistRepositoryInterface
      *
      * @param int $limit 限制數量，預設100
      * @param DateTime|null $since 起始時間，null時不限制
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<mixed> 黑名單項目陣列
      */
     public function getRecentBlacklistEntries(int $limit = 100, ?DateTime $since = null): array;
 
@@ -182,7 +182,7 @@ interface TokenBlacklistRepositoryInterface
      * 取得高優先級的黑名單項目.
      *
      * @param int $limit 限制數量，預設50
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<mixed> 黑名單項目陣列
      */
     public function getHighPriorityEntries(int $limit = 50): array;
 
@@ -198,7 +198,7 @@ interface TokenBlacklistRepositoryInterface
      *                        - date_to: 結束日期
      * @param int|null $limit 限制數量，null時不限制
      * @param int $offset 偏移量，預設0
-     * @return array<int, TokenBlacklistEntry> 搜尋結果
+     * @return array<mixed> 搜尋結果
      */
     public function search(array $criteria, ?int $limit = null, int $offset = 0): array;
 
@@ -221,22 +221,22 @@ interface TokenBlacklistRepositoryInterface
     /**
      * 取得黑名單大小資訊.
      *
-     * @return array<string, mixed> 大小資訊
-     *                              - total_entries: 總項目數
-     *                              - active_entries: 活動項目數
-     *                              - expired_entries: 過期項目數
-     *                              - cleanable_entries: 可清理項目數
-     *                              - estimated_size_mb: 預估大小（MB）
+     * @return array<mixed> 大小資訊
+     *                      - total_entries: 總項目數
+     *                      - active_entries: 活動項目數
+     *                      - expired_entries: 過期項目數
+     *                      - cleanable_entries: 可清理項目數
+     *                      - estimated_size_mb: 預估大小（MB）
      */
     public function getSizeInfo(): array;
 
     /**
      * 最佳化黑名單儲存.
      *
-     * @return array<string, mixed> 最佳化結果
-     *                              - cleaned_entries: 清理的項目數
-     *                              - compacted_size: 壓縮後大小
-     *                              - execution_time: 執行時間（秒）
+     * @return array<mixed> 最佳化結果
+     *                      - cleaned_entries: 清理的項目數
+     *                      - compacted_size: 壓縮後大小
+     *                      - execution_time: 執行時間（秒）
      */
     public function optimize(): array;
 }

@@ -85,7 +85,7 @@ class MiddlewareResolver
      *
      * @return MiddlewareInterface[]
      */
-    public function resolveMultiple(array $middlewares): array
+    public function resolveMultiple(array $middlewares): mixed
     {
         $resolved = [];
 
@@ -127,9 +127,9 @@ class MiddlewareResolver
     /**
      * 取得所有可用的中介軟體別名.
      *
-     * @return array<string, string>
+     * @return array<mixed>
      */
-    public function getAliases(): array
+    public function getAliases(): mixed
     {
         return self::$middlewareAliases;
     }

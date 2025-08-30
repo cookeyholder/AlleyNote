@@ -25,12 +25,12 @@ class PostTest extends TestCase
 
         $post = new Post($data);
 
-        $this->assertEquals($data['uuid'], $post->getUuid());
-        $this->assertEquals($data['seq_number'], $post->getSeqNumber());
-        $this->assertEquals(htmlspecialchars($data['title'], ENT_QUOTES, 'UTF-8'), $post->getTitle());
-        $this->assertEquals(htmlspecialchars($data['content'], ENT_QUOTES, 'UTF-8'), $post->getContent());
-        $this->assertEquals($data['user_id'], $post->getUserId());
-        $this->assertEquals($data['user_ip'], $post->getUserIp());
+        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['uuid'] : (is_object($data) ? $data->uuid : null)))) ? (is_array($data) ? $data['uuid'] : (is_object($data) ? $data->uuid : null)) : null, $post->getUuid());
+        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['seq_number'] : (is_object($data) ? $data->seq_number : null)))) ? (is_array($data) ? $data['seq_number'] : (is_object($data) ? $data->seq_number : null)) : null, $post->getSeqNumber());
+        $this->assertEquals(htmlspecialchars((is_array($data) && isset((is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)))) ? (is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)) : null, ENT_QUOTES, 'UTF-8'), $post->getTitle());
+        $this->assertEquals(htmlspecialchars((is_array($data) && isset((is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)))) ? (is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)) : null, ENT_QUOTES, 'UTF-8'), $post->getContent());
+        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['user_id'] : (is_object($data) ? $data->user_id : null)))) ? (is_array($data) ? $data['user_id'] : (is_object($data) ? $data->user_id : null)) : null, $post->getUserId());
+        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['user_ip'] : (is_object($data) ? $data->user_ip : null)))) ? (is_array($data) ? $data['user_ip'] : (is_object($data) ? $data->user_ip : null)) : null, $post->getUserIp());
     }
 
     #[Test]
@@ -61,7 +61,7 @@ class PostTest extends TestCase
         ]);
 
         // 移除 id，這樣才能測試預設值
-        unset($data['id']);
+        unset((is_array($data) ? $data['id'] : (is_object($data) ? $data->id : null)));
 
         $post = new Post($data);
 
@@ -79,7 +79,7 @@ class PostTest extends TestCase
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
             'title' => '<script>alert("XSS")</script>',
-            'content' => '<p onclick="alert(\'XSS\')">Test</p>',
+            'content' => '<p onclick="alert(\'XSS\')">Test',
             'user_id' => 1,
         ]);
 
@@ -91,7 +91,7 @@ class PostTest extends TestCase
             $post->getTitle(),
         );
         $this->assertEquals(
-            '<p onclick="alert(\'XSS\')">Test</p>',
+            '<p onclick="alert(\'XSS\')">Test',
             $post->getContent(),
         );
     }

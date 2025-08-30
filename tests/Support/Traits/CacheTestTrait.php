@@ -18,9 +18,9 @@ trait CacheTestTrait
     protected CacheService|MockInterface $cache;
 
     /**
-     * @var array<string, mixed>
+     * @var array<mixed>
      */
-    protected static array $cacheStorage = [];
+    protected static array<mixed> $cacheStorage = [];
 
     /**
      * 設定模擬快取服務.
@@ -110,9 +110,9 @@ trait CacheTestTrait
     /**
      * 取得目前快取中的所有資料.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    protected function getCacheStorage(): array
+    protected function getCacheStorage(): array<mixed>
     {
         return self::$cacheStorage;
     }

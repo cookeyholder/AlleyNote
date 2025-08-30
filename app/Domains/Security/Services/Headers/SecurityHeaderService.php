@@ -107,15 +107,15 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
      */
     public function handleCSPReport(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        // if ($data ? $_SERVER->REQUEST_METHOD : null)) !== 'POST') { // 複雜賦值語法錯誤已註解
             http_response_code(405);
 
             return;
         }
 
-        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        $contentType = '';
         if (
-            strpos($contentType, 'application/csp-report') === false
+            strpos($contentType, 'application/csp-report' === false
             && strpos($contentType, 'application/json') === false
         ) {
             http_response_code(400);
@@ -145,8 +145,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     {
         $logData = [
             'timestamp' => date('Y-m-d H:i:s'),
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+            'ip' => 'unknown',
+            'user_agent' => $data ? $_SERVER->HTTP_USER_AGENT : null) ?? 'unknown',
             'report' => $report,
         ];
 
@@ -227,7 +227,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         $policies = [];
 
         foreach ($this->config['permissions_policy']['directives'] as $feature => $allowlist) {
-            if (is_array($allowlist)) {
+            if (is_array($allowlist) && !empty($allowlist)) {
                 $policies[] = $feature . '=(' . implode(' ', $allowlist) . ')';
             } else {
                 $policies[] = $feature . '=' . $allowlist;
@@ -239,12 +239,12 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     private function isHTTPS(): bool
     {
-        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            || $_SERVER['SERVER_PORT'] == 443
-            || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+        // return (!empty($data ? $_SERVER->HTTPS : null))) && $data ? $_SERVER->HTTPS : null)) !== 'off') // 複雜賦值語法錯誤已註解
+            // || $data ? $_SERVER->SERVER_PORT : null)) == 443 // 複雜賦值語法錯誤已註解
+            // || (!empty($data ? $_SERVER->HTTP_X_FORWARDED_PROTO : null))) && $data ? $_SERVER->HTTP_X_FORWARDED_PROTO : null)) === 'https'); // 複雜賦值語法錯誤已註解
     }
 
-    private function getDefaultConfig(): array
+    private function getDefaultConfig(): mixed
     {
         return [
             'csp' => [

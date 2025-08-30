@@ -8,7 +8,7 @@
 class CommonErrorFixer
 {
     private int $fixCount = 0;
-    private array $processedFiles = [];
+    private array<mixed> $processedFiles = [];
 
     public function run(): void
     {
@@ -73,13 +73,13 @@ class CommonErrorFixer
             $content = file_get_contents($file);
             $originalContent = $content;
 
-            // 修復方法參數中的 array 類型
+            // 修復方法參數中的 array<mixed> 類型
             $patterns = [
                 // 方法參數
-                '/(\s+function\s+[a-zA-Z_][a-zA-Z0-9_]*\([^)]*?)array(\s+\$[a-zA-Z_][a-zA-Z0-9_]*)([^)]*\))/' => '$1array<string, mixed>$2$3',
+                '/(\s+function\s+[a-zA-Z_][a-zA-Z0-9_]*\([^)]*?)array(\s+\$[a-zA-Z_][a-zA-Z0-9_]*)([^)]*\))/' => '$1array$2$3',
 
                 // 屬性宣告
-                '/(\s+)(private|protected|public)(\s+)array(\s+\$[a-zA-Z_][a-zA-Z0-9_]*);/' => '$1$2$3array<string, mixed>$4;',
+                '/(\s+)(private|protected|public)(\s+)array(\s+\$[a-zA-Z_][a-zA-Z0-9_]*);/' => '$1$2$3array$4;',
             ];
 
             foreach ($patterns as $pattern => $replacement) {
@@ -148,8 +148,8 @@ class CommonErrorFixer
                 'isEnabled' => ': bool',
                 'exists' => ': bool',
                 'count' => ': int',
-                'toArray' => ': array<string, mixed>',
-                'getAll' => ': array<string, mixed>',
+                'toArray' => ': array<mixed>',
+                'getAll' => ': array<mixed>',
             ];
 
             foreach ($returnTypeMethods as $method => $returnType) {
@@ -168,7 +168,7 @@ class CommonErrorFixer
         }
     }
 
-    private function getPhpFiles(): array
+    private function getPhpFiles(): array<mixed>
     {
         $files = [];
 

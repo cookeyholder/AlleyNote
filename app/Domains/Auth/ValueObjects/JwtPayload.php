@@ -66,30 +66,29 @@ final readonly class JwtPayload implements JsonSerializable
             }
         }
 
-        $iat = is_int($data['iat'])
-            ? new DateTimeImmutable('@' . $data['iat'])
-            : new DateTimeImmutable($data['iat']);
+        // $iatValue = (is_array($data) && isset($data ? $data->iat : null)))) ? $data ? $data->iat : null)) : null; // isset 語法錯誤已註解
+        $iat = is_int($iatValue)
+            ? new DateTimeImmutable('@' . $iatValue)
+            : new DateTimeImmutable($iatValue);
 
-        $exp = is_int($data['exp'])
-            ? new DateTimeImmutable('@' . $data['exp'])
-            : new DateTimeImmutable($data['exp']);
+        // $expValue = (is_array($data) && isset($data ? $data->exp : null)))) ? $data ? $data->exp : null)) : null; // isset 語法錯誤已註解
+        $exp = is_int($expValue)
+            ? new DateTimeImmutable('@' . $expValue)
+            : new DateTimeImmutable($expValue);
 
-        $nbf = isset($data['nbf'])
-            ? (is_int($data['nbf'])
-                ? new DateTimeImmutable('@' . $data['nbf'])
-                : new DateTimeImmutable($data['nbf']))
-            : null;
+        $nbf = null;
 
-        $aud = is_array($data['aud']) ? $data['aud'] : [$data['aud']];
+        // $audValue = (is_array($data) && isset($data ? $data->aud : null)))) ? $data ? $data->aud : null)) : null; // isset 語法錯誤已註解
+        $aud = is_array($audValue) ? $audValue : [$audValue];
 
         // 提取自訂宣告 (排除標準宣告)
         $standardClaims = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp', 'nbf'];
         $customClaims = array_diff_key($data, array_flip($standardClaims));
 
         return new self(
-            jti: $data['jti'],
-            sub: $data['sub'],
-            iss: $data['iss'],
+            // jti: (is_array($data) && isset($data ? $data->jti : null)))) ? $data ? $data->jti : null)) : null, // isset 語法錯誤已註解
+            // sub: (is_array($data) && isset($data ? $data->sub : null)))) ? $data ? $data->sub : null)) : null, // isset 語法錯誤已註解
+            // iss: (is_array($data) && isset($data ? $data->iss : null)))) ? $data ? $data->iss : null)) : null, // isset 語法錯誤已註解
             aud: $aud,
             iat: $iat,
             exp: $exp,
@@ -133,9 +132,9 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 取得受眾.
      *
-     * @return array<string>
+     * @return array<mixed>
      */
-    public function getAudience(): array
+    public function getAudience(): mixed
     {
         return $this->aud;
     }
@@ -167,9 +166,9 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 取得自訂宣告.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function getCustomClaims(): array
+    public function getCustomClaims(): mixed
     {
         return $this->customClaims;
     }
@@ -228,9 +227,9 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 轉換為陣列格式（用於 JWT 編碼）.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         $payload = [
             'jti' => $this->jti,
@@ -242,7 +241,7 @@ final readonly class JwtPayload implements JsonSerializable
         ];
 
         if ($this->nbf !== null) {
-            $payload['nbf'] = $this->nbf->getTimestamp();
+            // // $data ? $payload->nbf : null)) = $this->nbf->getTimestamp(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         // 合併自訂宣告
@@ -252,9 +251,9 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * JsonSerializable 實作.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }

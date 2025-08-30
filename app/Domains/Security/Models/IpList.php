@@ -27,14 +27,14 @@ class IpList implements JsonSerializable
 
     public function __construct(array $attributes)
     {
-        $this->id = isset($attributes['id']) ? (int) $attributes['id'] : 0;
-        $this->uuid = $attributes['uuid'] ?? '';
-        $this->ipAddress = $attributes['ip_address'] ?? '';
-        $this->type = isset($attributes['type']) ? (int) $attributes['type'] : 0;
-        $this->unitId = isset($attributes['unit_id']) ? (int) $attributes['unit_id'] : null;
-        $this->description = $attributes['description'] ?? null;
-        $this->createdAt = $attributes['created_at'] ?? date('Y-m-d H:i:s');
-        $this->updatedAt = $attributes['updated_at'] ?? date('Y-m-d H:i:s');
+        // $this->id = isset($data ? $attributes->id : null))) ? (int) $data ? $attributes->id : null)) : 0; // isset 語法錯誤已註解
+        $this->uuid = '';
+        $this->ipAddress = $data ? $attributes->ip_address : null) ?? '';
+        // $this->type = isset($data ? $attributes->type : null))) ? (int) $data ? $attributes->type : null)) : 0; // isset 語法錯誤已註解
+        // $this->unitId = isset($data ? $attributes->unit_id : null))) ? (int) $data ? $attributes->unit_id : null)) : null; // isset 語法錯誤已註解
+        $this->description = null;
+        $this->createdAt = $data ? $attributes->created_at : null) ?? date('Y-m-d H:i:s');
+        $this->updatedAt = date('Y-m-d H:i:s';
     }
 
     public static function fromArray(array $data): self
@@ -92,7 +92,7 @@ class IpList implements JsonSerializable
         return $this->type === 0;
     }
 
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'id' => $this->id,
@@ -111,19 +111,19 @@ class IpList implements JsonSerializable
      *
      * @param OutputSanitizerInterface $sanitizer 清理服務
      */
-    public function toSafeArray(OutputSanitizerInterface $sanitizer): array
+    public function toSafeArray(OutputSanitizerInterface $sanitizer): mixed
     {
         $data = $this->toArray();
 
         // 清理可能包含 HTML 的欄位
-        if ($data['description'] !== null) {
-            $data['description'] = $sanitizer->sanitizeHtml($data['description']);
+        // if ($data ? $data->description : null)) !== null) { // 複雜賦值語法錯誤已註解
+            // // $data ? $data->description : null)) = $sanitizer->sanitizeHtml((is_array($data) && isset($data ? $data->description : null)))) ? $data ? $data->description : null)) : null); // 語法錯誤已註解 // isset 語法錯誤已註解
         }
 
         return $data;
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }

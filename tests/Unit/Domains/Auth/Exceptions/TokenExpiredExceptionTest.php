@@ -274,12 +274,12 @@ class TokenExpiredExceptionTest extends TestCase
 
         $context = $exception->getContext();
 
-        $this->assertSame(TokenExpiredException::ACCESS_TOKEN, $context['token_type']);
-        $this->assertSame($expiredAt, $context['expired_at']);
-        $this->assertSame($currentTime, $context['current_time']);
-        $this->assertSame(600, $context['expired_duration']);
-        $this->assertSame(date('Y-m-d H:i:s', $expiredAt), $context['expired_at_human']);
-        $this->assertSame(date('Y-m-d H:i:s', $currentTime), $context['current_time_human']);
+        $this->assertSame(TokenExpiredException::ACCESS_TOKEN, (is_array($context) ? $context['token_type'] : (is_object($context) ? $context->token_type : null)));
+        $this->assertSame($expiredAt, (is_array($context) ? $context['expired_at'] : (is_object($context) ? $context->expired_at : null)));
+        $this->assertSame($currentTime, (is_array($context) ? $context['current_time'] : (is_object($context) ? $context->current_time : null)));
+        $this->assertSame(600, (is_array($context) ? $context['expired_duration'] : (is_object($context) ? $context->expired_duration : null)));
+        $this->assertSame(date('Y-m-d H:i:s', $expiredAt), (is_array($context) ? $context['expired_at_human'] : (is_object($context) ? $context->expired_at_human : null)));
+        $this->assertSame(date('Y-m-d H:i:s', $currentTime), (is_array($context) ? $context['current_time_human'] : (is_object($context) ? $context->current_time_human : null)));
     }
 
     /**
@@ -295,8 +295,8 @@ class TokenExpiredExceptionTest extends TestCase
         );
 
         $context = $exception->getContext();
-        $this->assertEqualsWithDelta(time(), $context['current_time'], 2);
-        $this->assertEqualsWithDelta(300, $context['expired_duration'], 5);
+        $this->assertEqualsWithDelta(time(), (is_array($context) ? $context['current_time'] : (is_object($context) ? $context->current_time : null)), 2);
+        $this->assertEqualsWithDelta(300, (is_array($context) ? $context['expired_duration'] : (is_object($context) ? $context->expired_duration : null)), 5);
     }
 
     /**
@@ -345,8 +345,8 @@ class TokenExpiredExceptionTest extends TestCase
         $accessContext = $accessException->getContext();
         $refreshContext = $refreshException->getContext();
 
-        $this->assertEqualsWithDelta(time(), $accessContext['current_time'], 2);
-        $this->assertEqualsWithDelta(time(), $refreshContext['current_time'], 2);
+        $this->assertEqualsWithDelta(time(), (is_array($accessContext) ? $accessContext['current_time'] : (is_object($accessContext) ? $accessContext->current_time : null)), 2);
+        $this->assertEqualsWithDelta(time(), (is_array($refreshContext) ? $refreshContext['current_time'] : (is_object($refreshContext) ? $refreshContext->current_time : null)), 2);
     }
 
     /**
@@ -358,10 +358,10 @@ class TokenExpiredExceptionTest extends TestCase
 
         $details = $exception->getErrorDetails();
 
-        $this->assertSame('token_expired', $details['error_type']);
-        $this->assertSame(TokenExpiredException::ERROR_CODE, $details['code']);
+        $this->assertSame('token_expired', (is_array($details) ? $details['error_type'] : (is_object($details) ? $details->error_type : null)));
+        $this->assertSame(TokenExpiredException::ERROR_CODE, (is_array($details) ? $details['code'] : (is_object($details) ? $details->code : null)));
         $this->assertArrayHasKey('context', $details);
-        $this->assertSame(TokenExpiredException::ACCESS_TOKEN, $details['context']['token_type']);
+        $this->assertSame(TokenExpiredException::ACCESS_TOKEN, (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null))['token_type']);
     }
 
     /**

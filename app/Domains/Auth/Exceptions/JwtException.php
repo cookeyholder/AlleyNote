@@ -20,7 +20,7 @@ abstract class JwtException extends Exception
     /**
      * 錯誤上下文資訊.
      *
-     * @var array<string, mixed>
+     * @var array<mixed>
      */
     protected array $context = [];
 
@@ -50,9 +50,9 @@ abstract class JwtException extends Exception
     /**
      * 取得錯誤上下文資訊.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function getContext(): array
+    public function getContext(): mixed
     {
         return $this->context;
     }
@@ -93,9 +93,9 @@ abstract class JwtException extends Exception
     /**
      * 取得錯誤詳細資訊（用於 API 回應）.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function getErrorDetails(): array
+    public function getErrorDetails(): mixed
     {
         return [
             'error_type' => $this->getErrorType(),
@@ -130,9 +130,9 @@ abstract class JwtException extends Exception
     /**
      * 轉換為陣列格式（用於日誌記錄）.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'exception' => static::class,

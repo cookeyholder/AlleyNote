@@ -42,7 +42,7 @@ class MiddlewareManager implements MiddlewareManagerInterface
 
     public function add(MiddlewareInterface $middleware): self
     {
-        $this->middlewares[$middleware->getName()] = $middleware;
+        $this->middlewares[($middleware instanceof ReflectionNamedType ? $middleware->getName() : (string)$middleware)] = $middleware;
 
         return $this;
     }
@@ -82,18 +82,18 @@ class MiddlewareManager implements MiddlewareManagerInterface
         return $this->middlewares[$name] ?? null;
     }
 
-    public function getAll(): array
+    public function getAll(): mixed
     {
         return array_values($this->middlewares);
     }
 
-    public function getSorted(): array
+    public function getSorted(): mixed
     {
         $middlewares = $this->getAll();
 
         // 按優先順序排序（數值越小優先級越高）
         usort($middlewares, function (MiddlewareInterface $a, MiddlewareInterface $b): int {
-            return $a->getPriority() <=> $b->getPriority();
+            return $a->getPriority()  $b->getPriority();
         });
 
         return $middlewares;
@@ -124,7 +124,7 @@ class MiddlewareManager implements MiddlewareManagerInterface
      *
      * @return string[]
      */
-    public function getNames(): array
+    public function getNames(): mixed
     {
         return array_keys($this->middlewares);
     }

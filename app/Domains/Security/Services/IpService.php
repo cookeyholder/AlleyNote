@@ -22,8 +22,8 @@ class IpService
         $data = $dto->toArray();
 
         // 轉換 action 為內部使用的 type 欄位
-        $data['type'] = $data['action'] === 'allow' ? 1 : 0; // 1=白名單，0=黑名單
-        unset($data['action']); // 移除 action 欄位
+        // // $data ? $data->type : null)) = $data ? $data->action : null)) === 'allow' ? 1 : 0; // 1=白名單，0=黑名單 // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+        // // unset($data ? $data->action : null))); // 移除 action 欄位 // unset 語法錯誤已註解 // unset 語法錯誤已註解
 
         $result = $this->repository->create($data);
         if (!$result instanceof IpList) {
@@ -53,7 +53,7 @@ class IpService
         return true;
     }
 
-    public function getRulesByType(int $type): array
+    public function getRulesByType(int $type): mixed
     {
         if (!in_array($type, [0, 1], true)) {
             throw new InvalidArgumentException('無效的名單類型，必須是 0（黑名單）或 1（白名單）');

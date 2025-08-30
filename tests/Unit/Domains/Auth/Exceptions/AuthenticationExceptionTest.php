@@ -72,13 +72,13 @@ class AuthenticationExceptionTest extends TestCase
         );
 
         $context = $exception->getContext();
-        $this->assertSame('testuser', $context['username']);
-        $this->assertSame('192.168.1.100', $context['ip_address']);
-        $this->assertSame(123, $context['user_id']);
-        $this->assertSame(3, $context['attempt_count']);
-        $this->assertSame(AuthenticationException::REASON_TOO_MANY_ATTEMPTS, $context['reason']);
+        $this->assertSame('testuser', (is_array($context) ? $context['username'] : (is_object($context) ? $context->username : null)));
+        $this->assertSame('192.168.1.100', (is_array($context) ? $context['ip_address'] : (is_object($context) ? $context->ip_address : null)));
+        $this->assertSame(123, (is_array($context) ? $context['user_id'] : (is_object($context) ? $context->user_id : null)));
+        $this->assertSame(3, (is_array($context) ? $context['attempt_count'] : (is_object($context) ? $context->attempt_count : null)));
+        $this->assertSame(AuthenticationException::REASON_TOO_MANY_ATTEMPTS, (is_array($context) ? $context['reason'] : (is_object($context) ? $context->reason : null)));
         $this->assertArrayHasKey('attempt_id', $context);
-        $this->assertStringStartsWith('auth_', $context['attempt_id']);
+        $this->assertStringStartsWith('auth_', (is_array($context) ? $context['attempt_id'] : (is_object($context) ? $context->attempt_id : null)));
     }
 
     /**
@@ -338,7 +338,7 @@ class AuthenticationExceptionTest extends TestCase
         $this->assertSame($lockoutUntil, $exception->getLockoutUntil());
 
         $context = $exception->getContext();
-        $this->assertSame($reason, $context['lock_reason']);
+        $this->assertSame($reason, (is_array($context) ? $context['lock_reason'] : (is_object($context) ? $context->lock_reason : null)));
         $this->assertArrayHasKey('lockout_until_human', $context);
     }
 
@@ -357,7 +357,7 @@ class AuthenticationExceptionTest extends TestCase
         $this->assertSame($userId, $exception->getUserId());
 
         $context = $exception->getContext();
-        $this->assertSame($reason, $context['disable_reason']);
+        $this->assertSame($reason, (is_array($context) ? $context['disable_reason'] : (is_object($context) ? $context->disable_reason : null)));
     }
 
     /**
@@ -376,7 +376,7 @@ class AuthenticationExceptionTest extends TestCase
         $this->assertSame($userId, $exception->getUserId());
 
         $context = $exception->getContext();
-        $this->assertSame($email, $context['email']);
+        $this->assertSame($email, (is_array($context) ? $context['email'] : (is_object($context) ? $context->email : null)));
     }
 
     /**
@@ -433,7 +433,7 @@ class AuthenticationExceptionTest extends TestCase
         $this->assertSame($userId, $exception->getUserId());
 
         $context = $exception->getContext();
-        $this->assertSame($expiredAt, $context['expired_at']);
+        $this->assertSame($expiredAt, (is_array($context) ? $context['expired_at'] : (is_object($context) ? $context->expired_at : null)));
         $this->assertArrayHasKey('expired_at_human', $context);
     }
 
@@ -449,7 +449,7 @@ class AuthenticationExceptionTest extends TestCase
         $this->assertTrue($exception->isCredentialsRelated());
 
         $context = $exception->getContext();
-        $this->assertSame($missingFields, $context['missing_fields']);
+        $this->assertSame($missingFields, (is_array($context) ? $context['missing_fields'] : (is_object($context) ? $context->missing_fields : null)));
     }
 
     /**
@@ -466,8 +466,8 @@ class AuthenticationExceptionTest extends TestCase
         $this->assertTrue($exception->isTokenRelated());
 
         $context = $exception->getContext();
-        $this->assertSame($tokenType, $context['token_type']);
-        $this->assertSame($reason, $context['invalid_reason']);
+        $this->assertSame($tokenType, (is_array($context) ? $context['token_type'] : (is_object($context) ? $context->token_type : null)));
+        $this->assertSame($reason, (is_array($context) ? $context['invalid_reason'] : (is_object($context) ? $context->invalid_reason : null)));
     }
 
     /**
@@ -482,7 +482,7 @@ class AuthenticationExceptionTest extends TestCase
         $this->assertTrue($exception->isTokenRelated());
 
         $context = $exception->getContext();
-        $this->assertSame($resource, $context['required_for_resource']);
+        $this->assertSame($resource, (is_array($context) ? $context['required_for_resource'] : (is_object($context) ? $context->required_for_resource : null)));
     }
 
     /**
@@ -500,8 +500,8 @@ class AuthenticationExceptionTest extends TestCase
         $this->assertSame($userId, $exception->getUserId());
 
         $context = $exception->getContext();
-        $this->assertSame($requiredPrivilege, $context['required_privilege']);
-        $this->assertSame($userPrivileges, $context['user_privileges']);
+        $this->assertSame($requiredPrivilege, (is_array($context) ? $context['required_privilege'] : (is_object($context) ? $context->required_privilege : null)));
+        $this->assertSame($userPrivileges, (is_array($context) ? $context['user_privileges'] : (is_object($context) ? $context->user_privileges : null)));
     }
 
     /**
@@ -513,10 +513,10 @@ class AuthenticationExceptionTest extends TestCase
 
         $details = $exception->getErrorDetails();
 
-        $this->assertSame('authentication_failed', $details['error_type']);
-        $this->assertSame(AuthenticationException::ERROR_CODE, $details['code']);
+        $this->assertSame('authentication_failed', (is_array($details) ? $details['error_type'] : (is_object($details) ? $details->error_type : null)));
+        $this->assertSame(AuthenticationException::ERROR_CODE, (is_array($details) ? $details['code'] : (is_object($details) ? $details->code : null)));
         $this->assertArrayHasKey('context', $details);
-        $this->assertSame(AuthenticationException::REASON_INVALID_CREDENTIALS, $details['context']['reason']);
+        $this->assertSame(AuthenticationException::REASON_INVALID_CREDENTIALS, (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null))['reason']);
     }
 
     /**
@@ -557,15 +557,15 @@ class AuthenticationExceptionTest extends TestCase
         $this->assertFalse($exception->isRetryable());
 
         $context = $exception->getContext();
-        $this->assertSame('compromised_user', $context['username']);
-        $this->assertSame(987, $context['user_id']);
-        $this->assertSame(10, $context['attempt_count']);
+        $this->assertSame('compromised_user', (is_array($context) ? $context['username'] : (is_object($context) ? $context->username : null)));
+        $this->assertSame(987, (is_array($context) ? $context['user_id'] : (is_object($context) ? $context->user_id : null)));
+        $this->assertSame(10, (is_array($context) ? $context['attempt_count'] : (is_object($context) ? $context->attempt_count : null)));
         $this->assertArrayHasKey('geolocation', $context);
-        $this->assertSame('Unknown', $context['geolocation']['country']);
+        $this->assertSame('Unknown', (is_array($context) ? $context['geolocation'] : (is_object($context) ? $context->geolocation : null))['country']);
 
         $details = $exception->getErrorDetails();
-        $this->assertArrayHasKey('username', $details['context']);
-        $this->assertArrayHasKey('attempt_id', $details['context']);
-        $this->assertArrayHasKey('request_id', $details['context']);
+        $this->assertArrayHasKey('username', (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null)));
+        $this->assertArrayHasKey('attempt_id', (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null)));
+        $this->assertArrayHasKey('request_id', (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null)));
     }
 }

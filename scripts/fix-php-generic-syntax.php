@@ -16,9 +16,9 @@ class PhpGenericSyntaxFixer
 {
     private bool $dryRun = false;
     private int $fixCount = 0;
-    private array $fixedFiles = [];
+    private array<mixed> $fixedFiles = [];
 
-    public function __construct(array $args)
+    public function __construct(array<mixed> $args)
     {
         $this->dryRun = in_array('--dry-run', $args);
     }
@@ -37,7 +37,7 @@ class PhpGenericSyntaxFixer
         $this->printReport();
     }
 
-    private function findPhpFiles(): array
+    private function findPhpFiles(): array<mixed>
     {
         $files = [];
         $directories = ['app/', 'config/', 'tests/'];
@@ -79,30 +79,30 @@ class PhpGenericSyntaxFixer
         $fixCount = 0;
 
         // 修復模式 1: 方法參數中的泛型語法錯誤
-        // 例如: function method(array<string, mixed> $param) => function method(array $param)
+        // 例如: function method(array<mixed> $param) => function method(array<mixed> $param)
         $patterns = [
             // 匹配方法參數中的泛型陣列類型
-            '/(\b(?:public|private|protected)\s+function\s+\w+\s*\([^)]*?)array<[^>]+>(\s+\$\w+[^)]*)\)/' => function ($matches) use (&$fixCount) {
+            '/(\b(?:public|private|protected)\s+function\s+\w+\s*\([^)]*?)array<mixed>]+>(\s+\$\w+[^)]*)\)/' => function ($matches) use (&$fixCount) {
                 $fixCount++;
-                return $matches[1] . 'array' . $matches[2] . ')';
+                return $matches[1] . 'array<mixed>' . $matches[2] . ')';
             },
 
             // 匹配普通函數參數中的泛型陣列類型
-            '/(\bfunction\s+\w+\s*\([^)]*?)array<[^>]+>(\s+\$\w+[^)]*)\)/' => function ($matches) use (&$fixCount) {
+            '/(\bfunction\s+\w+\s*\([^)]*?)array<mixed>]+>(\s+\$\w+[^)]*)\)/' => function ($matches) use (&$fixCount) {
                 $fixCount++;
-                return $matches[1] . 'array' . $matches[2] . ')';
+                return $matches[1] . 'array<mixed>' . $matches[2] . ')';
             },
 
             // 修復返回類型中的泛型語法
-            '/(\)\s*:\s*)array<[^>]+>(\s*\{)/' => function ($matches) use (&$fixCount) {
+            '/(\)\s*:\s*)array<mixed>]+>(\s*\{)/' => function ($matches) use (&$fixCount) {
                 $fixCount++;
-                return $matches[1] . 'array' . $matches[2];
+                return $matches[1] . 'array<mixed>' . $matches[2];
             },
 
             // 修復建構子參數中的泛型語法
-            '/(\b__construct\s*\([^)]*?)array<[^>]+>(\s+\$\w+[^)]*)\)/' => function ($matches) use (&$fixCount) {
+            '/(\b__construct\s*\([^)]*?)array<mixed>]+>(\s+\$\w+[^)]*)\)/' => function ($matches) use (&$fixCount) {
                 $fixCount++;
-                return $matches[1] . 'array' . $matches[2] . ')';
+                return $matches[1] . 'array<mixed>' . $matches[2] . ')';
             },
         ];
 
@@ -138,8 +138,8 @@ class PhpGenericSyntaxFixer
         }
 
         echo "\n📝 重要提醒:\n";
-        echo "- PHP 只支援在 PHPDoc 註解中使用泛型語法 (如 @param array<string, mixed> \$param)\n";
-        echo "- 實際的類型聲明中不能使用泛型語法 (如 array<string, mixed> \$param)\n";
+        echo "- PHP 只支援在 PHPDoc 註解中使用泛型語法 (如 @param array<mixed> \$param)\n";
+        echo "- 實際的類型聲明中不能使用泛型語法 (如 array<mixed> \$param)\n";
         echo "- 修復工具已將錯誤的泛型語法轉換為正確的 PHP 語法\n";
     }
 }

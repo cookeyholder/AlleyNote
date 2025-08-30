@@ -107,9 +107,9 @@ class PostActivityLoggingTest extends TestCase
                 'post', // target_type
                 '123', // target_id
                 Mockery::on(function ($metadata) {
-                    return isset($metadata['title'])
-                        && $metadata['title'] === 'Test Post'
-                        && isset($metadata['ip_address']);
+                    return isset((is_array($metadata) ? $metadata['title'] : (is_object($metadata) ? $metadata->title : null)))
+                        && (is_array($metadata) ? $metadata['title'] : (is_object($metadata) ? $metadata->title : null)) === 'Test Post'
+                        && isset((is_array($metadata) ? $metadata['ip_address'] : (is_object($metadata) ? $metadata->ip_address : null)));
                 }),
             )
             ->andReturn(true);
@@ -151,7 +151,7 @@ class PostActivityLoggingTest extends TestCase
                 1, // user_id
                 'Invalid JSON format', // reason
                 Mockery::on(function ($metadata) {
-                    return isset($metadata['ip_address']);
+                    return isset((is_array($metadata) ? $metadata['ip_address'] : (is_object($metadata) ? $metadata->ip_address : null)));
                 }),
             )
             ->andReturn(true);
@@ -214,9 +214,9 @@ class PostActivityLoggingTest extends TestCase
                 'post', // target_type
                 '123', // target_id
                 Mockery::on(function ($metadata) {
-                    return isset($metadata['title'])
-                        && $metadata['title'] === 'Test Post'
-                        && isset($metadata['ip_address']);
+                    return isset((is_array($metadata) ? $metadata['title'] : (is_object($metadata) ? $metadata->title : null)))
+                        && (is_array($metadata) ? $metadata['title'] : (is_object($metadata) ? $metadata->title : null)) === 'Test Post'
+                        && isset((is_array($metadata) ? $metadata['ip_address'] : (is_object($metadata) ? $metadata->ip_address : null)));
                 }),
             )
             ->andReturn(true);
@@ -286,10 +286,10 @@ class PostActivityLoggingTest extends TestCase
                 'post', // target_type
                 '123', // target_id
                 Mockery::on(function ($metadata) {
-                    return isset($metadata['title'])
-                        && $metadata['title'] === 'Test Post'
-                        && $metadata['pinned'] === true
-                        && isset($metadata['ip_address']);
+                    return isset((is_array($metadata) ? $metadata['title'] : (is_object($metadata) ? $metadata->title : null)))
+                        && (is_array($metadata) ? $metadata['title'] : (is_object($metadata) ? $metadata->title : null)) === 'Test Post'
+                        && (is_array($metadata) ? $metadata['pinned'] : (is_object($metadata) ? $metadata->pinned : null)) === true
+                        && isset((is_array($metadata) ? $metadata['ip_address'] : (is_object($metadata) ? $metadata->ip_address : null)));
                 }),
             )
             ->andReturn(true);

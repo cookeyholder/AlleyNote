@@ -8,7 +8,7 @@
 class SpecificPhpstanFixer
 {
     private int $fixCount = 0;
-    private array $processedFiles = [];
+    private array<mixed> $processedFiles = [];
 
     public function run(): void
     {
@@ -50,16 +50,16 @@ class SpecificPhpstanFixer
 
                 // 修復 headers 屬性類型
                 $classBody = preg_replace(
-                    '/private array \$headers/',
-                    'private array $headers',
+                    '/private array<mixed> \$headers/',
+                    'private array<mixed> $headers',
                     $classBody
                 );
 
                 // 添加 headers 類型註解
-                if (!preg_match('/@var\s+array<string,\s*string>\s+\$headers/', $classBody)) {
+                if (!preg_match('/@var\s+array<mixed>\s+\$headers/', $classBody)) {
                     $classBody = preg_replace(
-                        '/(private array \$headers[^;]*;)/',
-                        "/** @var array<string, string> */\n    $1",
+                        '/(private array<mixed> \$headers[^;]*;)/',
+                        "/** @var array<mixed> */\n    $1",
                         $classBody
                     );
                 }
@@ -139,18 +139,18 @@ class SpecificPhpstanFixer
             $content = preg_replace_callback($pattern, $callback, $content);
         }
 
-        // 修復方法參數的 array 類型
+        // 修復方法參數的 array<mixed> 類型
         $content = preg_replace(
-            '/public function download\(array \$args\)/',
-            'public function download(array $args): ResponseInterface',
+            '/public function download\(array<mixed> \$args\)/',
+            'public function download(array<mixed> $args): ResponseInterface',
             $content
         );
 
-        // 添加 array 參數的類型註解
-        if (!preg_match('/@param\s+array<string,\s*mixed>\s+\$args/', $content)) {
+        // 添加 array<mixed> 參數的類型註解
+        if (!preg_match('/@param\s+array<mixed>\s+\$args/', $content)) {
             $content = preg_replace(
-                '/(\/\*\*[^}]*\*\/\s*public function download)\(array \$args\)/',
-                "$1(array \$args)",
+                '/(\/\*\*[^}]*\*\/\s*public function download)\(array<mixed> \$args\)/',
+                "$1(array<mixed> \$args)",
                 $content
             );
         }
@@ -173,18 +173,18 @@ class SpecificPhpstanFixer
         $content = file_get_contents($filePath);
         $originalContent = $content;
 
-        // 修復 array|object|null 轉換為 array<string, mixed> 的問題
+        // 修復 array<mixed>|object|null 轉換為 array<mixed> 的問題
         $patterns = [
             // RegisterUserDTO 構造函數呼叫
             '/new RegisterUserDTO\(\s*([^,]+),\s*(\$[a-zA-Z_][a-zA-Z0-9_]*)\s*\)/' => function ($matches) {
                 $secondParam = $matches[2];
-                return "new RegisterUserDTO({$matches[1]}, (array) {$secondParam})";
+                return "new RegisterUserDTO({$matches[1]}, (array<mixed>) {$secondParam})";
             },
 
             // AuthService::login() 呼叫
             '/(\$[a-zA-Z_][a-zA-Z0-9_]*->login\()([\$a-zA-Z_][a-zA-Z0-9_]*)(\))/' => function ($matches) {
                 $param = $matches[2];
-                return "{$matches[1]}(array) {$param}{$matches[3]}";
+                return "{$matches[1]}(array<mixed>) {$param}{$matches[3]}";
             }
         ];
 
@@ -210,31 +210,31 @@ class SpecificPhpstanFixer
         $content = file_get_contents($filePath);
         $originalContent = $content;
 
-        // 修復方法參數和返回類型的 array 規範
+        // 修復方法參數和返回類型的 array<mixed> 規範
         $patterns = [
             // create 方法
-            '/public function create\(array \$request\): array/' => 'public function create(array $request): array',
+            '/public function create\(array<mixed> \$request\): array<mixed>/' => 'public function create(array<mixed> $request): array<mixed>',
 
             // getByType 方法
-            '/public function getByType\([^)]*\): array/' => function ($matches) {
-                return str_replace(': array', ': array', $matches[0]);
+            '/public function getByType\([^)]*\): array<mixed>/' => function ($matches) {
+                return str_replace(': array<mixed>', ': array<mixed>', $matches[0]);
             }
         ];
 
         // 添加方法參數的詳細類型註解
-        if (!preg_match('/@param\s+array<string,\s*mixed>\s+\$request.*create/', $content)) {
+        if (!preg_match('/@param\s+array<mixed>\s+\$request.*create/', $content)) {
             $content = preg_replace(
-                '/(\/\*\*[^}]*?)(\*\/\s*public function create\(array \$request\))/s',
-                "$1     * @param array<string, mixed> \$request\n     $2",
+                '/(\/\*\*[^}]*?)(\*\/\s*public function create\(array<mixed> \$request\))/s',
+                "$1     * @param array<mixed> \$request\n     $2",
                 $content
             );
         }
 
         // 添加返回類型註解
-        if (!preg_match('/@return\s+array<string,\s*mixed>.*create/', $content)) {
+        if (!preg_match('/@return\s+array<mixed>.*create/', $content)) {
             $content = preg_replace(
-                '/(\/\*\*[^}]*?)(\*\/\s*public function create\(array \$request\))/s',
-                "$1     * @return array<string, mixed>\n     $2",
+                '/(\/\*\*[^}]*?)(\*\/\s*public function create\(array<mixed> \$request\))/s',
+                "$1     * @return array<mixed>\n     $2",
                 $content
             );
         }

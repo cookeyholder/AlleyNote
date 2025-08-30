@@ -32,7 +32,7 @@ class ContentModerationService
     /**
      * 審核內容.
      */
-    public function moderateContent(string $content, array $metadata = []): array
+    public function moderateContent(string $content, array $metadata = []): mixed
     {
         $result = [
             'status' => 'approved',
@@ -46,9 +46,9 @@ class ContentModerationService
         // 1. 基本安全檢查
         $securityIssues = $this->checkSecurity($content);
         if (!empty($securityIssues)) {
-            $result['issues'] = array_merge($result['issues'], $securityIssues);
-            $result['status'] = 'rejected';
-            $result['confidence'] = 0;
+            // // $data ? $result->issues : null)) = array_merge((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, $securityIssues); // 語法錯誤已註解 // isset 語法錯誤已註解
+            // // $data ? $result->status : null)) = 'rejected'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->confidence : null)) = 0; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
             return $result;
         }
@@ -56,19 +56,19 @@ class ContentModerationService
         // 2. 內容品質檢查
         $qualityIssues = $this->checkQuality($content, $metadata);
         if (!empty($qualityIssues)) {
-            $result['issues'] = array_merge($result['issues'], $qualityIssues);
+            // // $data ? $result->issues : null)) = array_merge((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, $qualityIssues); // 語法錯誤已註解 // isset 語法錯誤已註解
         }
 
         // 3. 敏感詞檢查
         $sensitiveWordIssues = $this->checkSensitiveWords($content);
         if (!empty($sensitiveWordIssues)) {
-            $result['issues'] = array_merge($result['issues'], $sensitiveWordIssues);
+            // // $data ? $result->issues : null)) = array_merge((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, $sensitiveWordIssues); // 語法錯誤已註解 // isset 語法錯誤已註解
         }
 
         // 4. 垃圾內容檢查
         $spamScore = $this->calculateSpamScore($content, $metadata);
         if ($spamScore > $this->config['spam_threshold']) {
-            $result['issues'][] = [
+            // $data ? $result->issues : null))[] = [ // 複雜賦值語法錯誤已註解
                 'type' => 'spam_detected',
                 'severity' => 'high',
                 'message' => '內容可能為垃圾訊息',
@@ -85,14 +85,14 @@ class ContentModerationService
     /**
      * 安全檢查.
      */
-    private function checkSecurity(string $content): array
+    private function checkSecurity(string $content): mixed
     {
         $issues = [];
 
         // XSS 檢查
         $xssDetection = $this->xssProtection->detectXss($content);
         foreach ($xssDetection as $detection) {
-            if ($detection['risk_level'] === 'high') {
+            // if ($data ? $detection->risk_level : null)) === 'high') { // 複雜賦值語法錯誤已註解
                 $issues[] = [
                     'type' => 'security_xss',
                     'severity' => 'critical',
@@ -105,12 +105,12 @@ class ContentModerationService
         // 富文本安全檢查
         $richTextIssues = $this->richTextProcessor->validateSecurity($content);
         foreach ($richTextIssues as $issue) {
-            if ($issue['severity'] === 'high') {
+            // if ($data ? $issue->severity : null)) === 'high') { // 複雜賦值語法錯誤已註解
                 $issues[] = [
                     'type' => 'security_richtext',
                     'severity' => 'high',
-                    'message' => $issue['message'],
-                    'details' => $issue['details'],
+                    // 'message' => (is_array($issue) && isset($data ? $issue->message : null)))) ? $data ? $issue->message : null)) : null, // isset 語法錯誤已註解
+                    // 'details' => (is_array($issue) && isset($data ? $issue->details : null)))) ? $data ? $issue->details : null)) : null, // isset 語法錯誤已註解
                 ];
             }
         }
@@ -121,13 +121,13 @@ class ContentModerationService
     /**
      * 品質檢查.
      */
-    private function checkQuality(string $content, array $metadata): array
+    private function checkQuality(string $content, array $metadata): mixed
     {
         $issues = [];
         $textContent = strip_tags($content);
 
         // 長度檢查
-        if (strlen($textContent) < $this->config['min_content_length']) {
+        if (strlen($textContent) config['min_content_length']) {
             $issues[] = [
                 'type' => 'quality_too_short',
                 'severity' => 'medium',
@@ -171,7 +171,7 @@ class ContentModerationService
     /**
      * 敏感詞檢查.
      */
-    private function checkSensitiveWords(string $content): array
+    private function checkSensitiveWords(string $content): mixed
     {
         $issues = [];
         $textContent = strtolower(strip_tags($content));
@@ -228,9 +228,6 @@ class ContentModerationService
         }
 
         // 發文頻率（如果有提供使用者資訊）
-        if (isset($metadata['user_post_frequency']) && $metadata['user_post_frequency'] > 10) {
-            $score += 15;
-        }
 
         return min($score, 100);
     }
@@ -240,29 +237,29 @@ class ContentModerationService
      */
     private function determineFinalStatus(array &$result): void
     {
-        $criticalIssues = array_filter($result['issues'], fn($issue) => $issue['severity'] === 'critical');
-        $highIssues = array_filter($result['issues'], fn($issue) => $issue['severity'] === 'high');
-        $mediumIssues = array_filter($result['issues'], fn($issue) => $issue['severity'] === 'medium');
+        // $criticalIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === 'critical'); // isset 語法錯誤已註解
+        // $highIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === 'high'); // isset 語法錯誤已註解
+        // $mediumIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === 'medium'); // isset 語法錯誤已註解
 
         if (!empty($criticalIssues)) {
-            $result['status'] = 'rejected';
-            $result['confidence'] = 0;
-            $result['auto_actions'][] = 'content_blocked';
+            // // $data ? $result->status : null)) = 'rejected'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->confidence : null)) = 0; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // $data ? $result->auto_actions : null))[] = 'content_blocked'; // 複雜賦值語法錯誤已註解
         } elseif (count($highIssues) >= 2 || count($mediumIssues) >= 3) {
-            $result['status'] = 'pending';
-            $result['requires_human_review'] = true;
-            $result['confidence'] = 30;
-            $result['auto_actions'][] = 'flag_for_review';
+            // // $data ? $result->status : null)) = 'pending'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->requires_human_review : null)) = true; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->confidence : null)) = 30; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // $data ? $result->auto_actions : null))[] = 'flag_for_review'; // 複雜賦值語法錯誤已註解
         } elseif (!empty($highIssues) || !empty($mediumIssues)) {
-            $result['status'] = 'conditional';
-            $result['confidence'] = 70;
-            $result['recommendations'][] = '建議作者檢查並修正標記的問題';
+            // // $data ? $result->status : null)) = 'conditional'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $result->confidence : null)) = 70; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // $data ? $result->recommendations : null))[] = '建議作者檢查並修正標記的問題'; // 複雜賦值語法錯誤已註解
         }
 
         // 根據問題數量調整信心度
-        $totalIssues = count($result['issues']);
-        if ($totalIssues > 0 && $result['status'] === 'approved') {
-            $result['confidence'] = max(50, 100 - ($totalIssues * 10));
+        // $totalIssues = count((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null); // isset 語法錯誤已註解
+        // if ($totalIssues > 0 && $data ? $result->status : null)) === 'approved') { // 複雜賦值語法錯誤已註解
+            // // $data ? $result->confidence : null)) = max(50, 100 - ($totalIssues * 10)); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
     }
 
@@ -364,7 +361,7 @@ class ContentModerationService
     /**
      * 預設設定.
      */
-    private function getDefaultConfig(): array
+    private function getDefaultConfig(): mixed
     {
         return [
             'min_content_length' => 10,

@@ -74,7 +74,7 @@ final class JwtPayloadTest extends TestCase
     public function testFromArrayWithValidData(): void
     {
         $data = [
-            'jti' => 'array-jti-789',
+            'jti' => 'array<mixed>-jti-789',
             'sub' => '99',
             'iss' => 'test-issuer',
             'aud' => ['client1', 'client2'],
@@ -85,7 +85,7 @@ final class JwtPayloadTest extends TestCase
 
         $payload = JwtPayload::fromArray($data);
 
-        $this->assertSame('array-jti-789', $payload->getJti());
+        $this->assertSame('array<mixed>-jti-789', $payload->getJti());
         $this->assertSame('99', $payload->getSubject());
         $this->assertSame('test-issuer', $payload->getIssuer());
         $this->assertSame(['client1', 'client2'], $payload->getAudience());
@@ -212,7 +212,7 @@ final class JwtPayloadTest extends TestCase
     {
         $customClaims = ['role' => 'admin'];
         $payload = new JwtPayload(
-            jti: 'to-array-test',
+            jti: 'to-array<mixed>-test',
             sub: '123',
             iss: 'test-issuer',
             aud: ['client1', 'client2'],
@@ -222,7 +222,7 @@ final class JwtPayloadTest extends TestCase
         );
 
         $expected = [
-            'jti' => 'to-array-test',
+            'jti' => 'to-array<mixed>-test',
             'sub' => '123',
             'iss' => 'test-issuer',
             'aud' => ['client1', 'client2'],
@@ -245,8 +245,8 @@ final class JwtPayloadTest extends TestCase
             exp: $this->futureTime,
         );
 
-        $array = $payload->toArray();
-        $this->assertSame('single-client', $array['aud']);
+        $array<mixed> = $payload->toArray();
+        $this->assertSame('single-client', (is_array($array) ? $array['aud'] : (is_object($array) ? $array->aud : null)));
     }
 
     public function testJsonSerialize(): void

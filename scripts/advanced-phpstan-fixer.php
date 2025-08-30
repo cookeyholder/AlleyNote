@@ -5,25 +5,25 @@
  * 基於錯誤分析報告的智能型修復腳本
  * 
  * 使用方式:
- * php scripts/advanced-phpstan-fixer.php [--dry-run] [--type=stream|null-coalescing|array-types|all]
+ * php scripts/advanced-phpstan-fixer.php [--dry-run] [--type=stream|null-coalescing|array<mixed>-types|all]
  */
 
 class AdvancedPhpstanFixer
 {
     private bool $dryRun = false;
     private string $fixType = 'all';
-    private array $stats = [
+    private array<mixed> $stats = [
         'files_processed' => 0,
         'fixes_applied' => 0,
         'errors_prevented' => 0
     ];
 
-    public function __construct(array $args)
+    public function __construct(array<mixed> $args)
     {
         $this->parseArguments($args);
     }
 
-    private function parseArguments(array $args): void
+    private function parseArguments(array<mixed> $args): void
     {
         foreach ($args as $arg) {
             if ($arg === '--dry-run') {
@@ -49,7 +49,7 @@ class AdvancedPhpstanFixer
         $this->printStats();
     }
 
-    private function findPhpFiles(): array
+    private function findPhpFiles(): array<mixed>
     {
         $files = [];
         $directories = ['app/', 'config/', 'tests/'];
@@ -80,20 +80,20 @@ class AdvancedPhpstanFixer
         // 應用各種修復策略
         if ($this->fixType === 'all' || $this->fixType === 'stream') {
             $result = $this->fixStreamWriteIssues($modifiedContent);
-            $modifiedContent = $result['content'];
-            $fixesInThisFile += $result['fixes'];
+            $modifiedContent = (is_array($result) ? $result['content'] : (is_object($result) ? $result->content : null));
+            $fixesInThisFile += (is_array($result) ? $result['fixes'] : (is_object($result) ? $result->fixes : null));
         }
 
         if ($this->fixType === 'all' || $this->fixType === 'null-coalescing') {
             $result = $this->fixUnnecessaryNullCoalescing($modifiedContent);
-            $modifiedContent = $result['content'];
-            $fixesInThisFile += $result['fixes'];
+            $modifiedContent = (is_array($result) ? $result['content'] : (is_object($result) ? $result->content : null));
+            $fixesInThisFile += (is_array($result) ? $result['fixes'] : (is_object($result) ? $result->fixes : null));
         }
 
-        if ($this->fixType === 'all' || $this->fixType === 'array-types') {
+        if ($this->fixType === 'all' || $this->fixType === 'array<mixed>-types') {
             $result = $this->fixMissingArrayTypes($modifiedContent);
-            $modifiedContent = $result['content'];
-            $fixesInThisFile += $result['fixes'];
+            $modifiedContent = (is_array($result) ? $result['content'] : (is_object($result) ? $result->content : null));
+            $fixesInThisFile += (is_array($result) ? $result['fixes'] : (is_object($result) ? $result->fixes : null));
         }
 
         // 如果有變更且不是預覽模式，則寫入檔案
@@ -113,7 +113,7 @@ class AdvancedPhpstanFixer
      * 修復 StreamInterface::write() 類型問題
      * 處理 json_encode() 和其他可能返回 false 的函數
      */
-    private function fixStreamWriteIssues(string $content): array
+    private function fixStreamWriteIssues(string $content): array<mixed>
     {
         $fixes = 0;
 
@@ -161,7 +161,7 @@ class AdvancedPhpstanFixer
      * 移除不必要的 null coalescing 運算子
      * 分析上下文判斷變數是否真的可能為 null
      */
-    private function fixUnnecessaryNullCoalescing(string $content): array
+    private function fixUnnecessaryNullCoalescing(string $content): array<mixed>
     {
         $fixes = 0;
 
@@ -214,13 +214,13 @@ class AdvancedPhpstanFixer
      * 修復缺失的陣列類型規範
      * 智能推斷正確的泛型類型
      */
-    private function fixMissingArrayTypes(string $content): array
+    private function fixMissingArrayTypes(string $content): array<mixed>
     {
         $fixes = 0;
 
         // 根據上下文推斷陣列類型
         $patterns = [
-            // 方法參數中的 array 類型
+            // 方法參數中的 array<mixed> 類型
             '/(public|private|protected)\s+function\s+(\w+)\s*\([^)]*\barray\s+\$(\w+)[^)]*\)\s*:\s*/' => function ($matches) use (&$fixes) {
                 $methodName = $matches[2];
                 $paramName = $matches[3];
@@ -230,20 +230,20 @@ class AdvancedPhpstanFixer
 
                 if ($inferredType) {
                     $fixes++;
-                    return str_replace('array $' . $paramName, $inferredType . ' $' . $paramName, $matches[0]);
+                    return str_replace('array<mixed> $' . $paramName, $inferredType . ' $' . $paramName, $matches[0]);
                 }
 
                 return $matches[0];
             },
 
-            // 返回類型中的 array
-            '/:\s*array\s*$/' => function ($matches) use (&$fixes) {
+            // 返回類型中的 array<mixed>
+            '/:\s*array<mixed>\s*$/' => function ($matches) use (&$fixes) {
                 $fixes++;
-                return ': array<string, mixed>';
+                return ': array<mixed>';
             },
 
-            // @param 註解中的 array
-            '/@param\s+array\s+\$(\w+)/' => function ($matches) use (&$fixes) {
+            // @param 註解中的 array<mixed>
+            '/@param\s+array<mixed>\s+\$(\w+)/' => function ($matches) use (&$fixes) {
                 $paramName = $matches[1];
                 $inferredType = $this->inferArrayTypeFromParamName($paramName);
 
@@ -268,26 +268,26 @@ class AdvancedPhpstanFixer
     {
         // Headers 相關
         if (str_contains($paramName, 'header') || str_contains($methodName, 'header')) {
-            return 'array<string, array<string>>';
+            return 'array<mixed>>';
         }
 
         // Config 或 options 相關
         if (str_contains($paramName, 'config') || str_contains($paramName, 'option') || str_contains($paramName, 'setting')) {
-            return 'array<string, mixed>';
+            return 'array<mixed>';
         }
 
         // Data 或 payload 相關
         if (str_contains($paramName, 'data') || str_contains($paramName, 'payload') || str_contains($paramName, 'body')) {
-            return 'array<string, mixed>';
+            return 'array<mixed>';
         }
 
         // Arguments 相關
         if (str_contains($paramName, 'arg') || str_contains($paramName, 'param')) {
-            return 'array<string, string>';
+            return 'array<mixed>';
         }
 
         // 預設為混合類型
-        return 'array<string, mixed>';
+        return 'array<mixed>';
     }
 
     /**
@@ -296,16 +296,16 @@ class AdvancedPhpstanFixer
     private function inferArrayTypeFromParamName(string $paramName): string
     {
         $typeMap = [
-            'headers' => 'array<string, array<string>>',
-            'config' => 'array<string, mixed>',
-            'options' => 'array<string, mixed>',
-            'settings' => 'array<string, mixed>',
-            'data' => 'array<string, mixed>',
-            'payload' => 'array<string, mixed>',
-            'args' => 'array<string, string>',
-            'params' => 'array<string, string>',
-            'criteria' => 'array<string, mixed>',
-            'filters' => 'array<string, mixed>',
+            'headers' => 'array<mixed>>',
+            'config' => 'array<mixed>',
+            'options' => 'array<mixed>',
+            'settings' => 'array<mixed>',
+            'data' => 'array<mixed>',
+            'payload' => 'array<mixed>',
+            'args' => 'array<mixed>',
+            'params' => 'array<mixed>',
+            'criteria' => 'array<mixed>',
+            'filters' => 'array<mixed>',
         ];
 
         foreach ($typeMap as $keyword => $type) {
@@ -314,7 +314,7 @@ class AdvancedPhpstanFixer
             }
         }
 
-        return 'array<string, mixed>';
+        return 'array<mixed>';
     }
 
     private function printStats(): void

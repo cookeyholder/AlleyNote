@@ -80,9 +80,9 @@ class ActivityLogController extends BaseController
             }
 
             $dto = new CreateActivityLogDTO(
-                actionType: ActivityType::from($data["action_type"] ?? ""),
-                userId: (int) ($data["user_id"] ?? 0),
-                metadata: $data["metadata"] ?? [],
+                actionType: ActivityType::from((is_array($data) ? $data['action_type'] : (is_object($data) ? $data->action_type : null)) ?? ""),
+                userId: (int) ((is_array($data) ? $data['user_id'] : (is_object($data) ? $data->user_id : null)) ?? 0),
+                metadata: (is_array($data) ? $data['metadata'] : (is_object($data) ? $data->metadata : null)) ?? [],
             );
 
             $result = $this->loggingService->log($dto);
@@ -124,8 +124,8 @@ class ActivityLogController extends BaseController
     {
         try {
             $params = $request->getQueryParams();
-            $limit = (int) ($params["limit"] ?? 20);
-            $offset = (int) ($params["offset"] ?? 0);
+            $limit = (int) ((is_array($params) ? $params['limit'] : (is_object($params) ? $params->limit : null)) ?? 20);
+            $offset = (int) ((is_array($params) ? $params['offset'] : (is_object($params) ? $params->offset : null)) ?? 0);
 
             $logs = $this->repository->findAll($limit, $offset);
 

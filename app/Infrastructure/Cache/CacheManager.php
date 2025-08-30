@@ -115,7 +115,7 @@ class CacheManager
     /**
      * 取得或設定多個快取值
      */
-    public function many(array $keys): array
+    public function many(array $keys): mixed
     {
         $result = [];
         foreach ($keys as $key) {
@@ -181,7 +181,7 @@ class CacheManager
     /**
      * 取得快取統計資訊.
      */
-    public function getStats(): array
+    public function getStats(): mixed
     {
         $now = time();
         $expired = 0;

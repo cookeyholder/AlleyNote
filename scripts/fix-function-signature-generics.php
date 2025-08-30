@@ -5,7 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 /**
  * 修復函數簽名中錯誤的泛型類型標註
- * PHP 不支援在函數簽名中使用 array<string, mixed> 這種語法
+ * PHP 不支援在函數簽名中使用 array<mixed> 這種語法
  * 這些只能在 docblock 中使用
  */
 
@@ -22,39 +22,39 @@ foreach ($directories as $dir) {
     if (!is_dir($fullDir)) {
         continue;
     }
-    
+
     $iterator = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($fullDir, RecursiveDirectoryIterator::SKIP_DOTS)
     );
-    
+
     foreach ($iterator as $file) {
         if ($file->getExtension() !== 'php') {
             continue;
         }
-        
+
         $filePath = $file->getPathname();
         $content = file_get_contents($filePath);
         if ($content === false) {
             continue;
         }
-        
+
         $originalContent = $content;
         $fixesInFile = 0;
-        
+
         // 修復各種函數簽名中的泛型類型標註
         $patterns = [
-            // array<string, mixed> -> array
-            '/\): array<string, mixed>/' => '): array',
-            '/\): array<int, mixed>/' => '): array',
-            '/\): array<string, string>/' => '): array',
-            '/\): array<int, string>/' => '): array',
+            // array<mixed> -> array<mixed>
+            '/\): array<mixed>/' => '): array<mixed>',
+            '/\): array<mixed>/' => '): array<mixed>',
+            '/\): array<mixed>/' => '): array<mixed>',
+            '/\): array<mixed>/' => '): array<mixed>',
             // 同時處理參數類型
-            '/\(([^)]*array)<string, mixed>/' => '($1',
-            '/\(([^)]*array)<int, mixed>/' => '($1',
-            '/\(([^)]*array)<string, string>/' => '($1',
-            '/\(([^)]*array)<int, string>/' => '($1',
+            '/\(([^)]*array<mixed>)<string, mixed>/' => '($1',
+            '/\(([^)]*array<mixed>)<int, mixed>/' => '($1',
+            '/\(([^)]*array<mixed>)<string, string>/' => '($1',
+            '/\(([^)]*array<mixed>)<int, string>/' => '($1',
         ];
-        
+
         foreach ($patterns as $pattern => $replacement) {
             $newContent = preg_replace($pattern, $replacement, $content);
             if ($newContent !== null && $newContent !== $content) {
@@ -65,12 +65,12 @@ foreach ($directories as $dir) {
                 $content = $newContent;
             }
         }
-        
+
         if ($content !== $originalContent) {
             file_put_contents($filePath, $content);
             $totalFiles++;
             $totalFixes += $fixesInFile;
-            
+
             $relativePath = str_replace($baseDir . '/', '', $filePath);
             echo "處理檔案: {$relativePath}\n";
             echo "  修復了 {$fixesInFile} 個函數簽名泛型錯誤\n";

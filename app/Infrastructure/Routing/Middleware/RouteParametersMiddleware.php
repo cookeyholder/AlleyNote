@@ -18,7 +18,7 @@ class RouteParametersMiddleware extends AbstractMiddleware
     /**
      * 路由參數.
      *
-     * @var array<string, mixed>
+     * @var array<mixed>
      */
     private array $parameters = [];
 
@@ -77,9 +77,9 @@ class RouteParametersMiddleware extends AbstractMiddleware
     /**
      * 取得路由參數.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function getParameters(): array
+    public function getParameters(): mixed
     {
         return $this->parameters;
     }

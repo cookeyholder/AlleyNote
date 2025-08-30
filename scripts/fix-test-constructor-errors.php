@@ -9,7 +9,7 @@ declare(strict_types=1);
 class TestConstructorFixer
 {
     private int $fixCount = 0;
-    private array $processedFiles = [];
+    private array<mixed> $processedFiles = [];
 
     public function run(): void
     {

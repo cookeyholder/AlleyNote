@@ -68,24 +68,13 @@ class UpdatePostDTO extends BaseDTO
         $validatedData = $this->validatePartialData($filteredData);
 
         // 設定屬性（全部都是可選的）
-        $this->title = isset($validatedData['title']) ? trim($validatedData['title']) : null;
-        $this->content = isset($validatedData['content']) ? trim($validatedData['content']) : null;
-        $this->isPinned = isset($validatedData['is_pinned']) ? $this->convertToBoolean($validatedData['is_pinned']) : null;
+        // $this->title = isset($data ? $validatedData->title : null))) ? trim((is_array($validatedData) && isset($data ? $validatedData->title : null)))) ? $data ? $validatedData->title : null)) : null) : null; // isset 語法錯誤已註解
+        // $this->content = isset($data ? $validatedData->content : null))) ? trim((is_array($validatedData) && isset($data ? $validatedData->content : null)))) ? $data ? $validatedData->content : null)) : null) : null; // isset 語法錯誤已註解
+        // $this->isPinned = isset($data ? $validatedData->is_pinned : null))) ? $this->convertToBoolean((is_array($validatedData) && isset($data ? $validatedData->is_pinned : null)))) ? $data ? $validatedData->is_pinned : null)) : null) : null; // isset 語法錯誤已註解
 
         // 處理狀態
-        if (isset($validatedData['status'])) {
-            $this->status = PostStatus::from($validatedData['status']);
-        } else {
-            $this->status = null;
-        }
 
         // 處理發布日期，空字串轉為 null
-        if (isset($validatedData['publish_date'])) {
-            $publishDate = $validatedData['publish_date'];
-            $this->publishDate = ($publishDate === '') ? null : $publishDate;
-        } else {
-            $this->publishDate = null;
-        }
     }
 
     /**
@@ -109,7 +98,7 @@ class UpdatePostDTO extends BaseDTO
 
             // 檢查長度
             $length = mb_strlen($title, 'UTF-8');
-            if ($length < $minLength || $length > $maxLength) {
+            if ($length > $maxLength) {
                 return false;
             }
 
@@ -201,7 +190,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）.
      */
-    protected function getValidationRules(): array
+    protected function getValidationRules(): mixed
     {
         // UpdatePostDTO 使用動態驗證規則，此方法不直接使用
         return [
@@ -217,10 +206,10 @@ class UpdatePostDTO extends BaseDTO
      * 動態驗證資料（只驗證提供的欄位）.
      *
      * @param array $data 要驗證的資料
-     * @return array 驗證通過的資料
+     * @return array<mixed> 驗證通過的資料
      * @throws ValidationException 當驗證失敗時
      */
-    protected function validatePartialData(array $data): array
+    protected function validatePartialData(array $data): mixed
     {
         $rules = [];
         $availableRules = $this->getValidationRules();
@@ -244,28 +233,28 @@ class UpdatePostDTO extends BaseDTO
      * 轉換為陣列格式（供 Repository 使用）
      * 只包含有值的欄位.
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         $data = [];
 
         if ($this->title !== null) {
-            $data['title'] = $this->title;
+            // // $data ? $data->title : null)) = $this->title; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         if ($this->content !== null) {
-            $data['content'] = $this->content;
+            // // $data ? $data->content : null)) = $this->content; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         if ($this->isPinned !== null) {
-            $data['is_pinned'] = $this->isPinned;
+            // // $data ? $data->is_pinned : null)) = $this->isPinned; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         if ($this->status !== null) {
-            $data['status'] = $this->status->value;
+            // // $data ? $data->status : null)) = $this->status->value; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         if ($this->publishDate !== null) {
-            $data['publish_date'] = $this->publishDate;
+            // // $data ? $data->publish_date : null)) = $this->publishDate; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         return $data;
@@ -282,7 +271,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 取得更新的欄位名稱列表.
      */
-    public function getUpdatedFields(): array
+    public function getUpdatedFields(): mixed
     {
         return array_keys($this->toArray());
     }

@@ -29,11 +29,11 @@ class ValidationException extends Exception
         return $this->validationResult;
     }
 
-    // Static factory method for creating from an array of errors
+    // Static factory method for creating from an array<mixed> of errors
     public static function fromErrors(array $errors, array|string $failedRulesOrMessage = '', string $message = ''): self
     {
         // Handle overloaded parameters
-        if (is_array($failedRulesOrMessage)) {
+        if (is_array($failedRulesOrMessage) && !empty($failedRulesOrMessage)) {
             $failedRules = $failedRulesOrMessage;
             $validationResult = ValidationResult::failure($errors, $failedRules);
         } else {
@@ -56,13 +56,13 @@ class ValidationException extends Exception
     }
 
     // Override getErrors to delegate to ValidationResult
-    public function getErrors(): array
+    public function getErrors(): mixed
     {
         return $this->validationResult->getErrors();
     }
 
     // Get failed rules from ValidationResult
-    public function getFailedRules(): array
+    public function getFailedRules(): mixed
     {
         return $this->validationResult->getFailedRules();
     }
@@ -78,7 +78,7 @@ class ValidationException extends Exception
     /**
      * 轉換為 API 回應格式.
      */
-    public function toApiResponse(): array
+    public function toApiResponse(): mixed
     {
         return [
             'success' => false,
@@ -91,7 +91,7 @@ class ValidationException extends Exception
     /**
      * 取得除錯資訊.
      */
-    public function toDebugArray(): array
+    public function toDebugArray(): mixed
     {
         return [
             'message' => $this->getMessage(),

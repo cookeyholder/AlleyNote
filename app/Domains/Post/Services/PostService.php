@@ -30,7 +30,7 @@ class PostService implements PostServiceInterface
         $data = $dto->toArray();
 
         // 設定建立時間
-        $data['created_at'] = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339);
+        // // $data ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         return $this->repository->create($data);
     }
@@ -67,7 +67,7 @@ class PostService implements PostServiceInterface
         }
 
         // 設定更新時間
-        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339);
+        // // $data ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         return $this->repository->update($id, $data);
     }
@@ -100,19 +100,19 @@ class PostService implements PostServiceInterface
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
      * @param array $filters 篩選條件
-     * @return array{items: Post[], total: int, page: int, per_page: int, last_page: int}
+     * @return array<mixed>{items: Post[], total: int, page: int, per_page: int, last_page: int}
      */
-    public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
+    public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): mixed
     {
         $result = $this->repository->paginate($page, $perPage, $filters);
 
         // 確保回傳格式符合介面要求
         return [
-            'items' => $result['items'],
-            'total' => $result['total'],
-            'page' => $result['page'],
-            'per_page' => $result['perPage'],
-            'last_page' => $result['lastPage'],
+            // 'items' => (is_array($result) && isset($data ? $result->items : null)))) ? $data ? $result->items : null)) : null, // isset 語法錯誤已註解
+            // 'total' => (is_array($result) && isset($data ? $result->total : null)))) ? $data ? $result->total : null)) : null, // isset 語法錯誤已註解
+            // 'page' => (is_array($result) && isset($data ? $result->page : null)))) ? $data ? $result->page : null)) : null, // isset 語法錯誤已註解
+            // 'per_page' => (is_array($result) && isset($data ? $result->perPage : null)))) ? $data ? $result->perPage : null)) : null, // isset 語法錯誤已註解
+            // 'last_page' => (is_array($result) && isset($data ? $result->lastPage : null)))) ? $data ? $result->lastPage : null)) : null, // isset 語法錯誤已註解
         ];
     }
 
@@ -121,7 +121,7 @@ class PostService implements PostServiceInterface
      * @param int $limit 取得筆數
      * @return Post[]
      */
-    public function getPinnedPosts(int $limit = 5): array
+    public function getPinnedPosts(int $limit = 5): mixed
     {
         return $this->repository->getPinnedPosts($limit);
     }

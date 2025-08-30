@@ -92,12 +92,12 @@ class LoggingSecurityServiceTest extends TestCase
 
         $result = $method->invoke($this->service, $sensitiveData);
 
-        $this->assertEquals('testuser', $result['username']);
-        $this->assertEquals('[REDACTED]', $result['password']);
-        $this->assertEquals('[REDACTED]', $result['csrf_token']);
-        $this->assertEquals('this is safe', $result['safe_data']);
-        $this->assertEquals('[REDACTED]', $result['nested']['api_key']);
-        $this->assertEquals('public', $result['nested']['public_info']);
+        $this->assertEquals('testuser', (is_array($result) && isset((is_array($result) ? $result['username'] : (is_object($result) ? $result->username : null)))) ? (is_array($result) ? $result['username'] : (is_object($result) ? $result->username : null)) : null);
+        $this->assertEquals('[REDACTED]', (is_array($result) && isset((is_array($result) ? $result['password'] : (is_object($result) ? $result->password : null)))) ? (is_array($result) ? $result['password'] : (is_object($result) ? $result->password : null)) : null);
+        $this->assertEquals('[REDACTED]', (is_array($result) && isset((is_array($result) ? $result['csrf_token'] : (is_object($result) ? $result->csrf_token : null)))) ? (is_array($result) ? $result['csrf_token'] : (is_object($result) ? $result->csrf_token : null)) : null);
+        $this->assertEquals('this is safe', (is_array($result) && isset((is_array($result) ? $result['safe_data'] : (is_object($result) ? $result->safe_data : null)))) ? (is_array($result) ? $result['safe_data'] : (is_object($result) ? $result->safe_data : null)) : null);
+        $this->assertEquals('[REDACTED]', (is_array($result) ? $result['nested'] : (is_object($result) ? $result->nested : null))['api_key']);
+        $this->assertEquals('public', (is_array($result) ? $result['nested'] : (is_object($result) ? $result->nested : null))['public_info']);
     }
 
     #[Test]
@@ -138,14 +138,14 @@ class LoggingSecurityServiceTest extends TestCase
 
         $result = $method->invoke($this->service, $data);
 
-        $this->assertStringEndsWith('[TRUNCATED]', $result['long_field']);
-        $this->assertLessThan(1500, strlen($result['long_field']));
+        $this->assertStringEndsWith('[TRUNCATED]', (is_array($result) && isset((is_array($result) ? $result['long_field'] : (is_object($result) ? $result->long_field : null)))) ? (is_array($result) ? $result['long_field'] : (is_object($result) ? $result->long_field : null)) : null);
+        $this->assertLessThan(1500, strlen((is_array($result) && isset((is_array($result) ? $result['long_field'] : (is_object($result) ? $result->long_field : null)))) ? (is_array($result) ? $result['long_field'] : (is_object($result) ? $result->long_field : null)) : null));
     }
 
     #[Test]
     public function enrichesSecurityContext(): void
     {
-        $_SESSION['user_id'] = 123;
+        (is_array($_SESSION) ? $_SESSION['user_id'] : (is_object($_SESSION) ? $_SESSION->user_id : null)) = 123;
         session_id('test_session_id');
 
         $context = ['event' => 'test_event'];
@@ -158,14 +158,14 @@ class LoggingSecurityServiceTest extends TestCase
 
         $this->assertArrayHasKey('server_time', $result);
         $this->assertArrayHasKey('process_id', $result);
-        $this->assertEquals('test_event', $result['event']);
-        $this->assertEquals(123, $result['user_id']);
+        $this->assertEquals('test_event', (is_array($result) && isset((is_array($result) ? $result['event'] : (is_object($result) ? $result->event : null)))) ? (is_array($result) ? $result['event'] : (is_object($result) ? $result->event : null)) : null);
+        $this->assertEquals(123, (is_array($result) && isset((is_array($result) ? $result['user_id'] : (is_object($result) ? $result->user_id : null)))) ? (is_array($result) ? $result['user_id'] : (is_object($result) ? $result->user_id : null)) : null);
     }
 
     #[Test]
     public function enrichesRequestContext(): void
     {
-        $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 Test Browser';
+        (is_array($_SERVER) ? $_SERVER['HTTP_USER_AGENT'] : (is_object($_SERVER) ? $_SERVER->HTTP_USER_AGENT : null)) = 'Mozilla/5.0 Test Browser';
 
         $context = ['method' => 'GET'];
 
@@ -177,10 +177,10 @@ class LoggingSecurityServiceTest extends TestCase
 
         $this->assertArrayHasKey('server_time', $result);
         $this->assertArrayHasKey('user_agent_hash', $result);
-        $this->assertEquals('GET', $result['method']);
+        $this->assertEquals('GET', (is_array($result) && isset((is_array($result) ? $result['method'] : (is_object($result) ? $result->method : null)))) ? (is_array($result) ? $result['method'] : (is_object($result) ? $result->method : null)) : null);
         $this->assertEquals(
             hash('sha256', 'Mozilla/5.0 Test Browser'),
-            $result['user_agent_hash'],
+            (is_array($result) && isset((is_array($result) ? $result['user_agent_hash'] : (is_object($result) ? $result->user_agent_hash : null)))) ? (is_array($result) ? $result['user_agent_hash'] : (is_object($result) ? $result->user_agent_hash : null)) : null,
         );
     }
 
@@ -228,11 +228,11 @@ class LoggingSecurityServiceTest extends TestCase
 
         $result = $method->invoke($this->service, $data);
 
-        $this->assertEquals('[REDACTED]', $result['Password']);
-        $this->assertEquals('[REDACTED]', $result['API_KEY']);
-        $this->assertEquals('[REDACTED]', $result['user_token']);
-        $this->assertEquals('[REDACTED]', $result['csrf_TOKEN']);
-        $this->assertEquals('public', $result['safe_field']);
+        $this->assertEquals('[REDACTED]', (is_array($result) && isset((is_array($result) ? $result['Password'] : (is_object($result) ? $result->Password : null)))) ? (is_array($result) ? $result['Password'] : (is_object($result) ? $result->Password : null)) : null);
+        $this->assertEquals('[REDACTED]', (is_array($result) && isset((is_array($result) ? $result['API_KEY'] : (is_object($result) ? $result->API_KEY : null)))) ? (is_array($result) ? $result['API_KEY'] : (is_object($result) ? $result->API_KEY : null)) : null);
+        $this->assertEquals('[REDACTED]', (is_array($result) && isset((is_array($result) ? $result['user_token'] : (is_object($result) ? $result->user_token : null)))) ? (is_array($result) ? $result['user_token'] : (is_object($result) ? $result->user_token : null)) : null);
+        $this->assertEquals('[REDACTED]', (is_array($result) && isset((is_array($result) ? $result['csrf_TOKEN'] : (is_object($result) ? $result->csrf_TOKEN : null)))) ? (is_array($result) ? $result['csrf_TOKEN'] : (is_object($result) ? $result->csrf_TOKEN : null)) : null);
+        $this->assertEquals('public', (is_array($result) && isset((is_array($result) ? $result['safe_field'] : (is_object($result) ? $result->safe_field : null)))) ? (is_array($result) ? $result['safe_field'] : (is_object($result) ? $result->safe_field : null)) : null);
     }
 
     #[Test]
@@ -252,11 +252,11 @@ class LoggingSecurityServiceTest extends TestCase
 
         $result = $method->invoke($this->service, $data);
 
-        $this->assertEquals('', $result['empty_string']);
-        $this->assertNull($result['null_value']);
-        $this->assertEquals(0, $result['zero']);
-        $this->assertFalse($result['false_value']);
-        $this->assertEquals('[REDACTED]', $result['password']);
+        $this->assertEquals('', (is_array($result) && isset((is_array($result) ? $result['empty_string'] : (is_object($result) ? $result->empty_string : null)))) ? (is_array($result) ? $result['empty_string'] : (is_object($result) ? $result->empty_string : null)) : null);
+        $this->assertNull((is_array($result) && isset((is_array($result) ? $result['null_value'] : (is_object($result) ? $result->null_value : null)))) ? (is_array($result) ? $result['null_value'] : (is_object($result) ? $result->null_value : null)) : null);
+        $this->assertEquals(0, (is_array($result) && isset((is_array($result) ? $result['zero'] : (is_object($result) ? $result->zero : null)))) ? (is_array($result) ? $result['zero'] : (is_object($result) ? $result->zero : null)) : null);
+        $this->assertFalse((is_array($result) && isset((is_array($result) ? $result['false_value'] : (is_object($result) ? $result->false_value : null)))) ? (is_array($result) ? $result['false_value'] : (is_object($result) ? $result->false_value : null)) : null);
+        $this->assertEquals('[REDACTED]', (is_array($result) && isset((is_array($result) ? $result['password'] : (is_object($result) ? $result->password : null)))) ? (is_array($result) ? $result['password'] : (is_object($result) ? $result->password : null)) : null);
     }
 
     #[Test]

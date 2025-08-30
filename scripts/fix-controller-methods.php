@@ -9,7 +9,7 @@ declare(strict_types=1);
 class ControllerMethodFixer
 {
     private int $fixCount = 0;
-    private array $processedFiles = [];
+    private array<mixed> $processedFiles = [];
 
     public function run(): void
     {
@@ -52,14 +52,14 @@ class ControllerMethodFixer
         // 修復錯誤的函式簽名：public function method(...$args): mixed: string
         $content = preg_replace(
             '/public function (\w+)\(\.\.\.(\$\w+)\): mixed: string/',
-            'public function $1(Request $request, Response $response, array $args): Response',
+            'public function $1(Request $request, Response $response, array<mixed> $args): Response',
             $content
         );
 
         // 修復錯誤的函式簽名：public function method(...$args): mixed
         $content = preg_replace(
             '/public function (\w+)\(\.\.\.(\$\w+)\): mixed/',
-            'public function $1(Request $request, Response $response, array $args): Response',
+            'public function $1(Request $request, Response $response, array<mixed> $args): Response',
             $content
         );
 

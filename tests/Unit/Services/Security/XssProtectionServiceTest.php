@@ -58,11 +58,11 @@ class XssProtectionServiceTest extends TestCase
 
         $this->assertEquals(
             '&lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;',
-            $result['title'],
+            (is_array($result) && isset((is_array($result) ? $result['title'] : (is_object($result) ? $result->title : null)))) ? (is_array($result) ? $result['title'] : (is_object($result) ? $result->title : null)) : null,
         );
         $this->assertEquals(
             '&lt;img src=&quot;x&quot; onerror=&quot;alert(&#039;XSS&#039;)&quot; /&gt;',
-            $result['content'],
+            (is_array($result) && isset((is_array($result) ? $result['content'] : (is_object($result) ? $result->content : null)))) ? (is_array($result) ? $result['content'] : (is_object($result) ? $result->content : null)) : null,
         );
     }
 }

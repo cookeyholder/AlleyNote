@@ -36,7 +36,7 @@ interface SuspiciousActivityDetectorInterface
      * 檢測全域可疑活動模式.
      *
      * @param int $timeWindowMinutes 檢測時間窗口（分鐘）
-     * @return array<SuspiciousActivityAnalysisDTO> 分析結果列表
+     * @return array<mixed> 分析結果列表
      */
     public function detectGlobalSuspiciousPatterns(int $timeWindowMinutes = 60): array;
 
@@ -76,7 +76,7 @@ interface SuspiciousActivityDetectorInterface
     /**
      * 取得所有配置的閾值
      *
-     * @return array<string, array<string, int>> 閾值配置
+     * @return array<mixed>> 閾值配置
      */
     public function getThresholdConfiguration(): array;
 

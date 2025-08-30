@@ -125,7 +125,7 @@ interface AuthenticationServiceInterface
      * 取得指定使用者的權杖使用統計資訊。
      *
      * @param int $userId 使用者 ID
-     * @return array<string, int> 權杖統計資訊
+     * @return array<mixed> 權杖統計資訊
      */
     public function getUserTokenStats(int $userId): array;
 

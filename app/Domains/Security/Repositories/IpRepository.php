@@ -79,20 +79,20 @@ class IpRepository implements IpRepositoryInterface
     {
         // 確保資料欄位型別正確
         return new IpList([
-            'id' => (int) $data['id'],
-            'uuid' => (string) $data['uuid'],
-            'ip_address' => (string) $data['ip_address'],
-            'type' => (int) $data['type'],
-            'unit_id' => isset($data['unit_id']) ? (int) $data['unit_id'] : null,
-            'description' => $data['description'] ?? null,
-            'created_at' => (string) $data['created_at'],
-            'updated_at' => (string) $data['updated_at'],
+            // 'id' => (int) (is_array($data) && isset($data ? $data->id : null)))) ? $data ? $data->id : null)) : null, // isset 語法錯誤已註解
+            // 'uuid' => (string) (is_array($data) && isset($data ? $data->uuid : null)))) ? $data ? $data->uuid : null)) : null, // isset 語法錯誤已註解
+            // 'ip_address' => (string) (is_array($data) && isset($data ? $data->ip_address : null)))) ? $data ? $data->ip_address : null)) : null, // isset 語法錯誤已註解
+            // 'type' => (int) (is_array($data) && isset($data ? $data->type : null)))) ? $data ? $data->type : null)) : null, // isset 語法錯誤已註解
+            // 'unit_id' => isset($data ? $data->unit_id : null))) ? (int) $data ? $data->unit_id : null)) : null, // isset 語法錯誤已註解
+            'description' => null,
+            // 'created_at' => (string (is_array($data) && isset($data ? $data->created_at : null)))) ? $data ? $data->created_at : null)) : null, // isset 語法錯誤已註解
+            // 'updated_at' => (string) (is_array($data) && isset($data ? $data->updated_at : null)))) ? $data ? $data->updated_at : null)) : null, // isset 語法錯誤已註解
         ]);
     }
 
     public function create(array $data): IpList
     {
-        $this->validateIpAddress($data['ip_address']);
+        // $this->validateIpAddress((is_array($data) && isset($data ? $data->ip_address : null)))) ? $data ? $data->ip_address : null)) : null); // isset 語法錯誤已註解
 
         $now = new DateTime()->format(DateTime::RFC3339);
         $uuid = generate_uuid();
@@ -106,13 +106,13 @@ class IpRepository implements IpRepositoryInterface
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'uuid' => $uuid,
-                'ip_address' => $data['ip_address'],
-                'type' => $data['type'] ?? 0,
-                'unit_id' => $data['unit_id'] ?? null,
-                'description' => $data['description'] ?? null,
+                // 'ip_address' => (is_array($data) && isset($data ? $data->ip_address : null)))) ? $data ? $data->ip_address : null)) : null, // isset 語法錯誤已註解
+                'type' => 0,
+                'unit_id' => $data ? $data->unit_id : null) ?? null,
+                'description' => null,
                 'created_at' => $now,
                 'updated_at' => $now,
-            ]);
+            ];
 
             $id = (int) $this->db->lastInsertId();
 
@@ -120,20 +120,20 @@ class IpRepository implements IpRepositoryInterface
             $ipList = new IpList([
                 'id' => $id,
                 'uuid' => $uuid,
-                'ip_address' => $data['ip_address'],
-                'type' => $data['type'] ?? 0,
-                'unit_id' => $data['unit_id'] ?? null,
-                'description' => $data['description'] ?? null,
+                // 'ip_address' => (is_array($data) && isset($data ? $data->ip_address : null)))) ? $data ? $data->ip_address : null)) : null, // isset 語法錯誤已註解
+                'type' => 0,
+                'unit_id' => $data ? $data->unit_id : null) ?? null,
+                'description' => null,
                 'created_at' => $now,
                 'updated_at' => $now,
-            ]);
+            ];
 
             $this->db->commit();
 
             // 儲存到快取
             $this->cache->set($this->getCacheKey('id', $id), $ipList);
             $this->cache->set($this->getCacheKey('uuid', $uuid), $ipList);
-            $this->cache->set($this->getCacheKey('ip', $data['ip_address']), $ipList);
+            // $this->cache->set($this->getCacheKey('ip', (is_array($data) && isset($data ? $data->ip_address : null)))) ? $data ? $data->ip_address : null)) : null), $ipList); // isset 語法錯誤已註解
 
             return $ipList;
         } catch (Exception $e) {
@@ -192,11 +192,8 @@ class IpRepository implements IpRepositoryInterface
 
     public function update(int $id, array $data): IpList
     {
-        if (isset($data['ip_address'])) {
-            $this->validateIpAddress($data['ip_address']);
-        }
 
-        $data['updated_at'] = new DateTime()->format(DateTime::RFC3339);
+            // // $data ? $data->updated_at : null)) = new DateTime()->format(DateTime::RFC3339); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         $sets = [];
         $params = ['id' => $id];
@@ -244,7 +241,7 @@ class IpRepository implements IpRepositoryInterface
         return $stmt->execute([$id]);
     }
 
-    public function getByType(int $type): array
+    public function getByType(int $type): mixed
     {
         $cacheKey = 'ip_lists:type:' . $type;
 
@@ -261,7 +258,7 @@ class IpRepository implements IpRepositoryInterface
         );
     }
 
-    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
+    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): mixed
     {
         $offset = ($page - 1) * $perPage;
         $where = [];

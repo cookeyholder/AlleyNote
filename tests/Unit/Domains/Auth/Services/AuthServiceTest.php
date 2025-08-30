@@ -116,9 +116,9 @@ class AuthServiceTest extends TestCase
         $result = $service->register($dto);
 
         // 驗證結果 - 傳統格式，不包含 tokens
-        $this->assertTrue($result['success']);
-        $this->assertEquals('註冊成功', $result['message']);
-        $this->assertEquals('testuser', $result['user']['username']);
+        $this->assertTrue((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('註冊成功', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
+        $this->assertEquals('testuser', (is_array($result) ? $result['user'] : (is_object($result) ? $result->user : null))['username']);
         $this->assertArrayNotHasKey('tokens', $result);
     }
 
@@ -189,9 +189,9 @@ class AuthServiceTest extends TestCase
                     && $deviceInfo instanceof DeviceInfo
                     && $deviceInfo->getIpAddress() === '192.168.1.100'
                     && is_array($customClaims)
-                    && $customClaims['type'] === 'registration'
-                    && $customClaims['username'] === 'testuser'
-                    && $customClaims['email'] === 'test@example.com';
+                    && (is_array($customClaims) ? $customClaims['type'] : (is_object($customClaims) ? $customClaims->type : null)) === 'registration'
+                    && (is_array($customClaims) ? $customClaims['username'] : (is_object($customClaims) ? $customClaims->username : null)) === 'testuser'
+                    && (is_array($customClaims) ? $customClaims['email'] : (is_object($customClaims) ? $customClaims->email : null)) === 'test@example.com';
             })
             ->andReturn($tokenPair);
 
@@ -199,15 +199,15 @@ class AuthServiceTest extends TestCase
         $result = $service->register($dto, $deviceInfo);
 
         // 驗證結果 - 包含 JWT tokens
-        $this->assertTrue($result['success']);
-        $this->assertEquals('註冊成功', $result['message']);
-        $this->assertEquals('testuser', $result['user']['username']);
+        $this->assertTrue((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('註冊成功', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
+        $this->assertEquals('testuser', (is_array($result) ? $result['user'] : (is_object($result) ? $result->user : null))['username']);
         $this->assertArrayHasKey('tokens', $result);
-        $this->assertEquals('Bearer', $result['tokens']['token_type']);
-        $this->assertArrayHasKey('access_token', $result['tokens']);
-        $this->assertArrayHasKey('refresh_token', $result['tokens']);
-        $this->assertArrayHasKey('expires_in', $result['tokens']);
-        $this->assertArrayHasKey('expires_at', $result['tokens']);
+        $this->assertEquals('Bearer', (is_array($result) ? $result['tokens'] : (is_object($result) ? $result->tokens : null))['token_type']);
+        $this->assertArrayHasKey('access_token', (is_array($result) ? $result['tokens'] : (is_object($result) ? $result->tokens : null)));
+        $this->assertArrayHasKey('refresh_token', (is_array($result) ? $result['tokens'] : (is_object($result) ? $result->tokens : null)));
+        $this->assertArrayHasKey('expires_in', (is_array($result) ? $result['tokens'] : (is_object($result) ? $result->tokens : null)));
+        $this->assertArrayHasKey('expires_at', (is_array($result) ? $result['tokens'] : (is_object($result) ? $result->tokens : null)));
     }
 
     /**
@@ -254,8 +254,8 @@ class AuthServiceTest extends TestCase
         $result = $service->register($dto, $deviceInfo);
 
         // 驗證回退到傳統格式
-        $this->assertTrue($result['success']);
-        $this->assertEquals('註冊成功', $result['message']);
+        $this->assertTrue((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('註冊成功', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
         $this->assertArrayNotHasKey('tokens', $result);
     }
 
@@ -296,11 +296,11 @@ class AuthServiceTest extends TestCase
 
         $result = $service->login($credentials);
 
-        $this->assertTrue($result['success']);
-        $this->assertEquals('登入成功', $result['message']);
-        $this->assertEquals('testuser', $result['user']['username']);
+        $this->assertTrue((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('登入成功', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
+        $this->assertEquals('testuser', (is_array($result) ? $result['user'] : (is_object($result) ? $result->user : null))['username']);
         $this->assertArrayNotHasKey('tokens', $result);
-        $this->assertArrayNotHasKey('password', $result['user']);
+        $this->assertArrayNotHasKey('password', (is_array($result) ? $result['user'] : (is_object($result) ? $result->user : null)));
     }
 
     /**
@@ -348,11 +348,11 @@ class AuthServiceTest extends TestCase
 
         $result = $service->login($credentials, $deviceInfo);
 
-        $this->assertTrue($result['success']);
-        $this->assertEquals('登入成功', $result['message']);
-        $this->assertEquals('testuser', $result['user']['username']);
+        $this->assertTrue((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('登入成功', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
+        $this->assertEquals('testuser', (is_array($result) ? $result['user'] : (is_object($result) ? $result->user : null))['username']);
         $this->assertArrayHasKey('tokens', $result);
-        $this->assertArrayHasKey('access_token', $result['tokens']);
+        $this->assertArrayHasKey('access_token', (is_array($result) ? $result['tokens'] : (is_object($result) ? $result->tokens : null)));
     }
 
     /**
@@ -379,8 +379,8 @@ class AuthServiceTest extends TestCase
 
         $result = $service->login($credentials);
 
-        $this->assertFalse($result['success']);
-        $this->assertEquals('無效的認證資訊', $result['message']);
+        $this->assertFalse((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('無效的認證資訊', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
     }
 
     /**
@@ -411,8 +411,8 @@ class AuthServiceTest extends TestCase
 
         $result = $service->login($credentials);
 
-        $this->assertFalse($result['success']);
-        $this->assertEquals('帳號已被停用', $result['message']);
+        $this->assertFalse((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('帳號已被停用', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
     }
 
     /**
@@ -441,8 +441,8 @@ class AuthServiceTest extends TestCase
 
         $result = $service->login($credentials);
 
-        $this->assertFalse($result['success']);
-        $this->assertEquals('無效的認證資訊', $result['message']);
+        $this->assertFalse((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('無效的認證資訊', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
     }
 
     /**
@@ -459,8 +459,8 @@ class AuthServiceTest extends TestCase
 
         $result = $service->logout();
 
-        $this->assertTrue($result['success']);
-        $this->assertEquals('登出成功', $result['message']);
+        $this->assertTrue((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('登出成功', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
     }
 
     /**
@@ -485,8 +485,8 @@ class AuthServiceTest extends TestCase
 
         $result = $service->logout($accessToken, $deviceInfo);
 
-        $this->assertTrue($result['success']);
-        $this->assertEquals('登出成功', $result['message']);
+        $this->assertTrue((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('登出成功', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
     }
 
     /**
@@ -513,7 +513,7 @@ class AuthServiceTest extends TestCase
         $result = $service->logout($accessToken, $deviceInfo);
 
         // 即使撤銷失敗，仍然回傳成功（使用者體驗優先）
-        $this->assertTrue($result['success']);
-        $this->assertEquals('登出成功', $result['message']);
+        $this->assertTrue((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertEquals('登出成功', (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)));
     }
 }

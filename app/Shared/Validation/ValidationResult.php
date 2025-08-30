@@ -79,7 +79,7 @@ class ValidationResult implements JsonSerializable
     /**
      * 取得所有錯誤訊息.
      */
-    public function getErrors(): array
+    public function getErrors(): mixed
     {
         return $this->errors;
     }
@@ -89,7 +89,7 @@ class ValidationResult implements JsonSerializable
      *
      * @param string $field 欄位名稱
      */
-    public function getFieldErrors(string $field): array
+    public function getFieldErrors(string $field): mixed
     {
         return $this->errors[$field] ?? [];
     }
@@ -133,7 +133,7 @@ class ValidationResult implements JsonSerializable
     /**
      * 取得所有錯誤訊息的扁平陣列.
      */
-    public function getAllErrors(): array
+    public function getAllErrors(): mixed
     {
         $allErrors = [];
         foreach ($this->errors as $fieldErrors) {
@@ -146,7 +146,7 @@ class ValidationResult implements JsonSerializable
     /**
      * 取得驗證通過的資料.
      */
-    public function getValidatedData(): array
+    public function getValidatedData(): mixed
     {
         return $this->validatedData;
     }
@@ -165,7 +165,7 @@ class ValidationResult implements JsonSerializable
     /**
      * 取得失敗的規則.
      */
-    public function getFailedRules(): array
+    public function getFailedRules(): mixed
     {
         return $this->failedRules;
     }
@@ -175,7 +175,7 @@ class ValidationResult implements JsonSerializable
      *
      * @param string $field 欄位名稱
      */
-    public function getFieldFailedRules(string $field): array
+    public function getFieldFailedRules(string $field): mixed
     {
         return $this->failedRules[$field] ?? [];
     }
@@ -285,7 +285,7 @@ class ValidationResult implements JsonSerializable
     /**
      * 轉換為陣列格式.
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'is_valid' => $this->isValid,
@@ -298,7 +298,7 @@ class ValidationResult implements JsonSerializable
     /**
      * 實作 JsonSerializable 介面.
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }

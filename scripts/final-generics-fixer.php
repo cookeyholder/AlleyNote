@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Final Generic Annotations Fixer
- * 
+ *
  * 修復所有剩餘的泛型標註語法錯誤
  */
 
@@ -19,47 +19,47 @@ $filesFixes = [];
  */
 function fixAllRemainingGenerics($content) {
     global $totalFixes;
-    
+
     $lines = explode("\n", $content);
     $modified = false;
-    
+
     for ($i = 0; $i < count($lines); $i++) {
         $line = $lines[$i];
         $originalLine = $line;
-        
+
         // 修復所有方法回傳值中的泛型標註
-        if (preg_match('/\):\s*array<[^>]+>/', $line)) {
-            $newLine = preg_replace('/\):\s*array<[^>]+>/', '): array', $line);
+        if (preg_match('/\):\s*array<mixed>]+>/', $line)) {
+            $newLine = preg_replace('/\):\s*array<mixed>]+>/', '): array<mixed>', $line);
             $lines[$i] = $newLine;
             $modified = true;
             $totalFixes++;
         }
-        
+
         // 修復所有參數中的泛型標註
-        if (preg_match('/array<[^>]+>\s+\$/', $line)) {
-            $newLine = preg_replace('/array<[^>]+>(\s+\$)/', 'array$1', $line);
+        if (preg_match('/array<mixed>]+>\s+\$/', $line)) {
+            $newLine = preg_replace('/array<mixed>]+>(\s+\$)/', 'array<mixed>$1', $line);
             $lines[$i] = $newLine;
             $modified = true;
             $totalFixes++;
         }
-        
+
         // 修復所有屬性中的泛型標註
-        if (preg_match('/^(\s*)(private|protected|public)\s+array<[^>]+>\s+\$/', $line)) {
-            $newLine = preg_replace('/^(\s*)(private|protected|public)\s+array<[^>]+>(\s+\$)/', '$1$2 array$3', $line);
+        if (preg_match('/^(\s*)(private|protected|public)\s+array<mixed>]+>\s+\$/', $line)) {
+            $newLine = preg_replace('/^(\s*)(private|protected|public)\s+array<mixed>]+>(\s+\$)/', '$1$2 array<mixed>$3', $line);
             $lines[$i] = $newLine;
             $modified = true;
             $totalFixes++;
         }
-        
+
         // 修復變數宣告中的泛型標註
-        if (preg_match('/\$\w+\s*:\s*array<[^>]+>/', $line)) {
-            $newLine = preg_replace('/(\$\w+)\s*:\s*array<[^>]+>/', '$1: array', $line);
+        if (preg_match('/\$\w+\s*:\s*array<mixed>]+>/', $line)) {
+            $newLine = preg_replace('/(\$\w+)\s*:\s*array<mixed>]+>/', '$1: array<mixed>', $line);
             $lines[$i] = $newLine;
             $modified = true;
             $totalFixes++;
         }
     }
-    
+
     return $modified ? implode("\n", $lines) : $content;
 }
 
@@ -68,28 +68,20 @@ function fixAllRemainingGenerics($content) {
  */
 function processFile($filePath) {
     global $filesFixes;
-    
+
     if (!file_exists($filePath)) {
         return;
     }
-    
+
     $content = file_get_contents($filePath);
     $originalContent = $content;
-    
+
     $newContent = fixAllRemainingGenerics($content);
-    
+
     // 如果內容有變更，寫回檔案
     if ($newContent !== $originalContent) {
         file_put_contents($filePath, $newContent);
-        $fixCount = substr_count($originalContent, 'array<') - substr_count($newContent, 'array<');
-        $filesFixes[$filePath] = $fixCount;
-        echo "已處理: " . str_replace('/var/www/html/', '', $filePath) . " (修復 $fixCount 個問題)\n";
-    }
-}
-
-// 取得所有 PHP 檔案
-$finder = new Symfony\Component\Finder\Finder();
-$finder->files()
+        $fixCount = substr_count($originalContent, 'arrayfiles()
     ->name('*.php')
     ->in($projectRoot . '/app')
     ->notPath('vendor')

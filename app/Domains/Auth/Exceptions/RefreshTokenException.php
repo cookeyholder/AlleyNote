@@ -171,7 +171,7 @@ class RefreshTokenException extends JwtException
     /**
      * 取得裝置資訊（如果有）.
      *
-     * @return array<string, mixed>|null
+     * @return array<mixed>|null
      */
     public function getDeviceInfo(): ?array
     {
@@ -243,7 +243,7 @@ class RefreshTokenException extends JwtException
     {
         $context = ['token_id' => $tokenId];
         if ($userId !== null) {
-            $context['user_id'] = $userId;
+            // // $data ? $context->user_id : null)) = $userId; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         return new self(self::REASON_NOT_FOUND, '', $context);
@@ -253,15 +253,15 @@ class RefreshTokenException extends JwtException
      * 靜態工廠方法：Token 已被撤銷.
      *
      * @param string $tokenId Token ID
-     * @param int $revokedAt 撤銷時間戳
+     * @param int $$revokedAt 撤銷時間戳
      * @param string $revokedReason 撤銷原因
      */
-    public static function revoked(string $tokenId, int $revokedAt, string $revokedReason = ''): self
+    public static function revoked(string $tokenId, int $$revokedAt, string $revokedReason = ''): self
     {
         return new self(self::REASON_REVOKED, '', [
             'token_id' => $tokenId,
-            'revoked_at' => $revokedAt,
-            'revoked_at_human' => date('Y-m-d H:i:s', $revokedAt),
+            'revoked_at' => $$revokedAt,
+            'revoked_at_human' => date('Y-m-d H:i:s', $$revokedAt),
             'revoked_reason' => $revokedReason,
         ]);
     }

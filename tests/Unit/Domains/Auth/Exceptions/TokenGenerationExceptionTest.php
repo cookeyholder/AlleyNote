@@ -79,12 +79,12 @@ class TokenGenerationExceptionTest extends TestCase
         );
 
         $context = $exception->getContext();
-        $this->assertSame(123, $context['user_id']);
-        $this->assertSame('req-456', $context['request_id']);
-        $this->assertSame(2048, $context['key_length']);
-        $this->assertSame(TokenGenerationException::REASON_SIGNATURE_FAILED, $context['reason']);
+        $this->assertSame(123, (is_array($context) ? $context['user_id'] : (is_object($context) ? $context->user_id : null)));
+        $this->assertSame('req-456', (is_array($context) ? $context['request_id'] : (is_object($context) ? $context->request_id : null)));
+        $this->assertSame(2048, (is_array($context) ? $context['key_length'] : (is_object($context) ? $context->key_length : null)));
+        $this->assertSame(TokenGenerationException::REASON_SIGNATURE_FAILED, (is_array($context) ? $context['reason'] : (is_object($context) ? $context->reason : null)));
         $this->assertArrayHasKey('generation_attempt_id', $context);
-        $this->assertStringStartsWith('gen_', $context['generation_attempt_id']);
+        $this->assertStringStartsWith('gen_', (is_array($context) ? $context['generation_attempt_id'] : (is_object($context) ? $context->generation_attempt_id : null)));
     }
 
     /**
@@ -236,7 +236,7 @@ class TokenGenerationExceptionTest extends TestCase
         $this->assertTrue($exception->isDataRelated());
 
         $context = $exception->getContext();
-        $this->assertSame($invalidFields, $context['invalid_fields']);
+        $this->assertSame($invalidFields, (is_array($context) ? $context['invalid_fields'] : (is_object($context) ? $context->invalid_fields : null)));
     }
 
     /**
@@ -252,7 +252,7 @@ class TokenGenerationExceptionTest extends TestCase
         $this->assertTrue($exception->isSystemConfigurationError());
 
         $context = $exception->getContext();
-        $this->assertSame($algorithm, $context['algorithm']);
+        $this->assertSame($algorithm, (is_array($context) ? $context['algorithm'] : (is_object($context) ? $context->algorithm : null)));
     }
 
     /**
@@ -267,7 +267,7 @@ class TokenGenerationExceptionTest extends TestCase
         $this->assertTrue($exception->isDataRelated());
 
         $context = $exception->getContext();
-        $this->assertSame($invalidClaims, $context['invalid_claims']);
+        $this->assertSame($invalidClaims, (is_array($context) ? $context['invalid_claims'] : (is_object($context) ? $context->invalid_claims : null)));
     }
 
     /**
@@ -282,7 +282,7 @@ class TokenGenerationExceptionTest extends TestCase
         $this->assertTrue($exception->isAccessTokenGeneration());
 
         $context = $exception->getContext();
-        $this->assertSame($details, $context['failure_details']);
+        $this->assertSame($details, (is_array($context) ? $context['failure_details'] : (is_object($context) ? $context->failure_details : null)));
     }
 
     /**
@@ -298,7 +298,7 @@ class TokenGenerationExceptionTest extends TestCase
         $this->assertTrue($exception->isRetryable());
 
         $context = $exception->getContext();
-        $this->assertSame($resourceType, $context['resource_type']);
+        $this->assertSame($resourceType, (is_array($context) ? $context['resource_type'] : (is_object($context) ? $context->resource_type : null)));
     }
 
     /**
@@ -313,7 +313,7 @@ class TokenGenerationExceptionTest extends TestCase
         $this->assertTrue($exception->isRetryable());
 
         $context = $exception->getContext();
-        $this->assertSame($details, $context['failure_details']);
+        $this->assertSame($details, (is_array($context) ? $context['failure_details'] : (is_object($context) ? $context->failure_details : null)));
     }
 
     /**
@@ -350,10 +350,10 @@ class TokenGenerationExceptionTest extends TestCase
 
         $details = $exception->getErrorDetails();
 
-        $this->assertSame('token_generation_failed', $details['error_type']);
-        $this->assertSame(TokenGenerationException::ERROR_CODE, $details['code']);
+        $this->assertSame('token_generation_failed', (is_array($details) ? $details['error_type'] : (is_object($details) ? $details->error_type : null)));
+        $this->assertSame(TokenGenerationException::ERROR_CODE, (is_array($details) ? $details['code'] : (is_object($details) ? $details->code : null)));
         $this->assertArrayHasKey('context', $details);
-        $this->assertSame(TokenGenerationException::REASON_KEY_INVALID, $details['context']['reason']);
+        $this->assertSame(TokenGenerationException::REASON_KEY_INVALID, (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null))['reason']);
     }
 
     /**
@@ -395,13 +395,13 @@ class TokenGenerationExceptionTest extends TestCase
         $this->assertTrue($exception->isAccessTokenGeneration());
 
         $context = $exception->getContext();
-        $this->assertSame(123, $context['user_id']);
-        $this->assertSame('RS256', $context['key_algorithm']);
-        $this->assertSame(2048, $context['key_size']);
-        $this->assertSame('128MB', $context['memory_usage']);
+        $this->assertSame(123, (is_array($context) ? $context['user_id'] : (is_object($context) ? $context->user_id : null)));
+        $this->assertSame('RS256', (is_array($context) ? $context['key_algorithm'] : (is_object($context) ? $context->key_algorithm : null)));
+        $this->assertSame(2048, (is_array($context) ? $context['key_size'] : (is_object($context) ? $context->key_size : null)));
+        $this->assertSame('128MB', (is_array($context) ? $context['memory_usage'] : (is_object($context) ? $context->memory_usage : null)));
 
         $details = $exception->getErrorDetails();
-        $this->assertArrayHasKey('user_id', $details['context']);
-        $this->assertArrayHasKey('generation_attempt_id', $details['context']);
+        $this->assertArrayHasKey('user_id', (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null)));
+        $this->assertArrayHasKey('generation_attempt_id', (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null)));
     }
 }

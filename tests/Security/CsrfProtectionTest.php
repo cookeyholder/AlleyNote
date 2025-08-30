@@ -45,7 +45,7 @@ class CsrfProtectionTest extends TestCase
 
     private int $lastStatusCode = 0;
 
-    private array $headers = [];
+    private array<mixed> $headers = [];
 
     protected function setUp(): void
     {
@@ -74,7 +74,7 @@ class CsrfProtectionTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
-            $this->activityLogger
+            $this->activityLogger,
         );
 
         // 設定預設回應行為
@@ -184,8 +184,8 @@ class CsrfProtectionTest extends TestCase
         // 模擬 PostService 創建成功
         $post = new Post([
             'id' => 1,
-            'title' => $postData['title'],
-            'content' => $postData['content'],
+            'title' => (is_array($postData) && isset((is_array($postData) ? $postData['title'] : (is_object($postData) ? $postData->title : null)))) ? (is_array($postData) ? $postData['title'] : (is_object($postData) ? $postData->title : null)) : null,
+            'content' => (is_array($postData) && isset((is_array($postData) ? $postData['content'] : (is_object($postData) ? $postData->content : null)))) ? (is_array($postData) ? $postData['content'] : (is_object($postData) ? $postData->content : null)) : null,
             'user_id' => 1,
         ]);
 
@@ -233,8 +233,8 @@ class CsrfProtectionTest extends TestCase
         // 模擬 PostService 創建成功
         $post = new Post([
             'id' => 1,
-            'title' => $postData['title'],
-            'content' => $postData['content'],
+            'title' => (is_array($postData) && isset((is_array($postData) ? $postData['title'] : (is_object($postData) ? $postData->title : null)))) ? (is_array($postData) ? $postData['title'] : (is_object($postData) ? $postData->title : null)) : null,
+            'content' => (is_array($postData) && isset((is_array($postData) ? $postData['content'] : (is_object($postData) ? $postData->content : null)))) ? (is_array($postData) ? $postData['content'] : (is_object($postData) ? $postData->content : null)) : null,
             'user_id' => 1,
         ]);
 
@@ -282,8 +282,8 @@ class CsrfProtectionTest extends TestCase
         // 模擬 PostService 創建成功
         $post = new Post([
             'id' => 1,
-            'title' => $postData['title'],
-            'content' => $postData['content'],
+            'title' => (is_array($postData) && isset((is_array($postData) ? $postData['title'] : (is_object($postData) ? $postData->title : null)))) ? (is_array($postData) ? $postData['title'] : (is_object($postData) ? $postData->title : null)) : null,
+            'content' => (is_array($postData) && isset((is_array($postData) ? $postData['content'] : (is_object($postData) ? $postData->content : null)))) ? (is_array($postData) ? $postData['content'] : (is_object($postData) ? $postData->content : null)) : null,
             'user_id' => 1,
         ]);
 
@@ -299,7 +299,7 @@ class CsrfProtectionTest extends TestCase
 
         $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertIsArray($responseData);
-        $this->assertTrue($responseData['success']);
+        $this->assertTrue((is_array($responseData) && isset((is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)))) ? (is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)) : null);
     }
 
     protected function tearDown(): void

@@ -114,18 +114,18 @@ if (!function_exists('sanitize_post_array')) {
     /**
      * 清理 Post 陣列中的 HTML 內容，適用於 API 輸出.
      * @param array $posts Post 資料陣列
-     * @return array<string, mixed> 清理過的陣列
+     * @return array<mixed> 清理過的陣列
      */
     function sanitize_post_array(array $posts): array
     {
         return array_map(function ($post) {
             // 如果是陣列，手動清理
-            if (is_array($post)) {
+            if (is_array($post) && !empty($post)) {
                 $sanitized = $post;
-                if (isset($sanitized['title'])) {
+                if (is_array($sanitized) && isset($sanitized['title'])) {
                     $sanitized['title'] = htmlspecialchars($sanitized['title'], ENT_QUOTES, 'UTF-8');
                 }
-                if (isset($sanitized['content'])) {
+                if (is_array($sanitized) && isset($sanitized['content'])) {
                     $sanitized['content'] = htmlspecialchars($sanitized['content'], ENT_QUOTES, 'UTF-8');
                 }
 

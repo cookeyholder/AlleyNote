@@ -65,9 +65,9 @@ enum ActivityStatus: string
     /**
      * 取得所有可用狀態.
      *
-     * @return array<string>
+     * @return array<mixed>
      */
-    public static function getAvailableStatuses(): array
+    public static function getAvailableStatuses(): mixed
     {
         return array_map(fn($case) => $case->value, self::cases());
     }

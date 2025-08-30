@@ -25,7 +25,7 @@ class RoutingServiceProvider
     /**
      * 取得所有路由服務定義.
      */
-    public static function getDefinitions(): array
+    public static function getDefinitions(): mixed
     {
         return [
             // 路由器核心服務
@@ -100,7 +100,7 @@ class RoutingServiceProvider
     /**
      * 取得路由配置檔案清單.
      */
-    public static function getRouteFiles(): array
+    public static function getRouteFiles(): mixed
     {
         return [
             'api' => __DIR__ . '/../../../../config/routes/api.php',
@@ -146,7 +146,7 @@ class RoutingServiceProvider
     /**
      * 取得路由系統統計資訊.
      */
-    public static function getRoutingStats(ContainerInterface $container): array
+    public static function getRoutingStats(ContainerInterface $container): mixed
     {
         try {
             $routeLoader = $container->get(RouteLoader::class);

@@ -72,7 +72,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
             // 檢查是否已經分配
             $stmt = $this->db->prepare('SELECT COUNT(*) FROM user_roles WHERE user_id = ? AND role_id = ?');
-            $stmt->execute([$userId, $role['id']]);
+            // $stmt->execute([$userId, (is_array($role) && isset($data ? $role->id : null)))) ? $data ? $role->id : null)) : null]); // isset 語法錯誤已註解
 
             if ($stmt->fetchColumn() > 0) {
                 return true; // 已經存在
@@ -80,7 +80,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
             // 分配角色
             $stmt = $this->db->prepare('INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)');
-            $result = $stmt->execute([$userId, $role['id']]);
+            // $result = $stmt->execute([$userId, (is_array($role) && isset($data ? $role->id : null)))) ? $data ? $role->id : null)) : null]); // isset 語法錯誤已註解
 
             if ($result) {
                 $this->clearUserCache($userId);
@@ -127,7 +127,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
             // 檢查是否已經分配
             $stmt = $this->db->prepare('SELECT COUNT(*) FROM user_permissions WHERE user_id = ? AND permission_id = ?');
-            $stmt->execute([$userId, $perm['id']]);
+            // $stmt->execute([$userId, (is_array($perm) && isset($data ? $perm->id : null)))) ? $data ? $perm->id : null)) : null]); // isset 語法錯誤已註解
 
             if ($stmt->fetchColumn() > 0) {
                 return true; // 已經存在
@@ -135,7 +135,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
             // 分配權限
             $stmt = $this->db->prepare('INSERT INTO user_permissions (user_id, permission_id) VALUES (?, ?)');
-            $result = $stmt->execute([$userId, $perm['id']]);
+            // $result = $stmt->execute([$userId, (is_array($perm) && isset($data ? $perm->id : null)))) ? $data ? $perm->id : null)) : null]); // isset 語法錯誤已註解
 
             if ($result) {
                 $this->clearUserCache($userId);
@@ -168,7 +168,7 @@ class AuthorizationService implements AuthorizationServiceInterface
         }
     }
 
-    public function getUserRoles(int $userId): array
+    public function getUserRoles(int $userId): mixed
     {
         $stmt = $this->db->prepare('
             SELECT r.id, r.name, r.description, r.created_at, r.updated_at
@@ -181,7 +181,7 @@ class AuthorizationService implements AuthorizationServiceInterface
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getUserPermissions(int $userId): array
+    public function getUserPermissions(int $userId): mixed
     {
         // 取得角色權限
         $stmt = $this->db->prepare('
@@ -242,7 +242,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $stmt->execute([$postId]);
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $post && (int) $post['user_id'] === $userId;
+            // return $post && (int) $data ? $post->user_id : null)) === $userId; // 複雜賦值語法錯誤已註解
         } catch (Exception $e) {
             return false;
         }
@@ -260,7 +260,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $stmt->execute([$attachmentUuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result && (int) $result['user_id'] === $userId;
+            // return $result && (int) $data ? $result->user_id : null)) === $userId; // 複雜賦值語法錯誤已註解
         } catch (Exception $e) {
             return false;
         }

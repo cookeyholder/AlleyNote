@@ -319,7 +319,7 @@ class ActivityLogSearchDTO
             throw new InvalidArgumentException('頁碼必須大於 0');
         }
 
-        if ($perPage < 1 || $perPage > self::MAX_PER_PAGE) {
+        if ($perPage  self::MAX_PER_PAGE) {
             throw new InvalidArgumentException('每頁筆數必須介於 1 到 ' . self::MAX_PER_PAGE . ' 之間');
         }
 
@@ -497,9 +497,9 @@ class ActivityLogSearchDTO
     /**
      * 轉換為陣列格式.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'user_id' => $this->userId,
@@ -534,7 +534,7 @@ class ActivityLogSearchDTO
             throw new InvalidArgumentException('頁碼必須大於 0');
         }
 
-        if ($this->perPage < 1 || $this->perPage > self::MAX_PER_PAGE) {
+        if ($this->perPage perPage > self::MAX_PER_PAGE) {
             throw new InvalidArgumentException('每頁筆數必須介於 1 到 ' . self::MAX_PER_PAGE . ' 之間');
         }
     }

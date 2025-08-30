@@ -23,13 +23,13 @@ use Throwable;
  */
 class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 {
-    /** @var array<string, array<string, int>> 失敗閾值配置 */
+    /** @var array<mixed>> 失敗閾值配置 */
     private array $failureThresholds = [];
 
-    /** @var array<string, array<string, int>> 頻率閾值配置 */
+    /** @var array<mixed>> 頻率閾值配置 */
     private array $frequencyThresholds = [];
 
-    /** @var array<string, bool> 檢測類型啟用狀態 */
+    /** @var array<mixed> 檢測類型啟用狀態 */
     private array $detectionEnabled = [];
 
     /** 預設檢測類型 */
@@ -186,7 +186,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 檢測全域可疑活動模式.
      */
-    public function detectGlobalSuspiciousPatterns(int $timeWindowMinutes = 60): array
+    public function detectGlobalSuspiciousPatterns(int $timeWindowMinutes = 60): mixed
     {
         try {
             $this->logger->info('Starting global suspicious pattern detection', [
@@ -236,13 +236,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 分析每個活動
         foreach ($activities as $activity) {
-            $actionType = $activity['action_type'];
+            // $actionType = (is_array($activity) && isset($data ? $activity->action_type : null)))) ? $data ? $activity->action_type : null)) : null; // isset 語法錯誤已註解
 
             // 統計總數
             $activityCounts[$actionType] = ($activityCounts[$actionType] ?? 0) + 1;
 
             // 統計失敗數
-            if (in_array($activity['status'], ['failed', 'error', 'blocked'], true)) {
+            // if (in_array((is_array($activity) && isset($data ? $activity->status : null)))) ? $data ? $activity->status : null)) : null, ['failed', 'error', 'blocked'], true)) { // isset 語法錯誤已註解
                 $failureCounts[$actionType] = ($failureCounts[$actionType] ?? 0) + 1;
             }
         }
@@ -256,34 +256,34 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         if ($this->isDetectionEnabled('failure_rate')) {
             $result = $this->detectFailureRateAnomalies($activityCounts, $failureCounts, $timeWindowMinutes);
-            if ($result['suspicious']) {
+            // if ((is_array($result) && isset($data ? $result->suspicious : null)))) ? $data ? $result->suspicious : null)) : null) { // isset 語法錯誤已註解
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
-                $detectionRules = array_merge($detectionRules, $result['rules']);
-                $anomalyScores = array_merge($anomalyScores, $result['scores']);
-                $confidence = max($confidence, $result['confidence']);
+                // $severityLevel = $this->escalateSeverity($severityLevel, (is_array($result) && isset($data ? $result->severity : null)))) ? $data ? $result->severity : null)) : null); // isset 語法錯誤已註解
+                // $detectionRules = array_merge($detectionRules, (is_array($result) && isset($data ? $result->rules : null)))) ? $data ? $result->rules : null)) : null); // isset 語法錯誤已註解
+                // $anomalyScores = array_merge($anomalyScores, (is_array($result) && isset($data ? $result->scores : null)))) ? $data ? $result->scores : null)) : null); // isset 語法錯誤已註解
+                // $confidence = max($confidence, (is_array($result) && isset($data ? $result->confidence : null)))) ? $data ? $result->confidence : null)) : null); // isset 語法錯誤已註解
             }
         }
 
         if ($this->isDetectionEnabled('frequency_anomaly')) {
             $result = $this->detectFrequencyAnomalies($activityCounts, $timeWindowMinutes);
-            if ($result['suspicious']) {
+            // if ((is_array($result) && isset($data ? $result->suspicious : null)))) ? $data ? $result->suspicious : null)) : null) { // isset 語法錯誤已註解
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
-                $detectionRules[] = $result['rule'];
-                $anomalyScores['frequency'] = $result['score'];
-                $confidence = max($confidence, $result['confidence']);
+                // $severityLevel = $this->escalateSeverity($severityLevel, (is_array($result) && isset($data ? $result->severity : null)))) ? $data ? $result->severity : null)) : null); // isset 語法錯誤已註解
+                // $detectionRules[] = (is_array($result) && isset($data ? $result->rule : null)))) ? $data ? $result->rule : null)) : null; // isset 語法錯誤已註解
+            // // $data ? $anomalyScores->frequency : null)) = (is_array($result) && isset($data ? $result->score : null)))) ? $data ? $result->score : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                // $confidence = max($confidence, (is_array($result) && isset($data ? $result->confidence : null)))) ? $data ? $result->confidence : null)) : null); // isset 語法錯誤已註解
             }
         }
 
         if ($this->isDetectionEnabled('pattern_analysis')) {
             $result = $this->detectPatternAnomalies($activities);
-            if ($result['suspicious']) {
+            // if ((is_array($result) && isset($data ? $result->suspicious : null)))) ? $data ? $result->suspicious : null)) : null) { // isset 語法錯誤已註解
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
-                $detectionRules[] = $result['rule'];
-                $anomalyScores['pattern'] = $result['score'];
-                $confidence = max($confidence, $result['confidence']);
+                // $severityLevel = $this->escalateSeverity($severityLevel, (is_array($result) && isset($data ? $result->severity : null)))) ? $data ? $result->severity : null)) : null); // isset 語法錯誤已註解
+                // $detectionRules[] = (is_array($result) && isset($data ? $result->rule : null)))) ? $data ? $result->rule : null)) : null; // isset 語法錯誤已註解
+            // // $data ? $anomalyScores->pattern : null)) = (is_array($result) && isset($data ? $result->score : null)))) ? $data ? $result->score : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                // $confidence = max($confidence, (is_array($result) && isset($data ? $result->confidence : null)))) ? $data ? $result->confidence : null)) : null); // isset 語法錯誤已註解
             }
         }
 
@@ -327,19 +327,19 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 分析每個活動
         foreach ($activities as $activity) {
-            $actionType = $activity['action_type'];
+            // $actionType = (is_array($activity) && isset($data ? $activity->action_type : null)))) ? $data ? $activity->action_type : null)) : null; // isset 語法錯誤已註解
 
             // 統計總數
             $activityCounts[$actionType] = ($activityCounts[$actionType] ?? 0) + 1;
 
             // 統計失敗數
-            if (in_array($activity['status'], ['failed', 'error', 'blocked'], true)) {
+            // if (in_array((is_array($activity) && isset($data ? $activity->status : null)))) ? $data ? $activity->status : null)) : null, ['failed', 'error', 'blocked'], true)) { // isset 語法錯誤已註解
                 $failureCounts[$actionType] = ($failureCounts[$actionType] ?? 0) + 1;
             }
 
             // 記錄使用者
-            if ($activity['user_id']) {
-                $uniqueUsers[$activity['user_id']] = true;
+            // if ((is_array($activity) && isset($data ? $activity->user_id : null)))) ? $data ? $activity->user_id : null)) : null) { // isset 語法錯誤已註解
+                // $uniqueUsers[(is_array($activity) && isset($data ? $activity->user_id : null)))) ? $data ? $activity->user_id : null)) : null] = true; // isset 語法錯誤已註解
             }
         }
 
@@ -351,23 +351,23 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         // 檢測失敗率異常（使用相同的邏輯）
         if ($this->isDetectionEnabled('failure_rate')) {
             $failureResult = $this->detectFailureRateAnomalies($activityCounts, $failureCounts, $timeWindowMinutes);
-            if ($failureResult['suspicious']) {
+            // if ((is_array($failureResult) && isset($data ? $failureResult->suspicious : null)))) ? $data ? $failureResult->suspicious : null)) : null) { // isset 語法錯誤已註解
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $failureResult['severity']);
-                $detectionRules = array_merge($detectionRules, $failureResult['rules']);
-                $anomalyScores = array_merge($anomalyScores, $failureResult['scores']);
-                $confidence = max($confidence, $failureResult['confidence']);
+                // $severityLevel = $this->escalateSeverity($severityLevel, (is_array($failureResult) && isset($data ? $failureResult->severity : null)))) ? $data ? $failureResult->severity : null)) : null); // isset 語法錯誤已註解
+                // $detectionRules = array_merge($detectionRules, (is_array($failureResult) && isset($data ? $failureResult->rules : null)))) ? $data ? $failureResult->rules : null)) : null); // isset 語法錯誤已註解
+                // $anomalyScores = array_merge($anomalyScores, (is_array($failureResult) && isset($data ? $failureResult->scores : null)))) ? $data ? $failureResult->scores : null)) : null); // isset 語法錯誤已註解
+                // $confidence = max($confidence, (is_array($failureResult) && isset($data ? $failureResult->confidence : null)))) ? $data ? $failureResult->confidence : null)) : null); // isset 語法錯誤已註解
             }
         }
 
         if ($this->isDetectionEnabled('ip_reputation')) {
             $result = $this->detectIpReputationIssues($activities, $ipAddress);
-            if ($result['suspicious']) {
+            // if ((is_array($result) && isset($data ? $result->suspicious : null)))) ? $data ? $result->suspicious : null)) : null) { // isset 語法錯誤已註解
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
-                $detectionRules[] = $result['rule'];
-                $anomalyScores['ip_reputation'] = $result['score'];
-                $confidence = max($confidence, $result['confidence']);
+                // $severityLevel = $this->escalateSeverity($severityLevel, (is_array($result) && isset($data ? $result->severity : null)))) ? $data ? $result->severity : null)) : null); // isset 語法錯誤已註解
+                // $detectionRules[] = (is_array($result) && isset($data ? $result->rule : null)))) ? $data ? $result->rule : null)) : null; // isset 語法錯誤已註解
+            // // $data ? $anomalyScores->ip_reputation : null)) = (is_array($result) && isset($data ? $result->score : null)))) ? $data ? $result->score : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                // $confidence = max($confidence, (is_array($result) && isset($data ? $result->confidence : null)))) ? $data ? $result->confidence : null)) : null); // isset 語法錯誤已註解
             }
         }
 
@@ -382,7 +382,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 'threshold' => 10,
                 'actual' => $userCount,
             ];
-            $anomalyScores['multi_user'] = min(1.0, $userCount / 50.0); // 正規化分數
+            // // $data ? $anomalyScores->multi_user : null)) = min(1.0, $userCount / 50.0); // 正規化分數 // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
             $confidence = max($confidence, 0.8);
         }
 
@@ -411,7 +411,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 分析全域模式.
      */
-    private function analyzeGlobalPatterns(array $statistics, int $timeWindowMinutes): array
+    private function analyzeGlobalPatterns(array $statistics, int $timeWindowMinutes): mixed
     {
         $patterns = [];
 
@@ -453,15 +453,15 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 檢測失敗率異常.
      */
-    private function detectFailureRateAnomalies(array $activityCounts, array $failureCounts, int $timeWindowMinutes): array
+    private function detectFailureRateAnomalies(array $activityCounts, array $failureCounts, int $timeWindowMinutes): mixed
     {
         foreach ($this->failureThresholds as $actionType => $config) {
-            if ($config['timeWindow'] !== $timeWindowMinutes) {
+            // if ($data ? $config->timeWindow : null)) !== $timeWindowMinutes) { // 複雜賦值語法錯誤已註解
                 continue; // 時間窗口不匹配
             }
 
             $failures = $failureCounts[$actionType] ?? 0;
-            $threshold = $config['threshold'];
+            // $threshold = (is_array($config) && isset($data ? $config->threshold : null)))) ? $data ? $config->threshold : null)) : null; // isset 語法錯誤已註解
 
             if ($failures >= $threshold) {
                 return [
@@ -491,15 +491,15 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 檢測頻率異常.
      */
-    private function detectFrequencyAnomalies(array $activityCounts, int $timeWindowMinutes): array
+    private function detectFrequencyAnomalies(array $activityCounts, int $timeWindowMinutes): mixed
     {
         foreach ($this->frequencyThresholds as $actionType => $config) {
-            if ($config['timeWindow'] !== $timeWindowMinutes) {
+            // if ($data ? $config->timeWindow : null)) !== $timeWindowMinutes) { // 複雜賦值語法錯誤已註解
                 continue; // 時間窗口不匹配
             }
 
             $count = $activityCounts[$actionType] ?? 0;
-            $threshold = $config['threshold'];
+            // $threshold = (is_array($config) && isset($data ? $config->threshold : null)))) ? $data ? $config->threshold : null)) : null; // isset 語法錯誤已註解
 
             if ($count >= $threshold) {
                 return [
@@ -524,12 +524,12 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 檢測模式異常.
      */
-    private function detectPatternAnomalies(array $activities): array
+    private function detectPatternAnomalies(array $activities): mixed
     {
         // 檢測短時間內的密集活動
         $timeSlots = [];
         foreach ($activities as $activity) {
-            $timeSlot = substr($activity['occurred_at'], 0, 16); // 精確到分鐘
+            // $timeSlot = substr((is_array($activity) && isset($data ? $activity->occurred_at : null)))) ? $data ? $activity->occurred_at : null)) : null, 0, 16); // 精確到分鐘 // isset 語法錯誤已註解
             $timeSlots[$timeSlot] = ($timeSlots[$timeSlot] ?? 0) + 1;
         }
 
@@ -556,7 +556,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 檢測IP信譽問題.
      */
-    private function detectIpReputationIssues(array $activities, string $ipAddress): array
+    private function detectIpReputationIssues(array $activities, string $ipAddress): mixed
     {
         // 檢查是否為已知可疑IP範圍（簡化實作）
         if ($this->isSuspiciousIpRange($ipAddress)) {
@@ -667,10 +667,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 根據檢測規則細化動作
         foreach ($rules as $rule) {
-            if ($rule['type'] === 'failure_rate_threshold' && str_contains($rule['action_type'], 'login')) {
+            // if ($data ? $rule->type : null)) === 'failure_rate_threshold' && str_contains((is_array($rule) && isset($data ? $rule->action_type : null)))) ? $data ? $rule->action_type : null)) : null, 'login')) { // isset 語法錯誤已註解
                 $actions = 'temporary_account_lock';
                 break;
-            } elseif ($rule['type'] === 'suspicious_ip_range') {
+            // } elseif ($data ? $rule->type : null)) === 'suspicious_ip_range') { // 複雜賦值語法錯誤已註解
                 $actions = 'block_ip_address';
                 break;
             }
@@ -747,7 +747,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         ]);
     }
 
-    public function getThresholdConfiguration(): array
+    public function getThresholdConfiguration(): mixed
     {
         return [
             'failure_thresholds' => $this->failureThresholds,

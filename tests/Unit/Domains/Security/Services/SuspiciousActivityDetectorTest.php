@@ -42,6 +42,14 @@ class SuspiciousActivityDetectorTest extends TestCase
         $this->mockActivityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->mockLogger = Mockery::mock(LoggerInterface::class);
 
+        // 設定 ActivityLoggingService 預設行為
+        $this->activityLogger->shouldReceive('logFailure')
+            ->byDefault()
+            ->andReturn(true);
+        $this->activityLogger->shouldReceive('logSuccess')
+            ->byDefault()
+            ->andReturn(true);
+
         $this->detector = new SuspiciousActivityDetector(
             $this->mockRepository,
             $this->mockActivityLogger,
@@ -173,9 +181,9 @@ class SuspiciousActivityDetectorTest extends TestCase
         $config = $this->detector->getThresholdConfiguration();
 
         $this->assertArrayHasKey('failure_thresholds', $config);
-        $this->assertArrayHasKey($activityType->value, $config['failure_thresholds']);
-        $this->assertSame($threshold, $config['failure_thresholds'][$activityType->value]['threshold']);
-        $this->assertSame($timeWindow, $config['failure_thresholds'][$activityType->value]['timeWindow']);
+        $this->assertArrayHasKey($activityType->value, (is_array($config) ? $config['failure_thresholds'] : (is_object($config) ? $config->failure_thresholds : null)));
+        $this->assertSame($threshold, (is_array($config) ? $config['failure_thresholds'] : (is_object($config) ? $config->failure_thresholds : null))[$activityType->value]['threshold']);
+        $this->assertSame($timeWindow, (is_array($config) ? $config['failure_thresholds'] : (is_object($config) ? $config->failure_thresholds : null))[$activityType->value]['timeWindow']);
     }
 
     #[Test]
@@ -190,9 +198,9 @@ class SuspiciousActivityDetectorTest extends TestCase
         $config = $this->detector->getThresholdConfiguration();
 
         $this->assertArrayHasKey('frequency_thresholds', $config);
-        $this->assertArrayHasKey($activityType->value, $config['frequency_thresholds']);
-        $this->assertSame($threshold, $config['frequency_thresholds'][$activityType->value]['threshold']);
-        $this->assertSame($timeWindow, $config['frequency_thresholds'][$activityType->value]['timeWindow']);
+        $this->assertArrayHasKey($activityType->value, (is_array($config) ? $config['frequency_thresholds'] : (is_object($config) ? $config->frequency_thresholds : null)));
+        $this->assertSame($threshold, (is_array($config) ? $config['frequency_thresholds'] : (is_object($config) ? $config->frequency_thresholds : null))[$activityType->value]['threshold']);
+        $this->assertSame($timeWindow, (is_array($config) ? $config['frequency_thresholds'] : (is_object($config) ? $config->frequency_thresholds : null))[$activityType->value]['timeWindow']);
     }
 
     #[Test]
@@ -224,8 +232,8 @@ class SuspiciousActivityDetectorTest extends TestCase
         $config = $this->detector->getThresholdConfiguration();
 
         // 應該回到預設值（注意是 timeWindow 而非 time_window）
-        $this->assertSame(5, $config['failure_thresholds'][ActivityType::LOGIN_FAILED->value]['threshold']);
-        $this->assertSame(60, $config['failure_thresholds'][ActivityType::LOGIN_FAILED->value]['timeWindow']);
+        $this->assertSame(5, (is_array($config) ? $config['failure_thresholds'] : (is_object($config) ? $config->failure_thresholds : null))[ActivityType::LOGIN_FAILED->value]['threshold']);
+        $this->assertSame(60, (is_array($config) ? $config['failure_thresholds'] : (is_object($config) ? $config->failure_thresholds : null))[ActivityType::LOGIN_FAILED->value]['timeWindow']);
     }
 
     #[Test]

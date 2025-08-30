@@ -125,9 +125,9 @@ class PostRepositoryPerformanceTest extends TestCase
                 'content' => "內容 {$i}",
                 'user_id' => 1,
             ]);
-            $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-            $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-            $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
             $this->repository->create($data);
         }
 
@@ -146,9 +146,9 @@ class PostRepositoryPerformanceTest extends TestCase
                 'content' => "內容 {$i}",
                 'user_id' => 1,
             ]);
-            $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-            $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-            $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
             $this->repository->create($data);
         }
 
@@ -158,7 +158,7 @@ class PostRepositoryPerformanceTest extends TestCase
         $duration = ($endTime - $startTime) * 1000;
 
         $this->assertLessThan(50, $duration, '分頁查詢時間應小於 50ms');
-        $this->assertCount(10, $result['items']);
+        $this->assertCount(10, (is_array($result) && isset((is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)))) ? (is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)) : null);
     }
 
     public function testSearchPerformance(): void
@@ -171,9 +171,9 @@ class PostRepositoryPerformanceTest extends TestCase
                 'user_id' => 1,
                 'status' => 'published',
             ]);
-            $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-            $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-            $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+            (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
             $this->repository->create($data);
         }
 
@@ -195,9 +195,9 @@ class PostRepositoryPerformanceTest extends TestCase
         // }
 
         $data = PostFactory::make(['user_id' => 1]);
-        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
         $tagIds = range(1, 10);
 
@@ -216,9 +216,9 @@ class PostRepositoryPerformanceTest extends TestCase
 
         // 已註解因為不可達
         // $data = PostFactory::make(['user_id' => 1]);
-        // $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        // (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
         $concurrentCount = 10;
         $startTime = microtime(true);

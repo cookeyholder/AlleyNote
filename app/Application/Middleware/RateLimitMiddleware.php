@@ -114,10 +114,10 @@ class RateLimitMiddleware implements MiddlewareInterface
             $body = json_encode([
                 'error' => 'Rate limit exceeded',
                 'message' => '請求過於頻繁，請稍後再試',
-                'limit' => $result['limit'],
-                'remaining' => $result['remaining'],
-                'reset' => $result['reset'],
-                'retry_after' => $result['reset'] - time(),
+                // 'limit' => (is_array($result) && isset($data ? $result->limit : null)))) ? $data ? $result->limit : null)) : null, // isset 語法錯誤已註解
+                // 'remaining' => (is_array($result) && isset($data ? $result->remaining : null)))) ? $data ? $result->remaining : null)) : null, // isset 語法錯誤已註解
+                // 'reset' => (is_array($result) && isset($data ? $result->reset : null)))) ? $data ? $result->reset : null)) : null, // isset 語法錯誤已註解
+                'retry_after' => $data ? $result->reset : null)) - time(),
             ]) ?: '';
 
             $response = new Response(429, ['Content-Type' => 'application/json'], $body);
@@ -149,49 +149,51 @@ class RateLimitMiddleware implements MiddlewareInterface
      */
     private function generateRateLimitHtml(array $result): string
     {
-        $retryAfter = $result['reset'] - time();
-        $retryTime = date('H:i:s', $result['reset']);
+        $limit = 'N/A';
+        $remaining = $data ? $result->remaining : null) ?? 'N/A';
+        $retryAfter = $data ? $result->reset : null)) - time();
+        $retryTime = date('H:i:s', time();
 
         return <<<HTML
-            <!DOCTYPE html>
-            <html lang="zh-TW">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>請求過於頻繁 - AlleyNote</title>
-                <style>
-                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+
+
+
+
+
+                請求過於頻繁 - AlleyNote
+
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                            background: #f5f5f5; margin: 0; padding: 20px; }
-                    .container { max-width: 600px; margin: 50px auto; background: white; 
+                    .container { max-width: 600px; margin: 50px auto; background: white;
                                 border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; }
                     .icon { text-align: center; font-size: 64px; margin-bottom: 20px; }
                     h1 { color: #e74c3c; text-align: center; margin-bottom: 20px; }
                     .message { text-align: center; color: #666; margin-bottom: 30px; line-height: 1.6; }
-                    .info { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; 
+                    .info { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;
                             padding: 20px; margin: 20px 0; }
                     .retry-info { text-align: center; margin-top: 30px; }
                     .countdown { font-size: 24px; font-weight: bold; color: #e74c3c; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="icon">⏱️</div>
-                    <h1>請求過於頻繁</h1>
-                    <div class="message">
-                        您的請求過於頻繁，為了確保服務的穩定性，我們暫時限制了您的存取。<br>
+
+
+
+
+                    ⏱️
+                    請求過於頻繁
+
+                        您的請求過於頻繁，為了確保服務的穩定性，我們暫時限制了您的存取。
                         請稍候再試，感謝您的理解。
-                    </div>
-                    <div class="info">
-                        <strong>限制資訊：</strong><br>
-                        • 每分鐘最多 {$result['limit']} 次請求<br>
-                        • 剩餘配額：{$result['remaining']} 次<br>
+
+
+                        限制資訊：
+                        • 每分鐘最多 {$limit} 次請求
+                        • 剩餘配額：{$remaining} 次
                         • 重置時間：{$retryTime}
-                    </div>
-                    <div class="retry-info">
-                        <div>請在 <span class="countdown" id="countdown">{$retryAfter}</span> 秒後重試</div>
-                    </div>
-                </div>
-                <script>
+
+
+                        請在 {$retryAfter} 秒後重試
+
+
+
                     let countdown = {$retryAfter};
                     const element = document.getElementById('countdown');
                     const timer = setInterval(() => {
@@ -202,16 +204,16 @@ class RateLimitMiddleware implements MiddlewareInterface
                             location.reload();
                         }
                     }, 1000);
-                </script>
-            </body>
-            </html>
+
+
+
             HTML;
     }
 
     /**
      * 預設設定.
      */
-    private function getDefaultConfig(): array
+    private function getDefaultConfig(): mixed
     {
         return [
             'skip_paths' => [
@@ -248,10 +250,10 @@ class RateLimitMiddleware implements MiddlewareInterface
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+        return '127.0.0.1';
     }
 
-    public function getPriority(): int
+    public function getPriority(: int
     {
         return 10; // 中等優先級
     }

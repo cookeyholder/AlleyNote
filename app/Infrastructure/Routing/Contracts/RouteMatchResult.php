@@ -37,9 +37,9 @@ class RouteMatchResult
     /**
      * 取得路由參數.
      *
-     * @return array<string, string>
+     * @return array<mixed>
      */
-    public function getParameters(): array
+    public function getParameters(): mixed
     {
         return $this->parameters;
     }

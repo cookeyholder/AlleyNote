@@ -23,7 +23,7 @@ class JwtExceptionTest extends TestCase
         string $message = 'Test exception',
         int $code = 1000,
         ?Exception $previous = null,
-        array $context = [],
+        array<mixed> $context = [],
         string $errorType = 'test_jwt_error',
     ): JwtException {
         return new class ($message, $code, $previous, $context, $errorType) extends JwtException {
@@ -31,7 +31,7 @@ class JwtExceptionTest extends TestCase
                 string $message,
                 int $code,
                 ?Exception $previous,
-                array $context,
+                array<mixed> $context,
                 string $errorType,
             ) {
                 parent::__construct($message, $code, $previous, $context);
@@ -139,10 +139,10 @@ class JwtExceptionTest extends TestCase
         $details = $exception->getErrorDetails();
 
         $this->assertIsArray($details);
-        $this->assertSame($errorType, $details['error_type']);
-        $this->assertSame($message, $details['message']);
-        $this->assertSame($code, $details['code']);
-        $this->assertSame($context, $details['context']);
+        $this->assertSame($errorType, (is_array($details) ? $details['error_type'] : (is_object($details) ? $details->error_type : null)));
+        $this->assertSame($message, (is_array($details) ? $details['message'] : (is_object($details) ? $details->message : null)));
+        $this->assertSame($code, (is_array($details) ? $details['code'] : (is_object($details) ? $details->code : null)));
+        $this->assertSame($context, (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null)));
         $this->assertArrayHasKey('file', $details);
         $this->assertArrayHasKey('line', $details);
     }
@@ -171,22 +171,22 @@ class JwtExceptionTest extends TestCase
 
         $exception = $this->createConcreteJwtException($message, $code, null, $context, $errorType);
 
-        $array = $exception->toArray();
+        $array<mixed> = $exception->toArray();
 
-        $this->assertIsArray($array);
-        $this->assertArrayHasKey('exception', $array);
-        $this->assertArrayHasKey('error_type', $array);
-        $this->assertArrayHasKey('message', $array);
-        $this->assertArrayHasKey('code', $array);
-        $this->assertArrayHasKey('context', $array);
-        $this->assertArrayHasKey('file', $array);
-        $this->assertArrayHasKey('line', $array);
-        $this->assertArrayHasKey('trace', $array);
+        $this->assertIsArray($array<mixed>);
+        $this->assertArrayHasKey('exception', $array<mixed>);
+        $this->assertArrayHasKey('error_type', $array<mixed>);
+        $this->assertArrayHasKey('message', $array<mixed>);
+        $this->assertArrayHasKey('code', $array<mixed>);
+        $this->assertArrayHasKey('context', $array<mixed>);
+        $this->assertArrayHasKey('file', $array<mixed>);
+        $this->assertArrayHasKey('line', $array<mixed>);
+        $this->assertArrayHasKey('trace', $array<mixed>);
 
-        $this->assertSame($errorType, $array['error_type']);
-        $this->assertSame($message, $array['message']);
-        $this->assertSame($code, $array['code']);
-        $this->assertSame($context, $array['context']);
+        $this->assertSame($errorType, (is_array($array) ? $array['error_type'] : (is_object($array) ? $array->error_type : null)));
+        $this->assertSame($message, (is_array($array) ? $array['message'] : (is_object($array) ? $array->message : null)));
+        $this->assertSame($code, (is_array($array) ? $array['code'] : (is_object($array) ? $array->code : null)));
+        $this->assertSame($context, (is_array($array) ? $array['context'] : (is_object($array) ? $array->context : null)));
     }
 
     /**
@@ -256,8 +256,8 @@ class JwtExceptionTest extends TestCase
 
         // 測試嵌套資料的存取
         $tokenData = $exception->getContext()['token_data'];
-        $this->assertSame('access', $tokenData['type']);
-        $this->assertSame(['read', 'write'], $tokenData['scopes']);
+        $this->assertSame('access', (is_array($tokenData) ? $tokenData['type'] : (is_object($tokenData) ? $tokenData->type : null)));
+        $this->assertSame(['read', 'write'], (is_array($tokenData) ? $tokenData['scopes'] : (is_object($tokenData) ? $tokenData->scopes : null)));
     }
 
     /**
@@ -280,12 +280,12 @@ class JwtExceptionTest extends TestCase
         $exception = $this->createConcreteJwtException(context: $originalContext);
 
         // 修改原始上下文
-        $originalContext['mutable_array'][] = 'value3';
-        $originalContext['new_key'] = 'new_value';
+        (is_array($originalContext) ? $originalContext['mutable_array'] : (is_object($originalContext) ? $originalContext->mutable_array : null))[] = 'value3';
+        (is_array($originalContext) ? $originalContext['new_key'] : (is_object($originalContext) ? $originalContext->new_key : null)) = 'new_value';
 
         // 例外中的上下文應該不受影響
         $exceptionContext = $exception->getContext();
-        $this->assertCount(2, $exceptionContext['mutable_array']);
+        $this->assertCount(2, (is_array($exceptionContext) ? $exceptionContext['mutable_array'] : (is_object($exceptionContext) ? $exceptionContext->mutable_array : null)));
         $this->assertArrayNotHasKey('new_key', $exceptionContext);
     }
 }

@@ -77,9 +77,9 @@ final readonly class AuthorizationResult implements JsonSerializable
     /**
      * 取得應用的授權規則.
      *
-     * @return array<string> 規則清單
+     * @return array<mixed> 規則清單
      */
-    public function getAppliedRules(): array
+    public function getAppliedRules(): mixed
     {
         return $this->appliedRules;
     }
@@ -87,9 +87,9 @@ final readonly class AuthorizationResult implements JsonSerializable
     /**
      * 取得元資料.
      *
-     * @return array<string, mixed> 元資料
+     * @return array<mixed> 元資料
      */
-    public function getMetadata(): array
+    public function getMetadata(): mixed
     {
         return $this->metadata;
     }
@@ -233,9 +233,9 @@ final readonly class AuthorizationResult implements JsonSerializable
     /**
      * 轉換為陣列格式.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'allowed' => $this->allowed,
@@ -249,9 +249,9 @@ final readonly class AuthorizationResult implements JsonSerializable
     /**
      * JsonSerializable 實作.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }

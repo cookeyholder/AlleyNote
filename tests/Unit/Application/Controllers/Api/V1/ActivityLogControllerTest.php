@@ -33,6 +33,14 @@ class ActivityLogControllerTest extends TestCase
         $this->loggingService = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->repository = Mockery::mock(ActivityLogRepositoryInterface::class);
 
+        // 設定 ActivityLoggingService 預設行為
+        $this->loggingService->shouldReceive('logFailure')
+            ->byDefault()
+            ->andReturn(true);
+        $this->loggingService->shouldReceive('logSuccess')
+            ->byDefault()
+            ->andReturn(true);
+
         $this->controller = new ActivityLogController(
             $this->loggingService,
             $this->repository,
@@ -84,7 +92,7 @@ class ActivityLogControllerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $result);
     }
 
-    private function createMockRequest(array $body = []): ServerRequestInterface&MockInterface
+    private function createMockRequest(array<mixed> $body = []): ServerRequestInterface&MockInterface
     {
         $request = Mockery::mock(ServerRequestInterface::class);
 

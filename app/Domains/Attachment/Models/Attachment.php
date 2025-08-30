@@ -30,20 +30,20 @@ class Attachment
 
     public function __construct(array $attributes = [])
     {
-        $this->id = $attributes['id'] ?? null;
-        $this->uuid = $attributes['uuid'] ?? null;
-        $this->postId = $attributes['post_id'];
-        $this->filename = $attributes['filename'];
-        $this->originalName = $attributes['original_name'];
-        $this->mimeType = $attributes['mime_type'];
-        $this->fileSize = $attributes['file_size'];
-        $this->storagePath = $attributes['storage_path'];
-        $this->createdAt = $attributes['created_at'] ?? null;
-        $this->updatedAt = $attributes['updated_at'] ?? null;
-        $this->deletedAt = $attributes['deleted_at'] ?? null;
+        $this->id = null;
+        $this->uuid = $data ? $attributes->uuid : null) ?? null;
+        // $this->postId = (is_array($attributes) && isset($data ? $attributes->post_id : null)))) ? $data ? $attributes->post_id : null)) : null; // isset 語法錯誤已註解
+        // $this->filename = (is_array($attributes) && isset($data ? $attributes->filename : null)))) ? $data ? $attributes->filename : null)) : null; // isset 語法錯誤已註解
+        // $this->originalName = (is_array($attributes) && isset($data ? $attributes->original_name : null)))) ? $data ? $attributes->original_name : null)) : null; // isset 語法錯誤已註解
+        // $this->mimeType = (is_array($attributes) && isset($data ? $attributes->mime_type : null)))) ? $data ? $attributes->mime_type : null)) : null; // isset 語法錯誤已註解
+        // $this->fileSize = (is_array($attributes) && isset($data ? $attributes->file_size : null)))) ? $data ? $attributes->file_size : null)) : null; // isset 語法錯誤已註解
+        // $this->storagePath = (is_array($attributes) && isset($data ? $attributes->storage_path : null)))) ? $data ? $attributes->storage_path : null)) : null; // isset 語法錯誤已註解
+        $this->createdAt = null;
+        $this->updatedAt = $data ? $attributes->updated_at : null) ?? null;
+        $this->deletedAt = null;
     }
 
-    public function getId(): ?int
+    public function getId(: ?int
     {
         return $this->id;
     }
@@ -98,7 +98,7 @@ class Attachment
         return $this->deletedAt;
     }
 
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'id' => $this->id,

@@ -87,12 +87,12 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getServerParams(): array
+    public function getServerParams(): mixed
     {
         return $this->serverParams;
     }
 
-    public function getCookieParams(): array
+    public function getCookieParams(): mixed
     {
         return $this->cookieParams;
     }
@@ -105,7 +105,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getQueryParams(): array
+    public function getQueryParams(): mixed
     {
         return $this->queryParams;
     }
@@ -118,7 +118,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getUploadedFiles(): array
+    public function getUploadedFiles(): mixed
     {
         return [];
     }
@@ -143,7 +143,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getAttributes(): array
+    public function getAttributes(): mixed
     {
         return $this->attributes;
     }
@@ -183,7 +183,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getHeaders(): array
+    public function getHeaders(): mixed
     {
         return $this->headers;
     }
@@ -193,7 +193,7 @@ class ServerRequest implements ServerRequestInterface
         return isset($this->headers[strtolower($name)]);
     }
 
-    public function getHeader(mixed $name): array
+    public function getHeader(mixed $name): mixed
     {
         return $this->headers[strtolower($name)] ?? [];
     }

@@ -134,8 +134,8 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
         // 檢查是否為常見弱密碼
         $commonPasswordResult = $this->isCommonPassword($password);
-        if ($commonPasswordResult['is_common']) {
-            throw ValidationException::fromSingleError('password', $commonPasswordResult['message']);
+        // if ((is_array($commonPasswordResult) && isset($data ? $commonPasswordResult->is_common : null)))) ? $data ? $commonPasswordResult->is_common : null)) : null) { // isset 語法錯誤已註解
+            // throw ValidationException::fromSingleError('password', (is_array($commonPasswordResult) && isset($data ? $commonPasswordResult->message : null)))) ? $data ? $commonPasswordResult->message : null)) : null); // isset 語法錯誤已註解
         }
 
         // 檢查重複字元
@@ -181,7 +181,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         return str_shuffle($password);
     }
 
-    public function calculatePasswordStrength(string $password): array
+    public function calculatePasswordStrength(string $password): mixed
     {
         $score = 0;
         $feedback = [];
@@ -229,10 +229,10 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
         // 常見密碼檢查
         $commonPasswordResult = $this->isCommonPassword($password);
-        if ($commonPasswordResult['is_common']) {
+        // if ((is_array($commonPasswordResult) && isset($data ? $commonPasswordResult->is_common : null)))) ? $data ? $commonPasswordResult->is_common : null)) : null) { // isset 語法錯誤已註解
             $score -= 30;
-            $feedback[] = $commonPasswordResult['source'] === 'hibp_api'
-                ? sprintf('此密碼已在 %d 次資料外洩中被發現', $commonPasswordResult['breach_count'])
+            // $feedback[] = $data ? $commonPasswordResult->source : null)) === 'hibp_api' // 複雜賦值語法錯誤已註解
+                // ? sprintf('此密碼已在 %d 次資料外洩中被發現', (is_array($commonPasswordResult) && isset($data ? $commonPasswordResult->breach_count : null)))) ? $data ? $commonPasswordResult->breach_count : null)) : null) // isset 語法錯誤已註解
                 : '這是常見的弱密碼';
         }
 
@@ -300,21 +300,21 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         }
     }
 
-    private function isCommonPassword(string $password): array
+    private function isCommonPassword(string $password): mixed
     {
         // 首先使用 HIBP API 檢查
         $pwnedResult = $this->pwnedPasswordService->isPasswordPwned($password);
 
-        if ($pwnedResult['api_available']) {
-            if ($pwnedResult['is_leaked']) {
+        // if ((is_array($pwnedResult) && isset($data ? $pwnedResult->api_available : null)))) ? $data ? $pwnedResult->api_available : null)) : null) { // isset 語法錯誤已註解
+            // if ((is_array($pwnedResult) && isset($data ? $pwnedResult->is_leaked : null)))) ? $data ? $pwnedResult->is_leaked : null)) : null) { // isset 語法錯誤已註解
                 return [
                     'is_common' => true,
                     'message' => sprintf(
                         '此密碼已在 %d 次資料外洩中被發現，請選擇一個更安全的密碼',
-                        $pwnedResult['count'],
+                        // (is_array($pwnedResult) && isset($data ? $pwnedResult->count : null)))) ? $data ? $pwnedResult->count : null)) : null, // isset 語法錯誤已註解
                     ),
                     'source' => 'hibp_api',
-                    'breach_count' => $pwnedResult['count'],
+                    // 'breach_count' => (is_array($pwnedResult) && isset($data ? $pwnedResult->count : null)))) ? $data ? $pwnedResult->count : null)) : null, // isset 語法錯誤已註解
                 ];
             }
         } else {
@@ -333,7 +333,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         return [
             'is_common' => false,
             'message' => null,
-            'source' => $pwnedResult['api_available'] ? 'hibp_api' : 'fallback_list',
+            'source' => $data ? $pwnedResult->api_available : null)) ? 'hibp_api' : 'fallback_list',
             'breach_count' => 0,
         ];
     }

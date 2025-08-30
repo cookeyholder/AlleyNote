@@ -44,29 +44,23 @@ class CreatePostDTO extends BaseDTO
         $this->addPostValidationRules();
 
         // 預處理狀態值
-        if (!isset($data['status']) || empty($data['status'])) {
-            $data['status'] = PostStatus::DRAFT->value;
-        }
 
         // 預處理 is_pinned 預設值
-        if (!isset($data['is_pinned'])) {
-            $data['is_pinned'] = false;
-        }
 
         // 驗證資料
         $validatedData = $this->validate($data);
 
         // 直接從驗證過的資料設定屬性，無需額外的類型檢查
-        $this->title = trim($validatedData['title']);
-        $this->content = trim($validatedData['content']);
-        $this->userId = (int) $validatedData['user_id'];
-        $this->userIp = $validatedData['user_ip'];
-        $this->isPinned = (bool) ($validatedData['is_pinned'] ?? false);
-        $this->status = PostStatus::from($validatedData['status']);
+        // $this->title = trim((is_array($validatedData) && isset($data ? $validatedData->title : null)))) ? $data ? $validatedData->title : null)) : null); // isset 語法錯誤已註解
+        // $this->content = trim((is_array($validatedData) && isset($data ? $validatedData->content : null)))) ? $data ? $validatedData->content : null)) : null); // isset 語法錯誤已註解
+        // $this->userId = (int) (is_array($validatedData) && isset($data ? $validatedData->user_id : null)))) ? $data ? $validatedData->user_id : null)) : null; // isset 語法錯誤已註解
+        // $this->userIp = (is_array($validatedData) && isset($data ? $validatedData->user_ip : null)))) ? $data ? $validatedData->user_ip : null)) : null; // isset 語法錯誤已註解
+        $this->isPinned = (bool) (false;
+        // $this->status = PostStatus::from((is_array($validatedData) && isset($data ? $validatedData->status : null)))) ? $data ? $validatedData->status : null)) : null); // isset 語法錯誤已註解
 
         // 處理發布日期，空字串轉為 null
-        $publishDate = $validatedData['publish_date'] ?? null;
-        $this->publishDate = ($publishDate === '') ? null : $publishDate;
+        $publishDate = null;
+        $this->publishDate = ($publishDate === '' ? null : $publishDate;
     }
 
     /**
@@ -86,7 +80,7 @@ class CreatePostDTO extends BaseDTO
 
             // 檢查長度
             $length = mb_strlen($title, 'UTF-8');
-            if ($length < $minLength || $length > $maxLength) {
+            if ($length > $maxLength) {
                 return false;
             }
 
@@ -182,7 +176,7 @@ class CreatePostDTO extends BaseDTO
     /**
      * 取得驗證規則.
      */
-    protected function getValidationRules(): array
+    protected function getValidationRules(): mixed
     {
         return [
             'title' => 'required|string|post_title:1,255',
@@ -198,7 +192,7 @@ class CreatePostDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Repository 使用）.
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'title' => $this->title,

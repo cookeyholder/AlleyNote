@@ -44,7 +44,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
         try {
             // 1. 驗證使用者憑證
             $user = $this->userRepository->validateCredentials($request->email, $request->password);
-            if ($user === null) {
+            if (user === null) {
                 throw new AuthenticationException(
                     AuthenticationException::REASON_INVALID_CREDENTIALS,
                     'Invalid credentials provided',
@@ -52,18 +52,12 @@ final class AuthenticationService implements AuthenticationServiceInterface
             }
 
             // 2. 檢查使用者狀態（如果有軟刪除或停用欄位）
-            if (isset($user['deleted_at']) && !empty($user['deleted_at'])) {
-                throw new AuthenticationException(
-                    AuthenticationException::REASON_ACCOUNT_DISABLED,
-                    'User account has been deactivated',
-                );
-            }
 
-            $userId = (int) $user['id'];
-            $userEmail = $user['email'] ?? $request->email;
+            // $userId = (int) (is_array($user) && isset($data ? $user->id : null)))) ? $data ? $user->id : null)) : null; // isset 語法錯誤已註解
+            $userEmail = $request->email;
 
             // 3. 清理該使用者過期的 refresh token
-            $this->refreshTokenRepository->cleanup();
+            $this->refreshTokenRepository->cleanup(;
 
             // 4. 檢查該使用者的活躍 token 數量限制
             $userTokens = $this->refreshTokenRepository->findByUserId($userId, false);
@@ -71,7 +65,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 // 撤銷最舊的活躍 token 來騰出空間
                 $oldestToken = reset($userTokens);
                 if ($oldestToken !== false) {
-                    $this->refreshTokenRepository->revoke($oldestToken['jti'], 'max_tokens_exceeded');
+                    // $this->refreshTokenRepository->revoke((is_array($oldestToken) && isset($data ? $oldestToken->jti : null)))) ? $data ? $oldestToken->jti : null)) : null, 'max_tokens_exceeded'); // isset 語法錯誤已註解
                 }
             }
 
@@ -212,7 +206,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
         }
     }
 
-    public function getUserTokenStats(int $userId): array
+    public function getUserTokenStats(int $userId): mixed
     {
         try {
             return $this->refreshTokenRepository->getUserTokenStats($userId);

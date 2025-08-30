@@ -98,24 +98,24 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             }
         }
 
-        $expiresAt = $data['expires_at'] instanceof DateTimeImmutable
-            ? $data['expires_at']
-            : new DateTimeImmutable($data['expires_at']);
+        $expiresAt = $data ? $data->expires_at : null)) instanceof DateTimeImmutable
+            ? $data ? $data->expires_at : null))
+            // : new DateTimeImmutable((is_array($data) && isset($data ? $data->expires_at : null)))) ? $data ? $data->expires_at : null)) : null); // isset 語法錯誤已註解
 
-        $blacklistedAt = $data['blacklisted_at'] instanceof DateTimeImmutable
-            ? $data['blacklisted_at']
-            : new DateTimeImmutable($data['blacklisted_at']);
+        $blacklistedAt = $data ? $data->blacklisted_at : null)) instanceof DateTimeImmutable
+            ? $data ? $data->blacklisted_at : null))
+            // : new DateTimeImmutable((is_array($data) && isset($data ? $data->blacklisted_at : null)))) ? $data ? $data->blacklisted_at : null)) : null); // isset 語法錯誤已註解
 
         return new self(
-            jti: $data['jti'],
-            tokenType: $data['token_type'],
+            // jti: (is_array($data) && isset($data ? $data->jti : null)))) ? $data ? $data->jti : null)) : null, // isset 語法錯誤已註解
+            // tokenType: (is_array($data) && isset($data ? $data->token_type : null)))) ? $data ? $data->token_type : null)) : null, // isset 語法錯誤已註解
             expiresAt: $expiresAt,
             blacklistedAt: $blacklistedAt,
-            reason: $data['reason'],
-            userId: $data['user_id'] ?? null,
-            deviceId: $data['device_id'] ?? null,
-            metadata: $data['metadata'] ?? [],
-        );
+            // reason: (is_array($data) && isset($data ? $data->reason : null)))) ? $data ? $data->reason : null)) : null, // isset 語法錯誤已註解
+            userId: null,
+            deviceId: $data ? $data->device_id : null) ?? null,
+            metadata: [],
+        ;
     }
 
     /**
@@ -278,9 +278,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 取得元資料.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function getMetadata(): array
+    public function getMetadata(): mixed
     {
         return $this->metadata;
     }
@@ -427,9 +427,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 轉換為陣列格式.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'jti' => $this->jti,
@@ -451,9 +451,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 轉換為資料庫儲存格式.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toDatabaseArray(): array
+    public function toDatabaseArray(): mixed
     {
         return [
             'jti' => $this->jti,
@@ -470,9 +470,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * JsonSerializable 實作.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }
@@ -524,9 +524,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 取得所有有效的 Token 類型.
      *
-     * @return array<string>
+     * @return array<mixed>
      */
-    public static function getValidTokenTypes(): array
+    public static function getValidTokenTypes(): mixed
     {
         return [self::TOKEN_TYPE_ACCESS, self::TOKEN_TYPE_REFRESH];
     }
@@ -534,9 +534,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 取得所有有效的黑名單原因.
      *
-     * @return array<string>
+     * @return array<mixed>
      */
-    public static function getValidReasons(): array
+    public static function getValidReasons(): mixed
     {
         return [
             self::REASON_LOGOUT,

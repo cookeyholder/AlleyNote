@@ -223,8 +223,8 @@ class FileSecurityService implements FileSecurityServiceInterface
     {
         $maliciousPatterns = [
             // Script tags
-            '/<script[^>]*>/i',
-            '/}<\/script>/i',
+            '/]*>/i',
+            '/}/i',
             '/javascript:/i',
             '/vbscript:/i',
             '/data:(?!image\/)/i',
@@ -234,7 +234,7 @@ class FileSecurityService implements FileSecurityServiceInterface
 
             // Server-side code
             '/<\?php/i',
-            '/<%[\s\S]*?%>/i',
+            '//i',
             '/<asp:/i',
             '/<jsp:/i',
 

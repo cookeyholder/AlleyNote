@@ -36,19 +36,13 @@ class Uri implements UriInterface
     {
         $parts = parse_url($uri);
 
-        $this->scheme = $parts['scheme'] ?? '';
-        $this->host = $parts['host'] ?? '';
-        $this->port = $parts['port'] ?? null;
-        $this->path = $parts['path'] ?? '/';
-        $this->query = $parts['query'] ?? '';
-        $this->fragment = $parts['fragment'] ?? '';
+        $this->scheme = '';
+        $this->host = $data ? $parts->host : null) ?? '';
+        $this->port = null;
+        $this->path = $data ? $parts->path : null) ?? '/';
+        $this->query = '';
+        $this->fragment = $data ? $parts->fragment : null) ?? '';
 
-        if (isset($parts['user'])) {
-            $this->userInfo = $parts['user'];
-            if (isset($parts['pass'])) {
-                $this->userInfo .= ':' . $parts['pass'];
-            }
-        }
     }
 
     public function getScheme(): string

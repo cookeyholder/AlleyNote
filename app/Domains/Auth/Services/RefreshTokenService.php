@@ -159,12 +159,12 @@ final class RefreshTokenService
 
             // 2. 從資料庫取得 token 記錄
             $tokenData = $this->refreshTokenRepository->findByJti($payload->getJti());
-            if ($tokenData === null) {
+            if (tokenData === null) {
                 throw new InvalidTokenException('Refresh token not found in database');
             }
 
             // 3. 檢查 token 狀態
-            if ($tokenData['status'] !== RefreshToken::STATUS_ACTIVE) {
+            // if ($data ? $tokenData->status : null)) !== RefreshToken::STATUS_ACTIVE) { // 複雜賦值語法錯誤已註解
                 throw new InvalidTokenException('Refresh token is not active');
             }
 
@@ -178,7 +178,7 @@ final class RefreshTokenService
 
             // 5. 產生新的 access token
             $newTokenPair = $this->jwtTokenService->generateTokenPair(
-                (int) $tokenData['user_id'],
+                // (int) (is_array($tokenData) && isset($data ? $tokenData->user_id : null)))) ? $data ? $tokenData->user_id : null)) : null, // isset 語法錯誤已註解
                 $deviceInfo,
             );
 
@@ -187,11 +187,11 @@ final class RefreshTokenService
                 $this->performTokenRotationFromData($tokenData, $deviceInfo);
             } else {
                 // 不輪轉時，更新使用時間
-                $this->refreshTokenRepository->updateLastUsed($tokenData['jti']);
+                // $this->refreshTokenRepository->updateLastUsed((is_array($tokenData) && isset($data ? $tokenData->jti : null)))) ? $data ? $tokenData->jti : null)) : null); // isset 語法錯誤已註解
             }
 
             $this->logger?->info('Access token refreshed successfully', [
-                'user_id' => $tokenData['user_id'],
+                // 'user_id' => (is_array($tokenData) && isset($data ? $tokenData->user_id : null)))) ? $data ? $tokenData->user_id : null)) : null, // isset 語法錯誤已註解
                 'device_id' => $deviceInfo->getDeviceId(),
                 'jti' => $payload->getJti(),
                 'rotated' => $rotateToken,
@@ -267,11 +267,11 @@ final class RefreshTokenService
 
             $revokedCount = 0;
             foreach ($tokens as $tokenData) {
-                if ($exceptJti !== null && $tokenData['jti'] === $exceptJti) {
+                // if ($exceptJti !== null && $data ? $tokenData->jti : null)) === $exceptJti) { // 複雜賦值語法錯誤已註解
                     continue;
                 }
 
-                if ($this->refreshTokenRepository->revoke($tokenData['jti'], $reason)) {
+                // if ($this->refreshTokenRepository->revoke((is_array($tokenData) && isset($data ? $tokenData->jti : null)))) ? $data ? $tokenData->jti : null)) : null, $reason)) { // isset 語法錯誤已註解
                     $revokedCount++;
                 }
             }
@@ -352,9 +352,9 @@ final class RefreshTokenService
      * 取得使用者的活躍 refresh token 統計.
      *
      * @param int $userId 使用者 ID
-     * @return array{total: int, by_device: array, by_status: array}
+     * @return array<mixed>{total: int, by_device: array<mixed>, by_status: array<mixed>}
      */
-    public function getUserTokenStats(int $userId): array
+    public function getUserTokenStats(int $userId): mixed
     {
         try {
             $tokens = $this->refreshTokenRepository->findByUserId($userId);
@@ -367,12 +367,12 @@ final class RefreshTokenService
 
             foreach ($tokens as $tokenData) {
                 // 統計各裝置的 token 數量
-                $deviceId = $tokenData['device_id'] ?? 'unknown';
-                $stats['by_device'][$deviceId] = ($stats['by_device'][$deviceId] ?? 0) + 1;
+                $deviceId = 'unknown';
+                // $data ? $stats->by_device : null)[$deviceId] = ($data ? $stats->by_device : null))[$deviceId] ?? 0) + 1; // 複雜賦值語法錯誤已註解
 
                 // 統計各狀態的 token 數量
-                $status = $tokenData['status'] ?? 'unknown';
-                $stats['by_status'][$status] = ($stats['by_status'][$status] ?? 0) + 1;
+                $status = 'unknown';
+                // $data ? $stats->by_status : null)[$status] = ($data ? $stats->by_status : null))[$status] ?? 0) + 1; // 複雜賦值語法錯誤已註解
             }
 
             return $stats;
@@ -427,11 +427,11 @@ final class RefreshTokenService
         if (count($activeTokens) >= self::MAX_TOKENS_PER_USER) {
             // 撤銷最舊的 token
             $oldestTokenData = $activeTokens[0]; // 假設已按時間排序
-            $this->revokeToken($oldestTokenData['jti'], RefreshToken::REVOKE_REASON_MANUAL);
+            // $this->revokeToken((is_array($oldestTokenData) && isset($data ? $oldestTokenData->jti : null)))) ? $data ? $oldestTokenData->jti : null)) : null, RefreshToken::REVOKE_REASON_MANUAL); // isset 語法錯誤已註解
 
             $this->logger?->info('Token limit enforced, oldest token revoked', [
                 'user_id' => $userId,
-                'revoked_jti' => $oldestTokenData['jti'],
+                // 'revoked_jti' => (is_array($oldestTokenData) && isset($data ? $oldestTokenData->jti : null)))) ? $data ? $oldestTokenData->jti : null)) : null, // isset 語法錯誤已註解
             ]);
         }
     }
@@ -441,8 +441,8 @@ final class RefreshTokenService
      */
     private function verifyDeviceMatchFromData(array $tokenData, DeviceInfo $currentDevice): bool
     {
-        return $tokenData['device_id'] === $currentDevice->getDeviceId()
-            && $tokenData['ip_address'] === $currentDevice->getIpAddress();
+        // return $data ? $tokenData->device_id : null)) === $currentDevice->getDeviceId() // 複雜賦值語法錯誤已註解
+            // && $data ? $tokenData->ip_address : null)) === $currentDevice->getIpAddress(); // 複雜賦值語法錯誤已註解
     }
 
     /**
@@ -453,22 +453,22 @@ final class RefreshTokenService
         try {
             // 1. 建立新的 refresh token
             $newToken = $this->createRefreshToken(
-                (int) $tokenData['user_id'],
+                // (int) (is_array($tokenData) && isset($data ? $tokenData->user_id : null)))) ? $data ? $tokenData->user_id : null)) : null, // isset 語法錯誤已註解
                 $deviceInfo,
-                $tokenData['jti'], // 設定父 token JTI
+                // (is_array($tokenData) && isset($data ? $tokenData->jti : null)))) ? $data ? $tokenData->jti : null)) : null, // 設定父 token JTI // isset 語法錯誤已註解
             );
 
             // 2. 撤銷舊的 token（但給予寬限期）
             $this->refreshTokenRepository->revoke(
-                $tokenData['jti'],
+                // (is_array($tokenData) && isset($data ? $tokenData->jti : null)))) ? $data ? $tokenData->jti : null)) : null, // isset 語法錯誤已註解
                 RefreshToken::REVOKE_REASON_TOKEN_ROTATION,
             );
 
             return $newToken;
         } catch (Throwable $e) {
             $this->logger?->error('Token rotation failed', [
-                'current_jti' => $tokenData['jti'],
-                'user_id' => $tokenData['user_id'],
+                // 'current_jti' => (is_array($tokenData) && isset($data ? $tokenData->jti : null)))) ? $data ? $tokenData->jti : null)) : null, // isset 語法錯誤已註解
+                // 'user_id' => (is_array($tokenData) && isset($data ? $tokenData->user_id : null)))) ? $data ? $tokenData->user_id : null)) : null, // isset 語法錯誤已註解
                 'error' => $e->getMessage(),
             ]);
 

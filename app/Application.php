@@ -191,8 +191,8 @@ class Application
                 return substr($this->content, $this->position);
             }
 
-            /** @return array<string, mixed> */
-            public function getMetadata(?string $key = null): array
+            /** @return array<mixed> */
+            public function getMetadata(?string $key = null): mixed
             {
                 return [];
             }
@@ -245,8 +245,8 @@ class Application
                 return $this;
             }
 
-            /** @return array<string, array<string>> */
-            public function getHeaders(): array
+            /** @return array<mixed>> */
+            public function getHeaders(): mixed
             {
                 return ['Content-Type' => ['application/json']];
             }
@@ -256,8 +256,8 @@ class Application
                 return strtolower($name) === 'content-type';
             }
 
-            /** @return array<string> */
-            public function getHeader(string $name): array
+            /** @return array<mixed> */
+            public function getHeader(string $name): mixed
             {
                 return strtolower($name) === 'content-type' ? ['application/json'] : [];
             }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Enhanced Missing Iterable Value Type Fixer
- * 
+ *
  * 專門修復 missingType.iterableValue 錯誤
  */
 
@@ -19,79 +19,79 @@ $filesFixes = [];
  */
 function fixMissingIterableValueType($content, $line, $context) {
     global $totalFixes;
-    
+
     $lines = explode("\n", $content);
     $lineIndex = $line - 1;
-    
+
     if (!isset($lines[$lineIndex])) {
         return $content;
     }
-    
+
     $currentLine = $lines[$lineIndex];
     $originalLine = $currentLine;
-    
-    // 修復方法參數中的 array 類型
-    if (strpos($context, 'parameter') !== false && strpos($context, 'iterable type array') !== false) {
-        // 替換 array $param 為 array<string, mixed> $param
+
+    // 修復方法參數中的 array<mixed> 類型
+    if (strpos($context, 'parameter') !== false && strpos($context, 'iterable type array<mixed>') !== false) {
+        // 替換 array<mixed> $param 為 array<mixed> $param
         $currentLine = preg_replace(
             '/\barray\s+(\$\w+)/i',
-            'array<string, mixed> $1',
+            'array<mixed> $1',
             $currentLine
         );
-        
+
         // 或者根據上下文推測更具體的類型
         if (strpos($currentLine, '$request') !== false) {
             $currentLine = preg_replace(
-                '/array<string, mixed>\s+(\$request)/i',
-                'array<string, mixed> $1',
+                '/array<mixed>\s+(\$request)/i',
+                'array<mixed> $1',
                 $currentLine
             );
         }
     }
-    
-    // 修復回傳類型中的 array
-    if (strpos($context, 'return type') !== false && strpos($context, 'iterable type array') !== false) {
-        // 替換 ): array 為 ): array<string, mixed>
+
+    // 修復回傳類型中的 array<mixed>
+    if (strpos($context, 'return type') !== false && strpos($context, 'iterable type array<mixed>') !== false) {
+        // 替換 ): array<mixed> 為 ): array<mixed>
         $currentLine = preg_replace(
-            '/\):\s*array\s*$/i',
-            '): array<string, mixed>',
+            '/\):\s*array<mixed>\s*$/i',
+            '): array<mixed>',
             $currentLine
         );
-        
+
         // 也處理單行函式宣告
         $currentLine = preg_replace(
-            '/\):\s*array\s*\{/i',
-            '): array<string, mixed> {',
+            '/\):\s*array<mixed>\s*\{/i',
+            '): array<mixed> {',
             $currentLine
         );
     }
-    
-    // 修復屬性中的 array 類型
-    if (strpos($context, 'property') !== false && strpos($context, 'iterable type array') !== false) {
-        // 處理 private array $property
+
+    // 修復屬性中的 array<mixed> 類型
+    if (strpos($context, 'property') !== false && strpos($context, 'iterable type array<mixed>') !== false) {
+        // 處理 private array<mixed> $property
         $currentLine = preg_replace(
-            '/\b(private|protected|public)\s+array\s+(\$\w+)/i',
-            '$1 array<string, mixed> $2',
+            '/\b(private|protected|public)\s+array<mixed>\s+(\$\w+)/i',
+            '$1 array<mixed> $2',
             $currentLine
         );
     }
-    
-    // 修復變數宣告中的 array 類型標註
-    if (preg_match('/@(var|param|return)\s+array\s/', $currentLine)) {
+
+    // 修復變數宣告中的 array<mixed> 類型標註
+    if (preg_match('/@(var|param|return)\s+array<mixed>\s/', $currentLine)) {
         $currentLine = preg_replace(
-            '/@(var|param|return)\s+array\s+/',
-            '@$1 array<string, mixed> ',
+            '/@(var|param|return)\s+array<mixed>\s+/',
+            '@$1 array<mixed> ',
             $currentLine
         );
     }
-    
+
     // 如果有變更，更新
     if ($currentLine !== $originalLine) {
         $lines[$lineIndex] = $currentLine;
         $totalFixes++;
         return implode("\n", $lines);
     }
-    
+
     return $content;
 }
 
@@ -100,40 +100,40 @@ function fixMissingIterableValueType($content, $line, $context) {
  */
 function processFile($filePath) {
     global $filesFixes;
-    
+
     if (!file_exists($filePath)) {
         return;
     }
-    
+
     $content = file_get_contents($filePath);
     $originalContent = $content;
     $fixCount = 0;
-    
+
     // 運行 PHPStan 只針對這個檔案
     $relativeFilePath = str_replace('/var/www/html/', '', $filePath);
     $phpstanCmd = "cd /var/www/html && ./vendor/bin/phpstan analyse --memory-limit=256M --no-progress " . escapeshellarg($relativeFilePath) . " 2>&1";
     $phpstanOutput = shell_exec($phpstanCmd);
-    
+
     if (!$phpstanOutput) {
         return;
     }
-    
+
     // 解析 PHPStan 輸出中的 missingType.iterableValue 錯誤
     $lines = explode("\n", $phpstanOutput);
     $currentLine = 0;
     $currentContext = '';
-    
+
     foreach ($lines as $outputLine) {
         // 捕獲行號
         if (preg_match('/^\s*(\d+)\s+/', $outputLine, $matches)) {
             $currentLine = (int)$matches[1];
         }
-        
+
         // 捕獲錯誤上下文
-        if (strpos($outputLine, 'iterable type array') !== false) {
+        if (strpos($outputLine, 'iterable type array<mixed>') !== false) {
             $currentContext = $outputLine;
         }
-        
+
         // 處理 missingType.iterableValue 錯誤
         if (strpos($outputLine, 'missingType.iterableValue') !== false && $currentLine > 0) {
             $newContent = fixMissingIterableValueType($content, $currentLine, $currentContext);
@@ -143,7 +143,7 @@ function processFile($filePath) {
             }
         }
     }
-    
+
     // 如果內容有變更，寫回檔案
     if ($content !== $originalContent) {
         file_put_contents($filePath, $content);

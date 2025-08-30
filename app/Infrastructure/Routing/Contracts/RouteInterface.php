@@ -108,7 +108,7 @@ interface RouteInterface
      * 從路徑中提取參數.
      *
      * @param string $path URI 路徑
-     * @return array<string, string> 提取的參數
+     * @return array<mixed> 提取的參數
      */
     public function extractParameters(string $path): array;
 

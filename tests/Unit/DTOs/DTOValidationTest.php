@@ -49,7 +49,7 @@ class DTOValidationTest extends TestCase
 
         // 測試必填欄位缺失
         $missingTitleData = $validData;
-        unset($missingTitleData['title']);
+        unset((is_array($missingTitleData) ? $missingTitleData['title'] : (is_object($missingTitleData) ? $missingTitleData->title : null)));
 
         $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $missingTitleData);
@@ -69,7 +69,7 @@ class DTOValidationTest extends TestCase
 
         // 測試空標題
         $emptyTitleData = $baseData;
-        $emptyTitleData['title'] = '';
+        (is_array($emptyTitleData) ? $emptyTitleData['title'] : (is_object($emptyTitleData) ? $emptyTitleData->title : null)) = '';
 
         $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $emptyTitleData);
@@ -88,13 +88,13 @@ class DTOValidationTest extends TestCase
 
         // 測試有效的最小長度標題
         $validMinTitleData = $baseData;
-        $validMinTitleData['title'] = 'A';
+        (is_array($validMinTitleData) ? $validMinTitleData['title'] : (is_object($validMinTitleData) ? $validMinTitleData->title : null)) = 'A';
         $dto = new CreatePostDTO($this->validator, $validMinTitleData);
         $this->assertInstanceOf(CreatePostDTO::class, $dto);
 
         // 測試超過最大長度
         $tooLongTitleData = $baseData;
-        $tooLongTitleData['title'] = str_repeat('很長的標題', 100); // 超過 255 字元
+        (is_array($tooLongTitleData) ? $tooLongTitleData['title'] : (is_object($tooLongTitleData) ? $tooLongTitleData->title : null)) = str_repeat('很長的標題', 100); // 超過 255 字元
 
         $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $tooLongTitleData);
@@ -113,14 +113,14 @@ class DTOValidationTest extends TestCase
 
         // 測試內容為空
         $emptyContentData = $baseData;
-        $emptyContentData['content'] = '';
+        (is_array($emptyContentData) ? $emptyContentData['content'] : (is_object($emptyContentData) ? $emptyContentData->content : null)) = '';
 
         $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $emptyContentData);
 
         // 測試內容長度限制
         $validContentData = $baseData;
-        $validContentData['content'] = str_repeat('內容', 5000); // 合理長度
+        (is_array($validContentData) ? $validContentData['content'] : (is_object($validContentData) ? $validContentData->content : null)) = str_repeat('內容', 5000); // 合理長度
         $dto = new CreatePostDTO($this->validator, $validContentData);
         $this->assertInstanceOf(CreatePostDTO::class, $dto);
     }
@@ -138,21 +138,21 @@ class DTOValidationTest extends TestCase
 
         // 測試無效的 user_id
         $invalidUserIdData = $baseData;
-        $invalidUserIdData['user_id'] = 'invalid';
+        (is_array($invalidUserIdData) ? $invalidUserIdData['user_id'] : (is_object($invalidUserIdData) ? $invalidUserIdData->user_id : null)) = 'invalid';
 
         $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $invalidUserIdData);
 
         // 測試負數 user_id
         $negativeUserIdData = $baseData;
-        $negativeUserIdData['user_id'] = -1;
+        (is_array($negativeUserIdData) ? $negativeUserIdData['user_id'] : (is_object($negativeUserIdData) ? $negativeUserIdData->user_id : null)) = -1;
 
         $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $negativeUserIdData);
 
         // 測試零 user_id
         $zeroUserIdData = $baseData;
-        $zeroUserIdData['user_id'] = 0;
+        (is_array($zeroUserIdData) ? $zeroUserIdData['user_id'] : (is_object($zeroUserIdData) ? $zeroUserIdData->user_id : null)) = 0;
 
         $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $zeroUserIdData);
@@ -171,19 +171,19 @@ class DTOValidationTest extends TestCase
 
         // 測試有效的 IPv4 地址
         $validIpv4Data = $baseData;
-        $validIpv4Data['user_ip'] = '192.168.1.1';
+        (is_array($validIpv4Data) ? $validIpv4Data['user_ip'] : (is_object($validIpv4Data) ? $validIpv4Data->user_ip : null)) = '192.168.1.1';
         $dto = new CreatePostDTO($this->validator, $validIpv4Data);
         $this->assertInstanceOf(CreatePostDTO::class, $dto);
 
         // 測試有效的 IPv6 地址
         $validIpv6Data = $baseData;
-        $validIpv6Data['user_ip'] = '2001:db8::1';
+        (is_array($validIpv6Data) ? $validIpv6Data['user_ip'] : (is_object($validIpv6Data) ? $validIpv6Data->user_ip : null)) = '2001:db8::1';
         $dto = new CreatePostDTO($this->validator, $validIpv6Data);
         $this->assertInstanceOf(CreatePostDTO::class, $dto);
 
         // 測試無效的 IP 地址
         $invalidIpData = $baseData;
-        $invalidIpData['user_ip'] = 'not-an-ip';
+        (is_array($invalidIpData) ? $invalidIpData['user_ip'] : (is_object($invalidIpData) ? $invalidIpData->user_ip : null)) = 'not-an-ip';
 
         $this->expectException(ValidationException::class);
         new CreatePostDTO($this->validator, $invalidIpData);
@@ -255,7 +255,7 @@ class DTOValidationTest extends TestCase
 
         // 測試必填欄位缺失
         $missingPostIdData = $validData;
-        unset($missingPostIdData['post_id']);
+        unset((is_array($missingPostIdData) ? $missingPostIdData['post_id'] : (is_object($missingPostIdData) ? $missingPostIdData->post_id : null)));
 
         $this->expectException(ValidationException::class);
         new CreateAttachmentDTO($this->validator, $missingPostIdData);
@@ -278,14 +278,14 @@ class DTOValidationTest extends TestCase
 
         // 測試無效的檔案大小
         $invalidSizeData = $baseData;
-        $invalidSizeData['file_size'] = -1;
+        (is_array($invalidSizeData) ? $invalidSizeData['file_size'] : (is_object($invalidSizeData) ? $invalidSizeData->file_size : null)) = -1;
 
         $this->expectException(ValidationException::class);
         new CreateAttachmentDTO($this->validator, $invalidSizeData);
 
         // 測試無效的檔案名稱
         $invalidFilenameData = $baseData;
-        $invalidFilenameData['filename'] = 'file/with/slash.jpg';
+        (is_array($invalidFilenameData) ? $invalidFilenameData['filename'] : (is_object($invalidFilenameData) ? $invalidFilenameData->filename : null)) = 'file/with/slash.jpg';
 
         $this->expectException(ValidationException::class);
         new CreateAttachmentDTO($this->validator, $invalidFilenameData);
@@ -310,7 +310,7 @@ class DTOValidationTest extends TestCase
 
         // 測試必填欄位缺失
         $missingUsernameData = $validData;
-        unset($missingUsernameData['username']);
+        unset((is_array($missingUsernameData) ? $missingUsernameData['username'] : (is_object($missingUsernameData) ? $missingUsernameData->username : null)));
 
         $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $missingUsernameData);
@@ -331,21 +331,21 @@ class DTOValidationTest extends TestCase
 
         // 測試使用者名稱太短
         $shortUsernameData = $baseData;
-        $shortUsernameData['username'] = 'ab';
+        (is_array($shortUsernameData) ? $shortUsernameData['username'] : (is_object($shortUsernameData) ? $shortUsernameData->username : null)) = 'ab';
 
         $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $shortUsernameData);
 
         // 測試使用者名稱包含無效字元
         $invalidCharsData = $baseData;
-        $invalidCharsData['username'] = 'user@name';
+        (is_array($invalidCharsData) ? $invalidCharsData['username'] : (is_object($invalidCharsData) ? $invalidCharsData->username : null)) = 'user@name';
 
         $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $invalidCharsData);
 
         // 測試使用者名稱以數字開頭
         $numberStartData = $baseData;
-        $numberStartData['username'] = '123user';
+        (is_array($numberStartData) ? $numberStartData['username'] : (is_object($numberStartData) ? $numberStartData->username : null)) = '123user';
 
         $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $numberStartData);
@@ -366,14 +366,14 @@ class DTOValidationTest extends TestCase
 
         // 測試無效的電子郵件格式
         $invalidEmailData = $baseData;
-        $invalidEmailData['email'] = 'invalid-email';
+        (is_array($invalidEmailData) ? $invalidEmailData['email'] : (is_object($invalidEmailData) ? $invalidEmailData->email : null)) = 'invalid-email';
 
         $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $invalidEmailData);
 
         // 測試包含危險字元的電子郵件
         $dangerousEmailData = $baseData;
-        $dangerousEmailData['email'] = 'user@<script>alert(1)</script>.com';
+        (is_array($dangerousEmailData) ? $dangerousEmailData['email'] : (is_object($dangerousEmailData) ? $dangerousEmailData->email : null)) = 'user@<script>alert(1)</script>.com';
 
         $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $dangerousEmailData);
@@ -392,24 +392,24 @@ class DTOValidationTest extends TestCase
 
         // 測試密碼太短
         $shortPasswordData = $baseData;
-        $shortPasswordData['password'] = '123';
-        $shortPasswordData['confirm_password'] = '123';
+        (is_array($shortPasswordData) ? $shortPasswordData['password'] : (is_object($shortPasswordData) ? $shortPasswordData->password : null)) = '123';
+        (is_array($shortPasswordData) ? $shortPasswordData['confirm_password'] : (is_object($shortPasswordData) ? $shortPasswordData->confirm_password : null)) = '123';
 
         $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $shortPasswordData);
 
         // 測試密碼缺乏複雜度
         $weakPasswordData = $baseData;
-        $weakPasswordData['password'] = 'password';
-        $weakPasswordData['confirm_password'] = 'password';
+        (is_array($weakPasswordData) ? $weakPasswordData['password'] : (is_object($weakPasswordData) ? $weakPasswordData->password : null)) = 'password';
+        (is_array($weakPasswordData) ? $weakPasswordData['confirm_password'] : (is_object($weakPasswordData) ? $weakPasswordData->confirm_password : null)) = 'password';
 
         $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $weakPasswordData);
 
         // 測試密碼確認不符
         $mismatchPasswordData = $baseData;
-        $mismatchPasswordData['password'] = 'SecurePass123';
-        $mismatchPasswordData['confirm_password'] = 'DifferentPass123';
+        (is_array($mismatchPasswordData) ? $mismatchPasswordData['password'] : (is_object($mismatchPasswordData) ? $mismatchPasswordData->password : null)) = 'SecurePass123';
+        (is_array($mismatchPasswordData) ? $mismatchPasswordData['confirm_password'] : (is_object($mismatchPasswordData) ? $mismatchPasswordData->confirm_password : null)) = 'DifferentPass123';
 
         $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, $mismatchPasswordData);
@@ -433,7 +433,7 @@ class DTOValidationTest extends TestCase
 
         // 測試必填欄位缺失
         $missingIpData = $validData;
-        unset($missingIpData['ip_address']);
+        unset((is_array($missingIpData) ? $missingIpData['ip_address'] : (is_object($missingIpData) ? $missingIpData->ip_address : null)));
 
         $this->expectException(ValidationException::class);
         new CreateIpRuleDTO($this->validator, $missingIpData);
@@ -453,20 +453,20 @@ class DTOValidationTest extends TestCase
 
         // 測試 CIDR 格式
         $cidrData = $baseData;
-        $cidrData['ip_address'] = '192.168.1.0/24';
+        (is_array($cidrData) ? $cidrData['ip_address'] : (is_object($cidrData) ? $cidrData->ip_address : null)) = '192.168.1.0/24';
         $dto = new CreateIpRuleDTO($this->validator, $cidrData);
         $this->assertInstanceOf(CreateIpRuleDTO::class, $dto);
 
         // 測試無效的 IP 格式
         $invalidIpData = $baseData;
-        $invalidIpData['ip_address'] = 'not-an-ip';
+        (is_array($invalidIpData) ? $invalidIpData['ip_address'] : (is_object($invalidIpData) ? $invalidIpData->ip_address : null)) = 'not-an-ip';
 
         $this->expectException(ValidationException::class);
         new CreateIpRuleDTO($this->validator, $invalidIpData);
 
         // 測試無效的 CIDR 格式
         $invalidCidrData = $baseData;
-        $invalidCidrData['ip_address'] = '192.168.1.0/999';
+        (is_array($invalidCidrData) ? $invalidCidrData['ip_address'] : (is_object($invalidCidrData) ? $invalidCidrData->ip_address : null)) = '192.168.1.0/999';
 
         $this->expectException(ValidationException::class);
         new CreateIpRuleDTO($this->validator, $invalidCidrData);
@@ -488,14 +488,14 @@ class DTOValidationTest extends TestCase
         $validTypes = ['allow', 'block', 'deny'];
         foreach ($validTypes as $type) {
             $validTypeData = $baseData;
-            $validTypeData['action'] = $type;
+            (is_array($validTypeData) ? $validTypeData['action'] : (is_object($validTypeData) ? $validTypeData->action : null)) = $type;
             $dto = new CreateIpRuleDTO($this->validator, $validTypeData);
             $this->assertInstanceOf(CreateIpRuleDTO::class, $dto);
         }
 
         // 測試無效的規則類型
         $invalidTypeData = $baseData;
-        $invalidTypeData['action'] = 'invalid_type';
+        (is_array($invalidTypeData) ? $invalidTypeData['action'] : (is_object($invalidTypeData) ? $invalidTypeData->action : null)) = 'invalid_type';
 
         $this->expectException(ValidationException::class);
         new CreateIpRuleDTO($this->validator, $invalidTypeData);
@@ -510,7 +510,7 @@ class DTOValidationTest extends TestCase
         $dirtyPostData = [
             'title' => '  測試標題  ',
             'content' => '  內容  ',
-            'user_id' => '1',
+            'user_id' => 1,
             'user_ip' => '192.168.1.1',
         ];
 
@@ -575,7 +575,7 @@ class DTOValidationTest extends TestCase
         // 測試 toArray
         $arrayData = $dto->toArray();
         $this->assertIsArray($arrayData);
-        $this->assertEquals($originalData['title'], $arrayData['title']);
+        $this->assertEquals((is_array($originalData) && isset((is_array($originalData) ? $originalData['title'] : (is_object($originalData) ? $originalData->title : null)))) ? (is_array($originalData) ? $originalData['title'] : (is_object($originalData) ? $originalData->title : null)) : null, (is_array($arrayData) && isset((is_array($arrayData) ? $arrayData['title'] : (is_object($arrayData) ? $arrayData->title : null)))) ? (is_array($arrayData) ? $arrayData['title'] : (is_object($arrayData) ? $arrayData->title : null)) : null);
 
         // 測試 JSON 序列化
         $json = json_encode($dto);
@@ -583,7 +583,7 @@ class DTOValidationTest extends TestCase
 
         $decoded = json_decode($json, true);
         $this->assertIsArray($decoded);
-        $this->assertEquals($originalData['title'], $decoded['title']);
+        $this->assertEquals((is_array($originalData) && isset((is_array($originalData) ? $originalData['title'] : (is_object($originalData) ? $originalData->title : null)))) ? (is_array($originalData) ? $originalData['title'] : (is_object($originalData) ? $originalData->title : null)) : null, (is_array($decoded) && isset((is_array($decoded) ? $decoded['title'] : (is_object($decoded) ? $decoded->title : null)))) ? (is_array($decoded) ? $decoded['title'] : (is_object($decoded) ? $decoded->title : null)) : null);
     }
 
     /**

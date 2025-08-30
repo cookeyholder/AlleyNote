@@ -227,7 +227,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     /**
      * 取得所有活動記錄.
      */
-    public function findAll(int $limit = 20, int $offset = 0): array
+    public function findAll(int $limit = 20, int $offset = 0): mixed
     {
         try {
             $sql = 'SELECT ' . self::SELECT_FIELDS . ' 
@@ -242,7 +242,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return array_map(function (array $row): array {
+            return array_map(function (array $row): mixed {
                 $entity = ActivityLog::fromDatabaseRow($row);
 
                 return $entity->toArray();
@@ -265,7 +265,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         int $offset = 0,
         ?ActivityCategory $category = null,
         ?ActivityType $actionType = null,
-    ): array {
+    ): mixed {
         $conditions = ['user_id = :user_id'];
         $params = [':user_id' => $userId];
 
@@ -313,7 +313,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         int $limit = 100,
         int $offset = 0,
         ?ActivityCategory $category = null,
-    ): array {
+    ): mixed {
         $conditions = ['occurred_at BETWEEN :start_time AND :end_time'];
         $params = [
             ':start_time' => $startTime->format('Y-m-d H:i:s'),
@@ -357,7 +357,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         int $limit = 100,
         int $offset = 0,
         ?string $ipAddress = null,
-    ): array {
+    ): mixed {
         $conditions = ["(action_category = 'security' OR status IN ('failed', 'blocked'))"];
         $params = [];
 
@@ -399,7 +399,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         int $offset = 0,
         ?int $userId = null,
         ?ActivityType $actionType = null,
-    ): array {
+    ): mixed {
         $conditions = ["status = 'failed'"];
         $params = [];
 
@@ -479,7 +479,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     public function getActivityStatistics(
         DateTimeInterface $startTime,
         DateTimeInterface $endTime,
-    ): array {
+    ): mixed {
         $sql = 'SELECT action_category, action_type, COUNT(*) as count 
                 FROM ' . self::TABLE_NAME . ' 
                 WHERE occurred_at BETWEEN :start_time AND :end_time 
@@ -498,7 +498,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     /**
      * 取得熱門活動類型.
      */
-    public function getPopularActivityTypes(int $limit = 10): array
+    public function getPopularActivityTypes(int $limit = 10): mixed
     {
         $sql = 'SELECT action_type, COUNT(*) as count 
                 FROM ' . self::TABLE_NAME . ' 
@@ -519,7 +519,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     public function getSuspiciousIpAddresses(
         int $failureThreshold = 10,
         ?DateTimeInterface $timeWindow = null,
-    ): array {
+    ): mixed {
         $conditions = ["status = 'failed'", 'ip_address IS NOT NULL'];
         $params = [];
 
@@ -599,7 +599,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         int $offset = 0,
         string $sortBy = 'occurred_at',
         string $sortOrder = 'DESC',
-    ): array {
+    ): mixed {
         $conditions = [];
         $params = [];
 
@@ -722,7 +722,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     /**
      * 取得可疑 IP 清單（基於失敗嘗試次數）.
      */
-    public function getSuspiciousIPs(int $minFailedAttempts = 5): array
+    public function getSuspiciousIPs(int $minFailedAttempts = 5): mixed
     {
         $stmt = $this->db->prepare('
             SELECT 
@@ -745,9 +745,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     /**
      * Find activity logs by user ID within time window.
      */
-    public function findByUserIdAndTimeWindow(int $userId, ?DateTimeInterface $timeWindow = null): array
+    public function findByUserIdAndTimeWindow(int $userId, ?DateTimeInterface $timeWindow = null): mixed
     {
-        if ($timeWindow === null) {
+        if (timeWindow === null) {
             return $this->findByUser($userId);
         }
 
@@ -777,7 +777,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         DateTimeInterface $endTime,
         int $limit = 1000,
         int $offset = 0,
-    ): array {
+    ): mixed {
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
                 WHERE user_id = :user_id 
                 AND occurred_at BETWEEN :start_time AND :end_time
@@ -811,7 +811,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         DateTimeInterface $endTime,
         int $limit = 1000,
         int $offset = 0,
-    ): array {
+    ): mixed {
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
                 WHERE ip_address = :ip_address 
                 AND occurred_at BETWEEN :start_time AND :end_time
@@ -837,9 +837,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     }
 
     /**
-     * Helper method to map database row to array.
+     * Helper method to map database row to array<mixed>.
      */
-    private function mapToArray(array $data): array
+    private function mapToArray(array $data): mixed
     {
         $entity = ActivityLog::fromDatabaseRow($data);
 

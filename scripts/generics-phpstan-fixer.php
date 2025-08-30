@@ -10,25 +10,25 @@ declare(strict_types=1);
 class GenericsPhpstanFixer
 {
     private int $fixCount = 0;
-    private array $processedFiles = [];
+    private array<mixed> $processedFiles = [];
 
     public function run(): void
     {
         echo "開始 Generics PHPStan 修復...\n";
-        
+
         $directories = [
             'tests/',
             'app/',
         ];
-        
+
         foreach ($directories as $directory) {
             $this->processDirectory($directory);
         }
-        
+
         echo "\n修復完成！\n";
         echo "總修復次數: {$this->fixCount}\n";
         echo "修復的檔案數: " . count($this->processedFiles) . "\n";
-        
+
         if (!empty($this->processedFiles)) {
             echo "\n修復的檔案:\n";
             foreach ($this->processedFiles as $file) {
@@ -42,11 +42,11 @@ class GenericsPhpstanFixer
         if (!is_dir($directory)) {
             return;
         }
-        
+
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS)
         );
-        
+
         foreach ($iterator as $file) {
             if ($file->getExtension() === 'php') {
                 $this->processFile($file->getPathname());
@@ -57,20 +57,20 @@ class GenericsPhpstanFixer
     private function processFile(string $filePath): void
     {
         echo "處理檔案: $filePath\n";
-        
+
         $content = file_get_contents($filePath);
         if ($content === false) {
             return;
         }
-        
+
         $originalContent = $content;
-        
+
         // 修復各種 generics 類型問題
         $content = $this->fixReflectionClassGenerics($content);
         $content = $this->fixMockeryGenerics($content);
         $content = $this->fixCollectorGenerics($content);
         $content = $this->fixIteratorGenerics($content);
-        
+
         if ($content !== $originalContent) {
             file_put_contents($filePath, $content);
             $this->processedFiles[] = $filePath;
@@ -79,26 +79,26 @@ class GenericsPhpstanFixer
 
     private function fixReflectionClassGenerics(string $content): string
     {
-        // 修復 ReflectionClass<T> 泛型問題
+        // 修復 ReflectionClass 泛型問題
         $patterns = [
             // Property declarations with ReflectionClass
             '/(\s+\*\s+@var\s+)ReflectionClass(\s+\$\w+)/i' => function($matches) {
                 $this->fixCount++;
-                return $matches[1] . 'ReflectionClass<object>' . $matches[2];
+                return $matches[1] . 'ReflectionClass' . $matches[2];
             },
-            
+
             // Method parameters with ReflectionClass
             '/(\s+\*\s+@param\s+)ReflectionClass(\s+\$\w+)/i' => function($matches) {
                 $this->fixCount++;
-                return $matches[1] . 'ReflectionClass<object>' . $matches[2];
+                return $matches[1] . 'ReflectionClass' . $matches[2];
             },
-            
+
             // Method return types with ReflectionClass
             '/(\s+\*\s+@return\s+)ReflectionClass(\s)/i' => function($matches) {
                 $this->fixCount++;
-                return $matches[1] . 'ReflectionClass<object>' . $matches[2];
+                return $matches[1] . 'ReflectionClass' . $matches[2];
             },
-            
+
             // New ReflectionClass instantiation
             '/new\s+ReflectionClass\(\s*([^)]+)\s*\)/' => function($matches) {
                 // 不修復這個，只修復 @var 註解
@@ -128,13 +128,13 @@ class GenericsPhpstanFixer
             // MockInterface 泛型
             '/(\s+\*\s+@var\s+)([a-zA-Z\\\\]+)\|Mockery\\\\MockInterface(\s+\$\w+)/i' => function($matches) {
                 $this->fixCount++;
-                return $matches[1] . $matches[2] . '|Mockery\\MockInterface<' . $matches[2] . '>' . $matches[3];
+                return $matches[1] . $matches[2] . '|Mockery\\MockInterface' . $matches[3];
             },
-            
+
             // @param with MockInterface
             '/(\s+\*\s+@param\s+)([a-zA-Z\\\\]+)\|Mockery\\\\MockInterface(\s+\$\w+)/i' => function($matches) {
                 $this->fixCount++;
-                return $matches[1] . $matches[2] . '|Mockery\\MockInterface<' . $matches[2] . '>' . $matches[3];
+                return $matches[1] . $matches[2] . '|Mockery\\MockInterface' . $matches[3];
             },
         ];
 
@@ -151,7 +151,7 @@ class GenericsPhpstanFixer
     {
         // 修復 Collector 介面的泛型問題
         $patterns = [
-            // @implements Collector<Node, array>
+            // @implements Collector
             '/(\s+\*\s+@implements\s+Collector)<([^,>]+),\s*([^>]+)>/' => function($matches) {
                 $this->fixCount++;
                 return $matches[1] . '<' . $matches[2] . ', ' . $matches[3] . '>';
@@ -171,7 +171,7 @@ class GenericsPhpstanFixer
     {
         // 修復 Iterator 相關的泛型問題
         $patterns = [
-            // @implements IteratorAggregate<Key, Value>
+            // @implements IteratorAggregate
             '/(\s+\*\s+@implements\s+IteratorAggregate)<([^>]+)>/' => function($matches) {
                 // 檢查是否已經有兩個參數
                 if (strpos($matches[2], ',') === false) {
@@ -180,8 +180,8 @@ class GenericsPhpstanFixer
                 }
                 return $matches[0];
             },
-            
-            // @var Iterator<Value>
+
+            // @var Iterator
             '/(\s+\*\s+@var\s+Iterator)<([^>]+)>/' => function($matches) {
                 // 檢查是否已經有兩個參數
                 if (strpos($matches[2], ',') === false) {

@@ -54,6 +54,14 @@ class AuthControllerTest extends TestCase
         $this->validator = Mockery::mock(ValidatorInterface::class);
         $this->activityLoggingService = Mockery::mock(ActivityLoggingServiceInterface::class);
 
+        // 設定 ActivityLoggingService 預設行為
+        $this->activityLogger->shouldReceive('logFailure')
+            ->byDefault()
+            ->andReturn(true);
+        $this->activityLogger->shouldReceive('logSuccess')
+            ->byDefault()
+            ->andReturn(true);
+
         // 設置 Request Mock
         $this->request = Mockery::mock(ServerRequestInterface::class);
 
@@ -161,8 +169,8 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode()); // 成功註冊狀態碼
         $responseBody = (string) $response->getBody();
         $responseData = json_decode($responseBody, true);
-        $this->assertTrue($responseData['success']);
-        $this->assertEquals('註冊成功', $responseData['message']);
+        $this->assertTrue((is_array($responseData) && isset((is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)))) ? (is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)) : null);
+        $this->assertEquals('註冊成功', (is_array($responseData) && isset((is_array($responseData) ? $responseData['message'] : (is_object($responseData) ? $responseData->message : null)))) ? (is_array($responseData) ? $responseData['message'] : (is_object($responseData) ? $responseData->message : null)) : null);
     }
 
     #[Test]
@@ -281,7 +289,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $responseBody = (string) $response->getBody();
         $responseData = json_decode($responseBody, true);
-        $this->assertTrue($responseData['success']);
+        $this->assertTrue((is_array($responseData) && isset((is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)))) ? (is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)) : null);
     }
 
     #[Test]
@@ -322,7 +330,7 @@ class AuthControllerTest extends TestCase
         $this->request->shouldReceive('getParsedBody')->andReturn($logoutData);
         $this->request->shouldReceive('getHeaderLine')
             ->with('Authorization')
-            ->andReturn('Bearer ' . $logoutData['access_token']);
+            ->andReturn('Bearer ' . (is_array($logoutData) && isset((is_array($logoutData) ? $logoutData['access_token'] : (is_object($logoutData) ? $logoutData->access_token : null)))) ? (is_array($logoutData) ? $logoutData['access_token'] : (is_object($logoutData) ? $logoutData->access_token : null)) : null);
 
         // Mock AuthenticationService 的 logout 方法
         $this->authenticationService->shouldReceive('logout')
@@ -342,7 +350,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $responseBody = (string) $response->getBody();
         $responseData = json_decode($responseBody, true);
-        $this->assertTrue($responseData['success']);
-        $this->assertEquals('登出成功', $responseData['message']);
+        $this->assertTrue((is_array($responseData) && isset((is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)))) ? (is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)) : null);
+        $this->assertEquals('登出成功', (is_array($responseData) && isset((is_array($responseData) ? $responseData['message'] : (is_object($responseData) ? $responseData->message : null)))) ? (is_array($responseData) ? $responseData['message'] : (is_object($responseData) ? $responseData->message : null)) : null);
     }
 }

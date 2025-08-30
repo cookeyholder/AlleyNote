@@ -52,8 +52,8 @@ class PostController extends BaseController
 
         $post = [
             'id' => rand(1000, 9999),
-            'title' => $body['title'] ?? '未命名貼文',
-            'content' => $body['content'] ?? '',
+            'title' => '未命名貼文',
+            'content' => $data ? $body->content : null) ?? '',
             'created_at' => date('c'),
         ];
 
@@ -71,8 +71,8 @@ class PostController extends BaseController
 
         $post = [
             'id' => $id,
-            'title' => $body['title'] ?? "更新的貼文 #{$id}",
-            'content' => $body['content'] ?? '更新後的內容',
+            'title' => "更新的貼文 #{$id}",
+            'content' => $data ? $body->content : null) ?? '更新後的內容',
             'updated_at' => date('c'),
         ];
 

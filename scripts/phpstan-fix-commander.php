@@ -12,19 +12,19 @@ class PhpstanFixCommander
 {
     private bool $dryRun = false;
     private string $stage = 'all';
-    private array $totalStats = [
+    private array<mixed> $totalStats = [
         'errors_before' => 0,
         'errors_after' => 0,
         'fixes_applied' => 0,
         'files_processed' => 0
     ];
 
-    public function __construct(array $args)
+    public function __construct(array<mixed> $args)
     {
         $this->parseArguments($args);
     }
 
-    private function parseArguments(array $args): void
+    private function parseArguments(array<mixed> $args): void
     {
         foreach ($args as $arg) {
             if ($arg === '--dry-run') {
@@ -98,7 +98,7 @@ class PhpstanFixCommander
         echo "修復陣列類型規範和移除不必要的 null coalescing\n\n";
 
         // 執行陣列類型修復
-        $this->runTool('advanced-phpstan-fixer.php --type=array-types', '陣列類型規範修復');
+        $this->runTool('advanced-phpstan-fixer.php --type=array<mixed>-types', '陣列類型規範修復');
 
         // 執行 null coalescing 最佳化
         $this->runTool('advanced-phpstan-fixer.php --type=null-coalescing', 'Null Coalescing 最佳化');

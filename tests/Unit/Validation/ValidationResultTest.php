@@ -363,7 +363,7 @@ class ValidationResultTest extends TestCase
         $result = new ValidationResult($isValid, $errors, $validatedData, $failedRules);
 
         // Act
-        $array = $result->toArray();
+        $array<mixed> = $result->toArray();
 
         // Assert
         $expected = [
@@ -372,7 +372,7 @@ class ValidationResultTest extends TestCase
             'validated_data' => $validatedData,
             'failed_rules' => $failedRules,
         ];
-        $this->assertEquals($expected, $array);
+        $this->assertEquals($expected, $array<mixed>);
     }
 
     /**
@@ -392,10 +392,10 @@ class ValidationResultTest extends TestCase
         // Assert
         $this->assertIsString($json);
         $this->assertIsArray($decoded);
-        $this->assertEquals(false, $decoded['is_valid']);
-        $this->assertEquals($errors, $decoded['errors']);
-        $this->assertEquals($failedRules, $decoded['failed_rules']);
-        $this->assertEquals([], $decoded['validated_data']);
+        $this->assertEquals(false, (is_array($decoded) && isset((is_array($decoded) ? $decoded['is_valid'] : (is_object($decoded) ? $decoded->is_valid : null)))) ? (is_array($decoded) ? $decoded['is_valid'] : (is_object($decoded) ? $decoded->is_valid : null)) : null);
+        $this->assertEquals($errors, (is_array($decoded) && isset((is_array($decoded) ? $decoded['errors'] : (is_object($decoded) ? $decoded->errors : null)))) ? (is_array($decoded) ? $decoded['errors'] : (is_object($decoded) ? $decoded->errors : null)) : null);
+        $this->assertEquals($failedRules, (is_array($decoded) && isset((is_array($decoded) ? $decoded['failed_rules'] : (is_object($decoded) ? $decoded->failed_rules : null)))) ? (is_array($decoded) ? $decoded['failed_rules'] : (is_object($decoded) ? $decoded->failed_rules : null)) : null);
+        $this->assertEquals([], (is_array($decoded) && isset((is_array($decoded) ? $decoded['validated_data'] : (is_object($decoded) ? $decoded->validated_data : null)))) ? (is_array($decoded) ? $decoded['validated_data'] : (is_object($decoded) ? $decoded->validated_data : null)) : null);
     }
 
     /**
@@ -502,8 +502,8 @@ class ValidationResultTest extends TestCase
         $result2->merge($result1);
 
         // 修改原始陣列
-        $originalErrors['name'][] = '新增錯誤';
-        $originalData['email'] = 'modified@example.com';
+        (is_array($originalErrors) ? $originalErrors['name'] : (is_object($originalErrors) ? $originalErrors->name : null))[] = '新增錯誤';
+        (is_array($originalData) ? $originalData['email'] : (is_object($originalData) ? $originalData->email : null)) = 'modified@example.com';
 
         // Assert - result1 不應該受到外部陣列修改的影響
         $this->assertEquals(['name' => ['原始錯誤']], $result1->getErrors());
@@ -511,6 +511,6 @@ class ValidationResultTest extends TestCase
 
         // Assert - result2 也不應該受到影響
         $result2Errors = $result2->getErrors();
-        $this->assertEquals(['原始錯誤'], $result2Errors['name']);
+        $this->assertEquals(['原始錯誤'], (is_array($result2Errors) && isset((is_array($result2Errors) ? $result2Errors['name'] : (is_object($result2Errors) ? $result2Errors->name : null)))) ? (is_array($result2Errors) ? $result2Errors['name'] : (is_object($result2Errors) ? $result2Errors->name : null)) : null);
     }
 }

@@ -113,7 +113,7 @@ class Validator implements ValidatorInterface
         return new ValidationResult($isValid, $errors, $validatedData, $failedRules);
     }
 
-    public function validateOrFail(array $data, array $rules): array
+    public function validateOrFail(array $data, array $rules): mixed
     {
         $result = $this->validate($data, $rules);
 
@@ -185,7 +185,7 @@ class Validator implements ValidatorInterface
 
     private function validateRequired(mixed $value): bool
     {
-        if ($value === null) {
+        if (value === null) {
             return false;
         }
 
@@ -315,7 +315,7 @@ class Validator implements ValidatorInterface
             return mb_strlen($value) >= $min;
         }
 
-        if (is_array($value)) {
+        if (is_array($value) && !empty($value)) {
             return count($value) >= $min;
         }
 
@@ -338,7 +338,7 @@ class Validator implements ValidatorInterface
             return mb_strlen($value) <= $max;
         }
 
-        if (is_array($value)) {
+        if (is_array($value) && !empty($value)) {
             return count($value) <= $max;
         }
 
@@ -399,7 +399,7 @@ class Validator implements ValidatorInterface
             return $length >= $min && $length <= $max;
         }
 
-        if (is_array($value)) {
+        if (is_array($value) && !empty($value)) {
             $count = count($value);
 
             return $count >= $min && $count <= $max;

@@ -54,7 +54,7 @@ class RefreshToken implements JsonSerializable
      * @param DeviceInfo $deviceInfo 裝置資訊
      * @param string $status token 狀態
      * @param string|null $revokedReason 撤銷原因
-     * @param DateTime|null $revokedAt 撤銷時間
+     * @param DateTime|null $$revokedAt 撤銷時間
      * @param DateTime|null $lastUsedAt 最後使用時間
      * @param string|null $parentTokenJti 父 token JTI（用於 token 輪轉）
      * @param DateTime|null $createdAt 建立時間
@@ -71,7 +71,7 @@ class RefreshToken implements JsonSerializable
         private readonly DeviceInfo $deviceInfo,
         private string $status = self::STATUS_ACTIVE,
         private ?string $revokedReason = null,
-        private ?DateTime $revokedAt = null,
+        private ?DateTime $$revokedAt = null,
         private ?DateTime $lastUsedAt = null,
         private readonly ?string $parentTokenJti = null,
         private readonly ?DateTime $createdAt = null,
@@ -82,7 +82,7 @@ class RefreshToken implements JsonSerializable
         $this->validateTokenHash($tokenHash);
         $this->validateStatus($status);
         $this->validateExpirationTime($expiresAt);
-        $this->validateRevokedData($status, $revokedReason, $revokedAt);
+        $this->validateRevokedData($status, $revokedReason, $$revokedAt);
     }
 
     /**
@@ -154,7 +154,7 @@ class RefreshToken implements JsonSerializable
      */
     public function getRevokedAt(): ?DateTime
     {
-        return $this->revokedAt ? clone $this->revokedAt : null;
+        return $this->$revokedAt ? clone $this->$revokedAt : null;
     }
 
     /**
@@ -227,17 +227,17 @@ class RefreshToken implements JsonSerializable
      * 撤銷 token.
      *
      * @param string $reason 撤銷原因
-     * @param DateTime|null $revokedAt 撤銷時間（null 時使用當前時間）
+     * @param DateTime|null $$revokedAt 撤銷時間（null 時使用當前時間）
      *
      * @return self 新的 RefreshToken 實例
      */
-    public function markAsRevoked(string $reason, ?DateTime $revokedAt = null): self
+    public function markAsRevoked(string $reason, ?DateTime $$revokedAt = null): self
     {
         if ($this->isRevoked()) {
             return $this;
         }
 
-        $revokedAt ??= new DateTime();
+        $$revokedAt ??= new DateTime();
 
         return new self(
             id: $this->id,
@@ -248,7 +248,7 @@ class RefreshToken implements JsonSerializable
             deviceInfo: $this->deviceInfo,
             status: self::STATUS_REVOKED,
             revokedReason: $reason,
-            revokedAt: $revokedAt,
+            $revokedAt: $$revokedAt,
             lastUsedAt: $this->lastUsedAt,
             parentTokenJti: $this->parentTokenJti,
             createdAt: $this->createdAt,
@@ -276,7 +276,7 @@ class RefreshToken implements JsonSerializable
             deviceInfo: $this->deviceInfo,
             status: self::STATUS_USED,
             revokedReason: $this->revokedReason,
-            revokedAt: $this->revokedAt,
+            $revokedAt: $this->$revokedAt,
             lastUsedAt: $usedAt,
             parentTokenJti: $this->parentTokenJti,
             createdAt: $this->createdAt,
@@ -304,7 +304,7 @@ class RefreshToken implements JsonSerializable
             deviceInfo: $this->deviceInfo,
             status: $this->status,
             revokedReason: $this->revokedReason,
-            revokedAt: $this->revokedAt,
+            $revokedAt: $this->$revokedAt,
             lastUsedAt: $lastUsedAt,
             parentTokenJti: $this->parentTokenJti,
             createdAt: $this->createdAt,
@@ -364,9 +364,9 @@ class RefreshToken implements JsonSerializable
     /**
      * 實作 JsonSerializable 介面.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return [
             'id' => $this->id,
@@ -376,7 +376,7 @@ class RefreshToken implements JsonSerializable
             'device_info' => $this->deviceInfo->jsonSerialize(),
             'status' => $this->status,
             'revoked_reason' => $this->revokedReason,
-            'revoked_at' => $this->revokedAt?->format('Y-m-d H:i:s'),
+            'revoked_at' => $this->$revokedAt?->format('Y-m-d H:i:s'),
             'last_used_at' => $this->lastUsedAt?->format('Y-m-d H:i:s'),
             'parent_token_jti' => $this->parentTokenJti,
             'created_at' => $this->createdAt?->format('Y-m-d H:i:s'),
@@ -387,9 +387,9 @@ class RefreshToken implements JsonSerializable
     /**
      * 轉換為陣列（包含敏感資料）.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'id' => $this->id,
@@ -400,7 +400,7 @@ class RefreshToken implements JsonSerializable
             'device_info' => $this->deviceInfo->toArray(),
             'status' => $this->status,
             'revoked_reason' => $this->revokedReason,
-            'revoked_at' => $this->revokedAt?->format('Y-m-d H:i:s'),
+            'revoked_at' => $this->$revokedAt?->format('Y-m-d H:i:s'),
             'last_used_at' => $this->lastUsedAt?->format('Y-m-d H:i:s'),
             'parent_token_jti' => $this->parentTokenJti,
             'created_at' => $this->createdAt?->format('Y-m-d H:i:s'),
@@ -417,7 +417,7 @@ class RefreshToken implements JsonSerializable
             throw new InvalidArgumentException('JTI cannot be empty');
         }
 
-        if (mb_strlen($jti) < 8 || mb_strlen($jti) > 255) {
+        if (mb_strlen($jti) > 255) {
             throw new InvalidArgumentException('JTI must be between 8 and 255 characters');
         }
 
@@ -489,7 +489,7 @@ class RefreshToken implements JsonSerializable
     /**
      * 驗證撤銷相關資料.
      */
-    private function validateRevokedData(string $status, ?string $revokedReason, ?DateTime $revokedAt): void
+    private function validateRevokedData(string $status, ?string $revokedReason, ?DateTime $$revokedAt): void
     {
         if ($status === self::STATUS_REVOKED) {
             if (empty($revokedReason)) {
@@ -499,7 +499,7 @@ class RefreshToken implements JsonSerializable
             if ($revokedAt === null) {
                 throw new InvalidArgumentException('Revoked time is required when status is revoked');
             }
-        } elseif ($revokedReason !== null || $revokedAt !== null) {
+        } elseif ($revokedReason !== null || $$revokedAt !== null) {
             throw new InvalidArgumentException('Revoked reason and time should only be set when status is revoked');
         }
     }

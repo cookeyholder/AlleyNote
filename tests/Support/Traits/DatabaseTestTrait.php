@@ -239,10 +239,8 @@ trait DatabaseTestTrait
 
     /**
      * 插入測試用貼文資料.
-     *
-     * @param array<string, mixed> $data
      */
-    protected function insertTestPost(array $data = []): int
+    protected function insertTestPost(array<mixed> $data = []): int
     {
         $defaultData = [
             'uuid' => $this->generateTestUuid(),
@@ -262,7 +260,7 @@ trait DatabaseTestTrait
         $postData = array_merge($defaultData, $data);
 
         $stmt = $this->db->prepare('
-            INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at) 
+            INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at)
             VALUES (:uuid, :seq_number, :title, :content, :user_id, :user_ip, :views, :is_pinned, :status, :publish_date, :created_at, :updated_at)
         ');
 
@@ -273,10 +271,8 @@ trait DatabaseTestTrait
 
     /**
      * 插入測試用使用者資料.
-     *
-     * @param array<string, mixed> $data
      */
-    protected function insertTestUser(array $data = []): int
+    protected function insertTestUser(array<mixed> $data = []): int
     {
         $defaultData = [
             'username' => 'testuser_' . $this->generateRandomString(6),
@@ -290,7 +286,7 @@ trait DatabaseTestTrait
         $userData = array_merge($defaultData, $data);
 
         $stmt = $this->db->prepare('
-            INSERT INTO users (username, email, password, status, created_at, updated_at) 
+            INSERT INTO users (username, email, password, status, created_at, updated_at)
             VALUES (:username, :email, :password, :status, :created_at, :updated_at)
         ');
 

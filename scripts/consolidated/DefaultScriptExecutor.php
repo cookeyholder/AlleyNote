@@ -15,7 +15,7 @@ final readonly class DefaultScriptExecutor implements ScriptExecutorInterface
         private string $projectRoot
     ) {}
 
-    public function execute(string $command, array $args = []): ScriptResult
+    public function execute(string $command, array<mixed> $args = []): ScriptResult
     {
         $startTime = microtime(true);
         $fullCommand = $this->buildCommand($command, $args);
@@ -42,7 +42,7 @@ final readonly class DefaultScriptExecutor implements ScriptExecutorInterface
         }
     }
 
-    public function executeBackground(string $command, array $args = []): string
+    public function executeBackground(string $command, array<mixed> $args = []): string
     {
         $fullCommand = $this->buildCommand($command, $args);
         $pidFile = tempnam(sys_get_temp_dir(), 'script_pid_');
@@ -56,7 +56,7 @@ final readonly class DefaultScriptExecutor implements ScriptExecutorInterface
         return $pid;
     }
 
-    private function buildCommand(string $command, array $args): string
+    private function buildCommand(string $command, array<mixed> $args): string
     {
         $escapedArgs = array_map('escapeshellarg', $args);
         return "cd {$this->projectRoot} && {$command} " . implode(' ', $escapedArgs);

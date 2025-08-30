@@ -10,7 +10,7 @@ declare(strict_types=1);
 class BulkPHPStanFixer
 {
     private int $totalFixes = 0;
-    private array $fixedFiles = [];
+    private array<mixed> $fixedFiles = [];
 
     public function run(): void
     {
@@ -28,7 +28,7 @@ class BulkPHPStanFixer
 
     private function fixArrayTypeHints(): void
     {
-        echo "修復 array 類型提示問題...\n";
+        echo "修復 array<mixed> 類型提示問題...\n";
 
         $files = $this->findPhpFiles(['app/']);
 
@@ -39,27 +39,27 @@ class BulkPHPStanFixer
             $originalContent = $content;
             $fixed = false;
 
-            // 修復方法參數中的 array 類型
+            // 修復方法參數中的 array<mixed> 類型
             $patterns = [
-                // public function method(array $param): array
-                '/(\bpublic\s+function\s+\w+\([^)]*\b)array(\s+\$\w+[^)]*\)):\s*array\b/'
-                => '$1array<string, mixed>$2: array<string, mixed>',
+                // public function method(array<mixed> $param): array<mixed>
+                '/(\bpublic\s+function\s+\w+\([^)]*\b)array(\s+\$\w+[^)]*\)):\s*array<mixed>\b/'
+                => '$1array$2: array<mixed>',
 
-                // public function method(array $param)
+                // public function method(array<mixed> $param)
                 '/(\bpublic\s+function\s+\w+\([^)]*\b)array(\s+\$\w+[^)]*)/'
-                => '$1array<string, mixed>$2',
+                => '$1array$2',
 
-                // ): array
-                '/(function\s+\w+\([^)]*\)):\s*array\b/'
-                => '$1: array<string, mixed>',
+                // ): array<mixed>
+                '/(function\s+\w+\([^)]*\)):\s*array<mixed>\b/'
+                => '$1: array<mixed>',
 
                 // protected/private functions
                 '/(\b(?:protected|private)\s+function\s+\w+\([^)]*\b)array(\s+\$\w+[^)]*)/'
-                => '$1array<string, mixed>$2',
+                => '$1array$2',
 
                 // Property types
                 '/((?:public|protected|private)\s+)array(\s+\$\w+)/'
-                => '$1array<string, mixed>$2',
+                => '$1array$2',
             ];
 
             foreach ($patterns as $pattern => $replacement) {
@@ -74,7 +74,7 @@ class BulkPHPStanFixer
                 file_put_contents($file, $content);
                 if (!in_array($file, $this->fixedFiles)) {
                     $this->fixedFiles[] = $file;
-                    echo "  修復 array 類型: $file\n";
+                    echo "  修復 array<mixed> 類型: $file\n";
                 }
                 $this->totalFixes++;
             }
@@ -144,15 +144,15 @@ class BulkPHPStanFixer
             $patterns = [
                 // toArray() methods
                 '/(public\s+function\s+toArray\s*\(\s*\))(\s*\{)/'
-                => "$1: array<string, mixed>$2",
+                => "$1: array<mixed>$2",
 
                 // getValidationRules() methods
                 '/(public\s+function\s+getValidationRules\s*\(\s*\))(\s*\{)/'
-                => "$1: array<string, mixed>$2",
+                => "$1: array<mixed>$2",
 
                 // create() methods in repositories
-                '/(public\s+function\s+create\s*\(\s*array\s+\$[^)]*\))(\s*\{)/'
-                => "$1: array<string, mixed>$2",
+                '/(public\s+function\s+create\s*\(\s*array<mixed>\s+\$[^)]*\))(\s*\{)/'
+                => "$1: array<mixed>$2",
             ];
 
             foreach ($patterns as $pattern => $replacement) {
@@ -240,7 +240,7 @@ class BulkPHPStanFixer
                 '/(function\s+\w+\([^)]*)\$(\w+)(?!\s*:)([^)]*\))/'
                 => function ($matches) {
                     // 不修復已經有類型的參數
-                    if (preg_match('/(?:int|string|bool|array|mixed|object)\s+\$' . $matches[2] . '/', $matches[0])) {
+                    if (preg_match('/(?:int|string|bool|array<mixed>|mixed|object)\s+\$' . $matches[2] . '/', $matches[0])) {
                         return $matches[0];
                     }
                     return $matches[1] . 'mixed $' . $matches[2] . $matches[3];
@@ -271,7 +271,7 @@ class BulkPHPStanFixer
         }
     }
 
-    private function findPhpFiles(array $directories): array
+    private function findPhpFiles(array<mixed> $directories): array<mixed>
     {
         $files = [];
 

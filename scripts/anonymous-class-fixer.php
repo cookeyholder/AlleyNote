@@ -13,7 +13,7 @@ class AnonymousClassFixer
     private bool $dryRun = false;
     private int $fixCount = 0;
 
-    public function __construct(array $args)
+    public function __construct(array<mixed> $args)
     {
         $this->dryRun = in_array('--dry-run', $args);
     }
@@ -83,8 +83,8 @@ class AnonymousClassFixer
     {
         return 'new class implements ResponseInterface {
     private string $protocolVersion = \'1.1\';
-    /** @var array<string, array<string>> */
-    private array $headers = [];
+    /** @var array<mixed>> */
+    private array<mixed> $headers = [];
     private StreamInterface $body;
     private int $statusCode = 200;
     private string $reasonPhrase = \'OK\';
@@ -179,8 +179,8 @@ class AnonymousClassFixer
                 return substr($this->content, $this->position);
             }
 
-            /** @return array<string, mixed> */
-            public function getMetadata(?string $key = null): array
+            /** @return array<mixed> */
+            public function getMetadata(?string $key = null): array<mixed>
             {
                 return [];
             }
@@ -199,8 +199,8 @@ class AnonymousClassFixer
         return $new;
     }
 
-    /** @return array<string, array<string>> */
-    public function getHeaders(): array
+    /** @return array<mixed>> */
+    public function getHeaders(): array<mixed>
     {
         return $this->headers;
     }
@@ -210,8 +210,8 @@ class AnonymousClassFixer
         return isset($this->headers[strtolower($name)]);
     }
 
-    /** @return array<string> */
-    public function getHeader(string $name): array
+    /** @return array<mixed> */
+    public function getHeader(string $name): array<mixed>
     {
         return $this->headers[strtolower($name)] ?? [];
     }
@@ -383,8 +383,8 @@ class AnonymousClassFixer
         return substr($this->content, $this->position);
     }
 
-    /** @return array<string, mixed> */
-    public function getMetadata(?string $key = null): array
+    /** @return array<mixed> */
+    public function getMetadata(?string $key = null): array<mixed>
     {
         return [];
     }

@@ -24,17 +24,17 @@ final readonly class LoginRequestDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            email: $data['email'] ?? '',
-            password: $data['password'] ?? '',
-            rememberMe: $data['remember_me'] ?? false,
-            scopes: $data['scopes'] ?? null,
+            email: '',
+            password: $data ? $data->password : null) ?? '',
+            rememberMe: false,
+            scopes: $data ? $data->scopes : null) ?? null,
         );
     }
 
     /**
      * 轉換為陣列.
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'email' => $this->email,

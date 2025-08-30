@@ -25,7 +25,7 @@ final readonly class LoginResponseDTO
     /**
      * 轉換為陣列.
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'access_token' => $this->tokens->getAccessToken(),

@@ -79,12 +79,12 @@ class PostServiceTest extends TestCase
         $this->repository->shouldReceive('create')
             ->once()
             ->with(Mockery::on(function ($data) {
-                return $data['title'] === '測試文章'
-                    && $data['content'] === '這是測試內容'
-                    && $data['user_id'] === 1
-                    && $data['user_ip'] === '192.168.1.1'
-                    && $data['status'] === PostStatus::DRAFT->value
-                    && isset($data['created_at']);
+                return (is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)) === '測試文章'
+                    && (is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)) === '這是測試內容'
+                    && (is_array($data) ? $data['user_id'] : (is_object($data) ? $data->user_id : null)) === 1
+                    && (is_array($data) ? $data['user_ip'] : (is_object($data) ? $data->user_ip : null)) === '192.168.1.1'
+                    && (is_array($data) ? $data['status'] : (is_object($data) ? $data->status : null)) === PostStatus::DRAFT->value
+                    && isset((is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)));
             }))
             ->andReturn($expectedPost);
 
@@ -142,9 +142,9 @@ class PostServiceTest extends TestCase
         $this->repository->shouldReceive('update')
             ->once()
             ->with($id, Mockery::on(function ($data) {
-                return $data['title'] === '更新的標題'
-                    && $data['content'] === '更新的內容'
-                    && isset($data['updated_at']);
+                return (is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)) === '更新的標題'
+                    && (is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)) === '更新的內容'
+                    && isset((is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)));
             }))
             ->andReturn($updatedPost);
 
@@ -370,8 +370,8 @@ class PostServiceTest extends TestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('items', $result);
         $this->assertArrayHasKey('total', $result);
-        $this->assertEquals(2, $result['total']);
-        $this->assertCount(2, $result['items']);
+        $this->assertEquals(2, (is_array($result) && isset((is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)))) ? (is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)) : null);
+        $this->assertCount(2, (is_array($result) && isset((is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)))) ? (is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)) : null);
     }
 
     public function testGetPinnedPosts(): void

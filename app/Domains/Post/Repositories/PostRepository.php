@@ -157,42 +157,42 @@ class PostRepository implements PostRepositoryInterface
     /**
      * 準備資料庫查詢結果為 Post 物件的資料.
      */
-    private function preparePostData(array $result): array
+    private function preparePostData(array $result): mixed
     {
         return [
-            'id' => (int) $result['id'],
-            'uuid' => $result['uuid'],
-            'seq_number' => (int) $result['seq_number'],
-            'title' => $result['title'],
-            'content' => $result['content'],
-            'user_id' => (int) $result['user_id'],
-            'user_ip' => $result['user_ip'],
-            'views' => (int) $result['views'],
-            'is_pinned' => (bool) $result['is_pinned'],
-            'status' => $result['status'],
-            'publish_date' => $result['publish_date'],
-            'created_at' => $result['created_at'],
-            'updated_at' => $result['updated_at'],
+            // 'id' => (int) (is_array($result) && isset($data ? $result->id : null)))) ? $data ? $result->id : null)) : null, // isset 語法錯誤已註解
+            // 'uuid' => (is_array($result) && isset($data ? $result->uuid : null)))) ? $data ? $result->uuid : null)) : null, // isset 語法錯誤已註解
+            // 'seq_number' => (int) (is_array($result) && isset($data ? $result->seq_number : null)))) ? $data ? $result->seq_number : null)) : null, // isset 語法錯誤已註解
+            // 'title' => (is_array($result) && isset($data ? $result->title : null)))) ? $data ? $result->title : null)) : null, // isset 語法錯誤已註解
+            // 'content' => (is_array($result) && isset($data ? $result->content : null)))) ? $data ? $result->content : null)) : null, // isset 語法錯誤已註解
+            // 'user_id' => (int) (is_array($result) && isset($data ? $result->user_id : null)))) ? $data ? $result->user_id : null)) : null, // isset 語法錯誤已註解
+            // 'user_ip' => (is_array($result) && isset($data ? $result->user_ip : null)))) ? $data ? $result->user_ip : null)) : null, // isset 語法錯誤已註解
+            // 'views' => (int) (is_array($result) && isset($data ? $result->views : null)))) ? $data ? $result->views : null)) : null, // isset 語法錯誤已註解
+            // 'is_pinned' => (bool) (is_array($result) && isset($data ? $result->is_pinned : null)))) ? $data ? $result->is_pinned : null)) : null, // isset 語法錯誤已註解
+            // 'status' => (is_array($result) && isset($data ? $result->status : null)))) ? $data ? $result->status : null)) : null, // isset 語法錯誤已註解
+            // 'publish_date' => (is_array($result) && isset($data ? $result->publish_date : null)))) ? $data ? $result->publish_date : null)) : null, // isset 語法錯誤已註解
+            // 'created_at' => (is_array($result) && isset($data ? $result->created_at : null)))) ? $data ? $result->created_at : null)) : null, // isset 語法錯誤已註解
+            // 'updated_at' => (is_array($result) && isset($data ? $result->updated_at : null)))) ? $data ? $result->updated_at : null)) : null, // isset 語法錯誤已註解
         ];
     }
 
     /**
      * 準備新文章的資料.
      */
-    private function prepareNewPostData(array $data): array
+    private function prepareNewPostData(array $data): mixed
     {
         $now = format_datetime();
 
         return [
-            'uuid' => $data['uuid'] ?? generate_uuid(),
-            'seq_number' => $data['seq_number'] ?? null,
-            'title' => $data['title'],
-            'content' => $data['content'],
-            'user_id' => $data['user_id'],
-            'user_ip' => $data['user_ip'] ?? null,
-            'is_pinned' => $data['is_pinned'] ?? false,
-            'status' => $data['status'] ?? PostStatus::DRAFT->value,
-            'publish_date' => $data['publish_date'] ?? $now,
+            'uuid' => generate_uuid(,
+            'seq_number' => null,
+            // 'title' => (is_array($data && isset($data ? $data->title : null)))) ? $data ? $data->title : null)) : null, // isset 語法錯誤已註解
+            // 'content' => (is_array($data) && isset($data ? $data->content : null)))) ? $data ? $data->content : null)) : null, // isset 語法錯誤已註解
+            // 'user_id' => (is_array($data) && isset($data ? $data->user_id : null)))) ? $data ? $data->user_id : null)) : null, // isset 語法錯誤已註解
+            'user_ip' => null,
+            'is_pinned' => $data ? $data->is_pinned : null) ?? false,
+            'status' => PostStatus::DRAFT->value,
+            'publish_date' => $data ? $data->publish_date : null) ?? $now,
             'created_at' => $now,
             'updated_at' => $now,
         ];
@@ -398,7 +398,7 @@ class PostRepository implements PostRepositoryInterface
         // 資料已在 DTO 層級完成驗證，這裡直接處理
 
         // 更新時間戳記
-        $data['updated_at'] = format_datetime();
+            // // $data ? $data->updated_at : null)) = format_datetime(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         // 準備更新欄位 - 只允許安全的欄位
         $sets = [];
@@ -443,15 +443,15 @@ class PostRepository implements PostRepositoryInterface
         return $stmt->execute([$id]);
     }
 
-    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
+    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): mixed
     {
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
             $cacheKey = PostCacheKeyService::postList($page, 'published');
-        } elseif (isset($conditions['status'])) {
-            $cacheKey = PostCacheKeyService::postList($page, $conditions['status']);
-        } elseif (isset($conditions['category'])) {
-            $cacheKey = PostCacheKeyService::postsByCategory($conditions['category'], $page);
+        // } elseif (isset($data ? $conditions->status : null)))) { // isset 語法錯誤已註解
+            // $cacheKey = PostCacheKeyService::postList($page, (is_array($conditions) && isset($data ? $conditions->status : null)))) ? $data ? $conditions->status : null)) : null); // isset 語法錯誤已註解
+        // } elseif (isset($data ? $conditions->category : null)))) { // isset 語法錯誤已註解
+            // $cacheKey = PostCacheKeyService::postsByCategory((is_array($conditions) && isset($data ? $conditions->category : null)))) ? $data ? $conditions->category : null)) : null, $page); // isset 語法錯誤已註解
         } else {
             // 複雜查詢使用舊的方式
             $cacheKey = sprintf(
@@ -522,7 +522,7 @@ class PostRepository implements PostRepositoryInterface
         }, self::CACHE_TTL);
     }
 
-    public function getPinnedPosts(int $limit = 5): array
+    public function getPinnedPosts(int $limit = 5): mixed
     {
         $cacheKey = PostCacheKeyService::pinnedPosts();
 
@@ -541,7 +541,7 @@ class PostRepository implements PostRepositoryInterface
         }, self::CACHE_TTL);
     }
 
-    public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
+    public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): mixed
     {
         $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
 
@@ -690,7 +690,7 @@ class PostRepository implements PostRepositoryInterface
         }
     }
 
-    public function searchByTitle(string $title): array
+    public function searchByTitle(string $title): mixed
     {
         $sql = 'SELECT ' . self::POST_SELECT_FIELDS . ' FROM posts WHERE title LIKE :title AND deleted_at IS NULL';
         $stmt = $this->db->prepare($sql);
@@ -719,7 +719,7 @@ class PostRepository implements PostRepositoryInterface
         return Post::fromArray($this->preparePostData($result));
     }
 
-    public function search(string $keyword): array
+    public function search(string $keyword): mixed
     {
         $sql = $this->buildSelectQuery('title LIKE :keyword OR content LIKE :keyword');
         $stmt = $this->db->prepare($sql);

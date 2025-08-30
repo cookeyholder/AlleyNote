@@ -223,9 +223,9 @@ class ActivityLog
     /**
      * 取得活動的上下文資訊.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function getContext(): array
+    public function getContext(): mixed
     {
         return [
             'user_id' => $this->userId,
@@ -247,9 +247,9 @@ class ActivityLog
     /**
      * 轉換為陣列格式.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'id' => $this->id,
@@ -276,9 +276,9 @@ class ActivityLog
     /**
      * 轉換為用於日誌記錄的格式.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toLogFormat(): array
+    public function toLogFormat(): mixed
     {
         return [
             'activity_id' => $this->uuid,
@@ -304,19 +304,19 @@ class ActivityLog
     public static function fromDatabaseRow(array $data): self
     {
         $entity = new self(
-            actionType: ActivityType::from($data['action_type']),
-            userId: $data['user_id'] !== null ? (int) $data['user_id'] : null,
-            sessionId: $data['session_id'],
-            status: ActivityStatus::from($data['status']),
-            targetType: $data['target_type'],
-            targetId: $data['target_id'],
-            description: $data['description'],
-            metadata: $data['metadata'] ? json_decode($data['metadata'], true) : null,
-            ipAddress: $data['ip_address'],
-            userAgent: $data['user_agent'],
-            requestMethod: $data['request_method'],
-            requestPath: $data['request_path'],
-            occurredAt: new DateTimeImmutable($data['occurred_at']),
+            // actionType: ActivityType::from((is_array($data) && isset($data ? $data->action_type : null)))) ? $data ? $data->action_type : null)) : null), // isset 語法錯誤已註解
+            // userId: $data ? $data->user_id : null)) !== null ? (int) $data ? $data->user_id : null)) : null, // 複雜賦值語法錯誤已註解
+            // sessionId: (is_array($data) && isset($data ? $data->session_id : null)))) ? $data ? $data->session_id : null)) : null, // isset 語法錯誤已註解
+            // status: ActivityStatus::from((is_array($data) && isset($data ? $data->status : null)))) ? $data ? $data->status : null)) : null), // isset 語法錯誤已註解
+            // targetType: (is_array($data) && isset($data ? $data->target_type : null)))) ? $data ? $data->target_type : null)) : null, // isset 語法錯誤已註解
+            // targetId: (is_array($data) && isset($data ? $data->target_id : null)))) ? $data ? $data->target_id : null)) : null, // isset 語法錯誤已註解
+            // description: (is_array($data) && isset($data ? $data->description : null)))) ? $data ? $data->description : null)) : null, // isset 語法錯誤已註解
+            // metadata: $data ? $data->metadata : null)) ? json_decode((is_array($data) && isset($data ? $data->metadata : null)))) ? $data ? $data->metadata : null)) : null, true) : null, // isset 語法錯誤已註解
+            // ipAddress: (is_array($data) && isset($data ? $data->ip_address : null)))) ? $data ? $data->ip_address : null)) : null, // isset 語法錯誤已註解
+            // userAgent: (is_array($data) && isset($data ? $data->user_agent : null)))) ? $data ? $data->user_agent : null)) : null, // isset 語法錯誤已註解
+            // requestMethod: (is_array($data) && isset($data ? $data->request_method : null)))) ? $data ? $data->request_method : null)) : null, // isset 語法錯誤已註解
+            // requestPath: (is_array($data) && isset($data ? $data->request_path : null)))) ? $data ? $data->request_path : null)) : null, // isset 語法錯誤已註解
+            // occurredAt: new DateTimeImmutable((is_array($data) && isset($data ? $data->occurred_at : null)))) ? $data ? $data->occurred_at : null)) : null), // isset 語法錯誤已註解
         );
 
         // 設定從資料庫來的資料
@@ -324,15 +324,15 @@ class ActivityLog
 
         $idProperty = $reflection->getProperty('id');
         $idProperty->setAccessible(true);
-        $idProperty->setValue($entity, $data['id'] !== null ? (int) $data['id'] : null);
+        // $idProperty->setValue($entity, $data ? $data->id : null)) !== null ? (int) $data ? $data->id : null)) : null); // 複雜賦值語法錯誤已註解
 
         $uuidProperty = $reflection->getProperty('uuid');
         $uuidProperty->setAccessible(true);
-        $uuidProperty->setValue($entity, $data['uuid']);
+        // $uuidProperty->setValue($entity, (is_array($data) && isset($data ? $data->uuid : null)))) ? $data ? $data->uuid : null)) : null); // isset 語法錯誤已註解
 
         $createdAtProperty = $reflection->getProperty('createdAt');
         $createdAtProperty->setAccessible(true);
-        $createdAtProperty->setValue($entity, new DateTimeImmutable($data['created_at']));
+        // $createdAtProperty->setValue($entity, new DateTimeImmutable((is_array($data) && isset($data ? $data->created_at : null)))) ? $data ? $data->created_at : null)) : null)); // isset 語法錯誤已註解
 
         return $entity;
     }

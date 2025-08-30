@@ -29,11 +29,11 @@ class IntegrationTestExampleTest extends IntegrationTestCase
         // 驗證資料是否正確插入
         $stmt = $this->db->prepare('SELECT * FROM posts WHERE id = ?');
         $stmt->execute([$postId]);
-        $post = $stmt->fetch();
+        $post = ($stmt !== false ? $stmt->fetch() : false);
 
         $this->assertIsArray($post);
-        $this->assertEquals('測試貼文標題', $post['title']);
-        $this->assertEquals('測試貼文內容', $post['content']);
+        $this->assertEquals('測試貼文標題', (is_array($post) && isset((is_array($post) ? $post['title'] : (is_object($post) ? $post->title : null)))) ? (is_array($post) ? $post['title'] : (is_object($post) ? $post->title : null)) : null);
+        $this->assertEquals('測試貼文內容', (is_array($post) && isset((is_array($post) ? $post['content'] : (is_object($post) ? $post->content : null)))) ? (is_array($post) ? $post['content'] : (is_object($post) ? $post->content : null)) : null);
     }
 
     public function testCacheIntegration(): void
@@ -97,20 +97,20 @@ class IntegrationTestExampleTest extends IntegrationTestCase
 
         // 4. 驗證整合結果
         $stmt = $this->db->prepare('
-            SELECT p.*, u.username 
-            FROM posts p 
-            JOIN users u ON p.user_id = u.id 
+            SELECT p.*, u.username
+            FROM posts p
+            JOIN users u ON p.user_id = u.id
             WHERE p.id = ?
         ');
         $stmt->execute([$postId]);
-        $result = $stmt->fetch();
+        $result = ($stmt !== false ? $stmt->fetch() : false);
 
-        $this->assertEquals('testuser', $result['username']);
-        $this->assertEquals('使用者的測試貼文', $result['title']);
+        $this->assertEquals('testuser', (is_array($result) && isset((is_array($result) ? $result['username'] : (is_object($result) ? $result->username : null)))) ? (is_array($result) ? $result['username'] : (is_object($result) ? $result->username : null)) : null);
+        $this->assertEquals('使用者的測試貼文', (is_array($result) && isset((is_array($result) ? $result['title'] : (is_object($result) ? $result->title : null)))) ? (is_array($result) ? $result['title'] : (is_object($result) ? $result->title : null)) : null);
 
         // 5. 檢查快取
         $cachedUser = $this->cache->get("user:{$userId}");
-        $this->assertEquals('testuser', $cachedUser['username']);
+        $this->assertEquals('testuser', (is_array($cachedUser) && isset((is_array($cachedUser) ? $cachedUser['username'] : (is_object($cachedUser) ? $cachedUser->username : null)))) ? (is_array($cachedUser) ? $cachedUser['username'] : (is_object($cachedUser) ? $cachedUser->username : null)) : null);
 
         // 6. 建立成功回應
         $response = $this->createJsonResponseMock([

@@ -121,7 +121,7 @@ class MemoryRouteCache implements RouteCacheInterface
         return $this->ttl;
     }
 
-    public function getStats(): array
+    public function getStats(): mixed
     {
         return $this->stats;
     }
@@ -129,7 +129,7 @@ class MemoryRouteCache implements RouteCacheInterface
     /**
      * 取得所有快取項目.
      */
-    public function getCache(): array
+    public function getCache(): mixed
     {
         return $this->cache;
     }
@@ -137,7 +137,7 @@ class MemoryRouteCache implements RouteCacheInterface
     /**
      * 取得所有時間戳.
      */
-    public function getTimestamps(): array
+    public function getTimestamps(): mixed
     {
         return $this->timestamps;
     }

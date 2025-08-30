@@ -35,9 +35,9 @@ class PwnedPasswordService
      * 檢查密碼是否在已知的洩露資料庫中.
      *
      * @param string $password 要檢查的密碼
-     * @return array 包含是_leaked, count, error 等資訊的陣列
+     * @return array<mixed> 包含是_leaked, count, error 等資訊的陣列
      */
-    public function isPasswordPwned(string $password): array
+    public function isPasswordPwned(string $password): mixed
     {
         try {
             // 計算密碼的 SHA-1 雜湊值
@@ -57,7 +57,7 @@ class PwnedPasswordService
                 }
             }
 
-            if ($hashList === null) {
+            if (hashList === null) {
                 return [
                     'is_leaked' => false,
                     'count' => 0,
@@ -159,7 +159,7 @@ class PwnedPasswordService
     /**
      * 取得 API 狀態.
      */
-    public function getApiStatus(): array
+    public function getApiStatus(): mixed
     {
         try {
             $response = $this->httpClient->get(self::HIBP_API_URL . '00000');
@@ -179,7 +179,7 @@ class PwnedPasswordService
     /**
      * 批次檢查多個密碼
      */
-    public function checkMultiplePasswords(array $passwords): array
+    public function checkMultiplePasswords(array $passwords): mixed
     {
         $results = [];
 

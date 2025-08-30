@@ -20,7 +20,7 @@ use Throwable;
  */
 class ActivityLoggingService implements ActivityLoggingServiceInterface
 {
-    /** @var array<string, bool> 已停用的活動類型 */
+    /** @var array<mixed> 已停用的活動類型 */
     private array $disabledActionTypes = [];
 
     /** 記錄等級閾值 */
@@ -57,7 +57,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             // 記錄到資料庫
             $result = $this->repository->create($dto);
 
-            if ($result === null) {
+            if (result === null) {
                 $this->logger->error('Repository returned null for activity log creation', [
                     'action_type' => $dto->getActionType()->value,
                     'user_id' => $dto->getUserId(),

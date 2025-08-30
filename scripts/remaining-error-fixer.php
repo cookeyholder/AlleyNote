@@ -8,7 +8,7 @@
 class RemainingErrorFixer
 {
     private int $fixCount = 0;
-    private array $processedFiles = [];
+    private array<mixed> $processedFiles = [];
 
     public function run(): void
     {
@@ -54,8 +54,8 @@ class RemainingErrorFixer
         $pattern = '/\$response = new class implements ResponseInterface \{.*?\};/s';
 
         $replacement = '$response = new class implements ResponseInterface {
-            /** @var array<string, array<string>> */
-            private array $headers = [\'Content-Type\' => [\'application/json\']];
+            /** @var array<mixed>> */
+            private array<mixed> $headers = [\'Content-Type\' => [\'application/json\']];
             private string $body = \'\';
             private int $statusCode = 500;
             private string $reasonPhrase = \'Internal Server Error\';
@@ -73,7 +73,7 @@ class RemainingErrorFixer
                 return $new;
             }
 
-            public function getHeaders(): array
+            public function getHeaders(): array<mixed>
             {
                 return $this->headers;
             }
@@ -83,7 +83,7 @@ class RemainingErrorFixer
                 return isset($this->headers[$name]);
             }
 
-            public function getHeader(string $name): array
+            public function getHeader(string $name): array<mixed>
             {
                 return $this->headers[$name] ?? [];
             }
@@ -96,7 +96,7 @@ class RemainingErrorFixer
             public function withHeader(string $name, $value): ResponseInterface
             {
                 $new = clone $this;
-                $new->headers[$name] = (array) $value;
+                $new->headers[$name] = (array<mixed>) $value;
                 return $new;
             }
 
@@ -106,7 +106,7 @@ class RemainingErrorFixer
                 if (!isset($new->headers[$name])) {
                     $new->headers[$name] = [];
                 }
-                $new->headers[$name] = array_merge($new->headers[$name], (array) $value);
+                $new->headers[$name] = array_merge($new->headers[$name], (array<mixed>) $value);
                 return $new;
             }
 
@@ -254,16 +254,16 @@ class RemainingErrorFixer
 
         // 修復方法參數類型
         $content = preg_replace(
-            '/public function download\(array \$args\):/',
-            'public function download(array $args): ResponseInterface',
+            '/public function download\(array<mixed> \$args\):/',
+            'public function download(array<mixed> $args): ResponseInterface',
             $content
         );
 
         // 添加 @param 註解
-        if (!preg_match('/@param\s+array<string,\s*mixed>\s+\$args/', $content)) {
+        if (!preg_match('/@param\s+array<mixed>\s+\$args/', $content)) {
             $content = preg_replace(
-                '/(\/\*\*[^}]*?)(\*\/\s*public function download\(array \$args\))/s',
-                "$1     * @param array<string, mixed> \$args\n     $2",
+                '/(\/\*\*[^}]*?)(\*\/\s*public function download\(array<mixed> \$args\))/s',
+                "$1     * @param array<mixed> \$args\n     $2",
                 $content
             );
         }
@@ -335,15 +335,15 @@ class RemainingErrorFixer
 
             $originalContent = $content;
 
-            // 修復方法參數中缺少類型規範的 array
+            // 修復方法參數中缺少類型規範的 array<mixed>
             $patterns = [
-                // 修復 function(array $param) 沒有泛型類型的問題
-                '/(\s+function\s+[a-zA-Z_][a-zA-Z0-9_]*\([^)]*?)array(\s+\$[a-zA-Z_][a-zA-Z0-9_]*)([^)]*\))/' => '$1array<string, mixed>$2$3',
+                // 修復 function(array<mixed> $param) 沒有泛型類型的問題
+                '/(\s+function\s+[a-zA-Z_][a-zA-Z0-9_]*\([^)]*?)array(\s+\$[a-zA-Z_][a-zA-Z0-9_]*)([^)]*\))/' => '$1array$2$3',
             ];
 
             foreach ($patterns as $pattern => $replacement) {
                 // 只有當沒有已經指定泛型類型時才替換
-                if (!preg_match('/array<[^>]+>/', $content)) {
+                if (!preg_match('/array<mixed>]+>/', $content)) {
                     $content = preg_replace($pattern, $replacement, $content);
                 }
             }
@@ -359,7 +359,7 @@ class RemainingErrorFixer
         }
     }
 
-    private function getPhpFiles(): array
+    private function getPhpFiles(): array<mixed>
     {
         $files = [];
 

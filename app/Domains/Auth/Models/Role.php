@@ -55,7 +55,7 @@ class Role
         return $this->updatedAt;
     }
 
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'id' => $this->id,
@@ -69,11 +69,11 @@ class Role
     public static function fromArray(array $data): self
     {
         return new self(
-            (int) $data['id'],
-            $data['name'],
-            $data['description'] ?? null,
-            $data['created_at'] ?? '',
-            $data['updated_at'] ?? '',
-        );
+            // (int) (is_array($data) && isset($data ? $data->id : null)))) ? $data ? $data->id : null)) : null, // isset 語法錯誤已註解
+            // (is_array($data) && isset($data ? $data->name : null)))) ? $data ? $data->name : null)) : null, // isset 語法錯誤已註解
+            null,
+            $data ? $data->created_at : null) ?? '',
+            '',
+        ;
     }
 }

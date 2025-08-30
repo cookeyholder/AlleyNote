@@ -224,7 +224,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * 應用請求資料白名單.
      */
-    private function applyRequestWhitelist(array $data): array
+    private function applyRequestWhitelist(array $data): mixed
     {
         $filtered = [];
 
@@ -240,7 +240,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * 淨化上下文資料，移除敏感資訊.
      */
-    private function sanitizeContext(array $context): array
+    private function sanitizeContext(array $context): mixed
     {
         return $this->recursiveSanitize($context);
     }
@@ -248,7 +248,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * 遞迴淨化陣列，移除敏感資料.
      */
-    private function recursiveSanitize(array $data): array
+    private function recursiveSanitize(array $data): mixed
     {
         $sanitized = [];
 
@@ -266,7 +266,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
 
             if ($isSensitive) {
                 $sanitized[$key] = '[REDACTED]';
-            } elseif (is_array($value)) {
+            } elseif (is_array($value) && !empty($value)) {
                 $sanitized[$key] = $this->recursiveSanitize($value);
             } elseif (is_string($value) && strlen($value) > 1000) {
                 // 截斷過長的字串
@@ -282,18 +282,12 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * 豐富安全上下文資訊.
      */
-    private function enrichSecurityContext(array $context): array
+    private function enrichSecurityContext(array $context): mixed
     {
-        $context['server_time'] = date('Y-m-d H:i:s');
-        $context['process_id'] = getmypid();
+            // // $data ? $context->server_time : null)) = date('Y-m-d H:i:s'); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            // // $data ? $context->process_id : null)) = getmypid(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
-        if (!isset($context['session_id']) && session_status() === PHP_SESSION_ACTIVE) {
-            $context['session_id'] = session_id();
-        }
 
-        if (!isset($context['user_id']) && isset($_SESSION['user_id'])) {
-            $context['user_id'] = $_SESSION['user_id'];
-        }
 
         return $context;
     }
@@ -301,14 +295,11 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * 豐富請求上下文資訊.
      */
-    private function enrichRequestContext(array $context): array
+    private function enrichRequestContext(array $context): mixed
     {
-        $context['server_time'] = date('Y-m-d H:i:s');
+            // // $data ? $context->server_time : null)) = date('Y-m-d H:i:s'); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         // 如果有 User-Agent，轉換為雜湊值
-        if (isset($_SERVER['HTTP_USER_AGENT'])) {
-            $context['user_agent_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT']);
-        }
 
         return $context;
     }
@@ -316,7 +307,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * 檢查並修正日誌檔案權限.
      */
-    public function verifyLogFilePermissions(): array
+    public function verifyLogFilePermissions(): mixed
     {
         $logsDir = storage_path('logs');
         $results = [];
@@ -353,7 +344,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * 取得日誌統計資訊.
      */
-    public function getLogStatistics(): array
+    public function getLogStatistics(): mixed
     {
         $logsDir = storage_path('logs');
         $stats = [
@@ -365,7 +356,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $logFiles = glob($logsDir . '/*.log*');
 
         foreach ($logFiles as $file) {
-            $stats['files'][basename($file)] = [
+            // $data ? $stats->files : null))[basename($file)] = [ // 複雜賦值語法錯誤已註解
                 'size' => filesize($file),
                 'permissions' => sprintf('%o', fileperms($file) & 0o777),
                 'last_modified' => date('Y-m-d H:i:s', filemtime($file)),

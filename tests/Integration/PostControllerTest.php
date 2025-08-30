@@ -42,7 +42,7 @@ class PostControllerTest extends TestCase
 
     /** @var OutputSanitizerInterface&MockInterface */
     private OutputSanitizerInterface $sanitizer;
-    
+
     /** @var ActivityLoggingServiceInterface&MockInterface */
     private ActivityLoggingServiceInterface $activityLogger;
 

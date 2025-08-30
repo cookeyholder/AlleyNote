@@ -184,9 +184,9 @@ final readonly class TokenPair implements JsonSerializable
     /**
      * 轉換為陣列格式.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toArray(): array
+    public function toArray(): mixed
     {
         return [
             'access_token' => $this->accessToken,
@@ -202,9 +202,9 @@ final readonly class TokenPair implements JsonSerializable
      * 轉換為 API 回應格式（隱藏敏感資訊）.
      *
      * @param bool $includeRefreshToken 是否包含 Refresh Token
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function toApiResponse(bool $includeRefreshToken = true): array
+    public function toApiResponse(bool $includeRefreshToken = true): mixed
     {
         $response = [
             'access_token' => $this->accessToken,
@@ -213,7 +213,7 @@ final readonly class TokenPair implements JsonSerializable
         ];
 
         if ($includeRefreshToken) {
-            $response['refresh_token'] = $this->refreshToken;
+            // // $data ? $response->refresh_token : null)) = $this->refreshToken; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         }
 
         return $response;
@@ -222,9 +222,9 @@ final readonly class TokenPair implements JsonSerializable
     /**
      * JsonSerializable 實作.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }

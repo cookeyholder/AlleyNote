@@ -28,7 +28,7 @@ class UserActivityLogsSeeder extends AbstractSeed
     /**
      * 產生範例活動記錄資料
      */
-    private function generateSampleActivityLogs(): array
+    private function generateSampleActivityLogs(): array<mixed>
     {
         $logs = [];
         $now = new DateTime();
@@ -54,7 +54,7 @@ class UserActivityLogsSeeder extends AbstractSeed
     /**
      * 產生認證相關活動記錄
      */
-    private function generateAuthActivities(DateTime $now): array
+    private function generateAuthActivities(DateTime $now): array<mixed>
     {
         return [
             [
@@ -125,7 +125,7 @@ class UserActivityLogsSeeder extends AbstractSeed
     /**
      * 產生文章管理活動記錄
      */
-    private function generatePostActivities(DateTime $now): array
+    private function generatePostActivities(DateTime $now): array<mixed>
     {
         return [
             [
@@ -177,7 +177,7 @@ class UserActivityLogsSeeder extends AbstractSeed
     /**
      * 產生附件管理活動記錄
      */
-    private function generateAttachmentActivities(DateTime $now): array
+    private function generateAttachmentActivities(DateTime $now): array<mixed>
     {
         return [
             [
@@ -230,7 +230,7 @@ class UserActivityLogsSeeder extends AbstractSeed
     /**
      * 產生安全事件記錄
      */
-    private function generateSecurityEvents(DateTime $now): array
+    private function generateSecurityEvents(DateTime $now): array<mixed>
     {
         return [
             [
@@ -283,7 +283,7 @@ class UserActivityLogsSeeder extends AbstractSeed
     /**
      * 產生失敗操作記錄
      */
-    private function generateFailedActivities(DateTime $now): array
+    private function generateFailedActivities(DateTime $now): array<mixed>
     {
         return [
             [

@@ -18,20 +18,20 @@ class ApiResponseTest extends TestCase
 
         $response = ApiResponse::success($data, $message);
 
-        $this->assertTrue($response['success']);
-        $this->assertEquals($message, $response['message']);
-        $this->assertEquals($data, $response['data']);
+        $this->assertTrue((is_array($response) && isset((is_array($response) ? $response['success'] : (is_object($response) ? $response->success : null)))) ? (is_array($response) ? $response['success'] : (is_object($response) ? $response->success : null)) : null);
+        $this->assertEquals($message, (is_array($response) && isset((is_array($response) ? $response['message'] : (is_object($response) ? $response->message : null)))) ? (is_array($response) ? $response['message'] : (is_object($response) ? $response->message : null)) : null);
+        $this->assertEquals($data, (is_array($response) && isset((is_array($response) ? $response['data'] : (is_object($response) ? $response->data : null)))) ? (is_array($response) ? $response['data'] : (is_object($response) ? $response->data : null)) : null);
         $this->assertArrayHasKey('timestamp', $response);
-        $this->assertIsString($response['timestamp']);
+        $this->assertIsString((is_array($response) && isset((is_array($response) ? $response['timestamp'] : (is_object($response) ? $response->timestamp : null)))) ? (is_array($response) ? $response['timestamp'] : (is_object($response) ? $response->timestamp : null)) : null);
     }
 
     public function testSuccessResponseWithDefaults(): void
     {
         $response = ApiResponse::success();
 
-        $this->assertTrue($response['success']);
-        $this->assertEquals('Success', $response['message']);
-        $this->assertNull($response['data']);
+        $this->assertTrue((is_array($response) && isset((is_array($response) ? $response['success'] : (is_object($response) ? $response->success : null)))) ? (is_array($response) ? $response['success'] : (is_object($response) ? $response->success : null)) : null);
+        $this->assertEquals('Success', (is_array($response) && isset((is_array($response) ? $response['message'] : (is_object($response) ? $response->message : null)))) ? (is_array($response) ? $response['message'] : (is_object($response) ? $response->message : null)) : null);
+        $this->assertNull((is_array($response) && isset((is_array($response) ? $response['data'] : (is_object($response) ? $response->data : null)))) ? (is_array($response) ? $response['data'] : (is_object($response) ? $response->data : null)) : null);
         $this->assertArrayHasKey('timestamp', $response);
     }
 
@@ -43,12 +43,12 @@ class ApiResponseTest extends TestCase
 
         $response = ApiResponse::error($message, $code, $errors);
 
-        $this->assertFalse($response['success']);
-        $this->assertEquals($message, $response['message']);
-        $this->assertEquals($code, $response['error_code']);
-        $this->assertEquals($errors, $response['errors']);
+        $this->assertFalse((is_array($response) && isset((is_array($response) ? $response['success'] : (is_object($response) ? $response->success : null)))) ? (is_array($response) ? $response['success'] : (is_object($response) ? $response->success : null)) : null);
+        $this->assertEquals($message, (is_array($response) && isset((is_array($response) ? $response['message'] : (is_object($response) ? $response->message : null)))) ? (is_array($response) ? $response['message'] : (is_object($response) ? $response->message : null)) : null);
+        $this->assertEquals($code, (is_array($response) && isset((is_array($response) ? $response['error_code'] : (is_object($response) ? $response->error_code : null)))) ? (is_array($response) ? $response['error_code'] : (is_object($response) ? $response->error_code : null)) : null);
+        $this->assertEquals($errors, (is_array($response) && isset((is_array($response) ? $response['errors'] : (is_object($response) ? $response->errors : null)))) ? (is_array($response) ? $response['errors'] : (is_object($response) ? $response->errors : null)) : null);
         $this->assertArrayHasKey('timestamp', $response);
-        $this->assertIsString($response['timestamp']);
+        $this->assertIsString((is_array($response) && isset((is_array($response) ? $response['timestamp'] : (is_object($response) ? $response->timestamp : null)))) ? (is_array($response) ? $response['timestamp'] : (is_object($response) ? $response->timestamp : null)) : null);
     }
 
     public function testErrorResponseWithDefaults(): void
@@ -57,10 +57,10 @@ class ApiResponseTest extends TestCase
 
         $response = ApiResponse::error($message);
 
-        $this->assertFalse($response['success']);
-        $this->assertEquals($message, $response['message']);
-        $this->assertEquals(400, $response['error_code']);
-        $this->assertNull($response['errors']);
+        $this->assertFalse((is_array($response) && isset((is_array($response) ? $response['success'] : (is_object($response) ? $response->success : null)))) ? (is_array($response) ? $response['success'] : (is_object($response) ? $response->success : null)) : null);
+        $this->assertEquals($message, (is_array($response) && isset((is_array($response) ? $response['message'] : (is_object($response) ? $response->message : null)))) ? (is_array($response) ? $response['message'] : (is_object($response) ? $response->message : null)) : null);
+        $this->assertEquals(400, (is_array($response) && isset((is_array($response) ? $response['error_code'] : (is_object($response) ? $response->error_code : null)))) ? (is_array($response) ? $response['error_code'] : (is_object($response) ? $response->error_code : null)) : null);
+        $this->assertNull((is_array($response) && isset((is_array($response) ? $response['errors'] : (is_object($response) ? $response->errors : null)))) ? (is_array($response) ? $response['errors'] : (is_object($response) ? $response->errors : null)) : null);
         $this->assertArrayHasKey('timestamp', $response);
     }
 
@@ -76,19 +76,19 @@ class ApiResponseTest extends TestCase
 
         $response = ApiResponse::paginated($data, $total, $page, $perPage);
 
-        $this->assertTrue($response['success']);
-        $this->assertEquals($data, $response['data']);
+        $this->assertTrue((is_array($response) && isset((is_array($response) ? $response['success'] : (is_object($response) ? $response->success : null)))) ? (is_array($response) ? $response['success'] : (is_object($response) ? $response->success : null)) : null);
+        $this->assertEquals($data, (is_array($response) && isset((is_array($response) ? $response['data'] : (is_object($response) ? $response->data : null)))) ? (is_array($response) ? $response['data'] : (is_object($response) ? $response->data : null)) : null);
         $this->assertArrayHasKey('pagination', $response);
 
-        $pagination = $response['pagination'];
-        $this->assertEquals($total, $pagination['total']);
-        $this->assertEquals($page, $pagination['page']);
-        $this->assertEquals($perPage, $pagination['per_page']);
-        $this->assertEquals(ceil($total / $perPage), $pagination['total_pages']);
-        $this->assertEquals(10, $pagination['total_pages']); // 100 / 10 = 10
+        $pagination = (is_array($response) && isset((is_array($response) ? $response['pagination'] : (is_object($response) ? $response->pagination : null)))) ? (is_array($response) ? $response['pagination'] : (is_object($response) ? $response->pagination : null)) : null;
+        $this->assertEquals($total, (is_array($pagination) && isset((is_array($pagination) ? $pagination['total'] : (is_object($pagination) ? $pagination->total : null)))) ? (is_array($pagination) ? $pagination['total'] : (is_object($pagination) ? $pagination->total : null)) : null);
+        $this->assertEquals($page, (is_array($pagination) && isset((is_array($pagination) ? $pagination['page'] : (is_object($pagination) ? $pagination->page : null)))) ? (is_array($pagination) ? $pagination['page'] : (is_object($pagination) ? $pagination->page : null)) : null);
+        $this->assertEquals($perPage, (is_array($pagination) && isset((is_array($pagination) ? $pagination['per_page'] : (is_object($pagination) ? $pagination->per_page : null)))) ? (is_array($pagination) ? $pagination['per_page'] : (is_object($pagination) ? $pagination->per_page : null)) : null);
+        $this->assertEquals(ceil($total / $perPage), (is_array($pagination) && isset((is_array($pagination) ? $pagination['total_pages'] : (is_object($pagination) ? $pagination->total_pages : null)))) ? (is_array($pagination) ? $pagination['total_pages'] : (is_object($pagination) ? $pagination->total_pages : null)) : null);
+        $this->assertEquals(10, (is_array($pagination) && isset((is_array($pagination) ? $pagination['total_pages'] : (is_object($pagination) ? $pagination->total_pages : null)))) ? (is_array($pagination) ? $pagination['total_pages'] : (is_object($pagination) ? $pagination->total_pages : null)) : null); // 100 / 10 = 10
 
         $this->assertArrayHasKey('timestamp', $response);
-        $this->assertIsString($response['timestamp']);
+        $this->assertIsString((is_array($response) && isset((is_array($response) ? $response['timestamp'] : (is_object($response) ? $response->timestamp : null)))) ? (is_array($response) ? $response['timestamp'] : (is_object($response) ? $response->timestamp : null)) : null);
     }
 
     public function testTimestampFormat(): void
@@ -96,7 +96,7 @@ class ApiResponseTest extends TestCase
         $response = ApiResponse::success();
 
         // 驗證時間戳格式是否為 ISO 8601
-        $timestamp = $response['timestamp'];
+        $timestamp = (is_array($response) && isset((is_array($response) ? $response['timestamp'] : (is_object($response) ? $response->timestamp : null)))) ? (is_array($response) ? $response['timestamp'] : (is_object($response) ? $response->timestamp : null)) : null;
         $this->assertMatchesRegularExpression(
             '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/',
             $timestamp,

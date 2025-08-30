@@ -6,7 +6,7 @@ namespace App\Shared\Http;
 
 class ApiResponse
 {
-    public static function success($data = null, string $message = 'Success'): array
+    public static function success($data = null, string $message = 'Success'): mixed
     {
         return [
             'success' => true,
@@ -16,7 +16,7 @@ class ApiResponse
         ];
     }
 
-    public static function error(string $message, int $code = 400, mixed $errors = null): array
+    public static function error(string $message, int $code = 400, mixed $errors = null): mixed
     {
         return [
             'success' => false,
@@ -27,7 +27,7 @@ class ApiResponse
         ];
     }
 
-    public static function paginated(array $data, int $total, int $page, int $perPage): array
+    public static function paginated(array $data, int $total, int $page, int $perPage): mixed
     {
         return [
             'success' => true,
