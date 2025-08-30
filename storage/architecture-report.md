@@ -1,16 +1,16 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-08-29 22:41:12
+**生成時間**: 2025-08-30 08:21:17
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 182 | - |
-| 介面與類別比例 | 21.98% | ✅ 良好 |
+| 總類別數 | 185 | - |
+| 介面與類別比例 | 21.62% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 56.04% | ✅ 良好 |
-| PSR-4 合規率 | 82.91% | ❌ 需修正 |
+| 現代 PHP 採用率 | 56.22% | ✅ 良好 |
+| PSR-4 合規率 | 81.93% | ❌ 需修正 |
 | DDD 結構完整性 | 80.00% | ✅ 良好 |
 
 ## 🎯 DDD 邊界上下文分析
@@ -74,12 +74,12 @@
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 151 | ✅ 更安全的條件分支 |
-| 唯讀屬性 (PHP 8.1+) | 101 | ✅ 提升資料不變性 |
-| 屬性標籤 (PHP 8.0+) | 74 | ✅ 現代化 metadata |
+| Match 表達式 (PHP 8.0+) | 152 | ✅ 更安全的條件分支 |
+| 唯讀屬性 (PHP 8.1+) | 103 | ✅ 提升資料不變性 |
+| 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
 | 空安全運算子 (PHP 8.0+) | 55 | ✅ 防止 null 指標異常 |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
-| 聯合型別 (PHP 8.0+) | 13 | ✅ 更靈活的型別定義 |
+| 聯合型別 (PHP 8.0+) | 16 | ✅ 更靈活的型別定義 |
 | 列舉型別 (PHP 8.1+) | 5 | ✅ 型別安全的常數 |
 
 ## 📁 目錄結構
@@ -746,6 +746,16 @@
             if (preg_match('/^namespace [^`
 - scripts/fix-phpunit-deprecations.php
 
+### `$content = str_replace(
+                'AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface',
+                'App\Domains\Auth\Contracts\AuthenticationServiceInterface',
+                $content
+            )`
+- scripts/fix-test-constructor-errors.php
+
+### `App\\Application\\Controllers\\Api\\V1`
+- scripts/rebuild-activity-controller.php
+
 ### `= trim($matches[1])`
 - scripts/scan-project-architecture.php
 
@@ -771,7 +781,7 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 182
+- **類別總數**: 185
 - **介面總數**: 40
 - **Trait 總數**: 0
 
@@ -866,9 +876,6 @@
   - 繼承: BaseController
   - 實作: 
 - **IpController**: `app/Application/Controllers/Api/V1/IpController.php`
-  - 實作: 
-- **ActivityLogController**: `app/Application/Controllers/Api/V1/ActivityLogController.php`
-  - 繼承: BaseController
   - 實作: 
 - **AuthController**: `app/Application/Controllers/Api/V1/AuthController.php`
   - 繼承: BaseController
@@ -971,7 +978,7 @@
 - HealthController (`app/Application/Controllers/TestController.php`)
 - PostController (`app/Application/Controllers/Api/V1/PostController.php`)
 - IpController (`app/Application/Controllers/Api/V1/IpController.php`)
-- ActivityLogController (`app/Application/Controllers/Api/V1/ActivityLogController.php`)
+- ActivityLogController (`scripts/rebuild-activity-controller.php`)
 - AuthController (`app/Application/Controllers/Api/V1/AuthController.php`)
 - AttachmentController (`app/Application/Controllers/Api/V1/AttachmentController.php`)
 - BaseController (`app/Application/Controllers/BaseController.php`)
@@ -994,6 +1001,8 @@
 - RouteValidator (`app/Infrastructure/Routing/RouteValidator.php`)
 - RateLimitService (`app/Infrastructure/Services/RateLimitService.php`)
 - OutputSanitizer (`app/Infrastructure/Services/OutputSanitizer.php`)
+- JsonEncodeIssueFixer (`scripts/fix-json-encode-issues.php`)
+- ControllerMethodFixer (`scripts/fix-controller-methods.php`)
 - SpecificPhpstanFixer (`scripts/specific-phpstan-fixer.php`)
 - ConsolidatedAnalyzer (`scripts/consolidated/ConsolidatedAnalyzer.php`)
 - ScriptManager (`scripts/consolidated/ScriptManager.php`)
@@ -1012,6 +1021,7 @@
 - ConsolidatedMaintainer (`scripts/consolidated/ConsolidatedMaintainer.php`)
 - ConsolidatedTestManager (`scripts/consolidated/ConsolidatedTestManager.php`)
 - PhpUnitDeprecationFixer (`scripts/fix-phpunit-deprecations.php`)
+- TestConstructorFixer (`scripts/fix-test-constructor-errors.php`)
 - AnonymousClassFixer (`scripts/anonymous-class-fixer.php`)
 - PhpGenericSyntaxFixer (`scripts/fix-php-generic-syntax.php`)
 - ConsoleOutput (`scripts/lib/ConsoleOutput.php`)
@@ -1164,7 +1174,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 182 個
+- **缺少測試的類別**: 185 個
 
 ### 缺少測試的重要類別
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
@@ -1354,4 +1364,4 @@
             $sql = $this->buildSelectQuery('id = ?') (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
 - ❓ 找不到類別/介面: ($uuid) {
             $sql = $this->buildSelectQuery('uuid = ?') (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ... 還有 125 個
+- ... 還有 129 個
