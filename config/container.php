@@ -16,9 +16,16 @@ use App\Infrastructure\Http\ServerRequestFactory;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Shared\Config\EnvironmentConfig;
+use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
+use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
+use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
+use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Log\LoggerInterface;
 
 return array_merge(
     // 基本 HTTP 服務
@@ -86,18 +93,25 @@ return array_merge(
         'security.session_lifetime' => \DI\env('SESSION_LIFETIME', 3600),
     ],
 
-    // 第三方服務配置（為將來擴展準備）
+    // 第三方服務配置
     [
-        // Monolog Logger（如果需要）
-        // Monolog\Logger::class => \DI\factory(function (ContainerInterface $c) {
-        //     $logger = new \Monolog\Logger($c->get('app.name'));
-        //     $logger->pushHandler(new \Monolog\Handler\StreamHandler($c->get('log.path')));
-        //     return $logger;
-        // }),
+        // Monolog Logger
+        LoggerInterface::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            $logger = new Logger($c->get('app.name'));
+            $handler = new StreamHandler($c->get('log.path'), Logger::DEBUG);
+            $logger->pushHandler($handler);
+            return $logger;
+        }),
+
+        // Logger 別名
+        Logger::class => \DI\get(LoggerInterface::class),
 
         // PDO 連線（如果需要）
         // PDO::class => \DI\factory(function (ContainerInterface $c) {
         //     return new PDO('sqlite:' . $c->get('db.path'));
         // }),
-    ]
+    ],
+
+    // 監控服務
+    MonitoringServiceProvider::getDefinitions()
 );

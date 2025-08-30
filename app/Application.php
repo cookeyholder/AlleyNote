@@ -8,6 +8,8 @@ use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Infrastructure\Routing\RouteDispatcher;
 use App\Shared\Config\EnvironmentConfig;
+use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
+use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
 use DI\ContainerBuilder;
 use Exception;
 use Psr\Container\ContainerInterface;
@@ -32,6 +34,7 @@ class Application
     {
         $this->initializeContainer();
         $this->initializeEnvironmentConfig();
+        $this->initializeMonitoring();
         $this->initializeRouter();
         $this->initializeRouteDispatcher();
         $this->loadRoutes();
@@ -47,6 +50,16 @@ class Application
         } catch (Exception $e) {
             return $this->handleException($e);
         }
+    }
+
+    /**
+     * 初始化監控服務。
+     */
+    private function initializeMonitoring(): void
+    {
+        MonitoringServiceProvider::initialize($this->container);
+        MonitoringServiceProvider::setupPerformanceBenchmarks($this->container);
+        MonitoringServiceProvider::setupHealthCheckSchedule($this->container);
     }
 
     /**
@@ -115,6 +128,19 @@ class Application
      */
     private function handleException(Exception $e): ResponseInterface
     {
+        // 記錄錯誤到監控系統
+        try {
+            $errorTracker = $this->container->get(ErrorTrackerInterface::class);
+            $errorTracker->recordCriticalError($e, [
+                'context' => 'application_exception',
+                'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
+                'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
+            ]);
+        } catch (\Exception $monitoringException) {
+            // 如果監控系統本身出錯，記錄到錯誤日誌
+            error_log("Monitoring system error: " . $monitoringException->getMessage());
+        }
+
         // 建立基本的錯誤回應（使用匿名類別實作）
         $stream = new class implements StreamInterface {
             private string $content = '';
