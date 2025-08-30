@@ -207,6 +207,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
         return (int) $result['next_seq'];
     }
 
@@ -354,6 +355,7 @@ class PostRepository implements PostRepositoryInterface
             $stmt = $this->db->prepare(self::SQL_INSERT_POST);
             if (!$stmt->execute($data)) {
                 $errorInfo = $stmt->errorInfo();
+
                 throw new PDOException('Failed to insert post: ' . $errorInfo[2]);
             }
             $postId = (int) $this->db->lastInsertId();
@@ -413,7 +415,7 @@ class PostRepository implements PostRepositoryInterface
         // 資料已在 DTO 層級完成驗證，這裡直接處理
 
         // 更新時間戳記
-            // // $data ? $data->updated_at : null)) = format_datetime(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+        // // $data ? $data->updated_at : null)) = format_datetime(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         // 準備更新欄位 - 只允許安全的欄位
         $sets = [];
@@ -463,9 +465,9 @@ class PostRepository implements PostRepositoryInterface
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
             $cacheKey = PostCacheKeyService::postList($page, 'published');
-        // } elseif (isset($data ? $conditions->status : null)))) { // isset 語法錯誤已註解
+            // } elseif (isset($data ? $conditions->status : null)))) { // isset 語法錯誤已註解
             // $cacheKey = PostCacheKeyService::postList($page, (is_array($conditions) && isset($data ? $conditions->status : null)))) ? $data ? $conditions->status : null)) : null); // isset 語法錯誤已註解
-        // } elseif (isset($data ? $conditions->category : null)))) { // isset 語法錯誤已註解
+            // } elseif (isset($data ? $conditions->category : null)))) { // isset 語法錯誤已註解
             // $cacheKey = PostCacheKeyService::postsByCategory((is_array($conditions) && isset($data ? $conditions->category : null)))) ? $data ? $conditions->category : null)) : null, $page); // isset 語法錯誤已註解
         } else {
             // 複雜查詢使用舊的方式

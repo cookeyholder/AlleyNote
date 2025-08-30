@@ -20,7 +20,8 @@ use RuntimeException;
 
 class PostService implements PostServiceInterface
 {
-    public function __construct(private readonly PostRepositoryInterface $repository,
+    public function __construct(
+        private readonly PostRepositoryInterface $repository,
     ) {}
 
     public function createPost(CreatePostDTO $dto): Post

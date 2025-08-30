@@ -221,7 +221,7 @@ class DatabaseBackupTest extends TestCase
         $restoredAttachments = $restoredDb->query('SELECT * FROM attachments ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);
 
         // 比較關鍵欄位而非完整記錄
-        $originalPostsFiltered = array_map(function($post) {
+        $originalPostsFiltered = array_map(function ($post) {
             return [
                 'title' => $post['title'],
                 'content' => $post['content'],

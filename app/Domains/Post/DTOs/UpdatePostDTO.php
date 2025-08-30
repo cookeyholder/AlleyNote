@@ -91,7 +91,8 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 添加文章專用驗證規則.
      */
-    private function addPostValidationRules(): void {
+    private function addPostValidationRules(): void
+    {
         // 文章標題驗證規則（更新版本，允許空值）
         $this->validator->addRule('post_title_update', function ($value, array $parameters) {
             if ($value === null || $value === '') {

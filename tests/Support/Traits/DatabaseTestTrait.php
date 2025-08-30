@@ -10,8 +10,8 @@ use PDOException;
 use RuntimeException;
 
 /**
- * 資料庫測試功能 Trait
- * 
+ * 資料庫測試功能 Trait.
+ *
  * 提供記憶體 SQLite 資料庫的設定和測試資料表建立功能
  */
 trait DatabaseTestTrait
@@ -19,7 +19,7 @@ trait DatabaseTestTrait
     protected PDO $db;
 
     /**
-     * 設定測試資料庫
+     * 設定測試資料庫.
      */
     protected function setUpDatabase(): void
     {
@@ -48,7 +48,7 @@ trait DatabaseTestTrait
     }
 
     /**
-     * 清理資料庫連線
+     * 清理資料庫連線.
      */
     protected function tearDownDatabase(): void
     {
@@ -59,7 +59,7 @@ trait DatabaseTestTrait
     }
 
     /**
-     * 建立測試用資料表
+     * 建立測試用資料表.
      */
     protected function createTestTables(): void
     {
@@ -73,7 +73,7 @@ trait DatabaseTestTrait
     }
 
     /**
-     * 建立貼文資料表
+     * 建立貼文資料表.
      */
     protected function createPostsTable(): void
     {
@@ -97,7 +97,7 @@ trait DatabaseTestTrait
     }
 
     /**
-     * 建立 IP 黑白名單資料表
+     * 建立 IP 黑白名單資料表.
      */
     protected function createIpListsTable(): void
     {
@@ -116,7 +116,7 @@ trait DatabaseTestTrait
     }
 
     /**
-     * 建立附件資料表
+     * 建立附件資料表.
      */
     protected function createAttachmentsTable(): void
     {
@@ -139,7 +139,7 @@ trait DatabaseTestTrait
     }
 
     /**
-     * 建立使用者資料表
+     * 建立使用者資料表.
      */
     protected function createUsersTable(): void
     {
@@ -157,7 +157,7 @@ trait DatabaseTestTrait
     }
 
     /**
-     * 建立 Refresh Token 資料表
+     * 建立 Refresh Token 資料表.
      */
     protected function createRefreshTokensTable(): void
     {
@@ -188,7 +188,7 @@ trait DatabaseTestTrait
     }
 
     /**
-     * 建立 Token Blacklist 資料表
+     * 建立 Token Blacklist 資料表.
      */
     protected function createTokenBlacklistTable(): void
     {
@@ -209,7 +209,7 @@ trait DatabaseTestTrait
     }
 
     /**
-     * 建立資料表索引
+     * 建立資料表索引.
      */
     protected function createIndices(): void
     {
@@ -238,8 +238,8 @@ trait DatabaseTestTrait
     }
 
     /**
-     * 插入測試用貼文資料
-     * 
+     * 插入測試用貼文資料.
+     *
      * @param array<string, mixed> $data
      */
     protected function insertTestPost(array $data = []): int
@@ -260,20 +260,20 @@ trait DatabaseTestTrait
         ];
 
         $postData = array_merge($defaultData, $data);
-        
+
         $stmt = $this->db->prepare('
             INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at) 
             VALUES (:uuid, :seq_number, :title, :content, :user_id, :user_ip, :views, :is_pinned, :status, :publish_date, :created_at, :updated_at)
         ');
-        
+
         $stmt->execute($postData);
-        
+
         return (int) $this->db->lastInsertId();
     }
 
     /**
-     * 插入測試用使用者資料
-     * 
+     * 插入測試用使用者資料.
+     *
      * @param array<string, mixed> $data
      */
     protected function insertTestUser(array $data = []): int
@@ -288,14 +288,14 @@ trait DatabaseTestTrait
         ];
 
         $userData = array_merge($defaultData, $data);
-        
+
         $stmt = $this->db->prepare('
             INSERT INTO users (username, email, password, status, created_at, updated_at) 
             VALUES (:username, :email, :password, :status, :created_at, :updated_at)
         ');
-        
+
         $stmt->execute($userData);
-        
+
         return (int) $this->db->lastInsertId();
     }
 }
