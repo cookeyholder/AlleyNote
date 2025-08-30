@@ -8,7 +8,7 @@ use App\Shared\Cache\Contracts\CacheDriverInterface;
 
 /**
  * 多層快取驅動。
- * 
+ *
  * 組合多個快取驅動，按照優先順序查詢和存儲資料
  */
 class LayeredCacheDriver implements CacheDriverInterface
@@ -46,13 +46,13 @@ class LayeredCacheDriver implements CacheDriverInterface
             }
 
             $value = $layer->get($key, $default);
-            
+
             if ($value !== $default) {
                 $this->stats['hits']++;
-                
+
                 // 將資料推送到更高優先級的層級
                 $this->promoteToHigherLayers($key, $value, $index);
-                
+
                 return $value;
             }
         }
@@ -64,7 +64,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function put(string $key, mixed $value, int $ttl = 3600): bool
     {
         $success = true;
-        
+
         foreach ($this->layers as $layer) {
             if (!$layer->isAvailable()) {
                 continue;
@@ -100,7 +100,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function forget(string $key): bool
     {
         $success = true;
-        
+
         foreach ($this->layers as $layer) {
             if (!$layer->isAvailable()) {
                 continue;
@@ -121,7 +121,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function flush(): bool
     {
         $success = true;
-        
+
         foreach ($this->layers as $layer) {
             if (!$layer->isAvailable()) {
                 continue;
@@ -150,14 +150,14 @@ class LayeredCacheDriver implements CacheDriverInterface
             }
 
             $layerResult = $layer->many($missingKeys);
-            
+
             foreach ($layerResult as $key => $value) {
                 if ($value !== null) {
                     $result[$key] = $value;
-                    
+
                     // 將找到的資料推送到更高優先級的層級
                     $this->promoteToHigherLayers($key, $value, $index);
-                    
+
                     // 從待查找列表中移除
                     $missingKeys = array_filter($missingKeys, fn($k) => $k !== $key);
                 }
@@ -175,7 +175,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function putMany(array $values, int $ttl = 3600): bool
     {
         $success = true;
-        
+
         foreach ($this->layers as $layer) {
             if (!$layer->isAvailable()) {
                 continue;
@@ -196,7 +196,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function forgetMany(array $keys): bool
     {
         $success = true;
-        
+
         foreach ($this->layers as $layer) {
             if (!$layer->isAvailable()) {
                 continue;
@@ -217,7 +217,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function forgetPattern(string $pattern): int
     {
         $totalDeleted = 0;
-        
+
         foreach ($this->layers as $layer) {
             if (!$layer->isAvailable()) {
                 continue;
@@ -237,10 +237,10 @@ class LayeredCacheDriver implements CacheDriverInterface
         foreach ($this->layers as $layer) {
             if ($layer->isAvailable()) {
                 $result = $layer->increment($key, $value);
-                
+
                 // 同步到其他層級
                 $this->syncToOtherLayers($key, $result, $layer);
-                
+
                 return $result;
             }
         }
@@ -254,10 +254,10 @@ class LayeredCacheDriver implements CacheDriverInterface
         foreach ($this->layers as $layer) {
             if ($layer->isAvailable()) {
                 $result = $layer->decrement($key, $value);
-                
+
                 // 同步到其他層級
                 $this->syncToOtherLayers($key, $result, $layer);
-                
+
                 return $result;
             }
         }
@@ -268,7 +268,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function remember(string $key, callable $callback, int $ttl = 3600): mixed
     {
         $value = $this->get($key);
-        
+
         if ($value !== null) {
             return $value;
         }
@@ -326,7 +326,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function cleanup(): int
     {
         $totalCleaned = 0;
-        
+
         foreach ($this->layers as $layer) {
             if ($layer->isAvailable()) {
                 $cleaned = $layer->cleanup();
@@ -344,7 +344,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     {
         for ($i = 0; $i < $fromIndex; $i++) {
             $layer = $this->layers[$i];
-            
+
             if ($layer->isAvailable()) {
                 $layer->put($key, $value);
                 $this->stats['layer_promotions']++;
@@ -386,7 +386,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function removeLayer(CacheDriverInterface $layer): bool
     {
         $key = array_search($layer, $this->layers, true);
-        
+
         if ($key !== false) {
             unset($this->layers[$key]);
             $this->layers = array_values($this->layers); // 重新索引

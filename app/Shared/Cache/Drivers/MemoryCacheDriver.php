@@ -8,7 +8,7 @@ use App\Shared\Cache\Contracts\CacheDriverInterface;
 
 /**
  * 記憶體快取驅動。
- * 
+ *
  * 使用 PHP 陣列作為快取存儲，提供最快的訪問速度但僅限於請求週期內
  */
 class MemoryCacheDriver implements CacheDriverInterface
@@ -41,7 +41,7 @@ class MemoryCacheDriver implements CacheDriverInterface
         }
 
         $item = $this->cache[$key];
-        
+
         // 檢查過期
         if ($item['expires_at'] !== 0 && time() > $item['expires_at']) {
             unset($this->cache[$key]);
@@ -61,7 +61,7 @@ class MemoryCacheDriver implements CacheDriverInterface
         }
 
         $expiresAt = $ttl > 0 ? time() + $ttl : 0;
-        
+
         $this->cache[$key] = [
             'value' => $value,
             'expires_at' => $expiresAt,
@@ -78,7 +78,7 @@ class MemoryCacheDriver implements CacheDriverInterface
         }
 
         $item = $this->cache[$key];
-        
+
         // 檢查過期
         if ($item['expires_at'] !== 0 && time() > $item['expires_at']) {
             unset($this->cache[$key]);
@@ -141,7 +141,7 @@ class MemoryCacheDriver implements CacheDriverInterface
     {
         $deleted = 0;
         $keys = array_keys($this->cache);
-        
+
         foreach ($keys as $key) {
             if ($this->matchesPattern($key, $pattern)) {
                 if ($this->forget($key)) {
@@ -172,7 +172,7 @@ class MemoryCacheDriver implements CacheDriverInterface
     public function remember(string $key, callable $callback, int $ttl = 3600): mixed
     {
         $value = $this->get($key);
-        
+
         if ($value !== null) {
             return $value;
         }
@@ -284,7 +284,7 @@ class MemoryCacheDriver implements CacheDriverInterface
     public function setMaxItems(int $maxItems): void
     {
         $this->maxItems = $maxItems;
-        
+
         // 如果當前項目數超過新限制，淘汰多餘項目
         while (count($this->cache) > $maxItems) {
             $this->evictOldest();

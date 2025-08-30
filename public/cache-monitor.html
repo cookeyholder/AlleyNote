@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlleyNote - 快取效能監控儀表板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .metric-card h3 {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .metric-unit {
+            font-size: 1rem;
+            color: #999;
+            margin-left: 0.5rem;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-healthy {
+            background-color: #28a745;
+        }
+        
+        .status-degraded {
+            background-color: #ffc107;
+        }
+        
+        .status-error {
+            background-color: #dc3545;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #5a67d8;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+        
+        .drivers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .driver-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .driver-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .driver-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #999;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 AlleyNote 快取監控</h1>
+            <p>即時快取效能監控與管理儀表板</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="refreshData()">🔄 重新整理</button>
+            <button class="btn btn-secondary" onclick="resetStats()">📊 重設統計</button>
+            <button class="btn btn-danger" onclick="flushCache()">🗑️ 清空快取</button>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <h3>快取命中率</h3>
+                <div class="metric-value" id="hit-rate">
+                    <span id="hit-rate-value">--</span>
+                    <span class="metric-unit">%</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>總操作次數</h3>
+                <div class="metric-value" id="total-operations">
+                    <span id="total-operations-value">--</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>快取命中</h3>
+                <div class="metric-value" id="total-hits">
+                    <span id="total-hits-value">--</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>快取未命中</h3>
+                <div class="metric-value" id="total-misses">
+                    <span id="total-misses-value">--</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>系統狀態</h3>
+                <div class="metric-value">
+                    <span class="status-indicator" id="health-indicator"></span>
+                    <span id="health-status">--</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>運行時間</h3>
+                <div class="metric-value" id="uptime">
+                    <span id="uptime-value">--</span>
+                    <span class="metric-unit">秒</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>快取驅動狀態</h3>
+            <div class="drivers-grid" id="drivers-grid">
+                <!-- 驅動狀態將動態載入 -->
+            </div>
+        </div>
+        
+        <div class="last-updated" id="last-updated">
+            最後更新：--
+        </div>
+    </div>
+
+    <script>
+        let refreshInterval;
+        
+        async function fetchData(endpoint) {
+            try {
+                const response = await fetch(`/api/admin/cache/${endpoint}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return null;
+            }
+        }
+        
+        async function refreshData() {
+            const [stats, health, drivers] = await Promise.all([
+                fetchData('stats'),
+                fetchData('health'),
+                fetchData('drivers')
+            ]);
+            
+            if (stats) {
+                updateStats(stats);
+            }
+            
+            if (health) {
+                updateHealth(health);
+            }
+            
+            if (drivers) {
+                updateDrivers(drivers);
+            }
+            
+            document.getElementById('last-updated').textContent = 
+                `最後更新：${new Date().toLocaleString('zh-TW')}`;
+        }
+        
+        function updateStats(data) {
+            const metrics = data.metrics || {};
+            const totalHits = metrics.total_hits || 0;
+            const totalMisses = metrics.total_misses || 0;
+            const totalOperations = totalHits + totalMisses;
+            const hitRate = totalOperations > 0 ? (totalHits / totalOperations * 100).toFixed(2) : '0.00';
+            
+            document.getElementById('hit-rate-value').textContent = hitRate;
+            document.getElementById('total-operations-value').textContent = totalOperations.toLocaleString();
+            document.getElementById('total-hits-value').textContent = totalHits.toLocaleString();
+            document.getElementById('total-misses-value').textContent = totalMisses.toLocaleString();
+            document.getElementById('uptime-value').textContent = data.uptime || '--';
+        }
+        
+        function updateHealth(data) {
+            const overallStatus = data.overall_status || 'unknown';
+            const healthIndicator = document.getElementById('health-indicator');
+            const healthStatus = document.getElementById('health-status');
+            
+            healthIndicator.className = 'status-indicator';
+            
+            switch (overallStatus) {
+                case 'healthy':
+                    healthIndicator.classList.add('status-healthy');
+                    healthStatus.textContent = '健康';
+                    break;
+                case 'degraded':
+                    healthIndicator.classList.add('status-degraded');
+                    healthStatus.textContent = '降級';
+                    break;
+                default:
+                    healthIndicator.classList.add('status-error');
+                    healthStatus.textContent = '異常';
+            }
+        }
+        
+        function updateDrivers(data) {
+            const driversGrid = document.getElementById('drivers-grid');
+            const drivers = data.drivers || {};
+            
+            driversGrid.innerHTML = '';
+            
+            Object.entries(drivers).forEach(([name, info]) => {
+                const driverCard = document.createElement('div');
+                driverCard.className = 'driver-card';
+                
+                const statusClass = info.available ? 'status-healthy' : 'status-error';
+                const statusText = info.available ? '可用' : '不可用';
+                
+                driverCard.innerHTML = `
+                    <div class="driver-name">
+                        <span class="status-indicator ${statusClass}"></span>
+                        ${name}
+                    </div>
+                    <div class="driver-info">
+                        狀態：${statusText}<br>
+                        類別：${info.class.split('\\').pop()}
+                    </div>
+                `;
+                
+                driversGrid.appendChild(driverCard);
+            });
+        }
+        
+        async function resetStats() {
+            if (!confirm('確定要重設所有統計資料嗎？')) return;
+            
+            try {
+                const response = await fetch('/api/admin/cache/reset', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    alert('統計資料已重設');
+                    refreshData();
+                } else {
+                    alert('重設統計資料失敗');
+                }
+            } catch (error) {
+                console.error('Error resetting stats:', error);
+                alert('重設統計資料時發生錯誤');
+            }
+        }
+        
+        async function flushCache() {
+            if (!confirm('確定要清空所有快取嗎？此操作無法復原！')) return;
+            
+            try {
+                const response = await fetch('/api/admin/cache/flush', {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('所有快取已清空');
+                    refreshData();
+                } else {
+                    alert('清空快取失敗');
+                }
+            } catch (error) {
+                console.error('Error flushing cache:', error);
+                alert('清空快取時發生錯誤');
+            }
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
+            
+            // 每 30 秒自動更新
+            refreshInterval = setInterval(refreshData, 30000);
+        });
+        
+        // 在頁面隱藏時停止自動更新，顯示時恢復
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                    refreshInterval = null;
+                }
+            } else {
+                if (!refreshInterval) {
+                    refreshData();
+                    refreshInterval = setInterval(refreshData, 30000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

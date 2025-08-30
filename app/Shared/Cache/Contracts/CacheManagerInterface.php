@@ -6,7 +6,7 @@ namespace App\Shared\Cache\Contracts;
 
 /**
  * 快取管理器介面。
- * 
+ *
  * 提供統一的快取管理功能，支援多層快取和策略選擇
  */
 interface CacheManagerInterface
@@ -43,7 +43,7 @@ interface CacheManagerInterface
 
     /**
      * 取得或設定標籤化快取。
-     * 
+     *
      * @param string|array<string> $tags 標籤
      */
     public function tags(string|array $tags): TaggedCacheInterface;
@@ -70,7 +70,7 @@ interface CacheManagerInterface
 
     /**
      * 預熱快取。
-     * 
+     *
      * @param array<string, callable> $warmupCallbacks 預熱回調
      */
     public function warmup(array $warmupCallbacks): array;

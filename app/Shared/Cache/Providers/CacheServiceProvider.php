@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * 快取服務提供者。
- * 
+ *
  * 負責註冊快取系統的所有組件到 DI 容器中
  */
 class CacheServiceProvider
@@ -107,21 +107,21 @@ class CacheServiceProvider
     {
         $this->container->set(CacheManagerInterface::class, function (Container $container) {
             $strategy = $container->get(CacheStrategyInterface::class);
-            $logger = $container->has(LoggerInterface::class) 
-                ? $container->get(LoggerInterface::class) 
+            $logger = $container->has(LoggerInterface::class)
+                ? $container->get(LoggerInterface::class)
                 : null;
-            
+
             $manager = new CacheManager($strategy, $logger, $this->config['manager'] ?? []);
-            
+
             // 新增驅動
             $this->addDriversToManager($manager, $container);
-            
+
             // 設定預設驅動
             $defaultDriver = $this->config['default_driver'] ?? 'memory';
             if ($manager->getDriver($defaultDriver)) {
                 $manager->setDefaultDriver($defaultDriver);
             }
-            
+
             return $manager;
         });
 
@@ -227,19 +227,19 @@ class CacheServiceProvider
                 $strategy = $c->get(CacheStrategyInterface::class);
                 $logger = $c->has(LoggerInterface::class) ? $c->get(LoggerInterface::class) : null;
                 $config = $c->has('cache.manager') ? $c->get('cache.manager') : [];
-                
+
                 $manager = new CacheManager($strategy, $logger, $config);
-                
+
                 // 新增記憶體驅動
                 $memoryDriver = $c->get('cache.driver.memory');
                 $memoryPriority = $c->has('cache.drivers.memory.priority') ? $c->get('cache.drivers.memory.priority') : 90;
                 $manager->addDriver('memory', $memoryDriver, $memoryPriority);
-                
+
                 // 新增檔案驅動
                 $fileDriver = $c->get('cache.driver.file');
                 $filePriority = $c->has('cache.drivers.file.priority') ? $c->get('cache.drivers.file.priority') : 50;
                 $manager->addDriver('file', $fileDriver, $filePriority);
-                
+
                 // 新增 Redis 驅動（如果可用）
                 if (extension_loaded('redis')) {
                     try {
@@ -253,13 +253,13 @@ class CacheServiceProvider
                         }
                     }
                 }
-                
+
                 // 設定預設驅動
                 $defaultDriver = $c->has('cache.default_driver') ? $c->get('cache.default_driver') : 'memory';
                 if ($manager->getDriver($defaultDriver)) {
                     $manager->setDefaultDriver($defaultDriver);
                 }
-                
+
                 return $manager;
             }),
 
@@ -342,7 +342,7 @@ class CacheServiceProvider
 
 /**
  * 快取設定建構器。
- * 
+ *
  * 提供流暢的介面來建構快取設定
  */
 class CacheConfigBuilder

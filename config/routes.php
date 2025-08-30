@@ -186,3 +186,8 @@ return function (RouterInterface $router): void {
  * 
  * 注意：實際的中介軟體註冊需要在應用程式啟動時透過 DI 容器完成
  */
+
+    // 加載快取監控路由
+    $cacheMonitorRoutes = require __DIR__ . '/routes/cache-monitor.php';
+    $cacheMonitorRoutes($app);
+};

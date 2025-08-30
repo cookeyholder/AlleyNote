@@ -87,7 +87,7 @@ return array_merge(
         // 快取配置
         'cache.default_driver' => \DI\env('CACHE_DEFAULT_DRIVER', 'memory'),
         'cache.path' => \DI\env('CACHE_PATH', __DIR__ . '/../storage/cache'),
-        
+
         // 快取驅動設定
         'cache.drivers.memory' => [
             'enabled' => true,
@@ -109,7 +109,7 @@ return array_merge(
             'timeout' => 2.0,
             'prefix' => 'alleynote:cache:',
         ],
-        
+
         // 快取策略設定
         'cache.strategy' => [
             'min_ttl' => 60,
@@ -117,7 +117,7 @@ return array_merge(
             'max_value_size' => 1024 * 1024,
             'exclude_patterns' => ['temp:*', 'debug:*'],
         ],
-        
+
         // 快取管理器設定
         'cache.manager' => [
             'enable_sync' => false,
@@ -152,7 +152,18 @@ return array_merge(
         // PDO::class => \DI\factory(function (ContainerInterface $c) {
         //     return new PDO('sqlite:' . $c->get('db.path'));
         // }),
+        
+        // Cache Monitor Controller
+        \App\Application\Controllers\Admin\CacheMonitorController::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
+            return new \App\Application\Controllers\Admin\CacheMonitorController(
+                $container->get(\App\Shared\Monitoring\Contracts\CacheMonitorInterface::class),
+                $container->get(\App\Shared\Cache\Contracts\CacheManagerInterface::class)
+            );
+        }),
     ],
+
+    // 快取服務
+    CacheServiceProvider::getDefinitions(),
 
     // 監控服務
     MonitoringServiceProvider::getDefinitions()

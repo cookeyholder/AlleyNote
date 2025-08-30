@@ -6,7 +6,7 @@ namespace App\Shared\Cache\Contracts;
 
 /**
  * 快取策略介面。
- * 
+ *
  * 定義快取策略的行為，如 LRU、FIFO、TTL 等
  */
 interface CacheStrategyInterface
@@ -18,7 +18,7 @@ interface CacheStrategyInterface
 
     /**
      * 選擇快取驅動。
-     * 
+     *
      * @param array<string, CacheDriverInterface> $drivers 可用驅動
      */
     public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface;
@@ -35,13 +35,13 @@ interface CacheStrategyInterface
 
     /**
      * 處理快取驅動故障。
-     * 
+     *
      * @param array<string, CacheDriverInterface> $availableDrivers 可用驅動
      */
     public function handleDriverFailure(
-        CacheDriverInterface $failedDriver, 
-        array $availableDrivers, 
-        string $operation, 
+        CacheDriverInterface $failedDriver,
+        array $availableDrivers,
+        string $operation,
         array $params
     ): mixed;
 

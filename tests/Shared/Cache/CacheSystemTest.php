@@ -63,14 +63,14 @@ class CacheSystemTest extends TestCase
     {
         // 在記憶體驅動中儲存資料
         $this->cacheManager->put('memory_key', 'memory_value', 3600);
-        
+
         // 確認可以取得資料
         $this->assertEquals('memory_value', $this->cacheManager->get('memory_key'));
-        
+
         // 確認驅動存在
         $this->assertNotNull($this->cacheManager->getDriver('memory'));
         $this->assertNotNull($this->cacheManager->getDriver('file'));
-        
+
         // 測試可用驅動
         $availableDrivers = $this->cacheManager->getAvailableDrivers();
         $this->assertCount(2, $availableDrivers);

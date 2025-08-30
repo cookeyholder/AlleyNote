@@ -8,7 +8,7 @@ use App\Shared\Cache\Contracts\CacheDriverInterface;
 
 /**
  * 檔案快取驅動。
- * 
+ *
  * 使用檔案系統存儲快取資料，支援持久化存儲
  */
 class FileCacheDriver implements CacheDriverInterface
@@ -40,7 +40,7 @@ class FileCacheDriver implements CacheDriverInterface
     public function get(string $key, mixed $default = null): mixed
     {
         $filePath = $this->getCacheFilePath($key);
-        
+
         if (!file_exists($filePath)) {
             $this->stats['misses']++;
             return $default;
@@ -73,7 +73,7 @@ class FileCacheDriver implements CacheDriverInterface
     {
         $filePath = $this->getCacheFilePath($key);
         $this->ensureDirectoryExists(dirname($filePath));
-        
+
         $data = [
             'value' => $value,
             'expires_at' => $ttl > 0 ? time() + $ttl : 0,
@@ -81,7 +81,7 @@ class FileCacheDriver implements CacheDriverInterface
         ];
 
         $result = file_put_contents($filePath, serialize($data), LOCK_EX) !== false;
-        
+
         if ($result) {
             $this->stats['sets']++;
         }
@@ -92,7 +92,7 @@ class FileCacheDriver implements CacheDriverInterface
     public function has(string $key): bool
     {
         $filePath = $this->getCacheFilePath($key);
-        
+
         if (!file_exists($filePath)) {
             return false;
         }
@@ -119,7 +119,7 @@ class FileCacheDriver implements CacheDriverInterface
     public function forget(string $key): bool
     {
         $filePath = $this->getCacheFilePath($key);
-        
+
         if (file_exists($filePath)) {
             $result = unlink($filePath);
             if ($result) {
@@ -135,7 +135,7 @@ class FileCacheDriver implements CacheDriverInterface
     {
         $success = true;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
-        
+
         if ($files === false) {
             return false;
         }
@@ -188,7 +188,7 @@ class FileCacheDriver implements CacheDriverInterface
     {
         $deleted = 0;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
-        
+
         if ($files === false) {
             return 0;
         }
@@ -225,7 +225,7 @@ class FileCacheDriver implements CacheDriverInterface
     public function remember(string $key, callable $callback, int $ttl = self::DEFAULT_TTL): mixed
     {
         $value = $this->get($key);
-        
+
         if ($value !== null) {
             return $value;
         }
@@ -272,7 +272,7 @@ class FileCacheDriver implements CacheDriverInterface
         $cleaned = 0;
         $currentTime = time();
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
-        
+
         if ($files === false) {
             return 0;
         }
@@ -352,7 +352,7 @@ class FileCacheDriver implements CacheDriverInterface
     {
         $totalSize = 0;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
-        
+
         if ($files !== false) {
             foreach ($files as $file) {
                 $totalSize += filesize($file);
@@ -370,7 +370,7 @@ class FileCacheDriver implements CacheDriverInterface
         $expired = 0;
         $currentTime = time();
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
-        
+
         if ($files === false) {
             return 0;
         }

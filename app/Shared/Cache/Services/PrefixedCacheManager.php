@@ -10,7 +10,7 @@ use App\Shared\Cache\Contracts\TaggedCacheInterface;
 
 /**
  * 有前綴的快取管理器。
- * 
+ *
  * 為所有操作自動新增前綴
  */
 class PrefixedCacheManager implements CacheManagerInterface
@@ -79,11 +79,11 @@ class PrefixedCacheManager implements CacheManagerInterface
     public function warmup(array $warmupCallbacks): array
     {
         $prefixedCallbacks = [];
-        
+
         foreach ($warmupCallbacks as $key => $callback) {
             $prefixedCallbacks[$this->prefixKey($key)] = $callback;
         }
-        
+
         return $this->manager->warmup($prefixedCallbacks);
     }
 

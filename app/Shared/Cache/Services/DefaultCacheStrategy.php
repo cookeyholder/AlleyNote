@@ -9,7 +9,7 @@ use App\Shared\Cache\Contracts\CacheStrategyInterface;
 
 /**
  * 預設快取策略。
- * 
+ *
  * 提供基本的快取策略實作
  */
 class DefaultCacheStrategy implements CacheStrategyInterface
@@ -184,9 +184,9 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     }
 
     public function handleDriverFailure(
-        CacheDriverInterface $failedDriver, 
-        array $availableDrivers, 
-        string $operation, 
+        CacheDriverInterface $failedDriver,
+        array $availableDrivers,
+        string $operation,
         array $params
     ): mixed {
         $this->stats['failure_handles']++;
@@ -273,7 +273,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     public function removeExcludePattern(string $pattern): bool
     {
         $key = array_search($pattern, $this->excludePatterns, true);
-        
+
         if ($key !== false) {
             unset($this->excludePatterns[$key]);
             $this->excludePatterns = array_values($this->excludePatterns);

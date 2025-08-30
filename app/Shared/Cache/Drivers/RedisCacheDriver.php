@@ -10,7 +10,7 @@ use RedisException;
 
 /**
  * Redis 快取驅動。
- * 
+ *
  * 使用 Redis 存儲快取資料，支援分散式快取和高效能訪問
  */
 class RedisCacheDriver implements CacheDriverInterface
@@ -37,7 +37,7 @@ class RedisCacheDriver implements CacheDriverInterface
     {
         $this->redis = new Redis();
         $this->prefix = $config['prefix'] ?? 'alleynote_cache:';
-        
+
         $this->connect($config);
     }
 
@@ -45,7 +45,7 @@ class RedisCacheDriver implements CacheDriverInterface
     {
         try {
             $value = $this->redis->get($this->getPrefixedKey($key));
-            
+
             if ($value === false) {
                 $this->stats['misses']++;
                 return $default;
@@ -65,11 +65,11 @@ class RedisCacheDriver implements CacheDriverInterface
         try {
             $prefixedKey = $this->getPrefixedKey($key);
             $serializedValue = serialize($value);
-            
-            $result = $ttl > 0 
+
+            $result = $ttl > 0
                 ? $this->redis->setex($prefixedKey, $ttl, $serializedValue)
                 : $this->redis->set($prefixedKey, $serializedValue);
-            
+
             if ($result) {
                 $this->stats['sets']++;
             }
@@ -122,11 +122,11 @@ class RedisCacheDriver implements CacheDriverInterface
     public function many(array $keys): array
     {
         $result = [];
-        
+
         try {
             $prefixedKeys = array_map([$this, 'getPrefixedKey'], $keys);
             $values = $this->redis->mget($prefixedKeys);
-            
+
             foreach ($keys as $index => $key) {
                 $value = $values[$index] ?? false;
                 if ($value !== false) {
@@ -151,21 +151,21 @@ class RedisCacheDriver implements CacheDriverInterface
     {
         try {
             $pipe = $this->redis->multi();
-            
+
             foreach ($values as $key => $value) {
                 $prefixedKey = $this->getPrefixedKey($key);
                 $serializedValue = serialize($value);
-                
+
                 if ($ttl > 0) {
                     $pipe->setex($prefixedKey, $ttl, $serializedValue);
                 } else {
                     $pipe->set($prefixedKey, $serializedValue);
                 }
             }
-            
+
             $results = $pipe->exec();
             $success = $results !== false && !in_array(false, $results, true);
-            
+
             if ($success) {
                 $this->stats['sets'] += count($values);
             }
@@ -188,7 +188,7 @@ class RedisCacheDriver implements CacheDriverInterface
         try {
             $prefixedKeys = array_map([$this, 'getPrefixedKey'], $keys);
             $deleted = $this->redis->del($prefixedKeys);
-            
+
             $this->stats['deletes'] += $deleted;
             return $deleted === count($keys);
         } catch (RedisException) {
@@ -208,14 +208,14 @@ class RedisCacheDriver implements CacheDriverInterface
         try {
             $prefixedPattern = $this->prefix . $pattern;
             $keys = $this->redis->keys($prefixedPattern);
-            
+
             if (empty($keys)) {
                 return 0;
             }
-            
+
             $deleted = $this->redis->del($keys);
             $this->stats['deletes'] += $deleted;
-            
+
             return $deleted;
         } catch (RedisException) {
             return 0;
@@ -253,7 +253,7 @@ class RedisCacheDriver implements CacheDriverInterface
     public function remember(string $key, callable $callback, int $ttl = self::DEFAULT_TTL): mixed
     {
         $value = $this->get($key);
-        
+
         if ($value !== null) {
             return $value;
         }
@@ -328,11 +328,11 @@ class RedisCacheDriver implements CacheDriverInterface
 
         try {
             $this->redis->connect($host, $port, $timeout);
-            
+
             if ($password !== null) {
                 $this->redis->auth($password);
             }
-            
+
             $this->redis->select($database);
         } catch (RedisException $e) {
             throw new \RuntimeException("無法連線到 Redis: " . $e->getMessage(), 0, $e);

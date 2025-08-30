@@ -6,7 +6,7 @@ namespace App\Shared\Cache\Contracts;
 
 /**
  * 快取驅動介面。
- * 
+ *
  * 定義所有快取驅動必須實作的基本操作
  */
 interface CacheDriverInterface
@@ -38,7 +38,7 @@ interface CacheDriverInterface
 
     /**
      * 批次取得多個快取。
-     * 
+     *
      * @param array<string> $keys 快取鍵陣列
      * @return array<string, mixed> 快取資料
      */
@@ -46,14 +46,14 @@ interface CacheDriverInterface
 
     /**
      * 批次設定多個快取。
-     * 
+     *
      * @param array<string, mixed> $values 快取資料
      */
     public function putMany(array $values, int $ttl = 3600): bool;
 
     /**
      * 批次刪除多個快取。
-     * 
+     *
      * @param array<string> $keys 快取鍵陣列
      */
     public function forgetMany(array $keys): bool;

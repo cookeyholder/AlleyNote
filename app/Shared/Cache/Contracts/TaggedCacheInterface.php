@@ -6,7 +6,7 @@ namespace App\Shared\Cache\Contracts;
 
 /**
  * 標籤化快取介面。
- * 
+ *
  * 支援按標籤組織和批次操作快取項目
  */
 interface TaggedCacheInterface
@@ -43,28 +43,28 @@ interface TaggedCacheInterface
 
     /**
      * 增加新標籤。
-     * 
+     *
      * @param string|array<string> $tags 標籤
      */
     public function addTags(string|array $tags): TaggedCacheInterface;
 
     /**
      * 取得所有標籤。
-     * 
+     *
      * @return array<string> 標籤陣列
      */
     public function getTags(): array;
 
     /**
      * 按標籤清空快取。
-     * 
+     *
      * @param string|array<string> $tags 要清空的標籤
      */
     public function flushByTags(string|array $tags): int;
 
     /**
      * 取得標籤下的所有快取鍵。
-     * 
+     *
      * @return array<string> 快取鍵陣列
      */
     public function getTaggedKeys(): array;
