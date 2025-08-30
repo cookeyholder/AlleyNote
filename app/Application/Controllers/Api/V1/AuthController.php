@@ -246,7 +246,7 @@ class AuthController extends BaseController
                 'data' => $user,
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(201)
@@ -257,7 +257,7 @@ class AuthController extends BaseController
                 'error' => $e->getMessage(),
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(400)
@@ -267,7 +267,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(404)
@@ -277,7 +277,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(400)
@@ -288,7 +288,7 @@ class AuthController extends BaseController
                 'error' => '系統發生錯誤',
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(500)
@@ -371,7 +371,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少必要的登入資料',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: ''));
 
                 return $response
                     ->withStatus(400)
@@ -411,7 +411,7 @@ class AuthController extends BaseController
                 ...$loginResponse->toArray(),
             ];
 
-            $response->getBody()->write((json_encode($result) ?? ''));
+            $response->getBody()->write((json_encode($result) ?: ''));
 
             return $response
                 ->withStatus(200)
@@ -426,7 +426,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(400)
@@ -441,7 +441,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(404)
@@ -456,7 +456,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(400)
@@ -472,7 +472,7 @@ class AuthController extends BaseController
                 'error' => '系統發生錯誤',
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(500)
@@ -570,7 +570,7 @@ class AuthController extends BaseController
                 'message' => '登出成功',
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(200)
@@ -580,7 +580,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(400)
@@ -590,7 +590,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(404)
@@ -600,7 +600,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(400)
@@ -610,7 +610,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => '系統發生錯誤',
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(500)
@@ -658,7 +658,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少有效的 Authorization header',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: ''));
 
                 return $response
                     ->withStatus(401)
@@ -690,7 +690,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => 'Token 無效或使用者不存在',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: ''));
 
                 return $response
                     ->withStatus(401)
@@ -712,7 +712,7 @@ class AuthController extends BaseController
                 ],
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(200)
@@ -722,7 +722,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(400)
@@ -732,7 +732,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(404)
@@ -742,7 +742,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(400)
@@ -752,7 +752,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => '系統發生錯誤',
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(500)
@@ -829,7 +829,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少必要的 refresh_token',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: ''));
 
                 return $response
                     ->withStatus(400)
@@ -855,7 +855,7 @@ class AuthController extends BaseController
                 ...$refreshResponse->toArray(),
             ];
 
-            $response->getBody()->write((json_encode($result) ?? ''));
+            $response->getBody()->write((json_encode($result) ?: ''));
 
             return $response
                 ->withStatus(200)
@@ -865,7 +865,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(400)
@@ -875,7 +875,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(404)
@@ -885,7 +885,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(400)
@@ -895,7 +895,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => '系統發生錯誤',
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: ''));
 
             return $response
                 ->withStatus(500)

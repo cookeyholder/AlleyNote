@@ -7,12 +7,15 @@ namespace Tests\Integration;
 use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\DTOs\LoginResponseDTO;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
@@ -209,12 +212,23 @@ class AuthControllerTest extends TestCase
     public function loginUserSuccessfully(): void
     {
         $credentials = [
-            'username' => 'testuser',
+            'email' => 'test@example.com',
             'password' => 'password123',
         ];
 
         // 設定 Mock 期望和請求數據
         $this->request->shouldReceive('getParsedBody')->andReturn($credentials);
+        $this->request->shouldReceive('getHeaderLine')
+            ->with('User-Agent')
+            ->andReturn('Mozilla/5.0 (Test Browser)');
+        $this->request->shouldReceive('getHeaderLine')
+            ->with('X-Forwarded-For')
+            ->andReturn('');
+        $this->request->shouldReceive('getHeaderLine')
+            ->with('X-Real-IP')
+            ->andReturn('');
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
         // 設定驗證器的基本方法
         $this->validator->shouldReceive('addRule')
@@ -232,18 +246,32 @@ class AuthControllerTest extends TestCase
                 return $data; // 返回原始數據作為驗證通過的數據
             });
 
-        $this->authService->shouldReceive('login')
+        // Mock AuthenticationService 的 login 方法
+        $tokenPair = new TokenPair(
+            'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6InRlc3QifQ.fake-signature',
+            'fake-refresh-token-string-123456',
+            new DateTimeImmutable('+1 hour'),
+            new DateTimeImmutable('+7 days'),
+            'Bearer',
+        );
+
+        $loginResponse = new LoginResponseDTO(
+            $tokenPair,
+            1,
+            'test@example.com',
+            time() + 3600,
+            'session-id',
+            [],
+        );
+
+        $this->authenticationService->shouldReceive('login')
             ->once()
-            ->with($credentials)
-            ->andReturn([
-                'success' => true,
-                'token' => 'fake-jwt-token',
-                'user' => [
-                    'id' => 1,
-                    'username' => 'testuser',
-                    'email' => 'test@example.com',
-                ],
-            ]);
+            ->andReturn($loginResponse);
+
+        // Mock ActivityLoggingService
+        $this->activityLoggingService->shouldReceive('logActivity')
+            ->once()
+            ->andReturn(true);
 
         // 建立控制器並執行
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
@@ -283,7 +311,28 @@ class AuthControllerTest extends TestCase
     #[Test]
     public function logoutUserSuccessfully(): void
     {
-        // logout 方法不需要調用 AuthService，直接返回成功響應
+        // 設定請求數據
+        $logoutData = [
+            'access_token' => 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6InRlc3QifQ.fake-signature',
+            'refresh_token' => 'fake-refresh-token',
+            'logout_all_devices' => false,
+        ];
+
+        // 設定請求 mock
+        $this->request->shouldReceive('getParsedBody')->andReturn($logoutData);
+        $this->request->shouldReceive('getHeaderLine')
+            ->with('Authorization')
+            ->andReturn('Bearer ' . $logoutData['access_token']);
+
+        // Mock AuthenticationService 的 logout 方法
+        $this->authenticationService->shouldReceive('logout')
+            ->once()
+            ->andReturn(true);
+
+        // Mock ActivityLoggingService
+        $this->activityLoggingService->shouldReceive('logActivity')
+            ->once()
+            ->andReturn(true);
 
         // 建立控制器並執行
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
