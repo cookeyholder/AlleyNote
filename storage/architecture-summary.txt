@@ -1,10 +1,10 @@
-=== 專案架構快速摘要 (2025-08-30 08:21:17) ===
+=== 專案架構快速摘要 (2025-08-30 08:37:46) ===
 
 📊 品質指標:
 - 總類別數: 185
 - 介面比例: 21.62%
 - 現代 PHP 採用率: 56.22%
-- PSR-4 合規率: 81.93%
+- PSR-4 合規率: 81.59%
 
 🎯 邊界上下文: 5 個
 - Attachment: 6 個組件
@@ -19,7 +19,7 @@
 📊 統計資訊:
 - 類別: 185 個
 - 介面: 40 個
-- 命名空間: 79 個
+- 命名空間: 76 個
 
 🏗️ DDD 架構:
 - Application: 16 個檔案
@@ -27,8 +27,12 @@
 - Infrastructure: 46 個檔案
 - Shared: 20 個檔案
 
-❌ 架構問題 (6 個):
+❌ 架構問題 (10 個):
+- Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\RefreshTokenRepository
+- Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\TokenBlacklistRepository
 - Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
+- Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\RefreshTokenRepository
+- Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\TokenBlacklistRepository
 - Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
 - 可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
 - 可能的循環依賴: app/Application/Controllers/Api/V1/ActivityLogController.php -> App\Application\Controllers\BaseController
@@ -48,7 +52,7 @@
 
 💉 重依賴類別 (≥3個依賴): 29 個
 
-❓ 可能問題引用: 139 個
+❓ 可能問題引用: 141 個
 
 🔑 重點服務/控制器:
 - PostRepository (app/Domains/Post/Repositories/PostRepository.php)

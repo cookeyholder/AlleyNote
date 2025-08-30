@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Services;
 
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use App\Domains\Auth\Exceptions\TokenGenerationException;
-use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
+use App\Domains\Auth\Exceptions\TokenGenerationException;
 use App\Domains\Auth\Repositories\UserRepository;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
 use Exception;
 
 class AuthService

@@ -7,6 +7,7 @@ namespace App\Domains\Auth\Services;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
+use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LoginResponseDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
@@ -16,7 +17,6 @@ use App\Domains\Auth\Exceptions\AuthenticationException;
 use App\Domains\Auth\Exceptions\InvalidTokenException;
 use App\Domains\Auth\Exceptions\TokenExpiredException;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
-use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use DateTime;
 use Throwable;
 

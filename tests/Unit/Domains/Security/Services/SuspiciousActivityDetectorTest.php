@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Security\Services;
 
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
-use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
 use App\Domains\Security\DTOs\SuspiciousActivityAnalysisDTO;
 use App\Domains\Security\Enums\ActivitySeverity;
@@ -15,6 +14,7 @@ use DateTimeImmutable;
 use Exception;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 

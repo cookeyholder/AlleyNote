@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;

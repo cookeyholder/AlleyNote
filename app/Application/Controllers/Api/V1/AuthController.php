@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
+use App\Application\Controllers\BaseController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
 use App\Domains\Auth\DTOs\RefreshRequestDTO;
-use App\Domains\Auth\ValueObjects\DeviceInfo;
-use App\Application\Controllers\BaseController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;

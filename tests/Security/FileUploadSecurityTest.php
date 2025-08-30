@@ -9,6 +9,7 @@ use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Models\Post;
 use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
@@ -17,7 +18,6 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;
-use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 
 class FileUploadSecurityTest extends TestCase
 {

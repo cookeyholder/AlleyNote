@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Functional;
 
 use App\Domains\Security\Enums\ActivityType;
-use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Security\Repositories\ActivityLogRepository;
 use DateTime;
 use PDO;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 /**

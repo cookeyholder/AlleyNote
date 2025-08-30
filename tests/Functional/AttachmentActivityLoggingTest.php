@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Tests\Functional;
 
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
-use PHPUnit\Framework\Attributes\Test;
 use App\Domains\Security\Enums\ActivityType;
 use App\Domains\Security\Repositories\ActivityLogRepository;
 use App\Domains\Security\Services\ActivityLoggingService;
 use PDO;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

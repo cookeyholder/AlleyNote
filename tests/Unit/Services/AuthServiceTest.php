@@ -38,7 +38,7 @@ class AuthServiceTest extends TestCase
 
         $this->service = new AuthService(
             $this->userRepository,
-            $this->passwordService
+            $this->passwordService,
         );
     }
 

@@ -10,6 +10,7 @@ use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Models\Post;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
@@ -24,7 +25,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
-use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 
 class PostControllerTest extends TestCase
 {
@@ -81,10 +81,9 @@ class PostControllerTest extends TestCase
         $this->sanitizer->shouldReceive('sanitizeHtml')
             ->andReturnUsing(function ($input) {
                 return $input;
-
-        // 設置 ActivityLoggingService mock 期望
-        $this->activityLogger->shouldReceive('log')
-            ->andReturn();
+                // 設置 ActivityLoggingService mock 期望
+                $this->activityLogger->shouldReceive('log')
+                    ->andReturn();
             })
             ->byDefault();
 

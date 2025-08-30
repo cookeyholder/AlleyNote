@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Middleware;
 
+use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Exceptions\InvalidTokenException;
 use App\Domains\Auth\Exceptions\TokenExpiredException;
 use App\Domains\Auth\ValueObjects\JwtPayload;
-use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use DateTimeImmutable;
 use GuzzleHttp\Psr7\Response;

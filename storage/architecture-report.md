@@ -1,6 +1,6 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-08-30 08:21:17
+**生成時間**: 2025-08-30 08:37:46
 
 ## 📊 程式碼品質指標
 
@@ -10,7 +10,7 @@
 | 介面與類別比例 | 21.62% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
 | 現代 PHP 採用率 | 56.22% | ✅ 良好 |
-| PSR-4 合規率 | 81.93% | ❌ 需修正 |
+| PSR-4 合規率 | 81.59% | ❌ 需修正 |
 | DDD 結構完整性 | 80.00% | ✅ 良好 |
 
 ## 🎯 DDD 邊界上下文分析
@@ -497,16 +497,14 @@
 ### `App\Domains\Security\Entities`
 - app/Domains/Security/Entities/ActivityLog.php
 
-### `AlleyNote\Domains\Auth\Contracts`
+### `App\Domains\Auth\Contracts`
 - app/Domains/Auth/Contracts/RefreshTokenRepositoryInterface.php
 - app/Domains/Auth/Contracts/AuthenticationServiceInterface.php
 - app/Domains/Auth/Contracts/JwtProviderInterface.php
-- app/Domains/Auth/Contracts/JwtTokenServiceInterface.php
-- app/Domains/Auth/Contracts/TokenBlacklistRepositoryInterface.php
-
-### `App\Domains\Auth\Contracts`
 - app/Domains/Auth/Contracts/UserRepositoryInterface.php
+- app/Domains/Auth/Contracts/JwtTokenServiceInterface.php
 - app/Domains/Auth/Contracts/SessionSecurityServiceInterface.php
+- app/Domains/Auth/Contracts/TokenBlacklistRepositoryInterface.php
 - app/Domains/Auth/Contracts/AuthorizationServiceInterface.php
 - app/Domains/Auth/Contracts/PasswordSecurityServiceInterface.php
 
@@ -521,51 +519,45 @@
 - app/Domains/Auth/Models/Role.php
 - app/Domains/Auth/Models/Permission.php
 
-### `AlleyNote\Domains\Auth\Exceptions`
+### `App\Domains\Auth\Exceptions`
 - app/Domains/Auth/Exceptions/TokenExpiredException.php
 - app/Domains/Auth/Exceptions/JwtException.php
+- app/Domains/Auth/Exceptions/ForbiddenException.php
 - app/Domains/Auth/Exceptions/InvalidTokenException.php
 - app/Domains/Auth/Exceptions/RefreshTokenException.php
 - app/Domains/Auth/Exceptions/TokenValidationException.php
+- app/Domains/Auth/Exceptions/UnauthorizedException.php
 - app/Domains/Auth/Exceptions/AuthenticationException.php
 - app/Domains/Auth/Exceptions/TokenParsingException.php
 - app/Domains/Auth/Exceptions/TokenGenerationException.php
 - app/Domains/Auth/Exceptions/JwtConfigurationException.php
 
-### `App\Domains\Auth\Exceptions`
-- app/Domains/Auth/Exceptions/ForbiddenException.php
-- app/Domains/Auth/Exceptions/UnauthorizedException.php
-
-### `AlleyNote\Domains\Auth\DTOs`
+### `App\Domains\Auth\DTOs`
 - app/Domains/Auth/DTOs/LoginRequestDTO.php
 - app/Domains/Auth/DTOs/LogoutRequestDTO.php
 - app/Domains/Auth/DTOs/RefreshResponseDTO.php
 - app/Domains/Auth/DTOs/LoginResponseDTO.php
-- app/Domains/Auth/DTOs/RefreshRequestDTO.php
-
-### `App\Domains\Auth\DTOs`
 - app/Domains/Auth/DTOs/RegisterUserDTO.php
+- app/Domains/Auth/DTOs/RefreshRequestDTO.php
 
 ### `App\Domains\Auth\Services\Advanced`
 - app/Domains/Auth/Services/Advanced/PwnedPasswordService.php
 
 ### `App\Domains\Auth\Services`
 - app/Domains/Auth/Services/SessionSecurityService.php
+- app/Domains/Auth/Services/AuthenticationService.php
 - app/Domains/Auth/Services/AuthService.php
 - app/Domains/Auth/Services/PasswordManagementService.php
 - app/Domains/Auth/Services/PasswordSecurityService.php
-- app/Domains/Auth/Services/AuthorizationService.php
-
-### `AlleyNote\Domains\Auth\Services`
-- app/Domains/Auth/Services/AuthenticationService.php
 - app/Domains/Auth/Services/RefreshTokenService.php
+- app/Domains/Auth/Services/AuthorizationService.php
 - app/Domains/Auth/Services/TokenBlacklistService.php
 - app/Domains/Auth/Services/JwtTokenService.php
 
-### `AlleyNote\Domains\Auth\Entities`
+### `App\Domains\Auth\Entities`
 - app/Domains/Auth/Entities/RefreshToken.php
 
-### `AlleyNote\Domains\Auth\ValueObjects`
+### `App\Domains\Auth\ValueObjects`
 - app/Domains/Auth/ValueObjects/TokenBlacklistEntry.php
 - app/Domains/Auth/ValueObjects/TokenPair.php
 - app/Domains/Auth/ValueObjects/DeviceInfo.php
@@ -669,7 +661,7 @@
 ### `App\Infrastructure\Auth\Jwt`
 - app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php
 
-### `AlleyNote\Infrastructure\Auth\Repositories`
+### `App\Infrastructure\Auth\Repositories`
 - app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php
 - app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php
 
@@ -759,6 +751,10 @@
 ### `= trim($matches[1])`
 - scripts/scan-project-architecture.php
 
+### `宣告
+        $content = preg_replace('/^namespace AlleyNote\\\\/m', 'namespace App\\', $content, -1, $namespaceCount)`
+- scripts/fix-namespace-consistency.php
+
 
 ## 🏗️ DDD 架構分析
 
@@ -787,7 +783,11 @@
 
 ## ⚠️ 發現的架構問題
 
+- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\RefreshTokenRepository
+- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\TokenBlacklistRepository
 - ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
+- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\RefreshTokenRepository
+- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\TokenBlacklistRepository
 - ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
 - ⚠️  可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
 - ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/ActivityLogController.php -> App\Application\Controllers\BaseController
@@ -1364,4 +1364,4 @@
             $sql = $this->buildSelectQuery('id = ?') (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
 - ❓ 找不到類別/介面: ($uuid) {
             $sql = $this->buildSelectQuery('uuid = ?') (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ... 還有 129 個
+- ... 還有 131 個
