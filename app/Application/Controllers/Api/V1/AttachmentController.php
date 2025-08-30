@@ -25,7 +25,7 @@ class AttachmentController
     {
         // 從 request attributes 或 session 中取得使用者 ID
         $userId = $request->getAttribute('user_id');
-        if (userId === null) {
+        if ($userId === null) {
             throw ValidationException::fromSingleError('user_id', '使用者未登入');
         }
 
@@ -41,6 +41,7 @@ class AttachmentController
         security: [
             ['bearerAuth' => []],
             ['sessionAuth' => []],
+        ],
         parameters: [
             new OA\Parameter(
                 name: 'post_id',
@@ -137,7 +138,7 @@ class AttachmentController
             if (!isset($files['file'])) {
                 $response->getBody()->write((json_encode([
                     'error' => '缺少上傳檔案',
-                ]) ?: '');
+                ]) ?: ''));
 
                 return $response
                     ->withStatus(400)
@@ -157,7 +158,7 @@ class AttachmentController
         } catch (ValidationException $e) {
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}');
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -165,7 +166,7 @@ class AttachmentController
         } catch (NotFoundException $e) {
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}');
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -274,7 +275,7 @@ class AttachmentController
 
             $response->getBody()->write((json_encode([
                 'error' => '檔案下載功能尚未實作',
-            ]) ?: '');
+            ]) ?: ''));
 
             return $response
                 ->withStatus(501)
@@ -282,7 +283,7 @@ class AttachmentController
         } catch (ValidationException $e) {
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}');
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -290,7 +291,7 @@ class AttachmentController
         } catch (NotFoundException $e) {
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}');
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -358,7 +359,7 @@ class AttachmentController
                 fn($attachment) => $attachment->toArray(),
                 $attachments,
             ),
-        ]) ?: '{"error": "JSON encoding failed"}');
+        ]) ?: '{"error": "JSON encoding failed"}'));
 
         return $response
             ->withStatus(200)
@@ -374,6 +375,7 @@ class AttachmentController
         security: [
             ['bearerAuth' => []],
             ['sessionAuth' => []],
+        ],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -430,14 +432,13 @@ class AttachmentController
             if (!$uuid || !is_string($uuid)) {
                 throw ValidationException::fromSingleError('uuid', '無效的附件識別碼');
             }
-
             $this->attachmentService->delete($uuid, $currentUserId);
 
             return $response->withStatus(204);
         } catch (ValidationException $e) {
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}');
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -445,7 +446,7 @@ class AttachmentController
         } catch (NotFoundException $e) {
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}');
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)

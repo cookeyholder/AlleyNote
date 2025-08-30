@@ -61,7 +61,7 @@ class ActivityLogController extends BaseController
                     'success' => false,
                     'message' => 'Invalid request data',
                     'error_code' => 400,
-                ]) ?: '';
+                ]);
                 $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
@@ -79,7 +79,7 @@ class ActivityLogController extends BaseController
                 'success' => true,
                 'data' => $result,
                 'message' => 'Activity logged successfully',
-            ]) ?: '';
+            ]);
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
@@ -88,7 +88,7 @@ class ActivityLogController extends BaseController
                 'success' => false,
                 'message' => 'Internal server error',
                 'error_code' => 500,
-            ]) ?: '';
+            ]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -122,7 +122,7 @@ class ActivityLogController extends BaseController
                 'success' => true,
                 'data' => $logs,
                 'message' => 'Activity logs retrieved successfully',
-            ]) ?: '';
+            ]);
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json');
@@ -131,7 +131,7 @@ class ActivityLogController extends BaseController
                 'success' => false,
                 'message' => 'Internal server error',
                 'error_code' => 500,
-            ]) ?: '';
+            ]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

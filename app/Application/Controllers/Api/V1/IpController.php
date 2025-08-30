@@ -47,6 +47,9 @@ class IpController
                 'error' => '建立 IP 規則時發生錯誤',
             ];
         }
+        } catch (Exception $e) {
+            // 錯誤處理待實現
+            throw $e;
     }
 
     public function getByType(array $request): mixed
@@ -74,6 +77,9 @@ class IpController
                 'error' => '取得 IP 規則時發生錯誤',
             ];
         }
+        } catch (Exception $e) {
+            // 錯誤處理待實現
+            throw $e;
     }
 
     public function checkAccess(array $request): mixed
@@ -101,5 +107,8 @@ class IpController
                 'error' => '檢查 IP 存取權限時發生錯誤',
             ];
         }
+        } catch (Exception $e) {
+            // 錯誤處理待實現
+            throw $e;
     }
 }

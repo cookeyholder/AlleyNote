@@ -106,23 +106,23 @@ class PostController extends BaseController
             $limit = min(100, max(1, (int) ($queryParams['limit'] ?? 10)));
 
             $filters = [];
-            if (!empty($queryParams['search'] ?? null)) {
+            if (!empty($queryParams['search'])) {
                 $filters['search'] = trim($queryParams['search']);
             }
-            if (!empty($queryParams['category'] ?? null)) {
+            if (!empty($queryParams['category'])) {
                 $filters['category'] = $queryParams['category'];
             }
-            if (!empty($queryParams['status'] ?? null)) {
+            if (!empty($queryParams['status'])) {
                 $filters['status'] = $queryParams['status'];
             }
 
             $result = $this->postService->listPosts($page, $limit, $filters);
 
             $responseData = $this->paginatedResponse(
-                result->items ,
-                result->total ,
-                result->page ,
-                result->per_page ,
+                $result['items'],
+                $result['total'],
+                $result['page'],
+                $result['per_page'],
             );
 
             // 記錄成功的文章列表查看活動
@@ -135,7 +135,7 @@ class PostController extends BaseController
                     'page' => $page,
                     'limit' => $limit,
                     'filters' => $filters,
-                    'total_results' => result->total ,
+                    'total_results' => $result['total'],
                     'ip_address' => $this->getUserIp($request),
                 ],
             );
@@ -185,6 +185,7 @@ class PostController extends BaseController
         tags: ['posts'],
         security: [
             ['csrfToken' => []],
+        ],
         requestBody: new OA\RequestBody(
             description: '貼文資料',
             required: true,
@@ -340,14 +341,14 @@ class PostController extends BaseController
     public function show(Request $request, Response $response, array $args): Response
     {
         try {
-            $id = (int) $args->id ;
+            $id = (int) $args['id'];
 
             if ($id <= 0) {
                 // 記錄無效 ID 錯誤
                 $this->activityLogger->logFailure(
                     actionType: ActivityType::POST_VIEWED,
                     userId: $request->getAttribute('user_id'),
-                    reason: 'Invalid post ID: ' . args->id ,
+                    reason: 'Invalid post ID: ' . $args['id'],
                     metadata: ['ip_address' => $this->getUserIp($request)],
                 );
 
@@ -389,8 +390,8 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
-                    'requested_id' => 'unknown',
-                    'ip_address' => $this->getUserIp($request,
+                    'requested_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
                 ],
             );
 
@@ -405,8 +406,8 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
-                    'requested_id' => 'unknown',
-                    'ip_address' => $this->getUserIp($request,
+                    'requested_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
                 ],
             );
 
@@ -425,6 +426,7 @@ class PostController extends BaseController
         tags: ['posts'],
         security: [
             ['csrfToken' => []],
+        ],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -484,14 +486,14 @@ class PostController extends BaseController
     public function update(Request $request, Response $response, array $args): Response
     {
         try {
-            $id = (int) $args->id ;
+            $id = (int) $args['id'];
 
             if ($id <= 0) {
                 // 記錄無效 ID 錯誤
                 $this->activityLogger->logFailure(
                     actionType: ActivityType::POST_UPDATED,
                     userId: $request->getAttribute('user_id'),
-                    reason: 'Invalid post ID: ' . args->id ,
+                    reason: 'Invalid post ID: ' . $args['id'],
                     metadata: ['ip_address' => $this->getUserIp($request)],
                 );
 
@@ -550,7 +552,7 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Validation failed: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => 'unknown',
+                    'post_id' => $args['id'] ?? 'unknown',
                     'errors' => $e->getErrors(),
                     'ip_address' => $this->getUserIp($request),
                 ],
@@ -567,8 +569,8 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
-                    'requested_id' => 'unknown',
-                    'ip_address' => $this->getUserIp($request,
+                    'requested_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
                 ],
             );
 
@@ -583,8 +585,8 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => 'unknown',
-                    'ip_address' => $this->getUserIp($request,
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
                 ],
             );
 
@@ -603,6 +605,7 @@ class PostController extends BaseController
         tags: ['posts'],
         security: [
             ['csrfToken' => []],
+        ],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -645,14 +648,14 @@ class PostController extends BaseController
     public function delete(Request $request, Response $response, array $args): Response
     {
         try {
-            $id = (int) $args->id ;
+            $id = (int) $args['id'];
 
             if ($id <= 0) {
                 // 記錄無效 ID 錯誤
                 $this->activityLogger->logFailure(
                     actionType: ActivityType::POST_DELETED,
                     userId: $request->getAttribute('user_id'),
-                    reason: 'Invalid post ID: ' . args->id ,
+                    reason: 'Invalid post ID: ' . $args['id'],
                     metadata: ['ip_address' => $this->getUserIp($request)],
                 );
 
@@ -691,7 +694,7 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Validation failed: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => 'unknown',
+                    'post_id' => $args['id'] ?? 'unknown',
                     'errors' => $e->getErrors(),
                     'ip_address' => $this->getUserIp($request),
                 ],
@@ -708,8 +711,8 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
-                    'requested_id' => 'unknown',
-                    'ip_address' => $this->getUserIp($request,
+                    'requested_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
                 ],
             );
 
@@ -724,8 +727,8 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Post status error: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => 'unknown',
-                    'ip_address' => $this->getUserIp($request,
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
                 ],
             );
 
@@ -740,8 +743,8 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => 'unknown',
-                    'ip_address' => $this->getUserIp($request,
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
                 ],
             );
 
@@ -760,6 +763,7 @@ class PostController extends BaseController
         tags: ['posts'],
         security: [
             ['csrfToken' => []],
+        ],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -830,14 +834,14 @@ class PostController extends BaseController
     public function togglePin(Request $request, Response $response, array $args): Response
     {
         try {
-            $id = (int) $args->id ;
+            $id = (int) $args['id'];
 
             if ($id <= 0) {
                 // 記錄無效 ID 錯誤
                 $this->activityLogger->logFailure(
                     actionType: ActivityType::POST_PINNED,
                     userId: $request->getAttribute('user_id'),
-                    reason: 'Invalid post ID: ' . args->id ,
+                    reason: 'Invalid post ID: ' . $args['id'],
                     metadata: ['ip_address' => $this->getUserIp($request)],
                 );
 
@@ -868,6 +872,7 @@ class PostController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
+            if (!isset($data['pinned']) || !is_bool($data['pinned'])) {
                 // 記錄參數錯誤
                 $this->activityLogger->logFailure(
                     actionType: ActivityType::POST_PINNED,
@@ -883,12 +888,14 @@ class PostController extends BaseController
                 $errorResponse = $this->errorResponse('Missing or invalid pinned parameter', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
 
-            $this->postService->setPinned($id, $data->pinned );
+            $this->postService->setPinned($id, $data['pinned']);
             $post = $this->postService->findById($id);
 
             // 記錄置頂狀態變更活動
-            $actionType = $data->pinned  ? ActivityType::POST_PINNED : ActivityType::POST_UNPINNED;
+            $actionType = $data['pinned'] ? ActivityType::POST_PINNED : ActivityType::POST_UNPINNED;
             $this->activityLogger->logSuccess(
                 actionType: $actionType,
                 userId: $request->getAttribute('user_id'),
@@ -896,12 +903,12 @@ class PostController extends BaseController
                 targetId: (string) $id,
                 metadata: [
                     'title' => $post->getTitle(),
-                    'pinned' => data->pinned ,
+                    'pinned' => $data['pinned'],
                     'ip_address' => $this->getUserIp($request),
                 ],
             );
 
-            $message = $data->pinned  ? '貼文已設為置頂' : '貼文已取消置頂';
+            $message = $data['pinned'] ? '貼文已設為置頂' : '貼文已取消置頂';
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), $message);
             $response->getBody()->write(($successResponse ?: ''));
 
@@ -913,8 +920,8 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
-                    'requested_id' => 'unknown',
-                    'ip_address' => $this->getUserIp($request,
+                    'requested_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
                 ],
             );
 
@@ -929,8 +936,8 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'State transition error: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => 'unknown',
-                    'ip_address' => $this->getUserIp($request,
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
                 ],
             );
 
@@ -945,8 +952,8 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => 'unknown',
-                    'ip_address' => $this->getUserIp($request,
+                    'post_id' => $args['id'] ?? 'unknown',
+                    'ip_address' => $this->getUserIp($request),
                 ],
             );
 
@@ -986,16 +993,16 @@ class PostController extends BaseController
         }
 
         // 如果無法取得有效 IP，使用 REMOTE_ADDR 或預設值
-        return '127.0.0.1';
+        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
     }
 
     /**
      * 刪除貼文.
      */
-    public function destroy(Request $request, Response $response, array $args: Response
+    public function destroy(Request $request, Response $response, array $args): Response
     {
         try {
-            $postId = (int) $args->id ;
+            $postId = (int) $args['id'];
             $this->postService->deletePost($postId);
 
             $responseData = [
@@ -1003,7 +1010,7 @@ class PostController extends BaseController
                 'message' => '貼文已成功刪除',
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
@@ -1012,7 +1019,7 @@ class PostController extends BaseController
                 'error' => '刪除貼文失敗: ' . $e->getMessage(),
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
