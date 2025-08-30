@@ -52,7 +52,7 @@
   // 語意化命名優先
   abstract class BaseController
   abstract class BaseDTO
-  
+
   // 也可以使用 Abstract 前綴
   abstract class AbstractMiddleware
   ```
@@ -104,7 +104,7 @@
   ```php
   // SQL 查詢
   private const POST_SELECT_FIELDS = 'id, uuid, seq_number, user_id, created_at';
-  
+
   // PHP 屬性
   private $seqNumber;
   private $userId;
@@ -119,7 +119,7 @@
   // 設定檔
   'jwt_secret' => env('JWT_SECRET'),
   'cache_ttl' => 3600,
-  
+
   // 常數
   private const JWT_ALGORITHM = 'HS256';
   private const DEFAULT_CACHE_TTL = 3600;

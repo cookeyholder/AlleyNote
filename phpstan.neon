@@ -2,10 +2,11 @@
 includes:
 	- vendor/phpstan/phpstan-mockery/extension.neon
 	- phpstan-mockery-ignore.neon
+	- phpstan-level-10-baseline.neon
 
 parameters:
     treatPhpDocTypesAsCertain: false
-    level: 8
+    level: 10
     paths:
         - app
         - tests
