@@ -1,16 +1,16 @@
-=== 專案架構快速摘要 (2025-08-30 20:56:09) ===
+=== 專案架構快速摘要 (2025-08-30 22:34:32) ===
 
 📊 品質指標:
 - 總類別數: 201
-- 介面比例: 20.4%
+- 介面比例: 20.9%
 - 現代 PHP 採用率: 65.17%
-- PSR-4 合規率: 68.42%
+- PSR-4 合規率: 68.53%
 
 🎯 邊界上下文: 5 個
 - Attachment: 6 個組件
 - Auth: 28 個組件
 - Post: 7 個組件
-- Security: 21 個組件
+- Security: 22 個組件
 - storage: 0 個組件
 
 🚀 現代 PHP 特性: 7 種正在使用
@@ -18,12 +18,12 @@
 
 📊 統計資訊:
 - 類別: 201 個
-- 介面: 41 個
+- 介面: 42 個
 - 命名空間: 77 個
 
 🏗️ DDD 架構:
 - Application: 16 個檔案
-- Domains: 105 個檔案
+- Domains: 106 個檔案
 - Infrastructure: 46 個檔案
 - Shared: 20 個檔案
 
@@ -44,7 +44,7 @@
 - 缺少測試: 201 個類別
 
 🔌 介面實作:
-- : 145 個實作
+- : 142 個實作
 - PostRepositoryInterface: 1 個實作
 - JsonSerializable: 12 個實作
 - PostServiceInterface: 1 個實作
@@ -52,7 +52,7 @@
 
 💉 重依賴類別 (≥3個依賴): 29 個
 
-❓ 可能問題引用: 164 個
+❓ 可能問題引用: 167 個
 
 🔑 重點服務/控制器:
 - PostRepository (app/Domains/Post/Repositories/PostRepository.php)

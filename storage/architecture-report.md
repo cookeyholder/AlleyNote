@@ -1,16 +1,16 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-08-30 20:56:09
+**生成時間**: 2025-08-30 22:34:32
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
 | 總類別數 | 201 | - |
-| 介面與類別比例 | 20.40% | ✅ 良好 |
+| 介面與類別比例 | 20.90% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
 | 現代 PHP 採用率 | 65.17% | ✅ 良好 |
-| PSR-4 合規率 | 68.42% | ❌ 需修正 |
+| PSR-4 合規率 | 68.53% | ❌ 需修正 |
 | DDD 結構完整性 | 80.00% | ✅ 良好 |
 
 ## 🎯 DDD 邊界上下文分析
@@ -56,7 +56,7 @@
 | 值物件 | 0 | - |
 | 聚合 | 0 | - |
 | 儲存庫 | 8 | IpRepositoryInterface, ActivityLogRepositoryInterface, SecurityServiceProvider... |
-| 領域服務 | 13 | ErrorHandlerServiceInterface, SecurityHeaderServiceInterface, LoggingSecurityServiceInterface... |
+| 領域服務 | 14 | ErrorHandlerServiceInterface, SecurityHeaderServiceInterface, LoggingSecurityServiceInterface... |
 | 領域事件 | 0 | - |
 
 ### storage 上下文
@@ -442,6 +442,7 @@
 - app/Domains/Security/Contracts/SecurityHeaderServiceInterface.php
 - app/Domains/Security/Contracts/LoggingSecurityServiceInterface.php
 - app/Domains/Security/Contracts/XssProtectionServiceInterface.php
+- app/Domains/Security/Contracts/IpServiceInterface.php
 - app/Domains/Security/Contracts/SecretsManagerInterface.php
 - app/Domains/Security/Contracts/ActivityLoggingServiceInterface.php
 - app/Domains/Security/Contracts/SuspiciousActivityDetectorInterface.php
@@ -771,7 +772,7 @@
 
 ### Domains 層
 **子目錄**: .., Post, Post/., Post/.., Post/Contracts, Post/Contracts/., Post/Contracts/.., Post/Enums, Post/Enums/., Post/Enums/.., Post/Repositories, Post/Repositories/., Post/Repositories/.., Post/Models, Post/Models/., Post/Models/.., Post/Exceptions, Post/Exceptions/., Post/Exceptions/.., Post/DTOs, Post/DTOs/., Post/DTOs/.., Post/Services, Post/Services/., Post/Services/.., Post/Validation, Post/Validation/., Post/Validation/.., Security, Security/., Security/.., Security/Contracts, Security/Contracts/., Security/Contracts/.., Security/Providers, Security/Providers/., Security/Providers/.., Security/Enums, Security/Enums/., Security/Enums/.., Security/Repositories, Security/Repositories/., Security/Repositories/.., Security/Models, Security/Models/., Security/Models/.., Security/DTOs, Security/DTOs/., Security/DTOs/.., Security/Services, Security/Services/., Security/Services/.., Security/Services/Advanced, Security/Services/Advanced/., Security/Services/Advanced/.., Security/Services/Core, Security/Services/Core/., Security/Services/Core/.., Security/Services/Secrets, Security/Services/Secrets/., Security/Services/Secrets/.., Security/Services/Content, Security/Services/Content/., Security/Services/Content/.., Security/Services/Headers, Security/Services/Headers/., Security/Services/Headers/.., Security/Services/Error, Security/Services/Error/., Security/Services/Error/.., Security/Services/Logging, Security/Services/Logging/., Security/Services/Logging/.., Security/Entities, Security/Entities/., Security/Entities/.., Auth, Auth/., Auth/.., Auth/Contracts, Auth/Contracts/., Auth/Contracts/.., Auth/Providers, Auth/Providers/., Auth/Providers/.., Auth/Repositories, Auth/Repositories/., Auth/Repositories/.., Auth/Models, Auth/Models/., Auth/Models/.., Auth/Exceptions, Auth/Exceptions/., Auth/Exceptions/.., Auth/DTOs, Auth/DTOs/., Auth/DTOs/.., Auth/Services, Auth/Services/., Auth/Services/.., Auth/Services/Advanced, Auth/Services/Advanced/., Auth/Services/Advanced/.., Auth/Entities, Auth/Entities/., Auth/Entities/.., Auth/ValueObjects, Auth/ValueObjects/., Auth/ValueObjects/.., Attachment, Attachment/., Attachment/.., Attachment/Contracts, Attachment/Contracts/., Attachment/Contracts/.., Attachment/Enums, Attachment/Enums/., Attachment/Enums/.., Attachment/Repositories, Attachment/Repositories/., Attachment/Repositories/.., Attachment/Models, Attachment/Models/., Attachment/Models/.., Attachment/DTOs, Attachment/DTOs/., Attachment/DTOs/.., Attachment/Services, Attachment/Services/., Attachment/Services/.., storage, storage/., storage/.., storage/cache, storage/cache/., storage/cache/.., storage/cache/htmlpurifier, storage/cache/htmlpurifier/., storage/cache/htmlpurifier/..
-**檔案數量**: 105
+**檔案數量**: 106
 
 ### Infrastructure 層
 **子目錄**: .., Database, Database/., Database/.., Cache, Cache/., Cache/.., Config, Config/., Config/.., Auth, Auth/., Auth/.., Auth/Jwt, Auth/Jwt/., Auth/Jwt/.., Auth/Repositories, Auth/Repositories/., Auth/Repositories/.., OpenApi, OpenApi/., OpenApi/.., Http, Http/., Http/.., Routing, Routing/., Routing/.., Routing/Middleware, Routing/Middleware/., Routing/Middleware/.., Routing/Core, Routing/Core/., Routing/Core/.., Routing/Cache, Routing/Cache/., Routing/Cache/.., Routing/Contracts, Routing/Contracts/., Routing/Contracts/.., Routing/Providers, Routing/Providers/., Routing/Providers/.., Routing/Exceptions, Routing/Exceptions/., Routing/Exceptions/.., Services, Services/., Services/..
@@ -785,7 +786,7 @@
 ## 📊 類別統計
 
 - **類別總數**: 201
-- **介面總數**: 41
+- **介面總數**: 42
 - **Trait 總數**: 0
 
 ## ⚠️ 發現的架構問題
@@ -822,9 +823,9 @@
 - **SecurityTestService**: `app/Domains/Security/Services/Advanced/SecurityTestService.php`
   - 實作: SecurityTestInterface
 - **XssProtectionService**: `app/Domains/Security/Services/Core/XssProtectionService.php`
-  - 實作: 
+  - 實作: XssProtectionServiceInterface
 - **CsrfProtectionService**: `app/Domains/Security/Services/Core/CsrfProtectionService.php`
-  - 實作: 
+  - 實作: CsrfProtectionServiceInterface
 - **SuspiciousActivityDetector**: `app/Domains/Security/Services/SuspiciousActivityDetector.php`
   - 實作: SuspiciousActivityDetectorInterface
 - **SecretsManager**: `app/Domains/Security/Services/Secrets/SecretsManager.php`
@@ -832,7 +833,7 @@
 - **XssProtectionExtensionService**: `app/Domains/Security/Services/Content/XssProtectionExtensionService.php`
   - 實作: 
 - **IpService**: `app/Domains/Security/Services/IpService.php`
-  - 實作: 
+  - 實作: IpServiceInterface
 - **SecurityHeaderService**: `app/Domains/Security/Services/Headers/SecurityHeaderService.php`
   - 實作: SecurityHeaderServiceInterface
 - **ActivityLoggingService**: `app/Domains/Security/Services/ActivityLoggingService.php`
@@ -931,10 +932,7 @@
 - SecurityServiceProvider (`app/Domains/Security/Providers/SecurityServiceProvider.php`)
 - CreateIpRuleDTO (`app/Domains/Security/DTOs/CreateIpRuleDTO.php`)
 - ActivityLogSearchDTO (`app/Domains/Security/DTOs/ActivityLogSearchDTO.php`)
-- XssProtectionService (`app/Domains/Security/Services/Core/XssProtectionService.php`)
-- CsrfProtectionService (`app/Domains/Security/Services/Core/CsrfProtectionService.php`)
 - XssProtectionExtensionService (`app/Domains/Security/Services/Content/XssProtectionExtensionService.php`)
-- IpService (`app/Domains/Security/Services/IpService.php`)
 - ActivityLog (`app/Domains/Security/Entities/ActivityLog.php`)
 - AuthServiceProvider (`app/Domains/Auth/Providers/AuthServiceProvider.php`)
 - SimpleAuthServiceProvider (`app/Domains/Auth/Providers/SimpleAuthServiceProvider.php`)
@@ -1086,11 +1084,20 @@
 ### `SecurityTestInterface`
 - SecurityTestService (`app/Domains/Security/Services/Advanced/SecurityTestService.php`)
 
+### `XssProtectionServiceInterface`
+- XssProtectionService (`app/Domains/Security/Services/Core/XssProtectionService.php`)
+
+### `CsrfProtectionServiceInterface`
+- CsrfProtectionService (`app/Domains/Security/Services/Core/CsrfProtectionService.php`)
+
 ### `SuspiciousActivityDetectorInterface`
 - SuspiciousActivityDetector (`app/Domains/Security/Services/SuspiciousActivityDetector.php`)
 
 ### `SecretsManagerInterface`
 - SecretsManager (`app/Domains/Security/Services/Secrets/SecretsManager.php`)
+
+### `IpServiceInterface`
+- IpService (`app/Domains/Security/Services/IpService.php`)
 
 ### `SecurityHeaderServiceInterface`
 - SecurityHeaderService (`app/Domains/Security/Services/Headers/SecurityHeaderService.php`)
@@ -1394,4 +1401,4 @@
 - ❓ 找不到類別/介面: App\Domains\Post\Enums\PostStatus (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
 - ❓ 找不到類別/介面: ($id) {
             $sql = $this->buildSelectQuery('id = ?') (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ... 還有 154 個
+- ... 還有 157 個
