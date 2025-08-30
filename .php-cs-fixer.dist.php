@@ -138,6 +138,17 @@ return $config
         'trim_array_spaces' => true,
         'unary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
+
+        // 新增的程式碼品質規則
+        'strict_comparison' => true,              // 強制使用嚴格比較 (=== 而非 ==)
+        'no_superfluous_phpdoc_tags' => [        // 移除多餘的 PHPDoc 標籤
+            'allow_mixed' => true,
+            'allow_unused_params' => false,
+        ],
+        'phpdoc_types_order' => [                // PHPDoc 類型排序
+            'null_adjustment' => 'always_last',
+            'sort_algorithm' => 'none',
+        ],
     ])
     ->setRiskyAllowed(true)
     ->setUsingCache(true)
