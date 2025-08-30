@@ -58,7 +58,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         if ($success && !empty($this->tags)) {
             // 設定標籤關聯
             $tagSuccess = $this->tagRepository->setTags($key, $this->tags, $ttl);
-            
+
             if (!$tagSuccess) {
                 $this->logger->warning('設定快取標籤失敗', [
                     'key' => $key,
@@ -86,14 +86,14 @@ class TaggedCacheManager implements TaggedCacheInterface
     public function forget(string $key): bool
     {
         $keyTags = $this->tagRepository->getTags($key);
-        
+
         // 先刪除快取值
         $success = $this->cacheManager->forget($key);
 
         if ($success) {
             // 刪除標籤關聯
             $this->tagRepository->deleteKey($key);
-            
+
             if (!empty($keyTags)) {
                 $this->logTaggedAccess('forget', $key, $keyTags);
             }
@@ -149,7 +149,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     public function addTags(string|array $tags): TaggedCacheInterface
     {
         $tagsArray = is_array($tags) ? $tags : [$tags];
-        
+
         foreach ($tagsArray as $tag) {
             if (!in_array($tag, $this->tags, true)) {
                 // 驗證標籤
@@ -189,7 +189,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         $this->tagRepository->deleteByTags($tagsArray);
 
         $deletedCount = count(array_unique($deletedKeys));
-        
+
         $this->logger->info('按標籤清空快取', [
             'tags' => $tagsArray,
             'deleted_keys_count' => $deletedCount,
@@ -204,7 +204,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     public function getTaggedKeys(): array
     {
         $keys = [];
-        
+
         foreach ($this->tags as $tag) {
             $tagKeys = $this->tagRepository->getKeysByTag($tag);
             $keys = array_merge($keys, $tagKeys);
@@ -231,7 +231,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         if ($success) {
             // 設定標籤關聯
             $tagSuccess = $this->tagRepository->setTags($key, $tags, $ttl);
-            
+
             if (!$tagSuccess) {
                 $this->logger->warning('設定快取標籤失敗', [
                     'key' => $key,
@@ -271,14 +271,14 @@ class TaggedCacheManager implements TaggedCacheInterface
         }
 
         $tagsArray = is_array($tags) ? $tags : [$tags];
-        
+
         // 驗證所有標籤
         foreach ($tagsArray as $tag) {
             new CacheTag($tag);
         }
 
         $success = $this->tagRepository->addTags($key, $tagsArray);
-        
+
         if ($success) {
             $this->logTaggedAccess('addTags', $key, $tagsArray);
         }
@@ -292,9 +292,9 @@ class TaggedCacheManager implements TaggedCacheInterface
     public function removeTagsFromKey(string $key, string|array $tags): bool
     {
         $tagsArray = is_array($tags) ? $tags : [$tags];
-        
+
         $success = $this->tagRepository->removeTags($key, $tagsArray);
-        
+
         if ($success) {
             $this->logTaggedAccess('removeTags', $key, $tagsArray);
         }
@@ -324,7 +324,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     public function cleanupUnusedTags(): int
     {
         $cleanedCount = $this->tagRepository->cleanupUnusedTags();
-        
+
         if ($cleanedCount > 0) {
             $this->logger->info('清除未使用的標籤', [
                 'cleaned_count' => $cleanedCount,
@@ -350,7 +350,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         $instance = clone $this;
         $instance->tags = [];
         $instance->addTags($tags);
-        
+
         return $instance;
     }
 
@@ -365,7 +365,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     public function putMany(array $items, array $tags, int $ttl = 3600): array
     {
         $results = [];
-        
+
         foreach ($items as $key => $value) {
             $results[$key] = $this->putWithTags($key, $value, $tags, $ttl);
         }
@@ -389,7 +389,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     {
         $keys = $this->getKeysByTag($tag);
         $results = [];
-        
+
         foreach ($keys as $key) {
             $value = $this->get($key);
             if ($value !== null) {

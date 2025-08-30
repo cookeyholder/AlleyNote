@@ -17,7 +17,7 @@ class RedisTagRepository implements TagRepositoryInterface
     private const KEY_PREFIX = 'cache_tags:';
     private const TAG_PREFIX = 'tag:';
     private const KEY_TAG_PREFIX = 'key_tags:';
-    
+
     /**
      * @var \Redis Redis 連線實例
      */
@@ -111,11 +111,11 @@ class RedisTagRepository implements TagRepositoryInterface
         }
 
         $normalizedTags = $this->normalizeTags($tags);
-        
+
         // 取得現有標籤的最大過期時間
         $keyTagsKey = $this->getKeyTagsKey($key);
         $existingTags = $this->redis->hGetAll($keyTagsKey);
-        
+
         $maxExpiryTime = time() + 3600; // 預設 1 小時
         if (!empty($existingTags)) {
             $maxExpiryTime = max(array_values($existingTags));
@@ -186,7 +186,7 @@ class RedisTagRepository implements TagRepositoryInterface
     {
         $keyTagsKey = $this->getKeyTagsKey($key);
         $expiryTime = $this->redis->hGet($keyTagsKey, $tag);
-        
+
         if ($expiryTime === false) {
             return false;
         }
@@ -257,11 +257,11 @@ class RedisTagRepository implements TagRepositoryInterface
     {
         $pattern = self::KEY_PREFIX . self::TAG_PREFIX . '*';
         $tagKeys = $this->redis->keys($pattern);
-        
+
         $tags = [];
         foreach ($tagKeys as $tagKey) {
             $tag = str_replace(self::KEY_PREFIX . self::TAG_PREFIX, '', $tagKey);
-            
+
             // 檢查標籤是否還有有效的快取鍵
             if (!empty($this->getKeysByTag($tag))) {
                 $tags[] = $tag;
@@ -282,10 +282,10 @@ class RedisTagRepository implements TagRepositoryInterface
 
         foreach ($tagKeys as $tagKey) {
             $tag = str_replace(self::KEY_PREFIX . self::TAG_PREFIX, '', $tagKey);
-            
+
             // 清理過期的快取鍵
             $this->cleanupExpiredKeysForTag($tag);
-            
+
             // 如果標籤沒有有效的快取鍵，刪除標籤
             if (empty($this->getKeysByTag($tag))) {
                 $this->redis->del($tagKey);
@@ -370,11 +370,11 @@ class RedisTagRepository implements TagRepositoryInterface
     {
         $pattern = self::KEY_PREFIX . '*';
         $keys = $this->redis->keys($pattern);
-        
+
         if (!empty($keys)) {
             $this->redis->del(...$keys);
         }
-        
+
         return true;
     }
 
@@ -453,7 +453,7 @@ class RedisTagRepository implements TagRepositoryInterface
             if ((int)$expiryTime <= $currentTime) {
                 // 從快取鍵的標籤集合中移除過期標籤
                 $this->redis->hDel($keyTagsKey, $tag);
-                
+
                 // 從標籤的快取鍵集合中移除過期項目
                 $tagKey = $this->getTagKey($tag);
                 $this->redis->hDel($tagKey, $key);
@@ -478,7 +478,7 @@ class RedisTagRepository implements TagRepositoryInterface
             if ((int)$expiryTime <= $currentTime) {
                 // 從標籤的快取鍵集合中移除過期項目
                 $this->redis->hDel($tagKey, $key);
-                
+
                 // 從快取鍵的標籤集合中移除過期標籤
                 $keyTagsKey = $this->getKeyTagsKey($key);
                 $this->redis->hDel($keyTagsKey, $tag);

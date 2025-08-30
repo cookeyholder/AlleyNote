@@ -50,7 +50,7 @@ class TagManagementController
                 if ($driver && $driver instanceof TaggedCacheInterface) {
                     $driverTags = $driver->getAllTags();
                     $tagStats = $driver->getTagStatistics();
-                    
+
                     foreach ($driverTags as $tag) {
                         if (empty($search) || stripos($tag, $search) !== false) {
                             $tags[] = [
@@ -117,7 +117,7 @@ class TagManagementController
     {
         try {
             $tagName = urldecode($args['tag'] ?? '');
-            
+
             if (empty($tagName)) {
                 throw new \InvalidArgumentException('標籤名稱不能為空');
             }
@@ -131,7 +131,7 @@ class TagManagementController
                     if ($driver->tagExists($tagName)) {
                         $keys = $driver->getKeysByTag($tagName);
                         $tagStats = $driver->getTagStatistics();
-                        
+
                         $keyDetails = [];
                         foreach (array_slice($keys, 0, 50) as $key) { // 限制顯示前50個鍵
                             $value = $driver->get($key);
@@ -197,7 +197,7 @@ class TagManagementController
     {
         try {
             $tagName = urldecode($args['tag'] ?? '');
-            
+
             if (empty($tagName)) {
                 throw new \InvalidArgumentException('標籤名稱不能為空');
             }
@@ -213,7 +213,7 @@ class TagManagementController
                         $cleared = $driver->flushByTags($tagName);
                         $totalCleared += $cleared;
                         $driversAffected[] = $driverName;
-                        
+
                         $this->logger?->info('標籤快取已清空', [
                             'tag' => $tagName,
                             'driver' => $driverName,
@@ -363,12 +363,12 @@ class TagManagementController
                 if ($driver && $driver instanceof TaggedCacheInterface) {
                     $driverStats = $driver->getTagStatistics();
                     $statistics['drivers'][$driverName] = $driverStats;
-                    
+
                     $statistics['summary']['total_tags'] += $driverStats['total_tags'];
-                    
+
                     foreach ($driverStats['tags'] as $tag => $tagData) {
                         $statistics['summary']['total_keys'] += $tagData['key_count'];
-                        
+
                         // 統計標籤類型
                         $tagType = $this->getTagType($tag);
                         if (isset($statistics['tag_types'][$tagType])) {
@@ -602,7 +602,7 @@ class TagManagementController
         } elseif (str_starts_with($tag, 'group_')) {
             return 'group';
         }
-        
+
         return 'custom';
     }
 

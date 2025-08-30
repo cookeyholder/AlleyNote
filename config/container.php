@@ -164,28 +164,28 @@ return array_merge(
         // Tag Management Controller
         \App\Application\Controllers\Admin\TagManagementController::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
             $cacheManager = $container->get(\App\Shared\Cache\Contracts\CacheManagerInterface::class);
-            
+
             $tagRepository = null;
             try {
                 $tagRepository = $container->get(\App\Shared\Cache\Contracts\TagRepositoryInterface::class);
             } catch (\Exception) {
                 // 標籤倉庫不可用
             }
-            
+
             $groupManager = null;
             try {
                 $groupManager = $container->get(\App\Shared\Cache\Services\CacheGroupManager::class);
             } catch (\Exception) {
                 // 分組管理器不可用
             }
-            
+
             $logger = null;
             try {
                 $logger = $container->get(\Psr\Log\LoggerInterface::class);
             } catch (\Exception) {
                 // 記錄器不可用
             }
-            
+
             return new \App\Application\Controllers\Admin\TagManagementController(
                 $cacheManager,
                 $tagRepository,

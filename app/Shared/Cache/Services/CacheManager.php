@@ -660,7 +660,7 @@ class CacheManager implements CacheManagerInterface
                         $this->logger
                     );
                 }
-                
+
                 return $driver->tags($tags);
             }
         }

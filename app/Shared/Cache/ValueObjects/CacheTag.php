@@ -36,7 +36,7 @@ class CacheTag
         $normalized = strtolower(trim($name));
         $normalized = preg_replace('/[^a-z0-9_\-\.]/', '_', $normalized);
         $normalized = preg_replace('/_{2,}/', '_', $normalized);
-        
+
         return trim($normalized, '_');
     }
 
@@ -164,7 +164,7 @@ class CacheTag
      */
     public function isGroupTag(): bool
     {
-        return str_starts_with($this->name, 'group:');
+        return str_starts_with($this->name, 'group_');
     }
 
     /**
@@ -172,7 +172,7 @@ class CacheTag
      */
     public function isUserTag(): bool
     {
-        return str_starts_with($this->name, 'user:');
+        return str_starts_with($this->name, 'user_');
     }
 
     /**
@@ -180,7 +180,7 @@ class CacheTag
      */
     public function isModuleTag(): bool
     {
-        return str_starts_with($this->name, 'module:');
+        return str_starts_with($this->name, 'module_');
     }
 
     /**
@@ -188,6 +188,6 @@ class CacheTag
      */
     public function isTemporalTag(): bool
     {
-        return str_starts_with($this->name, 'time:');
+        return str_starts_with($this->name, 'time_');
     }
 }

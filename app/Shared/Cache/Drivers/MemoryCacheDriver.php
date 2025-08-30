@@ -328,23 +328,155 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         ];
     }
 
-    // ===== 標籤化快取介面實作 =====
-
     /**
-     * 設定快取標籤
+     * 增加新標籤到快取管理器
      *
-     * @param array<string>|string $tags 標籤陣列或單一標籤
-     * @return TaggedCacheInterface 標籤化快取實例
+     * @param string|array<string> $tags 標籤
      */
-    public function tags(array|string $tags): TaggedCacheInterface
+    public function addTags(string|array $tags): TaggedCacheInterface
     {
         $tagsArray = is_array($tags) ? $tags : [$tags];
-        
-        // 建立新的驅動實例以避免標籤污染
-        $driver = clone $this;
-        $driver->tags = $tagsArray;
-        
-        return $driver;
+        $this->tags = array_unique(array_merge($this->tags, $tagsArray));
+        return $this;
+    }
+
+    /**
+     * 取得當前標籤化快取的所有鍵
+     *
+     * @return array<string> 快取鍵陣列
+     */
+    public function getTaggedKeys(): array
+    {
+        if (empty($this->tags)) {
+            return [];
+        }
+
+        return $this->getKeysByTags($this->tags);
+    }
+
+    /**
+     * 使用指定標籤存放快取項目
+     *
+     * @param string $key 快取鍵
+     * @param mixed $value 快取值
+     * @param array<string> $tags 標籤陣列
+     * @param int $ttl 存活時間（秒）
+     * @return bool 是否成功
+     */
+    public function putWithTags(string $key, mixed $value, array $tags, int $ttl = 3600): bool
+    {
+        $oldTags = $this->tags;
+        $this->tags = $tags;
+        $result = $this->put($key, $value, $ttl);
+        $this->tags = $oldTags;
+        return $result;
+    }
+
+    /**
+     * 取得快取項目的所有標籤
+     *
+     * @param string $key 快取鍵
+     * @return array<string> 標籤陣列
+     */
+    public function getTagsByKey(string $key): array
+    {
+        $tags = [];
+        foreach ($this->tagIndex as $tag => $keys) {
+            if (in_array($key, $keys, true)) {
+                $tags[] = $tag;
+            }
+        }
+        return $tags;
+    }
+
+    /**
+     * 為現有快取項目添加標籤
+     *
+     * @param string $key 快取鍵
+     * @param string|array<string> $tags 標籤或標籤陣列
+     * @return bool 是否成功
+     */
+    public function addTagsToKey(string $key, string|array $tags): bool
+    {
+        if (!isset($this->cache[$key])) {
+            return false;
+        }
+
+        $tagsArray = is_array($tags) ? $tags : [$tags];
+        $this->addKeyToTags($key, $tagsArray);
+        return true;
+    }
+
+    /**
+     * 從快取項目移除標籤
+     *
+     * @param string $key 快取鍵
+     * @param string|array<string> $tags 標籤或標籤陣列
+     * @return bool 是否成功
+     */
+    public function removeTagsFromKey(string $key, string|array $tags): bool
+    {
+        $tagsArray = is_array($tags) ? $tags : [$tags];
+        $removed = false;
+
+        foreach ($tagsArray as $tag) {
+            if (!isset($this->tagIndex[$tag])) {
+                continue;
+            }
+
+            $index = array_search($key, $this->tagIndex[$tag], true);
+            if ($index !== false) {
+                unset($this->tagIndex[$tag][$index]);
+                $this->tagIndex[$tag] = array_values($this->tagIndex[$tag]);
+                $removed = true;
+
+                // 如果標籤下沒有鍵了，移除標籤
+                if (empty($this->tagIndex[$tag])) {
+                    unset($this->tagIndex[$tag]);
+                }
+            }
+        }
+
+        return $removed;
+    }
+
+    /**
+     * 檢查快取項目是否包含指定標籤
+     *
+     * @param string $key 快取鍵
+     * @param string $tag 標籤
+     * @return bool 是否包含
+     */
+    public function hasTag(string $key, string $tag): bool
+    {
+        return isset($this->tagIndex[$tag]) && in_array($key, $this->tagIndex[$tag], true);
+    }
+
+    /**
+     * 清除未使用的標籤
+     *
+     * @return int 清除的標籤數量
+     */
+    public function cleanupUnusedTags(): int
+    {
+        $cleaned = 0;
+        foreach ($this->tagIndex as $tag => $keys) {
+            $validKeys = [];
+            foreach ($keys as $key) {
+                if ($this->has($key)) {
+                    $validKeys[] = $key;
+                }
+            }
+
+            if (empty($validKeys)) {
+                unset($this->tagIndex[$tag]);
+                $cleaned++;
+            } else {
+                $this->tagIndex[$tag] = $validKeys;
+            }
+        }
+
+        return $cleaned;
     }
 
     /**
@@ -428,13 +560,13 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
         foreach ($tags as $tag) {
             $tagKeys = $this->getKeysByTag($tag);
-            
+
             if ($commonKeys === null) {
                 $commonKeys = $tagKeys;
             } else {
                 $commonKeys = array_intersect($commonKeys, $tagKeys);
             }
-            
+
             // 如果已經沒有共同鍵，提早結束
             if (empty($commonKeys)) {
                 break;
@@ -500,7 +632,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             if (!isset($this->tagIndex[$tag])) {
                 $this->tagIndex[$tag] = [];
             }
-            
+
             if (!in_array($key, $this->tagIndex[$tag], true)) {
                 $this->tagIndex[$tag][] = $key;
             }
@@ -520,12 +652,31 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 unset($keys[$index]);
                 $keys = array_values($keys); // 重新索引陣列
             }
-            
+
             // 如果標籤下沒有鍵了，移除標籤
             if (empty($keys)) {
                 unset($this->tagIndex[$tag]);
             }
         }
         unset($keys);
+    }
+
+    // ===== 標籤化快取介面實作 =====
+
+    /**
+     * 設定快取標籤
+     *
+     * @param array<string>|string $tags 標籤陣列或單一標籤
+     * @return TaggedCacheInterface 標籤化快取實例
+     */
+    public function tags(array|string $tags): TaggedCacheInterface
+    {
+        $tagsArray = is_array($tags) ? $tags : [$tags];
+
+        // 建立新的驅動實例以避免標籤污染
+        $driver = clone $this;
+        $driver->tags = $tagsArray;
+
+        return $driver;
     }
 }

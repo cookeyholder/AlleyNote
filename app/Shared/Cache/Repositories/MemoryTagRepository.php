@@ -40,7 +40,7 @@ class MemoryTagRepository implements TagRepositoryInterface
         $this->keyToTags[$key] = [];
         foreach ($normalizedTags as $tag) {
             $this->keyToTags[$key][$tag] = $expiryTime;
-            
+
             if (!isset($this->tagToKeys[$tag])) {
                 $this->tagToKeys[$tag] = [];
             }
@@ -83,7 +83,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     {
         $normalizedTags = $this->normalizeTags($tags);
         $currentTime = time();
-        
+
         // 取得現有標籤的過期時間，使用最大值作為新標籤的過期時間
         $maxExpiryTime = $currentTime + 3600; // 預設 1 小時
         if (isset($this->keyToTags[$key])) {
@@ -100,7 +100,7 @@ class MemoryTagRepository implements TagRepositoryInterface
         // 添加新標籤
         foreach ($normalizedTags as $tag) {
             $this->keyToTags[$key][$tag] = $maxExpiryTime;
-            
+
             if (!isset($this->tagToKeys[$tag])) {
                 $this->tagToKeys[$tag] = [];
             }
@@ -124,11 +124,11 @@ class MemoryTagRepository implements TagRepositoryInterface
         foreach ($normalizedTags as $tag) {
             // 從快取鍵的標籤列表移除
             unset($this->keyToTags[$key][$tag]);
-            
+
             // 從標籤的快取鍵列表移除
             if (isset($this->tagToKeys[$tag])) {
                 unset($this->tagToKeys[$tag][$key]);
-                
+
                 // 如果標籤沒有關聯的快取鍵，移除標籤
                 if (empty($this->tagToKeys[$tag])) {
                     unset($this->tagToKeys[$tag]);
@@ -211,7 +211,7 @@ class MemoryTagRepository implements TagRepositoryInterface
         foreach ($this->keyToTags[$key] as $tag => $expiryTime) {
             if (isset($this->tagToKeys[$tag])) {
                 unset($this->tagToKeys[$tag][$key]);
-                
+
                 // 如果標籤沒有關聯的快取鍵，移除標籤
                 if (empty($this->tagToKeys[$tag])) {
                     unset($this->tagToKeys[$tag]);
@@ -240,9 +240,9 @@ class MemoryTagRepository implements TagRepositoryInterface
     public function cleanupUnusedTags(): int
     {
         $initialCount = count($this->tagToKeys);
-        
+
         $this->cleanupExpiredData();
-        
+
         // 移除沒有關聯快取鍵的標籤
         foreach ($this->tagToKeys as $tag => $keys) {
             if (empty($keys)) {
@@ -259,7 +259,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     public function getTagStatistics(): array
     {
         $this->cleanupExpiredData();
-        
+
         $statistics = [];
         foreach ($this->tagToKeys as $tag => $keys) {
             $statistics[$tag] = count($keys);
@@ -291,7 +291,7 @@ class MemoryTagRepository implements TagRepositoryInterface
         // 更新快取鍵的所有標籤過期時間
         foreach ($this->keyToTags[$key] as $tag => $oldExpiryTime) {
             $this->keyToTags[$key][$tag] = $expiryTime;
-            
+
             if (isset($this->tagToKeys[$tag][$key])) {
                 $this->tagToKeys[$tag][$key] = $expiryTime;
             }
@@ -331,14 +331,14 @@ class MemoryTagRepository implements TagRepositoryInterface
         }
 
         $currentTime = time();
-        
+
         foreach ($this->keyToTags[$key] as $tag => $expiryTime) {
             if ($expiryTime <= $currentTime) {
                 unset($this->keyToTags[$key][$tag]);
-                
+
                 if (isset($this->tagToKeys[$tag])) {
                     unset($this->tagToKeys[$tag][$key]);
-                    
+
                     if (empty($this->tagToKeys[$tag])) {
                         unset($this->tagToKeys[$tag]);
                     }
@@ -361,14 +361,14 @@ class MemoryTagRepository implements TagRepositoryInterface
         }
 
         $currentTime = time();
-        
+
         foreach ($this->tagToKeys[$tag] as $key => $expiryTime) {
             if ($expiryTime <= $currentTime) {
                 unset($this->tagToKeys[$tag][$key]);
-                
+
                 if (isset($this->keyToTags[$key])) {
                     unset($this->keyToTags[$key][$tag]);
-                    
+
                     if (empty($this->keyToTags[$key])) {
                         unset($this->keyToTags[$key]);
                     }
@@ -387,7 +387,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     private function cleanupExpiredData(): void
     {
         $currentTime = time();
-        
+
         // 清理過期的快取鍵標籤
         foreach ($this->keyToTags as $key => $tags) {
             foreach ($tags as $tag => $expiryTime) {
@@ -397,7 +397,7 @@ class MemoryTagRepository implements TagRepositoryInterface
                 }
             }
         }
-        
+
         // 清理空的標籤
         foreach ($this->tagToKeys as $tag => $keys) {
             if (empty($keys)) {

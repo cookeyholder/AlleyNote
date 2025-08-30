@@ -255,12 +255,12 @@ class CacheServiceProvider
             // 快取分組管理器
             CacheGroupManager::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
                 $taggedCache = $c->get(CacheManagerInterface::class);
-                
+
                 // 確保快取管理器支援標籤功能
                 if (!method_exists($taggedCache, 'tags')) {
                     throw new \RuntimeException('快取管理器不支援標籤功能');
                 }
-                
+
                 $logger = $c->has(LoggerInterface::class) ? $c->get(LoggerInterface::class) : null;
                 return new CacheGroupManager($taggedCache->tags([]), $logger);
             }),
@@ -269,7 +269,7 @@ class CacheServiceProvider
                 $strategy = $c->get(CacheStrategyInterface::class);
                 $logger = $c->has(LoggerInterface::class) ? $c->get(LoggerInterface::class) : null;
                 $config = $c->has('cache.manager') ? $c->get('cache.manager') : [];
-                
+
                 // 取得標籤倉庫
                 $tagRepository = null;
                 try {
@@ -277,7 +277,7 @@ class CacheServiceProvider
                 } catch (\Exception) {
                     // 標籤倉庫不可用
                 }
-                
+
                 $monitor = null;
                 try {
                     $monitor = $c->get(\App\Shared\Monitoring\Contracts\CacheMonitorInterface::class);

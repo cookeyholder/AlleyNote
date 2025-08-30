@@ -190,7 +190,7 @@ return function (RouterInterface $router): void {
     // 加載快取監控路由
     $cacheMonitorRoutes = require __DIR__ . '/routes/cache-monitor.php';
     $cacheMonitorRoutes($app);
-    
+
     // 加載標籤管理路由
     $tagManagementRoutes = require __DIR__ . '/routes/tag-management.php';
     $tagManagementRoutes($app);

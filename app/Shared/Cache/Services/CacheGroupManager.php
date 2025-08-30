@@ -86,7 +86,7 @@ class CacheGroupManager
     public function setDependencies(string $parentGroup, array|string $childGroups): void
     {
         $childGroupsArray = is_array($childGroups) ? $childGroups : [$childGroups];
-        
+
         if (!isset($this->dependencies[$parentGroup])) {
             $this->dependencies[$parentGroup] = [];
         }
@@ -112,7 +112,7 @@ class CacheGroupManager
     public function setInvalidationRule(string $triggerPattern, array|string $targetGroups): void
     {
         $targetGroupsArray = is_array($targetGroups) ? $targetGroups : [$targetGroups];
-        
+
         $this->invalidationRules[$triggerPattern] = $targetGroupsArray;
 
         $this->logger->debug('設定自動失效規則', [
@@ -130,8 +130,12 @@ class CacheGroupManager
      */
     public function flushGroup(string $groupName, bool $cascade = true): int
     {
+        if (!isset($this->groups[$groupName])) {
+            return 0;
+        }
+
         $groupTag = CacheTag::group($groupName);
-        $clearedCount = $this->taggedCache->flushByTags($groupTag->getName());
+        $clearedCount = $this->taggedCache->flushByTags([$groupTag->getName()]);
 
         $this->logger->info('清空快取分組', [
             'group_name' => $groupName,
@@ -191,7 +195,7 @@ class CacheGroupManager
         foreach ($this->groups as $groupName => $groupCache) {
             $groupTag = CacheTag::group($groupName);
             $keys = $this->taggedCache->getKeysByTag($groupTag->getName());
-            
+
             $statistics['groups'][$groupName] = [
                 'cache_count' => count($keys),
                 'tags' => $groupCache->getTags(),
@@ -301,10 +305,131 @@ class CacheGroupManager
     public function temporalGroup(string $period, array $additionalTags = []): TaggedCacheInterface
     {
         $temporalTag = CacheTag::temporal($period);
-        $groupName = "time_{$period}";
+        $groupName = "temporal_{$period}";
         $tags = array_merge([$temporalTag->getName()], $additionalTags);
 
         return $this->group($groupName, $tags);
+    }
+
+    /**
+     * 批量清空多個分組
+     *
+     * @param array<string> $groupNames 分組名稱陣列
+     * @param bool $cascade 是否級聯清空
+     * @return int 總清空的項目數量
+     */
+    public function flushGroups(array $groupNames, bool $cascade = true): int
+    {
+        $totalCleared = 0;
+
+        foreach ($groupNames as $groupName) {
+            $totalCleared += $this->flushGroup($groupName, $cascade);
+        }
+
+        return $totalCleared;
+    }
+
+    /**
+     * 按模式清空分組
+     *
+     * @param string $pattern 分組名稱模式（支援 * 萬用字元）
+     * @param bool $cascade 是否級聯清空
+     * @return int 清空的項目數量
+     */
+    public function flushByPattern(string $pattern, bool $cascade = true): int
+    {
+        $matchingGroups = [];
+
+        foreach ($this->groups as $groupName => $group) {
+            if ($this->matchPattern($groupName, $pattern)) {
+                $matchingGroups[] = $groupName;
+            }
+        }
+
+        return $this->flushGroups($matchingGroups, $cascade);
+    }
+
+    /**
+     * 設定分組失效規則
+     *
+     * @param string $groupName 分組名稱
+     * @param array<string, mixed> $rules 失效規則
+     */
+    public function setInvalidationRules(string $groupName, array $rules): void
+    {
+        $this->invalidationRules[$groupName] = $rules;
+
+        $this->logger->debug('設定分組失效規則', [
+            'group_name' => $groupName,
+            'rules' => $rules,
+        ]);
+    }
+
+    /**
+     * 取得分組失效規則
+     *
+     * @param string $groupName 分組名稱
+     * @return array<string, mixed> 失效規則
+     */
+    public function getInvalidationRules(string $groupName): array
+    {
+        return $this->invalidationRules[$groupName] ?? [];
+    }
+
+    /**
+     * 取得分組依賴關係
+     *
+     * @param string $groupName 分組名稱
+     * @return array<string> 依賴的子分組
+     */
+    public function getDependencies(string $groupName): array
+    {
+        return $this->dependencies[$groupName] ?? [];
+    }
+
+    /**
+     * 檢查分組是否應該失效
+     *
+     * @param string $groupName 分組名稱
+     * @return bool 是否應該失效
+     */
+    public function shouldInvalidate(string $groupName): bool
+    {
+        $rules = $this->getInvalidationRules($groupName);
+
+        if (empty($rules)) {
+            return false;
+        }
+
+        // 檢查最大年齡規則
+        if (isset($rules['max_age'])) {
+            $group = $this->getGroup($groupName);
+            if ($group && $this->isGroupExpired($groupName, $rules['max_age'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 檢查分組是否過期
+     *
+     * @param string $groupName 分組名稱
+     * @param int $maxAge 最大年齡（秒）
+     * @return bool 是否過期
+     */
+    private function isGroupExpired(string $groupName, int $maxAge): bool
+    {
+        // 這裡應該檢查分組的建立時間，但為了簡化，我們使用一個簡單的實作
+        static $groupCreationTimes = [];
+
+        if (!isset($groupCreationTimes[$groupName])) {
+            $groupCreationTimes[$groupName] = time();
+            return false;
+        }
+
+        return (time() - $groupCreationTimes[$groupName]) > $maxAge;
     }
 
     /**
@@ -334,8 +459,11 @@ class CacheGroupManager
      */
     private function matchPattern(string $text, string $pattern): bool
     {
-        // 將萬用字元模式轉換為正規表示式
-        $regex = '/^' . str_replace('*', '.*', preg_quote($pattern, '/')) . '$/';
+        // 先替換萬用字元為佔位符，然後轉義，最後替換佔位符為正規表示式
+        $placeholder = '___WILDCARD___';
+        $escapedPattern = str_replace('*', $placeholder, $pattern);
+        $quotedPattern = preg_quote($escapedPattern, '/');
+        $regex = '/^' . str_replace($placeholder, '.*', $quotedPattern) . '$/';
         
         return preg_match($regex, $text) === 1;
     }

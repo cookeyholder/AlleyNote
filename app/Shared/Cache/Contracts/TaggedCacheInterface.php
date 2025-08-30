@@ -145,4 +145,12 @@ interface TaggedCacheInterface
      * @return array<string, int> 標籤名稱 => 快取項目數量
      */
     public function getTagStatistics(): array;
+
+    /**
+     * 建立新的標籤化快取實例
+     *
+     * @param string|array<string> $tags 標籤或標籤陣列
+     * @return TaggedCacheInterface 新的標籤化快取實例
+     */
+    public function tags(string|array $tags): TaggedCacheInterface;
 }

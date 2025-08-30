@@ -19,25 +19,25 @@ return function (RouterInterface $router): void {
 
     // 標籤管理路由群組
     $router->group('/api/admin/cache/tags', function (RouterInterface $router) {
-        
+
         // 取得所有標籤列表
         // GET /api/admin/cache/tags
         // 查詢參數: page, limit, search
         $router->get('', [TagManagementController::class, 'listTags']);
-        
+
         // 取得標籤統計資訊
         // GET /api/admin/cache/tags/statistics
         $router->get('/statistics', [TagManagementController::class, 'getTagStatistics']);
-        
+
         // 批量清空多個標籤
         // DELETE /api/admin/cache/tags
         // Body: {"tags": ["tag1", "tag2", ...]}
         $router->delete('', [TagManagementController::class, 'flushTags']);
-        
+
         // 取得特定標籤詳細資訊
         // GET /api/admin/cache/tags/{tag}
         $router->get('/{tag}', [TagManagementController::class, 'getTag']);
-        
+
         // 清空特定標籤的所有快取
         // DELETE /api/admin/cache/tags/{tag}
         $router->delete('/{tag}', [TagManagementController::class, 'flushTag']);
@@ -49,16 +49,16 @@ return function (RouterInterface $router): void {
 
     // 分組管理路由群組
     $router->group('/api/admin/cache/groups', function (RouterInterface $router) {
-        
+
         // 取得所有分組列表
         // GET /api/admin/cache/groups
         $router->get('', [TagManagementController::class, 'listGroups']);
-        
+
         // 建立快取分組
         // POST /api/admin/cache/groups
         // Body: {"name": "group_name", "tags": ["tag1", "tag2"], "dependencies": [...]}
         $router->post('', [TagManagementController::class, 'createGroup']);
-        
+
         // 清空特定分組
         // DELETE /api/admin/cache/groups/{group}
         // 查詢參數: cascade (是否級聯清空子分組，預設 true)
@@ -187,7 +187,7 @@ return function (RouterInterface $router): void {
                 <!-- 搜尋和分頁控制 -->
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <input type="text" class="form-control search-input" id="searchInput" 
+                        <input type="text" class="form-control search-input" id="searchInput"
                                placeholder="搜尋標籤..." onkeyup="handleSearch()">
                     </div>
                     <div class="col-md-6 text-end">
@@ -290,7 +290,7 @@ return function (RouterInterface $router): void {
             try {
                 const response = await fetch('/api/admin/cache/tags/statistics');
                 const data = await response.json();
-                
+
                 if (data.success) {
                     const stats = data.data;
                     document.getElementById('totalTags').textContent = stats.summary.total_tags || 0;
@@ -309,17 +309,17 @@ return function (RouterInterface $router): void {
             showLoading(true);
             currentPage = page;
             currentSearch = search;
-            
+
             try {
                 const params = new URLSearchParams({
                     page: page.toString(),
                     limit: '20',
                     search: search
                 });
-                
+
                 const response = await fetch('/api/admin/cache/tags?' + params);
                 const data = await response.json();
-                
+
                 if (data.success) {
                     allTags = data.data.tags;
                     renderTagsTable(data.data.tags);
@@ -339,19 +339,19 @@ return function (RouterInterface $router): void {
         function renderTagsTable(tags) {
             const tbody = document.getElementById('tagsTableBody');
             tbody.innerHTML = '';
-            
+
             if (tags.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">沒有找到標籤</td></tr>';
                 return;
             }
-            
+
             tags.forEach(tag => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
                         <code>${escapeHtml(tag.name)}</code>
-                        ${tag.sample_keys.length > 0 ? 
-                            `<small class="text-muted d-block">範例: ${tag.sample_keys.slice(0, 2).map(k => k).join(', ')}</small>` : 
+                        ${tag.sample_keys.length > 0 ?
+                            `<small class="text-muted d-block">範例: ${tag.sample_keys.slice(0, 2).map(k => k).join(', ')}</small>` :
                             ''
                         }
                     </td>
@@ -386,23 +386,23 @@ return function (RouterInterface $router): void {
         function renderPagination(pagination) {
             const paginationEl = document.getElementById('pagination');
             paginationEl.innerHTML = '';
-            
+
             if (pagination.pages <= 1) return;
-            
+
             // 上一頁
             if (pagination.page > 1) {
                 paginationEl.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="loadTags(${pagination.page - 1}, '${currentSearch}')">上一頁</a></li>`;
             }
-            
+
             // 頁碼
             const start = Math.max(1, pagination.page - 2);
             const end = Math.min(pagination.pages, pagination.page + 2);
-            
+
             for (let i = start; i <= end; i++) {
                 const active = i === pagination.page ? 'active' : '';
                 paginationEl.innerHTML += `<li class="page-item ${active}"><a class="page-link" href="#" onclick="loadTags(${i}, '${currentSearch}')">${i}</a></li>`;
             }
-            
+
             // 下一頁
             if (pagination.page < pagination.pages) {
                 paginationEl.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="loadTags(${pagination.page + 1}, '${currentSearch}')">下一頁</a></li>`;
@@ -422,7 +422,7 @@ return function (RouterInterface $router): void {
             try {
                 const response = await fetch('/api/admin/cache/tags/' + encodeURIComponent(tagName));
                 const data = await response.json();
-                
+
                 if (data.success) {
                     const tag = data.data;
                     const content = document.getElementById('tagDetailsContent');
@@ -441,7 +441,7 @@ return function (RouterInterface $router): void {
                             <div class="col-md-6">
                                 <h6>快取鍵列表</h6>
                                 <div style="max-height: 300px; overflow-y: auto;">
-                                    ${tag.keys.length > 0 ? 
+                                    ${tag.keys.length > 0 ?
                                         tag.keys.map(k => `<div class="mb-1"><code class="small">${escapeHtml(k.key)}</code> <span class="badge bg-light text-dark">${formatBytes(k.value_size)}</span></div>`).join('') :
                                         '<p class="text-muted">沒有快取鍵</p>'
                                     }
@@ -449,7 +449,7 @@ return function (RouterInterface $router): void {
                             </div>
                         </div>
                     `;
-                    
+
                     const modal = new bootstrap.Modal(document.getElementById('tagDetailsModal'));
                     modal.show();
                 } else {
@@ -466,13 +466,13 @@ return function (RouterInterface $router): void {
             if (!confirm(`確定要清空標籤 "${tagName}" 的所有快取嗎？此操作無法撤銷。`)) {
                 return;
             }
-            
+
             try {
                 const response = await fetch('/api/admin/cache/tags/' + encodeURIComponent(tagName), {
                     method: 'DELETE'
                 });
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showAlert(`標籤 "${tagName}" 已清空 ${data.data.cleared_count} 個項目`, 'success');
                     refreshData();
@@ -489,19 +489,19 @@ return function (RouterInterface $router): void {
         function showBulkDeleteModal() {
             const listEl = document.getElementById('bulkDeleteTagsList');
             listEl.innerHTML = '';
-            
+
             allTags.forEach(tag => {
                 listEl.innerHTML += `
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="${escapeHtml(tag.name)}" id="tag_${tag.name}">
                         <label class="form-check-label" for="tag_${tag.name}">
-                            <code>${escapeHtml(tag.name)}</code> 
+                            <code>${escapeHtml(tag.name)}</code>
                             <span class="badge bg-info">${tag.key_count} 鍵</span>
                         </label>
                     </div>
                 `;
             });
-            
+
             const modal = new bootstrap.Modal(document.getElementById('bulkDeleteModal'));
             modal.show();
         }
@@ -510,16 +510,16 @@ return function (RouterInterface $router): void {
         async function executeBulkDelete() {
             const checkboxes = document.querySelectorAll('#bulkDeleteTagsList input[type="checkbox"]:checked');
             const tags = Array.from(checkboxes).map(cb => cb.value);
-            
+
             if (tags.length === 0) {
                 showAlert('請選擇要清空的標籤', 'warning');
                 return;
             }
-            
+
             if (!confirm(`確定要清空 ${tags.length} 個標籤的所有快取嗎？此操作無法撤銷。`)) {
                 return;
             }
-            
+
             try {
                 const response = await fetch('/api/admin/cache/tags', {
                     method: 'DELETE',
@@ -529,7 +529,7 @@ return function (RouterInterface $router): void {
                     body: JSON.stringify({ tags: tags })
                 });
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showAlert(`批量清空完成，共清空 ${data.data.total_cleared} 個項目`, 'success');
                     const modal = bootstrap.Modal.getInstance(document.getElementById('bulkDeleteModal'));
@@ -564,9 +564,9 @@ return function (RouterInterface $router): void {
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
-            
+
             document.body.insertBefore(alertEl, document.body.firstChild);
-            
+
             setTimeout(() => {
                 alertEl.remove();
             }, 5000);
@@ -601,7 +601,7 @@ return function (RouterInterface $router): void {
 </body>
 </html>
 HTML;
-        
+
         $response->getBody()->write($html);
         return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
     });
