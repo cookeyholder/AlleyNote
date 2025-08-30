@@ -44,7 +44,7 @@ class DatabaseConnectionTest extends TestCase
 
         // 驗證資料
         $result = $pdo->query('SELECT * FROM test_table')->fetch(PDO::FETCH_ASSOC);
-        $this->assertEquals('test', (is_array($result) && isset((is_array($result) ? $result['name'] : (is_object($result) ? $result->name : null)))) ? (is_array($result) ? $result['name'] : (is_object($result) ? $result->name : null)) : null);
+        $this->assertEquals('test', $result['name']);
     }
 
     protected function tearDown(): void

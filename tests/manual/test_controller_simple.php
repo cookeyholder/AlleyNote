@@ -93,7 +93,7 @@ class MockResponse implements ResponseInterface
 
     private int $statusCode = 200;
 
-    private array<mixed> $headers = [];
+    private array $headers = [];
 
     public function __construct()
     {
@@ -110,7 +110,7 @@ class MockResponse implements ResponseInterface
         return $this;
     }
 
-    public function getHeaders(): array<mixed>
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -120,7 +120,7 @@ class MockResponse implements ResponseInterface
         return isset($this->headers[$name]);
     }
 
-    public function getHeader(string $name): array<mixed>
+    public function getHeader(string $name): array
     {
         return $this->headers[$name] ?? [];
     }
@@ -179,7 +179,7 @@ class MockResponse implements ResponseInterface
 
 class MockRequest implements ServerRequestInterface
 {
-    private array<mixed> $attributes = [];
+    private array $attributes = [];
 
     public function __construct(private string $method, private string $path) {}
 
@@ -230,7 +230,7 @@ class MockRequest implements ServerRequestInterface
         return $this;
     }
 
-    public function getHeaders(): array<mixed>
+    public function getHeaders(): array
     {
         return [];
     }
@@ -240,7 +240,7 @@ class MockRequest implements ServerRequestInterface
         return false;
     }
 
-    public function getHeader(string $name): array<mixed>
+    public function getHeader(string $name): array
     {
         return [];
     }
@@ -275,37 +275,37 @@ class MockRequest implements ServerRequestInterface
         return $this;
     }
 
-    public function getServerParams(): array<mixed>
+    public function getServerParams(): array
     {
         return [];
     }
 
-    public function getCookieParams(): array<mixed>
+    public function getCookieParams(): array
     {
         return [];
     }
 
-    public function withCookieParams(array<mixed> $cookies): ServerRequestInterface
+    public function withCookieParams(array $cookies): ServerRequestInterface
     {
         return $this;
     }
 
-    public function getQueryParams(): array<mixed>
+    public function getQueryParams(): array
     {
         return [];
     }
 
-    public function withQueryParams(array<mixed> $query): ServerRequestInterface
+    public function withQueryParams(array $query): ServerRequestInterface
     {
         return $this;
     }
 
-    public function getUploadedFiles(): array<mixed>
+    public function getUploadedFiles(): array
     {
         return [];
     }
 
-    public function withUploadedFiles(array<mixed> $uploadedFiles): ServerRequestInterface
+    public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
         return $this;
     }
@@ -320,7 +320,7 @@ class MockRequest implements ServerRequestInterface
         return $this;
     }
 
-    public function getAttributes(): array<mixed>
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -376,9 +376,9 @@ try {
 
     $body = $result->getBody()->getContents();
     $data = json_decode($body, true);
-    if ($data && isset((is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null))) && (is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)) === true) {
+    if ($data && isset($data['success']) && $data['success'] === true) {
         echo "   ✓ 回應內容正確\n";
-        echo '   ✓ 貼文 ID: ' . (is_array($data) ? $data['data'] : (is_object($data) ? $data->data : null))['id'] . "\n";
+        echo '   ✓ 貼文 ID: ' . $data['data']['id'] . "\n";
     } else {
         echo "   ✗ 回應內容格式錯誤\n";
     }

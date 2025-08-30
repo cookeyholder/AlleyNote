@@ -99,9 +99,9 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals('Bearer realm="API"', $response->getHeaderLine('WWW-Authenticate'));
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertFalse($body['success'] ?? null);
-        $this->assertEquals('缺少有效的認證 Token', $body['error'] ?? null);
-        $this->assertEquals('UNAUTHORIZED', $body['code'] ?? null);
+        $this->assertFalse($body['success']);
+        $this->assertEquals('缺少有效的認證 Token', $body['error']);
+        $this->assertEquals('UNAUTHORIZED', $body['code']);
     }
 
     public function testShouldExtractTokenFromAuthorizationHeader(): void
@@ -227,8 +227,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 已過期', $body['error'] ?? null);
-        $this->assertEquals('TOKEN_EXPIRED', $body['code'] ?? null);
+        $this->assertEquals('Token 已過期', $body['error']);
+        $this->assertEquals('TOKEN_EXPIRED', $body['code']);
     }
 
     public function testShouldReturnUnauthorizedWhenTokenInvalid(): void
@@ -249,8 +249,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error'] ?? null);
-        $this->assertEquals('TOKEN_INVALID', $body['code'] ?? null);
+        $this->assertEquals('Token 無效', $body['error']);
+        $this->assertEquals('TOKEN_INVALID', $body['code']);
     }
 
     public function testShouldValidateIpAddressWhenPresentInToken(): void
@@ -302,8 +302,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error'] ?? null);
-        $this->assertEquals('TOKEN_INVALID', $body['code'] ?? null);
+        $this->assertEquals('Token 無效', $body['error']);
+        $this->assertEquals('TOKEN_INVALID', $body['code']);
     }
 
     public function testShouldRejectWhenIpAddressMismatch(): void
@@ -325,8 +325,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error'] ?? null);
-        $this->assertEquals('TOKEN_INVALID', $body['code'] ?? null);
+        $this->assertEquals('Token 無效', $body['error']);
+        $this->assertEquals('TOKEN_INVALID', $body['code']);
     }
 
     public function testShouldValidateDeviceFingerprint(): void
@@ -375,8 +375,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error'] ?? null);
-        $this->assertEquals('TOKEN_INVALID', $body['code'] ?? null);
+        $this->assertEquals('Token 無效', $body['error']);
+        $this->assertEquals('TOKEN_INVALID', $body['code']);
     }
 
     public function testShouldSkipProcessingWhenDisabled(): void
@@ -413,8 +413,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('認證驗證失敗', $body['error'] ?? null);
-        $this->assertEquals('AUTH_FAILED', $body['code'] ?? null);
+        $this->assertEquals('認證驗證失敗', $body['error']);
+        $this->assertEquals('AUTH_FAILED', $body['code']);
     }
 
     public function testShouldPrioritizeAuthorizationHeaderOverOtherMethods(): void
@@ -473,7 +473,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
     /**
      * 建立有效的 JWT payload.
      *
-     * @param array<mixed> $customClaims 自訂宣告
+     * @param array<string, mixed> $customClaims 自訂宣告
      */
     private function createValidPayload(array $customClaims = []): JwtPayload
     {

@@ -76,7 +76,7 @@ class DIValidationIntegrationTest extends TestCase
         $this->assertFalse($result->isValid());
         $errors = $result->getErrors();
         $this->assertArrayHasKey('name', $errors);
-        $this->assertStringContainsString('必填項目', (is_array($errors) ? $errors['name'] : (is_object($errors) ? $errors->name : null))[0]);
+        $this->assertStringContainsString('必填項目', $errors['name'][0]);
     }
 
     /**
@@ -144,7 +144,7 @@ class DIValidationIntegrationTest extends TestCase
         // 測試自訂配置是否生效
         $result = $customValidator->validate([], ['field' => 'required']);
         $errors = $result->getErrors();
-        $this->assertStringContainsString('自訂必填錯誤訊息', (is_array($errors) ? $errors['field'] : (is_object($errors) ? $errors->field : null))[0]);
+        $this->assertStringContainsString('自訂必填錯誤訊息', $errors['field'][0]);
 
         // 測試自訂規則是否生效
         $this->assertTrue($customValidator->checkRule('test', 'custom_test'));
@@ -222,7 +222,7 @@ class DIValidationIntegrationTest extends TestCase
 
         foreach ($testCases as $testCase) {
             // Act
-            $result = $validator->validate((is_array($testCase) && isset((is_array($testCase) ? $testCase['data'] : (is_object($testCase) ? $testCase->data : null)))) ? (is_array($testCase) ? $testCase['data'] : (is_object($testCase) ? $testCase->data : null)) : null, (is_array($testCase) && isset((is_array($testCase) ? $testCase['rules'] : (is_object($testCase) ? $testCase->rules : null)))) ? (is_array($testCase) ? $testCase['rules'] : (is_object($testCase) ? $testCase->rules : null)) : null);
+            $result = $validator->validate($testCase['data'], $testCase['rules']);
 
             // Assert
             $this->assertFalse(
@@ -231,10 +231,10 @@ class DIValidationIntegrationTest extends TestCase
             );
 
             $errors = $result->getErrors();
-            $field = array_key_first((is_array($testCase) && isset((is_array($testCase) ? $testCase['rules'] : (is_object($testCase) ? $testCase->rules : null)))) ? (is_array($testCase) ? $testCase['rules'] : (is_object($testCase) ? $testCase->rules : null)) : null);
+            $field = array_key_first($testCase['rules']);
             $this->assertArrayHasKey($field, $errors);
             $this->assertStringContainsString(
-                (is_array($testCase) && isset((is_array($testCase) ? $testCase['expected'] : (is_object($testCase) ? $testCase->expected : null)))) ? (is_array($testCase) ? $testCase['expected'] : (is_object($testCase) ? $testCase->expected : null)) : null,
+                $testCase['expected'],
                 $errors[$field][0],
                 '錯誤訊息不包含預期的中文內容: ' . $errors[$field][0],
             );

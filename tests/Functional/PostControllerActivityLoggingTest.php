@@ -84,8 +84,8 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->assertSame('post', $logs[0]['target_type']);
 
         $metadata = json_decode($logs[0]['metadata'], true);
-        $this->assertSame($postId, (is_array($metadata) && isset((is_array($metadata) ? $metadata['post_id'] : (is_object($metadata) ? $metadata->post_id : null)))) ? (is_array($metadata) ? $metadata['post_id'] : (is_object($metadata) ? $metadata->post_id : null)) : null);
-        $this->assertSame('Test Post Title', (is_array($metadata) && isset((is_array($metadata) ? $metadata['title'] : (is_object($metadata) ? $metadata->title : null)))) ? (is_array($metadata) ? $metadata['title'] : (is_object($metadata) ? $metadata->title : null)) : null);
+        $this->assertSame($postId, $metadata['post_id']);
+        $this->assertSame('Test Post Title', $metadata['title']);
     }
 
     #[Test]
@@ -130,8 +130,8 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->assertSame((string) $postId, $logs[0]['target_id']);
 
         $metadata = json_decode($logs[0]['metadata'], true);
-        $this->assertSame($postId, (is_array($metadata) && isset((is_array($metadata) ? $metadata['post_id'] : (is_object($metadata) ? $metadata->post_id : null)))) ? (is_array($metadata) ? $metadata['post_id'] : (is_object($metadata) ? $metadata->post_id : null)) : null);
-        $this->assertSame('view', (is_array($metadata) && isset((is_array($metadata) ? $metadata['operation'] : (is_object($metadata) ? $metadata->operation : null)))) ? (is_array($metadata) ? $metadata['operation'] : (is_object($metadata) ? $metadata->operation : null)) : null);
+        $this->assertSame($postId, $metadata['post_id']);
+        $this->assertSame('view', $metadata['operation']);
     }
 
     #[Test]
@@ -173,9 +173,9 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->assertSame(ActivityType::POST_UPDATED->value, $logs[0]['action_type']);
 
         $metadata = json_decode($logs[0]['metadata'], true);
-        $this->assertSame('update', (is_array($metadata) && isset((is_array($metadata) ? $metadata['operation'] : (is_object($metadata) ? $metadata->operation : null)))) ? (is_array($metadata) ? $metadata['operation'] : (is_object($metadata) ? $metadata->operation : null)) : null);
-        $this->assertContains('title', (is_array($metadata) && isset((is_array($metadata) ? $metadata['changes'] : (is_object($metadata) ? $metadata->changes : null)))) ? (is_array($metadata) ? $metadata['changes'] : (is_object($metadata) ? $metadata->changes : null)) : null);
-        $this->assertContains('content', (is_array($metadata) && isset((is_array($metadata) ? $metadata['changes'] : (is_object($metadata) ? $metadata->changes : null)))) ? (is_array($metadata) ? $metadata['changes'] : (is_object($metadata) ? $metadata->changes : null)) : null);
+        $this->assertSame('update', $metadata['operation']);
+        $this->assertContains('title', $metadata['changes']);
+        $this->assertContains('content', $metadata['changes']);
     }
 
     #[Test]
@@ -204,14 +204,14 @@ class PostControllerActivityLoggingTest extends TestCase
             ')->execute([
                 uniqid('test_' . $i . '_', true),
                 $userId,
-                (is_array($activity) ? $activity['type'] : (is_object($activity) ? $activity->type : null))->value,
-                (is_array($activity) ? $activity['type'] : (is_object($activity) ? $activity->type : null))->getCategory()->value,
+                $activity['type']->value,
+                $activity['type']->getCategory()->value,
                 'success',
                 (string) ($i + 1),
                 'post',
                 '192.168.1.100',
-                (is_array($activity) ? $activity['time'] : (is_object($activity) ? $activity->time : null))->format('Y-m-d H:i:s'),
-                (is_array($activity) ? $activity['time'] : (is_object($activity) ? $activity->time : null))->format('Y-m-d H:i:s'),
+                $activity['time']->format('Y-m-d H:i:s'),
+                $activity['time']->format('Y-m-d H:i:s'),
             ]);
         }
 

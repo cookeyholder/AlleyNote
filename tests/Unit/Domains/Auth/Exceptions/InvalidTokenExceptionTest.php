@@ -78,10 +78,10 @@ class InvalidTokenExceptionTest extends TestCase
         );
 
         $context = $exception->getContext();
-        $this->assertSame('test-token-123', (is_array($context) ? $context['token_id'] : (is_object($context) ? $context->token_id : null)));
-        $this->assertSame('req-456', (is_array($context) ? $context['request_id'] : (is_object($context) ? $context->request_id : null)));
-        $this->assertSame(InvalidTokenException::REASON_BLACKLISTED, (is_array($context) ? $context['reason'] : (is_object($context) ? $context->reason : null)));
-        $this->assertSame(InvalidTokenException::ACCESS_TOKEN, (is_array($context) ? $context['token_type'] : (is_object($context) ? $context->token_type : null)));
+        $this->assertSame('test-token-123', $context['token_id']);
+        $this->assertSame('req-456', $context['request_id']);
+        $this->assertSame(InvalidTokenException::REASON_BLACKLISTED, $context['reason']);
+        $this->assertSame(InvalidTokenException::ACCESS_TOKEN, $context['token_type']);
         $this->assertArrayHasKey('timestamp', $context);
     }
 
@@ -220,8 +220,8 @@ class InvalidTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isSignatureRelated());
 
         $context = $exception->getContext();
-        $this->assertSame('RS256', (is_array($context) ? $context['expected_algorithm'] : (is_object($context) ? $context->expected_algorithm : null)));
-        $this->assertSame('HS256', (is_array($context) ? $context['actual_algorithm'] : (is_object($context) ? $context->actual_algorithm : null)));
+        $this->assertSame('RS256', $context['expected_algorithm']);
+        $this->assertSame('HS256', $context['actual_algorithm']);
     }
 
     /**
@@ -235,8 +235,8 @@ class InvalidTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isClaimsRelated());
 
         $context = $exception->getContext();
-        $this->assertSame('https://auth.example.com', (is_array($context) ? $context['expected_issuer'] : (is_object($context) ? $context->expected_issuer : null)));
-        $this->assertSame('https://fake.com', (is_array($context) ? $context['actual_issuer'] : (is_object($context) ? $context->actual_issuer : null)));
+        $this->assertSame('https://auth.example.com', $context['expected_issuer']);
+        $this->assertSame('https://fake.com', $context['actual_issuer']);
     }
 
     /**
@@ -251,8 +251,8 @@ class InvalidTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isClaimsRelated());
 
         $context = $exception->getContext();
-        $this->assertSame('api.example.com', (is_array($context) ? $context['expected_audience'] : (is_object($context) ? $context->expected_audience : null)));
-        $this->assertSame('wrong.com', (is_array($context) ? $context['actual_audience'] : (is_object($context) ? $context->actual_audience : null)));
+        $this->assertSame('api.example.com', $context['expected_audience']);
+        $this->assertSame('wrong.com', $context['actual_audience']);
     }
 
     /**
@@ -279,7 +279,7 @@ class InvalidTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isClaimsRelated());
 
         $context = $exception->getContext();
-        $this->assertSame($invalidClaims, (is_array($context) ? $context['invalid_claims'] : (is_object($context) ? $context->invalid_claims : null)));
+        $this->assertSame($invalidClaims, $context['invalid_claims']);
     }
 
     /**
@@ -294,7 +294,7 @@ class InvalidTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isRefreshTokenInvalid());
 
         $context = $exception->getContext();
-        $this->assertSame($tokenId, (is_array($context) ? $context['token_id'] : (is_object($context) ? $context->token_id : null)));
+        $this->assertSame($tokenId, $context['token_id']);
     }
 
     /**
@@ -308,9 +308,9 @@ class InvalidTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isReason(InvalidTokenException::REASON_NOT_BEFORE));
 
         $context = $exception->getContext();
-        $this->assertSame($notBefore, (is_array($context) ? $context['not_before'] : (is_object($context) ? $context->not_before : null)));
+        $this->assertSame($notBefore, $context['not_before']);
         $this->assertArrayHasKey('not_before_human', $context);
-        $this->assertSame(date('Y-m-d H:i:s', $notBefore), (is_array($context) ? $context['not_before_human'] : (is_object($context) ? $context->not_before_human : null)));
+        $this->assertSame(date('Y-m-d H:i:s', $notBefore), $context['not_before_human']);
     }
 
     /**
@@ -325,10 +325,10 @@ class InvalidTokenExceptionTest extends TestCase
 
         $details = $exception->getErrorDetails();
 
-        $this->assertSame('invalid_token', (is_array($details) ? $details['error_type'] : (is_object($details) ? $details->error_type : null)));
-        $this->assertSame(InvalidTokenException::ERROR_CODE, (is_array($details) ? $details['code'] : (is_object($details) ? $details->code : null)));
+        $this->assertSame('invalid_token', $details['error_type']);
+        $this->assertSame(InvalidTokenException::ERROR_CODE, $details['code']);
         $this->assertArrayHasKey('context', $details);
-        $this->assertSame(InvalidTokenException::REASON_SIGNATURE_INVALID, (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null))['reason']);
+        $this->assertSame(InvalidTokenException::REASON_SIGNATURE_INVALID, $details['context']['reason']);
     }
 
     /**
@@ -369,10 +369,10 @@ class InvalidTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isAccessTokenInvalid());
 
         $context = $exception->getContext();
-        $this->assertSame('req-12345', (is_array($context) ? $context['request_id'] : (is_object($context) ? $context->request_id : null)));
-        $this->assertSame('/api/user/profile', (is_array($context) ? $context['attempted_resource'] : (is_object($context) ? $context->attempted_resource : null)));
+        $this->assertSame('req-12345', $context['request_id']);
+        $this->assertSame('/api/user/profile', $context['attempted_resource']);
 
         $details = $exception->getErrorDetails();
-        $this->assertArrayHasKey('request_id', (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null)));
+        $this->assertArrayHasKey('request_id', $details['context']);
     }
 }

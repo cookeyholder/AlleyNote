@@ -241,10 +241,10 @@ class CacheManagerTest extends TestCase
         $this->assertArrayHasKey('expired_keys', $stats);
         $this->assertArrayHasKey('memory_usage', $stats);
 
-        $this->assertIsInt($stats['total_keys'] ?? null);
-        $this->assertIsInt($stats['active_keys'] ?? null);
-        $this->assertIsInt($stats['expired_keys'] ?? null);
-        $this->assertIsString($stats['memory_usage'] ?? null);
+        $this->assertIsInt($stats['total_keys']);
+        $this->assertIsInt($stats['active_keys']);
+        $this->assertIsInt($stats['expired_keys']);
+        $this->assertIsString($stats['memory_usage']);
     }
 
     public function testCleanup(): void

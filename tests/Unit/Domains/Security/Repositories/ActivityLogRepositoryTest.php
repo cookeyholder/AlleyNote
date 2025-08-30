@@ -113,8 +113,8 @@ class ActivityLogRepositoryTest extends TestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('uuid', $result);
-        $this->assertEquals(ActivityType::LOGIN_SUCCESS->value, (is_array($result) ? $result['action_type'] : (is_object($result) ? $result->action_type : null)));
-        $this->assertEquals(1, (is_array($result) ? $result['user_id'] : (is_object($result) ? $result->user_id : null)));
+        $this->assertEquals(ActivityType::LOGIN_SUCCESS->value, $result['action_type']);
+        $this->assertEquals(1, $result['user_id']);
     }
 
     #[Test]
@@ -159,8 +159,8 @@ class ActivityLogRepositoryTest extends TestCase
 
         // Assert
         $this->assertIsArray($result);
-        $this->assertEquals(1, (is_array($result) ? $result['id'] : (is_object($result) ? $result->id : null)));
-        $this->assertEquals(ActivityType::LOGIN_SUCCESS->value, (is_array($result) ? $result['action_type'] : (is_object($result) ? $result->action_type : null)));
+        $this->assertEquals(1, $result['id']);
+        $this->assertEquals(ActivityType::LOGIN_SUCCESS->value, $result['action_type']);
     }
 
     #[Test]
@@ -230,7 +230,7 @@ class ActivityLogRepositoryTest extends TestCase
 
         // Assert
         $this->assertIsArray($result);
-        $this->assertEquals($uuid, (is_array($result) ? $result['uuid'] : (is_object($result) ? $result->uuid : null)));
+        $this->assertEquals($uuid, $result['uuid']);
     }
 
     #[Test]

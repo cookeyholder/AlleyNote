@@ -7,7 +7,7 @@ namespace Tests\Unit\Support;
 use Tests\Support\UnitTestCase;
 
 /**
- * 展示新測試架構使用方式的範例測試.
+ * 展示新測試架構使用方式的範例測試
  */
 class TestArchitectureExampleTest extends UnitTestCase
 {
@@ -30,6 +30,8 @@ class TestArchitectureExampleTest extends UnitTestCase
     public function testUnitTestIsolation(): void
     {
         // 單元測試應該是快速且獨立的
+        $this->assertTrue(true);
+        
         // 這個測試不應該有資料庫或快取依賴
         $this->assertFalse(property_exists($this, 'db'));
         $this->assertFalse(property_exists($this, 'cache'));

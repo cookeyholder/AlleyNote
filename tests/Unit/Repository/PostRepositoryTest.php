@@ -114,9 +114,9 @@ class PostRepositoryTest extends TestCase
             'title' => '測試文章',
             'content' => '這是測試內容',
         ]);
-        (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
 
         $post = $this->repository->create($data);
 
@@ -128,9 +128,9 @@ class PostRepositoryTest extends TestCase
     public function testCanFindPostById(): void
     {
         $data = PostFactory::make();
-        (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
 
         $found = $this->repository->find($post->getId());
@@ -142,9 +142,9 @@ class PostRepositoryTest extends TestCase
     public function testCanFindPostByUuid(): void
     {
         $data = PostFactory::make();
-        (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
 
         $found = $this->repository->findByUuid($post->getUuid());
@@ -156,9 +156,9 @@ class PostRepositoryTest extends TestCase
     public function testCanUpdatePost(): void
     {
         $data = PostFactory::make();
-        (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
 
         $updateData = [
@@ -177,9 +177,9 @@ class PostRepositoryTest extends TestCase
     public function testCanDeletePost(): void
     {
         $data = PostFactory::make();
-        (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
 
         $result = $this->repository->delete($post->getId());
@@ -200,11 +200,11 @@ class PostRepositoryTest extends TestCase
 
         $result = $this->repository->paginate(1, 10);
 
-        $this->assertCount(10, (is_array($result) && isset((is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)))) ? (is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)) : null);
-        $this->assertEquals(15, (is_array($result) && isset((is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)))) ? (is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)) : null);
-        $this->assertEquals(1, (is_array($result) && isset((is_array($result) ? $result['page'] : (is_object($result) ? $result->page : null)))) ? (is_array($result) ? $result['page'] : (is_object($result) ? $result->page : null)) : null);
-        $this->assertEquals(10, (is_array($result) && isset((is_array($result) ? $result['perPage'] : (is_object($result) ? $result->perPage : null)))) ? (is_array($result) ? $result['perPage'] : (is_object($result) ? $result->perPage : null)) : null);
-        $this->assertEquals(2, (is_array($result) && isset((is_array($result) ? $result['lastPage'] : (is_object($result) ? $result->lastPage : null)))) ? (is_array($result) ? $result['lastPage'] : (is_object($result) ? $result->lastPage : null)) : null);
+        $this->assertCount(10, $result['items']);
+        $this->assertEquals(15, $result['total']);
+        $this->assertEquals(1, $result['page']);
+        $this->assertEquals(10, $result['perPage']);
+        $this->assertEquals(2, $result['lastPage']);
     }
 
     public function testCanGetPinnedPosts(): void
@@ -252,9 +252,9 @@ class PostRepositoryTest extends TestCase
         }
 
         $data = PostFactory::make();
-        (is_array($data) ? $data['publish_date'] : (is_object($data) ? $data->publish_date : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['created_at'] : (is_object($data) ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        (is_array($data) ? $data['updated_at'] : (is_object($data) ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
+        $data['updated_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
         $post = $this->repository->create($data);
         $initialViews = $post->getViews();
 

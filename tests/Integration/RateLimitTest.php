@@ -56,7 +56,7 @@ class RateLimitTest extends TestCase
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue((is_array($result) && isset((is_array($result) ? $result['allowed'] : (is_object($result) ? $result->allowed : null)))) ? (is_array($result) ? $result['allowed'] : (is_object($result) ? $result->allowed : null)) : null, '正常請求應該被允許');
+        $this->assertTrue($result['allowed'], '正常請求應該被允許');
     }
 
     #[Test]
@@ -77,7 +77,7 @@ class RateLimitTest extends TestCase
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertFalse((is_array($result) && isset((is_array($result) ? $result['allowed'] : (is_object($result) ? $result->allowed : null)))) ? (is_array($result) ? $result['allowed'] : (is_object($result) ? $result->allowed : null)) : null, '超過限制的請求應該被拒絕');
+        $this->assertFalse($result['allowed'], '超過限制的請求應該被拒絕');
 
         // 第二次請求 - 模擬時間窗口重置
         $this->cacheService->shouldReceive('get')
@@ -91,7 +91,7 @@ class RateLimitTest extends TestCase
 
         $resetResult = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue((is_array($resetResult) && isset((is_array($resetResult) ? $resetResult['allowed'] : (is_object($resetResult) ? $resetResult->allowed : null)))) ? (is_array($resetResult) ? $resetResult['allowed'] : (is_object($resetResult) ? $resetResult->allowed : null)) : null, '重置後的請求應該被允許');
+        $this->assertTrue($resetResult['allowed'], '重置後的請求應該被允許');
     }
 
     #[Test]
@@ -122,8 +122,8 @@ class RateLimitTest extends TestCase
 
         $result2 = $this->rateLimitService->checkLimit($ip2);
 
-        $this->assertTrue((is_array($result1) && isset((is_array($result1) ? $result1['allowed'] : (is_object($result1) ? $result1->allowed : null)))) ? (is_array($result1) ? $result1['allowed'] : (is_object($result1) ? $result1->allowed : null)) : null, 'IP1 應該被允許');
-        $this->assertTrue((is_array($result2) && isset((is_array($result2) ? $result2['allowed'] : (is_object($result2) ? $result2->allowed : null)))) ? (is_array($result2) ? $result2['allowed'] : (is_object($result2) ? $result2->allowed : null)) : null, 'IP2 應該被允許');
+        $this->assertTrue($result1['allowed'], 'IP1 應該被允許');
+        $this->assertTrue($result2['allowed'], 'IP2 應該被允許');
     }
 
     #[Test]
@@ -139,7 +139,7 @@ class RateLimitTest extends TestCase
         // 當快取服務不可用時，應該允許請求以確保服務可用性
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue((is_array($result) && isset((is_array($result) ? $result['allowed'] : (is_object($result) ? $result->allowed : null)))) ? (is_array($result) ? $result['allowed'] : (is_object($result) ? $result->allowed : null)) : null, '快取服務錯誤時應該允許請求');
+        $this->assertTrue($result['allowed'], '快取服務錯誤時應該允許請求');
     }
 
     #[Test]
@@ -169,7 +169,7 @@ class RateLimitTest extends TestCase
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue((is_array($result) && isset((is_array($result) ? $result['allowed'] : (is_object($result) ? $result->allowed : null)))) ? (is_array($result) ? $result['allowed'] : (is_object($result) ? $result->allowed : null)) : null, '計數器應該正確遞增');
+        $this->assertTrue($result['allowed'], '計數器應該正確遞增');
     }
 
     #[Test]
@@ -185,7 +185,7 @@ class RateLimitTest extends TestCase
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertFalse((is_array($result) && isset((is_array($result) ? $result['allowed'] : (is_object($result) ? $result->allowed : null)))) ? (is_array($result) ? $result['allowed'] : (is_object($result) ? $result->allowed : null)) : null, '達到最大嘗試次數時應該被拒絕');
+        $this->assertFalse($result['allowed'], '達到最大嘗試次數時應該被拒絕');
     }
 
     protected function tearDown(): void

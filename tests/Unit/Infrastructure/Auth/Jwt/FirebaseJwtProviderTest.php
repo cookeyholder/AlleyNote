@@ -39,13 +39,13 @@ final class FirebaseJwtProviderTest extends TestCase
         $this->generateTestKeys();
 
         // 設定測試環境變數
-        (is_array($_ENV) ? $_ENV['JWT_ALGORITHM'] : (is_object($_ENV) ? $_ENV->JWT_ALGORITHM : null)) = 'RS256';
-        (is_array($_ENV) ? $_ENV['JWT_PRIVATE_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PRIVATE_KEY : null)) = str_replace("\n", '\\n', $this->validPrivateKey);
-        (is_array($_ENV) ? $_ENV['JWT_PUBLIC_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PUBLIC_KEY : null)) = str_replace("\n", '\\n', $this->validPublicKey);
-        (is_array($_ENV) ? $_ENV['JWT_ISSUER'] : (is_object($_ENV) ? $_ENV->JWT_ISSUER : null)) = 'alleynote-test';
-        (is_array($_ENV) ? $_ENV['JWT_AUDIENCE'] : (is_object($_ENV) ? $_ENV->JWT_AUDIENCE : null)) = 'alleynote-app';
-        (is_array($_ENV) ? $_ENV['JWT_ACCESS_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_ACCESS_TOKEN_TTL : null)) = '3600'; // 1 小時
-        (is_array($_ENV) ? $_ENV['JWT_REFRESH_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_REFRESH_TOKEN_TTL : null)) = '2592000'; // 30 天
+        $_ENV['JWT_ALGORITHM'] = 'RS256';
+        $_ENV['JWT_PRIVATE_KEY'] = str_replace("\n", '\\n', $this->validPrivateKey);
+        $_ENV['JWT_PUBLIC_KEY'] = str_replace("\n", '\\n', $this->validPublicKey);
+        $_ENV['JWT_ISSUER'] = 'alleynote-test';
+        $_ENV['JWT_AUDIENCE'] = 'alleynote-app';
+        $_ENV['JWT_ACCESS_TOKEN_TTL'] = '3600'; // 1 小時
+        $_ENV['JWT_REFRESH_TOKEN_TTL'] = '2592000'; // 30 天
 
         // 建立真實的 JwtConfig 物件
         $config = new JwtConfig();
@@ -56,13 +56,13 @@ final class FirebaseJwtProviderTest extends TestCase
     {
         // 清理環境變數
         unset(
-            (is_array($_ENV) ? $_ENV['JWT_ALGORITHM'] : (is_object($_ENV) ? $_ENV->JWT_ALGORITHM : null)),
-            (is_array($_ENV) ? $_ENV['JWT_PRIVATE_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PRIVATE_KEY : null)),
-            (is_array($_ENV) ? $_ENV['JWT_PUBLIC_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PUBLIC_KEY : null)),
-            (is_array($_ENV) ? $_ENV['JWT_ISSUER'] : (is_object($_ENV) ? $_ENV->JWT_ISSUER : null)),
-            (is_array($_ENV) ? $_ENV['JWT_AUDIENCE'] : (is_object($_ENV) ? $_ENV->JWT_AUDIENCE : null)),
-            (is_array($_ENV) ? $_ENV['JWT_ACCESS_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_ACCESS_TOKEN_TTL : null)),
-            (is_array($_ENV) ? $_ENV['JWT_REFRESH_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_REFRESH_TOKEN_TTL : null)),
+            $_ENV['JWT_ALGORITHM'],
+            $_ENV['JWT_PRIVATE_KEY'],
+            $_ENV['JWT_PUBLIC_KEY'],
+            $_ENV['JWT_ISSUER'],
+            $_ENV['JWT_AUDIENCE'],
+            $_ENV['JWT_ACCESS_TOKEN_TTL'],
+            $_ENV['JWT_REFRESH_TOKEN_TTL'],
         );
     }
 
@@ -80,7 +80,7 @@ final class FirebaseJwtProviderTest extends TestCase
     public function testConstructorThrowsExceptionForInvalidPrivateKey(): void
     {
         // 暫時修改環境變數
-        (is_array($_ENV) ? $_ENV['JWT_PRIVATE_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PRIVATE_KEY : null)) = 'invalid-private-key';
+        $_ENV['JWT_PRIVATE_KEY'] = 'invalid-private-key';
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -93,7 +93,7 @@ final class FirebaseJwtProviderTest extends TestCase
     public function testConstructorThrowsExceptionForInvalidPublicKey(): void
     {
         // 暫時修改環境變數
-        (is_array($_ENV) ? $_ENV['JWT_PUBLIC_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PUBLIC_KEY : null)) = 'invalid-public-key';
+        $_ENV['JWT_PUBLIC_KEY'] = 'invalid-public-key';
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -109,7 +109,7 @@ final class FirebaseJwtProviderTest extends TestCase
         $this->generateAlternativeKeys();
 
         // 暫時修改環境變數（使用不匹配的公鑰）
-        (is_array($_ENV) ? $_ENV['JWT_PUBLIC_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PUBLIC_KEY : null)) = str_replace("\n", '\\n', $this->invalidPublicKey);
+        $_ENV['JWT_PUBLIC_KEY'] = str_replace("\n", '\\n', $this->invalidPublicKey);
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -170,7 +170,7 @@ final class FirebaseJwtProviderTest extends TestCase
 
         // 驗證過期時間
         $expectedExp = time() + $customTtl;
-        $actualExp = (is_array($decodedPayload) ? $decodedPayload['exp'] : (is_object($decodedPayload) ? $decodedPayload->exp : null));
+        $actualExp = $decodedPayload['exp'];
 
         // 允許 5 秒的誤差
         $this->assertLessThanOrEqual(5, abs($expectedExp - $actualExp));
@@ -189,7 +189,7 @@ final class FirebaseJwtProviderTest extends TestCase
 
         // 驗證過期時間
         $expectedExp = time() + $customTtl;
-        $actualExp = (is_array($decodedPayload) ? $decodedPayload['exp'] : (is_object($decodedPayload) ? $decodedPayload->exp : null));
+        $actualExp = $decodedPayload['exp'];
 
         // 允許 5 秒的誤差
         $this->assertLessThanOrEqual(5, abs($expectedExp - $actualExp));
@@ -210,14 +210,14 @@ final class FirebaseJwtProviderTest extends TestCase
         $validatedPayload = $this->provider->validateToken($token, 'access');
 
         // 驗證自訂載荷
-        $this->assertEquals('user-123', (is_array($validatedPayload) ? $validatedPayload['sub'] : (is_object($validatedPayload) ? $validatedPayload->sub : null)));
-        $this->assertEquals('test@example.com', (is_array($validatedPayload) ? $validatedPayload['email'] : (is_object($validatedPayload) ? $validatedPayload->email : null)));
-        $this->assertEquals('admin', (is_array($validatedPayload) ? $validatedPayload['role'] : (is_object($validatedPayload) ? $validatedPayload->role : null)));
+        $this->assertEquals('user-123', $validatedPayload['sub']);
+        $this->assertEquals('test@example.com', $validatedPayload['email']);
+        $this->assertEquals('admin', $validatedPayload['role']);
 
         // 驗證標準宣告
-        $this->assertEquals('alleynote-test', (is_array($validatedPayload) ? $validatedPayload['iss'] : (is_object($validatedPayload) ? $validatedPayload->iss : null)));
-        $this->assertEquals('alleynote-app', (is_array($validatedPayload) ? $validatedPayload['aud'] : (is_object($validatedPayload) ? $validatedPayload->aud : null)));
-        $this->assertEquals('access', (is_array($validatedPayload) ? $validatedPayload['type'] : (is_object($validatedPayload) ? $validatedPayload->type : null)));
+        $this->assertEquals('alleynote-test', $validatedPayload['iss']);
+        $this->assertEquals('alleynote-app', $validatedPayload['aud']);
+        $this->assertEquals('access', $validatedPayload['type']);
         $this->assertArrayHasKey('iat', $validatedPayload);
         $this->assertArrayHasKey('exp', $validatedPayload);
         $this->assertArrayHasKey('jti', $validatedPayload);
@@ -236,9 +236,9 @@ final class FirebaseJwtProviderTest extends TestCase
         $token = $this->provider->generateRefreshToken($originalPayload);
         $validatedPayload = $this->provider->validateToken($token, 'refresh');
 
-        $this->assertEquals('user-123', (is_array($validatedPayload) ? $validatedPayload['sub'] : (is_object($validatedPayload) ? $validatedPayload->sub : null)));
-        $this->assertEquals('device-456', (is_array($validatedPayload) ? $validatedPayload['device_id'] : (is_object($validatedPayload) ? $validatedPayload->device_id : null)));
-        $this->assertEquals('refresh', (is_array($validatedPayload) ? $validatedPayload['type'] : (is_object($validatedPayload) ? $validatedPayload->type : null)));
+        $this->assertEquals('user-123', $validatedPayload['sub']);
+        $this->assertEquals('device-456', $validatedPayload['device_id']);
+        $this->assertEquals('refresh', $validatedPayload['type']);
     }
 
     /**
@@ -323,9 +323,9 @@ final class FirebaseJwtProviderTest extends TestCase
         $token = $this->provider->generateAccessToken($originalPayload);
         $parsedPayload = $this->provider->parseTokenUnsafe($token);
 
-        $this->assertEquals('user-123', (is_array($parsedPayload) ? $parsedPayload['sub'] : (is_object($parsedPayload) ? $parsedPayload->sub : null)));
-        $this->assertEquals('test@example.com', (is_array($parsedPayload) ? $parsedPayload['email'] : (is_object($parsedPayload) ? $parsedPayload->email : null)));
-        $this->assertEquals('access', (is_array($parsedPayload) ? $parsedPayload['type'] : (is_object($parsedPayload) ? $parsedPayload->type : null)));
+        $this->assertEquals('user-123', $parsedPayload['sub']);
+        $this->assertEquals('test@example.com', $parsedPayload['email']);
+        $this->assertEquals('access', $parsedPayload['type']);
     }
 
     /**
@@ -421,15 +421,15 @@ final class FirebaseJwtProviderTest extends TestCase
     {
         // 建立一個帶有不同 issuer 的 token
         // 先暫時修改環境變數
-        $originalIssuer = (is_array($_ENV) ? $_ENV['JWT_ISSUER'] : (is_object($_ENV) ? $_ENV->JWT_ISSUER : null));
-        (is_array($_ENV) ? $_ENV['JWT_ISSUER'] : (is_object($_ENV) ? $_ENV->JWT_ISSUER : null)) = 'different-issuer';
+        $originalIssuer = $_ENV['JWT_ISSUER'];
+        $_ENV['JWT_ISSUER'] = 'different-issuer';
 
         $differentConfig = new JwtConfig();
         $differentProvider = new FirebaseJwtProvider($differentConfig);
         $token = $differentProvider->generateAccessToken(['sub' => 'user-123']);
 
         // 還原環境變數
-        (is_array($_ENV) ? $_ENV['JWT_ISSUER'] : (is_object($_ENV) ? $_ENV->JWT_ISSUER : null)) = $originalIssuer;
+        $_ENV['JWT_ISSUER'] = $originalIssuer;
 
         $this->expectException(TokenValidationException::class);
         $this->expectExceptionMessage('Token issuer 無效');
@@ -445,15 +445,15 @@ final class FirebaseJwtProviderTest extends TestCase
     {
         // 建立一個帶有不同 audience 的 token
         // 先暫時修改環境變數
-        $originalAudience = (is_array($_ENV) ? $_ENV['JWT_AUDIENCE'] : (is_object($_ENV) ? $_ENV->JWT_AUDIENCE : null));
-        (is_array($_ENV) ? $_ENV['JWT_AUDIENCE'] : (is_object($_ENV) ? $_ENV->JWT_AUDIENCE : null)) = 'different-audience';
+        $originalAudience = $_ENV['JWT_AUDIENCE'];
+        $_ENV['JWT_AUDIENCE'] = 'different-audience';
 
         $differentConfig = new JwtConfig();
         $differentProvider = new FirebaseJwtProvider($differentConfig);
         $token = $differentProvider->generateAccessToken(['sub' => 'user-123']);
 
         // 還原環境變數
-        (is_array($_ENV) ? $_ENV['JWT_AUDIENCE'] : (is_object($_ENV) ? $_ENV->JWT_AUDIENCE : null)) = $originalAudience;
+        $_ENV['JWT_AUDIENCE'] = $originalAudience;
 
         $this->expectException(TokenValidationException::class);
         $this->expectExceptionMessage('Token audience 無效');
@@ -475,9 +475,9 @@ final class FirebaseJwtProviderTest extends TestCase
         $payload1 = $this->provider->parseTokenUnsafe($token1);
         $payload2 = $this->provider->parseTokenUnsafe($token2);
 
-        $this->assertNotEquals((is_array($payload1) ? $payload1['jti'] : (is_object($payload1) ? $payload1->jti : null)), (is_array($payload2) ? $payload2['jti'] : (is_object($payload2) ? $payload2->jti : null)));
-        $this->assertNotEmpty((is_array($payload1) ? $payload1['jti'] : (is_object($payload1) ? $payload1->jti : null)));
-        $this->assertNotEmpty((is_array($payload2) ? $payload2['jti'] : (is_object($payload2) ? $payload2->jti : null)));
+        $this->assertNotEquals($payload1['jti'], $payload2['jti']);
+        $this->assertNotEmpty($payload1['jti']);
+        $this->assertNotEmpty($payload2['jti']);
     }
 
     /**
@@ -511,7 +511,7 @@ final class FirebaseJwtProviderTest extends TestCase
             $this->fail('無法取得公鑰');
         }
 
-        $this->validPublicKey = (is_array($keyDetails) ? $keyDetails['key'] : (is_object($keyDetails) ? $keyDetails->key : null));
+        $this->validPublicKey = $keyDetails['key'];
     }
 
     /**
@@ -545,6 +545,6 @@ final class FirebaseJwtProviderTest extends TestCase
             $this->fail('無法取得替代公鑰');
         }
 
-        $this->invalidPublicKey = (is_array($keyDetails) ? $keyDetails['key'] : (is_object($keyDetails) ? $keyDetails->key : null));
+        $this->invalidPublicKey = $keyDetails['key'];
     }
 }

@@ -86,12 +86,12 @@ class AttachmentRepositoryTest extends TestCase
         // 驗證結果
         $this->assertNotNull($attachment->getId());
         $this->assertNotNull($attachment->getUuid());
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['post_id'] : (is_object($data) ? $data->post_id : null)))) ? (is_array($data) ? $data['post_id'] : (is_object($data) ? $data->post_id : null)) : null, $attachment->getPostId());
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['filename'] : (is_object($data) ? $data->filename : null)))) ? (is_array($data) ? $data['filename'] : (is_object($data) ? $data->filename : null)) : null, $attachment->getFilename());
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['original_name'] : (is_object($data) ? $data->original_name : null)))) ? (is_array($data) ? $data['original_name'] : (is_object($data) ? $data->original_name : null)) : null, $attachment->getOriginalName());
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['mime_type'] : (is_object($data) ? $data->mime_type : null)))) ? (is_array($data) ? $data['mime_type'] : (is_object($data) ? $data->mime_type : null)) : null, $attachment->getMimeType());
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['file_size'] : (is_object($data) ? $data->file_size : null)))) ? (is_array($data) ? $data['file_size'] : (is_object($data) ? $data->file_size : null)) : null, $attachment->getFileSize());
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['storage_path'] : (is_object($data) ? $data->storage_path : null)))) ? (is_array($data) ? $data['storage_path'] : (is_object($data) ? $data->storage_path : null)) : null, $attachment->getStoragePath());
+        $this->assertEquals($data['post_id'], $attachment->getPostId());
+        $this->assertEquals($data['filename'], $attachment->getFilename());
+        $this->assertEquals($data['original_name'], $attachment->getOriginalName());
+        $this->assertEquals($data['mime_type'], $attachment->getMimeType());
+        $this->assertEquals($data['file_size'], $attachment->getFileSize());
+        $this->assertEquals($data['storage_path'], $attachment->getStoragePath());
     }
 
     #[Test]

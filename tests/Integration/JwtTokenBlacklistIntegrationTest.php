@@ -162,12 +162,12 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
         foreach ($testData as $data) {
             $entry = new TokenBlacklistEntry(
-                jti: (is_array($data) && isset((is_array($data) ? $data['jti'] : (is_object($data) ? $data->jti : null)))) ? (is_array($data) ? $data['jti'] : (is_object($data) ? $data->jti : null)) : null,
+                jti: $data['jti'],
                 tokenType: 'access',
-                expiresAt: new DateTimeImmutable((is_array($data) && isset((is_array($data) ? $data['expires'] : (is_object($data) ? $data->expires : null)))) ? (is_array($data) ? $data['expires'] : (is_object($data) ? $data->expires : null)) : null),
+                expiresAt: new DateTimeImmutable($data['expires']),
                 blacklistedAt: new DateTimeImmutable(),
                 reason: TokenBlacklistEntry::REASON_LOGOUT,
-                userId: (is_array($data) && isset((is_array($data) ? $data['user'] : (is_object($data) ? $data->user : null)))) ? (is_array($data) ? $data['user'] : (is_object($data) ? $data->user : null)) : null,
+                userId: $data['user'],
             );
             $this->tokenBlacklistRepository->addToBlacklist($entry);
         }
@@ -176,12 +176,12 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
         $stats = $this->tokenBlacklistService->getStatistics();
         $this->assertArrayHasKey('total', $stats);
         $this->assertArrayHasKey('size_info', $stats);
-        $this->assertEquals(5, (is_array($stats) && isset((is_array($stats) ? $stats['total'] : (is_object($stats) ? $stats->total : null)))) ? (is_array($stats) ? $stats['total'] : (is_object($stats) ? $stats->total : null)) : null);
+        $this->assertEquals(5, $stats['total']);
 
         // 3. 透過 Repository 取得使用者統計
         $userStats = $this->tokenBlacklistRepository->getUserBlacklistStats(1);
         $this->assertArrayHasKey('total_blacklisted', $userStats);
-        $this->assertEquals(2, (is_array($userStats) && isset((is_array($userStats) ? $userStats['total_blacklisted'] : (is_object($userStats) ? $userStats->total_blacklisted : null)))) ? (is_array($userStats) ? $userStats['total_blacklisted'] : (is_object($userStats) ? $userStats->total_blacklisted : null)) : null);
+        $this->assertEquals(2, $userStats['total_blacklisted']);
 
         // 4. 透過 Service 取得健康狀態
         $health = $this->tokenBlacklistService->getHealthStatus();
@@ -222,7 +222,7 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
 
         // 3. 驗證清理結果
         $this->assertArrayHasKey('expired_cleaned', $cleanupResult);
-        $this->assertGreaterThan(0, (is_array($cleanupResult) && isset((is_array($cleanupResult) ? $cleanupResult['expired_cleaned'] : (is_object($cleanupResult) ? $cleanupResult->expired_cleaned : null)))) ? (is_array($cleanupResult) ? $cleanupResult['expired_cleaned'] : (is_object($cleanupResult) ? $cleanupResult->expired_cleaned : null)) : null);
+        $this->assertGreaterThan(0, $cleanupResult['expired_cleaned']);
 
         // 4. 驗證過期項目已被清理，活躍項目仍存在
         $this->assertFalse($this->tokenBlacklistRepository->isBlacklisted('expired-cleanup-token'));

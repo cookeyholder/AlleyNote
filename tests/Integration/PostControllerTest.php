@@ -43,9 +43,6 @@ class PostControllerTest extends TestCase
     /** @var OutputSanitizerInterface&MockInterface */
     private OutputSanitizerInterface $sanitizer;
 
-    /** @var ActivityLoggingServiceInterface&MockInterface */
-    private ActivityLoggingServiceInterface $activityLogger;
-
     private mixed $request;
 
     private mixed $response;
@@ -65,6 +62,7 @@ class PostControllerTest extends TestCase
         $this->validator = Mockery::mock(ValidatorInterface::class);
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
 
         // 設定預設行為
         $this->xssProtection->shouldReceive('cleanArray')
@@ -81,31 +79,26 @@ class PostControllerTest extends TestCase
 
         // 設定 sanitizer 預設行為 - 返回原值
         $this->sanitizer->shouldReceive('sanitizeHtml')
-            ->byDefault()
             ->andReturnUsing(function ($input) {
                 return $input;
-            });
-
-        // 設定 ActivityLoggingService 預設行為
-        $this->activityLogger->shouldReceive('logFailure')
-            ->byDefault()
-            ->andReturn(true);
-        $this->activityLogger->shouldReceive('logSuccess')
-            ->byDefault()
-            ->andReturn(true);
+                // 設置 ActivityLoggingService mock 期望
+                $this->activityLogger->shouldReceive('log')
+                    ->andReturn();
+            })
+            ->byDefault();
 
         // 設定 validator 預設行為
         $this->validator->shouldReceive('validateOrFail')
-            ->byDefault()
             ->andReturnUsing(function ($data, $rules) {
                 return $data;
-            });
+            })
+            ->byDefault();
         $this->validator->shouldReceive('addRule')
-            ->byDefault()
-            ->andReturnNull();
+            ->andReturnNull()
+            ->byDefault();
         $this->validator->shouldReceive('addMessage')
-            ->byDefault()
-            ->andReturnNull();
+            ->andReturnNull()
+            ->byDefault();
 
         // 先建立 stream
         $this->stream = $this->createStreamMock();

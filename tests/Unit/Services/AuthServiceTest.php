@@ -81,7 +81,7 @@ class AuthServiceTest extends TestCase
 
         // 設定用戶倉庫 mock
         $expectedData = $dto->toArray();
-        (is_array($expectedData) ? $expectedData['password'] : (is_object($expectedData) ? $expectedData->password : null)) = 'hashed_password';
+        $expectedData['password'] = 'hashed_password';
 
         $this->userRepository->shouldReceive('create')
             ->once()
@@ -98,11 +98,11 @@ class AuthServiceTest extends TestCase
         $result = $this->service->register($dto, null);
 
         // 驗證結果
-        $this->assertTrue((is_array($result) && isset((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)))) ? (is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)) : null);
-        $this->assertEquals('註冊成功', (is_array($result) && isset((is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)))) ? (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)) : null);
-        $this->assertEquals('testuser', (is_array($result) ? $result['user'] : (is_object($result) ? $result->user : null))['username']);
-        $this->assertEquals('test@example.com', (is_array($result) ? $result['user'] : (is_object($result) ? $result->user : null))['email']);
-        $this->assertEquals(1, (is_array($result) ? $result['user'] : (is_object($result) ? $result->user : null))['status']);
+        $this->assertTrue($result['success']);
+        $this->assertEquals('註冊成功', $result['message']);
+        $this->assertEquals('testuser', $result['user']['username']);
+        $this->assertEquals('test@example.com', $result['user']['email']);
+        $this->assertEquals(1, $result['user']['status']);
     }
 
     #[Test]
@@ -167,8 +167,8 @@ class AuthServiceTest extends TestCase
         $result = $this->service->login($credentials, null);
 
         // 驗證結果
-        $this->assertTrue((is_array($result) && isset((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)))) ? (is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)) : null);
-        $this->assertEquals('test@example.com', (is_array($result) ? $result['user'] : (is_object($result) ? $result->user : null))['email']);
+        $this->assertTrue($result['success']);
+        $this->assertEquals('test@example.com', $result['user']['email']);
     }
 
     #[Test]
@@ -197,8 +197,8 @@ class AuthServiceTest extends TestCase
         $result = $this->service->login($credentials, null);
 
         // 驗證結果
-        $this->assertFalse((is_array($result) && isset((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)))) ? (is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)) : null);
-        $this->assertEquals('無效的認證資訊', (is_array($result) && isset((is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)))) ? (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)) : null);
+        $this->assertFalse($result['success']);
+        $this->assertEquals('無效的認證資訊', $result['message']);
     }
 
     #[Test]
@@ -227,7 +227,7 @@ class AuthServiceTest extends TestCase
         $result = $this->service->login($credentials, null);
 
         // 驗證結果
-        $this->assertFalse((is_array($result) && isset((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)))) ? (is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)) : null);
-        $this->assertEquals('帳號已被停用', (is_array($result) && isset((is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)))) ? (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)) : null);
+        $this->assertFalse($result['success']);
+        $this->assertEquals('帳號已被停用', $result['message']);
     }
 }

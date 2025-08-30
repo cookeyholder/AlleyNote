@@ -63,7 +63,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertNull($parameters[5]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testFindByJtiMethodSignature(): void
@@ -78,8 +78,8 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertTrue(($returnType instanceof ReflectionNamedType ? $returnType->allowsNull() : false));
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertTrue($returnType->allowsNull());
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testFindByTokenHashMethodSignature(): void
@@ -94,8 +94,8 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertTrue(($returnType instanceof ReflectionNamedType ? $returnType->allowsNull() : false));
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertTrue($returnType->allowsNull());
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testFindByUserIdMethodSignature(): void
@@ -115,7 +115,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertFalse($parameters[1]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testFindByUserIdAndDeviceMethodSignature(): void
@@ -133,7 +133,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[1]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testUpdateLastUsedMethodSignature(): void
@@ -154,7 +154,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertNull($parameters[1]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testRevokeMethodSignature(): void
@@ -173,7 +173,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertTrue($parameters[1]->isDefaultValueAvailable());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testRevokeAllByUserIdMethodSignature(): void
@@ -198,7 +198,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertNull($parameters[2]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testRevokeAllByDeviceMethodSignature(): void
@@ -220,7 +220,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertTrue($parameters[2]->isDefaultValueAvailable());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testDeleteMethodSignature(): void
@@ -235,7 +235,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testValidationMethods(): void
@@ -253,7 +253,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
             $this->assertEquals('string', $parameters[0]->getType()->getName());
 
             $returnType = $method->getReturnType();
-            $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+            $this->assertEquals('bool', $returnType->getName());
         }
     }
 
@@ -272,7 +272,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertNull($parameters[0]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testCleanupRevokedMethodSignature(): void
@@ -289,7 +289,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertEquals(30, $parameters[0]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testGetUserTokenStatsMethodSignature(): void
@@ -304,7 +304,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertEquals('int', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testTokenFamilyMethods(): void
@@ -340,7 +340,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
 
             $method = $this->interfaceReflection->getMethod($methodName);
             $returnType = $method->getReturnType();
-            $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+            $this->assertEquals('int', $returnType->getName());
         }
     }
 
@@ -358,7 +358,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertEquals(24, $parameters[0]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testGetSystemStatsMethodSignature(): void
@@ -370,7 +370,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertCount(0, $parameters);
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testAllRequiredMethodsExist(): void
@@ -401,7 +401,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         ];
 
         $actualMethods = array_map(
-            fn($method) => ($method instanceof ReflectionNamedType ? $method->getName() : (string) $method),
+            fn($method) => $method->getName(),
             $this->interfaceReflection->getMethods(),
         );
 

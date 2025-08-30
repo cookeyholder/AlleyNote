@@ -37,7 +37,7 @@ class AuthEndpointTest extends TestCase
     /**
      * 建立 HTTP 請求
      */
-    private function createRequest(string $method, string $path, ?array<mixed> $body = null, array<mixed> $headers = []): ResponseInterface
+    private function createRequest(string $method, string $path, ?array $body = null, array $headers = []): ResponseInterface
     {
         // 準備 $_SERVER 環境變數
         $_SERVER = array_merge($_SERVER, [
@@ -98,7 +98,7 @@ class AuthEndpointTest extends TestCase
             if ($response->getStatusCode() === 500) {
                 $this->assertIsArray($data, 'Response should be JSON even on error');
                 $this->assertArrayHasKey('error', $data, 'Error response should contain error field');
-                $this->markTestSkipped('Login endpoint configured but has internal error: ' . (is_array($data) && isset((is_array($data) ? $data['error'] : (is_object($data) ? $data->error : null)))) ? (is_array($data) ? $data['error'] : (is_object($data) ? $data->error : null)) : null);
+                $this->markTestSkipped('Login endpoint configured but has internal error: ' . $data['error']);
 
                 return;
             }
@@ -107,8 +107,8 @@ class AuthEndpointTest extends TestCase
             if (in_array($response->getStatusCode(), [400, 401, 422])) {
                 $this->assertIsArray($data, 'Response should be JSON');
                 $this->assertArrayHasKey('success', $data, 'Response should have success field');
-                $this->assertFalse((is_array($data) && isset((is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)))) ? (is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)) : null, 'Login should fail with test credentials');
-                $this->markTestSkipped('Login endpoint rejects test credentials (expected): ' . ((is_array($data) ? $data['error'] : (is_object($data) ? $data->error : null)) ?? 'unknown error'));
+                $this->assertFalse($data['success'], 'Login should fail with test credentials');
+                $this->markTestSkipped('Login endpoint rejects test credentials (expected): ' . ($data['error'] ?? 'unknown error'));
 
                 return;
             }
@@ -117,11 +117,11 @@ class AuthEndpointTest extends TestCase
             $this->assertEquals(200, $response->getStatusCode());
             $this->assertIsArray($data);
             $this->assertArrayHasKey('success', $data);
-            $this->assertTrue((is_array($data) && isset((is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)))) ? (is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)) : null);
+            $this->assertTrue($data['success']);
             $this->assertArrayHasKey('access_token', $data);
             $this->assertArrayHasKey('refresh_token', $data);
             $this->assertArrayHasKey('token_type', $data);
-            $this->assertEquals('Bearer', (is_array($data) && isset((is_array($data) ? $data['token_type'] : (is_object($data) ? $data->token_type : null)))) ? (is_array($data) ? $data['token_type'] : (is_object($data) ? $data->token_type : null)) : null);
+            $this->assertEquals('Bearer', $data['token_type']);
         } catch (Exception $e) {
             $this->markTestSkipped('Login endpoint test failed: ' . $e->getMessage());
         }
@@ -153,7 +153,7 @@ class AuthEndpointTest extends TestCase
             $this->assertContains($response->getStatusCode(), [400, 401, 500]);
             $this->assertIsArray($data);
             $this->assertArrayHasKey('success', $data);
-            $this->assertFalse((is_array($data) && isset((is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)))) ? (is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)) : null);
+            $this->assertFalse($data['success']);
         } catch (Exception $e) {
             $this->markTestSkipped('Refresh token endpoint test failed: ' . $e->getMessage());
         }
@@ -212,7 +212,7 @@ class AuthEndpointTest extends TestCase
             $data = json_decode($responseBody, true);
             $this->assertIsArray($data);
             $this->assertArrayHasKey('success', $data);
-            $this->assertFalse((is_array($data) && isset((is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)))) ? (is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)) : null);
+            $this->assertFalse($data['success']);
         } catch (Exception $e) {
             $this->markTestSkipped('Protected endpoint test failed: ' . $e->getMessage());
         }
@@ -244,7 +244,7 @@ class AuthEndpointTest extends TestCase
             $data = json_decode($responseBody, true);
             $this->assertIsArray($data);
             $this->assertArrayHasKey('success', $data);
-            $this->assertFalse((is_array($data) && isset((is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)))) ? (is_array($data) ? $data['success'] : (is_object($data) ? $data->success : null)) : null);
+            $this->assertFalse($data['success']);
         } catch (Exception $e) {
             $this->markTestSkipped('Protected endpoint with invalid token test failed: ' . $e->getMessage());
         }

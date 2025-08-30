@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class JwtConfigTest extends TestCase
 {
-    private array<mixed> $originalEnv = [];
+    private array $originalEnv = [];
 
     protected function setUp(): void
     {
@@ -18,13 +18,13 @@ class JwtConfigTest extends TestCase
 
         // 備份原始環境變數
         $this->originalEnv = [
-            'JWT_ALGORITHM' => (is_array($_ENV) ? $_ENV['JWT_ALGORITHM'] : (is_object($_ENV) ? $_ENV->JWT_ALGORITHM : null)) ?? null,
-            'JWT_PRIVATE_KEY' => (is_array($_ENV) ? $_ENV['JWT_PRIVATE_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PRIVATE_KEY : null)) ?? null,
-            'JWT_PUBLIC_KEY' => (is_array($_ENV) ? $_ENV['JWT_PUBLIC_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PUBLIC_KEY : null)) ?? null,
-            'JWT_ISSUER' => (is_array($_ENV) ? $_ENV['JWT_ISSUER'] : (is_object($_ENV) ? $_ENV->JWT_ISSUER : null)) ?? null,
-            'JWT_AUDIENCE' => (is_array($_ENV) ? $_ENV['JWT_AUDIENCE'] : (is_object($_ENV) ? $_ENV->JWT_AUDIENCE : null)) ?? null,
-            'JWT_ACCESS_TOKEN_TTL' => (is_array($_ENV) ? $_ENV['JWT_ACCESS_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_ACCESS_TOKEN_TTL : null)) ?? null,
-            'JWT_REFRESH_TOKEN_TTL' => (is_array($_ENV) ? $_ENV['JWT_REFRESH_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_REFRESH_TOKEN_TTL : null)) ?? null,
+            'JWT_ALGORITHM' => $_ENV['JWT_ALGORITHM'] ?? null,
+            'JWT_PRIVATE_KEY' => $_ENV['JWT_PRIVATE_KEY'] ?? null,
+            'JWT_PUBLIC_KEY' => $_ENV['JWT_PUBLIC_KEY'] ?? null,
+            'JWT_ISSUER' => $_ENV['JWT_ISSUER'] ?? null,
+            'JWT_AUDIENCE' => $_ENV['JWT_AUDIENCE'] ?? null,
+            'JWT_ACCESS_TOKEN_TTL' => $_ENV['JWT_ACCESS_TOKEN_TTL'] ?? null,
+            'JWT_REFRESH_TOKEN_TTL' => $_ENV['JWT_REFRESH_TOKEN_TTL'] ?? null,
         ];
     }
 
@@ -32,7 +32,7 @@ class JwtConfigTest extends TestCase
     {
         // 恢復原始環境變數
         foreach ($this->originalEnv as $key => $value) {
-            if (value === null) {
+            if ($value === null) {
                 unset($_ENV[$key]);
             } else {
                 $_ENV[$key] = $value;
@@ -59,7 +59,7 @@ class JwtConfigTest extends TestCase
     public function testPrivateKeyMissing(): void
     {
         $this->setValidEnvironmentVariables();
-        unset((is_array($_ENV) ? $_ENV['JWT_PRIVATE_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PRIVATE_KEY : null)));
+        unset($_ENV['JWT_PRIVATE_KEY']);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_PRIVATE_KEY 環境變數未設定');
@@ -70,7 +70,7 @@ class JwtConfigTest extends TestCase
     public function testPublicKeyMissing(): void
     {
         $this->setValidEnvironmentVariables();
-        unset((is_array($_ENV) ? $_ENV['JWT_PUBLIC_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PUBLIC_KEY : null)));
+        unset($_ENV['JWT_PUBLIC_KEY']);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_PUBLIC_KEY 環境變數未設定');
@@ -81,7 +81,7 @@ class JwtConfigTest extends TestCase
     public function testInvalidPrivateKeyFormat(): void
     {
         $this->setValidEnvironmentVariables();
-        (is_array($_ENV) ? $_ENV['JWT_PRIVATE_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PRIVATE_KEY : null)) = 'invalid-key-format';
+        $_ENV['JWT_PRIVATE_KEY'] = 'invalid-key-format';
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_PRIVATE_KEY 格式無效，必須是 PEM 格式的私鑰');
@@ -92,7 +92,7 @@ class JwtConfigTest extends TestCase
     public function testInvalidPublicKeyFormat(): void
     {
         $this->setValidEnvironmentVariables();
-        (is_array($_ENV) ? $_ENV['JWT_PUBLIC_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PUBLIC_KEY : null)) = 'invalid-key-format';
+        $_ENV['JWT_PUBLIC_KEY'] = 'invalid-key-format';
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_PUBLIC_KEY 格式無效，必須是 PEM 格式的公鑰');
@@ -103,7 +103,7 @@ class JwtConfigTest extends TestCase
     public function testUnsupportedAlgorithm(): void
     {
         $this->setValidEnvironmentVariables();
-        (is_array($_ENV) ? $_ENV['JWT_ALGORITHM'] : (is_object($_ENV) ? $_ENV->JWT_ALGORITHM : null)) = 'HS256';
+        $_ENV['JWT_ALGORITHM'] = 'HS256';
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('不支援的演算法: HS256');
@@ -114,7 +114,7 @@ class JwtConfigTest extends TestCase
     public function testInvalidAccessTokenTtl(): void
     {
         $this->setValidEnvironmentVariables();
-        (is_array($_ENV) ? $_ENV['JWT_ACCESS_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_ACCESS_TOKEN_TTL : null)) = '0';
+        $_ENV['JWT_ACCESS_TOKEN_TTL'] = '0';
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_ACCESS_TOKEN_TTL 必須大於 0');
@@ -125,7 +125,7 @@ class JwtConfigTest extends TestCase
     public function testInvalidRefreshTokenTtl(): void
     {
         $this->setValidEnvironmentVariables();
-        (is_array($_ENV) ? $_ENV['JWT_REFRESH_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_REFRESH_TOKEN_TTL : null)) = '0';
+        $_ENV['JWT_REFRESH_TOKEN_TTL'] = '0';
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_REFRESH_TOKEN_TTL 必須大於 0');
@@ -136,8 +136,8 @@ class JwtConfigTest extends TestCase
     public function testRefreshTokenTtlLessThanAccessToken(): void
     {
         $this->setValidEnvironmentVariables();
-        (is_array($_ENV) ? $_ENV['JWT_ACCESS_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_ACCESS_TOKEN_TTL : null)) = '7200';
-        (is_array($_ENV) ? $_ENV['JWT_REFRESH_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_REFRESH_TOKEN_TTL : null)) = '3600';
+        $_ENV['JWT_ACCESS_TOKEN_TTL'] = '7200';
+        $_ENV['JWT_REFRESH_TOKEN_TTL'] = '3600';
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Refresh token 有效期必須大於 access token 有效期');
@@ -150,11 +150,11 @@ class JwtConfigTest extends TestCase
         $this->setValidEnvironmentVariables();
 
         // 移除可選的環境變數來測試預設值
-        unset((is_array($_ENV) ? $_ENV['JWT_ALGORITHM'] : (is_object($_ENV) ? $_ENV->JWT_ALGORITHM : null)));
-        unset((is_array($_ENV) ? $_ENV['JWT_ISSUER'] : (is_object($_ENV) ? $_ENV->JWT_ISSUER : null)));
-        unset((is_array($_ENV) ? $_ENV['JWT_AUDIENCE'] : (is_object($_ENV) ? $_ENV->JWT_AUDIENCE : null)));
-        unset((is_array($_ENV) ? $_ENV['JWT_ACCESS_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_ACCESS_TOKEN_TTL : null)));
-        unset((is_array($_ENV) ? $_ENV['JWT_REFRESH_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_REFRESH_TOKEN_TTL : null)));
+        unset($_ENV['JWT_ALGORITHM']);
+        unset($_ENV['JWT_ISSUER']);
+        unset($_ENV['JWT_AUDIENCE']);
+        unset($_ENV['JWT_ACCESS_TOKEN_TTL']);
+        unset($_ENV['JWT_REFRESH_TOKEN_TTL']);
 
         $config = new JwtConfig();
 
@@ -177,11 +177,11 @@ class JwtConfigTest extends TestCase
         $this->assertArrayHasKey('iat', $payload);
         $this->assertArrayHasKey('nbf', $payload);
 
-        $this->assertEquals('test-issuer', (is_array($payload) && isset((is_array($payload) ? $payload['iss'] : (is_object($payload) ? $payload->iss : null)))) ? (is_array($payload) ? $payload['iss'] : (is_object($payload) ? $payload->iss : null)) : null);
-        $this->assertEquals('test-audience', (is_array($payload) && isset((is_array($payload) ? $payload['aud'] : (is_object($payload) ? $payload->aud : null)))) ? (is_array($payload) ? $payload['aud'] : (is_object($payload) ? $payload->aud : null)) : null);
-        $this->assertIsInt((is_array($payload) && isset((is_array($payload) ? $payload['iat'] : (is_object($payload) ? $payload->iat : null)))) ? (is_array($payload) ? $payload['iat'] : (is_object($payload) ? $payload->iat : null)) : null);
-        $this->assertIsInt((is_array($payload) && isset((is_array($payload) ? $payload['nbf'] : (is_object($payload) ? $payload->nbf : null)))) ? (is_array($payload) ? $payload['nbf'] : (is_object($payload) ? $payload->nbf : null)) : null);
-        $this->assertEquals((is_array($payload) && isset((is_array($payload) ? $payload['iat'] : (is_object($payload) ? $payload->iat : null)))) ? (is_array($payload) ? $payload['iat'] : (is_object($payload) ? $payload->iat : null)) : null, (is_array($payload) && isset((is_array($payload) ? $payload['nbf'] : (is_object($payload) ? $payload->nbf : null)))) ? (is_array($payload) ? $payload['nbf'] : (is_object($payload) ? $payload->nbf : null)) : null);
+        $this->assertEquals('test-issuer', $payload['iss']);
+        $this->assertEquals('test-audience', $payload['aud']);
+        $this->assertIsInt($payload['iat']);
+        $this->assertIsInt($payload['nbf']);
+        $this->assertEquals($payload['iat'], $payload['nbf']);
     }
 
     public function testGetConfigSummary(): void
@@ -199,8 +199,8 @@ class JwtConfigTest extends TestCase
         $this->assertArrayHasKey('private_key_configured', $summary);
         $this->assertArrayHasKey('public_key_configured', $summary);
 
-        $this->assertTrue((is_array($summary) && isset((is_array($summary) ? $summary['private_key_configured'] : (is_object($summary) ? $summary->private_key_configured : null)))) ? (is_array($summary) ? $summary['private_key_configured'] : (is_object($summary) ? $summary->private_key_configured : null)) : null);
-        $this->assertTrue((is_array($summary) && isset((is_array($summary) ? $summary['public_key_configured'] : (is_object($summary) ? $summary->public_key_configured : null)))) ? (is_array($summary) ? $summary['public_key_configured'] : (is_object($summary) ? $summary->public_key_configured : null)) : null);
+        $this->assertTrue($summary['private_key_configured']);
+        $this->assertTrue($summary['public_key_configured']);
 
         // 確認摘要中不包含實際的金鑰內容
         $this->assertArrayNotHasKey('private_key', $summary);
@@ -233,14 +233,14 @@ class JwtConfigTest extends TestCase
 
         openssl_pkey_export($keyResource, $privateKey);
         $publicKeyDetails = openssl_pkey_get_details($keyResource);
-        $publicKey = (is_array($publicKeyDetails) && isset((is_array($publicKeyDetails) ? $publicKeyDetails['key'] : (is_object($publicKeyDetails) ? $publicKeyDetails->key : null)))) ? (is_array($publicKeyDetails) ? $publicKeyDetails['key'] : (is_object($publicKeyDetails) ? $publicKeyDetails->key : null)) : null;
+        $publicKey = $publicKeyDetails['key'];
 
-        (is_array($_ENV) ? $_ENV['JWT_ALGORITHM'] : (is_object($_ENV) ? $_ENV->JWT_ALGORITHM : null)) = 'RS256';
-        (is_array($_ENV) ? $_ENV['JWT_PRIVATE_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PRIVATE_KEY : null)) = str_replace("\n", '\\n', $privateKey);
-        (is_array($_ENV) ? $_ENV['JWT_PUBLIC_KEY'] : (is_object($_ENV) ? $_ENV->JWT_PUBLIC_KEY : null)) = str_replace("\n", '\\n', $publicKey);
-        (is_array($_ENV) ? $_ENV['JWT_ISSUER'] : (is_object($_ENV) ? $_ENV->JWT_ISSUER : null)) = 'test-issuer';
-        (is_array($_ENV) ? $_ENV['JWT_AUDIENCE'] : (is_object($_ENV) ? $_ENV->JWT_AUDIENCE : null)) = 'test-audience';
-        (is_array($_ENV) ? $_ENV['JWT_ACCESS_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_ACCESS_TOKEN_TTL : null)) = '7200';
-        (is_array($_ENV) ? $_ENV['JWT_REFRESH_TOKEN_TTL'] : (is_object($_ENV) ? $_ENV->JWT_REFRESH_TOKEN_TTL : null)) = '604800';
+        $_ENV['JWT_ALGORITHM'] = 'RS256';
+        $_ENV['JWT_PRIVATE_KEY'] = str_replace("\n", '\\n', $privateKey);
+        $_ENV['JWT_PUBLIC_KEY'] = str_replace("\n", '\\n', $publicKey);
+        $_ENV['JWT_ISSUER'] = 'test-issuer';
+        $_ENV['JWT_AUDIENCE'] = 'test-audience';
+        $_ENV['JWT_ACCESS_TOKEN_TTL'] = '7200';
+        $_ENV['JWT_REFRESH_TOKEN_TTL'] = '604800';
     }
 }

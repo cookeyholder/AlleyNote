@@ -43,24 +43,30 @@ class CreatePostDTO extends BaseDTO
         // 添加文章專用驗證規則
         $this->addPostValidationRules();
 
-        // 預處理狀態值
-
         // 預處理 is_pinned 預設值
+        if (!isset($data['is_pinned'])) {
+            $data['is_pinned'] = false;
+        }
+
+        // 預處理狀態值
+        if (!isset($data['status'])) {
+            $data['status'] = PostStatus::DRAFT->value;
+        }
 
         // 驗證資料
         $validatedData = $this->validate($data);
 
-        // 直接從驗證過的資料設定屬性，無需額外的類型檢查
-        // $this->title = trim((is_array($validatedData) && isset($data ? $validatedData->title : null)))) ? $data ? $validatedData->title : null)) : null); // isset 語法錯誤已註解
-        // $this->content = trim((is_array($validatedData) && isset($data ? $validatedData->content : null)))) ? $data ? $validatedData->content : null)) : null); // isset 語法錯誤已註解
-        // $this->userId = (int) (is_array($validatedData) && isset($data ? $validatedData->user_id : null)))) ? $data ? $validatedData->user_id : null)) : null; // isset 語法錯誤已註解
-        // $this->userIp = (is_array($validatedData) && isset($data ? $validatedData->user_ip : null)))) ? $data ? $validatedData->user_ip : null)) : null; // isset 語法錯誤已註解
-        $this->isPinned = (bool) (false);
-        // $this->status = PostStatus::from((is_array($validatedData) && isset($data ? $validatedData->status : null)))) ? $data ? $validatedData->status : null)) : null); // isset 語法錯誤已註解
+        // 設定屬性
+        $this->title = $this->getString($validatedData, 'title') ?? '';
+        $this->content = $this->getString($validatedData, 'content') ?? '';
+        $this->userId = $this->getInt($validatedData, 'user_id') ?? 0;
+        $this->userIp = $this->getString($validatedData, 'user_ip') ?? '';
+        $this->isPinned = $this->getBool($validatedData, 'is_pinned') ?? false;
+        $this->status = PostStatus::from($validatedData['status']);
 
         // 處理發布日期，空字串轉為 null
-        $publishDate = null;
-        $this->publishDate = ($publishDate === '' ? null : $publishDate);
+        $publishDate = $this->getString($validatedData, 'publish_date');
+        $this->publishDate = (!empty($publishDate)) ? $publishDate : null;
     }
 
     /**
@@ -176,14 +182,14 @@ class CreatePostDTO extends BaseDTO
     /**
      * 取得驗證規則.
      */
-    protected function getValidationRules(): mixed
+    protected function getValidationRules(): array
     {
         return [
             'title' => 'required|string|post_title:1,255',
             'content' => 'required|string|post_content:1',
             'user_id' => 'required|user_id',
             'user_ip' => 'required|ip_address',
-            'is_pinned' => 'boolean',
+            'is_pinned' => 'nullable|boolean',
             'status' => 'required|string|post_status',
             'publish_date' => 'rfc3339_datetime',
         ];
@@ -192,7 +198,7 @@ class CreatePostDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Repository 使用）.
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         return [
             'title' => $this->title,

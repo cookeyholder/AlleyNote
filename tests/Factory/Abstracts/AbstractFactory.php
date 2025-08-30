@@ -6,20 +6,20 @@ namespace Tests\Factory\Abstracts;
 
 abstract class AbstractFactory
 {
-    protected static array<mixed> $sequence = [];
+    protected static array $sequence = [];
 
     /**
      * 產生一筆資料.
-     * @param array<mixed> $attributes 自訂屬性
+     * @param array<string, mixed> $attributes 自訂屬性
      */
-    abstract public static function make(array<mixed> $attributes = []): array<mixed>;
+    abstract public static function make(array $attributes = []): array;
 
     /**
      * 產生多筆資料.
      * @param int $count 數量
-     * @param array<mixed> $attributes 自訂屬性
+     * @param array<string, mixed> $attributes 自訂屬性
      */
-    public static function makeMany(int $count, array<mixed> $attributes = []): array<mixed>
+    public static function makeMany(int $count, array $attributes = []): array
     {
         return array_map(
             fn() => static::make($attributes),

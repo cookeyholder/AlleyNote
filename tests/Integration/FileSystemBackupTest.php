@@ -13,7 +13,7 @@ class FileSystemBackupTest extends TestCase
 
     private string $backupDir;
 
-    private array<mixed> $testFiles = [];
+    private array $testFiles = [];
 
     protected function setUp(): void
     {

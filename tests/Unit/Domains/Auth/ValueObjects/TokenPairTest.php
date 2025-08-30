@@ -242,14 +242,14 @@ final class TokenPairTest extends TestCase
             refreshTokenExpiresAt: $this->refreshExpiry,
         );
 
-        $array<mixed> = $tokenPair->toArray();
+        $array = $tokenPair->toArray();
 
-        $this->assertSame($this->validAccessToken, (is_array($array) ? $array['access_token'] : (is_object($array) ? $array->access_token : null)));
-        $this->assertSame($this->validRefreshToken, (is_array($array) ? $array['refresh_token'] : (is_object($array) ? $array->refresh_token : null)));
-        $this->assertSame('Bearer', (is_array($array) ? $array['token_type'] : (is_object($array) ? $array->token_type : null)));
-        $this->assertIsInt((is_array($array) ? $array['expires_in'] : (is_object($array) ? $array->expires_in : null)));
-        $this->assertSame($this->accessExpiry->format(DateTimeImmutable::ATOM), (is_array($array) ? $array['access_token_expires_at'] : (is_object($array) ? $array->access_token_expires_at : null)));
-        $this->assertSame($this->refreshExpiry->format(DateTimeImmutable::ATOM), (is_array($array) ? $array['refresh_token_expires_at'] : (is_object($array) ? $array->refresh_token_expires_at : null)));
+        $this->assertSame($this->validAccessToken, $array['access_token']);
+        $this->assertSame($this->validRefreshToken, $array['refresh_token']);
+        $this->assertSame('Bearer', $array['token_type']);
+        $this->assertIsInt($array['expires_in']);
+        $this->assertSame($this->accessExpiry->format(DateTimeImmutable::ATOM), $array['access_token_expires_at']);
+        $this->assertSame($this->refreshExpiry->format(DateTimeImmutable::ATOM), $array['refresh_token_expires_at']);
     }
 
     public function testToApiResponse(): void
@@ -263,10 +263,10 @@ final class TokenPairTest extends TestCase
 
         $response = $tokenPair->toApiResponse();
 
-        $this->assertSame($this->validAccessToken, (is_array($response) ? $response['access_token'] : (is_object($response) ? $response->access_token : null)));
-        $this->assertSame($this->validRefreshToken, (is_array($response) ? $response['refresh_token'] : (is_object($response) ? $response->refresh_token : null)));
-        $this->assertSame('Bearer', (is_array($response) ? $response['token_type'] : (is_object($response) ? $response->token_type : null)));
-        $this->assertIsInt((is_array($response) ? $response['expires_in'] : (is_object($response) ? $response->expires_in : null)));
+        $this->assertSame($this->validAccessToken, $response['access_token']);
+        $this->assertSame($this->validRefreshToken, $response['refresh_token']);
+        $this->assertSame('Bearer', $response['token_type']);
+        $this->assertIsInt($response['expires_in']);
         $this->assertArrayNotHasKey('access_token_expires_at', $response);
         $this->assertArrayNotHasKey('refresh_token_expires_at', $response);
     }
@@ -282,9 +282,9 @@ final class TokenPairTest extends TestCase
 
         $response = $tokenPair->toApiResponse(false);
 
-        $this->assertSame($this->validAccessToken, (is_array($response) ? $response['access_token'] : (is_object($response) ? $response->access_token : null)));
-        $this->assertSame('Bearer', (is_array($response) ? $response['token_type'] : (is_object($response) ? $response->token_type : null)));
-        $this->assertIsInt((is_array($response) ? $response['expires_in'] : (is_object($response) ? $response->expires_in : null)));
+        $this->assertSame($this->validAccessToken, $response['access_token']);
+        $this->assertSame('Bearer', $response['token_type']);
+        $this->assertIsInt($response['expires_in']);
         $this->assertArrayNotHasKey('refresh_token', $response);
     }
 

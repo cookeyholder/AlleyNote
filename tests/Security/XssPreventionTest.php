@@ -198,10 +198,10 @@ class XssPreventionTest extends TestCase
 
         $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertIsArray($responseData);
-        $this->assertTrue((is_array($responseData) && isset((is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)))) ? (is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)) : null);
+        $this->assertTrue($responseData['success']);
 
         // 在實際應用中，XSS 清理會在適當的層級進行
-        $this->assertNotNull((is_array($responseData) ? $responseData['data'] : (is_object($responseData) ? $responseData->data : null))['title']);
+        $this->assertNotNull($responseData['data']['title']);
     }
 
     #[Test]
@@ -256,10 +256,10 @@ class XssPreventionTest extends TestCase
 
         $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertIsArray($responseData);
-        $this->assertTrue((is_array($responseData) && isset((is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)))) ? (is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)) : null);
+        $this->assertTrue($responseData['success']);
 
         // 在實際應用中，XSS 清理會在適當的層級進行
-        $this->assertNotNull((is_array($responseData) ? $responseData['data'] : (is_object($responseData) ? $responseData->data : null))['content']);
+        $this->assertNotNull($responseData['data']['content']);
     }
 
     #[Test]
@@ -314,10 +314,10 @@ class XssPreventionTest extends TestCase
 
         $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertIsArray($responseData);
-        $this->assertTrue((is_array($responseData) && isset((is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)))) ? (is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)) : null);
+        $this->assertTrue($responseData['success']);
 
         // 在實際應用中，XSS 清理會在適當的層級進行
-        $this->assertNotNull((is_array($responseData) ? $responseData['data'] : (is_object($responseData) ? $responseData->data : null))['title']);
+        $this->assertNotNull($responseData['data']['title']);
     }
 
     protected function tearDown(): void

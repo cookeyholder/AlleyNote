@@ -4,23 +4,22 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Support;
 
-use PDO;
 use Tests\Support\IntegrationTestCase;
 
 /**
- * 展示整合測試架構使用方式的範例測試.
+ * 展示整合測試架構使用方式的範例測試
  */
 class IntegrationTestExampleTest extends IntegrationTestCase
 {
     public function testDatabaseIntegration(): void
     {
         // 測試資料庫功能
-        $this->assertInstanceOf(PDO::class, $this->db);
+        $this->assertInstanceOf(\PDO::class, $this->db);
 
         // 插入測試資料
         $postId = $this->insertTestPost([
             'title' => '測試貼文標題',
-            'content' => '測試貼文內容',
+            'content' => '測試貼文內容'
         ]);
 
         $this->assertIsInt($postId);
@@ -29,11 +28,11 @@ class IntegrationTestExampleTest extends IntegrationTestCase
         // 驗證資料是否正確插入
         $stmt = $this->db->prepare('SELECT * FROM posts WHERE id = ?');
         $stmt->execute([$postId]);
-        $post = ($stmt !== false ? $stmt->fetch() : false);
+        $post = $stmt->fetch();
 
         $this->assertIsArray($post);
-        $this->assertEquals('測試貼文標題', (is_array($post) && isset((is_array($post) ? $post['title'] : (is_object($post) ? $post->title : null)))) ? (is_array($post) ? $post['title'] : (is_object($post) ? $post->title : null)) : null);
-        $this->assertEquals('測試貼文內容', (is_array($post) && isset((is_array($post) ? $post['content'] : (is_object($post) ? $post->content : null)))) ? (is_array($post) ? $post['content'] : (is_object($post) ? $post->content : null)) : null);
+        $this->assertEquals('測試貼文標題', $post['title']);
+        $this->assertEquals('測試貼文內容', $post['content']);
     }
 
     public function testCacheIntegration(): void
@@ -74,51 +73,51 @@ class IntegrationTestExampleTest extends IntegrationTestCase
     public function testComprehensiveIntegration(): void
     {
         // 整合多種功能的測試場景
-
+        
         // 1. 建立測試使用者
         $userId = $this->insertTestUser([
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email' => 'test@example.com'
         ]);
-
+        
         // 2. 快取使用者資訊
         $this->setCacheValue("user:{$userId}", [
             'id' => $userId,
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email' => 'test@example.com'
         ]);
-
+        
         // 3. 建立該使用者的貼文
         $postId = $this->insertTestPost([
             'title' => '使用者的測試貼文',
             'content' => '這是一篇測試貼文',
-            'user_id' => $userId,
+            'user_id' => $userId
         ]);
-
+        
         // 4. 驗證整合結果
         $stmt = $this->db->prepare('
-            SELECT p.*, u.username
-            FROM posts p
-            JOIN users u ON p.user_id = u.id
+            SELECT p.*, u.username 
+            FROM posts p 
+            JOIN users u ON p.user_id = u.id 
             WHERE p.id = ?
         ');
         $stmt->execute([$postId]);
-        $result = ($stmt !== false ? $stmt->fetch() : false);
-
-        $this->assertEquals('testuser', (is_array($result) && isset((is_array($result) ? $result['username'] : (is_object($result) ? $result->username : null)))) ? (is_array($result) ? $result['username'] : (is_object($result) ? $result->username : null)) : null);
-        $this->assertEquals('使用者的測試貼文', (is_array($result) && isset((is_array($result) ? $result['title'] : (is_object($result) ? $result->title : null)))) ? (is_array($result) ? $result['title'] : (is_object($result) ? $result->title : null)) : null);
-
+        $result = $stmt->fetch();
+        
+        $this->assertEquals('testuser', $result['username']);
+        $this->assertEquals('使用者的測試貼文', $result['title']);
+        
         // 5. 檢查快取
         $cachedUser = $this->cache->get("user:{$userId}");
-        $this->assertEquals('testuser', (is_array($cachedUser) && isset((is_array($cachedUser) ? $cachedUser['username'] : (is_object($cachedUser) ? $cachedUser->username : null)))) ? (is_array($cachedUser) ? $cachedUser['username'] : (is_object($cachedUser) ? $cachedUser->username : null)) : null);
-
+        $this->assertEquals('testuser', $cachedUser['username']);
+        
         // 6. 建立成功回應
         $response = $this->createJsonResponseMock([
             'post_id' => $postId,
             'user' => $cachedUser,
-            'message' => 'Post created successfully',
+            'message' => 'Post created successfully'
         ]);
-
+        
         $this->assertJsonResponseHasKey($response, 'post_id');
         $this->assertJsonResponseValue($response, 'post_id', $postId);
     }

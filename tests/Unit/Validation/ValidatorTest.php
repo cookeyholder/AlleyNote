@@ -560,7 +560,7 @@ class ValidatorTest extends TestCase
 
         // 測試部分規則失敗
         $invalidData = $data;
-        (is_array($invalidData) ? $invalidData['age'] : (is_object($invalidData) ? $invalidData->age : null)) = 15; // 小於最小年齡
+        $invalidData['age'] = 15; // 小於最小年齡
 
         $result = $this->validator->validate($invalidData, $rules);
         $this->assertFalse($result->isValid());
@@ -594,7 +594,7 @@ class ValidatorTest extends TestCase
     public function test_custom_rule_with_parameters(): void
     {
         // 添加自訂規則：檢查值是否可以被指定數字整除
-        $this->validator->addRule('divisible_by', function ($value, array<mixed> $parameters) {
+        $this->validator->addRule('divisible_by', function ($value, array $parameters) {
             if (!is_numeric($value) || !isset($parameters[0]) || !is_numeric($parameters[0])) {
                 return false;
             }
@@ -628,12 +628,12 @@ class ValidatorTest extends TestCase
         $result = $this->validator->validate([], ['email' => 'required']);
         $this->assertFalse($result->isValid());
         $errors = $result->getErrors();
-        $this->assertStringContainsString('是必要的', (is_array($errors) ? $errors['email'] : (is_object($errors) ? $errors->email : null))[0]);
+        $this->assertStringContainsString('是必要的', $errors['email'][0]);
 
         $result = $this->validator->validate(['email' => 'invalid'], ['email' => 'email']);
         $this->assertFalse($result->isValid());
         $errors = $result->getErrors();
-        $this->assertStringContainsString('請輸入有效的電子郵件地址', (is_array($errors) ? $errors['email'] : (is_object($errors) ? $errors->email : null))[0]);
+        $this->assertStringContainsString('請輸入有效的電子郵件地址', $errors['email'][0]);
     }
 
     /**

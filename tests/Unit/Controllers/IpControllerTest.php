@@ -87,7 +87,7 @@ class IpControllerTest extends TestCase
 
         $response = $this->controller->create($request);
 
-        $this->assertEquals(201, $response['status'] ?? null);
+        $this->assertEquals(201, $response['status']);
         $this->assertArrayHasKey('data', $response);
     }
 
@@ -108,8 +108,8 @@ class IpControllerTest extends TestCase
 
         $response = $this->controller->create($request);
 
-        $this->assertEquals(400, $response['status'] ?? null);
-        $this->assertStringContainsString('無效的 IP 位址', $response['error'] ?? '');
+        $this->assertEquals(400, $response['status']);
+        $this->assertStringContainsString('無效的 IP 位址', $response['error']);
     }
 
     public function testCanListRulesByType(): void
@@ -137,9 +137,9 @@ class IpControllerTest extends TestCase
 
         $response = $this->controller->getByType(['type' => $type]);
 
-        $this->assertEquals(200, $response['status'] ?? null);
-        $this->assertCount(2, $response['data'] ?? []);
-        $this->assertEquals('192.168.1.1', ($response['data'] ?? [])[0]['ip_address'] ?? null);
+        $this->assertEquals(200, $response['status']);
+        $this->assertCount(2, $response['data']);
+        $this->assertEquals('192.168.1.1', $response['data'][0]['ip_address']);
     }
 
     public function testCanCheckIpAccess(): void
@@ -153,8 +153,8 @@ class IpControllerTest extends TestCase
 
         $response = $this->controller->checkAccess(['ip' => $ip]);
 
-        $this->assertEquals(200, $response['status'] ?? null);
-        $this->assertTrue(($response['data'] ?? [])['allowed'] ?? false);
+        $this->assertEquals(200, $response['status']);
+        $this->assertTrue($response['data']['allowed']);
     }
 
     public function testCannotCheckInvalidIp(): void
@@ -168,8 +168,8 @@ class IpControllerTest extends TestCase
 
         $response = $this->controller->checkAccess(['ip' => $ip]);
 
-        $this->assertEquals(400, $response['status'] ?? null);
-        $this->assertEquals('無效的 IP 位址格式', $response['error'] ?? null);
+        $this->assertEquals(400, $response['status']);
+        $this->assertEquals('無效的 IP 位址格式', $response['error']);
     }
 
     protected function tearDown(): void

@@ -101,17 +101,17 @@ class PostService implements PostServiceInterface
      * @param array $filters 篩選條件
      * @return array<mixed>{items: Post[], total: int, page: int, per_page: int, last_page: int}
      */
-    public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): mixed
+    public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {
         $result = $this->repository->paginate($page, $perPage, $filters);
 
         // 確保回傳格式符合介面要求
         return [
-            // 'items' => (is_array($result) && isset($data ? $result->items : null)))) ? $data ? $result->items : null)) : null, // isset 語法錯誤已註解
-            // 'total' => (is_array($result) && isset($data ? $result->total : null)))) ? $data ? $result->total : null)) : null, // isset 語法錯誤已註解
-            // 'page' => (is_array($result) && isset($data ? $result->page : null)))) ? $data ? $result->page : null)) : null, // isset 語法錯誤已註解
-            // 'per_page' => (is_array($result) && isset($data ? $result->perPage : null)))) ? $data ? $result->perPage : null)) : null, // isset 語法錯誤已註解
-            // 'last_page' => (is_array($result) && isset($data ? $result->lastPage : null)))) ? $data ? $result->lastPage : null)) : null, // isset 語法錯誤已註解
+            'items' => $result['items'] ?? [],
+            'total' => $result['total'] ?? 0,
+            'page' => $result['page'] ?? $page,
+            'per_page' => $result['perPage'] ?? $perPage,
+            'last_page' => $result['lastPage'] ?? 1,
         ];
     }
 
@@ -120,7 +120,7 @@ class PostService implements PostServiceInterface
      * @param int $limit 取得筆數
      * @return Post[]
      */
-    public function getPinnedPosts(int $limit = 5): mixed
+    public function getPinnedPosts(int $limit = 5): array
     {
         return $this->repository->getPinnedPosts($limit);
     }

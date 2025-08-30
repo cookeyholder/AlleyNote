@@ -31,8 +31,8 @@ class CsrfProtectionServiceTest extends TestCase
 
         $this->assertNotEmpty($token);
         $this->assertEquals(64, strlen($token)); // 32 bytes = 64 hex characters
-        $this->assertEquals($token, (is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token'] : (is_object($_SESSION) ? $_SESSION->csrf_token : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token'] : (is_object($_SESSION) ? $_SESSION->csrf_token : null)) : null);
-        $this->assertIsInt((is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token_time'] : (is_object($_SESSION) ? $_SESSION->csrf_token_time : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token_time'] : (is_object($_SESSION) ? $_SESSION->csrf_token_time : null)) : null);
+        $this->assertEquals($token, $_SESSION['csrf_token']);
+        $this->assertIsInt($_SESSION['csrf_token_time']);
     }
 
     #[Test]
@@ -70,8 +70,8 @@ class CsrfProtectionServiceTest extends TestCase
         $token = $this->service->generateToken();
 
         // 設定權杖池中的時間為過期（超過1小時前）
-        (is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null))[$token] = time() - 3601;
-        (is_array($_SESSION) ? $_SESSION['csrf_token_time'] : (is_object($_SESSION) ? $_SESSION->csrf_token_time : null)) = time() - 3601; // 也設定單一權杖時間以防萬一
+        $_SESSION['csrf_token_pool'][$token] = time() - 3601;
+        $_SESSION['csrf_token_time'] = time() - 3601; // 也設定單一權杖時間以防萬一
 
         $this->expectException(CsrfTokenException::class);
         $this->expectExceptionMessage('CSRF token 已過期');
@@ -83,11 +83,11 @@ class CsrfProtectionServiceTest extends TestCase
     public function updatesTokenAfterSuccessfulValidation(): void
     {
         $token = $this->service->generateToken();
-        $oldToken = (is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token'] : (is_object($_SESSION) ? $_SESSION->csrf_token : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token'] : (is_object($_SESSION) ? $_SESSION->csrf_token : null)) : null;
+        $oldToken = $_SESSION['csrf_token'];
 
         $this->service->validateToken($token);
 
-        $this->assertNotEquals($oldToken, (is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token'] : (is_object($_SESSION) ? $_SESSION->csrf_token : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token'] : (is_object($_SESSION) ? $_SESSION->csrf_token : null)) : null);
+        $this->assertNotEquals($oldToken, $_SESSION['csrf_token']);
     }
 
     #[Test]
@@ -96,9 +96,9 @@ class CsrfProtectionServiceTest extends TestCase
         $this->service->initializeTokenPool();
 
         $this->assertArrayHasKey('csrf_token_pool', $_SESSION);
-        $this->assertIsArray((is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)) : null);
-        $this->assertGreaterThan(0, count((is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)) : null));
-        $this->assertLessThanOrEqual(5, count((is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)) : null)); // TOKEN_POOL_SIZE = 5
+        $this->assertIsArray($_SESSION['csrf_token_pool']);
+        $this->assertGreaterThan(0, count($_SESSION['csrf_token_pool']));
+        $this->assertLessThanOrEqual(5, count($_SESSION['csrf_token_pool'])); // TOKEN_POOL_SIZE = 5
     }
 
     #[Test]
@@ -134,12 +134,12 @@ class CsrfProtectionServiceTest extends TestCase
         $this->service->initializeTokenPool();
         $token = $this->service->generateToken();
 
-        $poolBefore = (is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)) : null;
+        $poolBefore = $_SESSION['csrf_token_pool'];
         $this->assertArrayHasKey($token, $poolBefore);
 
         $this->service->validateToken($token);
 
-        $poolAfter = (is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)) : null;
+        $poolAfter = $_SESSION['csrf_token_pool'];
         $this->assertArrayNotHasKey($token, $poolAfter);
     }
 
@@ -150,11 +150,11 @@ class CsrfProtectionServiceTest extends TestCase
 
         // 手動添加過期權杖
         $expiredToken = bin2hex(random_bytes(32));
-        (is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null))[$expiredToken] = time() - 3601; // 超過1小時
+        $_SESSION['csrf_token_pool'][$expiredToken] = time() - 3601; // 超過1小時
 
         $this->service->generateToken(); // 這會觸發清理
 
-        $this->assertArrayNotHasKey($expiredToken, (is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)) : null);
+        $this->assertArrayNotHasKey($expiredToken, $_SESSION['csrf_token_pool']);
     }
 
     #[Test]
@@ -167,7 +167,7 @@ class CsrfProtectionServiceTest extends TestCase
             $this->service->generateToken();
         }
 
-        $this->assertLessThanOrEqual(5, count((is_array($_SESSION) && isset((is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)))) ? (is_array($_SESSION) ? $_SESSION['csrf_token_pool'] : (is_object($_SESSION) ? $_SESSION->csrf_token_pool : null)) : null));
+        $this->assertLessThanOrEqual(5, count($_SESSION['csrf_token_pool']));
     }
 
     #[Test]
@@ -182,10 +182,10 @@ class CsrfProtectionServiceTest extends TestCase
         $this->assertArrayHasKey('max_size', $status);
         $this->assertArrayHasKey('tokens', $status);
 
-        $this->assertTrue((is_array($status) && isset((is_array($status) ? $status['enabled'] : (is_object($status) ? $status->enabled : null)))) ? (is_array($status) ? $status['enabled'] : (is_object($status) ? $status->enabled : null)) : null);
-        $this->assertGreaterThan(0, (is_array($status) && isset((is_array($status) ? $status['size'] : (is_object($status) ? $status->size : null)))) ? (is_array($status) ? $status['size'] : (is_object($status) ? $status->size : null)) : null);
-        $this->assertEquals(5, (is_array($status) && isset((is_array($status) ? $status['max_size'] : (is_object($status) ? $status->max_size : null)))) ? (is_array($status) ? $status['max_size'] : (is_object($status) ? $status->max_size : null)) : null);
-        $this->assertIsArray((is_array($status) && isset((is_array($status) ? $status['tokens'] : (is_object($status) ? $status->tokens : null)))) ? (is_array($status) ? $status['tokens'] : (is_object($status) ? $status->tokens : null)) : null);
+        $this->assertTrue($status['enabled']);
+        $this->assertGreaterThan(0, $status['size']);
+        $this->assertEquals(5, $status['max_size']);
+        $this->assertIsArray($status['tokens']);
     }
 
     #[Test]

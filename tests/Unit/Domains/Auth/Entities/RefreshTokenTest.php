@@ -731,11 +731,11 @@ class RefreshTokenTest extends TestCase
 
         // Assert
         $this->assertIsArray($result);
-        $this->assertSame($id, (is_array($result) ? $result['id'] : (is_object($result) ? $result->id : null)));
-        $this->assertSame($jti, (is_array($result) ? $result['jti'] : (is_object($result) ? $result->jti : null)));
-        $this->assertSame($userId, (is_array($result) ? $result['user_id'] : (is_object($result) ? $result->user_id : null)));
-        $this->assertSame('2025-08-26 12:00:00', (is_array($result) ? $result['expires_at'] : (is_object($result) ? $result->expires_at : null)));
-        $this->assertSame('2025-08-26 10:00:00', (is_array($result) ? $result['created_at'] : (is_object($result) ? $result->created_at : null)));
+        $this->assertSame($id, $result['id']);
+        $this->assertSame($jti, $result['jti']);
+        $this->assertSame($userId, $result['user_id']);
+        $this->assertSame('2025-08-26 12:00:00', $result['expires_at']);
+        $this->assertSame('2025-08-26 10:00:00', $result['created_at']);
         $this->assertArrayHasKey('device_info', $result);
         $this->assertArrayNotHasKey('token_hash', $result); // 敏感資料不應出現在 JSON 序列化中
     }
@@ -744,7 +744,7 @@ class RefreshTokenTest extends TestCase
     {
         // Arrange
         $id = 123;
-        $jti = 'array<mixed>-test-123';
+        $jti = 'array-test-123';
         $userId = 456;
         $tokenHash = hash('sha256', 'test');
         $expiresAt = new DateTime('2025-08-26 12:00:00');
@@ -763,11 +763,11 @@ class RefreshTokenTest extends TestCase
 
         // Assert
         $this->assertIsArray($result);
-        $this->assertSame($id, (is_array($result) ? $result['id'] : (is_object($result) ? $result->id : null)));
-        $this->assertSame($jti, (is_array($result) ? $result['jti'] : (is_object($result) ? $result->jti : null)));
-        $this->assertSame($userId, (is_array($result) ? $result['user_id'] : (is_object($result) ? $result->user_id : null)));
-        $this->assertSame($tokenHash, (is_array($result) ? $result['token_hash'] : (is_object($result) ? $result->token_hash : null))); // 敏感資料應出現在 toArray 中
-        $this->assertSame('2025-08-26 12:00:00', (is_array($result) ? $result['expires_at'] : (is_object($result) ? $result->expires_at : null)));
+        $this->assertSame($id, $result['id']);
+        $this->assertSame($jti, $result['jti']);
+        $this->assertSame($userId, $result['user_id']);
+        $this->assertSame($tokenHash, $result['token_hash']); // 敏感資料應出現在 toArray 中
+        $this->assertSame('2025-08-26 12:00:00', $result['expires_at']);
     }
 
     // === 字串表示測試 ===

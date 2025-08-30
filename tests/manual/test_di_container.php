@@ -60,15 +60,15 @@ try {
     echo "\n測試 4: 測試路由統計功能\n";
 
     $routingStats = RoutingServiceProvider::getRoutingStats($container);
-    if (isset((is_array($routingStats) ? $routingStats['error'] : (is_object($routingStats) ? $routingStats->error : null)))) {
-        echo '⚠️  路由統計暫時無法取得: ' . ((is_array($routingStats) ? $routingStats['error'] : (is_object($routingStats) ? $routingStats->error : null)) ?? 'Unknown') . "\n";
+    if (isset($routingStats['error'])) {
+        echo "⚠️  路由統計暫時無法取得: {$routingStats['error']}\n";
     } else {
         echo "✅ 路由統計:\n";
-        echo '   - 總路由數: ' . ((is_array($routingStats) ? $routingStats['total_routes'] : (is_object($routingStats) ? $routingStats->total_routes : null)) ?? 0) . "\n";
-        echo '   - 載入檔案數: ' . ((is_array($routingStats) ? $routingStats['files_loaded'] : (is_object($routingStats) ? $routingStats->files_loaded : null)) ?? 0) . "\n";
-        echo '   - 路由群組: ' . implode(', ', array_keys((is_array($routingStats) ? $routingStats['groups'] : (is_object($routingStats) ? $routingStats->groups : null)) ?? [])) . "\n";
+        echo "   - 總路由數: {$routingStats['total_routes']}\n";
+        echo "   - 載入檔案數: {$routingStats['files_loaded']}\n";
+        echo '   - 路由群組: ' . implode(', ', array_keys($routingStats['groups'])) . "\n";
 
-        foreach ((is_array($routingStats) ? $routingStats['groups'] : (is_object($routingStats) ? $routingStats->groups : null)) as $group => $count) {
+        foreach ($routingStats['groups'] as $group => $count) {
             echo "     * {$group}: {$count} 條路由\n";
         }
     }
@@ -111,39 +111,39 @@ try {
 
         private string $uri = '/api/health';
 
-        private array<mixed> $headers = [];
+        private array $headers = [];
 
-        public function getServerParams(): array<mixed>
+        public function getServerParams(): array
         {
             return [];
         }
 
-        public function getCookieParams(): array<mixed>
+        public function getCookieParams(): array
         {
             return [];
         }
 
-        public function withCookieParams(array<mixed> $cookies): self
+        public function withCookieParams(array $cookies): self
         {
             return $this;
         }
 
-        public function getQueryParams(): array<mixed>
+        public function getQueryParams(): array
         {
             return [];
         }
 
-        public function withQueryParams(array<mixed> $query): self
+        public function withQueryParams(array $query): self
         {
             return $this;
         }
 
-        public function getUploadedFiles(): array<mixed>
+        public function getUploadedFiles(): array
         {
             return [];
         }
 
-        public function withUploadedFiles(array<mixed> $uploadedFiles): self
+        public function withUploadedFiles(array $uploadedFiles): self
         {
             return $this;
         }
@@ -158,7 +158,7 @@ try {
             return $this;
         }
 
-        public function getAttributes(): array<mixed>
+        public function getAttributes(): array
         {
             return [];
         }
@@ -311,7 +311,7 @@ try {
             return $this;
         }
 
-        public function getHeaders(): array<mixed>
+        public function getHeaders(): array
         {
             return $this->headers;
         }
@@ -321,7 +321,7 @@ try {
             return isset($this->headers[$name]);
         }
 
-        public function getHeader($name): array<mixed>
+        public function getHeader($name): array
         {
             return $this->headers[$name] ?? [];
         }

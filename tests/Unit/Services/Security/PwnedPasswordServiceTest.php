@@ -22,15 +22,15 @@ class PwnedPasswordServiceTest extends TestCase
         $result = $this->service->isPasswordPwned('password');
 
         // 如果 API 可用，應該檢測到這是被洩露的密碼
-        if ((is_array($result) && isset((is_array($result) ? $result['api_available'] : (is_object($result) ? $result->api_available : null)))) ? (is_array($result) ? $result['api_available'] : (is_object($result) ? $result->api_available : null)) : null) {
-            $this->assertTrue((is_array($result) && isset((is_array($result) ? $result['is_leaked'] : (is_object($result) ? $result->is_leaked : null)))) ? (is_array($result) ? $result['is_leaked'] : (is_object($result) ? $result->is_leaked : null)) : null);
-            $this->assertGreaterThan(0, (is_array($result) && isset((is_array($result) ? $result['count'] : (is_object($result) ? $result->count : null)))) ? (is_array($result) ? $result['count'] : (is_object($result) ? $result->count : null)) : null);
-            $this->assertNull((is_array($result) && isset((is_array($result) ? $result['error'] : (is_object($result) ? $result->error : null)))) ? (is_array($result) ? $result['error'] : (is_object($result) ? $result->error : null)) : null);
+        if ($result['api_available']) {
+            $this->assertTrue($result['is_leaked']);
+            $this->assertGreaterThan(0, $result['count']);
+            $this->assertNull($result['error']);
         } else {
             // API 不可用時不應拋出錯誤
-            $this->assertFalse((is_array($result) && isset((is_array($result) ? $result['is_leaked'] : (is_object($result) ? $result->is_leaked : null)))) ? (is_array($result) ? $result['is_leaked'] : (is_object($result) ? $result->is_leaked : null)) : null);
-            $this->assertEquals(0, (is_array($result) && isset((is_array($result) ? $result['count'] : (is_object($result) ? $result->count : null)))) ? (is_array($result) ? $result['count'] : (is_object($result) ? $result->count : null)) : null);
-            $this->assertNotNull((is_array($result) && isset((is_array($result) ? $result['error'] : (is_object($result) ? $result->error : null)))) ? (is_array($result) ? $result['error'] : (is_object($result) ? $result->error : null)) : null);
+            $this->assertFalse($result['is_leaked']);
+            $this->assertEquals(0, $result['count']);
+            $this->assertNotNull($result['error']);
         }
     }
 
@@ -41,10 +41,10 @@ class PwnedPasswordServiceTest extends TestCase
         $result = $this->service->isPasswordPwned($securePassword);
 
         // 如果 API 可用，這個密碼應該不在洩露清單中
-        if ((is_array($result) && isset((is_array($result) ? $result['api_available'] : (is_object($result) ? $result->api_available : null)))) ? (is_array($result) ? $result['api_available'] : (is_object($result) ? $result->api_available : null)) : null) {
-            $this->assertFalse((is_array($result) && isset((is_array($result) ? $result['is_leaked'] : (is_object($result) ? $result->is_leaked : null)))) ? (is_array($result) ? $result['is_leaked'] : (is_object($result) ? $result->is_leaked : null)) : null);
-            $this->assertEquals(0, (is_array($result) && isset((is_array($result) ? $result['count'] : (is_object($result) ? $result->count : null)))) ? (is_array($result) ? $result['count'] : (is_object($result) ? $result->count : null)) : null);
-            $this->assertNull((is_array($result) && isset((is_array($result) ? $result['error'] : (is_object($result) ? $result->error : null)))) ? (is_array($result) ? $result['error'] : (is_object($result) ? $result->error : null)) : null);
+        if ($result['api_available']) {
+            $this->assertFalse($result['is_leaked']);
+            $this->assertEquals(0, $result['count']);
+            $this->assertNull($result['error']);
         }
     }
 
@@ -68,7 +68,7 @@ class PwnedPasswordServiceTest extends TestCase
 
         $this->assertIsArray($status);
         $this->assertArrayHasKey('available', $status);
-        $this->assertIsBool((is_array($status) && isset((is_array($status) ? $status['available'] : (is_object($status) ? $status->available : null)))) ? (is_array($status) ? $status['available'] : (is_object($status) ? $status->available : null)) : null);
+        $this->assertIsBool($status['available']);
     }
 
     public function testShouldHandleMultiplePasswords(): void
@@ -96,9 +96,9 @@ class PwnedPasswordServiceTest extends TestCase
         $result2 = $this->service->isPasswordPwned('test123');
 
         // 結果應該相同
-        $this->assertEquals((is_array($result1) && isset((is_array($result1) ? $result1['is_leaked'] : (is_object($result1) ? $result1->is_leaked : null)))) ? (is_array($result1) ? $result1['is_leaked'] : (is_object($result1) ? $result1->is_leaked : null)) : null, (is_array($result2) && isset((is_array($result2) ? $result2['is_leaked'] : (is_object($result2) ? $result2->is_leaked : null)))) ? (is_array($result2) ? $result2['is_leaked'] : (is_object($result2) ? $result2->is_leaked : null)) : null);
-        $this->assertEquals((is_array($result1) && isset((is_array($result1) ? $result1['count'] : (is_object($result1) ? $result1->count : null)))) ? (is_array($result1) ? $result1['count'] : (is_object($result1) ? $result1->count : null)) : null, (is_array($result2) && isset((is_array($result2) ? $result2['count'] : (is_object($result2) ? $result2->count : null)))) ? (is_array($result2) ? $result2['count'] : (is_object($result2) ? $result2->count : null)) : null);
-        $this->assertEquals((is_array($result1) && isset((is_array($result1) ? $result1['api_available'] : (is_object($result1) ? $result1->api_available : null)))) ? (is_array($result1) ? $result1['api_available'] : (is_object($result1) ? $result1->api_available : null)) : null, (is_array($result2) && isset((is_array($result2) ? $result2['api_available'] : (is_object($result2) ? $result2->api_available : null)))) ? (is_array($result2) ? $result2['api_available'] : (is_object($result2) ? $result2->api_available : null)) : null);
+        $this->assertEquals($result1['is_leaked'], $result2['is_leaked']);
+        $this->assertEquals($result1['count'], $result2['count']);
+        $this->assertEquals($result1['api_available'], $result2['api_available']);
     }
 
     public function testShouldClearCache(): void

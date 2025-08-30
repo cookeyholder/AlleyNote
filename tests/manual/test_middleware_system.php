@@ -22,7 +22,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 // 建立模擬的 PSR-7 請求和回應
 $request = new class implements ServerRequestInterface {
-    private array<mixed> $attributes = [];
+    private array $attributes = [];
 
     public function getMethod(): string
     {
@@ -52,7 +52,7 @@ $request = new class implements ServerRequestInterface {
         return $this->attributes[$name] ?? $default;
     }
 
-    public function getAttributes(): array<mixed>
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -68,7 +68,7 @@ $request = new class implements ServerRequestInterface {
         return $this;
     }
 
-    public function getHeaders(): array<mixed>
+    public function getHeaders(): array
     {
         return [];
     }
@@ -78,7 +78,7 @@ $request = new class implements ServerRequestInterface {
         return false;
     }
 
-    public function getHeader($name): array<mixed>
+    public function getHeader($name): array
     {
         return [];
     }
@@ -138,37 +138,37 @@ $request = new class implements ServerRequestInterface {
         return $this;
     }
 
-    public function getServerParams(): array<mixed>
+    public function getServerParams(): array
     {
         return [];
     }
 
-    public function getCookieParams(): array<mixed>
+    public function getCookieParams(): array
     {
         return [];
     }
 
-    public function withCookieParams(array<mixed> $cookies): self
+    public function withCookieParams(array $cookies): self
     {
         return $this;
     }
 
-    public function getQueryParams(): array<mixed>
+    public function getQueryParams(): array
     {
         return [];
     }
 
-    public function withQueryParams(array<mixed> $query): self
+    public function withQueryParams(array $query): self
     {
         return $this;
     }
 
-    public function getUploadedFiles(): array<mixed>
+    public function getUploadedFiles(): array
     {
         return [];
     }
 
-    public function withUploadedFiles(array<mixed> $uploadedFiles): self
+    public function withUploadedFiles(array $uploadedFiles): self
     {
         return $this;
     }
@@ -235,7 +235,7 @@ $response = new class implements ResponseInterface {
         return $this;
     }
 
-    public function getHeaders(): array<mixed>
+    public function getHeaders(): array
     {
         return [];
     }
@@ -245,7 +245,7 @@ $response = new class implements ResponseInterface {
         return false;
     }
 
-    public function getHeader($name): array<mixed>
+    public function getHeader($name): array
     {
         return [];
     }
@@ -354,7 +354,7 @@ $finalHandler = new class implements RequestHandlerInterface {
                 return $this;
             }
 
-            public function getHeaders(): array<mixed>
+            public function getHeaders(): array
             {
                 return [];
             }
@@ -364,7 +364,7 @@ $finalHandler = new class implements RequestHandlerInterface {
                 return false;
             }
 
-            public function getHeader($name): array<mixed>
+            public function getHeader($name): array
             {
                 return [];
             }
@@ -466,7 +466,7 @@ $route->addMiddleware(new LoggingMiddleware('路由中介軟體'));
 $route->setName('users.show');
 
 echo '路由模式: ' . $route->getPattern() . "\n";
-echo '路由名稱: ' . ($route instanceof ReflectionNamedType ? $route->getName() : (string)$route) . "\n";
+echo '路由名稱: ' . $route->getName() . "\n";
 echo '中介軟體數量: ' . count($route->getMiddlewares()) . "\n";
 
 // 測試路由匹配

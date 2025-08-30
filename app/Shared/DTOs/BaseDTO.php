@@ -92,9 +92,13 @@ abstract class BaseDTO implements JsonSerializable
     {
         $value = $this->getValue($data, $key, $default);
         if ($value === null) {
-            return null;
+            return $default;
         }
 
-        return is_bool($value) ? $value : in_array($value, [1, '1', 'true', 'on', 'yes'], true);
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        return in_array($value, [1, '1', 'true', 'on', 'yes'], true);
     }
 }

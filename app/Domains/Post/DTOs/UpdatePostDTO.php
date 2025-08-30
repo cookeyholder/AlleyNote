@@ -68,13 +68,24 @@ class UpdatePostDTO extends BaseDTO
         $validatedData = $this->validatePartialData($filteredData);
 
         // 設定屬性（全部都是可選的）
-        // $this->title = isset($data ? $validatedData->title : null))) ? trim((is_array($validatedData) && isset($data ? $validatedData->title : null)))) ? $data ? $validatedData->title : null)) : null) : null; // isset 語法錯誤已註解
-        // $this->content = isset($data ? $validatedData->content : null))) ? trim((is_array($validatedData) && isset($data ? $validatedData->content : null)))) ? $data ? $validatedData->content : null)) : null) : null; // isset 語法錯誤已註解
-        // $this->isPinned = isset($data ? $validatedData->is_pinned : null))) ? $this->convertToBoolean((is_array($validatedData) && isset($data ? $validatedData->is_pinned : null)))) ? $data ? $validatedData->is_pinned : null)) : null) : null; // isset 語法錯誤已註解
+        $this->title = isset($validatedData['title']) ? $this->getString($validatedData, 'title') : null;
+        $this->content = isset($validatedData['content']) ? $this->getString($validatedData, 'content') : null;
+        $this->isPinned = isset($validatedData['is_pinned']) ? $this->getBool($validatedData, 'is_pinned') : null;
 
         // 處理狀態
+        if (isset($validatedData['status'])) {
+            $this->status = PostStatus::from($validatedData['status']);
+        } else {
+            $this->status = null;
+        }
 
         // 處理發布日期，空字串轉為 null
+        if (isset($validatedData['publish_date'])) {
+            $publishDate = $this->getString($validatedData, 'publish_date');
+            $this->publishDate = (!empty($publishDate)) ? $publishDate : null;
+        } else {
+            $this->publishDate = null;
+        }
     }
 
     /**
@@ -189,7 +200,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）.
      */
-    protected function getValidationRules(): mixed
+    protected function getValidationRules(): array
     {
         // UpdatePostDTO 使用動態驗證規則，此方法不直接使用
         return [
@@ -232,28 +243,28 @@ class UpdatePostDTO extends BaseDTO
      * 轉換為陣列格式（供 Repository 使用）
      * 只包含有值的欄位.
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         $data = [];
 
         if ($this->title !== null) {
-            // // $data ? $data->title : null)) = $this->title; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $data['title'] = $this->title;
         }
 
         if ($this->content !== null) {
-            // // $data ? $data->content : null)) = $this->content; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $data['content'] = $this->content;
         }
 
         if ($this->isPinned !== null) {
-            // // $data ? $data->is_pinned : null)) = $this->isPinned; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $data['is_pinned'] = $this->isPinned;
         }
 
         if ($this->status !== null) {
-            // // $data ? $data->status : null)) = $this->status->value; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $data['status'] = $this->status->value;
         }
 
         if ($this->publishDate !== null) {
-            // // $data ? $data->publish_date : null)) = $this->publishDate; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $data['publish_date'] = $this->publishDate;
         }
 
         return $data;

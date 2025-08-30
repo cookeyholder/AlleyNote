@@ -71,12 +71,12 @@ class RefreshTokenExceptionTest extends TestCase
         );
 
         $context = $exception->getContext();
-        $this->assertSame('refresh-123', (is_array($context) ? $context['token_id'] : (is_object($context) ? $context->token_id : null)));
-        $this->assertSame(456, (is_array($context) ? $context['user_id'] : (is_object($context) ? $context->user_id : null)));
-        $this->assertSame('abc123', (is_array($context) ? $context['device_fingerprint'] : (is_object($context) ? $context->device_fingerprint : null)));
-        $this->assertSame(RefreshTokenException::REASON_DEVICE_MISMATCH, (is_array($context) ? $context['reason'] : (is_object($context) ? $context->reason : null)));
+        $this->assertSame('refresh-123', $context['token_id']);
+        $this->assertSame(456, $context['user_id']);
+        $this->assertSame('abc123', $context['device_fingerprint']);
+        $this->assertSame(RefreshTokenException::REASON_DEVICE_MISMATCH, $context['reason']);
         $this->assertArrayHasKey('operation_id', $context);
-        $this->assertStringStartsWith('refresh_', (is_array($context) ? $context['operation_id'] : (is_object($context) ? $context->operation_id : null)));
+        $this->assertStringStartsWith('refresh_', $context['operation_id']);
     }
 
     /**
@@ -269,8 +269,8 @@ class RefreshTokenExceptionTest extends TestCase
         $this->assertSame($tokenId, $exception->getTokenId());
 
         $context = $exception->getContext();
-        $this->assertSame($revokedAt, (is_array($context) ? $context['revoked_at'] : (is_object($context) ? $context->revoked_at : null)));
-        $this->assertSame($reason, (is_array($context) ? $context['revoked_reason'] : (is_object($context) ? $context->revoked_reason : null)));
+        $this->assertSame($revokedAt, $context['revoked_at']);
+        $this->assertSame($reason, $context['revoked_reason']);
         $this->assertArrayHasKey('revoked_at_human', $context);
     }
 
@@ -288,8 +288,8 @@ class RefreshTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isSecurityRelated());
 
         $context = $exception->getContext();
-        $this->assertSame($tokenId, (is_array($context) ? $context['token_id'] : (is_object($context) ? $context->token_id : null)));
-        $this->assertSame($usedAt, (is_array($context) ? $context['used_at'] : (is_object($context) ? $context->used_at : null)));
+        $this->assertSame($tokenId, $context['token_id']);
+        $this->assertSame($usedAt, $context['used_at']);
         $this->assertArrayHasKey('used_at_human', $context);
     }
 
@@ -308,9 +308,9 @@ class RefreshTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isSecurityRelated());
 
         $context = $exception->getContext();
-        $this->assertSame($expectedFingerprint, (is_array($context) ? $context['expected_fingerprint'] : (is_object($context) ? $context->expected_fingerprint : null)));
-        $this->assertSame($actualFingerprint, (is_array($context) ? $context['actual_fingerprint'] : (is_object($context) ? $context->actual_fingerprint : null)));
-        $this->assertSame($tokenId, (is_array($context) ? $context['token_id'] : (is_object($context) ? $context->token_id : null)));
+        $this->assertSame($expectedFingerprint, $context['expected_fingerprint']);
+        $this->assertSame($actualFingerprint, $context['actual_fingerprint']);
+        $this->assertSame($tokenId, $context['token_id']);
     }
 
     /**
@@ -328,9 +328,9 @@ class RefreshTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isSecurityRelated());
 
         $context = $exception->getContext();
-        $this->assertSame($expectedUserId, (is_array($context) ? $context['expected_user_id'] : (is_object($context) ? $context->expected_user_id : null)));
-        $this->assertSame($actualUserId, (is_array($context) ? $context['actual_user_id'] : (is_object($context) ? $context->actual_user_id : null)));
-        $this->assertSame($tokenId, (is_array($context) ? $context['token_id'] : (is_object($context) ? $context->token_id : null)));
+        $this->assertSame($expectedUserId, $context['expected_user_id']);
+        $this->assertSame($actualUserId, $context['actual_user_id']);
+        $this->assertSame($tokenId, $context['token_id']);
     }
 
     /**
@@ -348,8 +348,8 @@ class RefreshTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isRetryable());
 
         $context = $exception->getContext();
-        $this->assertSame($error, (is_array($context) ? $context['storage_error'] : (is_object($context) ? $context->storage_error : null)));
-        $this->assertSame($tokenData, (is_array($context) ? $context['token_data'] : (is_object($context) ? $context->token_data : null)));
+        $this->assertSame($error, $context['storage_error']);
+        $this->assertSame($tokenData, $context['token_data']);
     }
 
     /**
@@ -367,8 +367,8 @@ class RefreshTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isRetryable());
 
         $context = $exception->getContext();
-        $this->assertSame($tokenId, (is_array($context) ? $context['token_id'] : (is_object($context) ? $context->token_id : null)));
-        $this->assertSame($error, (is_array($context) ? $context['deletion_error'] : (is_object($context) ? $context->deletion_error : null)));
+        $this->assertSame($tokenId, $context['token_id']);
+        $this->assertSame($error, $context['deletion_error']);
     }
 
     /**
@@ -385,8 +385,8 @@ class RefreshTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isRetryable());
 
         $context = $exception->getContext();
-        $this->assertSame($oldTokenId, (is_array($context) ? $context['old_token_id'] : (is_object($context) ? $context->old_token_id : null)));
-        $this->assertSame($error, (is_array($context) ? $context['rotation_error'] : (is_object($context) ? $context->rotation_error : null)));
+        $this->assertSame($oldTokenId, $context['old_token_id']);
+        $this->assertSame($error, $context['rotation_error']);
     }
 
     /**
@@ -403,9 +403,9 @@ class RefreshTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isReason(RefreshTokenException::REASON_LIMIT_EXCEEDED));
 
         $context = $exception->getContext();
-        $this->assertSame($userId, (is_array($context) ? $context['user_id'] : (is_object($context) ? $context->user_id : null)));
-        $this->assertSame($currentCount, (is_array($context) ? $context['current_count'] : (is_object($context) ? $context->current_count : null)));
-        $this->assertSame($maxLimit, (is_array($context) ? $context['max_limit'] : (is_object($context) ? $context->max_limit : null)));
+        $this->assertSame($userId, $context['user_id']);
+        $this->assertSame($currentCount, $context['current_count']);
+        $this->assertSame($maxLimit, $context['max_limit']);
     }
 
     /**
@@ -423,9 +423,9 @@ class RefreshTokenExceptionTest extends TestCase
         $this->assertTrue($exception->isSecurityRelated());
 
         $context = $exception->getContext();
-        $this->assertSame($expectedFamily, (is_array($context) ? $context['expected_family'] : (is_object($context) ? $context->expected_family : null)));
-        $this->assertSame($actualFamily, (is_array($context) ? $context['actual_family'] : (is_object($context) ? $context->actual_family : null)));
-        $this->assertSame($tokenId, (is_array($context) ? $context['token_id'] : (is_object($context) ? $context->token_id : null)));
+        $this->assertSame($expectedFamily, $context['expected_family']);
+        $this->assertSame($actualFamily, $context['actual_family']);
+        $this->assertSame($tokenId, $context['token_id']);
     }
 
     /**
@@ -437,10 +437,10 @@ class RefreshTokenExceptionTest extends TestCase
 
         $details = $exception->getErrorDetails();
 
-        $this->assertSame('refresh_token_error', (is_array($details) ? $details['error_type'] : (is_object($details) ? $details->error_type : null)));
-        $this->assertSame(RefreshTokenException::ERROR_CODE, (is_array($details) ? $details['code'] : (is_object($details) ? $details->code : null)));
+        $this->assertSame('refresh_token_error', $details['error_type']);
+        $this->assertSame(RefreshTokenException::ERROR_CODE, $details['code']);
         $this->assertArrayHasKey('context', $details);
-        $this->assertSame(RefreshTokenException::REASON_REVOKED, (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null))['reason']);
+        $this->assertSame(RefreshTokenException::REASON_REVOKED, $details['context']['reason']);
     }
 
     /**
@@ -482,13 +482,13 @@ class RefreshTokenExceptionTest extends TestCase
         $this->assertTrue($exception->requiresReauth());
 
         $context = $exception->getContext();
-        $this->assertSame(123, (is_array($context) ? $context['user_id'] : (is_object($context) ? $context->user_id : null)));
-        $this->assertSame('refresh-token-456', (is_array($context) ? $context['token_id'] : (is_object($context) ? $context->token_id : null)));
-        $this->assertIsArray((is_array($context) ? $context['device_info'] : (is_object($context) ? $context->device_info : null)));
-        $this->assertSame('device-abc-123', (is_array($context) ? $context['device_info'] : (is_object($context) ? $context->device_info : null))['fingerprint']);
+        $this->assertSame(123, $context['user_id']);
+        $this->assertSame('refresh-token-456', $context['token_id']);
+        $this->assertIsArray($context['device_info']);
+        $this->assertSame('device-abc-123', $context['device_info']['fingerprint']);
 
         $details = $exception->getErrorDetails();
-        $this->assertArrayHasKey('user_id', (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null)));
-        $this->assertArrayHasKey('operation_id', (is_array($details) ? $details['context'] : (is_object($details) ? $details->context : null)));
+        $this->assertArrayHasKey('user_id', $details['context']);
+        $this->assertArrayHasKey('operation_id', $details['context']);
     }
 }

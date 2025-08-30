@@ -396,21 +396,21 @@ final class TokenBlacklistEntryTest extends TestCase
             metadata: $metadata,
         );
 
-        $array<mixed> = $entry->toArray();
+        $array = $entry->toArray();
 
-        $this->assertSame($this->validJti, (is_array($array) ? $array['jti'] : (is_object($array) ? $array->jti : null)));
-        $this->assertSame(TokenBlacklistEntry::TOKEN_TYPE_ACCESS, (is_array($array) ? $array['token_type'] : (is_object($array) ? $array->token_type : null)));
-        $this->assertSame($this->futureExpiry->format(DateTimeImmutable::ATOM), (is_array($array) ? $array['expires_at'] : (is_object($array) ? $array->expires_at : null)));
-        $this->assertSame($this->blacklistedTime->format(DateTimeImmutable::ATOM), (is_array($array) ? $array['blacklisted_at'] : (is_object($array) ? $array->blacklisted_at : null)));
-        $this->assertSame(TokenBlacklistEntry::REASON_LOGOUT, (is_array($array) ? $array['reason'] : (is_object($array) ? $array->reason : null)));
-        $this->assertSame('User logged out', (is_array($array) ? $array['reason_description'] : (is_object($array) ? $array->reason_description : null)));
-        $this->assertSame(42, (is_array($array) ? $array['user_id'] : (is_object($array) ? $array->user_id : null)));
-        $this->assertSame('device-123', (is_array($array) ? $array['device_id'] : (is_object($array) ? $array->device_id : null)));
-        $this->assertSame($metadata, (is_array($array) ? $array['metadata'] : (is_object($array) ? $array->metadata : null)));
-        $this->assertFalse((is_array($array) ? $array['is_security_related'] : (is_object($array) ? $array->is_security_related : null)));
-        $this->assertTrue((is_array($array) ? $array['is_user_initiated'] : (is_object($array) ? $array->is_user_initiated : null)));
-        $this->assertTrue((is_array($array) ? $array['is_active'] : (is_object($array) ? $array->is_active : null)));
-        $this->assertIsInt((is_array($array) ? $array['priority'] : (is_object($array) ? $array->priority : null)));
+        $this->assertSame($this->validJti, $array['jti']);
+        $this->assertSame(TokenBlacklistEntry::TOKEN_TYPE_ACCESS, $array['token_type']);
+        $this->assertSame($this->futureExpiry->format(DateTimeImmutable::ATOM), $array['expires_at']);
+        $this->assertSame($this->blacklistedTime->format(DateTimeImmutable::ATOM), $array['blacklisted_at']);
+        $this->assertSame(TokenBlacklistEntry::REASON_LOGOUT, $array['reason']);
+        $this->assertSame('User logged out', $array['reason_description']);
+        $this->assertSame(42, $array['user_id']);
+        $this->assertSame('device-123', $array['device_id']);
+        $this->assertSame($metadata, $array['metadata']);
+        $this->assertFalse($array['is_security_related']);
+        $this->assertTrue($array['is_user_initiated']);
+        $this->assertTrue($array['is_active']);
+        $this->assertIsInt($array['priority']);
     }
 
     public function testToDatabaseArray(): void
@@ -429,14 +429,14 @@ final class TokenBlacklistEntryTest extends TestCase
 
         $dbArray = $entry->toDatabaseArray();
 
-        $this->assertSame($this->validJti, (is_array($dbArray) ? $dbArray['jti'] : (is_object($dbArray) ? $dbArray->jti : null)));
-        $this->assertSame(TokenBlacklistEntry::TOKEN_TYPE_ACCESS, (is_array($dbArray) ? $dbArray['token_type'] : (is_object($dbArray) ? $dbArray->token_type : null)));
-        $this->assertSame($this->futureExpiry->format('Y-m-d H:i:s'), (is_array($dbArray) ? $dbArray['expires_at'] : (is_object($dbArray) ? $dbArray->expires_at : null)));
-        $this->assertSame($this->blacklistedTime->format('Y-m-d H:i:s'), (is_array($dbArray) ? $dbArray['blacklisted_at'] : (is_object($dbArray) ? $dbArray->blacklisted_at : null)));
-        $this->assertSame(TokenBlacklistEntry::REASON_LOGOUT, (is_array($dbArray) ? $dbArray['reason'] : (is_object($dbArray) ? $dbArray->reason : null)));
-        $this->assertSame(42, (is_array($dbArray) ? $dbArray['user_id'] : (is_object($dbArray) ? $dbArray->user_id : null)));
-        $this->assertSame('device-123', (is_array($dbArray) ? $dbArray['device_id'] : (is_object($dbArray) ? $dbArray->device_id : null)));
-        $this->assertSame('{"ip":"192.168.1.1"}', (is_array($dbArray) ? $dbArray['metadata'] : (is_object($dbArray) ? $dbArray->metadata : null)));
+        $this->assertSame($this->validJti, $dbArray['jti']);
+        $this->assertSame(TokenBlacklistEntry::TOKEN_TYPE_ACCESS, $dbArray['token_type']);
+        $this->assertSame($this->futureExpiry->format('Y-m-d H:i:s'), $dbArray['expires_at']);
+        $this->assertSame($this->blacklistedTime->format('Y-m-d H:i:s'), $dbArray['blacklisted_at']);
+        $this->assertSame(TokenBlacklistEntry::REASON_LOGOUT, $dbArray['reason']);
+        $this->assertSame(42, $dbArray['user_id']);
+        $this->assertSame('device-123', $dbArray['device_id']);
+        $this->assertSame('{"ip":"192.168.1.1"}', $dbArray['metadata']);
     }
 
     public function testToDatabaseArrayWithEmptyMetadata(): void
@@ -451,7 +451,7 @@ final class TokenBlacklistEntryTest extends TestCase
 
         $dbArray = $entry->toDatabaseArray();
 
-        $this->assertNull((is_array($dbArray) ? $dbArray['metadata'] : (is_object($dbArray) ? $dbArray->metadata : null)));
+        $this->assertNull($dbArray['metadata']);
     }
 
     public function testJsonSerialize(): void

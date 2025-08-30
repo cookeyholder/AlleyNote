@@ -162,7 +162,7 @@ class PostRepositoryTest extends TestCase
         $this->pdo->exec('CREATE INDEX idx_posts_is_pinned ON posts(is_pinned)');
     }
 
-    private function createTestPost(array<mixed> $data = []): array<mixed>
+    private function createTestPost(array $data = []): array
     {
         $defaultData = [
             'uuid' => 'test-uuid-' . uniqid(),
@@ -209,8 +209,8 @@ class PostRepositoryTest extends TestCase
 
         $this->assertInstanceOf(Post::class, $foundPost);
         $this->assertEquals($id, $foundPost->getId());
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)))) ? (is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)) : null, $foundPost->getTitle());
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)))) ? (is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)) : null, $foundPost->getContent());
+        $this->assertEquals($data['title'], $foundPost->getTitle());
+        $this->assertEquals($data['content'], $foundPost->getContent());
     }
 
     public function testFindNonExistentPost(): void
@@ -307,13 +307,13 @@ class PostRepositoryTest extends TestCase
         $this->assertArrayHasKey('page', $result);
         $this->assertArrayHasKey('perPage', $result);
 
-        $this->assertEquals(15, (is_array($result) && isset((is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)))) ? (is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)) : null);
-        $this->assertEquals($page, (is_array($result) && isset((is_array($result) ? $result['page'] : (is_object($result) ? $result->page : null)))) ? (is_array($result) ? $result['page'] : (is_object($result) ? $result->page : null)) : null);
-        $this->assertEquals($perPage, (is_array($result) && isset((is_array($result) ? $result['perPage'] : (is_object($result) ? $result->perPage : null)))) ? (is_array($result) ? $result['perPage'] : (is_object($result) ? $result->perPage : null)) : null);
-        $this->assertCount($perPage, (is_array($result) && isset((is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)))) ? (is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)) : null);
+        $this->assertEquals(15, $result['total']);
+        $this->assertEquals($page, $result['page']);
+        $this->assertEquals($perPage, $result['perPage']);
+        $this->assertCount($perPage, $result['items']);
 
         // 驗證每個項目都是 Post 實例
-        foreach ((is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)) as $post) {
+        foreach ($result['items'] as $post) {
             $this->assertInstanceOf(Post::class, $post);
         }
     }
@@ -449,9 +449,9 @@ class PostRepositoryTest extends TestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('items', $result);
         $this->assertArrayHasKey('total', $result);
-        $this->assertEquals(1, (is_array($result) && isset((is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)))) ? (is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)) : null);
-        $this->assertCount(1, (is_array($result) && isset((is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)))) ? (is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null)) : null);
-        $this->assertInstanceOf(Post::class, (is_array($result) ? $result['items'] : (is_object($result) ? $result->items : null))[0]);
+        $this->assertEquals(1, $result['total']);
+        $this->assertCount(1, $result['items']);
+        $this->assertInstanceOf(Post::class, $result['items'][0]);
     }
 
     public function testSecurityValidationForDisallowedFields(): void
@@ -490,7 +490,7 @@ class PostRepositoryTest extends TestCase
 
         // 分頁查詢也不應包含已刪除的文章
         $result = $this->repository->paginate(1, 10);
-        $this->assertEquals(0, (is_array($result) && isset((is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)))) ? (is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)) : null);
+        $this->assertEquals(0, $result['total']);
     }
 
     public function testTransactionRollbackOnError(): void

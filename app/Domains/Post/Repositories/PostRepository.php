@@ -160,19 +160,19 @@ class PostRepository implements PostRepositoryInterface
     private function preparePostData(array $result): mixed
     {
         return [
-            // 'id' => (int) (is_array($result) && isset($data ? $result->id : null)))) ? $data ? $result->id : null)) : null, // isset 語法錯誤已註解
-            // 'uuid' => (is_array($result) && isset($data ? $result->uuid : null)))) ? $data ? $result->uuid : null)) : null, // isset 語法錯誤已註解
-            // 'seq_number' => (int) (is_array($result) && isset($data ? $result->seq_number : null)))) ? $data ? $result->seq_number : null)) : null, // isset 語法錯誤已註解
-            // 'title' => (is_array($result) && isset($data ? $result->title : null)))) ? $data ? $result->title : null)) : null, // isset 語法錯誤已註解
-            // 'content' => (is_array($result) && isset($data ? $result->content : null)))) ? $data ? $result->content : null)) : null, // isset 語法錯誤已註解
-            // 'user_id' => (int) (is_array($result) && isset($data ? $result->user_id : null)))) ? $data ? $result->user_id : null)) : null, // isset 語法錯誤已註解
-            // 'user_ip' => (is_array($result) && isset($data ? $result->user_ip : null)))) ? $data ? $result->user_ip : null)) : null, // isset 語法錯誤已註解
-            // 'views' => (int) (is_array($result) && isset($data ? $result->views : null)))) ? $data ? $result->views : null)) : null, // isset 語法錯誤已註解
-            // 'is_pinned' => (bool) (is_array($result) && isset($data ? $result->is_pinned : null)))) ? $data ? $result->is_pinned : null)) : null, // isset 語法錯誤已註解
-            // 'status' => (is_array($result) && isset($data ? $result->status : null)))) ? $data ? $result->status : null)) : null, // isset 語法錯誤已註解
-            // 'publish_date' => (is_array($result) && isset($data ? $result->publish_date : null)))) ? $data ? $result->publish_date : null)) : null, // isset 語法錯誤已註解
-            // 'created_at' => (is_array($result) && isset($data ? $result->created_at : null)))) ? $data ? $result->created_at : null)) : null, // isset 語法錯誤已註解
-            // 'updated_at' => (is_array($result) && isset($data ? $result->updated_at : null)))) ? $data ? $result->updated_at : null)) : null, // isset 語法錯誤已註解
+            'id' => (int) ($result['id'] ?? 0),
+            'uuid' => $result['uuid'] ?? '',
+            'seq_number' => (string) ($result['seq_number'] ?? ''),
+            'title' => $result['title'] ?? '',
+            'content' => $result['content'] ?? '',
+            'user_id' => (int) ($result['user_id'] ?? 0),
+            'user_ip' => $result['user_ip'] ?? null,
+            'views' => (int) ($result['views'] ?? 0),
+            'is_pinned' => (bool) ($result['is_pinned'] ?? false),
+            'status' => $result['status'] ?? 'draft',
+            'publish_date' => $result['publish_date'] ?? null,
+            'created_at' => $result['created_at'] ?? null,
+            'updated_at' => $result['updated_at'] ?? null,
         ];
     }
 
@@ -186,13 +186,13 @@ class PostRepository implements PostRepositoryInterface
         return [
             'uuid' => generate_uuid(),
             'seq_number' => null,
-            // 'title' => (is_array($data && isset($data ? $data->title : null)))) ? $data ? $data->title : null)) : null, // isset 語法錯誤已註解
-            // 'content' => (is_array($data) && isset($data ? $data->content : null)))) ? $data ? $data->content : null)) : null, // isset 語法錯誤已註解
-            // 'user_id' => (is_array($data) && isset($data ? $data->user_id : null)))) ? $data ? $data->user_id : null)) : null, // isset 語法錯誤已註解
-            'user_ip' => null,
-            'is_pinned' => ($data ? $data->is_pinned : null) ?? false,
-            'status' => PostStatus::DRAFT->value,
-            'publish_date' => ($data ? $data->publish_date : null) ?? $now,
+            'title' => $data['title'] ?? '',
+            'content' => $data['content'] ?? '',
+            'user_id' => $data['user_id'] ?? 0,
+            'user_ip' => $data['user_ip'] ?? null,
+            'is_pinned' => $data['is_pinned'] ?? false,
+            'status' => $data['status'] ?? PostStatus::DRAFT->value,
+            'publish_date' => $data['publish_date'] ?? null,
             'created_at' => $now,
             'updated_at' => $now,
         ];
@@ -340,7 +340,10 @@ class PostRepository implements PostRepositoryInterface
 
             // 新增文章
             $stmt = $this->db->prepare(self::SQL_INSERT_POST);
-            $stmt->execute($data);
+            if (!$stmt->execute($data)) {
+                $errorInfo = $stmt->errorInfo();
+                throw new PDOException('Failed to insert post: ' . $errorInfo[2]);
+            }
             $postId = (int) $this->db->lastInsertId();
 
             // 指派標籤（如果有的話）
@@ -443,7 +446,7 @@ class PostRepository implements PostRepositoryInterface
         return $stmt->execute([$id]);
     }
 
-    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): mixed
+    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
@@ -522,7 +525,7 @@ class PostRepository implements PostRepositoryInterface
         }, self::CACHE_TTL);
     }
 
-    public function getPinnedPosts(int $limit = 5): mixed
+    public function getPinnedPosts(int $limit = 5): array
     {
         $cacheKey = PostCacheKeyService::pinnedPosts();
 
@@ -541,7 +544,7 @@ class PostRepository implements PostRepositoryInterface
         }, self::CACHE_TTL);
     }
 
-    public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): mixed
+    public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
         $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
 

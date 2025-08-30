@@ -350,21 +350,21 @@ final class DeviceInfoTest extends TestCase
             isDesktop: true,
         );
 
-        $array<mixed> = $deviceInfo->toArray();
+        $array = $deviceInfo->toArray();
 
-        $this->assertSame($this->validDeviceId, (is_array($array) ? $array['device_id'] : (is_object($array) ? $array->device_id : null)));
-        $this->assertSame($this->validDeviceName, (is_array($array) ? $array['device_name'] : (is_object($array) ? $array->device_name : null)));
-        $this->assertSame($this->validUserAgent, (is_array($array) ? $array['user_agent'] : (is_object($array) ? $array->user_agent : null)));
-        $this->assertSame($this->validIpAddress, (is_array($array) ? $array['ip_address'] : (is_object($array) ? $array->ip_address : null)));
-        $this->assertSame('Windows', (is_array($array) ? $array['platform'] : (is_object($array) ? $array->platform : null)));
-        $this->assertSame('Chrome', (is_array($array) ? $array['browser'] : (is_object($array) ? $array->browser : null)));
-        $this->assertSame('120.0.0.0', (is_array($array) ? $array['browser_version'] : (is_object($array) ? $array->browser_version : null)));
-        $this->assertSame('10.0', (is_array($array) ? $array['os_version'] : (is_object($array) ? $array->os_version : null)));
-        $this->assertFalse((is_array($array) ? $array['is_mobile'] : (is_object($array) ? $array->is_mobile : null)));
-        $this->assertFalse((is_array($array) ? $array['is_tablet'] : (is_object($array) ? $array->is_tablet : null)));
-        $this->assertTrue((is_array($array) ? $array['is_desktop'] : (is_object($array) ? $array->is_desktop : null)));
-        $this->assertSame('desktop', (is_array($array) ? $array['device_type'] : (is_object($array) ? $array->device_type : null)));
-        $this->assertIsString((is_array($array) ? $array['fingerprint'] : (is_object($array) ? $array->fingerprint : null)));
+        $this->assertSame($this->validDeviceId, $array['device_id']);
+        $this->assertSame($this->validDeviceName, $array['device_name']);
+        $this->assertSame($this->validUserAgent, $array['user_agent']);
+        $this->assertSame($this->validIpAddress, $array['ip_address']);
+        $this->assertSame('Windows', $array['platform']);
+        $this->assertSame('Chrome', $array['browser']);
+        $this->assertSame('120.0.0.0', $array['browser_version']);
+        $this->assertSame('10.0', $array['os_version']);
+        $this->assertFalse($array['is_mobile']);
+        $this->assertFalse($array['is_tablet']);
+        $this->assertTrue($array['is_desktop']);
+        $this->assertSame('desktop', $array['device_type']);
+        $this->assertIsString($array['fingerprint']);
     }
 
     public function testToSummary(): void
@@ -382,12 +382,12 @@ final class DeviceInfoTest extends TestCase
 
         $summary = $deviceInfo->toSummary();
 
-        $this->assertSame($this->validDeviceId, (is_array($summary) ? $summary['device_id'] : (is_object($summary) ? $summary->device_id : null)));
-        $this->assertSame($this->validDeviceName, (is_array($summary) ? $summary['device_name'] : (is_object($summary) ? $summary->device_name : null)));
-        $this->assertSame('Windows 10.0', (is_array($summary) ? $summary['platform'] : (is_object($summary) ? $summary->platform : null)));
-        $this->assertSame('Chrome 120.0.0.0', (is_array($summary) ? $summary['browser'] : (is_object($summary) ? $summary->browser : null)));
-        $this->assertSame('desktop', (is_array($summary) ? $summary['device_type'] : (is_object($summary) ? $summary->device_type : null)));
-        $this->assertSame('192.168.1.xxx', (is_array($summary) ? $summary['ip_address_masked'] : (is_object($summary) ? $summary->ip_address_masked : null)));
+        $this->assertSame($this->validDeviceId, $summary['device_id']);
+        $this->assertSame($this->validDeviceName, $summary['device_name']);
+        $this->assertSame('Windows 10.0', $summary['platform']);
+        $this->assertSame('Chrome 120.0.0.0', $summary['browser']);
+        $this->assertSame('desktop', $summary['device_type']);
+        $this->assertSame('192.168.1.xxx', $summary['ip_address_masked']);
         $this->assertArrayNotHasKey('user_agent', $summary);
     }
 
@@ -467,7 +467,7 @@ final class DeviceInfoTest extends TestCase
         );
 
         $summary = $deviceInfo->toSummary();
-        $this->assertSame('192.168.1.xxx', (is_array($summary) ? $summary['ip_address_masked'] : (is_object($summary) ? $summary->ip_address_masked : null)));
+        $this->assertSame('192.168.1.xxx', $summary['ip_address_masked']);
     }
 
     public function testMaskIpAddressIPv6(): void
@@ -480,7 +480,7 @@ final class DeviceInfoTest extends TestCase
         );
 
         $summary = $deviceInfo->toSummary();
-        $this->assertSame('2001:db8::xxxx', (is_array($summary) ? $summary['ip_address_masked'] : (is_object($summary) ? $summary->ip_address_masked : null)));
+        $this->assertSame('2001:db8::xxxx', $summary['ip_address_masked']);
     }
 
     public function testConstructorWithEmptyDeviceId(): void

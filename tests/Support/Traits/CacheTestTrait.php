@@ -9,8 +9,8 @@ use Mockery;
 use Mockery\MockInterface;
 
 /**
- * 快取測試功能 Trait.
- *
+ * 快取測試功能 Trait
+ * 
  * 提供模擬快取服務的設定和測試輔助方法
  */
 trait CacheTestTrait
@@ -18,12 +18,12 @@ trait CacheTestTrait
     protected CacheService|MockInterface $cache;
 
     /**
-     * @var array<mixed>
+     * @var array<string, mixed>
      */
     protected static array $cacheStorage = [];
 
     /**
-     * 設定模擬快取服務.
+     * 設定模擬快取服務
      */
     protected function setUpCache(): void
     {
@@ -43,7 +43,6 @@ trait CacheTestTrait
         $this->cache->shouldReceive('set')
             ->andReturnUsing(function (string $key, $value, ?int $ttl = null): bool {
                 self::$cacheStorage[$key] = $value;
-
                 return true;
             });
 
@@ -51,7 +50,6 @@ trait CacheTestTrait
         $this->cache->shouldReceive('put')
             ->andReturnUsing(function (string $key, $value, ?int $ttl = null): bool {
                 self::$cacheStorage[$key] = $value;
-
                 return true;
             });
 
@@ -65,14 +63,12 @@ trait CacheTestTrait
         $this->cache->shouldReceive('forget')
             ->andReturnUsing(function (string $key): bool {
                 unset(self::$cacheStorage[$key]);
-
                 return true;
             });
 
         $this->cache->shouldReceive('delete')
             ->andReturnUsing(function (string $key): bool {
                 unset(self::$cacheStorage[$key]);
-
                 return true;
             });
 
@@ -80,7 +76,6 @@ trait CacheTestTrait
         $this->cache->shouldReceive('clear')
             ->andReturnUsing(function (): bool {
                 self::$cacheStorage = [];
-
                 return true;
             });
 
@@ -94,13 +89,12 @@ trait CacheTestTrait
                 if (!array_key_exists($key, self::$cacheStorage)) {
                     self::$cacheStorage[$key] = $callback();
                 }
-
                 return self::$cacheStorage[$key];
             });
     }
 
     /**
-     * 清理快取.
+     * 清理快取
      */
     protected function tearDownCache(): void
     {
@@ -108,9 +102,9 @@ trait CacheTestTrait
     }
 
     /**
-     * 取得目前快取中的所有資料.
-     *
-     * @return array<mixed>
+     * 取得目前快取中的所有資料
+     * 
+     * @return array<string, mixed>
      */
     protected function getCacheStorage(): array
     {
@@ -118,7 +112,7 @@ trait CacheTestTrait
     }
 
     /**
-     * 檢查特定的快取鍵是否存在.
+     * 檢查特定的快取鍵是否存在
      */
     protected function assertCacheHasKey(string $key): void
     {
@@ -126,7 +120,7 @@ trait CacheTestTrait
     }
 
     /**
-     * 檢查特定的快取鍵是否不存在.
+     * 檢查特定的快取鍵是否不存在
      */
     protected function assertCacheNotHasKey(string $key): void
     {
@@ -134,7 +128,7 @@ trait CacheTestTrait
     }
 
     /**
-     * 檢查快取值是否相符.
+     * 檢查快取值是否相符
      */
     protected function assertCacheValue(string $key, mixed $expectedValue): void
     {
@@ -143,7 +137,7 @@ trait CacheTestTrait
     }
 
     /**
-     * 檢查快取是否為空.
+     * 檢查快取是否為空
      */
     protected function assertCacheIsEmpty(): void
     {
@@ -151,7 +145,7 @@ trait CacheTestTrait
     }
 
     /**
-     * 設定特定快取值（用於測試準備）.
+     * 設定特定快取值（用於測試準備）
      */
     protected function setCacheValue(string $key, mixed $value): void
     {

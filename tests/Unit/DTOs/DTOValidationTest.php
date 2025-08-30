@@ -510,7 +510,7 @@ class DTOValidationTest extends TestCase
         $dirtyPostData = [
             'title' => '  測試標題  ',
             'content' => '  內容  ',
-            'user_id' => 1,
+            'user_id' => '1',
             'user_ip' => '192.168.1.1',
         ];
 
@@ -575,7 +575,7 @@ class DTOValidationTest extends TestCase
         // 測試 toArray
         $arrayData = $dto->toArray();
         $this->assertIsArray($arrayData);
-        $this->assertEquals($originalData['title'] ?? null, $arrayData['title'] ?? null);
+        $this->assertEquals($originalData['title'], $arrayData['title']);
 
         // 測試 JSON 序列化
         $json = json_encode($dto);
@@ -583,7 +583,7 @@ class DTOValidationTest extends TestCase
 
         $decoded = json_decode($json, true);
         $this->assertIsArray($decoded);
-        $this->assertEquals($originalData['title'] ?? null, $decoded['title'] ?? null);
+        $this->assertEquals($originalData['title'], $decoded['title']);
     }
 
     /**

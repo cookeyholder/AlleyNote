@@ -107,9 +107,9 @@ class DTOValidationIntegrationTest extends TestCase
 
         $dto = new UpdatePostDTO($this->validator, $fullData);
         $this->assertNotNull($dto);
-        $array<mixed> = $dto->toArray();
-        $this->assertEquals('完整更新的標題', (is_array($array<mixed>) && isset((is_array($array) ? $array['title'] : (is_object($array) ? $array->title : null)))) ? (is_array($array) ? $array['title'] : (is_object($array) ? $array->title : null)) : null);
-        $this->assertEquals('published', (is_array($array<mixed>) && isset((is_array($array) ? $array['status'] : (is_object($array) ? $array->status : null)))) ? (is_array($array) ? $array['status'] : (is_object($array) ? $array->status : null)) : null);
+        $array = $dto->toArray();
+        $this->assertEquals('完整更新的標題', $array['title']);
+        $this->assertEquals('published', $array['status']);
     }
 
     /**
@@ -261,8 +261,8 @@ class DTOValidationIntegrationTest extends TestCase
         $this->assertNotFalse($json);
 
         $decoded = json_decode($json, true);
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)))) ? (is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)) : null, (is_array($decoded) && isset((is_array($decoded) ? $decoded['title'] : (is_object($decoded) ? $decoded->title : null)))) ? (is_array($decoded) ? $decoded['title'] : (is_object($decoded) ? $decoded->title : null)) : null);
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)))) ? (is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)) : null, (is_array($decoded) && isset((is_array($decoded) ? $decoded['content'] : (is_object($decoded) ? $decoded->content : null)))) ? (is_array($decoded) ? $decoded['content'] : (is_object($decoded) ? $decoded->content : null)) : null);
-        $this->assertEquals((is_array($data) && isset((is_array($data) ? $data['status'] : (is_object($data) ? $data->status : null)))) ? (is_array($data) ? $data['status'] : (is_object($data) ? $data->status : null)) : null, (is_array($decoded) && isset((is_array($decoded) ? $decoded['status'] : (is_object($decoded) ? $decoded->status : null)))) ? (is_array($decoded) ? $decoded['status'] : (is_object($decoded) ? $decoded->status : null)) : null);
+        $this->assertEquals($data['title'], $decoded['title']);
+        $this->assertEquals($data['content'], $decoded['content']);
+        $this->assertEquals($data['status'], $decoded['status']);
     }
 }

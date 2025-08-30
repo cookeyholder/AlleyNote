@@ -195,13 +195,13 @@ class BaseDTOTest extends TestCase
         $data = [
             'string' => 'value',
             'number' => 42,
-            'array<mixed>' => [1, 2, 3],
+            'array' => [1, 2, 3],
             'null_value' => null,
         ];
 
         $this->assertEquals('value', $dto->testGetValue($data, 'string'));
         $this->assertEquals(42, $dto->testGetValue($data, 'number'));
-        $this->assertEquals([1, 2, 3], $dto->testGetValue($data, 'array<mixed>'));
+        $this->assertEquals([1, 2, 3], $dto->testGetValue($data, 'array'));
         $this->assertNull($dto->testGetValue($data, 'null_value'));
         $this->assertEquals('default', $dto->testGetValue($data, 'missing', 'default'));
         $this->assertNull($dto->testGetValue($data, 'missing'));

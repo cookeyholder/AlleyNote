@@ -93,11 +93,11 @@ class SqlInjectionTest extends TestCase
 
         // 驗證結果：確保SQL注入攻擊被正確防護
         // 搜尋應該安全地處理特殊字符，不會返回所有資料
-        $this->assertLessThanOrEqual(3, (is_array($results) && isset((is_array($results) ? $results['total'] : (is_object($results) ? $results->total : null)))) ? (is_array($results) ? $results['total'] : (is_object($results) ? $results->total : null)) : null, 'SQL注入攻擊不應該返回所有資料');
+        $this->assertLessThanOrEqual(3, $results['total'], 'SQL注入攻擊不應該返回所有資料');
 
         // 確保資料庫完整性
         $totalPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
-        $this->assertEquals(3, (is_array($totalPosts) && isset((is_array($totalPosts) ? $totalPosts['count'] : (is_object($totalPosts) ? $totalPosts->count : null)))) ? (is_array($totalPosts) ? $totalPosts['count'] : (is_object($totalPosts) ? $totalPosts->count : null)) : null, '資料表應該保持完整');
+        $this->assertEquals(3, $totalPosts['count'], '資料表應該保持完整');
     }
 
     #[Test]
@@ -131,7 +131,7 @@ class SqlInjectionTest extends TestCase
 
         // 測試正常的查詢
         $normalResults = $this->repository->paginate(1, 10, ['user_id' => $normalUserId]);
-        $this->assertGreaterThan(0, (is_array($normalResults) && isset((is_array($normalResults) ? $normalResults['total'] : (is_object($normalResults) ? $normalResults->total : null)))) ? (is_array($normalResults) ? $normalResults['total'] : (is_object($normalResults) ? $normalResults->total : null)) : null);
+        $this->assertGreaterThan(0, $normalResults['total']);
 
         // 嘗試用字串作為 user_id（應該被過濾或拒絕）
         $maliciousResults = $this->repository->paginate(1, 10, ['user_id' => $maliciousString]);
@@ -146,7 +146,7 @@ class SqlInjectionTest extends TestCase
 
         // 確認原始資料仍然存在
         $allPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
-        $this->assertEquals(3, (is_array($allPosts) && isset((is_array($allPosts) ? $allPosts['count'] : (is_object($allPosts) ? $allPosts->count : null)))) ? (is_array($allPosts) ? $allPosts['count'] : (is_object($allPosts) ? $allPosts->count : null)) : null); // 我們插入的 3 筆測試資料
+        $this->assertEquals(3, $allPosts['count']); // 我們插入的 3 筆測試資料
     }
 
     #[Test]
@@ -164,12 +164,12 @@ class SqlInjectionTest extends TestCase
             $results = $this->repository->paginate(1, 10, ['search' => $maliciousInput]);
 
             // 確保搜尋不會因為SQL注入而回傳所有資料
-            $this->assertLessThanOrEqual(3, (is_array($results) && isset((is_array($results) ? $results['total'] : (is_object($results) ? $results->total : null)))) ? (is_array($results) ? $results['total'] : (is_object($results) ? $results->total : null)) : null, "SQL injection should not return all data: {$maliciousInput}");
+            $this->assertLessThanOrEqual(3, $results['total'], "SQL injection should not return all data: {$maliciousInput}");
         }
 
         // 確認資料表和原始資料仍然完整
         $totalPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
-        $this->assertEquals(3, (is_array($totalPosts) && isset((is_array($totalPosts) ? $totalPosts['count'] : (is_object($totalPosts) ? $totalPosts->count : null)))) ? (is_array($totalPosts) ? $totalPosts['count'] : (is_object($totalPosts) ? $totalPosts->count : null)) : null);
+        $this->assertEquals(3, $totalPosts['count']);
     }
 
     protected function tearDown(): void

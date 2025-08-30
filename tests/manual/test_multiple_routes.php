@@ -54,16 +54,16 @@ $testCases = [
 ];
 
 foreach ($testCases as $index => $testCase) {
-    echo '測試 ' . ($index + 1) . ': ' . ((is_array($testCase) ? $testCase['name'] : (is_object($testCase) ? $testCase->name : null)) ?? 'Unknown') . "\n";
+    echo '測試 ' . ($index + 1) . ": {$testCase['name']}\n";
 
     try {
         // 建立測試請求
-        $request = new class (((is_array($testCase) ? $testCase['method'] : (is_object($testCase) ? $testCase->method : null)) ?? 'GET'), ((is_array($testCase) ? $testCase['uri'] : (is_object($testCase) ? $testCase->uri : null)) ?? '/')) implements ServerRequestInterface {
+        $request = new class ($testCase['method'], $testCase['uri']) implements ServerRequestInterface {
             private string $method;
 
             private string $uri;
 
-            private array<mixed> $headers = [];
+            private array $headers = [];
 
             public function __construct(string $method, string $uri)
             {
@@ -71,37 +71,37 @@ foreach ($testCases as $index => $testCase) {
                 $this->uri = $uri;
             }
 
-            public function getServerParams(): array<mixed>
+            public function getServerParams(): array
             {
                 return [];
             }
 
-            public function getCookieParams(): array<mixed>
+            public function getCookieParams(): array
             {
                 return [];
             }
 
-            public function withCookieParams(array<mixed> $cookies): self
+            public function withCookieParams(array $cookies): self
             {
                 return $this;
             }
 
-            public function getQueryParams(): array<mixed>
+            public function getQueryParams(): array
             {
                 return [];
             }
 
-            public function withQueryParams(array<mixed> $query): self
+            public function withQueryParams(array $query): self
             {
                 return $this;
             }
 
-            public function getUploadedFiles(): array<mixed>
+            public function getUploadedFiles(): array
             {
                 return [];
             }
 
-            public function withUploadedFiles(array<mixed> $uploadedFiles): self
+            public function withUploadedFiles(array $uploadedFiles): self
             {
                 return $this;
             }
@@ -116,7 +116,7 @@ foreach ($testCases as $index => $testCase) {
                 return $this;
             }
 
-            public function getAttributes(): array<mixed>
+            public function getAttributes(): array
             {
                 return [];
             }
@@ -271,7 +271,7 @@ foreach ($testCases as $index => $testCase) {
                 return $this;
             }
 
-            public function getHeaders(): array<mixed>
+            public function getHeaders(): array
             {
                 return $this->headers;
             }
@@ -281,7 +281,7 @@ foreach ($testCases as $index => $testCase) {
                 return isset($this->headers[$name]);
             }
 
-            public function getHeader($name): array<mixed>
+            public function getHeader($name): array
             {
                 return $this->headers[$name] ?? [];
             }

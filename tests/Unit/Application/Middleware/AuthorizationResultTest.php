@@ -177,10 +177,10 @@ class AuthorizationResultTest extends TestCase
         $jsonString = json_encode($result);
         $decodedData = json_decode($jsonString, true);
 
-        $this->assertSame(false, $decodedData['allowed'] ?? null);
-        $this->assertSame('測試 JSON', $decodedData['reason'] ?? null);
-        $this->assertSame('TEST_JSON', $decodedData['code'] ?? null);
-        $this->assertSame(['json_rule'], $decodedData['applied_rules'] ?? null);
+        $this->assertSame(false, $decodedData['allowed']);
+        $this->assertSame('測試 JSON', $decodedData['reason']);
+        $this->assertSame('TEST_JSON', $decodedData['code']);
+        $this->assertSame(['json_rule'], $decodedData['applied_rules']);
     }
 
     public function testEqualsMethod(): void

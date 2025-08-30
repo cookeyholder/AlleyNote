@@ -79,8 +79,8 @@ final class JwtAuthorizationMiddlewareTest extends TestCase
 
         $this->assertSame(403, $response->getStatusCode());
         $responseData = json_decode((string) $response->getBody(), true);
-        $this->assertFalse($responseData['success'] ?? null);
-        $this->assertSame('NOT_AUTHENTICATED', $responseData['code'] ?? null);
+        $this->assertFalse($responseData['success']);
+        $this->assertSame('NOT_AUTHENTICATED', $responseData['code']);
     }
 
     public function testAllowsSuperAdminAccess(): void
@@ -129,7 +129,7 @@ final class JwtAuthorizationMiddlewareTest extends TestCase
 
         $this->assertSame(403, $response->getStatusCode());
         $responseData = json_decode((string) $response->getBody(), true);
-        $this->assertFalse($responseData['success'] ?? null);
+        $this->assertFalse($responseData['success']);
     }
 
     public function testAllowsAccessWithValidDirectPermissions(): void

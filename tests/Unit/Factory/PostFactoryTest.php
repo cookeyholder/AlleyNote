@@ -13,9 +13,9 @@ class PostFactoryTest extends TestCase
     {
         $data = PostFactory::make();
 
-        $this->assertEquals('範例文章', (is_array($data) && isset((is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)))) ? (is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)) : null);
-        $this->assertEquals('這是一篇範例文章的內容', (is_array($data) && isset((is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)))) ? (is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)) : null);
-        $this->assertEquals(1, (is_array($data) && isset((is_array($data) ? $data['id'] : (is_object($data) ? $data->id : null)))) ? (is_array($data) ? $data['id'] : (is_object($data) ? $data->id : null)) : null);
+        $this->assertEquals('範例文章', $data['title']);
+        $this->assertEquals('這是一篇範例文章的內容', $data['content']);
+        $this->assertEquals(1, $data['id']);
     }
 
     public function testItCanCreatePostInDatabase(): void
@@ -25,8 +25,8 @@ class PostFactoryTest extends TestCase
             'content' => '客製化內容',
         ]);
 
-        $this->assertEquals('客製化標題', (is_array($data) && isset((is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)))) ? (is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)) : null);
-        $this->assertEquals('客製化內容', (is_array($data) && isset((is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)))) ? (is_array($data) ? $data['content'] : (is_object($data) ? $data->content : null)) : null);
+        $this->assertEquals('客製化標題', $data['title']);
+        $this->assertEquals('客製化內容', $data['content']);
     }
 
     public function testItCanOverrideDefaultAttributes(): void
@@ -36,7 +36,7 @@ class PostFactoryTest extends TestCase
             'title' => '自訂標題',
         ]);
 
-        $this->assertEquals(999, (is_array($data) && isset((is_array($data) ? $data['id'] : (is_object($data) ? $data->id : null)))) ? (is_array($data) ? $data['id'] : (is_object($data) ? $data->id : null)) : null);
-        $this->assertEquals('自訂標題', (is_array($data) && isset((is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)))) ? (is_array($data) ? $data['title'] : (is_object($data) ? $data->title : null)) : null);
+        $this->assertEquals(999, $data['id']);
+        $this->assertEquals('自訂標題', $data['title']);
     }
 }

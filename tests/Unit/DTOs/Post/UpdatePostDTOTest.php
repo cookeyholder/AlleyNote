@@ -287,17 +287,17 @@ class UpdatePostDTOTest extends TestCase
         ];
 
         $dto = new UpdatePostDTO($this->validator, $data);
-        $array<mixed> = $dto->toArray();
+        $array = $dto->toArray();
 
         $expected = [
             'title' => '新標題',
             'is_pinned' => true,
         ];
 
-        $this->assertEquals($expected, $array<mixed>);
-        $this->assertArrayNotHasKey('content', $array<mixed>);
-        $this->assertArrayNotHasKey('status', $array<mixed>);
-        $this->assertArrayNotHasKey('publish_date', $array<mixed>);
+        $this->assertEquals($expected, $array);
+        $this->assertArrayNotHasKey('content', $array);
+        $this->assertArrayNotHasKey('status', $array);
+        $this->assertArrayNotHasKey('publish_date', $array);
     }
 
     public function testToArrayReturnsEmptyArrayWhenNoChanges(): void
@@ -305,9 +305,9 @@ class UpdatePostDTOTest extends TestCase
         $data = [];
 
         $dto = new UpdatePostDTO($this->validator, $data);
-        $array<mixed> = $dto->toArray();
+        $array = $dto->toArray();
 
-        $this->assertEquals([], $array<mixed>);
+        $this->assertEquals([], $array);
     }
 
     public function testToArrayWithAllFields(): void
@@ -321,7 +321,7 @@ class UpdatePostDTOTest extends TestCase
         ];
 
         $dto = new UpdatePostDTO($this->validator, $data);
-        $array<mixed> = $dto->toArray();
+        $array = $dto->toArray();
 
         $expected = [
             'title' => '完整更新',
@@ -331,7 +331,7 @@ class UpdatePostDTOTest extends TestCase
             'publish_date' => '2024-12-01T10:30:00Z',
         ];
 
-        $this->assertEquals($expected, $array<mixed>);
+        $this->assertEquals($expected, $array);
     }
 
     public function testHasChangesReturnsTrueWhenDataExists(): void

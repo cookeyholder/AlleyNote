@@ -56,14 +56,14 @@ echo "測試 2: 路由載入器\n";
 
 // 建立模擬路由器
 $mockRouter = new class {
-    public array<mixed> $routes = [];
+    public array $routes = [];
 
-    public function map(array<mixed> $methods, string $path, $handler)
+    public function map(array $methods, string $path, $handler)
     {
         $route = new class {
             private ?string $name = null;
 
-            private array<mixed> $middlewares = [];
+            private array $middlewares = [];
 
             public function setName(string $name): self
             {
@@ -84,7 +84,7 @@ $mockRouter = new class {
                 return $this->name;
             }
 
-            public function getMiddlewares(): array<mixed>
+            public function getMiddlewares(): array
             {
                 return $this->middlewares;
             }
@@ -110,15 +110,15 @@ try {
 
     $stats = $routeLoader->getRouteStats();
     echo "✅ 路由載入成功\n";
-    echo '   - 總路由數: ' . ((is_array($stats) ? $stats['total_routes'] : (is_object($stats) ? $stats->total_routes : null)) ?? 'Unknown') . "\n";
-    echo '   - 載入檔案數: ' . ((is_array($stats) ? $stats['files_loaded'] : (is_object($stats) ? $stats->files_loaded : null)) ?? 'Unknown') . "\n";
-    echo '   - 路由群組: ' . implode(', ', array_keys((is_array($stats) && isset((is_array($stats) ? $stats['groups'] : (is_object($stats) ? $stats->groups : null)))) ? (is_array($stats) ? $stats['groups'] : (is_object($stats) ? $stats->groups : null)) : null)) . "\n";
+    echo "   - 總路由數: {$stats['total_routes']}\n";
+    echo "   - 載入檔案數: {$stats['files_loaded']}\n";
+    echo '   - 路由群組: ' . implode(', ', array_keys($stats['groups'])) . "\n";
 
     // 檢查載入的路由
     $loadedRoutes = $routeLoader->getLoadedRoutes();
     echo "   - 已載入路由:\n";
     foreach ($loadedRoutes as $route) {
-        echo '     * ' . ((is_array($route) ? $route['name'] : (is_object($route) ? $route->name : null)) ?? 'Unknown') . ": {(is_array($route) ? $route['methods'] : (is_object($route) ? $route->methods : null))[0]} " . ((is_array($route) ? $route['path'] : (is_object($route) ? $route->path : null)) ?? 'Unknown') . "\n";
+        echo "     * {$route['name']}: {$route['methods'][0]} {$route['path']}\n";
     }
 } catch (Exception $e) {
     echo '❌ 路由載入失敗: ' . $e->getMessage() . "\n";
@@ -131,14 +131,14 @@ echo "測試 3: 多個路由檔案載入\n";
 
 $multiRouteLoader = new RouteLoader();
 $multiMockRouter = new class {
-    public array<mixed> $routes = [];
+    public array $routes = [];
 
-    public function map(array<mixed> $methods, string $path, $handler)
+    public function map(array $methods, string $path, $handler)
     {
         $route = new class {
             private ?string $name = null;
 
-            private array<mixed> $middlewares = [];
+            private array $middlewares = [];
 
             public function setName(string $name): self
             {
@@ -176,9 +176,9 @@ try {
 
     $stats = $multiRouteLoader->getRouteStats();
     echo "✅ 多檔案路由載入成功\n";
-    echo '   - 總路由數: ' . ((is_array($stats) ? $stats['total_routes'] : (is_object($stats) ? $stats->total_routes : null)) ?? 'Unknown') . "\n";
+    echo "   - 總路由數: {$stats['total_routes']}\n";
     echo "   - 路由群組統計:\n";
-    foreach ((is_array($stats) ? $stats['groups'] : (is_object($stats) ? $stats->groups : null)) as $group => $count) {
+    foreach ($stats['groups'] as $group => $count) {
         echo "     * {$group}: {$count} 條路由\n";
     }
 } catch (Exception $e) {
@@ -200,7 +200,7 @@ try {
 
     // 自訂篩選器搜尋
     $postRoutes = $multiRouteLoader->findRoutes(function ($route) {
-        return strpos((is_array($route) && isset((is_array($route) ? $route['path'] : (is_object($route) ? $route->path : null)))) ? (is_array($route) ? $route['path'] : (is_object($route) ? $route->path : null)) : null, '/posts') !== false;
+        return strpos($route['path'], '/posts') !== false;
     });
     echo '✅ 貼文相關路由搜尋: 找到 ' . count($postRoutes) . " 條路由\n";
 } catch (Exception $e) {

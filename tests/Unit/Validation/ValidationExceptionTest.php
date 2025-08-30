@@ -307,10 +307,10 @@ class ValidationExceptionTest extends TestCase
 
         // Assert
         $this->assertIsArray($apiResponse);
-        $this->assertFalse((is_array($apiResponse) && isset((is_array($apiResponse) ? $apiResponse['success'] : (is_object($apiResponse) ? $apiResponse->success : null)))) ? (is_array($apiResponse) ? $apiResponse['success'] : (is_object($apiResponse) ? $apiResponse->success : null)) : null);
-        $this->assertEquals('驗證失敗', (is_array($apiResponse) && isset((is_array($apiResponse) ? $apiResponse['message'] : (is_object($apiResponse) ? $apiResponse->message : null)))) ? (is_array($apiResponse) ? $apiResponse['message'] : (is_object($apiResponse) ? $apiResponse->message : null)) : null);
-        $this->assertEquals($errors, (is_array($apiResponse) && isset((is_array($apiResponse) ? $apiResponse['errors'] : (is_object($apiResponse) ? $apiResponse->errors : null)))) ? (is_array($apiResponse) ? $apiResponse['errors'] : (is_object($apiResponse) ? $apiResponse->errors : null)) : null);
-        $this->assertEquals($failedRules, (is_array($apiResponse) && isset((is_array($apiResponse) ? $apiResponse['failed_rules'] : (is_object($apiResponse) ? $apiResponse->failed_rules : null)))) ? (is_array($apiResponse) ? $apiResponse['failed_rules'] : (is_object($apiResponse) ? $apiResponse->failed_rules : null)) : null);
+        $this->assertFalse($apiResponse['success']);
+        $this->assertEquals('驗證失敗', $apiResponse['message']);
+        $this->assertEquals($errors, $apiResponse['errors']);
+        $this->assertEquals($failedRules, $apiResponse['failed_rules']);
     }
 
     /**
@@ -332,7 +332,7 @@ class ValidationExceptionTest extends TestCase
         $this->assertArrayHasKey('file', $debugInfo);
         $this->assertArrayHasKey('line', $debugInfo);
         $this->assertArrayHasKey('validation_result', $debugInfo);
-        $this->assertIsArray((is_array($debugInfo) && isset((is_array($debugInfo) ? $debugInfo['validation_result'] : (is_object($debugInfo) ? $debugInfo->validation_result : null)))) ? (is_array($debugInfo) ? $debugInfo['validation_result'] : (is_object($debugInfo) ? $debugInfo->validation_result : null)) : null);
+        $this->assertIsArray($debugInfo['validation_result']);
     }
 
     /**
@@ -432,9 +432,9 @@ class ValidationExceptionTest extends TestCase
         // Assert
         $this->assertIsString($json);
         $this->assertIsArray($decoded);
-        $this->assertFalse((is_array($decoded) && isset((is_array($decoded) ? $decoded['success'] : (is_object($decoded) ? $decoded->success : null)))) ? (is_array($decoded) ? $decoded['success'] : (is_object($decoded) ? $decoded->success : null)) : null);
-        $this->assertEquals($errors, (is_array($decoded) && isset((is_array($decoded) ? $decoded['errors'] : (is_object($decoded) ? $decoded->errors : null)))) ? (is_array($decoded) ? $decoded['errors'] : (is_object($decoded) ? $decoded->errors : null)) : null);
-        $this->assertEquals($failedRules, (is_array($decoded) && isset((is_array($decoded) ? $decoded['failed_rules'] : (is_object($decoded) ? $decoded->failed_rules : null)))) ? (is_array($decoded) ? $decoded['failed_rules'] : (is_object($decoded) ? $decoded->failed_rules : null)) : null);
+        $this->assertFalse($decoded['success']);
+        $this->assertEquals($errors, $decoded['errors']);
+        $this->assertEquals($failedRules, $decoded['failed_rules']);
     }
 
     /**
@@ -492,7 +492,7 @@ class ValidationExceptionTest extends TestCase
         // Act & Assert
         $this->assertStringContainsString('姓名為必填項目', $chineseException->getMessage());
         $apiResponse = $chineseException->toApiResponse();
-        $this->assertEquals($chineseErrors, (is_array($apiResponse) && isset((is_array($apiResponse) ? $apiResponse['errors'] : (is_object($apiResponse) ? $apiResponse->errors : null)))) ? (is_array($apiResponse) ? $apiResponse['errors'] : (is_object($apiResponse) ? $apiResponse->errors : null)) : null);
+        $this->assertEquals($chineseErrors, $apiResponse['errors']);
 
         // Arrange - 測試英文錯誤訊息
         $englishErrors = [
@@ -504,7 +504,7 @@ class ValidationExceptionTest extends TestCase
         // Act & Assert
         $this->assertStringContainsString('Name is required', $englishException->getMessage());
         $apiResponse = $englishException->toApiResponse();
-        $this->assertEquals($englishErrors, (is_array($apiResponse) && isset((is_array($apiResponse) ? $apiResponse['errors'] : (is_object($apiResponse) ? $apiResponse->errors : null)))) ? (is_array($apiResponse) ? $apiResponse['errors'] : (is_object($apiResponse) ? $apiResponse->errors : null)) : null);
+        $this->assertEquals($englishErrors, $apiResponse['errors']);
     }
 
     /**

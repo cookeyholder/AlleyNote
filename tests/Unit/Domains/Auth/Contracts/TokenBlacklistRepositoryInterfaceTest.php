@@ -46,7 +46,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals(TokenBlacklistEntry::class, $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testIsBlacklistedMethodSignature(): void
@@ -61,7 +61,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testIsTokenHashBlacklistedMethodSignature(): void
@@ -76,7 +76,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testRemoveFromBlacklistMethodSignature(): void
@@ -91,7 +91,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testFindByJtiMethodSignature(): void
@@ -106,8 +106,8 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertTrue(($returnType instanceof ReflectionNamedType ? $returnType->allowsNull() : false));
-        $this->assertEquals(TokenBlacklistEntry::class, ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertTrue($returnType->allowsNull());
+        $this->assertEquals(TokenBlacklistEntry::class, $returnType->getName());
     }
 
     public function testFindByUserIdMethodSignature(): void
@@ -128,7 +128,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertNull($parameters[1]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testFindByDeviceIdMethodSignature(): void
@@ -149,7 +149,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertNull($parameters[1]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testFindByReasonMethodSignature(): void
@@ -170,7 +170,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertNull($parameters[1]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testBatchAddToBlacklistMethodSignature(): void
@@ -182,10 +182,10 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertCount(1, $parameters);
 
         $this->assertEquals('entries', $parameters[0]->getName());
-        $this->assertEquals('array<mixed>', $parameters[0]->getType()->getName());
+        $this->assertEquals('array', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testBatchIsBlacklistedMethodSignature(): void
@@ -197,10 +197,10 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertCount(1, $parameters);
 
         $this->assertEquals('jtis', $parameters[0]->getName());
-        $this->assertEquals('array<mixed>', $parameters[0]->getType()->getName());
+        $this->assertEquals('array', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testBatchRemoveFromBlacklistMethodSignature(): void
@@ -212,10 +212,10 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertCount(1, $parameters);
 
         $this->assertEquals('jtis', $parameters[0]->getName());
-        $this->assertEquals('array<mixed>', $parameters[0]->getType()->getName());
+        $this->assertEquals('array', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testBlacklistAllUserTokensMethodSignature(): void
@@ -239,7 +239,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertNull($parameters[2]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testBlacklistAllDeviceTokensMethodSignature(): void
@@ -257,7 +257,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[1]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testCleanupMethodSignature(): void
@@ -275,7 +275,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertNull($parameters[0]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testCleanupExpiredEntriesMethodSignature(): void
@@ -287,7 +287,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertCount(0, $parameters);
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testCleanupOldEntriesMethodSignature(): void
@@ -304,7 +304,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals(90, $parameters[0]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testGetBlacklistStatsMethodSignature(): void
@@ -316,7 +316,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertCount(0, $parameters);
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testGetUserBlacklistStatsMethodSignature(): void
@@ -331,7 +331,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals('int', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testGetRecentBlacklistEntriesMethodSignature(): void
@@ -354,7 +354,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertNull($parameters[1]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testGetHighPriorityEntriesMethodSignature(): void
@@ -371,7 +371,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals(50, $parameters[0]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testSearchMethodSignature(): void
@@ -383,7 +383,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertCount(3, $parameters);
 
         $this->assertEquals('criteria', $parameters[0]->getName());
-        $this->assertEquals('array<mixed>', $parameters[0]->getType()->getName());
+        $this->assertEquals('array', $parameters[0]->getType()->getName());
 
         $this->assertEquals('limit', $parameters[1]->getName());
         $this->assertTrue($parameters[1]->getType()->allowsNull());
@@ -397,7 +397,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals(0, $parameters[2]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testCountSearchMethodSignature(): void
@@ -409,10 +409,10 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertCount(1, $parameters);
 
         $this->assertEquals('criteria', $parameters[0]->getName());
-        $this->assertEquals('array<mixed>', $parameters[0]->getType()->getName());
+        $this->assertEquals('array', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testIsSizeExceededMethodSignature(): void
@@ -429,7 +429,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertEquals(100000, $parameters[0]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testGetSizeInfoMethodSignature(): void
@@ -441,7 +441,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertCount(0, $parameters);
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testOptimizeMethodSignature(): void
@@ -453,7 +453,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $this->assertCount(0, $parameters);
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('array<mixed>', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testAllRequiredMethodsExist(): void
@@ -468,7 +468,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         ];
 
         $actualMethods = array_map(
-            fn($method) => ($method instanceof ReflectionNamedType ? $method->getName() : (string) $method),
+            fn($method) => $method->getName(),
             $this->interfaceReflection->getMethods(),
         );
 
@@ -495,8 +495,8 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $methods = $this->interfaceReflection->getMethods();
 
         foreach ($methods as $method) {
-            $this->assertTrue($method->isPublic(), "Method {($method instanceof ReflectionNamedType ? $method->getName() : (string)$method)} should be public");
-            $this->assertFalse($method->isStatic(), "Method {($method instanceof ReflectionNamedType ? $method->getName() : (string)$method)} should not be static");
+            $this->assertTrue($method->isPublic(), "Method {$method->getName()} should be public");
+            $this->assertFalse($method->isStatic(), "Method {$method->getName()} should not be static");
         }
     }
 

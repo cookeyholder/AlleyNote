@@ -9,7 +9,7 @@ class CrossBrowserTest extends UITestCase
     /**
      * 測試瀏覽器清單.
      */
-    private array<mixed> $browsers = [
+    private array $browsers = [
         'chrome' => [
             'name' => 'Chrome',
             'userAgent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -33,7 +33,7 @@ class CrossBrowserTest extends UITestCase
         }
     }
 
-    private function testBrowserCompatibility(array<mixed> $browser): void
+    private function testBrowserCompatibility(array $browser): void
     {
         // 啟動瀏覽器並設定 User Agent
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -51,8 +51,7 @@ class CrossBrowserTest extends UITestCase
         $this->testResponsiveDesign();
 
         // 截圖保存
-        $browserName = (is_array($browser) && isset((is_array($browser) ? $browser['name'] : (is_object($browser) ? $browser->name : null)))) ? (is_array($browser) ? $browser['name'] : (is_object($browser) ? $browser->name : null)) : 'unknown';
-        $this->captureScreenshot("compatibility-{$browserName}");
+        $this->captureScreenshot("compatibility-{$browser['name']}");
 
         // 關閉瀏覽器
         $this->browserAction('close');

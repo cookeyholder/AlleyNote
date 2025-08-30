@@ -61,17 +61,17 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('info')
             ->zeroOrMoreTimes()
-            ->with(Mockery::type('string'), Mockery::type('array<mixed>'));
+            ->with(Mockery::type('string'), Mockery::type('array'));
 
         $this->logger
             ->shouldReceive('error')
             ->zeroOrMoreTimes()
-            ->with(Mockery::type('string'), Mockery::type('array<mixed>'));
+            ->with(Mockery::type('string'), Mockery::type('array'));
 
         $this->logger
             ->shouldReceive('warning')
             ->zeroOrMoreTimes()
-            ->with(Mockery::type('string'), Mockery::type('array<mixed>'));        // Act
+            ->with(Mockery::type('string'), Mockery::type('array'));        // Act
         $result = $this->service->blacklistToken(
             $jti,
             $tokenType,
@@ -103,17 +103,17 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('info')
             ->zeroOrMoreTimes()
-            ->with(Mockery::type('string'), Mockery::type('array<mixed>'));
+            ->with(Mockery::type('string'), Mockery::type('array'));
 
         $this->logger
             ->shouldReceive('warning')
             ->zeroOrMoreTimes()
-            ->with(Mockery::type('string'), Mockery::type('array<mixed>'));
+            ->with(Mockery::type('string'), Mockery::type('array'));
 
         $this->logger
             ->shouldReceive('error')
             ->zeroOrMoreTimes()
-            ->with(Mockery::type('string'), Mockery::type('array<mixed>'));        // Act
+            ->with(Mockery::type('string'), Mockery::type('array'));        // Act
         $result = $this->service->blacklistToken(
             $jti,
             $tokenType,
@@ -177,17 +177,17 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('info')
             ->zeroOrMoreTimes()
-            ->with(Mockery::type('string'), Mockery::type('array<mixed>'));
+            ->with(Mockery::type('string'), Mockery::type('array'));
 
         $this->logger
             ->shouldReceive('error')
             ->zeroOrMoreTimes()
-            ->with(Mockery::type('string'), Mockery::type('array<mixed>'));
+            ->with(Mockery::type('string'), Mockery::type('array'));
 
         $this->logger
             ->shouldReceive('warning')
             ->zeroOrMoreTimes()
-            ->with(Mockery::type('string'), Mockery::type('array<mixed>'));        // Act
+            ->with(Mockery::type('string'), Mockery::type('array'));        // Act
         $result = $this->service->blacklistToken($jti, $tokenType, $userId, $expiresAt, $reason);
 
         // Assert
@@ -211,7 +211,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to blacklist token', Mockery::type('array<mixed>'));
+            ->with('Failed to blacklist token', Mockery::type('array'));
 
         // Act
         $result = $this->service->blacklistToken($jti, $tokenType, $userId, $expiresAt, $reason);
@@ -261,7 +261,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to check blacklist status', Mockery::type('array<mixed>'));
+            ->with('Failed to check blacklist status', Mockery::type('array'));
 
         // Act
         $result = $this->service->isTokenBlacklisted($jti);
@@ -320,7 +320,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to batch check blacklist status', Mockery::type('array<mixed>'));
+            ->with('Failed to batch check blacklist status', Mockery::type('array'));
 
         // Act
         $result = $this->service->batchCheckBlacklist($jtis);
@@ -345,7 +345,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('info')
             ->once()
-            ->with('Blacklisted user tokens', Mockery::type('array<mixed>'));
+            ->with('Blacklisted user tokens', Mockery::type('array'));
 
         // Act
         $result = $this->service->blacklistUserTokens($userId, $reason, $excludeJti);
@@ -388,7 +388,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to blacklist user tokens', Mockery::type('array<mixed>'));
+            ->with('Failed to blacklist user tokens', Mockery::type('array'));
 
         // Act
         $result = $this->service->blacklistUserTokens($userId, $reason);
@@ -412,7 +412,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('info')
             ->once()
-            ->with('Blacklisted device tokens', Mockery::type('array<mixed>'));
+            ->with('Blacklisted device tokens', Mockery::type('array'));
 
         // Act
         $result = $this->service->blacklistDeviceTokens($deviceId, $reason);
@@ -445,7 +445,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to blacklist device tokens', Mockery::type('array<mixed>'));
+            ->with('Failed to blacklist device tokens', Mockery::type('array'));
 
         // Act
         $result = $this->service->blacklistDeviceTokens($deviceId, $reason);
@@ -468,7 +468,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('info')
             ->once()
-            ->with('Token removed from blacklist', Mockery::type('array<mixed>'));
+            ->with('Token removed from blacklist', Mockery::type('array'));
 
         // Act
         $result = $this->service->removeFromBlacklist($jti);
@@ -499,7 +499,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to remove token from blacklist', Mockery::type('array<mixed>'));
+            ->with('Failed to remove token from blacklist', Mockery::type('array'));
 
         // Act
         $result = $this->service->removeFromBlacklist($jti);
@@ -522,7 +522,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('info')
             ->once()
-            ->with('Batch removed tokens from blacklist', Mockery::type('array<mixed>'));
+            ->with('Batch removed tokens from blacklist', Mockery::type('array'));
 
         // Act
         $result = $this->service->batchRemoveFromBlacklist($jtis);
@@ -553,7 +553,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to batch remove tokens from blacklist', Mockery::type('array<mixed>'));
+            ->with('Failed to batch remove tokens from blacklist', Mockery::type('array'));
 
         // Act
         $result = $this->service->batchRemoveFromBlacklist($jtis);
@@ -578,17 +578,17 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('info')
             ->once()
-            ->with('Auto cleanup completed', Mockery::type('array<mixed>'));
+            ->with('Auto cleanup completed', Mockery::type('array'));
 
         // Act
         $result = $this->service->autoCleanup();
 
         // Assert
-        $this->assertTrue((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
-        $this->assertSame(15, (is_array($result) ? $result['total_cleaned'] : (is_object($result) ? $result->total_cleaned : null)));
-        $this->assertSame(10, (is_array($result) ? $result['expired_cleaned'] : (is_object($result) ? $result->expired_cleaned : null)));
-        $this->assertSame(5, (is_array($result) ? $result['old_cleaned'] : (is_object($result) ? $result->old_cleaned : null)));
-        $this->assertIsFloat((is_array($result) ? $result['execution_time'] : (is_object($result) ? $result->execution_time : null)));
+        $this->assertTrue($result['success']);
+        $this->assertSame(15, $result['total_cleaned']);
+        $this->assertSame(10, $result['expired_cleaned']);
+        $this->assertSame(5, $result['old_cleaned']);
+        $this->assertIsFloat($result['execution_time']);
     }
 
     public function testAutoCleanupWithRepositoryException(): void
@@ -602,16 +602,16 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Auto cleanup failed', Mockery::type('array<mixed>'));
+            ->with('Auto cleanup failed', Mockery::type('array'));
 
         // Act
         $result = $this->service->autoCleanup();
 
         // Assert
-        $this->assertFalse((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
-        $this->assertSame(0, (is_array($result) ? $result['total_cleaned'] : (is_object($result) ? $result->total_cleaned : null)));
+        $this->assertFalse($result['success']);
+        $this->assertSame(0, $result['total_cleaned']);
         $this->assertArrayHasKey('error', $result);
-        $this->assertIsFloat((is_array($result) ? $result['execution_time'] : (is_object($result) ? $result->execution_time : null)));
+        $this->assertIsFloat($result['execution_time']);
     }
 
     public function testGetStatisticsSuccessfully(): void
@@ -639,10 +639,10 @@ final class TokenBlacklistServiceTest extends TestCase
         $result = $this->service->getStatistics();
 
         // Assert
-        $this->assertSame(100, (is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)));
-        $this->assertSame($sizeInfo, (is_array($result) ? $result['size_info'] : (is_object($result) ? $result->size_info : null)));
-        $this->assertFalse((is_array($result) ? $result['is_size_exceeded'] : (is_object($result) ? $result->is_size_exceeded : null)));
-        $this->assertInstanceOf(DateTimeImmutable::class, (is_array($result) ? $result['generated_at'] : (is_object($result) ? $result->generated_at : null)));
+        $this->assertSame(100, $result['total']);
+        $this->assertSame($sizeInfo, $result['size_info']);
+        $this->assertFalse($result['is_size_exceeded']);
+        $this->assertInstanceOf(DateTimeImmutable::class, $result['generated_at']);
     }
 
     public function testGetStatisticsWithRepositoryException(): void
@@ -656,14 +656,14 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to get blacklist statistics', Mockery::type('array<mixed>'));
+            ->with('Failed to get blacklist statistics', Mockery::type('array'));
 
         // Act
         $result = $this->service->getStatistics();
 
         // Assert
         $this->assertArrayHasKey('error', $result);
-        $this->assertInstanceOf(DateTimeImmutable::class, (is_array($result) ? $result['generated_at'] : (is_object($result) ? $result->generated_at : null)));
+        $this->assertInstanceOf(DateTimeImmutable::class, $result['generated_at']);
     }
 
     public function testGetUserStatisticsSuccessfully(): void
@@ -708,13 +708,13 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to get user blacklist statistics', Mockery::type('array<mixed>'));
+            ->with('Failed to get user blacklist statistics', Mockery::type('array'));
 
         // Act
         $result = $this->service->getUserStatistics($userId);
 
         // Assert
-        $this->assertSame(1, (is_array($result) ? $result['user_id'] : (is_object($result) ? $result->user_id : null)));
+        $this->assertSame(1, $result['user_id']);
         $this->assertArrayHasKey('error', $result);
     }
 
@@ -761,11 +761,11 @@ final class TokenBlacklistServiceTest extends TestCase
         $result = $this->service->searchBlacklistEntries($criteria, $limit, $offset);
 
         // Assert
-        $this->assertSame($expectedEntries, (is_array($result) ? $result['entries'] : (is_object($result) ? $result->entries : null)));
-        $this->assertSame(2, (is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)));
-        $this->assertSame($limit, (is_array($result) ? $result['limit'] : (is_object($result) ? $result->limit : null)));
-        $this->assertSame($offset, (is_array($result) ? $result['offset'] : (is_object($result) ? $result->offset : null)));
-        $this->assertSame(false, (is_array($result) ? $result['has_more'] : (is_object($result) ? $result->has_more : null)));
+        $this->assertSame($expectedEntries, $result['entries']);
+        $this->assertSame(2, $result['total']);
+        $this->assertSame($limit, $result['limit']);
+        $this->assertSame($offset, $result['offset']);
+        $this->assertSame(false, $result['has_more']);
     }
 
     public function testSearchBlacklistEntriesWithNegativeOffset(): void
@@ -801,14 +801,14 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to search blacklist entries', Mockery::type('array<mixed>'));
+            ->with('Failed to search blacklist entries', Mockery::type('array'));
 
         // Act
         $result = $this->service->searchBlacklistEntries($criteria);
 
         // Assert
-        $this->assertSame([], (is_array($result) ? $result['entries'] : (is_object($result) ? $result->entries : null)));
-        $this->assertSame(0, (is_array($result) ? $result['total'] : (is_object($result) ? $result->total : null)));
+        $this->assertSame([], $result['entries']);
+        $this->assertSame(0, $result['total']);
         $this->assertArrayHasKey('error', $result);
     }
 
@@ -850,7 +850,7 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to get high priority entries', Mockery::type('array<mixed>'));
+            ->with('Failed to get high priority entries', Mockery::type('array'));
 
         // Act
         $result = $this->service->getRecentHighPriorityEntries();
@@ -896,13 +896,13 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Blacklist optimization failed', Mockery::type('array<mixed>'));
+            ->with('Blacklist optimization failed', Mockery::type('array'));
 
         // Act
         $result = $this->service->optimize();
 
         // Assert
-        $this->assertFalse((is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)));
+        $this->assertFalse($result['success']);
         $this->assertArrayHasKey('error', $result);
     }
 
@@ -936,12 +936,12 @@ final class TokenBlacklistServiceTest extends TestCase
         $result = $this->service->getHealthStatus();
 
         // Assert
-        $this->assertTrue((is_array($result) ? $result['healthy'] : (is_object($result) ? $result->healthy : null)));
-        $this->assertFalse((is_array($result) ? $result['size_exceeded'] : (is_object($result) ? $result->size_exceeded : null)));
-        $this->assertFalse((is_array($result) ? $result['too_large'] : (is_object($result) ? $result->too_large : null)));
-        $this->assertSame(100000, (is_array($result) ? $result['max_recommended_size'] : (is_object($result) ? $result->max_recommended_size : null)));
-        $this->assertSame(1000, (is_array($result) ? $result['total_entries'] : (is_object($result) ? $result->total_entries : null)));
-        $this->assertIsArray((is_array($result) ? $result['recommendations'] : (is_object($result) ? $result->recommendations : null)));
+        $this->assertTrue($result['healthy']);
+        $this->assertFalse($result['size_exceeded']);
+        $this->assertFalse($result['too_large']);
+        $this->assertSame(100000, $result['max_recommended_size']);
+        $this->assertSame(1000, $result['total_entries']);
+        $this->assertIsArray($result['recommendations']);
     }
 
     public function testGetHealthStatusUnhealthyWithRecommendations(): void
@@ -974,14 +974,14 @@ final class TokenBlacklistServiceTest extends TestCase
         $result = $this->service->getHealthStatus();
 
         // Assert
-        $this->assertFalse((is_array($result) ? $result['healthy'] : (is_object($result) ? $result->healthy : null)));
-        $this->assertTrue((is_array($result) ? $result['size_exceeded'] : (is_object($result) ? $result->size_exceeded : null)));
-        $this->assertTrue((is_array($result) ? $result['too_large'] : (is_object($result) ? $result->too_large : null)));
-        $this->assertSame(100000, (is_array($result) ? $result['max_recommended_size'] : (is_object($result) ? $result->max_recommended_size : null)));
-        $this->assertContains('Run cleanup to reduce blacklist size', (is_array($result) ? $result['recommendations'] : (is_object($result) ? $result->recommendations : null)));
-        $this->assertContains('Blacklist size exceeds recommended limit, consider cleanup', (is_array($result) ? $result['recommendations'] : (is_object($result) ? $result->recommendations : null)));
-        $this->assertContains('High number of expired entries, consider cleanup', (is_array($result) ? $result['recommendations'] : (is_object($result) ? $result->recommendations : null)));
-        $this->assertContains('High security-related blacklist entries detected', (is_array($result) ? $result['recommendations'] : (is_object($result) ? $result->recommendations : null)));
+        $this->assertFalse($result['healthy']);
+        $this->assertTrue($result['size_exceeded']);
+        $this->assertTrue($result['too_large']);
+        $this->assertSame(100000, $result['max_recommended_size']);
+        $this->assertContains('Run cleanup to reduce blacklist size', $result['recommendations']);
+        $this->assertContains('Blacklist size exceeds recommended limit, consider cleanup', $result['recommendations']);
+        $this->assertContains('High number of expired entries, consider cleanup', $result['recommendations']);
+        $this->assertContains('High security-related blacklist entries detected', $result['recommendations']);
     }
 
     public function testGetHealthStatusWithRepositoryException(): void
@@ -995,13 +995,13 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Failed to get blacklist health status', Mockery::type('array<mixed>'));
+            ->with('Failed to get blacklist health status', Mockery::type('array'));
 
         // Act
         $result = $this->service->getHealthStatus();
 
         // Assert
-        $this->assertFalse((is_array($result) ? $result['healthy'] : (is_object($result) ? $result->healthy : null)));
+        $this->assertFalse($result['healthy']);
         $this->assertArrayHasKey('error', $result);
     }
 

@@ -39,7 +39,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
 
         $method = $this->interfaceReflection->getMethod('generateTokenPair');
         $this->assertTrue($method->isPublic());
-        $this->assertEquals('generateTokenPair', ($method instanceof ReflectionNamedType ? $method->getName() : (string) $method));
+        $this->assertEquals('generateTokenPair', $method->getName());
 
         // 檢查參數
         $parameters = $method->getParameters();
@@ -52,12 +52,12 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertEquals(DeviceInfo::class, $parameters[1]->getType()->getName());
 
         $this->assertEquals('customClaims', $parameters[2]->getName());
-        $this->assertEquals('array<mixed>', $parameters[2]->getType()->getName());
+        $this->assertEquals('array', $parameters[2]->getType()->getName());
         $this->assertTrue($parameters[2]->isDefaultValueAvailable());
 
         // 檢查回傳類型
         $returnType = $method->getReturnType();
-        $this->assertEquals(TokenPair::class, ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals(TokenPair::class, $returnType->getName());
     }
 
     public function testValidateAccessTokenMethodSignature(): void
@@ -79,7 +79,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertTrue($parameters[1]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals(JwtPayload::class, ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals(JwtPayload::class, $returnType->getName());
     }
 
     public function testValidateRefreshTokenMethodSignature(): void
@@ -98,7 +98,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertTrue($parameters[1]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals(JwtPayload::class, ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals(JwtPayload::class, $returnType->getName());
     }
 
     public function testExtractPayloadMethodSignature(): void
@@ -113,7 +113,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals(JwtPayload::class, ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals(JwtPayload::class, $returnType->getName());
     }
 
     public function testRefreshTokensMethodSignature(): void
@@ -131,7 +131,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertEquals(DeviceInfo::class, $parameters[1]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals(TokenPair::class, ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals(TokenPair::class, $returnType->getName());
     }
 
     public function testRevokeTokenMethodSignature(): void
@@ -150,7 +150,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertTrue($parameters[1]->isDefaultValueAvailable());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testRevokeAllUserTokensMethodSignature(): void
@@ -169,7 +169,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertTrue($parameters[1]->isDefaultValueAvailable());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testIsTokenRevokedMethodSignature(): void
@@ -184,7 +184,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testGetTokenRemainingTimeMethodSignature(): void
@@ -199,7 +199,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testIsTokenNearExpiryMethodSignature(): void
@@ -219,7 +219,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertEquals(300, $parameters[1]->getDefaultValue());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testIsTokenOwnedByMethodSignature(): void
@@ -237,7 +237,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertEquals('int', $parameters[1]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testIsTokenFromDeviceMethodSignature(): void
@@ -255,7 +255,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertEquals(DeviceInfo::class, $parameters[1]->getType()->getName());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('bool', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('bool', $returnType->getName());
     }
 
     public function testGetAlgorithmMethodSignature(): void
@@ -267,7 +267,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertCount(0, $parameters);
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('string', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('string', $returnType->getName());
     }
 
     public function testGetAccessTokenTtlMethodSignature(): void
@@ -279,7 +279,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertCount(0, $parameters);
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testGetRefreshTokenTtlMethodSignature(): void
@@ -291,7 +291,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertCount(0, $parameters);
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', ($returnType instanceof ReflectionNamedType ? $returnType->getName() : (string) $returnType));
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testAllRequiredMethodsExist(): void
@@ -315,7 +315,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         ];
 
         $actualMethods = array_map(
-            fn($method) => ($method instanceof ReflectionNamedType ? $method->getName() : (string) $method),
+            fn($method) => $method->getName(),
             $this->interfaceReflection->getMethods(),
         );
 
