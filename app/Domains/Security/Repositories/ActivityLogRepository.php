@@ -18,16 +18,69 @@ use RuntimeException;
 /**
  * 活動記錄存儲庫實現.
  *
- * 負責活動記錄的 CRUD 操作和複雜查詢
+ * 這是活動記錄系統的資料存取層，負責所有與資料庫相關的操作。
+ * 提供高效能、類型安全的資料存取介面，支援複雜查詢和批次操作。
+ *
+ * 主要功能:
+ * - 活動記錄的 CRUD 操作
+ * - 複雜的查詢和過濾功能
+ * - 批次操作支援
+ * - 分頁和排序
+ * - 資料聚合和統計
+ * - 自動清理和維護
+ *
+ * 效能特色:
+ * - 使用複合索引優化查詢效能
+ * - 支援批次插入減少資料庫負載
+ * - 預備語句防止 SQL 注入
+ * - 事務支援確保資料一致性
+ *
+ * 設計模式:
+ * - Repository 模式封裝資料存取邏輯
+ * - 使用實體物件而非原始陣列
+ * - 完整的錯誤處理和異常管理
+ * - 符合 SOLID 原則的介面設計
+ *
+ * @author AlleyNote Development Team
+ * @since 1.0.0
+ * @version 1.2.0
+ * @see ActivityLogRepositoryInterface 介面定義
+ * @see ActivityLog 實體類別
+ * @see CreateActivityLogDTO DTO 類別
+ *
+ * @example
+ * ```php
+ * // 建立記錄
+ * $repository = new ActivityLogRepository($pdo);
+ * $result = $repository->create($dto);
+ *
+ * // 查詢使用者活動
+ * $activities = $repository->findByUserId(123, limit: 50);
+ *
+ * // 複雜查詢
+ * $filtered = $repository->findWithFilters([
+ *     'user_id' => 123,
+ *     'action_category' => ActivityCategory::AUTHENTICATION,
+ *     'date_from' => '2024-01-01',
+ *     'date_to' => '2024-12-31'
+ * ], page: 1, limit: 20);
+ * ```
  */
 class ActivityLogRepository implements ActivityLogRepositoryInterface
 {
+    /** @var string 資料表名稱 */
     private const TABLE_NAME = 'user_activity_logs';
 
+    /** @var string SELECT 查詢的預設欄位清單 */
     private const SELECT_FIELDS = 'id, uuid, user_id, session_id, action_type, action_category, 
         target_type, target_id, status, description, metadata, ip_address, user_agent, 
         request_method, request_path, created_at, occurred_at';
 
+    /**
+     * 建構存儲庫實例.
+     *
+     * @param PDO $db PDO 資料庫連線實例
+     */
     public function __construct(
         private PDO $db,
     ) {
@@ -37,7 +90,27 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     }
 
     /**
-     * 建立活動記錄.
+     * 建立新的活動記錄.
+     *
+     * 將活動記錄 DTO 轉換為實體並儲存到資料庫。
+     * 使用事務確保資料一致性，並自動產生 UUID。
+     *
+     * @param CreateActivityLogDTO $dto 活動記錄資料傳輸物件
+     * @return array|null 建立成功時返回記錄資料，失敗時返回 null
+     *
+     * @throws RuntimeException 當資料庫操作失敗時
+     *
+     * @example
+     * ```php
+     * $dto = CreateActivityLogDTO::success(
+     *     ActivityType::LOGIN_SUCCESS,
+     *     userId: 123,
+     *     description: '使用者登入成功'
+     * );
+     * $result = $repository->create($dto);
+     * // $result['id'] => 資料庫 ID
+     * // $result['uuid'] => 唯一識別符
+     * ```
      */
     public function create(CreateActivityLogDTO $dto): ?array
     {

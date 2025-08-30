@@ -3,7 +3,13 @@
 [![測試](https://github.com/your-org/alleynote/workflows/測試/badge.svg)](https://github.com/your-org/alleynote/actions)
 [![程式碼品質](https://github.com/your-org/alleynote/workflows/程式碼品質/badge.svg)](https://github.com/your-org/alleynote/actions)
 [![部署](https://github.com/your-org/alleynote/workflows/部署/badge.svg)](https://github.com/your-org/alleynote/actions)
-[![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.svg)](https://www.php.net)
+[![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.svg)]### 📖 開發者文件
+- **[DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)**: 完整開發者指南
+- **[DI_CONTAINER_GUIDE.md](docs/DI_CONTAINER_GUIDE.md)**: DI 容器使用手冊  
+- **[VALIDATOR_GUIDE.md](docs/VALIDATOR_GUIDE.md)**: 驗證器詳細指南
+- **[API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)**: API 文件
+- **[USER_ACTIVITY_LOGGING_ARCHITECTURE.md](docs/USER_ACTIVITY_LOGGING_ARCHITECTURE.md)**: 使用者活動記錄系統架構 ⭐
+- **[DATABASE_OPTIMIZATION_REPORT.md](docs/DATABASE_OPTIMIZATION_REPORT.md)**: 資料庫效能優化報告s://www.php.net)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![測試覆蓋率](https://img.shields.io/badge/Coverage-87.5%25-brightgreen.svg)](docs/TEST_SUITE_IMPROVEMENTS.md)
 [![架構版本](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/ARCHITECTURE_AUDIT.md)
@@ -44,12 +50,14 @@ AlleyNote 是一個現代化的公布欄網站系統，專為學校、社區、�
 - **附件系統**: 上傳、下載、刪除，支援多種檔案格式
 - **使用者系統**: 認證、權限管理、角色控制
 - **安全控制**: IP 黑白名單、CSRF 防護、XSS 過濾
+- **活動記錄**: 完整的使用者行為監控與異常檢測系統
 
 ### 🏗️ DDD 架構特色
 - **領域驅動設計**: Post、Attachment、Auth、Security 四個業務領域
 - **分層架構**: Domain → Application → Infrastructure → Shared
 - **強型別驗證系統**: 29 種內建驗證規則，支援繁體中文
 - **現代化 DI 容器**: PHP-DI 依賴注入，支援編譯快取
+- **活動記錄系統**: 21 種活動類型，智慧異常檢測，效能優化索引
 
 ### 🧪 品質保證
 - **1,213 個測試**: 單元、整合、效能、安全測試（全面通過）
