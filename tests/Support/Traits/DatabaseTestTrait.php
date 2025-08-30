@@ -69,6 +69,7 @@ trait DatabaseTestTrait
         $this->createUsersTable();
         $this->createRefreshTokensTable();
         $this->createTokenBlacklistTable();
+        $this->createUserActivityLogsTable();
         $this->createIndices();
     }
 
@@ -209,6 +210,35 @@ trait DatabaseTestTrait
     }
 
     /**
+     * 建立使用者活動記錄資料表.
+     */
+    protected function createUserActivityLogsTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS user_activity_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT NOT NULL UNIQUE,
+                user_id INTEGER,
+                session_id TEXT,
+                action_type TEXT NOT NULL,
+                action_category TEXT NOT NULL,
+                target_type TEXT,
+                target_id TEXT,
+                status TEXT NOT NULL DEFAULT "success",
+                description TEXT,
+                metadata TEXT,
+                ip_address TEXT,
+                user_agent TEXT,
+                request_method TEXT,
+                request_path TEXT,
+                created_at TEXT NOT NULL,
+                occurred_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+            )
+        ');
+    }
+
+    /**
      * 建立資料表索引.
      */
     protected function createIndices(): void
@@ -234,6 +264,20 @@ trait DatabaseTestTrait
             CREATE INDEX IF NOT EXISTS idx_attachments_uuid ON attachments(uuid);
             CREATE INDEX IF NOT EXISTS idx_attachments_post_id ON attachments(post_id);
             CREATE INDEX IF NOT EXISTS idx_attachments_created_at ON attachments(created_at)
+        ');
+
+        // User Activity Logs 索引
+        $this->db->exec('
+            CREATE INDEX IF NOT EXISTS idx_activity_logs_uuid ON user_activity_logs(uuid);
+            CREATE INDEX IF NOT EXISTS idx_activity_logs_user_id ON user_activity_logs(user_id);
+            CREATE INDEX IF NOT EXISTS idx_activity_logs_session_id ON user_activity_logs(session_id);
+            CREATE INDEX IF NOT EXISTS idx_activity_logs_action_type ON user_activity_logs(action_type);
+            CREATE INDEX IF NOT EXISTS idx_activity_logs_action_category ON user_activity_logs(action_category);
+            CREATE INDEX IF NOT EXISTS idx_activity_logs_target ON user_activity_logs(target_type, target_id);
+            CREATE INDEX IF NOT EXISTS idx_activity_logs_status ON user_activity_logs(status);
+            CREATE INDEX IF NOT EXISTS idx_activity_logs_ip_address ON user_activity_logs(ip_address);
+            CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON user_activity_logs(created_at);
+            CREATE INDEX IF NOT EXISTS idx_activity_logs_occurred_at ON user_activity_logs(occurred_at)
         ');
     }
 
@@ -262,7 +306,7 @@ trait DatabaseTestTrait
         $postData = array_merge($defaultData, $data);
 
         $stmt = $this->db->prepare('
-            INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at) 
+            INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at)
             VALUES (:uuid, :seq_number, :title, :content, :user_id, :user_ip, :views, :is_pinned, :status, :publish_date, :created_at, :updated_at)
         ');
 
@@ -290,7 +334,7 @@ trait DatabaseTestTrait
         $userData = array_merge($defaultData, $data);
 
         $stmt = $this->db->prepare('
-            INSERT INTO users (username, email, password, status, created_at, updated_at) 
+            INSERT INTO users (username, email, password, status, created_at, updated_at)
             VALUES (:username, :email, :password, :status, :created_at, :updated_at)
         ');
 
