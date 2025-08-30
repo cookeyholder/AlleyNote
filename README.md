@@ -5,7 +5,7 @@
 [![部署](https://github.com/your-org/alleynote/workflows/部署/badge.svg)](https://github.com/your-org/alleynote/actions)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.svg)]### 📖 開發者文件
 - **[DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)**: 完整開發者指南
-- **[DI_CONTAINER_GUIDE.md](docs/DI_CONTAINER_GUIDE.md)**: DI 容器使用手冊  
+- **[DI_CONTAINER_GUIDE.md](docs/DI_CONTAINER_GUIDE.md)**: DI 容器使用手冊
 - **[VALIDATOR_GUIDE.md](docs/VALIDATOR_GUIDE.md)**: 驗證器詳細指南
 - **[API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)**: API 文件
 - **[USER_ACTIVITY_LOGGING_ARCHITECTURE.md](docs/USER_ACTIVITY_LOGGING_ARCHITECTURE.md)**: 使用者活動記錄系統架構 ⭐
@@ -306,10 +306,10 @@ docker compose exec web php scripts/unified-scripts.php test --action=run
    ```bash
    # 先寫測試
    vim tests/Unit/Domains/Post/Services/PostServiceTest.php
-   
+
    # 實作領域邏輯
    vim app/Domains/Post/Services/PostService.php
-   
+
    # 更新應用層
    vim app/Application/Controllers/Api/V1/PostController.php
    ```
@@ -318,10 +318,10 @@ docker compose exec web php scripts/unified-scripts.php test --action=run
    ```bash
    # 使用統一腳本系統執行測試
    docker compose exec web php scripts/unified-scripts.php test --action=run
-   
+
    # 靜態分析
    docker compose exec web php scripts/unified-scripts.php fix --type=all
-   
+
    # 專案狀態檢查
    docker compose exec web php scripts/unified-scripts.php status
    ```
@@ -329,11 +329,11 @@ docker compose exec web php scripts/unified-scripts.php test --action=run
 4. **提交流程**
    ```bash
    git commit -m "feat(post): 新增文章分類功能
-   
+
    - 實作分類管理服務
    - 新增分類 API 端點
    - 完善測試覆蓋
-   
+
    Closes #123"
    ```
 
@@ -409,25 +409,25 @@ docker compose exec web php scripts/unified-scripts.php status
 
 ## 常見問題 FAQ
 
-**Q: 如何使用新的統一腳本系統？**  
+**Q: 如何使用新的統一腳本系統？**
 A: 執行 `docker compose exec web php scripts/unified-scripts.php status` 查看系統狀態，參考 [統一腳本文件](docs/UNIFIED_SCRIPTS_DOCUMENTATION.md)。
 
-**Q: 舊的腳本還能使用嗎？**  
+**Q: 舊的腳本還能使用嗎？**
 A: 重要的基礎設施腳本（備份、SSL、部署）仍保留可用，58+ 個開發工具腳本已整合到統一系統。
 
-**Q: 系統無法啟動怎麼辦？**  
+**Q: 系統無法啟動怎麼辦？**
 A: 參考 [故障排除指南](docs/TROUBLESHOOTING_GUIDE.md) 的緊急故障處理章節。
 
-**Q: 如何進行日常維護？**  
+**Q: 如何進行日常維護？**
 A: 使用 `docker compose exec web php scripts/unified-scripts.php maintain --task=all` 或查看 [管理員操作手冊](docs/ADMIN_MANUAL.md)。
 
-**Q: 測試失敗如何除錯？**  
+**Q: 測試失敗如何除錯？**
 A: 檢查 [TEST_SUITE_IMPROVEMENTS.md](docs/TEST_SUITE_IMPROVEMENTS.md) 了解測試改善歷程和除錯方法。
 
-**Q: 如何還原備份？**  
+**Q: 如何還原備份？**
 A: 參考 [管理員操作手冊](docs/ADMIN_MANUAL.md) 的備份與還原章節。
 
-**Q: 系統需求是什麼？**  
+**Q: 系統需求是什麼？**
 A: 詳見 [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)。
 
 ---
@@ -448,7 +448,7 @@ A: 詳見 [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)。
 
 ### �📖 開發者文件
 - **[DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)**: 完整開發者指南
-- **[DI_CONTAINER_GUIDE.md](docs/DI_CONTAINER_GUIDE.md)**: DI 容器使用手冊  
+- **[DI_CONTAINER_GUIDE.md](docs/DI_CONTAINER_GUIDE.md)**: DI 容器使用手冊
 - **[VALIDATOR_GUIDE.md](docs/VALIDATOR_GUIDE.md)**: 驗證器詳細指南
 - **[API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)**: API 文件
 

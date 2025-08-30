@@ -65,7 +65,7 @@
 #### ActivityLog Entity
 - **位置**: `app/Domains/Security/Entities/ActivityLog.php`
 - **責任**: 用戶活動的核心實體，封裝所有活動相關的業務邏輯
-- **特色**: 
+- **特色**:
   - 不可變實體設計
   - 豐富的領域行為
   - 完整的驗證邏輯

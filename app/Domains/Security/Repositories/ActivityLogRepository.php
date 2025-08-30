@@ -72,8 +72,8 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     private const TABLE_NAME = 'user_activity_logs';
 
     /** @var string SELECT 查詢的預設欄位清單 */
-    private const SELECT_FIELDS = 'id, uuid, user_id, session_id, action_type, action_category, 
-        target_type, target_id, status, description, metadata, ip_address, user_agent, 
+    private const SELECT_FIELDS = 'id, uuid, user_id, session_id, action_type, action_category,
+        target_type, target_id, status, description, metadata, ip_address, user_agent,
         request_method, request_path, created_at, occurred_at';
 
     /**
@@ -303,9 +303,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     public function findAll(int $limit = 20, int $offset = 0): array
     {
         try {
-            $sql = 'SELECT ' . self::SELECT_FIELDS . ' 
-                    FROM ' . self::TABLE_NAME . ' 
-                    ORDER BY occurred_at DESC 
+            $sql = 'SELECT ' . self::SELECT_FIELDS . '
+                    FROM ' . self::TABLE_NAME . '
+                    ORDER BY occurred_at DESC
                     LIMIT :limit OFFSET :offset';
 
             $stmt = $this->db->prepare($sql);
@@ -354,7 +354,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
                 WHERE ' . implode(' AND ', $conditions) . '
-                ORDER BY occurred_at DESC 
+                ORDER BY occurred_at DESC
                 LIMIT :limit OFFSET :offset';
 
         $stmt = $this->db->prepare($sql);
@@ -400,7 +400,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
                 WHERE ' . implode(' AND ', $conditions) . '
-                ORDER BY occurred_at DESC 
+                ORDER BY occurred_at DESC
                 LIMIT :limit OFFSET :offset';
 
         $stmt = $this->db->prepare($sql);
@@ -441,7 +441,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
                 WHERE ' . implode(' AND ', $conditions) . '
-                ORDER BY occurred_at DESC 
+                ORDER BY occurred_at DESC
                 LIMIT :limit OFFSET :offset';
 
         $stmt = $this->db->prepare($sql);
@@ -488,7 +488,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
                 WHERE ' . implode(' AND ', $conditions) . '
-                ORDER BY occurred_at DESC 
+                ORDER BY occurred_at DESC
                 LIMIT :limit OFFSET :offset';
 
         $stmt = $this->db->prepare($sql);
@@ -532,8 +532,8 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         DateTimeInterface $startTime,
         DateTimeInterface $endTime,
     ): int {
-        $sql = 'SELECT COUNT(*) FROM ' . self::TABLE_NAME . ' 
-                WHERE user_id = :user_id 
+        $sql = 'SELECT COUNT(*) FROM ' . self::TABLE_NAME . '
+                WHERE user_id = :user_id
                 AND occurred_at BETWEEN :start_time AND :end_time';
 
         $stmt = $this->db->prepare($sql);
@@ -553,10 +553,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         DateTimeInterface $startTime,
         DateTimeInterface $endTime,
     ): array {
-        $sql = 'SELECT action_category, action_type, COUNT(*) as count 
-                FROM ' . self::TABLE_NAME . ' 
-                WHERE occurred_at BETWEEN :start_time AND :end_time 
-                GROUP BY action_category, action_type 
+        $sql = 'SELECT action_category, action_type, COUNT(*) as count
+                FROM ' . self::TABLE_NAME . '
+                WHERE occurred_at BETWEEN :start_time AND :end_time
+                GROUP BY action_category, action_type
                 ORDER BY count DESC';
 
         $stmt = $this->db->prepare($sql);
@@ -573,10 +573,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function getPopularActivityTypes(int $limit = 10): array
     {
-        $sql = 'SELECT action_type, COUNT(*) as count 
-                FROM ' . self::TABLE_NAME . ' 
-                GROUP BY action_type 
-                ORDER BY count DESC 
+        $sql = 'SELECT action_type, COUNT(*) as count
+                FROM ' . self::TABLE_NAME . '
+                GROUP BY action_type
+                ORDER BY count DESC
                 LIMIT :limit';
 
         $stmt = $this->db->prepare($sql);
@@ -601,11 +601,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $params[':time_window'] = $timeWindow->format('Y-m-d H:i:s');
         }
 
-        $sql = 'SELECT ip_address, COUNT(*) as failure_count 
-                FROM ' . self::TABLE_NAME . ' 
-                WHERE ' . implode(' AND ', $conditions) . ' 
-                GROUP BY ip_address 
-                HAVING failure_count >= :threshold 
+        $sql = 'SELECT ip_address, COUNT(*) as failure_count
+                FROM ' . self::TABLE_NAME . '
+                WHERE ' . implode(' AND ', $conditions) . '
+                GROUP BY ip_address
+                HAVING failure_count >= :threshold
                 ORDER BY failure_count DESC';
 
         $stmt = $this->db->prepare($sql);
@@ -713,9 +713,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sortBy = in_array($sortBy, $allowedSortFields, true) ? $sortBy : 'occurred_at';
         $sortOrder = strtoupper($sortOrder) === 'ASC' ? 'ASC' : 'DESC';
 
-        $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . " 
-                {$whereClause} 
-                ORDER BY {$sortBy} {$sortOrder} 
+        $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . "
+                {$whereClause}
+                ORDER BY {$sortBy} {$sortOrder}
                 LIMIT :limit OFFSET :offset";
 
         $stmt = $this->db->prepare($sql);
@@ -798,13 +798,13 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     public function getSuspiciousIPs(int $minFailedAttempts = 5): array
     {
         $stmt = $this->db->prepare('
-            SELECT 
+            SELECT
                 ip_address,
                 COUNT(*) as failed_attempts,
                 MAX(occurred_at) as latest_attempt
-            FROM ' . self::TABLE_NAME . " 
+            FROM ' . self::TABLE_NAME . "
             WHERE action_type IN ('login_failed', 'auth_failed')
-            GROUP BY ip_address 
+            GROUP BY ip_address
             HAVING COUNT(*) >= :min_failed_attempts
             ORDER BY failed_attempts DESC
         ");
@@ -825,10 +825,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         }
 
         $stmt = $this->db->prepare('
-            SELECT ' . self::SELECT_FIELDS . ' 
+            SELECT ' . self::SELECT_FIELDS . '
             FROM ' . self::TABLE_NAME . '
-            WHERE user_id = :user_id 
-                AND occurred_at >= :time_window 
+            WHERE user_id = :user_id
+                AND occurred_at >= :time_window
             ORDER BY occurred_at DESC
         ');
 
@@ -852,9 +852,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         int $offset = 0,
     ): array {
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
-                WHERE user_id = :user_id 
+                WHERE user_id = :user_id
                 AND occurred_at BETWEEN :start_time AND :end_time
-                ORDER BY occurred_at DESC 
+                ORDER BY occurred_at DESC
                 LIMIT :limit OFFSET :offset';
 
         $stmt = $this->db->prepare($sql);
@@ -886,9 +886,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         int $offset = 0,
     ): array {
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
-                WHERE ip_address = :ip_address 
+                WHERE ip_address = :ip_address
                 AND occurred_at BETWEEN :start_time AND :end_time
-                ORDER BY occurred_at DESC 
+                ORDER BY occurred_at DESC
                 LIMIT :limit OFFSET :offset';
 
         $stmt = $this->db->prepare($sql);

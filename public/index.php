@@ -103,7 +103,9 @@ function generateApiDocs(): void
             $apiDoc = json_decode($jsonContent, true);
 
             // 驗證文件格式
-            if ($apiDoc && isset((is_array($apiDoc) ? $apiDoc['openapi'] : (is_object($apiDoc) ? $apiDoc->openapi : null))) && isset((is_array($apiDoc) ? $apiDoc['paths'] : (is_object($apiDoc) ? $apiDoc->paths : null)))) {
+            if ($apiDoc &&
+                (is_array($apiDoc) ? isset($apiDoc['openapi']) : (is_object($apiDoc) ? isset($apiDoc->openapi) : false)) &&
+                (is_array($apiDoc) ? isset($apiDoc['paths']) : (is_object($apiDoc) ? isset($apiDoc->paths) : false))) {
                 header('Content-Type: application/json');
                 header('Access-Control-Allow-Origin: *');
                 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');

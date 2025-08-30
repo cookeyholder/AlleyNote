@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * DI 容器配置檔案
- * 
+ *
  * 定義應用程式所有服務的依賴注入配置
  */
 
@@ -15,7 +15,7 @@ use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\ServerRequestFactory;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
-use PDO;
+use App\Shared\Config\EnvironmentConfig;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -39,10 +39,15 @@ return array_merge(
         // HTTP 工廠
         ServerRequestFactory::class => \DI\create(ServerRequestFactory::class),
 
+        // 環境配置
+        EnvironmentConfig::class => \DI\factory(function () {
+            return new EnvironmentConfig();
+        }),
+
         // 資料庫連線
-        PDO::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+        \PDO::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
             $dbPath = $c->get('db.path');
-            return new PDO('sqlite:' . $dbPath);
+            return new \PDO('sqlite:' . $dbPath);
         }),
     ],
 

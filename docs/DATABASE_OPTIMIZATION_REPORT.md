@@ -32,15 +32,15 @@
 
 ```sql
 -- 用戶活動類別查詢優化
-CREATE INDEX user_activity_logs_user_id_action_category_index 
+CREATE INDEX user_activity_logs_user_id_action_category_index
 ON user_activity_logs(user_id, action_category);
 
 -- 用戶狀態查詢優化
-CREATE INDEX user_activity_logs_user_id_status_index 
+CREATE INDEX user_activity_logs_user_id_status_index
 ON user_activity_logs(user_id, status);
 
 -- 類別時間範圍查詢優化
-CREATE INDEX user_activity_logs_action_category_occurred_at_index 
+CREATE INDEX user_activity_logs_action_category_occurred_at_index
 ON user_activity_logs(action_category, occurred_at);
 ```
 

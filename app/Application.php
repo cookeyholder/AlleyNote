@@ -7,6 +7,7 @@ namespace App;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Infrastructure\Routing\RouteDispatcher;
+use App\Shared\Config\EnvironmentConfig;
 use DI\ContainerBuilder;
 use Exception;
 use Psr\Container\ContainerInterface;
@@ -30,6 +31,7 @@ class Application
     public function __construct()
     {
         $this->initializeContainer();
+        $this->initializeEnvironmentConfig();
         $this->initializeRouter();
         $this->initializeRouteDispatcher();
         $this->loadRoutes();
@@ -48,6 +50,20 @@ class Application
     }
 
     /**
+     * 初始化環境配置.
+     */
+    private function initializeEnvironmentConfig(): void
+    {
+        // 從容器獲取並驗證環境配置
+        $config = $this->container->get(EnvironmentConfig::class);
+
+        // 驗證配置的完整性
+        $errors = $config->validate();
+        if (!empty($errors)) {
+            $errorMessage = "環境配置錯誤:\n" . implode("\n", $errors);
+            throw new Exception($errorMessage);
+        }
+    }    /**
      * 初始化 DI 容器.
      */
     private function initializeContainer(): void

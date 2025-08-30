@@ -225,12 +225,12 @@ $analysis = $detector->analyzeUserActivity(
 
 if ($analysis->isSuspicious()) {
     echo "檢測到可疑活動！風險分數: {$analysis->getRiskScore()}\n";
-    
+
     foreach ($analysis->getDetectedPatterns() as $pattern) {
         echo "- {$pattern->getDescription()}\n";
         echo "  風險分數: {$pattern->getRiskScore()}\n";
     }
-    
+
     // 取得建議措施
     foreach ($analysis->getRecommendations() as $recommendation) {
         echo "建議: {$recommendation}\n";
@@ -326,7 +326,7 @@ async function logActivity(actionType, metadata = {}) {
                 metadata: metadata
             })
         });
-        
+
         const result = await response.json();
         return result.success;
     } catch (error) {
@@ -407,7 +407,7 @@ $dto = CreateActivityLogDTO::success(
         // ✅ 安全
         'ip_address' => $request->getClientIp(),
         'login_method' => 'password',
-        
+
         // ❌ 避免記錄敏感資料
         // 'password' => $plainPassword,
         // 'credit_card' => $cardNumber

@@ -31,7 +31,7 @@ class DatabaseOptimizationValidationTest extends TestCase
             $this->assertNotFalse($stmt);
             $stmt->execute([$indexName]);
             $exists = $stmt->fetch();
-            
+
             $this->assertNotEmpty($exists, "Required index $indexName does not exist");
         }
     }
@@ -59,12 +59,12 @@ class DatabaseOptimizationValidationTest extends TestCase
 
             for ($i = 0; $i < $iterations; $i++) {
                 $start = microtime(true);
-                
+
                 $stmt = $this->db->prepare($config['sql']);
                 $this->assertNotFalse($stmt);
                 $stmt->execute($config['params']);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                
+
                 $end = microtime(true);
                 $totalTime += ($end - $start);
             }
@@ -73,7 +73,7 @@ class DatabaseOptimizationValidationTest extends TestCase
             $avgTimeMs = $avgTime * 1000;
 
             // 基本效能要求：平均查詢時間應小於 10ms
-            $this->assertLessThan(10.0, $avgTimeMs, 
+            $this->assertLessThan(10.0, $avgTimeMs,
                 "$testName took {$avgTimeMs}ms on average (expected < 10ms)");
         }
     }
@@ -84,7 +84,7 @@ class DatabaseOptimizationValidationTest extends TestCase
         $stmt = $this->db->query("SELECT COUNT(*) as total_rows FROM user_activity_logs");
         $this->assertNotFalse($stmt);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         $this->assertIsArray($result);
         $this->assertArrayHasKey('total_rows', $result);
         $this->assertGreaterThan(0, $result['total_rows'], 'Table should contain test data');

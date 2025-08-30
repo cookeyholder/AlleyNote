@@ -1,8 +1,8 @@
 # AlleyNote API 文件
 
-**版本**: v3.0  
-**基礎 URL**: `https://your-domain.com/api`  
-**API 版本**: RESTful API v3.0  
+**版本**: v3.0
+**基礎 URL**: `https://your-domain.com/api`
+**API 版本**: RESTful API v3.0
 **更新日期**: 2025-08-28
 
 ---
@@ -31,7 +31,7 @@ AlleyNote API v3.0 提供完整的公布欄網站功能，基於 DDD 架構設�
 ### 新版本特色（v3.0）
 
 - ✅ **DDD 架構**: 領域驅動設計，161 classes, 37 interfaces
-- ✅ **統一腳本系統**: 9 core classes，85% 程式碼精簡  
+- ✅ **統一腳本系統**: 9 core classes，85% 程式碼精簡
 - ✅ **完整測試覆蓋**: 1,213 tests, 87.5% coverage
 - ✅ **強型別驗證**: 29 種內建驗證規則，繁體中文錯誤訊息
 - ✅ **統一錯誤格式**: 標準化的 API 錯誤回應
@@ -918,7 +918,7 @@ docker compose exec web php scripts/unified-scripts.php swagger:serve
 產生的 API 文件可透過以下方式存取：
 
 - **JSON 格式**: `http://localhost/api-docs.json`
-- **YAML 格式**: `http://localhost/api-docs.yaml`  
+- **YAML 格式**: `http://localhost/api-docs.yaml`
 - **Swagger UI**: `http://localhost/docs` (如果有啟用)
 
 ### 自動化整合
@@ -932,7 +932,7 @@ API 文件會在以下情況自動更新：
 
 - **OpenAPI 版本**: 3.0.3
 - **支援格式**: JSON, YAML
-- **包含內容**: 
+- **包含內容**:
   - 完整端點清單
   - 請求/回應範例
   - 資料模型定義
@@ -1100,6 +1100,6 @@ X-CSRF-TOKEN: abc123def456
 
 ---
 
-*API 版本: v2.0*  
-*文件版本: v2.0*  
+*API 版本: v2.0*
+*文件版本: v2.0*
 *維護者: AlleyNote 開發團隊*
