@@ -47,11 +47,11 @@ if (count($lines) > 0) {
 
 if ($phpTagCount > 1 || $hasInlineRepetition) {
     echo "🔧 修復重複的 PHP 標籤和內容...\n";
-    
+
     if ($hasInlineRepetition) {
         // 處理行內重複的情況
         $fixedContent = '';
-        
+
         foreach ($lines as $line) {
             // 檢查行內是否有重複的模式
             if (preg_match('/^(.+)\1$/', $line, $matches)) {
@@ -68,21 +68,21 @@ if ($phpTagCount > 1 || $hasInlineRepetition) {
                 $parts = explode(';', $line);
                 $uniqueParts = [];
                 $lastPart = '';
-                
+
                 foreach ($parts as $part) {
                     if ($part !== $lastPart || trim($part) === '') {
                         $uniqueParts[] = $part;
                         $lastPart = $part;
                     }
                 }
-                
+
                 $cleanedLine = implode(';', $uniqueParts);
-                
+
                 // 處理 namespace 重複
                 if (preg_match('/^namespace ([^;]+);\1;?/', $cleanedLine, $matches)) {
                     $cleanedLine = 'namespace ' . $matches[1] . ';';
                 }
-                
+
                 $fixedContent .= $cleanedLine . "\n";
             }
         }
@@ -93,48 +93,48 @@ if ($phpTagCount > 1 || $hasInlineRepetition) {
         $classFound = false;
         $braceCount = 0;
         $skipDuplicates = false;
-        
+
         foreach ($lines as $i => $line) {
             $trimmedLine = trim($line);
-            
+
             // 跳過重複的 <?php 和 declare
             if ($trimmedLine === '<?php' && $classFound) {
                 $skipDuplicates = true;
                 continue;
             }
-            
+
             if ($skipDuplicates && $trimmedLine === 'declare(strict_types=1);') {
                 continue;
             }
-            
+
             if ($skipDuplicates && strpos($trimmedLine, 'namespace ') === 0) {
                 continue;
             }
-            
+
             if ($skipDuplicates && strpos($trimmedLine, 'use ') === 0) {
                 continue;
             }
-            
+
             // 檢查是否找到類別定義
             if (!$classFound && strpos($trimmedLine, 'class ') !== false && strpos($trimmedLine, 'extends TestCase') !== false) {
                 $classFound = true;
                 $inClass = true;
                 $skipDuplicates = false;
             }
-            
+
             // 如果已經找到類別且遇到重複的類別定義，跳過
             if ($classFound && $skipDuplicates && strpos($trimmedLine, 'class ') !== false) {
                 break;
             }
-            
+
             if (!$skipDuplicates) {
                 $fixedContent .= $line . "\n";
             }
-            
+
             // 計算大括號
             if ($inClass) {
                 $braceCount += substr_count($line, '{') - substr_count($line, '}');
-                
+
                 // 如果大括號平衡，類別結束
                 if ($braceCount <= 0 && strpos($line, '}') !== false) {
                     break;
@@ -142,22 +142,21 @@ if ($phpTagCount > 1 || $hasInlineRepetition) {
             }
         }
     }
-    
+
     // 移除末尾多餘的換行
     $fixedContent = rtrim($fixedContent) . "\n";
-    
+
     echo "✅ 修復後內容長度: " . strlen($fixedContent) . " 字元\n";
     echo "✅ 修復後行數: " . count(explode("\n", $fixedContent)) . " 行\n";
-    
+
     // 備份原檔案
     $backupFile = $filepath . '.backup.' . date('Y-m-d_H-i-s');
     copy($filepath, $backupFile);
     echo "💾 備份檔案: {$backupFile}\n";
-    
+
     // 寫入修復後的內容
     file_put_contents($filepath, $fixedContent);
     echo "✅ 修復完成！\n";
-    
 } else {
     echo "ℹ️  檔案看起來沒有重複內容問題\n";
 }

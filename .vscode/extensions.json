@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "bmewburn.vscode-intelephense-client",
+        "junstyle.php-cs-fixer",
+        "ms-vscode.vscode-json",
+        "formulahendry.auto-rename-tag",
+        "bradlc.vscode-tailwindcss",
+        "ms-azuretools.vscode-docker",
+        "editorconfig.editorconfig"
+    ]
+}
