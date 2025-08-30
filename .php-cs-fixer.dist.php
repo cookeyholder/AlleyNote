@@ -149,6 +149,13 @@ return $config
             'null_adjustment' => 'always_last',
             'sort_algorithm' => 'none',
         ],
+
+        // 命名規範相關規則
+        'class_reference_name_casing' => true,   // 確保類別引用使用正確大小寫
+        'constant_case' => true,                 // 確保 PHP 常數使用正確大小寫
+        'magic_constant_casing' => true,         // 魔術常數大小寫規範
+        'magic_method_casing' => true,           // 魔術方法大小寫規範
+        'native_function_casing' => true,        // PHP 內建函式大小寫規範
     ])
     ->setRiskyAllowed(true)
     ->setUsingCache(true)
