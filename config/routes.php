@@ -9,14 +9,14 @@ use App\Infrastructure\Routing\Contracts\RouterInterface;
 
 /**
  * 路由定義
- * 
+ *
  * 定義所有 API 路由，包含 JWT 認證和授權配置
- * 
+ *
  * 路由架構：
  * - 公開路由：不需要認證
  * - 認證路由：需要有效的 JWT token
  * - 授權路由：需要認證且具備特定權限
- * 
+ *
  * 中介軟體註冊：
  * - 'jwt.auth': JWT 認證中介軟體
  * - 'jwt.authorize': JWT 授權中介軟體
@@ -161,7 +161,7 @@ return function (RouterInterface $router): void {
 
 /*
  * 路由配置說明：
- * 
+ *
  * 1. 公開路由：
  *    - /api/health - 健康檢查
  *    - /docs, /api/docs, /api/docs/ui - API 文檔
@@ -170,24 +170,28 @@ return function (RouterInterface $router): void {
  *    - /api/auth/refresh - Token 刷新
  *    - /api/posts (GET) - 瀏覽貼文清單
  *    - /api/posts/{id} (GET) - 檢視特定貼文
- * 
+ *
  * 2. 需要認證的路由：
  *    - /api/auth/logout - 使用者登出
  *    - /api/auth/me - 取得使用者資訊
- * 
+ *
  * 3. 需要認證和授權的路由：
  *    - /api/posts (POST) - 建立新貼文
  *    - /api/posts/{id} (PUT) - 更新貼文
  *    - /api/posts/{id} (DELETE) - 刪除貼文
- * 
+ *
  * 中介軟體配置：
  * - jwt.auth: JWT 認證中介軟體，驗證 token 有效性
  * - jwt.authorize: JWT 授權中介軟體，檢查使用者權限
- * 
+ *
  * 注意：實際的中介軟體註冊需要在應用程式啟動時透過 DI 容器完成
  */
 
     // 加載快取監控路由
     $cacheMonitorRoutes = require __DIR__ . '/routes/cache-monitor.php';
     $cacheMonitorRoutes($app);
+    
+    // 加載標籤管理路由
+    $tagManagementRoutes = require __DIR__ . '/routes/tag-management.php';
+    $tagManagementRoutes($app);
 };

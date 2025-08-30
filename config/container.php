@@ -152,12 +152,45 @@ return array_merge(
         // PDO::class => \DI\factory(function (ContainerInterface $c) {
         //     return new PDO('sqlite:' . $c->get('db.path'));
         // }),
-        
+
         // Cache Monitor Controller
         \App\Application\Controllers\Admin\CacheMonitorController::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
             return new \App\Application\Controllers\Admin\CacheMonitorController(
                 $container->get(\App\Shared\Monitoring\Contracts\CacheMonitorInterface::class),
                 $container->get(\App\Shared\Cache\Contracts\CacheManagerInterface::class)
+            );
+        }),
+
+        // Tag Management Controller
+        \App\Application\Controllers\Admin\TagManagementController::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
+            $cacheManager = $container->get(\App\Shared\Cache\Contracts\CacheManagerInterface::class);
+            
+            $tagRepository = null;
+            try {
+                $tagRepository = $container->get(\App\Shared\Cache\Contracts\TagRepositoryInterface::class);
+            } catch (\Exception) {
+                // 標籤倉庫不可用
+            }
+            
+            $groupManager = null;
+            try {
+                $groupManager = $container->get(\App\Shared\Cache\Services\CacheGroupManager::class);
+            } catch (\Exception) {
+                // 分組管理器不可用
+            }
+            
+            $logger = null;
+            try {
+                $logger = $container->get(\Psr\Log\LoggerInterface::class);
+            } catch (\Exception) {
+                // 記錄器不可用
+            }
+            
+            return new \App\Application\Controllers\Admin\TagManagementController(
+                $cacheManager,
+                $tagRepository,
+                $groupManager,
+                $logger
             );
         }),
     ],

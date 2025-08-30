@@ -51,7 +51,7 @@ class CacheMonitorController extends BaseController
     {
         try {
             $metrics = $this->cacheMonitor->getMetrics();
-            
+
             // 計算額外的統計資料
             $totalOperations = array_sum([
                 $metrics['total_hits'] ?? 0,
@@ -59,11 +59,11 @@ class CacheMonitorController extends BaseController
                 $metrics['total_sets'] ?? 0,
                 $metrics['total_deletes'] ?? 0,
             ]);
-            
-            $hitRate = $totalOperations > 0 
+
+            $hitRate = $totalOperations > 0
                 ? round(($metrics['total_hits'] / $totalOperations) * 100, 2)
                 : 0;
-            
+
             $data = [
                 'basic_metrics' => $metrics,
                 'calculated_metrics' => [
@@ -94,7 +94,7 @@ class CacheMonitorController extends BaseController
     {
         try {
             $health = $this->cacheMonitor->getHealth();
-            
+
             // 判斷整體健康狀況
             $overallHealth = 'healthy';
             foreach ($health as $driver => $status) {
@@ -103,7 +103,7 @@ class CacheMonitorController extends BaseController
                     break;
                 }
             }
-            
+
             $data = [
                 'overall_status' => $overallHealth,
                 'driver_status' => $health,
@@ -132,7 +132,7 @@ class CacheMonitorController extends BaseController
     {
         try {
             $this->cacheMonitor->reset();
-            
+
             $this->logger->info('快取統計資料已重設');
 
             return $this->json($response, [
@@ -157,10 +157,10 @@ class CacheMonitorController extends BaseController
     {
         try {
             $result = $this->cacheManager->flush();
-            
+
             if ($result) {
                 $this->logger->info('所有快取已透過 API 清空');
-                
+
                 return $this->json($response, [
                     'message' => '所有快取已成功清空',
                     'flushed_at' => time(),
@@ -189,7 +189,7 @@ class CacheMonitorController extends BaseController
         try {
             $drivers = $this->cacheManager->getDrivers();
             $driverInfo = [];
-            
+
             foreach ($drivers as $name => $driver) {
                 $driverInfo[$name] = [
                     'class' => get_class($driver),
@@ -201,7 +201,7 @@ class CacheMonitorController extends BaseController
                 'drivers' => $driverInfo,
                 'default_driver' => $this->cacheManager->getDefaultDriver(),
                 'available_drivers' => array_keys(array_filter(
-                    $driverInfo, 
+                    $driverInfo,
                     fn($info) => $info['available']
                 )),
             ];

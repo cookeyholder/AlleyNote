@@ -31,10 +31,10 @@ class CacheMonitorTest extends TestCase
     public function test_record_hit_increases_hit_count(): void
     {
         $this->cacheMonitor->recordHit('memory', 'test_key', 1.5);
-        
+
         $metrics = $this->cacheMonitor->getMetrics();
         $this->assertEquals(1, $metrics['total_hits']);
-        
+
         // 測試驅動效能資料
         $performance = $this->cacheMonitor->getDriverPerformance();
         $this->assertArrayHasKey('memory', $performance);
@@ -45,7 +45,7 @@ class CacheMonitorTest extends TestCase
     public function test_record_miss_increases_miss_count(): void
     {
         $this->cacheMonitor->recordMiss('file', 'missing_key');
-        
+
         $metrics = $this->cacheMonitor->getMetrics();
         $this->assertEquals(1, $metrics['total_misses']);
     }
@@ -81,11 +81,11 @@ class CacheMonitorTest extends TestCase
         // 初始狀態應該是健康的
         $health = $this->cacheMonitor->getHealth();
         $this->assertIsArray($health);
-        
+
         // 記錄一些成功的操作
         $this->cacheMonitor->recordHit('memory', 'key1', 1.0);
         $this->cacheMonitor->recordOperation('put', 'memory', true, 1.0);
-        
+
         $health = $this->cacheMonitor->getHealth();
         $this->assertArrayHasKey('memory', $health);
     }
@@ -121,10 +121,10 @@ class CacheMonitorTest extends TestCase
         $this->cacheMonitor->recordOperation('put', 'memory', true, 1.5);
 
         $performance = $this->cacheMonitor->getDriverPerformance();
-        
+
         $this->assertArrayHasKey('memory', $performance);
         $memoryPerf = $performance['memory'];
-        
+
         $this->assertEquals(3, $memoryPerf['total_operations']);
         $this->assertEquals(4.5, $memoryPerf['total_time']); // 1.0 + 2.0 + 1.5
         $this->assertEquals(1.5, $memoryPerf['average_time']); // 4.5 / 3
@@ -136,13 +136,13 @@ class CacheMonitorTest extends TestCase
         $this->cacheMonitor->recordHit('memory', 'key1', 0.5);
         $this->cacheMonitor->recordHit('redis', 'key1', 1.2);
         $this->cacheMonitor->recordMiss('file', 'key2');
-        
+
         $performance = $this->cacheMonitor->getDriverPerformance();
-        
+
         $this->assertArrayHasKey('memory', $performance);
         $this->assertArrayHasKey('redis', $performance);
         $this->assertArrayHasKey('file', $performance);
-        
+
         $this->assertEquals(1, $performance['memory']['total_operations']);
         $this->assertEquals(1, $performance['redis']['total_operations']);
         $this->assertEquals(1, $performance['file']['total_operations']);
@@ -158,11 +158,11 @@ class CacheMonitorTest extends TestCase
         $this->assertEquals(3, $metrics['total_errors']);
 
         $performance = $this->cacheMonitor->getDriverPerformance();
-        
+
         // Redis 應有 2 個錯誤
         $this->assertArrayHasKey('redis', $performance);
         $this->assertEquals(2, $performance['redis']['total_errors']);
-        
+
         // File 應有 1 個錯誤
         $this->assertArrayHasKey('file', $performance);
         $this->assertEquals(1, $performance['file']['total_errors']);

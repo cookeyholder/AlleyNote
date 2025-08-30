@@ -5,16 +5,24 @@ declare(strict_types=1);
 namespace App\Shared\Cache\Drivers;
 
 use App\Shared\Cache\Contracts\CacheDriverInterface;
+use App\Shared\Cache\Contracts\TaggedCacheInterface;
 
 /**
  * 記憶體快取驅動。
  *
  * 使用 PHP 陣列作為快取存儲，提供最快的訪問速度但僅限於請求週期內
+ * 提供標籤支援功能
  */
-class MemoryCacheDriver implements CacheDriverInterface
+class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 {
     /** @var array<string, array{value: mixed, expires_at: int}> 快取資料 */
     private array $cache = [];
+
+    /** @var array<string, array<string>> 標籤索引 */
+    private array $tagIndex = [];
+
+    /** @var array<string> 當前標籤 */
+    private array $tags = [];
 
     /** @var array<string, int> 統計資料 */
     private array $stats = [
@@ -67,6 +75,11 @@ class MemoryCacheDriver implements CacheDriverInterface
             'expires_at' => $expiresAt,
         ];
 
+        // 如果有標籤，添加到標籤索引
+        if (!empty($this->tags)) {
+            $this->addKeyToTags($key, $this->tags);
+        }
+
         $this->stats['sets']++;
         return true;
     }
@@ -92,6 +105,7 @@ class MemoryCacheDriver implements CacheDriverInterface
     {
         if (isset($this->cache[$key])) {
             unset($this->cache[$key]);
+            $this->removeKeyFromAllTags($key);
             $this->stats['deletes']++;
             return true;
         }
@@ -102,6 +116,7 @@ class MemoryCacheDriver implements CacheDriverInterface
     public function flush(): bool
     {
         $this->cache = [];
+        $this->tagIndex = [];
         $this->stats['clears']++;
         return true;
     }
@@ -311,5 +326,206 @@ class MemoryCacheDriver implements CacheDriverInterface
             'deletes' => 0,
             'clears' => 0,
         ];
+    }
+
+    // ===== 標籤化快取介面實作 =====
+
+    /**
+     * 設定快取標籤
+     *
+     * @param array<string>|string $tags 標籤陣列或單一標籤
+     * @return TaggedCacheInterface 標籤化快取實例
+     */
+    public function tags(array|string $tags): TaggedCacheInterface
+    {
+        $tagsArray = is_array($tags) ? $tags : [$tags];
+        
+        // 建立新的驅動實例以避免標籤污染
+        $driver = clone $this;
+        $driver->tags = $tagsArray;
+        
+        return $driver;
+    }
+
+    /**
+     * 取得當前標籤
+     *
+     * @return array<string> 標籤陣列
+     */
+    public function getTags(): array
+    {
+        return $this->tags;
+    }
+
+    /**
+     * 根據標籤清空快取
+     *
+     * @param array<string>|string $tags 要清空的標籤
+     * @return int 清空的項目數量
+     */
+    public function flushByTags(array|string $tags): int
+    {
+        $tagsArray = is_array($tags) ? $tags : [$tags];
+        $deletedCount = 0;
+
+        foreach ($tagsArray as $tag) {
+            if (!isset($this->tagIndex[$tag])) {
+                continue;
+            }
+
+            $keys = $this->tagIndex[$tag];
+            foreach ($keys as $key) {
+                if (isset($this->cache[$key])) {
+                    unset($this->cache[$key]);
+                    $deletedCount++;
+                }
+            }
+
+            // 清空標籤索引
+            unset($this->tagIndex[$tag]);
+        }
+
+        $this->stats['deletes'] += $deletedCount;
+        return $deletedCount;
+    }
+
+    /**
+     * 根據標籤取得快取鍵
+     *
+     * @param string $tag 標籤名稱
+     * @return array<string> 快取鍵陣列
+     */
+    public function getKeysByTag(string $tag): array
+    {
+        if (!isset($this->tagIndex[$tag])) {
+            return [];
+        }
+
+        // 過濾出存在且未過期的鍵
+        $validKeys = [];
+        foreach ($this->tagIndex[$tag] as $key) {
+            if ($this->has($key)) {
+                $validKeys[] = $key;
+            }
+        }
+
+        return $validKeys;
+    }
+
+    /**
+     * 根據多個標籤取得共同的快取鍵
+     *
+     * @param array<string> $tags 標籤陣列
+     * @return array<string> 共同的快取鍵陣列
+     */
+    public function getKeysByTags(array $tags): array
+    {
+        if (empty($tags)) {
+            return [];
+        }
+
+        $commonKeys = null;
+
+        foreach ($tags as $tag) {
+            $tagKeys = $this->getKeysByTag($tag);
+            
+            if ($commonKeys === null) {
+                $commonKeys = $tagKeys;
+            } else {
+                $commonKeys = array_intersect($commonKeys, $tagKeys);
+            }
+            
+            // 如果已經沒有共同鍵，提早結束
+            if (empty($commonKeys)) {
+                break;
+            }
+        }
+
+        return $commonKeys ?? [];
+    }
+
+    /**
+     * 檢查標籤是否存在
+     *
+     * @param string $tag 標籤名稱
+     * @return bool 是否存在
+     */
+    public function tagExists(string $tag): bool
+    {
+        return isset($this->tagIndex[$tag]) && !empty($this->tagIndex[$tag]);
+    }
+
+    /**
+     * 取得所有標籤
+     *
+     * @return array<string> 所有標籤陣列
+     */
+    public function getAllTags(): array
+    {
+        return array_keys($this->tagIndex);
+    }
+
+    /**
+     * 取得標籤統計資訊
+     *
+     * @return array<string, mixed> 標籤統計資訊
+     */
+    public function getTagStatistics(): array
+    {
+        $statistics = [
+            'total_tags' => count($this->tagIndex),
+            'tags' => [],
+        ];
+
+        foreach ($this->tagIndex as $tag => $keys) {
+            $validKeys = $this->getKeysByTag($tag);
+            $statistics['tags'][$tag] = [
+                'key_count' => count($validKeys),
+                'sample_keys' => array_slice($validKeys, 0, 5), // 顯示前 5 個鍵作為範例
+            ];
+        }
+
+        return $statistics;
+    }
+
+    /**
+     * 將快取鍵添加到標籤索引
+     *
+     * @param string $key 快取鍵
+     * @param array<string> $tags 標籤陣列
+     */
+    private function addKeyToTags(string $key, array $tags): void
+    {
+        foreach ($tags as $tag) {
+            if (!isset($this->tagIndex[$tag])) {
+                $this->tagIndex[$tag] = [];
+            }
+            
+            if (!in_array($key, $this->tagIndex[$tag], true)) {
+                $this->tagIndex[$tag][] = $key;
+            }
+        }
+    }
+
+    /**
+     * 從所有標籤索引中移除快取鍵
+     *
+     * @param string $key 快取鍵
+     */
+    private function removeKeyFromAllTags(string $key): void
+    {
+        foreach ($this->tagIndex as $tag => &$keys) {
+            $index = array_search($key, $keys, true);
+            if ($index !== false) {
+                unset($keys[$index]);
+                $keys = array_values($keys); // 重新索引陣列
+            }
+            
+            // 如果標籤下沒有鍵了，移除標籤
+            if (empty($keys)) {
+                unset($this->tagIndex[$tag]);
+            }
+        }
+        unset($keys);
     }
 }

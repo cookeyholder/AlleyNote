@@ -8,6 +8,7 @@ use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\CacheStrategyInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
+use App\Shared\Cache\Contracts\TagRepositoryInterface;
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -37,6 +38,9 @@ class CacheManager implements CacheManagerInterface
     /** @var CacheMonitorInterface|null 快取監控器 */
     private ?CacheMonitorInterface $monitor;
 
+    /** @var TagRepositoryInterface|null 標籤倉庫 */
+    private ?TagRepositoryInterface $tagRepository;
+
     /** @var array<string, mixed> 設定 */
     private array $config;
 
@@ -56,11 +60,13 @@ class CacheManager implements CacheManagerInterface
         CacheStrategyInterface $strategy,
         LoggerInterface $logger = null,
         array $config = [],
-        CacheMonitorInterface $monitor = null
+        CacheMonitorInterface $monitor = null,
+        TagRepositoryInterface $tagRepository = null
     ) {
         $this->strategy = $strategy;
         $this->logger = $logger ?? new NullLogger();
         $this->monitor = $monitor;
+        $this->tagRepository = $tagRepository;
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
 
@@ -138,7 +144,7 @@ class CacheManager implements CacheManagerInterface
         $startTime = microtime(true);
 
         $availableDrivers = $this->getOrderedAvailableDrivers();
-        
+
         if (empty($availableDrivers)) {
             $this->logger->warning('沒有可用的快取驅動', ['key' => $key]);
             $this->stats['total_misses']++;
@@ -147,54 +153,54 @@ class CacheManager implements CacheManagerInterface
 
         foreach ($availableDrivers as $name => $driver) {
             $driverStartTime = microtime(true);
-            
+
             try {
                 if ($driver->has($key)) {
                     $value = $driver->get($key, $default);
                     $duration = (microtime(true) - $driverStartTime) * 1000; // 轉換為毫秒
-                    
+
                     // 記錄監控資料
                     if ($this->monitor) {
                         $this->monitor->recordHit($name, $key, $duration);
                         $this->monitor->recordOperation('get', $name, true, $duration, ['result' => 'hit']);
                     }
-                    
+
                     // 快取命中，同步到其他驅動
                     $this->syncCacheToHigherPriorityDrivers($key, $value, $name);
-                    
+
                     $this->stats['total_hits']++;
-                    
+
                     $this->logger->debug('快取命中', [
                         'key' => $key,
                         'driver' => $name,
                         'duration' => $duration,
                     ]);
-                    
+
                     return $value;
                 }
-                
+
                 // 記錄未命中
                 $duration = (microtime(true) - $driverStartTime) * 1000;
                 if ($this->monitor) {
                     $this->monitor->recordMiss($name, $key, $duration);
                 }
-                
+
             } catch (\Exception $e) {
                 $duration = (microtime(true) - $driverStartTime) * 1000;
-                
+
                 if ($this->monitor) {
                     $this->monitor->recordError($name, 'get', $e->getMessage(), ['key' => $key]);
                     $this->monitor->recordOperation('get', $name, false, $duration, ['error' => $e->getMessage()]);
                 }
-                
+
                 $this->handleDriverError($name, $e, 'get', ['key' => $key]);
             }
         }
 
         $this->stats['total_misses']++;
-        
+
         $this->logger->debug('快取未命中', ['key' => $key]);
-        
+
         return $default;
     public function put(string $key, mixed $value, int $ttl = 3600): bool
     {
@@ -229,7 +235,7 @@ class CacheManager implements CacheManagerInterface
         try {
             $success = $selectedDriver->put($key, $value, $adjustedTtl);
             $duration = (microtime(true) - $driverStartTime) * 1000; // 轉換為毫秒
-            
+
             // 記錄監控資料
             if ($this->monitor) {
                 $this->monitor->recordOperation('put', $driverName, $success, $duration, [
@@ -249,7 +255,7 @@ class CacheManager implements CacheManagerInterface
             }
         } catch (\Exception $e) {
             $duration = (microtime(true) - $driverStartTime) * 1000;
-            
+
             if ($this->monitor) {
                 $this->monitor->recordError($driverName, 'put', $e->getMessage(), [
                     'key' => $key,
@@ -259,7 +265,7 @@ class CacheManager implements CacheManagerInterface
                     'error' => $e->getMessage(),
                 ]);
             }
-            
+
             $success = $this->handleDriverError($driverName, $e, 'put', [
                 'key' => $key,
                 'value' => $value,
@@ -280,7 +286,7 @@ class CacheManager implements CacheManagerInterface
             try {
                 $hasKey = $driver->has($key);
                 $duration = (microtime(true) - $driverStartTime) * 1000;
-                
+
                 // 記錄監控資料
                 if ($this->monitor) {
                     $this->monitor->recordOperation('has', $name, true, $duration, [
@@ -288,13 +294,13 @@ class CacheManager implements CacheManagerInterface
                         'found' => $hasKey,
                     ]);
                 }
-                
+
                 if ($hasKey) {
                     return true;
                 }
             } catch (\Exception $e) {
                 $duration = (microtime(true) - $driverStartTime) * 1000;
-                
+
                 if ($this->monitor) {
                     $this->monitor->recordError($name, 'has', $e->getMessage(), [
                         'key' => $key,
@@ -303,7 +309,7 @@ class CacheManager implements CacheManagerInterface
                         'error' => $e->getMessage(),
                     ]);
                 }
-                
+
                 $this->handleDriverError($name, $e, 'has', ['key' => $key]);
             }
         }
@@ -324,20 +330,20 @@ class CacheManager implements CacheManagerInterface
             try {
                 $result = $driver->forget($key);
                 $duration = (microtime(true) - $driverStartTime) * 1000;
-                
+
                 // 記錄監控資料
                 if ($this->monitor) {
                     $this->monitor->recordOperation('forget', $name, $result, $duration, [
                         'key' => $key,
                     ]);
                 }
-                
+
                 if (!$result) {
                     $success = false;
                 }
             } catch (\Exception $e) {
                 $duration = (microtime(true) - $driverStartTime) * 1000;
-                
+
                 if ($this->monitor) {
                     $this->monitor->recordError($name, 'forget', $e->getMessage(), [
                         'key' => $key,
@@ -346,7 +352,7 @@ class CacheManager implements CacheManagerInterface
                         'error' => $e->getMessage(),
                     ]);
                 }
-                
+
                 $this->handleDriverError($name, $e, 'forget', ['key' => $key]);
                 $success = false;
             }
@@ -372,20 +378,20 @@ class CacheManager implements CacheManagerInterface
             try {
                 $result = $driver->flush();
                 $duration = (microtime(true) - $driverStartTime) * 1000;
-                
+
                 // 記錄監控資料
                 if ($this->monitor) {
                     $this->monitor->recordOperation('flush', $name, $result, $duration, [
                         'driver' => $name,
                     ]);
                 }
-                
+
                 if (!$result) {
                     $success = false;
                 }
             } catch (\Exception $e) {
                 $duration = (microtime(true) - $driverStartTime) * 1000;
-                
+
                 if ($this->monitor) {
                     $this->monitor->recordError($name, 'flush', $e->getMessage(), [
                         'driver' => $name,
@@ -394,7 +400,7 @@ class CacheManager implements CacheManagerInterface
                         'error' => $e->getMessage(),
                     ]);
                 }
-                
+
                 $this->handleDriverError($name, $e, 'flush', []);
                 $success = false;
             }
@@ -646,6 +652,15 @@ class CacheManager implements CacheManagerInterface
 
         foreach ($availableDrivers as $name => $driver) {
             if ($driver instanceof TaggedCacheInterface) {
+                // 如果有標籤倉庫，使用 TaggedCacheManager
+                if ($this->tagRepository !== null) {
+                    return new TaggedCacheManager(
+                        $driver->tags($tags),
+                        $this->tagRepository,
+                        $this->logger
+                    );
+                }
+                
                 return $driver->tags($tags);
             }
         }

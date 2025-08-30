@@ -7,9 +7,13 @@ namespace App\Shared\Cache\Providers;
 use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\CacheStrategyInterface;
+use App\Shared\Cache\Contracts\TagRepositoryInterface;
 use App\Shared\Cache\Drivers\FileCacheDriver;
 use App\Shared\Cache\Drivers\MemoryCacheDriver;
 use App\Shared\Cache\Drivers\RedisCacheDriver;
+use App\Shared\Cache\Repositories\MemoryTagRepository;
+use App\Shared\Cache\Repositories\RedisTagRepository;
+use App\Shared\Cache\Services\CacheGroupManager;
 use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Services\DefaultCacheStrategy;
 use App\Shared\Contracts\CacheServiceInterface;
@@ -223,12 +227,65 @@ class CacheServiceProvider
             FileCacheDriver::class => \DI\get('cache.driver.file'),
             RedisCacheDriver::class => \DI\get('cache.driver.redis'),
 
+            // 標籤倉庫
+            'cache.tag.repository.memory' => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+                return new MemoryTagRepository();
+            }),
+
+            'cache.tag.repository.redis' => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+                if (!extension_loaded('redis')) {
+                    throw new \RuntimeException('Redis 擴充功能未安裝');
+                }
+                $config = $c->has('cache.drivers.redis') ? $c->get('cache.drivers.redis') : [];
+                return new RedisTagRepository($config);
+            }),
+
+            TagRepositoryInterface::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+                // 根據是否有 Redis 來選擇標籤倉庫
+                if (extension_loaded('redis')) {
+                    try {
+                        return $c->get('cache.tag.repository.redis');
+                    } catch (\Exception) {
+                        return $c->get('cache.tag.repository.memory');
+                    }
+                }
+                return $c->get('cache.tag.repository.memory');
+            }),
+
+            // 快取分組管理器
+            CacheGroupManager::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+                $taggedCache = $c->get(CacheManagerInterface::class);
+                
+                // 確保快取管理器支援標籤功能
+                if (!method_exists($taggedCache, 'tags')) {
+                    throw new \RuntimeException('快取管理器不支援標籤功能');
+                }
+                
+                $logger = $c->has(LoggerInterface::class) ? $c->get(LoggerInterface::class) : null;
+                return new CacheGroupManager($taggedCache->tags([]), $logger);
+            }),
+
             CacheManagerInterface::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
                 $strategy = $c->get(CacheStrategyInterface::class);
                 $logger = $c->has(LoggerInterface::class) ? $c->get(LoggerInterface::class) : null;
                 $config = $c->has('cache.manager') ? $c->get('cache.manager') : [];
+                
+                // 取得標籤倉庫
+                $tagRepository = null;
+                try {
+                    $tagRepository = $c->get(TagRepositoryInterface::class);
+                } catch (\Exception) {
+                    // 標籤倉庫不可用
+                }
+                
+                $monitor = null;
+                try {
+                    $monitor = $c->get(\App\Shared\Monitoring\Contracts\CacheMonitorInterface::class);
+                } catch (\Exception) {
+                    // 監控器不可用
+                }
 
-                $manager = new CacheManager($strategy, $logger, $config);
+                $manager = new CacheManager($strategy, $logger, $config, $monitor, $tagRepository);
 
                 // 新增記憶體驅動
                 $memoryDriver = $c->get('cache.driver.memory');

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Cache\Drivers;
 
 use App\Shared\Cache\Contracts\CacheDriverInterface;
+use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use Redis;
 use RedisException;
 
@@ -12,8 +13,9 @@ use RedisException;
  * Redis 快取驅動。
  *
  * 使用 Redis 存儲快取資料，支援分散式快取和高效能訪問
+ * 提供標籤支援功能
  */
-class RedisCacheDriver implements CacheDriverInterface
+class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 {
     /** @var Redis Redis 連線 */
     private Redis $redis;
@@ -30,8 +32,14 @@ class RedisCacheDriver implements CacheDriverInterface
         'clears' => 0,
     ];
 
+    /** @var array<string> 當前標籤 */
+    private array $tags = [];
+
     /** @var int 預設 TTL */
     private const DEFAULT_TTL = 3600;
+
+    /** @var string 標籤索引前綴 */
+    private const TAG_INDEX_PREFIX = 'tag_index:';
 
     public function __construct(array $config = [])
     {
@@ -389,5 +397,379 @@ class RedisCacheDriver implements CacheDriverInterface
         } catch (RedisException) {
             // 忽略關閉連線時的錯誤
         }
+    }
+
+    // ===== 標籤化快取介面實作 =====
+
+    /**
+     * 設定快取標籤
+     *
+     * @param array<string>|string $tags 標籤陣列或單一標籤
+     * @return TaggedCacheInterface 標籤化快取實例
+     */
+    public function tags(array|string $tags): TaggedCacheInterface
+    {
+        $tagsArray = is_array($tags) ? $tags : [$tags];
+        
+        // 建立新的驅動實例以避免標籤污染
+        $driver = clone $this;
+        $driver->tags = $tagsArray;
+        
+        return $driver;
+    }
+
+    /**
+     * 取得當前標籤
+     *
+     * @return array<string> 標籤陣列
+     */
+    public function getTags(): array
+    {
+        return $this->tags;
+    }
+
+    /**
+     * 根據標籤清空快取
+     *
+     * @param array<string>|string $tags 要清空的標籤
+     * @return int 清空的項目數量
+     */
+    public function flushByTags(array|string $tags): int
+    {
+        $tagsArray = is_array($tags) ? $tags : [$tags];
+        $totalDeleted = 0;
+
+        try {
+            foreach ($tagsArray as $tag) {
+                $tagIndexKey = $this->getTagIndexKey($tag);
+                $keys = $this->redis->sMembers($tagIndexKey);
+                
+                if (!empty($keys)) {
+                    // 刪除所有與標籤相關的快取鍵
+                    $deleted = $this->redis->del($keys);
+                    $totalDeleted += $deleted;
+                    
+                    // 清空標籤索引
+                    $this->redis->del($tagIndexKey);
+                }
+                
+                $this->stats['deletes'] += count($keys);
+            }
+        } catch (RedisException) {
+            // 標籤清空失敗，回退處理
+        }
+
+        return $totalDeleted;
+    }
+
+    /**
+     * 根據標籤取得快取鍵
+     *
+     * @param string $tag 標籤名稱
+     * @return array<string> 快取鍵陣列
+     */
+    public function getKeysByTag(string $tag): array
+    {
+        try {
+            $tagIndexKey = $this->getTagIndexKey($tag);
+            $keys = $this->redis->sMembers($tagIndexKey);
+            
+            // 移除前綴並過濾存在的鍵
+            $result = [];
+            foreach ($keys as $key) {
+                if (str_starts_with($key, $this->prefix)) {
+                    $unprefixedKey = substr($key, strlen($this->prefix));
+                    if ($this->has($unprefixedKey)) {
+                        $result[] = $unprefixedKey;
+                    }
+                }
+            }
+            
+            return $result;
+        } catch (RedisException) {
+            return [];
+        }
+    }
+
+    /**
+     * 根據多個標籤取得共同的快取鍵
+     *
+     * @param array<string> $tags 標籤陣列
+     * @return array<string> 共同的快取鍵陣列
+     */
+    public function getKeysByTags(array $tags): array
+    {
+        if (empty($tags)) {
+            return [];
+        }
+
+        try {
+            $tagIndexKeys = array_map([$this, 'getTagIndexKey'], $tags);
+            
+            // 使用 Redis 的集合交集運算
+            $tempKey = 'temp_intersection_' . uniqid();
+            $this->redis->sInterStore($tempKey, ...$tagIndexKeys);
+            $keys = $this->redis->sMembers($tempKey);
+            $this->redis->del($tempKey);
+            
+            // 移除前綴並過濾存在的鍵
+            $result = [];
+            foreach ($keys as $key) {
+                if (str_starts_with($key, $this->prefix)) {
+                    $unprefixedKey = substr($key, strlen($this->prefix));
+                    if ($this->has($unprefixedKey)) {
+                        $result[] = $unprefixedKey;
+                    }
+                }
+            }
+            
+            return $result;
+        } catch (RedisException) {
+            return [];
+        }
+    }
+
+    /**
+     * 檢查標籤是否存在
+     *
+     * @param string $tag 標籤名稱
+     * @return bool 是否存在
+     */
+    public function tagExists(string $tag): bool
+    {
+        try {
+            $tagIndexKey = $this->getTagIndexKey($tag);
+            return $this->redis->exists($tagIndexKey) > 0;
+        } catch (RedisException) {
+            return false;
+        }
+    }
+
+    /**
+     * 取得所有標籤
+     *
+     * @return array<string> 所有標籤陣列
+     */
+    public function getAllTags(): array
+    {
+        try {
+            $pattern = $this->prefix . self::TAG_INDEX_PREFIX . '*';
+            $keys = $this->redis->keys($pattern);
+            
+            $tags = [];
+            foreach ($keys as $key) {
+                $tag = substr($key, strlen($this->prefix . self::TAG_INDEX_PREFIX));
+                if ($tag) {
+                    $tags[] = $tag;
+                }
+            }
+            
+            return $tags;
+        } catch (RedisException) {
+            return [];
+        }
+    }
+
+    /**
+     * 取得標籤統計資訊
+     *
+     * @return array<string, mixed> 標籤統計資訊
+     */
+    public function getTagStatistics(): array
+    {
+        $statistics = [
+            'total_tags' => 0,
+            'tags' => [],
+        ];
+
+        try {
+            $allTags = $this->getAllTags();
+            $statistics['total_tags'] = count($allTags);
+            
+            foreach ($allTags as $tag) {
+                $keys = $this->getKeysByTag($tag);
+                $statistics['tags'][$tag] = [
+                    'key_count' => count($keys),
+                    'sample_keys' => array_slice($keys, 0, 5), // 顯示前 5 個鍵作為範例
+                ];
+            }
+        } catch (RedisException) {
+            // 統計失敗
+        }
+
+        return $statistics;
+    }
+
+    /**
+     * 覆寫 put 方法以支援標籤
+     */
+    public function put(string $key, mixed $value, int $ttl = self::DEFAULT_TTL): bool
+    {
+        try {
+            $prefixedKey = $this->getPrefixedKey($key);
+            $serializedValue = serialize($value);
+
+            $result = $ttl > 0
+                ? $this->redis->setex($prefixedKey, $ttl, $serializedValue)
+                : $this->redis->set($prefixedKey, $serializedValue);
+
+            if ($result) {
+                $this->stats['sets']++;
+                
+                // 如果有標籤，添加到標籤索引
+                if (!empty($this->tags)) {
+                    $this->addKeyToTags($key, $this->tags);
+                }
+            }
+
+            return $result;
+        } catch (RedisException) {
+            return false;
+        }
+    }
+
+    /**
+     * 覆寫 putMany 方法以支援標籤
+     */
+    public function putMany(array $values, int $ttl = self::DEFAULT_TTL): bool
+    {
+        try {
+            $pipe = $this->redis->multi();
+
+            foreach ($values as $key => $value) {
+                $prefixedKey = $this->getPrefixedKey($key);
+                $serializedValue = serialize($value);
+
+                if ($ttl > 0) {
+                    $pipe->setex($prefixedKey, $ttl, $serializedValue);
+                } else {
+                    $pipe->set($prefixedKey, $serializedValue);
+                }
+            }
+
+            $results = $pipe->exec();
+            $success = $results !== false && !in_array(false, $results, true);
+
+            if ($success) {
+                $this->stats['sets'] += count($values);
+                
+                // 如果有標籤，添加到標籤索引
+                if (!empty($this->tags)) {
+                    foreach (array_keys($values) as $key) {
+                        $this->addKeyToTags($key, $this->tags);
+                    }
+                }
+            }
+
+            return $success;
+        } catch (RedisException) {
+            // 回退到單個操作
+            $success = true;
+            foreach ($values as $key => $value) {
+                if (!$this->put($key, $value, $ttl)) {
+                    $success = false;
+                }
+            }
+            return $success;
+        }
+    }
+
+    /**
+     * 覆寫 forget 方法以支援標籤
+     */
+    public function forget(string $key): bool
+    {
+        try {
+            $result = $this->redis->del($this->getPrefixedKey($key));
+            if ($result > 0) {
+                $this->stats['deletes']++;
+                $this->removeKeyFromAllTags($key);
+                return true;
+            }
+            return false;
+        } catch (RedisException) {
+            return false;
+        }
+    }
+
+    /**
+     * 覆寫 forgetMany 方法以支援標籤
+     */
+    public function forgetMany(array $keys): bool
+    {
+        try {
+            $prefixedKeys = array_map([$this, 'getPrefixedKey'], $keys);
+            $deleted = $this->redis->del($prefixedKeys);
+
+            $this->stats['deletes'] += $deleted;
+            
+            if ($deleted > 0) {
+                foreach ($keys as $key) {
+                    $this->removeKeyFromAllTags($key);
+                }
+            }
+            
+            return $deleted === count($keys);
+        } catch (RedisException) {
+            // 回退到單個操作
+            $success = true;
+            foreach ($keys as $key) {
+                if (!$this->forget($key)) {
+                    $success = false;
+                }
+            }
+            return $success;
+        }
+    }
+
+    /**
+     * 將快取鍵添加到標籤索引
+     *
+     * @param string $key 快取鍵
+     * @param array<string> $tags 標籤陣列
+     */
+    private function addKeyToTags(string $key, array $tags): void
+    {
+        try {
+            $prefixedKey = $this->getPrefixedKey($key);
+            
+            foreach ($tags as $tag) {
+                $tagIndexKey = $this->getTagIndexKey($tag);
+                $this->redis->sAdd($tagIndexKey, $prefixedKey);
+            }
+        } catch (RedisException) {
+            // 標籤索引添加失敗，但不影響主要快取操作
+        }
+    }
+
+    /**
+     * 從所有標籤索引中移除快取鍵
+     *
+     * @param string $key 快取鍵
+     */
+    private function removeKeyFromAllTags(string $key): void
+    {
+        try {
+            $prefixedKey = $this->getPrefixedKey($key);
+            $allTags = $this->getAllTags();
+            
+            foreach ($allTags as $tag) {
+                $tagIndexKey = $this->getTagIndexKey($tag);
+                $this->redis->sRem($tagIndexKey, $prefixedKey);
+            }
+        } catch (RedisException) {
+            // 標籤索引清理失敗
+        }
+    }
+
+    /**
+     * 取得標籤索引鍵
+     *
+     * @param string $tag 標籤名稱
+     * @return string 標籤索引鍵
+     */
+    private function getTagIndexKey(string $tag): string
+    {
+        return $this->prefix . self::TAG_INDEX_PREFIX . $tag;
     }
 }

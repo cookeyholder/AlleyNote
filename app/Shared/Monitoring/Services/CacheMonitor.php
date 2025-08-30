@@ -10,7 +10,7 @@ use Psr\Log\NullLogger;
 
 /**
  * 快取監控服務。
- * 
+ *
  * 實作快取系統的監控功能，收集效能指標和健康狀態
  */
 class CacheMonitor implements CacheMonitorInterface
@@ -44,14 +44,14 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     public function recordOperation(
-        string $operation, 
-        string $driver, 
-        bool $success, 
-        float $duration, 
+        string $operation,
+        string $driver,
+        bool $success,
+        float $duration,
         array $context = []
     ): void {
         $timestamp = microtime(true);
-        
+
         // 更新操作統計
         if (!isset($this->operationStats[$driver])) {
             $this->initializeDriverStats($driver);
@@ -60,7 +60,7 @@ class CacheMonitor implements CacheMonitorInterface
         $driverStats = &$this->operationStats[$driver];
         $driverStats['operations'][$operation] = ($driverStats['operations'][$operation] ?? 0) + 1;
         $driverStats['total_operations']++;
-        
+
         if ($success) {
             $driverStats['successful_operations']++;
         } else {
@@ -70,11 +70,11 @@ class CacheMonitor implements CacheMonitorInterface
         // 更新效能統計
         $driverStats['total_duration'] += $duration;
         $driverStats['avg_duration'] = $driverStats['total_duration'] / $driverStats['total_operations'];
-        
+
         if ($duration > $driverStats['max_duration']) {
             $driverStats['max_duration'] = $duration;
         }
-        
+
         if ($duration < $driverStats['min_duration'] || $driverStats['min_duration'] === 0) {
             $driverStats['min_duration'] = $duration;
         }
@@ -131,9 +131,9 @@ class CacheMonitor implements CacheMonitorInterface
         $this->hitStats[$driver]['hits']++;
         $this->hitStats[$driver]['total_requests']++;
         $this->hitStats[$driver]['total_hit_duration'] += $duration;
-        $this->hitStats[$driver]['avg_hit_duration'] = 
+        $this->hitStats[$driver]['avg_hit_duration'] =
             $this->hitStats[$driver]['total_hit_duration'] / $this->hitStats[$driver]['hits'];
-        
+
         $this->updateHitRate($driver);
         $this->recordOperation('get', $driver, true, $duration, ['result' => 'hit', 'key' => $key]);
     }
@@ -153,7 +153,7 @@ class CacheMonitor implements CacheMonitorInterface
 
         $this->hitStats[$driver]['misses']++;
         $this->hitStats[$driver]['total_requests']++;
-        
+
         $this->updateHitRate($driver);
         $this->recordOperation('get', $driver, true, $duration, ['result' => 'miss', 'key' => $key]);
     }
@@ -161,7 +161,7 @@ class CacheMonitor implements CacheMonitorInterface
     public function recordError(string $driver, string $operation, string $error, array $context = []): void
     {
         $timestamp = microtime(true);
-        
+
         if (!isset($this->errorStats[$driver])) {
             $this->errorStats[$driver] = [
                 'total_errors' => 0,
@@ -171,7 +171,7 @@ class CacheMonitor implements CacheMonitorInterface
         }
 
         $this->errorStats[$driver]['total_errors']++;
-        $this->errorStats[$driver]['errors_by_operation'][$operation] = 
+        $this->errorStats[$driver]['errors_by_operation'][$operation] =
             ($this->errorStats[$driver]['errors_by_operation'][$operation] ?? 0) + 1;
 
         // 保留最近的錯誤記錄
@@ -197,7 +197,7 @@ class CacheMonitor implements CacheMonitorInterface
     public function recordHealthStatus(string $driver, bool $healthy, array $details = []): void
     {
         $timestamp = microtime(true);
-        
+
         $this->healthRecords[$driver] = [
             'healthy' => $healthy,
             'timestamp' => $timestamp,
@@ -271,8 +271,8 @@ class CacheMonitor implements CacheMonitorInterface
                 'min_duration' => $stats['min_duration'],
                 'max_duration' => $stats['max_duration'],
                 'total_operations' => $stats['total_operations'],
-                'success_rate' => $stats['total_operations'] > 0 
-                    ? ($stats['successful_operations'] / $stats['total_operations']) * 100 
+                'success_rate' => $stats['total_operations'] > 0
+                    ? ($stats['successful_operations'] / $stats['total_operations']) * 100
                     : 0,
                 'operations_per_second' => $this->calculateOperationsPerSecond($driver),
             ];
@@ -287,10 +287,10 @@ class CacheMonitor implements CacheMonitorInterface
     public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array
     {
         $slowOps = array_filter($this->operationHistory, fn($op) => $op['duration'] >= $thresholdMs);
-        
+
         // 按持續時間降序排序
         usort($slowOps, fn($a, $b) => $b['duration'] <=> $a['duration']);
-        
+
         return array_slice($slowOps, 0, $limit);
     }
 
@@ -362,7 +362,7 @@ class CacheMonitor implements CacheMonitorInterface
         // 清理操作歷史
         $originalCount = count($this->operationHistory);
         $this->operationHistory = array_filter(
-            $this->operationHistory, 
+            $this->operationHistory,
             fn($op) => $op['timestamp'] > $cutoffTime
         );
         $cleaned += $originalCount - count($this->operationHistory);
@@ -442,8 +442,8 @@ class CacheMonitor implements CacheMonitorInterface
     private function updateHitRate(string $driver): void
     {
         $stats = &$this->hitStats[$driver];
-        $stats['hit_rate'] = $stats['total_requests'] > 0 
-            ? ($stats['hits'] / $stats['total_requests']) * 100 
+        $stats['hit_rate'] = $stats['total_requests'] > 0
+            ? ($stats['hits'] / $stats['total_requests']) * 100
             : 0;
     }
 
@@ -512,7 +512,7 @@ class CacheMonitor implements CacheMonitorInterface
         }
 
         $driverOps = array_filter($this->operationHistory, fn($op) => $op['driver'] === $driver);
-        
+
         if (empty($driverOps)) {
             return 0.0;
         }
@@ -543,7 +543,7 @@ class CacheMonitor implements CacheMonitorInterface
         // 簡化的 CSV 實作
         $csv = "快取監控報告\n";
         $csv .= "匯出時間," . $data['export_info']['timestamp'] . "\n\n";
-        
+
         // 可以根據需要擴展 CSV 格式
         return $csv . "請使用 JSON 格式取得完整資料\n";
     }
