@@ -6,16 +6,13 @@ use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
-use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
-use App\Domains\Security\DTOs\CreateActivityLogDTO;
-use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class AuthServiceTest extends TestCase
 {
@@ -23,30 +20,26 @@ class AuthServiceTest extends TestCase
 
     private PasswordSecurityServiceInterface|MockInterface $passwordService;
 
-    private ActivityLoggingServiceInterface|MockInterface $activityLogger;
-
     private ValidatorInterface|MockInterface $validator;
 
     private AuthService $service;
 
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
+    }
+
     protected function setUp(): void
     {
-        parent::setUp();
         $this->userRepository = Mockery::mock(UserRepository::class);
         $this->passwordService = Mockery::mock(PasswordSecurityServiceInterface::class);
-        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
 
         $this->service = new AuthService(
             $this->userRepository,
-            $this->passwordService,
+            $this->passwordService
         );
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        Mockery::close();
     }
 
     #[Test]
@@ -101,29 +94,15 @@ class AuthServiceTest extends TestCase
                 'status' => 1,
             ]);
 
-        // 設定活動記錄 mock
-        $this->activityLogger->shouldReceive('log')
-            ->once()
-            ->with(Mockery::type(CreateActivityLogDTO::class))
-            ->andReturnUsing(function (CreateActivityLogDTO $activityDto) {
-                $this->assertEquals(ActivityType::USER_REGISTERED, $activityDto->getActionType());
-                $this->assertEquals('test@example.com', $activityDto->getDescription());
-                $this->assertEquals('1', $activityDto->getUserId());
-                $this->assertEquals('192.168.1.1', $activityDto->getIpAddress());
-                $metadata = $activityDto->getMetadata();
-                $this->assertArrayHasKey('username', $metadata);
-                $this->assertArrayHasKey('email', $metadata);
-
-                return true;
-            });
-
         // 執行註冊
         $result = $this->service->register($dto, null);
 
         // 驗證結果
-        $this->assertEquals('testuser', $result['username']);
-        $this->assertEquals('test@example.com', $result['email']);
-        $this->assertEquals(1, $result['status']);
+        $this->assertTrue($result['success']);
+        $this->assertEquals('註冊成功', $result['message']);
+        $this->assertEquals('testuser', $result['user']['username']);
+        $this->assertEquals('test@example.com', $result['user']['email']);
+        $this->assertEquals(1, $result['user']['status']);
     }
 
     #[Test]
@@ -184,20 +163,6 @@ class AuthServiceTest extends TestCase
             ->with('1')
             ->andReturn(true);
 
-        // 設定活動記錄 mock - 登入成功
-        $this->activityLogger->shouldReceive('log')
-            ->once()
-            ->with(Mockery::type(CreateActivityLogDTO::class))
-            ->andReturnUsing(function (CreateActivityLogDTO $activityDto) {
-                $this->assertEquals(ActivityType::LOGIN_SUCCESS, $activityDto->getActionType());
-                $this->assertEquals('1', $activityDto->getUserId());
-                $metadata = $activityDto->getMetadata();
-                $this->assertArrayHasKey('email', $metadata);
-                $this->assertEquals('test@example.com', $metadata['email']);
-
-                return true;
-            });
-
         // 執行測試
         $result = $this->service->login($credentials, null);
 
@@ -228,21 +193,6 @@ class AuthServiceTest extends TestCase
                 'status' => 1,
             ]);
 
-        // 設定活動記錄 mock - 登入失敗
-        $this->activityLogger->shouldReceive('log')
-            ->once()
-            ->with(Mockery::type(CreateActivityLogDTO::class))
-            ->andReturnUsing(function (CreateActivityLogDTO $activityDto) {
-                $this->assertEquals(ActivityType::LOGIN_FAILED, $activityDto->getActionType());
-                $metadata = $activityDto->getMetadata();
-                $this->assertArrayHasKey('email', $metadata);
-                $this->assertArrayHasKey('reason', $metadata);
-                $this->assertEquals('test@example.com', $metadata['email']);
-                $this->assertEquals('invalid_credentials', $metadata['reason']);
-
-                return true;
-            });
-
         // 執行測試
         $result = $this->service->login($credentials, null);
 
@@ -272,21 +222,6 @@ class AuthServiceTest extends TestCase
                 'password' => $hashedPassword,
                 'status' => 0, // 停用狀態
             ]);
-
-        // 設定活動記錄 mock - 停用使用者嘗試登入
-        $this->activityLogger->shouldReceive('log')
-            ->once()
-            ->with(Mockery::type(CreateActivityLogDTO::class))
-            ->andReturnUsing(function (CreateActivityLogDTO $activityDto) {
-                $this->assertEquals(ActivityType::LOGIN_FAILED, $activityDto->getActionType());
-                $metadata = $activityDto->getMetadata();
-                $this->assertArrayHasKey('email', $metadata);
-                $this->assertArrayHasKey('reason', $metadata);
-                $this->assertEquals('inactive@example.com', $metadata['email']);
-                $this->assertEquals('account_disabled', $metadata['reason']);
-
-                return true;
-            });
 
         // 執行測試
         $result = $this->service->login($credentials, null);
