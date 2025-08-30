@@ -104,9 +104,9 @@ class TestConstructorFixer
     {
         echo "修復 PostController 測試...\n";
 
-        $testFiles = glob('/var/www/html/tests/**/PostControllerTest.php') + 
-                    glob('/var/www/html/tests/**/*PostControllerTest.php') +
-                    glob('/var/www/html/tests/**/Http/PostControllerTest.php');
+        $testFiles = glob('/var/www/html/tests/**/PostControllerTest.php') +
+            glob('/var/www/html/tests/**/*PostControllerTest.php') +
+            glob('/var/www/html/tests/**/Http/PostControllerTest.php');
 
         foreach ($testFiles as $file) {
             if (!file_exists($file)) {
@@ -182,8 +182,10 @@ class TestConstructorFixer
             $originalContent = $content;
 
             // 添加正確的 AuthenticationService import
-            if (strpos($content, 'use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;') === false &&
-                strpos($content, 'use App\Domains\Auth\Contracts\AuthenticationServiceInterface;') === false) {
+            if (
+                strpos($content, 'use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;') === false &&
+                strpos($content, 'use App\Domains\Auth\Contracts\AuthenticationServiceInterface;') === false
+            ) {
                 $content = preg_replace(
                     '/(use [^;]+;\n)(\n(?:class|final class|abstract class))/s',
                     '$1use App\Domains\Auth\Contracts\AuthenticationServiceInterface;' . "\n\$2",

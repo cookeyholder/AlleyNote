@@ -15,7 +15,7 @@ class PhpUnitDeprecationFixer
     public function run(): void
     {
         echo "開始修復 PHPUnit Deprecations...\n";
-        
+
         $testFiles = $this->findTestFiles();
 
         foreach ($testFiles as $file) {
@@ -120,7 +120,7 @@ class PhpUnitDeprecationFixer
 
         // 清理空的 docblock
         $content = preg_replace('/\/\*\*\s*\n\s*\*\/\s*\n/m', '', $content);
-        
+
         // 清理只剩空格的 docblock 
         $content = preg_replace('/\/\*\*\s*\n(\s*\*\s*\n)*\s*\*\/\s*\n/m', '', $content);
 

@@ -74,7 +74,7 @@ class ControllerMethodFixer
 
         // 修復 successResponse 和 errorResponse 的使用方式
         $successPattern = '/return \$this->successResponse\(([^,]+),\s*([^)]+)\);/';
-        $content = preg_replace_callback($successPattern, function($matches) {
+        $content = preg_replace_callback($successPattern, function ($matches) {
             return sprintf(
                 '$jsonResponse = json_encode([
                 \'success\' => true,
@@ -89,7 +89,7 @@ class ControllerMethodFixer
         }, $content);
 
         $errorPattern = '/return \$this->errorResponse\(([^,]+),\s*(\d+)\);/';
-        $content = preg_replace_callback($errorPattern, function($matches) {
+        $content = preg_replace_callback($errorPattern, function ($matches) {
             return sprintf(
                 '$errorResponse = json_encode([
                 \'success\' => false,

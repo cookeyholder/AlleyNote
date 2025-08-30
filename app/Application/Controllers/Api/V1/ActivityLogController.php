@@ -60,7 +60,7 @@ class ActivityLogController extends BaseController
     {
         try {
             $data = $request->getParsedBody();
-            
+
             if (!is_array($data)) {
                 $errorResponse = json_encode([
                     "success" => false,
@@ -86,7 +86,6 @@ class ActivityLogController extends BaseController
             ]);
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
             return $response->withHeader("Content-Type", "application/json")->withStatus(201);
-
         } catch (Exception $e) {
             $errorResponse = json_encode([
                 "success" => false,
@@ -128,7 +127,6 @@ class ActivityLogController extends BaseController
             ]);
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
             return $response->withHeader("Content-Type", "application/json");
-
         } catch (Exception $e) {
             $errorResponse = json_encode([
                 "success" => false,

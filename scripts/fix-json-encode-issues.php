@@ -75,12 +75,12 @@ class JsonEncodeIssueFixer
         $patterns = [
             // 模式1: ->write(json_encode([...]))
             '/(\$\w+->getBody\(\)->write\()(json_encode\([^)]+\))(\);)/s' => '$1($2 ?: \'{"error": "JSON encoding failed"}\')$3',
-            
+
             // 模式2: ->write(json_encode(...))
             '/(\$\w+->write\()(json_encode\([^)]+\))(\);)/s' => '$1($2 ?: \'{"error": "JSON encoding failed"}\')$3',
 
             // 模式3: 分行版本
-            '/(\$\w+->(?:getBody\(\)->)?write\(\s*)(json_encode\(\s*\[[\s\S]*?\]\s*\))(\s*\);)/m' => function($matches) {
+            '/(\$\w+->(?:getBody\(\)->)?write\(\s*)(json_encode\(\s*\[[\s\S]*?\]\s*\))(\s*\);)/m' => function ($matches) {
                 return $matches[1] . '(' . $matches[2] . ' ?: \'{"error": "JSON encoding failed"}\')' . $matches[3];
             },
         ];
@@ -91,7 +91,7 @@ class JsonEncodeIssueFixer
             } else {
                 $content = preg_replace($pattern, $replacement, $content);
             }
-            
+
             if ($content !== $originalContent) {
                 $this->fixCount++;
                 if (!in_array($file, $this->processedFiles)) {
