@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Middleware;
 
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
@@ -160,14 +162,14 @@ class RateLimitMiddleware implements MiddlewareInterface
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>請求過於頻繁 - AlleyNote</title>
                 <style>
-                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                            background: #f5f5f5; margin: 0; padding: 20px; }
-                    .container { max-width: 600px; margin: 50px auto; background: white; 
+                    .container { max-width: 600px; margin: 50px auto; background: white;
                                 border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; }
                     .icon { text-align: center; font-size: 64px; margin-bottom: 20px; }
                     h1 { color: #e74c3c; text-align: center; margin-bottom: 20px; }
                     .message { text-align: center; color: #666; margin-bottom: 30px; line-height: 1.6; }
-                    .info { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; 
+                    .info { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;
                             padding: 20px; margin: 20px 0; }
                     .retry-info { text-align: center; margin-top: 30px; }
                     .countdown { font-size: 24px; font-weight: bold; color: #e74c3c; }

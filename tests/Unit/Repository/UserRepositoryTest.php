@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Repository;
 
 use App\Domains\Auth\Repositories\UserRepository;
