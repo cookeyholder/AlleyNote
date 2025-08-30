@@ -62,7 +62,7 @@ class IpController
                 'status' => 200,
                 'data' => array_map(
                     fn(IpList $rule) => $rule->toSafeArray($this->sanitizer),
-                    array_filter($rules, fn($rule) => $rule instanceof IpList),
+                    $rules,
                 ),
             ];
         } catch (InvalidArgumentException $e) {

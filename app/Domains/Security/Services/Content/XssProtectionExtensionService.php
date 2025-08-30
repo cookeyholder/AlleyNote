@@ -139,7 +139,7 @@ class XssProtectionExtensionService
     private function protectPostTitle(string $input, array $options): array
     {
         // 標題不允許任何 HTML
-        $cleaned = $this->baseXssProtection->cleanStrict($input);
+        $cleaned = $this->baseXssProtection->strictClean($input);
 
         // 長度限制
         if (strlen($cleaned) > $this->config['max_title_length']) {
@@ -221,7 +221,7 @@ class XssProtectionExtensionService
     private function protectSearchQuery(string $input, array $options): array
     {
         // 搜尋查詢完全不允許 HTML
-        $cleaned = $this->baseXssProtection->cleanStrict($input);
+        $cleaned = $this->baseXssProtection->strictClean($input);
 
         // 移除特殊字元
         $cleaned = preg_replace('/[<>"\']/', '', $cleaned);

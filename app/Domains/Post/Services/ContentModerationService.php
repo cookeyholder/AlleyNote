@@ -90,16 +90,14 @@ class ContentModerationService
         $issues = [];
 
         // XSS 檢查
-        $xssDetection = $this->xssProtection->detectXss($content);
-        foreach ($xssDetection as $detection) {
-            // if ($data ? $detection->risk_level : null)) === 'high') { // 複雜賦值語法錯誤已註解
+        $hasXss = $this->xssProtection->detectXss($content);
+        if ($hasXss) {
             $issues[] = [
                 'type' => 'security_xss',
                 'severity' => 'critical',
-                'message' => '偵測到高風險 XSS 模式',
-                'details' => $detection,
+                'message' => '偵測到潛在 XSS 攻擊模式',
+                'details' => 'Content contains potentially dangerous XSS patterns',
             ];
-            // }
         }
 
         // 富文本安全檢查

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Security;
 
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Services\Core\CsrfProtectionService;
 use App\Shared\Exceptions\CsrfTokenException;
 use PHPUnit\Framework\Attributes\Test;
@@ -15,7 +16,8 @@ class CsrfProtectionServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->service = new CsrfProtectionService();
+        $mockActivityLogger = $this->createMock(ActivityLoggingServiceInterface::class);
+        $this->service = new CsrfProtectionService($mockActivityLogger);
         $_SESSION = [];
     }
 

@@ -4,9 +4,9 @@
  * 專案架構快速掃描腳本
  * 用於分析整個專案的結構、命名空間、類別關係等
  * 基於 Context7 MCP 查詢的最新分析技術和 DDD 最佳實踐
- * 
+ *
  * 使用方法: php scripts/scan-project-architecture.php
- * 
+ *
  * 新增功能（基於 Context7 MCP）:
  * - 現代 PHP 語法檢查
  * - 型別宣告一致性分析
@@ -18,7 +18,7 @@
 
 class ProjectArchitectureScanner
 {
-    private array<mixed> $analysis = [
+    private array $analysis = [
         'directories' => [],
         'namespaces' => [],
         'classes' => [],
@@ -40,7 +40,7 @@ class ProjectArchitectureScanner
     ];
 
     private string $projectRoot;
-    private array<mixed> $excludeDirectories = [
+    private array $excludeDirectories = [
         'tests',
         'vendor',
         'node_modules',
@@ -53,7 +53,7 @@ class ProjectArchitectureScanner
     ];
 
     // 新增：現代 PHP 特性檢查清單
-    private array<mixed> $modernPhpFeatures = [
+    private array $modernPhpFeatures = [
         'readonly_properties' => '/readonly\s+[a-zA-Z_]/i',
         'enum_usage' => '/enum\s+[A-Z]\w*/i',
         'union_types' => '/:\s*[a-zA-Z_\\\\|]+\|[a-zA-Z_\\\\|]+/',
@@ -132,7 +132,7 @@ class ProjectArchitectureScanner
         $this->calculateQualityMetrics();
     }
 
-    private function findPhpFiles(): array<mixed>
+    private function findPhpFiles(): array
     {
         $files = [];
         $iterator = new RecursiveIteratorIterator(
@@ -231,7 +231,7 @@ class ProjectArchitectureScanner
         }
     }
 
-    private function scanDddLayer(string $fullPath, string $relativePath): array<mixed>
+    private function scanDddLayer(string $fullPath, string $relativePath): array
     {
         $structure = [];
         $iterator = new RecursiveIteratorIterator(
@@ -243,11 +243,11 @@ class ProjectArchitectureScanner
             if ($file->isDir()) {
                 $subPath = str_replace($fullPath . '/', '', $file->getPathname());
                 if ($subPath !== '.') {
-                    (is_array($structure) ? $structure['directories'] : (is_object($structure) ? $structure->directories : null))[] = $subPath;
+                    $structure['directories'][] = $subPath;
                 }
             } elseif ($file->getExtension() === 'php') {
                 $subPath = str_replace($fullPath . '/', '', $file->getPathname());
-                (is_array($structure) ? $structure['files'] : (is_object($structure) ? $structure->files : null))[] = $subPath;
+                $structure['files'][] = $subPath;
             }
         }
 
@@ -312,7 +312,7 @@ class ProjectArchitectureScanner
         }
     }
 
-    private function findTestFiles(string $className, string $sourceFile): array<mixed>
+    private function findTestFiles(string $className, string $sourceFile): array
     {
         $testFiles = [];
         $possibleTestNames = [
@@ -352,7 +352,7 @@ class ProjectArchitectureScanner
         }
     }
 
-    private function extractConstructorParams(string $params): array<mixed>
+    private function extractConstructorParams(string $params): array
     {
         $dependencies = [];
 
@@ -495,10 +495,10 @@ class ProjectArchitectureScanner
 
             // 添加到摘要
             $summary .= "📊 品質指標:\n";
-            $summary .= "- 總類別數: {(is_array($metrics) ? $metrics['total_classes'] : (is_object($metrics) ? $metrics->total_classes : null))}\n";
-            $summary .= "- 介面比例: {(is_array($metrics) ? $metrics['interface_to_class_ratio'] : (is_object($metrics) ? $metrics->interface_to_class_ratio : null))}%\n";
-            $summary .= "- 現代 PHP 採用率: {(is_array($metrics) ? $metrics['modern_php_adoption_rate'] : (is_object($metrics) ? $metrics->modern_php_adoption_rate : null))}%\n";
-            $summary .= "- PSR-4 合規率: {(is_array($metrics) ? $metrics['psr4_compliance_rate'] : (is_object($metrics) ? $metrics->psr4_compliance_rate : null))}%\n\n";
+            $summary .= "- 總類別數: " . (is_array($metrics) ? $metrics['total_classes'] : (is_object($metrics) ? $metrics->total_classes : 'N/A')) . "\n";
+            $summary .= "- 介面比例: " . (is_array($metrics) ? $metrics['interface_to_class_ratio'] : (is_object($metrics) ? $metrics->interface_to_class_ratio : 'N/A')) . "%\n";
+            $summary .= "- 現代 PHP 採用率: " . (is_array($metrics) ? $metrics['modern_php_adoption_rate'] : (is_object($metrics) ? $metrics->modern_php_adoption_rate : 'N/A')) . "%\n";
+            $summary .= "- PSR-4 合規率: " . (is_array($metrics) ? $metrics['psr4_compliance_rate'] : (is_object($metrics) ? $metrics->psr4_compliance_rate : 'N/A')) . "%\n\n";
         }
 
         // DDD 邊界上下文分析（新增）
@@ -605,11 +605,11 @@ class ProjectArchitectureScanner
         $report .= "\n## 🏗️ DDD 架構分析\n\n";
         foreach ($this->analysis['ddd_structure'] as $layer => $structure) {
             $report .= "### $layer 層\n";
-            if (isset((is_array($structure) ? $structure['directories'] : (is_object($structure) ? $structure->directories : null)))) {
-                $report .= "**子目錄**: " . implode(', ', (is_array($structure) ? $structure['directories'] : (is_object($structure) ? $structure->directories : null))) . "\n";
+            if (isset($structure['directories'])) {
+                $report .= "**子目錄**: " . implode(', ', $structure['directories']) . "\n";
             }
-            if (isset((is_array($structure) ? $structure['files'] : (is_object($structure) ? $structure->files : null)))) {
-                $report .= "**檔案數量**: " . count((is_array($structure) ? $structure['files'] : (is_object($structure) ? $structure->files : null))) . "\n";
+            if (isset($structure['files'])) {
+                $report .= "**檔案數量**: " . count($structure['files']) . "\n";
             }
             $report .= "\n";
         }
@@ -636,9 +636,9 @@ class ProjectArchitectureScanner
                 str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Service') ||
                 str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Repository')
             ) {
-                $report .= "- **$className**: `{(is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null))}`\n";
+                $report .= "- **$className**: `" . (is_array($info) ? $info['file'] : (is_object($info) ? $info->file : 'N/A')) . "`\n";
                 if ((is_array($info) ? $info['extends'] : (is_object($info) ? $info->extends : null))) {
-                    $report .= "  - 繼承: {(is_array($info) ? $info['extends'] : (is_object($info) ? $info->extends : null))}\n";
+                    $report .= "  - 繼承: " . (is_array($info) ? $info['extends'] : (is_object($info) ? $info->extends : 'N/A')) . "\n";
                 }
                 if (!empty((is_array($info) ? $info['implements'] : (is_object($info) ? $info->implements : null)))) {
                     $report .= "  - 實作: " . implode(', ', (is_array($info) ? $info['implements'] : (is_object($info) ? $info->implements : null))) . "\n";
@@ -652,7 +652,7 @@ class ProjectArchitectureScanner
             foreach ($this->analysis['interface_implementations'] as $interface => $implementations) {
                 $report .= "### `$interface`\n";
                 foreach ($implementations as $impl) {
-                    $report .= "- {(is_array($impl) ? $impl['class'] : (is_object($impl) ? $impl->class : null))} (`{(is_array($impl) ? $impl['file'] : (is_object($impl) ? $impl->file : null))}`)\n";
+                    $report .= "- " . (is_array($impl) ? $impl['class'] : (is_object($impl) ? $impl->class : 'N/A')) . " (`" . (is_array($impl) ? $impl['file'] : (is_object($impl) ? $impl->file : 'N/A')) . "`)\n";
                 }
                 $report .= "\n";
             }
@@ -670,7 +670,7 @@ class ProjectArchitectureScanner
             $report .= "### 缺少測試的重要類別\n";
             foreach (array_slice($untestedClasses, 0, 20) as $className => $info) {
                 if (str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Service') || str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Repository')) {
-                    $report .= "- **$className**: `{(is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null))}`\n";
+                    $report .= "- **$className**: `" . (is_array($info) ? $info['file'] : (is_object($info) ? $info->file : 'N/A')) . "`\n";
                 }
             }
             $report .= "\n";
@@ -687,9 +687,9 @@ class ProjectArchitectureScanner
             if (!empty($heavyDeps)) {
                 $report .= "### 依賴較多的類別 (≥3個依賴)\n";
                 foreach ($heavyDeps as $className => $info) {
-                    $report .= "- **$className** (" . count((is_array($info) ? $info['dependencies'] : (is_object($info) ? $info->dependencies : null))) . " 個依賴)\n";
-                    foreach ((is_array($info) ? $info['dependencies'] : (is_object($info) ? $info->dependencies : null)) as $dep) {
-                        $report .= "  - `{(is_array($dep) ? $dep['type'] : (is_object($dep) ? $dep->type : null))}` \${(is_array($dep) ? $dep['name'] : (is_object($dep) ? $dep->name : null))}\n";
+                    $report .= "- **$className** (" . count((is_array($info) ? $info['dependencies'] : (is_object($info) ? $info->dependencies : []))) . " 個依賴)\n";
+                    foreach ((is_array($info) ? $info['dependencies'] : (is_object($info) ? $info->dependencies : [])) as $dep) {
+                        $report .= "  - `" . (is_array($dep) ? $dep['type'] : (is_object($dep) ? $dep->type : 'N/A')) . "` $" . (is_array($dep) ? $dep['name'] : (is_object($dep) ? $dep->name : 'N/A')) . "\n";
                     }
                     $report .= "\n";
                 }
@@ -717,7 +717,8 @@ class ProjectArchitectureScanner
 
         $summary .= "🏗️ DDD 架構:\n";
         foreach ($this->analysis['ddd_structure'] as $layer => $structure) {
-            $fileCount = isset((is_array($structure) ? $structure['files'] : (is_object($structure) ? $structure->files : null))) ? count((is_array($structure) ? $structure['files'] : (is_object($structure) ? $structure->files : null))) : 0;
+            $files = is_array($structure) ? ($structure['files'] ?? []) : (is_object($structure) ? ($structure->files ?? []) : []);
+            $fileCount = count($files);
             $summary .= "- $layer: $fileCount 個檔案\n";
         }
 
@@ -770,7 +771,7 @@ class ProjectArchitectureScanner
                 str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Repository')
             ) {
                 if (!str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Test')) {
-                    $importantClasses[] = "$className ({(is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null))})";
+                    $importantClasses[] = "$className (" . (is_array($info) ? $info['file'] : (is_object($info) ? $info->file : 'N/A')) . ")";
                 }
             }
         }
@@ -878,7 +879,7 @@ class ProjectArchitectureScanner
     /**
      * 掃描單一邊界上下文
      */
-    private function scanBoundaryContext(string $contextPath, array<mixed> &$context): void
+    private function scanBoundaryContext(string $contextPath, array &$context): void
     {
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($contextPath)
@@ -891,17 +892,29 @@ class ProjectArchitectureScanner
 
                 // 根據命名慣例分類 DDD 組件
                 if (str_contains($fileName, 'Entity') || str_contains($content, 'implements EntityInterface')) {
-                    (is_array($context) ? $context['entities'] : (is_object($context) ? $context->entities : null))[] = $fileName;
+                    if (is_array($context) && isset($context['entities'])) {
+                        $context['entities'][] = $fileName;
+                    }
                 } elseif (str_contains($fileName, 'ValueObject') || str_contains($content, 'ValueObject')) {
-                    (is_array($context) ? $context['value_objects'] : (is_object($context) ? $context->value_objects : null))[] = $fileName;
+                    if (is_array($context) && isset($context['value_objects'])) {
+                        $context['value_objects'][] = $fileName;
+                    }
                 } elseif (str_contains($fileName, 'Aggregate') || str_contains($content, 'AggregateRoot')) {
-                    (is_array($context) ? $context['aggregates'] : (is_object($context) ? $context->aggregates : null))[] = $fileName;
+                    if (is_array($context) && isset($context['aggregates'])) {
+                        $context['aggregates'][] = $fileName;
+                    }
                 } elseif (str_contains($fileName, 'Repository') || str_contains($content, 'RepositoryInterface')) {
-                    (is_array($context) ? $context['repositories'] : (is_object($context) ? $context->repositories : null))[] = $fileName;
+                    if (is_array($context) && isset($context['repositories'])) {
+                        $context['repositories'][] = $fileName;
+                    }
                 } elseif (str_contains($fileName, 'Service') || str_contains($content, 'DomainService')) {
-                    (is_array($context) ? $context['services'] : (is_object($context) ? $context->services : null))[] = $fileName;
+                    if (is_array($context) && isset($context['services'])) {
+                        $context['services'][] = $fileName;
+                    }
                 } elseif (str_contains($fileName, 'Event') || str_contains($content, 'DomainEvent')) {
-                    (is_array($context) ? $context['events'] : (is_object($context) ? $context->events : null))[] = $fileName;
+                    if (is_array($context) && isset($context['events'])) {
+                        $context['events'][] = $fileName;
+                    }
                 }
             }
         }
@@ -925,9 +938,9 @@ class ProjectArchitectureScanner
         ];
 
         // 計算介面與類別比例
-        if ((is_array($metrics) ? $metrics['total_classes'] : (is_object($metrics) ? $metrics->total_classes : null)) > 0) {
-            (is_array($metrics) ? $metrics['interface_to_class_ratio'] : (is_object($metrics) ? $metrics->interface_to_class_ratio : null)) = round(
-                ((is_array($metrics) ? $metrics['total_interfaces'] : (is_object($metrics) ? $metrics->total_interfaces : null)) / (is_array($metrics) ? $metrics['total_classes'] : (is_object($metrics) ? $metrics->total_classes : null))) * 100,
+        if ($metrics['total_classes'] > 0) {
+            $metrics['interface_to_class_ratio'] = round(
+                ($metrics['total_interfaces'] / $metrics['total_classes']) * 100,
                 2
             );
         }
@@ -935,9 +948,9 @@ class ProjectArchitectureScanner
         // 計算平均依賴數量
         if (!empty($this->analysis['constructor_dependencies'])) {
             $totalDeps = array_sum(
-                array_map(fn($deps) => count((is_array($deps) ? $deps['dependencies'] : (is_object($deps) ? $deps->dependencies : null))), $this->analysis['constructor_dependencies'])
+                array_map(fn($deps) => count($deps['dependencies']), $this->analysis['constructor_dependencies'])
             );
-            (is_array($metrics) ? $metrics['average_dependencies_per_class'] : (is_object($metrics) ? $metrics->average_dependencies_per_class : null)) = round(
+            $metrics['average_dependencies_per_class'] = round(
                 $totalDeps / count($this->analysis['constructor_dependencies']),
                 2
             );
@@ -946,8 +959,8 @@ class ProjectArchitectureScanner
         // 計算現代 PHP 特性採用率
         if (!empty($this->analysis['modern_syntax_usage'])) {
             $classesWithModernFeatures = count($this->analysis['modern_syntax_usage']);
-            (is_array($metrics) ? $metrics['modern_php_adoption_rate'] : (is_object($metrics) ? $metrics->modern_php_adoption_rate : null)) = round(
-                ($classesWithModernFeatures / max((is_array($metrics) ? $metrics['total_classes'] : (is_object($metrics) ? $metrics->total_classes : null)), 1)) * 100,
+            $metrics['modern_php_adoption_rate'] = round(
+                ($classesWithModernFeatures / max($metrics['total_classes'], 1)) * 100,
                 2
             );
         }
@@ -956,9 +969,9 @@ class ProjectArchitectureScanner
         if (!empty($this->analysis['psr4_compliance'])) {
             $compliantFiles = array_filter(
                 $this->analysis['psr4_compliance'],
-                fn($compliance) => !isset((is_array($compliance) ? $compliance['error'] : (is_object($compliance) ? $compliance->error : null)))
+                fn($compliance) => !isset($compliance['error'])
             );
-            (is_array($metrics) ? $metrics['psr4_compliance_rate'] : (is_object($metrics) ? $metrics->psr4_compliance_rate : null)) = round(
+            $metrics['psr4_compliance_rate'] = round(
                 (count($compliantFiles) / count($this->analysis['psr4_compliance'])) * 100,
                 2
             );
@@ -971,7 +984,7 @@ class ProjectArchitectureScanner
                 $componentCount = array_sum(array_map('count', $context));
                 if ($componentCount >= 3) $completeness++; // 至少有3種DDD組件
             }
-            (is_array($metrics) ? $metrics['ddd_structure_completeness'] : (is_object($metrics) ? $metrics->ddd_structure_completeness : null)) = round(
+            $metrics['ddd_structure_completeness'] = round(
                 ($completeness / count($this->analysis['boundary_contexts'])) * 100,
                 2
             );

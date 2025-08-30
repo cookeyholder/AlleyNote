@@ -6,8 +6,15 @@ namespace App\Domains\Security\Providers;
 
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
+use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
+use App\Domains\Security\Contracts\IpRepositoryInterface;
+use App\Domains\Security\Contracts\IpServiceInterface;
+use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Security\Repositories\ActivityLogRepository;
 use App\Domains\Security\Services\ActivityLoggingService;
+use App\Domains\Security\Services\Core\CsrfProtectionService;
+use App\Domains\Security\Services\Core\XssProtectionService;
+use App\Domains\Security\Services\IpService;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Stringable;
@@ -30,6 +37,18 @@ class SecurityServiceProvider
 
             // Activity Logging Service
             ActivityLoggingServiceInterface::class => \DI\factory([self::class, 'createActivityLoggingService']),
+
+            // CSRF Protection Service Interface & Implementation
+            CsrfProtectionServiceInterface::class => \DI\factory([self::class, 'createCsrfProtectionService']),
+            CsrfProtectionService::class => \DI\get(CsrfProtectionServiceInterface::class),
+
+            // XSS Protection Service Interface & Implementation
+            XssProtectionServiceInterface::class => \DI\factory([self::class, 'createXssProtectionService']),
+            XssProtectionService::class => \DI\get(XssProtectionServiceInterface::class),
+
+            // IP Service Interface & Implementation
+            IpServiceInterface::class => \DI\factory([self::class, 'createIpService']),
+            IpService::class => \DI\get(IpServiceInterface::class),
         ];
     }
 
@@ -89,5 +108,40 @@ class SecurityServiceProvider
         };
 
         return new ActivityLoggingService($repository, $logger);
+    }
+
+    /**
+     * 建立 CsrfProtectionService 實例.
+     */
+    public static function createCsrfProtectionService(ContainerInterface $container): CsrfProtectionServiceInterface
+    {
+        /** @var ActivityLoggingServiceInterface $activityLogger */
+        $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
+
+        return new CsrfProtectionService($activityLogger);
+    }
+
+    /**
+     * 建立 XssProtectionService 實例.
+     */
+    public static function createXssProtectionService(ContainerInterface $container): XssProtectionServiceInterface
+    {
+        /** @var ActivityLoggingServiceInterface $activityLogger */
+        $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
+
+        return new XssProtectionService($activityLogger);
+    }
+
+    /**
+     * 建立 IpService 實例.
+     */
+    public static function createIpService(ContainerInterface $container): IpServiceInterface
+    {
+        /** @var IpRepositoryInterface $repository */
+        $repository = $container->get(IpRepositoryInterface::class);
+        /** @var ActivityLoggingServiceInterface $activityLogger */
+        $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
+
+        return new IpService($repository, $activityLogger);
     }
 }

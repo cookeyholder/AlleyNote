@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Security;
 
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Services\Core\XssProtectionService;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -14,14 +15,15 @@ class XssProtectionServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->service = new XssProtectionService();
+        $mockActivityLogger = $this->createMock(ActivityLoggingServiceInterface::class);
+        $this->service = new XssProtectionService($mockActivityLogger);
     }
 
     #[Test]
-    public function escapesBasicHtml(): void
+    public function removesScriptTags(): void
     {
         $input = '<script>alert("XSS");</script>';
-        $expected = '&lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;';
+        $expected = ''; // HTMLPurifier 移除 script 標籤
 
         $result = $this->service->clean($input);
 
@@ -29,10 +31,10 @@ class XssProtectionServiceTest extends TestCase
     }
 
     #[Test]
-    public function escapesHtmlAttributes(): void
+    public function removesHarmfulAttributes(): void
     {
         $input = '<a href="javascript:alert(\'XSS\')" onclick="alert(\'XSS\')">Click me</a>';
-        $expected = '&lt;a href=&quot;javascript:alert(&#039;XSS&#039;)&quot; onclick=&quot;alert(&#039;XSS&#039;)&quot;&gt;Click me&lt;/a&gt;';
+        $expected = '<a>Click me</a>'; // HTMLPurifier 移除有害屬性但保留基本標籤
 
         $result = $this->service->clean($input);
 
@@ -40,10 +42,10 @@ class XssProtectionServiceTest extends TestCase
     }
 
     #[Test]
-    public function handlesNullInput(): void
+    public function handlesEmptyInput(): void
     {
-        $result = $this->service->clean(null);
-        $this->assertNull($result);
+        $result = $this->service->clean('');
+        $this->assertEquals('', $result);
     }
 
     #[Test]
@@ -54,15 +56,9 @@ class XssProtectionServiceTest extends TestCase
             'content' => '<img src="x" onerror="alert(\'XSS\')" />',
         ];
 
-        $result = $this->service->cleanArray($input, ['title', 'content']);
+        $result = $this->service->cleanArray($input, ['title' => true, 'content' => true]);
 
-        $this->assertEquals(
-            '&lt;script&gt;alert(&quot;XSS&quot;);&lt;/script&gt;',
-            $result['title'],
-        );
-        $this->assertEquals(
-            '&lt;img src=&quot;x&quot; onerror=&quot;alert(&#039;XSS&#039;)&quot; /&gt;',
-            $result['content'],
-        );
+        $this->assertEquals('', $result['title']); // script 標籤被移除
+        $this->assertEquals('', $result['content']); // 有害 img 標籤被移除
     }
 }

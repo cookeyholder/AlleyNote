@@ -1,16 +1,16 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-08-30 10:08:02
+**生成時間**: 2025-08-30 20:56:09
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 185 | - |
-| 介面與類別比例 | 21.62% | ✅ 良好 |
+| 總類別數 | 201 | - |
+| 介面與類別比例 | 20.40% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 56.76% | ✅ 良好 |
-| PSR-4 合規率 | 80.91% | ❌ 需修正 |
+| 現代 PHP 採用率 | 65.17% | ✅ 良好 |
+| PSR-4 合規率 | 68.42% | ❌ 需修正 |
 | DDD 結構完整性 | 80.00% | ✅ 良好 |
 
 ## 🎯 DDD 邊界上下文分析
@@ -74,12 +74,12 @@
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 154 | ✅ 更安全的條件分支 |
+| Match 表達式 (PHP 8.0+) | 250 | ✅ 更安全的條件分支 |
 | 唯讀屬性 (PHP 8.1+) | 103 | ✅ 提升資料不變性 |
 | 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
-| 空安全運算子 (PHP 8.0+) | 55 | ✅ 防止 null 指標異常 |
+| 空安全運算子 (PHP 8.0+) | 56 | ✅ 防止 null 指標異常 |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
-| 聯合型別 (PHP 8.0+) | 16 | ✅ 更靈活的型別定義 |
+| 聯合型別 (PHP 8.0+) | 17 | ✅ 更靈活的型別定義 |
 | 列舉型別 (PHP 8.1+) | 5 | ✅ 型別安全的常數 |
 
 ## 📁 目錄結構
@@ -784,8 +784,8 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 185
-- **介面總數**: 40
+- **類別總數**: 201
+- **介面總數**: 41
 - **Trait 總數**: 0
 
 ## ⚠️ 發現的架構問題
@@ -1010,7 +1010,7 @@
 - OutputSanitizer (`app/Infrastructure/Services/OutputSanitizer.php`)
 - JsonEncodeIssueFixer (`scripts/fix-json-encode-issues.php`)
 - ControllerMethodFixer (`scripts/fix-controller-methods.php`)
-- SpecificPhpstanFixer (`scripts/specific-phpstan-fixer.php`)
+- SpecificPhpstanFixer (`scripts/targeted-phpstan-fixer.php`)
 - ConsolidatedAnalyzer (`scripts/consolidated/ConsolidatedAnalyzer.php`)
 - ScriptManager (`scripts/consolidated/ScriptManager.php`)
 - ScriptResult (`scripts/consolidated/ScriptManager.php`)
@@ -1027,19 +1027,35 @@
 - ConsolidatedDeployer (`scripts/consolidated/ConsolidatedDeployer.php`)
 - ConsolidatedMaintainer (`scripts/consolidated/ConsolidatedMaintainer.php`)
 - ConsolidatedTestManager (`scripts/consolidated/ConsolidatedTestManager.php`)
+- FinalComprehensivePhpstanFixer (`scripts/final-comprehensive-phpstan-fixer.php`)
+- SyntaxErrorFixer (`scripts/fix-all-syntax-errors.php`)
+- Foo (`scripts/fix-all-syntax-errors.php`)
 - PhpUnitDeprecationFixer (`scripts/fix-phpunit-deprecations.php`)
+- PrecisionControllerSyntaxFixer (`scripts/precision-controller-syntax-fixer.php`)
+- UltimateErrorFixer (`scripts/ultimate-error-fixer.php`)
 - TestConstructorFixer (`scripts/fix-test-constructor-errors.php`)
+- FinalPhpStanComprehensiveFixer (`scripts/final-phpstan-comprehensive-fixer.php`)
+- GenericsPhpstanFixer (`scripts/generics-phpstan-fixer.php`)
+- GenericSyntaxFixer (`scripts/fix-generic-syntax-errors.php`)
+- SimpleSyntaxFixer (`scripts/simple-syntax-fixer.php`)
 - AnonymousClassFixer (`scripts/anonymous-class-fixer.php`)
+- IssetErrorFixer (`scripts/fix-isset-errors.php`)
 - PhpGenericSyntaxFixer (`scripts/fix-php-generic-syntax.php`)
+- RemainingErrorFixer (`scripts/remaining-error-fixer.php`)
+- ConservativeDomainSyntaxFixer (`scripts/conservative-domain-syntax-fixer.php`)
 - ConsoleOutput (`scripts/lib/ConsoleOutput.php`)
 - ProjectArchitectureScanner (`scripts/scan-project-architecture.php`)
 - CommonErrorFixer (`scripts/common-error-fixer.php`)
-- RemainingErrorFixer (`scripts/remaining-error-fixer.php`)
 - PHPStanTypeFixer (`scripts/phpstan-type-fixer.php`)
 - PhpstanFixCommander (`scripts/phpstan-fix-commander.php`)
+- TryCatchFixer (`scripts/fix-trycatch-errors.php`)
 - AdvancedPhpstanFixer (`scripts/advanced-phpstan-fixer.php`)
+- FinalPhpstanCleanup (`scripts/final-phpstan-cleanup.php`)
+- ComprehensiveSyntaxErrorFixer (`scripts/comprehensive-syntax-error-fixer.php`)
 - BulkPHPStanFixer (`scripts/bulk-phpstan-fixer.php`)
+- PropertyGenericSyntaxFixer (`scripts/fix-property-generic-syntax.php`)
 - EnhancedPhpstanFixer (`scripts/enhanced-phpstan-fixer.php`)
+- BulkSyntaxFixer (`bulk-syntax-fixer.php`)
 
 ### `PostRepositoryInterface`
 - PostRepository (`app/Domains/Post/Repositories/PostRepository.php`)
@@ -1181,7 +1197,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 185 個
+- **缺少測試的類別**: 201 個
 
 ### 缺少測試的重要類別
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
@@ -1365,10 +1381,17 @@
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250823051608_initial_schema.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Seed\AbstractSeed (在 database/seeds/UserActivityLogsSeeder.php 中使用)
+- ❓ 找不到類別/介面: 語句
+        'ordered_imports' => [                   // Import 語句排序（已存在，確保配置）
+            'sort_algorithm' => 'alpha',
+            'imports_order' => ['class', 'function', 'const'],
+        ],
+    ])
+    ->setRiskyAllowed(true)
+    ->setUsingCache(true)
+    ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache') (在 .php-cs-fixer.dist.php 中使用)
 - ❓ 找不到類別/介面: DI\ContainerBuilder (在 app/Application.php 中使用)
 - ❓ 找不到類別/介面: App\Domains\Post\Enums\PostStatus (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
 - ❓ 找不到類別/介面: ($id) {
             $sql = $this->buildSelectQuery('id = ?') (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ❓ 找不到類別/介面: ($uuid) {
-            $sql = $this->buildSelectQuery('uuid = ?') (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ... 還有 131 個
+- ... 還有 154 個
