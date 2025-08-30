@@ -391,7 +391,7 @@ class PostControllerTest extends TestCase
             ->once()
             ->with($postId)
             ->andReturn($post);
-        
+
         $this->postService->shouldReceive('deletePost')
             ->once()
             ->with($postId)

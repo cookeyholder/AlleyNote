@@ -120,13 +120,13 @@ class PasswordHashingTest extends TestCase
 
         // 註冊使用者
         $result = $this->authService->register($dto);
-        
+
         // 調試：檢查 register 方法的返回值
         $this->assertNotNull($result, '使用者註冊不應該返回 null');
         $this->assertArrayHasKey('user', $result, '註冊結果應該包含 user 鍵');
-        
+
         $user = $result['user'];
-        
+
         // 根據實際返回的結構來取得使用者 ID
         $userId = null;
         if (is_array($user) && isset($user['id'])) {
@@ -136,7 +136,7 @@ class PasswordHashingTest extends TestCase
         } elseif (is_object($user) && isset($user->id)) {
             $userId = $user->id;
         }
-        
+
         $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
 
         // 從資料庫取得雜湊後的密碼
@@ -173,7 +173,7 @@ class PasswordHashingTest extends TestCase
         // 註冊使用者
         $result = $this->authService->register($dto);
         $user = $result['user'];
-        
+
         // 根據實際返回的結構來取得使用者 ID
         $userId = null;
         if (is_array($user) && isset($user['id'])) {
@@ -183,7 +183,7 @@ class PasswordHashingTest extends TestCase
         } elseif (is_object($user) && isset($user->id)) {
             $userId = $user->id;
         }
-        
+
         $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
 
         // 從資料庫取得雜湊後的密碼
@@ -251,7 +251,7 @@ class PasswordHashingTest extends TestCase
         // 註冊使用者
         $result = $this->authService->register($dto);
         $user = $result['user'];
-        
+
         // 根據實際返回的結構來取得使用者 ID
         $userId = null;
         if (is_array($user) && isset($user['id'])) {

@@ -194,7 +194,7 @@ class DatabaseBackupTest extends TestCase
             escapeshellarg($this->backupDir),
             escapeshellarg(dirname(__DIR__, 2)),
         ));
-        
+
         // 找到最新生成的備份檔案
         $backupFiles = glob($this->backupDir . '/backup_*.db');
         $this->assertNotEmpty($backupFiles, '應該生成備份檔案');
@@ -224,7 +224,7 @@ class DatabaseBackupTest extends TestCase
         $originalPostsFiltered = array_map(function($post) {
             return [
                 'title' => $post['title'],
-                'content' => $post['content'], 
+                'content' => $post['content'],
                 'user_id' => $post['user_id'],
                 'status' => $post['status'],
             ];

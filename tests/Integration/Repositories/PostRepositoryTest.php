@@ -223,7 +223,7 @@ class PostRepositoryTest extends TestCase
         $uuid = 'test-uuid-' . uniqid() . '-' . time();
         $data = $this->createTestPost(['uuid' => $uuid]);
         $createdPost = $this->repository->create($data);
-        
+
         // 確保創建成功
         $this->assertInstanceOf(Post::class, $createdPost);
         $this->assertEquals($uuid, $createdPost->getUuid());
@@ -238,7 +238,7 @@ class PostRepositoryTest extends TestCase
     {
         $data = $this->createTestPost();
         $createdPost = $this->repository->create($data);
-        
+
         // 使用創建後的 seq_number 來查詢
         $foundPost = $this->repository->findBySeqNumber((int) $createdPost->getSeqNumber());
 
