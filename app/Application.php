@@ -207,7 +207,7 @@ class Application
         $stream->write($errorJson ?: '{"error": "JSON encoding failed"}');
 
         // 建立並返回 Response
-        $response = new class($stream) implements ResponseInterface {
+        $response = new class ($stream) implements ResponseInterface {
             private StreamInterface $body;
 
             private int $statusCode = 500;

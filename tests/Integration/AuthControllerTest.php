@@ -67,27 +67,23 @@ class AuthControllerTest extends TestCase
         // 設定預設的 user_id 屬性
         $this->request->shouldReceive('getAttribute')
             ->with('user_id')
-            ->andReturn(1)
-            ->byDefault();
+            ->andReturn(1);
 
-        // 設定 validator 預設行為
-        $this->validator->shouldReceive('validateOrFail')
-            ->andReturnUsing(function ($data, $rules) {
-                return $data; // 返回原始數據作為驗證通過的數據
-            })
-            ->byDefault();
+        // 設定 IP 地址相關的 header 方法
+        $this->request->shouldReceive('hasHeader')
+            ->andReturn(false);
 
-        $this->validator->shouldReceive('addRule')
-            ->andReturnNull()
-            ->byDefault();
+        $this->request->shouldReceive('getHeaderLine')
+            ->andReturn('');
 
-        $this->validator->shouldReceive('addMessage')
-            ->andReturnNull()
-            ->byDefault();
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn([]);
 
-        $this->validator->shouldReceive('stopOnFirstFailure')
-            ->andReturn($this->validator)
-            ->byDefault();
+        // 設定 ActivityLoggingService 的行為
+        $this->activityLoggingService->shouldReceive('log')
+            ->andReturn(true);
+
+        // 注意：每個測試方法需要自行設定 validator 的 mock 行為
 
         $this->response->shouldReceive('getStatusCode')->andReturnUsing(function () {
             return $this->statusCode;
@@ -128,6 +124,22 @@ class AuthControllerTest extends TestCase
         // 設定 Mock 期望和請求數據
         $this->request->shouldReceive('getParsedBody')->andReturn($userData);
 
+        // 設定驗證器成功通過
+        $this->validator->shouldReceive('validateOrFail')
+            ->once()
+            ->andReturnUsing(function ($data, $rules) {
+                return $data; // 返回原始數據作為驗證通過的數據
+            });
+
+        $this->validator->shouldReceive('addRule')
+            ->andReturnNull();
+
+        $this->validator->shouldReceive('addMessage')
+            ->andReturnNull();
+
+        $this->validator->shouldReceive('stopOnFirstFailure')
+            ->andReturn($this->validator);
+
         $this->authService->shouldReceive('register')
             ->once()
             ->with(Mockery::type(RegisterUserDTO::class))
@@ -139,7 +151,7 @@ class AuthControllerTest extends TestCase
             ]);
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -164,8 +176,20 @@ class AuthControllerTest extends TestCase
         // 設定 Mock 期望和請求數據
         $this->request->shouldReceive('getParsedBody')->andReturn($invalidData);
 
+        // 設定驗證器的基本方法
+        $this->validator->shouldReceive('addRule')
+            ->andReturnNull();
+
+        $this->validator->shouldReceive('addMessage')
+            ->andReturnNull();
+
+        $this->validator->shouldReceive('stopOnFirstFailure')
+            ->andReturn($this->validator);
+
         // 驗證器應該拋出驗證異常
         $this->validator->shouldReceive('validateOrFail')
+            ->once()
+            ->with($invalidData, Mockery::any())
             ->andThrow(new ValidationException(
                 ValidationResult::failure(['username' => ['使用者名稱不能為空']]),
             ));
@@ -174,7 +198,7 @@ class AuthControllerTest extends TestCase
         $this->authService->shouldNotReceive('register');
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -192,6 +216,22 @@ class AuthControllerTest extends TestCase
         // 設定 Mock 期望和請求數據
         $this->request->shouldReceive('getParsedBody')->andReturn($credentials);
 
+        // 設定驗證器的基本方法
+        $this->validator->shouldReceive('addRule')
+            ->andReturnNull();
+
+        $this->validator->shouldReceive('addMessage')
+            ->andReturnNull();
+
+        $this->validator->shouldReceive('stopOnFirstFailure')
+            ->andReturn($this->validator);
+
+        $this->validator->shouldReceive('validateOrFail')
+            ->once()
+            ->andReturnUsing(function ($data, $rules) {
+                return $data; // 返回原始數據作為驗證通過的數據
+            });
+
         $this->authService->shouldReceive('login')
             ->once()
             ->with($credentials)
@@ -206,7 +246,7 @@ class AuthControllerTest extends TestCase
             ]);
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應
@@ -233,7 +273,7 @@ class AuthControllerTest extends TestCase
             ->andThrow(new InvalidArgumentException('無效的憑證'));
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應 - 當 AuthService 拋出 InvalidArgumentException 時，控制器返回 400
@@ -246,7 +286,7 @@ class AuthControllerTest extends TestCase
         // logout 方法不需要調用 AuthService，直接返回成功響應
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
         $response = $controller->logout($this->request, $this->response);
 
         // 驗證回應
