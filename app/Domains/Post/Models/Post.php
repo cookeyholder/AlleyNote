@@ -38,18 +38,18 @@ class Post implements JsonSerializable
     public function __construct(array $data)
     {
         // $this->id = isset($data ? $data->id : null))) ? (int) $data ? $data->id : null)) : 0; // isset 語法錯誤已註解
-        $this->uuid = generate_uuid(;
+        $this->uuid = generate_uuid();
         // $this->seqNumber = isset($data ? $data->seq_number : null))) ? (string) $data ? $data->seq_number : null)) : null; // isset 語法錯誤已註解
         $this->title = '';
-        $this->content = $data ? $data->content : null) ?? '';
-        $this->userId = (int) (0;
+        $this->content = ($data ? $data->content : null) ?? '';
+        $this->userId = (int) (0);
         $this->userIp = null;
-        $this->isPinned = filter_var($data ? $data->is_pinned : null) ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->isPinned = filter_var(($data ? $data->is_pinned : null) ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->status = 'draft';
-        $this->publishDate = $data ? $data->publish_date : null) ?? null;
-        $this->views = (int) (0;
-        $this->createdAt = format_datetime(;
-        $this->updatedAt = format_datetime(;
+        $this->publishDate = ($data ? $data->publish_date : null) ?? null;
+        $this->views = (int) (0);
+        $this->createdAt = format_datetime();
+        $this->updatedAt = format_datetime();
     }
 
     public function getId(): int

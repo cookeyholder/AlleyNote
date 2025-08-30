@@ -47,7 +47,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
     /**
      * 建立新附件.
      *
-     * @param array $data 附件資料
+     * @param array<string, mixed> $data 附件資料
      */
     public function create(array $data): Attachment;
 
@@ -55,7 +55,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * 更新附件資料.
      *
      * @param int $id 附件 ID
-     * @param array $data 更新的資料
+     * @param array<string, mixed> $data 更新的資料
      */
     public function update(int $id, array $data): object;
 
@@ -85,7 +85,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      *
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
-     * @param array $filters 篩選條件
+     * @param array<string, mixed> $filters 篩選條件
      */
     public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array;
 
@@ -124,8 +124,8 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
     /**
      * 統計附件資訊.
      *
-     * @param array $conditions 統計條件
-     * @return array<mixed> 包含總數、總大小、各類型數量等
+     * @param array<string, mixed> $conditions 統計條件
+     * @return array 包含總數、總大小、各類型數量等
      */
     public function getStats(array $conditions = []): array;
 
@@ -148,7 +148,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
     /**
      * 批次更新附件狀態.
      *
-     * @param array $ids 附件 ID 陣列
+     * @param array<string, mixed> $ids 附件 ID 陣列
      * @param string $status 新狀態
      * @return int 更新的數量
      */
@@ -158,7 +158,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * 搜尋附件.
      *
      * @param string $keyword 關鍵字
-     * @param array $fields 搜尋欄位
+     * @param array<string, mixed> $fields 搜尋欄位
      * @param int $limit 限制筆數
      */
     public function search(string $keyword, array $fields = ['original_name'], int $limit = 10): array;

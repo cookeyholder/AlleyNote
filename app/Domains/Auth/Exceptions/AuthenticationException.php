@@ -59,7 +59,7 @@ class AuthenticationException extends JwtException
      *
      * @param string $reason 失敗原因
      * @param string $customMessage 自定義錯誤訊息
-     * @param array $additionalContext 額外上下文資訊
+     * @param array<string, mixed> $additionalContext 額外上下文資訊
      */
     public function __construct(
         string $reason = self::REASON_INVALID_CREDENTIALS,
@@ -275,10 +275,10 @@ class AuthenticationException extends JwtException
     {
         $context = [];
         if ($username) {
-            // // $data ? $context->username : null)) = $username; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $context['username'] = $username;
         }
         if ($ipAddress) {
-            // // $data ? $context->ip_address : null)) = $ipAddress; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $context['ip_address'] = $ipAddress;
         }
 
         return new self(self::REASON_INVALID_CREDENTIALS, '', $context);
@@ -325,7 +325,7 @@ class AuthenticationException extends JwtException
     {
         $context = ['user_id' => $userId];
         if ($email) {
-            // // $data ? $context->email : null)) = $email; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $context['email'] = $email;
         }
 
         return new self(self::REASON_ACCOUNT_NOT_VERIFIED, '', $context);
@@ -353,7 +353,7 @@ class AuthenticationException extends JwtException
         ];
 
         if ($ipAddress) {
-            // // $data ? $context->ip_address : null)) = $ipAddress; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $context['ip_address'] = $ipAddress;
         }
 
         return new self(self::REASON_TOO_MANY_ATTEMPTS, '', $context);
@@ -389,7 +389,7 @@ class AuthenticationException extends JwtException
     /**
      * 靜態工廠方法：憑證遺失.
      *
-     * @param array $missingFields 遺失的欄位
+     * @param array<string> $missingFields 遺失的欄位
      */
     public static function missingCredentials(array $missingFields = []): self
     {
@@ -428,7 +428,7 @@ class AuthenticationException extends JwtException
      * 靜態工廠方法：權限不足.
      *
      * @param string $requiredPrivilege 需要的權限
-     * @param array $userPrivileges 用戶擁有的權限
+     * @param array<string> $userPrivileges 用戶擁有的權限
      * @param int|null $userId 用戶 ID
      */
     public static function insufficientPrivileges(
@@ -442,7 +442,7 @@ class AuthenticationException extends JwtException
         ];
 
         if ($userId !== null) {
-            // // $data ? $context->user_id : null)) = $userId; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $context['user_id'] = $userId;
         }
 
         return new self(self::REASON_INSUFFICIENT_PRIVILEGES, '', $context);

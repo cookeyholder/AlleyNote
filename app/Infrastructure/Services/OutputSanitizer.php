@@ -31,7 +31,7 @@ class OutputSanitizer
     /**
      * 清理陣列中的所有字串值以供顯示.
      */
-    public static function sanitizeForDisplay(array $data): mixed
+    public static function sanitizeForDisplay(array $data): array
     {
         $sanitized = [];
         foreach ($data as $key => $value) {
@@ -91,7 +91,7 @@ class OutputSanitizerService implements OutputSanitizerInterface
     /**
      * 清理陣列中的所有字串值以供顯示.
      */
-    public function sanitizeForDisplay(array $data): mixed
+    public function sanitizeForDisplay(array $data): array
     {
         $sanitized = [];
         foreach ($data as $key => $value) {

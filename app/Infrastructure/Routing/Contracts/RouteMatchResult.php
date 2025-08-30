@@ -37,9 +37,9 @@ class RouteMatchResult
     /**
      * 取得路由參數.
      *
-     * @return array<mixed>
+     * @return array<string, string>
      */
-    public function getParameters(): mixed
+    public function getParameters(): array
     {
         return $this->parameters;
     }
@@ -62,6 +62,8 @@ class RouteMatchResult
 
     /**
      * 建立成功匹配的結果.
+     *
+     * @param array<string, string> $parameters
      */
     public static function success(RouteInterface $route, array $parameters = []): self
     {

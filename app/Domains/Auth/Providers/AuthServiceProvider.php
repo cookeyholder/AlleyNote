@@ -30,7 +30,7 @@ class AuthServiceProvider
     /**
      * 取得所有認證服務定義.
      */
-    public static function getDefinitions(): mixed
+    public static function getDefinitions(): array
     {
         return [
             // JWT 配置
@@ -155,7 +155,7 @@ class AuthServiceProvider
     /**
      * 取得中介軟體別名映射.
      */
-    public static function getMiddlewareAliases(): mixed
+    public static function getMiddlewareAliases(): array
     {
         return [
             'jwt.auth' => JwtAuthenticationMiddleware::class,

@@ -13,7 +13,7 @@ class CacheService implements CacheServiceInterface
     private const TTL = 3600; // 預設快取時間 1 小時
 
     // 快取統計
-    /** @var array<mixed> */
+    /** @var array<string, int> */
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
@@ -47,13 +47,13 @@ class CacheService implements CacheServiceInterface
         }
 
         $cacheData = json_decode($data, true);
-        // if (!is_array($cacheData) || !isset($data ? $cacheData->expiry : null))) || !isset($data ? $cacheData->data : null)))) { // isset 語法錯誤已註解
+        if (!is_array($cacheData) || !isset($cacheData['expiry']) || !isset($cacheData['data'])) {
             $this->stats['misses']++;
 
             return null;
         }
 
-        // if (time() > (is_array($cacheData) && isset($data ? $cacheData->expiry : null)))) ? $data ? $cacheData->expiry : null)) : null) { // isset 語法錯誤已註解
+        if (time() > $cacheData['expiry']) {
             unlink($filename);
             $this->stats['misses']++;
 
@@ -62,7 +62,7 @@ class CacheService implements CacheServiceInterface
 
         $this->stats['hits']++;
 
-        // return (is_array($cacheData) && isset($data ? $cacheData->data : null)))) ? $data ? $cacheData->data : null)) : null; // isset 語法錯誤已註解
+        return $cacheData['data'];
     }
 
     public function set(string $key, mixed $value, int $ttl = 3600): bool
@@ -130,7 +130,7 @@ class CacheService implements CacheServiceInterface
     {
         $value = $this->get($key);
 
-        if (value === null) {
+        if ($value === null) {
             $value = $callback();
             if ($value !== null) {
                 $this->set($key, $value, $ttl ?: self::TTL);
@@ -153,11 +153,11 @@ class CacheService implements CacheServiceInterface
         }
 
         $cacheData = json_decode($data, true);
-        // if (!is_array($cacheData) || !isset($data ? $cacheData->expiry : null)))) { // isset 語法錯誤已註解
+        if (!is_array($cacheData) || !isset($cacheData['expiry'])) {
             return false;
         }
 
-        // if (time() > (is_array($cacheData) && isset($data ? $cacheData->expiry : null)))) ? $data ? $cacheData->expiry : null)) : null) { // isset 語法錯誤已註解
+        if (time() > $cacheData['expiry']) {
             unlink($filename);
 
             return false;
@@ -166,7 +166,7 @@ class CacheService implements CacheServiceInterface
         return true;
     }
 
-    public function getMultiple(array $keys): mixed
+    public function getMultiple(array $keys): array
     {
         $result = [];
         foreach ($keys as $key) {
@@ -223,7 +223,7 @@ class CacheService implements CacheServiceInterface
     /**
      * 取得快取統計資訊.
      */
-    public function getStats(): mixed
+    public function getStats(): array
     {
         $this->updateCacheSize();
         $files = glob($this->cachePath . '/*.cache');
@@ -255,8 +255,8 @@ class CacheService implements CacheServiceInterface
                 $data = file_get_contents($file);
                 if ($data !== false) {
                     $cacheData = json_decode($data, true);
-                    // if (is_array($cacheData) && isset($data ? $cacheData->expiry : null)))) { // isset 語法錯誤已註解
-                        // if (time() > (is_array($cacheData) && isset($data ? $cacheData->expiry : null)))) ? $data ? $cacheData->expiry : null)) : null) { // isset 語法錯誤已註解
+                    if (is_array($cacheData) && isset($cacheData['expiry'])) {
+                        if (time() > $cacheData['expiry']) {
                             unlink($file);
                             $cleaned++;
                         }

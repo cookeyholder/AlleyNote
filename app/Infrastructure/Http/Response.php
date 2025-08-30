@@ -38,7 +38,7 @@ class Response implements ResponseInterface
         if ($body instanceof StreamInterface) {
             $this->body = $body;
         } else {
-            $this->body = new Stream($body);
+            $this->body = new Stream($body ?? '');
         }
 
         foreach ($headers as $name => $value) {
@@ -59,7 +59,7 @@ class Response implements ResponseInterface
         return $clone;
     }
 
-    public function getHeaders(): mixed
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -69,7 +69,7 @@ class Response implements ResponseInterface
         return isset($this->headerNames[strtolower($name)]);
     }
 
-    public function getHeader(string $name): mixed
+    public function getHeader(string $name): array
     {
         $name = strtolower($name);
         if (!isset($this->headerNames[$name])) {

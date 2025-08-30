@@ -56,7 +56,7 @@ final class TokenBlacklistService
      * @param DateTimeImmutable $expiresAt 過期時間
      * @param string $reason 黑名單原因
      * @param string|null $deviceId 裝置 ID
-     * @param array<mixed>|null $metadata 額外資料
+     * @param array<string, mixed>|null $metadata 額外資料
      * @return bool 成功時回傳 true
      * @throws InvalidArgumentException 當參數無效時
      */
@@ -81,7 +81,7 @@ final class TokenBlacklistService
                 blacklistedAt: new DateTimeImmutable(),
                 reason: $reason,
                 deviceId: $deviceId,
-                metadata: $metadata,
+                metadata: $metadata ?? [],
             );
 
             $result = $this->repository->addToBlacklist($entry);
@@ -137,10 +137,10 @@ final class TokenBlacklistService
     /**
      * 批次檢查 token 是否在黑名單中.
      *
-     * @param array $jtis JTI 陣列
-     * @return array<mixed> JTI 為 key，是否在黑名單為值的陣列
+     * @param array<int, string> $jtis JTI 陣列
+     * @return array<string, bool> JTI 為 key，是否在黑名單為值的陣列
      */
-    public function batchCheckBlacklist(array $jtis): mixed
+    public function batchCheckBlacklist(array $jtis): array
     {
         if (empty($jtis)) {
             return [];
@@ -274,7 +274,7 @@ final class TokenBlacklistService
     /**
      * 批次從黑名單中移除 token.
      *
-     * @param array $jtis JTI 陣列
+     * @param array<int, string> $jtis JTI 陣列
      * @return int 成功移除的數量
      */
     public function batchRemoveFromBlacklist(array $jtis): int
@@ -312,9 +312,9 @@ final class TokenBlacklistService
      * 自動清理過期的黑名單項目.
      *
      * @param int $batchSize 批次大小
-     * @return array<mixed> 清理結果統計
+     * @return array<string, mixed> 清理結果統計
      */
-    public function autoCleanup(int $batchSize = self::DEFAULT_CLEANUP_BATCH_SIZE): mixed
+    public function autoCleanup(int $batchSize = self::DEFAULT_CLEANUP_BATCH_SIZE): array
     {
         $startTime = microtime(true);
         $totalCleaned = 0;
@@ -360,9 +360,9 @@ final class TokenBlacklistService
     /**
      * 取得黑名單統計資訊.
      *
-     * @return array<mixed> 統計資訊
+     * @return array<string, mixed> 統計資訊
      */
-    public function getStatistics(): mixed
+    public function getStatistics(): array
     {
         try {
             $stats = $this->repository->getBlacklistStats();
@@ -389,9 +389,9 @@ final class TokenBlacklistService
      * 取得使用者的黑名單統計.
      *
      * @param int $userId 使用者 ID
-     * @return array<mixed> 使用者統計資訊
+     * @return array<string, mixed> 使用者統計資訊
      */
-    public function getUserStatistics(int $userId): mixed
+    public function getUserStatistics(int $userId): array
     {
         if ($userId <= 0) {
             throw new InvalidArgumentException('User ID must be positive');
@@ -415,16 +415,16 @@ final class TokenBlacklistService
     /**
      * 搜尋黑名單項目.
      *
-     * @param array $criteria 搜尋條件
+     * @param array<string, mixed> $criteria 搜尋條件
      * @param int|null $limit 限制數量
      * @param int $offset 偏移量
-     * @return array<mixed> 搜尋結果
+     * @return array<string, mixed> 搜尋結果
      */
     public function searchBlacklistEntries(
         array $criteria,
         ?int $limit = null,
         int $offset = 0,
-    ): mixed {
+    ): array {
         if ($offset < 0) {
             throw new InvalidArgumentException('Offset must be non-negative');
         }
@@ -462,9 +462,9 @@ final class TokenBlacklistService
      * 取得最近的高優先級黑名單項目.
      *
      * @param int $limit 限制數量
-     * @return array<mixed> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
      */
-    public function getRecentHighPriorityEntries(int $limit = 50): mixed
+    public function getRecentHighPriorityEntries(int $limit = 50): array
     {
         try {
             return $this->repository->getHighPriorityEntries($limit);
@@ -481,9 +481,9 @@ final class TokenBlacklistService
     /**
      * 最佳化黑名單儲存.
      *
-     * @return array<mixed> 最佳化結果
+     * @return array<string, mixed> 最佳化結果
      */
-    public function optimize(): mixed
+    public function optimize(): array
     {
         try {
             $result = $this->repository->optimize();
@@ -506,16 +506,16 @@ final class TokenBlacklistService
     /**
      * 檢查黑名單健康狀態.
      *
-     * @return array<mixed> 健康狀態資訊
+     * @return array<string, mixed> 健康狀態資訊
      */
-    public function getHealthStatus(): mixed
+    public function getHealthStatus(): array
     {
         try {
             $sizeInfo = $this->repository->getSizeInfo();
             $isOverLimit = $this->repository->isSizeExceeded();
             $stats = $this->repository->getBlacklistStats();
 
-            $totalEntries = 0;
+            $totalEntries = $sizeInfo['total_entries'] ?? 0;
             $isTooLarge = $totalEntries > self::DEFAULT_MAX_BLACKLIST_SIZE;
 
             $status = [
@@ -524,28 +524,28 @@ final class TokenBlacklistService
                 'too_large' => $isTooLarge,
                 'max_recommended_size' => self::DEFAULT_MAX_BLACKLIST_SIZE,
                 'total_entries' => $totalEntries,
-                'active_entries' => $data ? $sizeInfo->active_entries : null) ?? 0,
-                'expired_entries' => 0,
-                'cleanable_entries' => $data ? $sizeInfo->cleanable_entries : null) ?? 0,
-                'security_issues' => 0,
+                'active_entries' => $sizeInfo['active_entries'] ?? 0,
+                'expired_entries' => $sizeInfo['expired_entries'] ?? 0,
+                'cleanable_entries' => $sizeInfo['cleanable_entries'] ?? 0,
+                'security_issues' => $stats['security_related'] ?? 0,
                 'recommendations' => [],
             ];
 
             // 產生建議
-            if ($isOverLimit {
-                // $data ? $status->recommendations : null))[] = 'Run cleanup to reduce blacklist size'; // 複雜賦值語法錯誤已註解
+            if ($isOverLimit) {
+                $status['recommendations'][] = 'Run cleanup to reduce blacklist size';
             }
 
             if ($isTooLarge) {
-                // $data ? $status->recommendations : null))[] = 'Blacklist size exceeds recommended limit, consider cleanup'; // 複雜賦值語法錯誤已註解
+                $status['recommendations'][] = 'Blacklist size exceeds recommended limit, consider cleanup';
             }
 
-            if ((0 > 1000) {
-                // $data ? $status->recommendations : null))[] = 'High number of expired entries, consider cleanup'; // 複雜賦值語法錯誤已註解
+            if (($sizeInfo['expired_entries'] ?? 0) > 1000) {
+                $status['recommendations'][] = 'High number of expired entries, consider cleanup';
             }
 
-            if ((0 > 100) {
-                // $data ? $status->recommendations : null))[] = 'High security-related blacklist entries detected'; // 複雜賦值語法錯誤已註解
+            if (($stats['security_related'] ?? 0) > 100) {
+                $status['recommendations'][] = 'High security-related blacklist entries detected';
             }
 
             return $status;

@@ -104,25 +104,28 @@ class RichTextProcessorService
         // 根據使用者層級選擇處理器
         switch ($userLevel) {
             case 'admin':
-            // // $data ? $result->content : null)) = $this->adminPurifier->purify($content); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+                // $result['content'] = $this->adminPurifier->purify($content);
+                $result['content'] = $content; // 暫時使用原內容
                 break;
             case 'extended':
-            // // $data ? $result->content : null)) = $this->extendedPurifier->purify($content); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+                // $result['content'] = $this->extendedPurifier->purify($content);
+                $result['content'] = $content; // 暫時使用原內容
                 break;
             default:
-            // // $data ? $result->content : null)) = $this->basicPurifier->purify($content); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+                // $result['content'] = $this->basicPurifier->purify($content);
+                $result['content'] = $content; // 暫時使用原內容
         }
 
         // 生成統計資訊
-            // // $data ? $result->statistics : null)) = $this->generateStatistics($content, (is_array($result) && isset($data ? $result->content : null)))) ? $data ? $result->content : null)) : null); // 語法錯誤已註解 // isset 語法錯誤已註解
+        // $result['statistics'] = $this->generateStatistics($content, $result['content']);
 
         // 檢查內容變化
-        // if ($content !== (is_array($result) && isset($data ? $result->content : null)))) ? $data ? $result->content : null)) : null) { // isset 語法錯誤已註解
-            // $data ? $result->warnings : null))[] = [ // 複雜賦值語法錯誤已註解
+        if ($content !== $result['content']) {
+            $result['warnings'][] = [
                 'type' => 'content_modified',
                 'message' => '內容已被安全過濾器修改',
                 'original_length' => strlen($content),
-                // 'filtered_length' => strlen((is_array($result) && isset($data ? $result->content : null)))) ? $data ? $result->content : null)) : null), // isset 語法錯誤已註解
+                'filtered_length' => strlen($result['content']),
             ];
         }
 
@@ -272,7 +275,7 @@ class RichTextProcessorService
     {
         $cachePath = '/tmp/htmlpurifier';
 
-        if (!is_dir($cachePath) {
+        if (!is_dir($cachePath)) {
             // @ 符號抑制錯誤，以處理多執行緒環境下的競爭條件
             @mkdir($cachePath, 0o750, true);
         }

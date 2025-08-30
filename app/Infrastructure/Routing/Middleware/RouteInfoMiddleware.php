@@ -163,7 +163,7 @@ class RouteInfoMiddleware extends AbstractMiddleware
      *
      * @return string[]
      */
-    public function getMethods(): mixed
+    public function getMethods(): array
     {
         return $this->methods;
     }

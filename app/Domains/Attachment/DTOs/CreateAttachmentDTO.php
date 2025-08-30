@@ -31,7 +31,7 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array $data 輸入資料
+     * @param array<string, mixed> $data 輸入資料
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -45,13 +45,13 @@ class CreateAttachmentDTO extends BaseDTO
         $validatedData = $this->validate($data);
 
         // 設定屬性
-        // $this->postId = (int) (is_array($validatedData) && isset($data ? $validatedData->post_id : null)))) ? $data ? $validatedData->post_id : null)) : null; // isset 語法錯誤已註解
-        // $this->filename = trim((is_array($validatedData) && isset($data ? $validatedData->filename : null)))) ? $data ? $validatedData->filename : null)) : null); // isset 語法錯誤已註解
-        // $this->originalName = trim((is_array($validatedData) && isset($data ? $validatedData->original_name : null)))) ? $data ? $validatedData->original_name : null)) : null); // isset 語法錯誤已註解
-        // $this->mimeType = trim((is_array($validatedData) && isset($data ? $validatedData->mime_type : null)))) ? $data ? $validatedData->mime_type : null)) : null); // isset 語法錯誤已註解
-        // $this->fileSize = (int) (is_array($validatedData) && isset($data ? $validatedData->file_size : null)))) ? $data ? $validatedData->file_size : null)) : null; // isset 語法錯誤已註解
-        // $this->storagePath = trim((is_array($validatedData) && isset($data ? $validatedData->storage_path : null)))) ? $data ? $validatedData->storage_path : null)) : null); // isset 語法錯誤已註解
-        // $this->uploadedBy = (int) (is_array($validatedData) && isset($data ? $validatedData->uploaded_by : null)))) ? $data ? $validatedData->uploaded_by : null)) : null; // isset 語法錯誤已註解
+        $this->postId = (int) $validatedData['post_id'];
+        $this->filename = trim($validatedData['filename']);
+        $this->originalName = trim($validatedData['original_name']);
+        $this->mimeType = trim($validatedData['mime_type']);
+        $this->fileSize = (int) $validatedData['file_size'];
+        $this->storagePath = trim($validatedData['storage_path']);
+        $this->uploadedBy = (int) $validatedData['uploaded_by'];
     }
 
     /**
@@ -205,7 +205,7 @@ class CreateAttachmentDTO extends BaseDTO
     /**
      * 取得驗證規則.
      */
-    protected function getValidationRules(): mixed
+    protected function getValidationRules(): array
     {
         return [
             'post_id' => 'required|post_id',
@@ -221,7 +221,7 @@ class CreateAttachmentDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Repository 使用）.
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         return [
             'post_id' => $this->postId,

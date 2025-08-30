@@ -48,7 +48,7 @@ interface SecretsManagerInterface
     /**
      * 驗證必需的秘密設定.
      *
-     * @param array $requiredKeys 必需的設定鍵名陣列
+     * @param array<string, mixed> $requiredKeys 必需的設定鍵名陣列
      * @throws ValidationException 如果有缺少的設定
      */
     public function validateRequiredSecrets(array $requiredKeys): void;
@@ -79,7 +79,7 @@ interface SecretsManagerInterface
      * 驗證 .env 檔案的安全性.
      *
      * @param string $filePath .env 檔案路徑
-     * @return array<mixed> 發現的問題陣列
+     * @return array 發現的問題陣列
      */
     public function validateEnvFile(string $filePath = ''): array;
 }

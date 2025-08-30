@@ -35,16 +35,16 @@ class AttachmentRepository
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'uuid' => $uuid,
-            // 'post_id' => (is_array($data) && isset($data ? $data->post_id : null)))) ? $data ? $data->post_id : null)) : null, // isset 語法錯誤已註解
-            // 'filename' => (is_array($data) && isset($data ? $data->filename : null)))) ? $data ? $data->filename : null)) : null, // isset 語法錯誤已註解
-            // 'original_name' => (is_array($data) && isset($data ? $data->original_name : null)))) ? $data ? $data->original_name : null)) : null, // isset 語法錯誤已註解
-            // 'mime_type' => (is_array($data) && isset($data ? $data->mime_type : null)))) ? $data ? $data->mime_type : null)) : null, // isset 語法錯誤已註解
-            // 'file_size' => (is_array($data) && isset($data ? $data->file_size : null)))) ? $data ? $data->file_size : null)) : null, // isset 語法錯誤已註解
-            // 'storage_path' => (is_array($data) && isset($data ? $data->storage_path : null)))) ? $data ? $data->storage_path : null)) : null, // isset 語法錯誤已註解
+            'post_id' => $data['post_id'],
+            'filename' => $data['filename'],
+            'original_name' => $data['original_name'],
+            'mime_type' => $data['mime_type'],
+            'file_size' => $data['file_size'],
+            'storage_path' => $data['storage_path'],
         ]);
 
-        // // $data ? $data->id : null)) = (int) $this->db->lastInsertId(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-        // // $data ? $data->uuid : null)) = $uuid; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+        $data['id'] = (int) $this->db->lastInsertId();
+        $data['uuid'] = $uuid;
 
         return new Attachment($data);
     }
@@ -85,7 +85,7 @@ class AttachmentRepository
         });
     }
 
-    public function getByPostId(int $postId): mixed
+    public function getByPostId(int $postId): array
     {
         return $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
             $sql = '

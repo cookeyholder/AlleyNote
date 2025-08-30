@@ -73,7 +73,7 @@ class Permission
         return $this->updatedAt;
     }
 
-    public function toArray(): mixed
+    public function toArray(): array
     {
         return [
             'id' => $this->id,
@@ -89,13 +89,13 @@ class Permission
     public static function fromArray(array $data): self
     {
         return new self(
-            // (int) (is_array($data) && isset($data ? $data->id : null)))) ? $data ? $data->id : null)) : null, // isset 語法錯誤已註解
-            // (is_array($data) && isset($data ? $data->name : null)))) ? $data ? $data->name : null)) : null, // isset 語法錯誤已註解
-            // (is_array($data) && isset($data ? $data->resource : null)))) ? $data ? $data->resource : null)) : null, // isset 語法錯誤已註解
-            // (is_array($data) && isset($data ? $data->action : null)))) ? $data ? $data->action : null)) : null, // isset 語法錯誤已註解
-            null,
-            $data ? $data->created_at : null) ?? '',
-            '',
-        ;
+            (int) $data['id'],
+            $data['name'],
+            $data['resource'],
+            $data['action'],
+            $data['description'] ?? null,
+            $data['created_at'] ?? '',
+            $data['updated_at'] ?? '',
+        );
     }
 }

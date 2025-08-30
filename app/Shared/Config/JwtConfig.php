@@ -39,13 +39,13 @@ final class JwtConfig
      */
     private function loadFromEnvironment(): void
     {
-        $this->algorithm = 'RS256';
-        $this->privateKey = $this->loadPrivateKey(;
+        $this->algorithm = $_ENV['JWT_ALGORITHM'] ?? 'RS256';
+        $this->privateKey = $this->loadPrivateKey();
         $this->publicKey = $this->loadPublicKey();
-        $this->issuer = 'alleynote-api';
-        $this->audience = $data ? $_ENV->JWT_AUDIENCE : null) ?? 'alleynote-client';
-        $this->accessTokenTtl = (int) (3600;
-        $this->refreshTokenTtl = (int) (2592000;
+        $this->issuer = $_ENV['JWT_ISSUER'] ?? 'alleynote-api';
+        $this->audience = $_ENV['JWT_AUDIENCE'] ?? 'alleynote-client';
+        $this->accessTokenTtl = (int) ($_ENV['JWT_ACCESS_TOKEN_TTL'] ?? 3600);
+        $this->refreshTokenTtl = (int) ($_ENV['JWT_REFRESH_TOKEN_TTL'] ?? 2592000);
     }
 
     /**
@@ -53,9 +53,9 @@ final class JwtConfig
      */
     private function loadPrivateKey(): string
     {
-        $privateKey = '';
+        $privateKey = $_ENV['JWT_PRIVATE_KEY'] ?? '';
 
-        if (empty($privateKey) {
+        if (empty($privateKey)) {
             throw new InvalidArgumentException('JWT_PRIVATE_KEY 環境變數未設定');
         }
 
@@ -75,9 +75,9 @@ final class JwtConfig
      */
     private function loadPublicKey(): string
     {
-        $publicKey = '';
+        $publicKey = $_ENV['JWT_PUBLIC_KEY'] ?? '';
 
-        if (empty($publicKey) {
+        if (empty($publicKey)) {
             throw new InvalidArgumentException('JWT_PUBLIC_KEY 環境變數未設定');
         }
 
@@ -117,7 +117,7 @@ final class JwtConfig
             throw new InvalidArgumentException('JWT_REFRESH_TOKEN_TTL 必須大於 0');
         }
 
-        if ($this->refreshTokenTtl accessTokenTtl) {
+        if ($this->refreshTokenTtl <= $this->accessTokenTtl) {
             throw new InvalidArgumentException('Refresh token 有效期必須大於 access token 有效期');
         }
 
@@ -215,7 +215,7 @@ final class JwtConfig
     /**
      * 取得基本 JWT payload 結構.
      */
-    public function getBasePayload(): mixed
+    public function getBasePayload(): array
     {
         $now = time();
 
@@ -241,7 +241,7 @@ final class JwtConfig
     /**
      * 取得配置摘要（用於日誌記錄，不包含敏感資訊）.
      */
-    public function getConfigSummary(): mixed
+    public function getConfigSummary(): array
     {
         return [
             'algorithm' => $this->algorithm,

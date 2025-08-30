@@ -149,7 +149,7 @@ class RedisRouteCache implements RouteCacheInterface
         return $this->ttl;
     }
 
-    public function getStats(): mixed
+    public function getStats(): array
     {
         return $this->stats;
     }
@@ -191,7 +191,7 @@ class RedisRouteCache implements RouteCacheInterface
             $content = $this->redis->get(self::STATS_KEY);
             if ($content !== false) {
                 $stats = json_decode($content, true);
-                if (is_array($stats) && !empty($stats)) {
+                if (is_array($stats)) {
                     $this->stats = array_merge($this->stats, $stats);
                 }
             }

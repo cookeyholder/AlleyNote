@@ -79,8 +79,8 @@ final class JwtAuthorizationMiddlewareTest extends TestCase
 
         $this->assertSame(403, $response->getStatusCode());
         $responseData = json_decode((string) $response->getBody(), true);
-        $this->assertFalse((is_array($responseData) && isset((is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)))) ? (is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)) : null);
-        $this->assertSame('NOT_AUTHENTICATED', (is_array($responseData) && isset((is_array($responseData) ? $responseData['code'] : (is_object($responseData) ? $responseData->code : null)))) ? (is_array($responseData) ? $responseData['code'] : (is_object($responseData) ? $responseData->code : null)) : null);
+        $this->assertFalse($responseData['success'] ?? null);
+        $this->assertSame('NOT_AUTHENTICATED', $responseData['code'] ?? null);
     }
 
     public function testAllowsSuperAdminAccess(): void
@@ -129,7 +129,7 @@ final class JwtAuthorizationMiddlewareTest extends TestCase
 
         $this->assertSame(403, $response->getStatusCode());
         $responseData = json_decode((string) $response->getBody(), true);
-        $this->assertFalse((is_array($responseData) && isset((is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)))) ? (is_array($responseData) ? $responseData['success'] : (is_object($responseData) ? $responseData->success : null)) : null);
+        $this->assertFalse($responseData['success'] ?? null);
     }
 
     public function testAllowsAccessWithValidDirectPermissions(): void

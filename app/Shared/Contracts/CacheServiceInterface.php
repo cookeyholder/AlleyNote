@@ -55,15 +55,15 @@ interface CacheServiceInterface
     /**
      * 批次取得多個快取.
      *
-     * @param array $keys 快取鍵陣列
-     * @return array<mixed> 快取資料陣列，格式為 [key => value]
+     * @param array<string, mixed> $keys 快取鍵陣列
+     * @return array 快取資料陣列，格式為 [key => value]
      */
     public function getMultiple(array $keys): array;
 
     /**
      * 批次設定多個快取.
      *
-     * @param array $values 快取資料陣列，格式為 [key => value]
+     * @param array<string, mixed> $values 快取資料陣列，格式為 [key => value]
      * @param int $ttl 存活時間（秒）
      * @return bool 是否全部成功設定
      */
@@ -72,7 +72,7 @@ interface CacheServiceInterface
     /**
      * 批次刪除多個快取.
      *
-     * @param array $keys 快取鍵陣列
+     * @param array<string, mixed> $keys 快取鍵陣列
      * @return bool 是否全部成功刪除
      */
     public function deleteMultiple(array $keys): bool;
@@ -88,7 +88,7 @@ interface CacheServiceInterface
     /**
      * 取得快取統計資訊.
      *
-     * @return array<mixed> 包含命中率、快取數量等統計資訊
+     * @return array 包含命中率、快取數量等統計資訊
      */
     public function getStats(): array;
 

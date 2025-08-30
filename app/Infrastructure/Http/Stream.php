@@ -76,6 +76,9 @@ class Stream implements StreamInterface
         }
 
         $stats = fstat($this->stream);
+        if (isset($stats['size'])) {
+            return $stats['size'];
+        }
 
         return null;
     }
@@ -199,7 +202,7 @@ class Stream implements StreamInterface
         }
 
         $meta = stream_get_meta_data($this->stream);
-        if (key === null) {
+        if ($key === null) {
             return $meta;
         }
 

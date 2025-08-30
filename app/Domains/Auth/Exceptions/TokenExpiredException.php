@@ -57,9 +57,9 @@ class TokenExpiredException extends JwtException
         ];
 
         if ($expiredAt !== null) {
-            // // $data ? $context->expired_duration : null)) = $currentTime - $expiredAt; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $context->expired_at_human : null)) = date('Y-m-d H:i:s', $expiredAt); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $context->current_time_human : null)) = date('Y-m-d H:i:s', $currentTime); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $context['expired_duration'] = $currentTime - $expiredAt;
+            $context['expired_at_human'] = date('Y-m-d H:i:s', $expiredAt);
+            $context['current_time_human'] = date('Y-m-d H:i:s', $currentTime);
         }
 
         parent::__construct($message, self::ERROR_CODE, null, $context);
@@ -76,7 +76,7 @@ class TokenExpiredException extends JwtException
     {
         $tokenName = $tokenType === self::ACCESS_TOKEN ? 'Access token' : 'Refresh token';
 
-        if (expiredAt === null) {
+        if ($expiredAt === null) {
             return sprintf('%s has expired', $tokenName);
         }
 

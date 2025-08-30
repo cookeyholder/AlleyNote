@@ -25,8 +25,8 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array $data 輸入資料
-     *                    * @throws ValidationException 當驗證失敗時
+     * @param array<string, mixed> $data 輸入資料
+     *                                   * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
     {
@@ -39,10 +39,10 @@ class CreateIpRuleDTO extends BaseDTO
         $validatedData = $this->validate($data);
 
         // 設定屬性
-        // $this->ipAddress = trim((is_array($validatedData) && isset($data ? $validatedData->ip_address : null)))) ? $data ? $validatedData->ip_address : null)) : null); // isset 語法錯誤已註解
-        // $this->action = strtolower(trim((is_array($validatedData) && isset($data ? $validatedData->action : null)))) ? $data ? $validatedData->action : null)) : null)); // isset 語法錯誤已註解
-        // $this->reason = isset($data ? $validatedData->reason : null))) ? trim((is_array($validatedData) && isset($data ? $validatedData->reason : null)))) ? $data ? $validatedData->reason : null)) : null) : null; // isset 語法錯誤已註解
-        // $this->createdBy = (int) (is_array($validatedData) && isset($data ? $validatedData->created_by : null)))) ? $data ? $validatedData->created_by : null)) : null; // isset 語法錯誤已註解
+        $this->ipAddress = trim($validatedData['ip_address']);
+        $this->action = strtolower(trim($validatedData['action']));
+        $this->reason = isset($validatedData['reason']) ? trim($validatedData['reason']) : null;
+        $this->createdBy = (int) $validatedData['created_by'];
     }
 
     /**
@@ -149,7 +149,7 @@ class CreateIpRuleDTO extends BaseDTO
     /**
      * 取得驗證規則.
      */
-    protected function getValidationRules(): mixed
+    protected function getValidationRules(): array
     {
         return [
             'ip_address' => 'required|string|ip_or_cidr',
@@ -162,7 +162,7 @@ class CreateIpRuleDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Repository 使用）.
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         return [
             'ip_address' => $this->ipAddress,
@@ -265,7 +265,7 @@ class CreateIpRuleDTO extends BaseDTO
     /**
      * 取得 IP 規則的詳細資訊.
      */
-    public function getDetailedInfo(): mixed
+    public function getDetailedInfo(): array
     {
         return [
             'ip_address' => $this->ipAddress,

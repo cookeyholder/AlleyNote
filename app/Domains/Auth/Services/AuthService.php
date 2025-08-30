@@ -21,14 +21,14 @@ class AuthService
         private bool $jwtEnabled = false,
     ) {}
 
-    public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): mixed
+    public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): array
     {
         // DTO 已經在建構時進行基本驗證，這裡進行密碼安全性檢查
         $this->passwordService->validatePassword($dto->password);
 
         // 轉換為陣列並雜湊密碼
         $data = $dto->toArray();
-            // // $data ? $data->password : null)) = $this->passwordService->hashPassword((is_array($data) && isset($data ? $data->password : null)))) ? $data ? $data->password : null)) : null); // 語法錯誤已註解 // isset 語法錯誤已註解
+        $data['password'] = $this->passwordService->hashPassword($data['password']);
 
         $user = $this->userRepository->create($data);
 
@@ -40,8 +40,8 @@ class AuthService
                     deviceInfo: $deviceInfo,
                     customClaims: [
                         'type' => 'registration',
-                        // 'username' => (is_array($user) && isset($data ? $user->username : null)))) ? $data ? $user->username : null)) : null, // isset 語法錯誤已註解
-                        // 'email' => (is_array($user) && isset($data ? $user->email : null)))) ? $data ? $user->email : null)) : null, // isset 語法錯誤已註解
+                        'username' => $user['username'],
+                        'email' => $user['email'],
                     ],
                 );
 
@@ -71,9 +71,9 @@ class AuthService
         ];
     }
 
-    public function login(array $credentials, ?DeviceInfo $deviceInfo = null): mixed
+    public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
     {
-        // $user = $this->userRepository->findByEmail((is_array($credentials) && isset($data ? $credentials->email : null)))) ? $data ? $credentials->email : null)) : null); // isset 語法錯誤已註解
+        $user = $this->userRepository->findByEmail($credentials['email']);
 
         if (!$user) {
             return [
@@ -82,14 +82,14 @@ class AuthService
             ];
         }
 
-        // if ($data ? $user->status : null)) === 0) { // 複雜賦值語法錯誤已註解
+        if ($user['status'] === 0) {
             return [
                 'success' => false,
                 'message' => '帳號已被停用',
             ];
         }
 
-        // if (!password_verify((is_array($credentials) && isset($data ? $credentials->password : null)))) ? $data ? $credentials->password : null)) : null, (is_array($user) && isset($data ? $user->password : null)))) ? $data ? $user->password : null)) : null)) { // isset 語法錯誤已註解
+        if (!password_verify($credentials['password'], $user['password'])) {
             return [
                 'success' => false,
                 'message' => '無效的認證資訊',
@@ -104,15 +104,15 @@ class AuthService
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $deviceInfo !== null) {
             try {
                 $tokenPair = $this->jwtTokenService->generateTokenPair(
-                    // userId: (int) (is_array($user) && isset($data ? $user->id : null)))) ? $data ? $user->id : null)) : null, // isset 語法錯誤已註解
+                    userId: (int) $user['id'],
                     deviceInfo: $deviceInfo,
                     customClaims: [
                         'type' => 'access',
-                        // 'username' => (is_array($user) && isset($data ? $user->username : null)))) ? $data ? $user->username : null)) : null, // isset 語法錯誤已註解
-                        // 'email' => (is_array($user) && isset($data ? $user->email : null)))) ? $data ? $user->email : null)) : null, // isset 語法錯誤已註解
-                        'role' => 'user',
+                        'username' => $user['username'],
+                        'email' => $user['email'],
+                        'role' => $user['role'] ?? 'user',
                     ],
-                ;
+                );
 
                 return [
                     'success' => true,
@@ -140,7 +140,7 @@ class AuthService
         ];
     }
 
-    public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): mixed
+    public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): array
     {
         // 如果啟用 JWT 且有提供 JWT 服務和 access token
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $accessToken !== null) {

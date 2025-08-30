@@ -177,10 +177,10 @@ class AuthorizationResultTest extends TestCase
         $jsonString = json_encode($result);
         $decodedData = json_decode($jsonString, true);
 
-        $this->assertSame(false, (is_array($decodedData) && isset((is_array($decodedData) ? $decodedData['allowed'] : (is_object($decodedData) ? $decodedData->allowed : null)))) ? (is_array($decodedData) ? $decodedData['allowed'] : (is_object($decodedData) ? $decodedData->allowed : null)) : null);
-        $this->assertSame('測試 JSON', (is_array($decodedData) && isset((is_array($decodedData) ? $decodedData['reason'] : (is_object($decodedData) ? $decodedData->reason : null)))) ? (is_array($decodedData) ? $decodedData['reason'] : (is_object($decodedData) ? $decodedData->reason : null)) : null);
-        $this->assertSame('TEST_JSON', (is_array($decodedData) && isset((is_array($decodedData) ? $decodedData['code'] : (is_object($decodedData) ? $decodedData->code : null)))) ? (is_array($decodedData) ? $decodedData['code'] : (is_object($decodedData) ? $decodedData->code : null)) : null);
-        $this->assertSame(['json_rule'], (is_array($decodedData) && isset((is_array($decodedData) ? $decodedData['applied_rules'] : (is_object($decodedData) ? $decodedData->applied_rules : null)))) ? (is_array($decodedData) ? $decodedData['applied_rules'] : (is_object($decodedData) ? $decodedData->applied_rules : null)) : null);
+        $this->assertSame(false, $decodedData['allowed'] ?? null);
+        $this->assertSame('測試 JSON', $decodedData['reason'] ?? null);
+        $this->assertSame('TEST_JSON', $decodedData['code'] ?? null);
+        $this->assertSame(['json_rule'], $decodedData['applied_rules'] ?? null);
     }
 
     public function testEqualsMethod(): void

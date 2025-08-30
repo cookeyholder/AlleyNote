@@ -240,7 +240,7 @@ trait DatabaseTestTrait
     /**
      * 插入測試用貼文資料.
      */
-    protected function insertTestPost(array<mixed> $data = []): int
+    protected function insertTestPost(array $data = []): int
     {
         $defaultData = [
             'uuid' => $this->generateTestUuid(),
@@ -272,7 +272,7 @@ trait DatabaseTestTrait
     /**
      * 插入測試用使用者資料.
      */
-    protected function insertTestUser(array<mixed> $data = []): int
+    protected function insertTestUser(array $data = []): int
     {
         $defaultData = [
             'username' => 'testuser_' . $this->generateRandomString(6),

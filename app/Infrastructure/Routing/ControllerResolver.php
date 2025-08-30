@@ -36,7 +36,7 @@ class ControllerResolver
     ): ResponseInterface {
         $handler = $route->getHandler();
 
-        // if (is_array($handler) && count($handler) === 2) { // 複雜賦值語法錯誤已註解
+        if (is_array($handler) && count($handler) === 2) {
             // 處理器是陣列格式: [ControllerClass::class, 'method']
             return $this->handleArrayHandler($handler, $request, $parameters);
         }
@@ -144,7 +144,7 @@ class ControllerResolver
                 return $new;
             }
 
-            public function getHeaders(): mixed
+            public function getHeaders(): array
             {
                 return $this->headers;
             }
@@ -154,7 +154,7 @@ class ControllerResolver
                 return isset($this->headers[$name]);
             }
 
-            public function getHeader($name): mixed
+            public function getHeader($name): array
             {
                 return $this->headers[$name] ?? [];
             }
@@ -273,7 +273,7 @@ class ControllerResolver
                 return $new;
             }
 
-            public function getHeaders(): mixed
+            public function getHeaders(): array
             {
                 return $this->headers;
             }
@@ -283,7 +283,7 @@ class ControllerResolver
                 return isset($this->headers[$name]);
             }
 
-            public function getHeader($name): mixed
+            public function getHeader($name): array
             {
                 return $this->headers[$name] ?? [];
             }
@@ -399,7 +399,7 @@ class ControllerResolver
             $reflection = new ReflectionClass($controllerClass);
             $constructor = $reflection->getConstructor();
 
-            if (constructor === null) {
+            if ($constructor === null) {
                 // 無參數建構子
                 return new $controllerClass();
             }
@@ -416,36 +416,36 @@ class ControllerResolver
     /**
      * 解析建構子參數.
      */
-    private function resolveConstructorArguments(ReflectionMethod $constructor): mixed
+    private function resolveConstructorArguments(ReflectionMethod $constructor): array
     {
         $args = [];
 
         foreach ($constructor->getParameters() as $parameter) {
             $type = $parameter->getType();
 
-            if (type === null) {
+            if ($type === null) {
                 if ($parameter->isDefaultValueAvailable()) {
                     $args[] = $parameter->getDefaultValue();
                 } else {
-                    throw new RuntimeException("無法解析參數: {($parameter instanceof ReflectionNamedType ? $parameter->getName() : (string)$parameter)}");
+                    throw new RuntimeException("無法解析參數: {$parameter->getName()}");
                 }
                 continue;
             }
 
             if (!$type instanceof ReflectionNamedType) {
-                throw new RuntimeException("不支援的參數類型: {($parameter instanceof ReflectionNamedType ? $parameter->getName() : (string)$parameter)}");
+                throw new RuntimeException("不支援的參數類型: {$parameter->getName()}");
             }
 
-            $typeName = ($type instanceof ReflectionNamedType ? $type->getName() : (string)$type);
+            $typeName = $type->getName();
 
             if ($this->container->has($typeName)) {
                 $args[] = $this->container->get($typeName);
             } elseif ($parameter->isDefaultValueAvailable()) {
                 $args[] = $parameter->getDefaultValue();
-            } elseif (($parameter instanceof ReflectionNamedType ? $parameter->allowsNull() : false)) {
+            } elseif ($parameter->allowsNull()) {
                 $args[] = null;
             } else {
-                throw new RuntimeException("無法解析參數: {($parameter instanceof ReflectionNamedType ? $parameter->getName() : (string)$parameter)}，類型: {$typeName}");
+                throw new RuntimeException("無法解析參數: {$parameter->getName()}，類型: {$typeName}");
             }
         }
 
@@ -460,7 +460,7 @@ class ControllerResolver
         string $methodName,
         ServerRequestInterface $request,
         array $routeParameters,
-    ): mixed {
+    ): array {
         try {
             $reflection = new ReflectionMethod($controller, $methodName);
         } catch (ReflectionException $e) {
@@ -470,11 +470,11 @@ class ControllerResolver
         $args = [];
 
         foreach ($reflection->getParameters() as $parameter) {
-            $paramName = ($parameter instanceof ReflectionNamedType ? $parameter->getName() : (string)$parameter);
+            $paramName = $parameter->getName();
             $type = $parameter->getType();
 
             // 優先處理 PSR-7 請求物件
-            if ($type && $type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string)$type) === ServerRequestInterface::class) {
+            if ($type && $type instanceof ReflectionNamedType && $type->getName() === ServerRequestInterface::class) {
                 // 將路由參數注入到請求屬性中
                 $requestWithParams = $request;
                 foreach ($routeParameters as $key => $value) {
@@ -485,7 +485,7 @@ class ControllerResolver
             }
 
             // 處理 PSR-7 回應物件
-            if ($type && $type instanceof ReflectionNamedType && ($type instanceof ReflectionNamedType ? $type->getName() : (string)$type) === ResponseInterface::class) {
+            if ($type && $type instanceof ReflectionNamedType && $type->getName() === ResponseInterface::class) {
                 $args[] = $this->createResponse();
                 continue;
             }
@@ -498,7 +498,7 @@ class ControllerResolver
 
             // 處理依賴注入
             if ($type && $type instanceof ReflectionNamedType && !$type->isBuiltin()) {
-                $typeName = ($type instanceof ReflectionNamedType ? $type->getName() : (string)$type);
+                $typeName = $type->getName();
                 if ($this->container->has($typeName)) {
                     $args[] = $this->container->get($typeName);
                     continue;
@@ -512,7 +512,7 @@ class ControllerResolver
             }
 
             // 處理可為 null 的參數
-            if (($parameter instanceof ReflectionNamedType ? $parameter->allowsNull() : false)) {
+            if ($parameter->allowsNull()) {
                 $args[] = null;
                 continue;
             }
@@ -532,7 +532,7 @@ class ControllerResolver
             return $value;
         }
 
-        return match (($type instanceof ReflectionNamedType ? $type->getName() : (string)$type)) {
+        return match ($type->getName()) {
             'int' => (int) $value,
             'float' => (float) $value,
             'bool' => filter_var($value, FILTER_VALIDATE_BOOLEAN),

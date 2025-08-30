@@ -25,11 +25,11 @@ final readonly class JwtPayload implements JsonSerializable
      * @param string $jti JWT 唯一識別符 (JWT ID)
      * @param string $sub 主題，通常是使用者 ID (Subject)
      * @param string $iss 發行者 (Issuer)
-     * @param array $aud 受眾 (Audience)
+     * @param array<string> $aud 受眾 (Audience)
      * @param DateTimeImmutable $iat 發行時間 (Issued At)
      * @param DateTimeImmutable $exp 過期時間 (Expiration)
      * @param DateTimeImmutable|null $nbf 生效時間 (Not Before)
-     * @param array $customClaims 自訂宣告
+     * @param array<string, mixed> $customClaims 自訂宣告
      *
      * @throws InvalidArgumentException 當參數無效時
      */
@@ -54,7 +54,7 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 從陣列建立 JWT Payload.
      *
-     * @param array $data JWT payload 資料
+     * @param array<string, mixed> $data JWT payload 資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -66,29 +66,30 @@ final readonly class JwtPayload implements JsonSerializable
             }
         }
 
-        // $iatValue = (is_array($data) && isset($data ? $data->iat : null)))) ? $data ? $data->iat : null)) : null; // isset 語法錯誤已註解
-        $iat = is_int($iatValue)
-            ? new DateTimeImmutable('@' . $iatValue)
-            : new DateTimeImmutable($iatValue);
+        $iat = is_int($data['iat'])
+            ? new DateTimeImmutable('@' . $data['iat'])
+            : new DateTimeImmutable($data['iat']);
 
-        // $expValue = (is_array($data) && isset($data ? $data->exp : null)))) ? $data ? $data->exp : null)) : null; // isset 語法錯誤已註解
-        $exp = is_int($expValue)
-            ? new DateTimeImmutable('@' . $expValue)
-            : new DateTimeImmutable($expValue);
+        $exp = is_int($data['exp'])
+            ? new DateTimeImmutable('@' . $data['exp'])
+            : new DateTimeImmutable($data['exp']);
 
-        $nbf = null;
+        $nbf = isset($data['nbf'])
+            ? (is_int($data['nbf'])
+                ? new DateTimeImmutable('@' . $data['nbf'])
+                : new DateTimeImmutable($data['nbf']))
+            : null;
 
-        // $audValue = (is_array($data) && isset($data ? $data->aud : null)))) ? $data ? $data->aud : null)) : null; // isset 語法錯誤已註解
-        $aud = is_array($audValue) ? $audValue : [$audValue];
+        $aud = is_array($data['aud']) ? $data['aud'] : [$data['aud']];
 
         // 提取自訂宣告 (排除標準宣告)
         $standardClaims = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp', 'nbf'];
         $customClaims = array_diff_key($data, array_flip($standardClaims));
 
         return new self(
-            // jti: (is_array($data) && isset($data ? $data->jti : null)))) ? $data ? $data->jti : null)) : null, // isset 語法錯誤已註解
-            // sub: (is_array($data) && isset($data ? $data->sub : null)))) ? $data ? $data->sub : null)) : null, // isset 語法錯誤已註解
-            // iss: (is_array($data) && isset($data ? $data->iss : null)))) ? $data ? $data->iss : null)) : null, // isset 語法錯誤已註解
+            jti: $data['jti'],
+            sub: $data['sub'],
+            iss: $data['iss'],
             aud: $aud,
             iat: $iat,
             exp: $exp,
@@ -132,9 +133,9 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 取得受眾.
      *
-     * @return array<mixed>
+     * @return array<string>
      */
-    public function getAudience(): mixed
+    public function getAudience(): array
     {
         return $this->aud;
     }
@@ -166,9 +167,9 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 取得自訂宣告.
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function getCustomClaims(): mixed
+    public function getCustomClaims(): array
     {
         return $this->customClaims;
     }
@@ -227,9 +228,9 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 轉換為陣列格式（用於 JWT 編碼）.
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         $payload = [
             'jti' => $this->jti,
@@ -241,7 +242,7 @@ final readonly class JwtPayload implements JsonSerializable
         ];
 
         if ($this->nbf !== null) {
-            // // $data ? $payload->nbf : null)) = $this->nbf->getTimestamp(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $payload['nbf'] = $this->nbf->getTimestamp();
         }
 
         // 合併自訂宣告
@@ -251,9 +252,9 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * JsonSerializable 實作.
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -355,7 +356,7 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 驗證受眾.
      *
-     * @param array $aud 受眾陣列
+     * @param array<string> $aud 受眾陣列
      * @throws InvalidArgumentException 當受眾無效時
      */
     private function validateAud(array $aud): void
@@ -393,7 +394,7 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 驗證自訂宣告.
      *
-     * @param array $customClaims 自訂宣告
+     * @param array<string, mixed> $customClaims 自訂宣告
      * @throws InvalidArgumentException 當自訂宣告無效時
      */
     private function validateCustomClaims(array $customClaims): void

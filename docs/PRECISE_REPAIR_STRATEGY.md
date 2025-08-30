@@ -54,7 +54,7 @@
 ### ✅ 已完成項目
 - **控制器修復**: 4個主要控制器已恢復到穩定狀態
   - PostController.php ✅
-  - AuthController.php ✅  
+  - AuthController.php ✅
   - ActivityLogController.php ✅
   - AttachmentController.php ✅
 

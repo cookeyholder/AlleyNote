@@ -61,7 +61,7 @@ class InvalidTokenException extends JwtException
      * @param string $reason 失敗原因
      * @param string $tokenType Token 類型
      * @param string $customMessage 自定義錯誤訊息
-     * @param array $additionalContext 額外上下文資訊
+     * @param array<string, mixed> $additionalContext 額外上下文資訊
      */
     public function __construct(
         string $reason = self::REASON_DECODE_FAILED,
@@ -207,7 +207,7 @@ class InvalidTokenException extends JwtException
      * 靜態工廠方法：格式錯誤.
      *
      * @param string $tokenType Token 類型
-     * @param array $context 上下文資訊
+     * @param array<string, mixed> $context 上下文資訊
      */
     public static function malformed(string $tokenType = self::ACCESS_TOKEN, array $context = []): self
     {
@@ -218,7 +218,7 @@ class InvalidTokenException extends JwtException
      * 靜態工廠方法：簽章無效.
      *
      * @param string $tokenType Token 類型
-     * @param array $context 上下文資訊
+     * @param array<string, mixed> $context 上下文資訊
      */
     public static function signatureInvalid(string $tokenType = self::ACCESS_TOKEN, array $context = []): self
     {
@@ -292,7 +292,7 @@ class InvalidTokenException extends JwtException
     /**
      * 靜態工廠方法：聲明無效.
      *
-     * @param array $invalidClaims 無效的聲明
+     * @param array<string, mixed> $invalidClaims 無效的聲明
      * @param string $tokenType Token 類型
      */
     public static function claimsInvalid(array $invalidClaims, string $tokenType = self::ACCESS_TOKEN): self

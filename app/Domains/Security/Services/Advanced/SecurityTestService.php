@@ -50,7 +50,7 @@ class SecurityTestService implements SecurityTestInterface
         $this->secretsManager = $secretsManager;
     }
 
-    public function runAllTests(): mixed
+    public function runAllTests(): array
     {
         $this->testResults = [];
 
@@ -67,7 +67,7 @@ class SecurityTestService implements SecurityTestInterface
         return $this->testResults;
     }
 
-    public function testSessionSecurity(): mixed
+    public function testSessionSecurity(): array
     {
         $results = [
             'test_name' => 'Session Security',
@@ -79,19 +79,19 @@ class SecurityTestService implements SecurityTestInterface
         // 測試 Session 初始化
         try {
             $this->sessionService->initializeSecureSession();
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => 'Session 安全初始化',
                 'status' => 'PASS',
                 'message' => 'Session 成功初始化',
             ];
-            $data ? $results->passed : null))++;
+            $results['passed']++;
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => 'Session 安全初始化',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         // 測試 Session ID 重新產生
@@ -101,27 +101,27 @@ class SecurityTestService implements SecurityTestInterface
             $newSessionId = session_id();
 
             if ($oldSessionId !== $newSessionId) {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                $results['tests'][] = [
                     'name' => 'Session ID 重新產生',
                     'status' => 'PASS',
                     'message' => 'Session ID 成功重新產生',
                 ];
-                $data ? $results->passed : null))++;
+                $results['passed']++;
             } else {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                $results['tests'][] = [
                     'name' => 'Session ID 重新產生',
                     'status' => 'FAIL',
                     'message' => 'Session ID 未變更',
                 ];
-                $data ? $results->failed : null))++;
+                $results['failed']++;
             }
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => 'Session ID 重新產生',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         $this->testResults['session_security'] = $results;
@@ -129,7 +129,7 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
-    public function testAuthorization(): mixed
+    public function testAuthorization(): array
     {
         $results = [
             'test_name' => 'Authorization System',
@@ -141,37 +141,37 @@ class SecurityTestService implements SecurityTestInterface
         // 測試權限檢查
         try {
             $hasPermission = $this->authService->hasPermission(1, 'read_posts');
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '權限檢查',
                 'status' => 'PASS',
                 'message' => '權限檢查功能正常',
             ];
-            $data ? $results->passed : null))++;
+            $results['passed']++;
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '權限檢查',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         // 測試角色檢查
         try {
             $can = $this->authService->can(1, 'manage_posts', 'posts');
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '角色權限檢查',
                 'status' => 'PASS',
                 'message' => '角色權限檢查功能正常',
             ];
-            $data ? $results->passed : null))++;
+            $results['passed']++;
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '角色權限檢查',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         $this->testResults['authorization'] = $results;
@@ -179,7 +179,7 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
-    public function testFileSecurity(): mixed
+    public function testFileSecurity(): array
     {
         $results = [
             'test_name' => 'File Security',
@@ -192,38 +192,38 @@ class SecurityTestService implements SecurityTestInterface
         $testFile = $this->createMockUploadedFile();
 
         // 測試檔案驗證 - 跳過實際的檔案驗證測試，因為需要真實的 PSR 檔案物件
-        // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+        $results['tests'][] = [
             'name' => '檔案上傳驗證',
             'status' => 'SKIP',
             'message' => '檔案驗證功能需要真實檔案進行測試',
         ];
-        $data ? $results->passed : null))++;
+        $results['passed']++;
 
         // 測試檔名清理
         try {
-            $cleanName = $this->fileService->sanitizeFileName('testalert("xss").txt');
-            if ($cleanName !== 'testalert("xss").txt') {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $cleanName = $this->fileService->sanitizeFileName('test<script>alert("xss")</script>.txt');
+            if ($cleanName !== 'test<script>alert("xss")</script>.txt') {
+                $results['tests'][] = [
                     'name' => '檔名清理',
                     'status' => 'PASS',
                     'message' => '檔名成功清理',
                 ];
-                $data ? $results->passed : null))++;
+                $results['passed']++;
             } else {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                $results['tests'][] = [
                     'name' => '檔名清理',
                     'status' => 'FAIL',
                     'message' => '檔名未被清理',
                 ];
-                $data ? $results->failed : null))++;
+                $results['failed']++;
             }
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '檔名清理',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         $this->testResults['file_security'] = $results;
@@ -231,7 +231,7 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
-    public function testSecurityHeaders(): mixed
+    public function testSecurityHeaders(): array
     {
         $results = [
             'test_name' => 'Security Headers',
@@ -266,27 +266,27 @@ class SecurityTestService implements SecurityTestInterface
             }
 
             if ($foundHeaders >= 3) {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                $results['tests'][] = [
                     'name' => '安全標頭設定',
                     'status' => 'PASS',
                     'message' => "找到 {$foundHeaders} 個安全標頭",
                 ];
-                $data ? $results->passed : null))++;
+                $results['passed']++;
             } else {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                $results['tests'][] = [
                     'name' => '安全標頭設定',
                     'status' => 'FAIL',
                     'message' => "只找到 {$foundHeaders} 個安全標頭",
                 ];
-                $data ? $results->failed : null))++;
+                $results['failed']++;
             }
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '安全標頭設定',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         $this->testResults['security_headers'] = $results;
@@ -294,7 +294,7 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
-    public function testErrorHandling(): mixed
+    public function testErrorHandling(): array
     {
         $results = [
             'test_name' => 'Error Handling',
@@ -308,13 +308,28 @@ class SecurityTestService implements SecurityTestInterface
             $exception = new Exception('Test exception');
             $response = $this->errorService->handleException($exception, false);
 
+            if (isset($response['error'])) {
+                $results['tests'][] = [
+                    'name' => '錯誤處理',
+                    'status' => 'PASS',
+                    'message' => '錯誤處理功能正常',
+                ];
+                $results['passed']++;
+            } else {
+                $results['tests'][] = [
+                    'name' => '錯誤處理',
+                    'status' => 'FAIL',
+                    'message' => '錯誤處理回應格式不正確',
+                ];
+                $results['failed']++;
+            }
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '錯誤處理',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         $this->testResults['error_handling'] = $results;
@@ -322,7 +337,7 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
-    public function testPasswordSecurity(): mixed
+    public function testPasswordSecurity(): array
     {
         $results = [
             'test_name' => 'Password Security',
@@ -337,27 +352,27 @@ class SecurityTestService implements SecurityTestInterface
             $hash = $this->passwordService->hashPassword($password);
 
             if (password_verify($password, $hash)) {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                $results['tests'][] = [
                     'name' => '密碼雜湊',
                     'status' => 'PASS',
                     'message' => '密碼雜湊功能正常',
                 ];
-                $data ? $results->passed : null))++;
+                $results['passed']++;
             } else {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                $results['tests'][] = [
                     'name' => '密碼雜湊',
                     'status' => 'FAIL',
                     'message' => '密碼雜湊驗證失敗',
                 ];
-                $data ? $results->failed : null))++;
+                $results['failed']++;
             }
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '密碼雜湊',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         // 測試密碼強度檢查
@@ -369,27 +384,27 @@ class SecurityTestService implements SecurityTestInterface
             $strongScore = $this->passwordService->calculatePasswordStrength($strongPassword);
 
             if ($strongScore > $weakScore) {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                $results['tests'][] = [
                     'name' => '密碼強度檢查',
                     'status' => 'PASS',
                     'message' => '密碼強度檢查功能正常',
                 ];
-                $data ? $results->passed : null))++;
+                $results['passed']++;
             } else {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                $results['tests'][] = [
                     'name' => '密碼強度檢查',
                     'status' => 'FAIL',
                     'message' => '密碼強度檢查不正確',
                 ];
-                $data ? $results->failed : null))++;
+                $results['failed']++;
             }
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '密碼強度檢查',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         $this->testResults['password_security'] = $results;
@@ -397,7 +412,7 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
-    public function testSecretsManagement(): mixed
+    public function testSecretsManagement(): array
     {
         $results = [
             'test_name' => 'Secrets Management',
@@ -409,42 +424,42 @@ class SecurityTestService implements SecurityTestInterface
         // 測試秘密載入
         try {
             $this->secretsManager->load();
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '秘密設定載入',
                 'status' => 'PASS',
                 'message' => '秘密設定載入成功',
             ];
-            $data ? $results->passed : null))++;
+            $results['passed']++;
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '秘密設定載入',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         // 測試 .env 檔案驗證
         try {
             $issues = $this->secretsManager->validateEnvFile();
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '.env 檔案驗證',
                 'status' => empty($issues) ? 'PASS' : 'WARNING',
                 'message' => empty($issues) ? '.env 檔案驗證通過' : 'Found ' . count($issues) . ' issues',
             ];
 
             if (empty($issues)) {
-                $data ? $results->passed : null))++;
+                $results['passed']++;
             } else {
-                $data ? $results->failed : null))++;
+                $results['failed']++;
             }
         } catch (Exception $e) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => '.env 檔案驗證',
                 'status' => 'FAIL',
                 'message' => $e->getMessage(),
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         $this->testResults['secrets_management'] = $results;
@@ -452,7 +467,7 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
-    public function testSystemSecurity(): mixed
+    public function testSystemSecurity(): array
     {
         $results = [
             'test_name' => 'System Security',
@@ -464,19 +479,19 @@ class SecurityTestService implements SecurityTestInterface
         // 檢查 PHP 版本
         $phpVersion = PHP_VERSION;
         if (version_compare($phpVersion, '8.1.0', '>=')) {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => 'PHP 版本檢查',
                 'status' => 'PASS',
                 'message' => "PHP 版本 {$phpVersion} 符合要求",
             ];
-            $data ? $results->passed : null))++;
+            $results['passed']++;
         } else {
-            // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+            $results['tests'][] = [
                 'name' => 'PHP 版本檢查',
                 'status' => 'FAIL',
                 'message' => "PHP 版本 {$phpVersion} 過舊，建議升級至 8.1+",
             ];
-            $data ? $results->failed : null))++;
+            $results['failed']++;
         }
 
         // 檢查關鍵目錄權限
@@ -489,27 +504,27 @@ class SecurityTestService implements SecurityTestInterface
             if (is_dir($path)) {
                 $perms = fileperms($path) & 0o777;
                 if ($perms <= 0o755) {
-                    // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                    $results['tests'][] = [
                         'name' => "{$name} 目錄權限檢查",
                         'status' => 'PASS',
                         'message' => sprintf('目錄權限 %o 安全', $perms),
                     ];
-                    $data ? $results->passed : null))++;
+                    $results['passed']++;
                 } else {
-                    // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                    $results['tests'][] = [
                         'name' => "{$name} 目錄權限檢查",
                         'status' => 'FAIL',
                         'message' => sprintf('目錄權限 %o 過於寬鬆', $perms),
                     ];
-                    $data ? $results->failed : null))++;
+                    $results['failed']++;
                 }
             } else {
-                // $data ? $results->tests : null))[] = [ // 複雜賦值語法錯誤已註解
+                $results['tests'][] = [
                     'name' => "{$name} 目錄檢查",
                     'status' => 'FAIL',
                     'message' => '目錄不存在',
                 ];
-                $data ? $results->failed : null))++;
+                $results['failed']++;
             }
         }
 
@@ -518,7 +533,7 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
-    public function generateSecurityReport(): mixed
+    public function generateSecurityReport(): array
     {
         $allResults = $this->runAllTests();
 
@@ -528,15 +543,16 @@ class SecurityTestService implements SecurityTestInterface
         $criticalIssues = [];
 
         foreach ($allResults as $category => $results) {
-$totalTests += $data ? $results['passed'] : (is_object($results) ? $results->passed : null));
-            $totalFailed += $data ? $results->failed : null));
+            $totalTests += $results['passed'] + $results['failed'];
+            $totalPassed += $results['passed'];
+            $totalFailed += $results['failed'];
 
-            foreach ($data ? $results->tests : null)) as $test) {
-                // if ($data ? $test->status : null)) === 'FAIL') { // 複雜賦值語法錯誤已註解
+            foreach ($results['tests'] as $test) {
+                if ($test['status'] === 'FAIL') {
                     $criticalIssues[] = [
-                        'category' => $data ? $results->test_name : null)),
-                        'test' => $data ? $test->name : null)),
-                        'message' => $data ? $test->message : null)),
+                        'category' => $results['test_name'],
+                        'test' => $test['name'],
+                        'message' => $test['message'],
                     ];
                 }
             }
@@ -602,7 +618,7 @@ $totalTests += $data ? $results['passed'] : (is_object($results) ? $results->pas
         }
     }
 
-    private function getRecommendations(array $criticalIssues): mixed
+    private function getRecommendations(array $criticalIssues): array
     {
         $recommendations = [];
 
@@ -612,7 +628,7 @@ $totalTests += $data ? $results['passed'] : (is_object($results) ? $results->pas
             $recommendations[] = '發現 ' . count($criticalIssues) . ' 個安全問題，建議立即處理';
 
             foreach ($criticalIssues as $issue) {
-$recommendations[] = "{(is_array($issue) ? $issue['category']: $recommendations,
+                $recommendations[] = "{$issue['category']}: {$issue['message']}";
             }
         }
 

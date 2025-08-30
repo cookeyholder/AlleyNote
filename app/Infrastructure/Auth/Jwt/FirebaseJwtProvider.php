@@ -57,7 +57,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 產生 JWT access token.
      *
-     * @param array $payload Token 載荷資料
+     * @param array<string, mixed> $payload Token 載荷資料
      * @param int|null $ttl 存活時間（秒），null 使用預設值
      *
      * @return string JWT token 字串
@@ -74,7 +74,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 產生 JWT refresh token.
      *
-     * @param array $payload Token 載荷資料
+     * @param array<string, mixed> $payload Token 載荷資料
      * @param int|null $ttl 存活時間（秒），null 使用預設值
      *
      * @return string JWT token 字串
@@ -94,13 +94,13 @@ final class FirebaseJwtProvider implements JwtProviderInterface
      * @param string $token JWT token 字串
      * @param string|null $expectedType 預期的 token 類型（access 或 refresh）
      *
-     * @return array<mixed> Token 載荷資料
+     * @return array<string, mixed> Token 載荷資料
      *
      * @throws InvalidTokenException 當 token 格式無效時
      * @throws TokenExpiredException 當 token 已過期時
      * @throws TokenValidationException 當 token 驗證失敗時
      */
-    public function validateToken(string $token, ?string $expectedType = null): mixed
+    public function validateToken(string $token, ?string $expectedType = null): array
     {
         if (empty($token)) {
             throw new InvalidTokenException(
@@ -132,8 +132,8 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
             try {
                 $unsafePayload = $this->parseTokenUnsafe($token);
-                $expiredAt = null;
-            } catch (Throwable {
+                $expiredAt = $unsafePayload['exp'] ?? null;
+            } catch (Throwable) {
                 // 忽略解析錯誤
             }
 
@@ -173,11 +173,11 @@ final class FirebaseJwtProvider implements JwtProviderInterface
      *
      * @param string $token JWT token 字串
      *
-     * @return array<mixed> Token 載荷資料
+     * @return array<string, mixed> Token 載荷資料
      *
      * @throws TokenParsingException 當 token 無法解析時
      */
-    public function parseTokenUnsafe(string $token): mixed
+    public function parseTokenUnsafe(string $token): array
     {
         if (empty($token)) {
             throw TokenParsingException::emptyToken();
@@ -219,8 +219,11 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         try {
             $payload = $this->parseTokenUnsafe($token);
 
+            if (!isset($payload['exp']) || !is_int($payload['exp'])) {
+                return null;
+            }
 
-            // return DateTimeImmutable::createFromFormat('U', (string) (is_array($payload) && isset($data ? $payload->exp : null)))) ? $data ? $payload->exp : null)) : null) ?: null; // isset 語法錯誤已註解
+            return DateTimeImmutable::createFromFormat('U', (string) $payload['exp']) ?: null;
         } catch (Throwable) {
             return null;
         }
@@ -237,7 +240,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     {
         $expiration = $this->getTokenExpiration($token);
 
-        if (expiration === null) {
+        if ($expiration === null) {
             return false; // 無法確定過期時間，假設未過期
         }
 
@@ -321,7 +324,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 產生 JWT token 的共用方法.
      *
-     * @param array $payload Token 載荷資料
+     * @param array<string, mixed> $payload Token 載荷資料
      * @param int $ttl 存活時間（秒）
      * @param string $type Token 類型
      *
@@ -374,7 +377,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 驗證必要欄位.
      *
-     * @param array $payload Token 載荷
+     * @param array<string, mixed> $payload Token 載荷
      *
      * @throws InvalidTokenException 當必要欄位缺失時
      */
@@ -396,26 +399,45 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 驗證 token 類型.
      *
-     * @param array $payload Token 載荷
+     * @param array<string, mixed> $payload Token 載荷
      * @param string $expectedType 預期類型
      *
      * @throws InvalidTokenException 當 token 類型不符合預期時
      */
     private function validateTokenType(array $payload, string $expectedType): void
     {
+        if (!isset($payload['type']) || $payload['type'] !== $expectedType) {
+            throw new InvalidTokenException(
+                InvalidTokenException::REASON_CLAIMS_INVALID,
+                InvalidTokenException::ACCESS_TOKEN,
+                "Token 類型錯誤，預期: {$expectedType}，實際: " . ($payload['type'] ?? 'unknown'),
+            );
+        }
     }
 
     /**
      * 驗證 issuer 和 audience.
      *
-     * @param array $payload Token 載荷
+     * @param array<string, mixed> $payload Token 載荷
      *
      * @throws TokenValidationException 當 issuer 或 audience 無效時
      */
     private function validateIssuerAndAudience(array $payload): void
     {
         // 驗證 issuer
+        if (!isset($payload['iss']) || $payload['iss'] !== $this->config->getIssuer()) {
+            throw new TokenValidationException(
+                'Token issuer 無效',
+                TokenValidationException::INVALID_ISSUER,
+            );
+        }
 
         // 驗證 audience
+        if (!isset($payload['aud']) || $payload['aud'] !== $this->config->getAudience()) {
+            throw new TokenValidationException(
+                'Token audience 無效',
+                TokenValidationException::INVALID_AUDIENCE,
+            );
+        }
     }
 }

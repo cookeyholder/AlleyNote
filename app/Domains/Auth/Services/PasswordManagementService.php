@@ -39,7 +39,7 @@ class PasswordManagementService
         }
 
         // 驗證目前密碼
-        // if (!$this->passwordService->verifyPassword($currentPassword, (is_array($user) && isset($data ? $user->password : null)))) ? $data ? $user->password : null)) : null)) { // isset 語法錯誤已註解
+        if (!$this->passwordService->verifyPassword($currentPassword, $user['password'])) {
             throw new InvalidArgumentException('目前密碼不正確');
         }
 
@@ -70,9 +70,9 @@ class PasswordManagementService
      * 檢查密碼強度並提供建議.
      *
      * @param string $password 要檢查的密碼
-     * @return array<mixed> 包含強度評分和建議的陣列
+     * @return array 包含強度評分和建議的陣列
      */
-    public function checkPasswordStrength(string $password): mixed
+    public function checkPasswordStrength(string $password): array
     {
         return $this->passwordService->calculatePasswordStrength($password);
     }
@@ -115,8 +115,8 @@ class PasswordManagementService
 
         // 檢查密碼是否正確且需要升級
         if (
-            // $this->passwordService->verifyPassword($plainPassword, (is_array($user) && isset($data ? $user->password : null)))) ? $data ? $user->password : null)) : null) // isset 語法錯誤已註解
-            // && $this->passwordService->needsRehash((is_array($user) && isset($data ? $user->password : null)))) ? $data ? $user->password : null)) : null) // isset 語法錯誤已註解
+            $this->passwordService->verifyPassword($plainPassword, $user['password'])
+            && $this->passwordService->needsRehash($user['password'])
         ) {
             // 重新雜湊密碼並透過 updatePassword 方法更新
             return $this->userRepository->updatePassword($userId, $plainPassword);

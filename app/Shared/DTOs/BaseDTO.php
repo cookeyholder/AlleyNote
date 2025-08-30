@@ -40,7 +40,7 @@ abstract class BaseDTO implements JsonSerializable
     /**
      * 實作 JsonSerializable 介面.
      */
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -48,11 +48,11 @@ abstract class BaseDTO implements JsonSerializable
     /**
      * 驗證資料.
      *
-     * @param array $data 輸入資料
+     * @param array<string, mixed> $data 輸入資料
      * @throws ValidationException 當驗證失敗時
-     * @return array<mixed> 驗證通過的資料
+     * @return array 驗證通過的資料
      */
-    protected function validate(array $data): mixed
+    protected function validate(array $data): array
     {
         return $this->validator->validateOrFail($data, $this->getValidationRules());
     }
@@ -91,7 +91,7 @@ abstract class BaseDTO implements JsonSerializable
     protected function getBool(array $data, string $key, ?bool $default = null): ?bool
     {
         $value = $this->getValue($data, $key, $default);
-        if (value === null) {
+        if ($value === null) {
             return null;
         }
 

@@ -57,7 +57,7 @@ class RouteLoader
         $this->loadedRoutes = [];
 
         foreach ($this->routeFiles as $routeFile) {
-            // $this->loadRouteFile($router, (is_array($routeFile) && isset($data ? $routeFile->path : null)))) ? $data ? $routeFile->path : null)) : null, (is_array($routeFile) && isset($data ? $routeFile->group : null)))) ? $data ? $routeFile->group : null)) : null); // isset 語法錯誤已註解
+            $this->loadRouteFile($router, $routeFile['path'], $routeFile['group']);
         }
     }
 
@@ -76,7 +76,7 @@ class RouteLoader
             ob_end_clean();
 
             // 如果路由檔案返回陣列，處理陣列格式的路由定義
-            if (is_array($routes) && !empty($routes)) {
+            if (is_array($routes)) {
                 $this->processArrayRoutes($router, $routes, $group, $filePath);
             }
         } catch (ParseError $e) {
@@ -117,10 +117,13 @@ class RouteLoader
             }
 
             // 設定路由名稱（如果沒有提供的話）
+            if (!isset($routeConfig['name'])) {
+                $routeConfig['name'] = is_string($routeName) ? $routeName : "route_{$routeName}";
+            }
 
             // 新增群組資訊
-            // // $data ? $routeConfig->group : null)) = $group; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $routeConfig->file : null)) = $filePath; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $routeConfig['group'] = $group;
+            $routeConfig['file'] = $filePath;
 
             // 驗證路由配置
             $this->validator->validateRoute($routeConfig);
@@ -138,9 +141,9 @@ class RouteLoader
      */
     private function registerRoute(RouterInterface $router, array $routeConfig): void
     {
-        // $methods = (array) (is_array($routeConfig) && isset($data ? $routeConfig->methods : null)))) ? $data ? $routeConfig->methods : null)) : null; // isset 語法錯誤已註解
-        // $path = (is_array($routeConfig) && isset($data ? $routeConfig->path : null)))) ? $data ? $routeConfig->path : null)) : null; // isset 語法錯誤已註解
-        // $handler = (is_array($routeConfig) && isset($data ? $routeConfig->handler : null)))) ? $data ? $routeConfig->handler : null)) : null; // isset 語法錯誤已註解
+        $methods = (array) $routeConfig['methods'];
+        $path = $routeConfig['path'];
+        $handler = $routeConfig['handler'];
 
         // 正規化 HTTP 方法
         $normalizedMethods = array_map(function ($method) {
@@ -151,14 +154,23 @@ class RouteLoader
         $route = $router->map($normalizedMethods, $path, $handler);
 
         // 設定路由名稱（如果有提供）
+        if (isset($routeConfig['name'])) {
+            $route->setName($routeConfig['name']);
+        }
 
         // 設定中間件（如果有提供）
+        if (isset($routeConfig['middleware'])) {
+            $middlewares = (array) $routeConfig['middleware'];
+            foreach ($middlewares as $middleware) {
+                $route->middleware($middleware);
+            }
+        }
     }
 
     /**
      * 取得已載入的路由資訊.
      */
-    public function getLoadedRoutes(): mixed
+    public function getLoadedRoutes(): array
     {
         return $this->loadedRoutes;
     }
@@ -166,7 +178,7 @@ class RouteLoader
     /**
      * 取得路由統計資訊.
      */
-    public function getRouteStats(): mixed
+    public function getRouteStats(): array
     {
         $stats = [
             'total_routes' => count($this->loadedRoutes),
@@ -176,8 +188,11 @@ class RouteLoader
 
         // 統計各群組的路由數量
         foreach ($this->loadedRoutes as $route) {
-            $group = 'default';
-            $data ? $stats->groups : null)[$group]++;
+            $group = $route['group'] ?? 'default';
+            if (!isset($stats['groups'][$group])) {
+                $stats['groups'][$group] = 0;
+            }
+            $stats['groups'][$group]++;
         }
 
         return $stats;
@@ -196,17 +211,17 @@ class RouteLoader
     /**
      * 透過群組篩選路由.
      */
-    public function getRoutesByGroup(string $group): mixed
+    public function getRoutesByGroup(string $group): array
     {
         return array_filter($this->loadedRoutes, function ($route) use ($group) {
-            // return ('default' === $group; // 複雜賦值語法錯誤已註解
+            return ($route['group'] ?? 'default') === $group;
         });
     }
 
     /**
      * 搜尋路由.
      */
-    public function findRoutes(callable $filter): mixed
+    public function findRoutes(callable $filter): array
     {
         return array_filter($this->loadedRoutes, $filter);
     }

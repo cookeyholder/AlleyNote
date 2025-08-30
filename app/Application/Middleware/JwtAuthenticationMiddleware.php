@@ -61,7 +61,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             // 1. 提取 JWT token
             $accessToken = $this->extractToken($request);
 
-            if (accessToken === null) {
+            if ($accessToken === null) {
                 return $this->createUnauthorizedResponse('缺少有效的認證 Token');
             }
 

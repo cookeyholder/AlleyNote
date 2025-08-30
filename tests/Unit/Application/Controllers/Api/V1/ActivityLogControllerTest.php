@@ -92,7 +92,7 @@ class ActivityLogControllerTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $result);
     }
 
-    private function createMockRequest(array<mixed> $body = []): ServerRequestInterface&MockInterface
+    private function createMockRequest(array $body = []): ServerRequestInterface&MockInterface
     {
         $request = Mockery::mock(ServerRequestInterface::class);
 

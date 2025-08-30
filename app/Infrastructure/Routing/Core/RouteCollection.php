@@ -18,10 +18,10 @@ class RouteCollection implements RouteCollectionInterface
     /** @var RouteInterface[] */
     private array $routes = [];
 
-    /** @var array<mixed> */
+    /** @var array<string, RouteInterface> */
     private array $namedRoutes = [];
 
-    /** @var array<mixed> */
+    /** @var array<string, RouteInterface[]> */
     private array $routesByMethod = [];
 
     public function add(RouteInterface $route): void
@@ -29,8 +29,8 @@ class RouteCollection implements RouteCollectionInterface
         $this->routes[] = $route;
 
         // 如果路由有名稱，加入命名路由索引
-        if (($route instanceof ReflectionNamedType ? $route->getName() : (string)$route) !== null) {
-            $this->namedRoutes[($route instanceof ReflectionNamedType ? $route->getName() : (string)$route)] = $route;
+        if ($route->getName() !== null) {
+            $this->namedRoutes[$route->getName()] = $route;
         }
 
         // 按 HTTP 方法建立索引
@@ -57,12 +57,12 @@ class RouteCollection implements RouteCollectionInterface
         return $this->namedRoutes[$name] ?? null;
     }
 
-    public function all(): mixed
+    public function all(): array
     {
         return $this->routes;
     }
 
-    public function getByMethod(string $method): mixed
+    public function getByMethod(string $method): array
     {
         $method = strtoupper($method);
 
@@ -127,7 +127,7 @@ class RouteCollection implements RouteCollectionInterface
         return count($this->routes);
     }
 
-    public function toArray(): mixed
+    public function toArray(): array
     {
         $data = [];
 
@@ -136,7 +136,7 @@ class RouteCollection implements RouteCollectionInterface
                 'methods' => $route->getMethods(),
                 'pattern' => $route->getPattern(),
                 'handler' => $this->serializeHandler($route->getHandler()),
-                'name' => ($route instanceof ReflectionNamedType ? $route->getName() : (string)$route),
+                'name' => $route->getName(),
                 'middleware' => $route->getMiddlewares(),
             ];
         }
@@ -150,17 +150,17 @@ class RouteCollection implements RouteCollectionInterface
 
         foreach ($data as $routeData) {
             $route = new Route(
-                // (is_array($routeData) && isset($data ? $routeData->methods : null)))) ? $data ? $routeData->methods : null)) : null, // isset 語法錯誤已註解
-                // (is_array($routeData) && isset($data ? $routeData->pattern : null)))) ? $data ? $routeData->pattern : null)) : null, // isset 語法錯誤已註解
-                // (is_array($routeData) && isset($data ? $routeData->handler : null)))) ? $data ? $routeData->handler : null)) : null, // Note: 反序列化處理器可能需要額外邏輯 // isset 語法錯誤已註解
+                $routeData['methods'],
+                $routeData['pattern'],
+                $routeData['handler'], // Note: 反序列化處理器可能需要額外邏輯
             );
 
-            // if (!empty((is_array($routeData) && isset($data ? $routeData->name : null)))) ? $data ? $routeData->name : null)) : null)) { // isset 語法錯誤已註解
-                // $route->setName((is_array($routeData) && isset($data ? $routeData->name : null)))) ? $data ? $routeData->name : null)) : null); // isset 語法錯誤已註解
+            if (!empty($routeData['name'])) {
+                $route->setName($routeData['name']);
             }
 
-            // if (!empty((is_array($routeData) && isset($data ? $routeData->middleware : null)))) ? $data ? $routeData->middleware : null)) : null)) { // isset 語法錯誤已註解
-                // $route->middleware((is_array($routeData) && isset($data ? $routeData->middleware : null)))) ? $data ? $routeData->middleware : null)) : null); // isset 語法錯誤已註解
+            if (!empty($routeData['middleware'])) {
+                $route->middleware($routeData['middleware']);
             }
 
             $collection->add($route);
@@ -182,7 +182,7 @@ class RouteCollection implements RouteCollectionInterface
             return $handler;
         }
 
-        // if (is_array($handler) && count($handler) === 2) { // 複雜賦值語法錯誤已註解
+        if (is_array($handler) && count($handler) === 2) {
             [$class, $method] = $handler;
             if (is_string($class) && is_string($method)) {
                 return [$class, $method];

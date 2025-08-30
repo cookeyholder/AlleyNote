@@ -57,7 +57,7 @@ enum ActivitySeverity: int
      */
     public function isAtMost(self $level): bool
     {
-        return $this->value value;
+        return $this->value <= $level->value;
     }
 
     /**
@@ -79,9 +79,9 @@ enum ActivitySeverity: int
     /**
      * 取得所有嚴重程度等級.
      *
-     * @return array<mixed>
+     * @return array<self>
      */
-    public static function getAllLevels(): mixed
+    public static function getAllLevels(): array
     {
         return self::cases();
     }

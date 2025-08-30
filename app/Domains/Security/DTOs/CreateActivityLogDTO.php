@@ -24,7 +24,7 @@ final class CreateActivityLogDTO implements JsonSerializable
         private ?string $targetType = null,
         private ?string $targetId = null,
         private ?string $description = null,
-        /** @var array<mixed>|null */
+        /** @var array<string, mixed>|null */
         private ?array $metadata = null,
         private ?string $ipAddress = null,
         private ?string $userAgent = null,
@@ -40,23 +40,26 @@ final class CreateActivityLogDTO implements JsonSerializable
         }
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(
-            // actionType: ActivityType::from((is_array($data) && isset($data ? $data->action_type : null)))) ? $data ? $data->action_type : null)) : null), // isset 語法錯誤已註解
-            userId: null,
-            sessionId: $data ? $data->session_id : null) ?? null,
-            // status: isset($data ? $data->status : null))) ? ActivityStatus::from((is_array($data) && isset($data ? $data->status : null)))) ? $data ? $data->status : null)) : null) : ActivityStatus::SUCCESS, // isset 語法錯誤已註解
-            targetType: null,
-            targetId: $data ? $data->target_id : null) ?? null,
-            description: null,
-            metadata: $data ? $data->metadata : null) ?? null,
-            ipAddress: null,
-            userAgent: $data ? $data->user_agent : null) ?? null,
-            requestMethod: null,
-            requestPath: $data ? $data->request_path : null) ?? null,
-            // occurredAt: isset($data ? $data->occurred_at : null))) // isset 語法錯誤已註解
-                // ? new DateTimeImmutable((is_array($data) && isset($data ? $data->occurred_at : null)))) ? $data ? $data->occurred_at : null)) : null) // isset 語法錯誤已註解
+            actionType: ActivityType::from($data['action_type']),
+            userId: $data['user_id'] ?? null,
+            sessionId: $data['session_id'] ?? null,
+            status: isset($data['status']) ? ActivityStatus::from($data['status']) : ActivityStatus::SUCCESS,
+            targetType: $data['target_type'] ?? null,
+            targetId: $data['target_id'] ?? null,
+            description: $data['description'] ?? null,
+            metadata: $data['metadata'] ?? null,
+            ipAddress: $data['ip_address'] ?? null,
+            userAgent: $data['user_agent'] ?? null,
+            requestMethod: $data['request_method'] ?? null,
+            requestPath: $data['request_path'] ?? null,
+            occurredAt: isset($data['occurred_at'])
+                ? new DateTimeImmutable($data['occurred_at'])
                 : new DateTimeImmutable(),
         );
     }
@@ -64,7 +67,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     /**
      * 快速建立成功操作的記錄.
      *
-     * @param array<mixed>|null $metadata
+     * @param array<string, mixed>|null $metadata
      */
     public static function success(
         ActivityType $actionType,
@@ -88,7 +91,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     /**
      * 快速建立失敗操作的記錄.
      *
-     * @param array<mixed>|null $metadata
+     * @param array<string, mixed>|null $metadata
      */
     public static function failure(
         ActivityType $actionType,
@@ -112,7 +115,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     /**
      * 快速建立安全事件的記錄.
      *
-     * @param array<mixed>|null $metadata
+     * @param array<string, mixed>|null $metadata
      */
     public static function securityEvent(
         ActivityType $actionType,
@@ -169,7 +172,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array<mixed>|null
+     * @return array<string, mixed>|null
      */
     public function getMetadata(): ?array
     {
@@ -237,6 +240,9 @@ final class CreateActivityLogDTO implements JsonSerializable
         return $new;
     }
 
+    /**
+     * @param array<string, mixed> $metadata
+     */
     public function withMetadata(array $metadata): self
     {
         $this->validateMetadata($metadata);
@@ -259,9 +265,9 @@ final class CreateActivityLogDTO implements JsonSerializable
     /**
      * 轉換為資料庫儲存格式.
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         return [
             'action_type' => $this->actionType->value,
@@ -283,15 +289,17 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
     /**
      * 驗證 metadata 是否可序列化.
+     *
+     * @param array<string, mixed> $metadata
      */
     private function validateMetadata(array $metadata): void
     {

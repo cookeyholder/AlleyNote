@@ -14,7 +14,7 @@ class UserRepository
         private ?PasswordSecurityServiceInterface $passwordService = null,
     ) {}
 
-    public function create(array $data): mixed
+    public function create(array $data): array
     {
         $sql = 'INSERT INTO users (uuid, username, email, password) VALUES (:uuid, :username, :email, :password)';
         $stmt = $this->db->prepare($sql);
@@ -33,15 +33,15 @@ class UserRepository
 
         $stmt->execute([
             'uuid' => $uuid,
-            // 'username' => (is_array($data) && isset($data ? $data->username : null)))) ? $data ? $data->username : null)) : null, // isset 語法錯誤已註解
-            // 'email' => (is_array($data) && isset($data ? $data->email : null)))) ? $data ? $data->email : null)) : null, // isset 語法錯誤已註解
-            // 'password' => (is_array($data) && isset($data ? $data->password : null)))) ? $data ? $data->password : null)) : null,  // 密碼已在 AuthService 中雜湊 // isset 語法錯誤已註解
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'password' => $data['password'],  // 密碼已在 AuthService 中雜湊
         ]);
 
         return $this->findById($this->db->lastInsertId());
     }
 
-    public function update(string $id, array $data): mixed
+    public function update(string $id, array $data): array
     {
         $fields = [];
         $params = ['id' => $id];
@@ -80,7 +80,7 @@ class UserRepository
         $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
         $stmt->execute(['id' => $id]);
 
-        $result = ($stmt !== false ? $stmt->fetch() : false);
+        $result = $stmt->fetch();
 
         return $result ?: null;
     }
@@ -90,7 +90,7 @@ class UserRepository
         $stmt = $this->db->prepare('SELECT * FROM users WHERE uuid = :uuid');
         $stmt->execute(['uuid' => $uuid]);
 
-        $result = ($stmt !== false ? $stmt->fetch() : false);
+        $result = $stmt->fetch();
 
         return $result ?: null;
     }
@@ -100,7 +100,7 @@ class UserRepository
         $stmt = $this->db->prepare('SELECT * FROM users WHERE username = :username');
         $stmt->execute(['username' => $username]);
 
-        $result = ($stmt !== false ? $stmt->fetch() : false);
+        $result = $stmt->fetch();
 
         return $result ?: null;
     }
@@ -110,7 +110,7 @@ class UserRepository
         $stmt = $this->db->prepare('SELECT * FROM users WHERE email = :email');
         $stmt->execute(['email' => $email]);
 
-        $result = ($stmt !== false ? $stmt->fetch() : false);
+        $result = $stmt->fetch();
 
         return $result ?: null;
     }
@@ -138,7 +138,7 @@ class UserRepository
         }
 
         // 檢查新密碼是否與目前密碼相同
-        // if (password_verify($newPassword, (is_array($user) && isset($data ? $user->password : null)))) ? $data ? $user->password : null)) : null)) { // isset 語法錯誤已註解
+        if (password_verify($newPassword, $user['password'])) {
             throw new InvalidArgumentException('新密碼不能與目前的密碼相同');
         }
 

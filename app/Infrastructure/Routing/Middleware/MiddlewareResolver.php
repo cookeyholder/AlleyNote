@@ -83,9 +83,10 @@ class MiddlewareResolver
     /**
      * 解析中介軟體陣列.
      *
+     * @param array<string|MiddlewareInterface> $middlewares
      * @return MiddlewareInterface[]
      */
-    public function resolveMultiple(array $middlewares): mixed
+    public function resolveMultiple(array $middlewares): array
     {
         $resolved = [];
 
@@ -127,9 +128,9 @@ class MiddlewareResolver
     /**
      * 取得所有可用的中介軟體別名.
      *
-     * @return array<mixed>
+     * @return array<string, string>
      */
-    public function getAliases(): mixed
+    public function getAliases(): array
     {
         return self::$middlewareAliases;
     }

@@ -67,7 +67,7 @@ trait HttpResponseTestTrait
     /**
      * 建立帶有 JSON 內容的回應模擬物件.
      */
-    protected function createJsonResponseMock(array<mixed> $data, int $statusCode = 200): ResponseInterface|MockInterface
+    protected function createJsonResponseMock(array $data, int $statusCode = 200): ResponseInterface|MockInterface
     {
         /** @var ResponseInterface|MockInterface $response */
         $response = Mockery::mock(ResponseInterface::class);

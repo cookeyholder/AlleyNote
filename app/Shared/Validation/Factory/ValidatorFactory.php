@@ -33,14 +33,24 @@ class ValidatorFactory
     /**
      * 建立具有自訂配置的驗證器實例.
      *
-     * @param array $config 自訂配置
+     * @param array<string, mixed> $config 自訂配置
      */
     public function createWithConfig(array $config): ValidatorInterface
     {
         $validator = $this->create();
 
         // 應用自訂配置
+        if (isset($config['messages'])) {
+            foreach ($config['messages'] as $rule => $message) {
+                $validator->addMessage($rule, $message);
+            }
+        }
 
+        if (isset($config['rules'])) {
+            foreach ($config['rules'] as $name => $callback) {
+                $validator->addRule($name, $callback);
+            }
+        }
 
         return $validator;
     }
@@ -103,7 +113,7 @@ class ValidatorFactory
 
             // 檢查長度
             $length = mb_strlen($username, 'UTF-8');
-            if ($length > $maxLength) {
+            if ($length < $minLength || $length > $maxLength) {
                 return false;
             }
 
@@ -248,7 +258,7 @@ class ValidatorFactory
             }
 
             // 檢查是否包含危險字元
-            $dangerousChars = ['/', '\\', ':', '*', '?', '"', '', '|', "\0"];
+            $dangerousChars = ['/', '\\', ':', '*', '?', '"', '<', '>', '|', "\0"];
             foreach ($dangerousChars as $char) {
                 if (strpos($filename, $char) !== false) {
                     return false;
@@ -303,9 +313,9 @@ class ValidatorFactory
                 return false;
             }
 
-            $password = null;
+            $password = $allData['password'] ?? null;
 
-            if (password === null {
+            if ($password === null) {
                 return false;
             }
 

@@ -26,11 +26,11 @@ class RouteCacheFactory
     /**
      * 建立路由快取實例.
      *
-     * @param array<mixed>{driver: string, path?: string, ttl?: int, redis?: array<mixed>} $config 快取配置
+     * @param array{driver: string, path?: string, ttl?: int, redis?: array} $config 快取配置
      */
     public function create(array $config): RouteCacheInterface
     {
-        // $driver = (is_array($config) && isset($data ? $config->driver : null)))) ? $data ? $config->driver : null)) : null; // isset 語法錯誤已註解
+        $driver = $config['driver'];
 
         if (!isset(self::SUPPORTED_DRIVERS[$driver])) {
             throw new InvalidArgumentException(
@@ -49,13 +49,16 @@ class RouteCacheFactory
     /**
      * 建立檔案快取實例.
      *
-     * @param array<mixed>{path?: string, ttl?: int} $config
+     * @param array{path?: string, ttl?: int} $config
      */
     private function createFileCache(array $config): FileRouteCache
     {
-        $cachePath = sys_get_temp_dir( . '/route_cache';
+        $cachePath = $config['path'] ?? sys_get_temp_dir() . '/route_cache';
         $cache = new FileRouteCache($cachePath);
 
+        if (isset($config['ttl'])) {
+            $cache->setTtl((int) $config['ttl']);
+        }
 
         return $cache;
     }
@@ -63,12 +66,15 @@ class RouteCacheFactory
     /**
      * 建立記憶體快取實例.
      *
-     * @param array<mixed>{ttl?: int} $config
+     * @param array{ttl?: int} $config
      */
     private function createMemoryCache(array $config): MemoryRouteCache
     {
         $cache = new MemoryRouteCache();
 
+        if (isset($config['ttl'])) {
+            $cache->setTtl((int) $config['ttl']);
+        }
 
         return $cache;
     }
@@ -78,7 +84,7 @@ class RouteCacheFactory
      *
      * @return string[]
      */
-    public static function getSupportedDrivers(): mixed
+    public static function getSupportedDrivers(): array
     {
         return array_keys(self::SUPPORTED_DRIVERS);
     }
@@ -110,30 +116,30 @@ class RouteCacheFactory
     /**
      * 驗證快取配置.
      *
-     * @param array<mixed>{driver: string, path?: string, ttl?: int} $config
+     * @param array{driver: string, path?: string, ttl?: int} $config
      * @return string[] 驗證錯誤訊息
      */
-    public function validateConfig(array $config): mixed
+    public function validateConfig(array $config): array
     {
         $errors = [];
 
         if (!array_key_exists('driver', $config)) {
             $errors[] = 'Cache driver is required';
-        // } elseif (!self::isDriverSupported((is_array($config) && isset($data ? $config->driver : null)))) ? $data ? $config->driver : null)) : null)) { // isset 語法錯誤已註解
+        } elseif (!self::isDriverSupported($config['driver'])) {
             $errors[] = sprintf(
                 'Unsupported cache driver: %s. Supported drivers: %s',
-                // (is_array($config) && isset($data ? $config->driver : null)))) ? $data ? $config->driver : null)) : null, // isset 語法錯誤已註解
+                $config['driver'],
                 implode(', ', self::getSupportedDrivers()),
             );
         }
 
-        // if (array_key_exists('ttl', $config) && (!is_int((is_array($config) && isset($data ? $config->ttl : null)))) ? $data ? $config->ttl : null)) : null) || $data ? $config->ttl : null)) < 0)) { // isset 語法錯誤已註解
+        if (array_key_exists('ttl', $config) && (!is_int($config['ttl']) || $config['ttl'] < 0)) {
             $errors[] = 'Cache TTL must be a non-negative integer';
         }
 
-        // if ($data ? $config->driver : null)) === 'file') { // 複雜賦值語法錯誤已註解
+        if ($config['driver'] === 'file') {
             if (array_key_exists('path', $config)) {
-                // $path = (is_array($config) && isset($data ? $config->path : null)))) ? $data ? $config->path : null)) : null; // isset 語法錯誤已註解
+                $path = $config['path'];
                 if (!is_string($path) || empty($path)) {
                     $errors[] = 'Cache path must be a non-empty string';
                 } elseif (!is_writable(dirname($path))) {

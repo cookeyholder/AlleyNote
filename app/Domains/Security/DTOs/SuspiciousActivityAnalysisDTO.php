@@ -23,10 +23,10 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
      * @param int $timeWindowMinutes 分析時間窗口（分鐘）
      * @param bool $isSuspicious 是否可疑
      * @param ActivitySeverity $severityLevel 嚴重程度等級
-     * @param array $activityCounts 各活動類型計數
-     * @param array $failureCounts 各活動類型失敗計數
-     * @param array $detectionRules 觸發的檢測規則
-     * @param array $metadata 額外的元數據
+     * @param array<string, int> $activityCounts 各活動類型計數
+     * @param array<string, int> $failureCounts 各活動類型失敗計數
+     * @param array<string, mixed> $detectionRules 觸發的檢測規則
+     * @param array<string, mixed> $metadata 額外的元數據
      * @param string|null $recommendedAction 建議的處理動作
      * @param float $confidenceScore 信心分數（0-1）
      */
@@ -184,27 +184,27 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         return $this->severityLevel;
     }
 
-    public function getActivityCounts(): mixed
+    public function getActivityCounts(): array
     {
         return $this->activityCounts;
     }
 
-    public function getFailureCounts(): mixed
+    public function getFailureCounts(): array
     {
         return $this->failureCounts;
     }
 
-    public function getAnomalyScores(): mixed
+    public function getAnomalyScores(): array
     {
         return $this->anomalyScores;
     }
 
-    public function getDetectionRules(): mixed
+    public function getDetectionRules(): array
     {
         return $this->detectionRules;
     }
 
-    public function getMetadata(): mixed
+    public function getMetadata(): array
     {
         return $this->metadata;
     }
@@ -306,7 +306,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * 轉換為陣列.
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         return [
             'analysis_id' => $this->analysisId,
@@ -336,7 +336,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * JSON 序列化.
      */
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

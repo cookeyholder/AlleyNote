@@ -27,7 +27,7 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array $data 輸入資料
+     * @param array<string, mixed> $data 輸入資料
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -41,11 +41,11 @@ class RegisterUserDTO extends BaseDTO
         $validatedData = $this->validate($data);
 
         // 設定屬性
-        // $this->username = trim((is_array($validatedData) && isset($data ? $validatedData->username : null)))) ? $data ? $validatedData->username : null)) : null); // isset 語法錯誤已註解
-        // $this->email = trim(strtolower((is_array($validatedData) && isset($data ? $validatedData->email : null)))) ? $data ? $validatedData->email : null)) : null)); // isset 語法錯誤已註解
-        // $this->password = (is_array($validatedData) && isset($data ? $validatedData->password : null)))) ? $data ? $validatedData->password : null)) : null; // isset 語法錯誤已註解
-        // $this->confirmPassword = (is_array($validatedData) && isset($data ? $validatedData->confirm_password : null)))) ? $data ? $validatedData->confirm_password : null)) : null; // isset 語法錯誤已註解
-        // $this->userIp = (is_array($validatedData) && isset($data ? $validatedData->user_ip : null)))) ? $data ? $validatedData->user_ip : null)) : null; // isset 語法錯誤已註解
+        $this->username = trim($validatedData['username']);
+        $this->email = trim(strtolower($validatedData['email']));
+        $this->password = $validatedData['password'];
+        $this->confirmPassword = $validatedData['confirm_password'];
+        $this->userIp = $validatedData['user_ip'];
     }
 
     /**
@@ -65,7 +65,7 @@ class RegisterUserDTO extends BaseDTO
 
             // 檢查長度
             $length = strlen($username);
-            if ($length > $maxLength) {
+            if ($length < $minLength || $length > $maxLength) {
                 return false;
             }
 
@@ -137,10 +137,10 @@ class RegisterUserDTO extends BaseDTO
             }
 
             // 需要與 password 欄位比較
-            $password = null;
+            $password = $allData['password'] ?? null;
 
             return $password === $value;
-        };
+        });
 
         // 使用者 IP 驗證規則（擴展版本）
         $this->validator->addRule('user_ip', function ($value) {
@@ -221,7 +221,7 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 取得驗證規則.
      */
-    protected function getValidationRules(): mixed
+    protected function getValidationRules(): array
     {
         return [
             'username' => 'required|string|username:3,50',
@@ -235,11 +235,11 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 覆寫驗證方法以支援跨欄位驗證.
      *
-     * @param array $data 輸入資料
-     * @return array<mixed> 驗證通過的資料
+     * @param array<string, mixed> $data 輸入資料
+     * @return array 驗證通過的資料
      * @throws ValidationException 當驗證失敗時
      */
-    protected function validate(array $data): mixed
+    protected function validate(array $data): array
     {
         // 為跨欄位驗證規則提供完整資料
         $this->validator->addRule('password_confirmed', function ($value, array $parameters) use ($data) {
@@ -247,10 +247,10 @@ class RegisterUserDTO extends BaseDTO
                 return false;
             }
 
-            $password = null;
+            $password = $data['password'] ?? null;
 
             return $password === $value;
-        };
+        });
 
         return parent::validate($data);
     }
@@ -258,9 +258,9 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Service 使用）.
     /**
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         return [
             'username' => $this->username,
@@ -273,9 +273,9 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 取得用於密碼雜湊的資料.
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function getPasswordData(): mixed
+    public function getPasswordData(): array
     {
         return [
             'password' => $this->password,

@@ -15,7 +15,7 @@ interface UserRepositoryInterface
      * 根據使用者名稱查找使用者.
      *
      * @param string $username 使用者名稱
-     * @return array<mixed>|null 使用者資料陣列或 null
+     * @return array<string, mixed>|null 使用者資料陣列或 null
      */
     public function findByUsername(string $username): ?array;
 
@@ -23,7 +23,7 @@ interface UserRepositoryInterface
      * 根據電子郵件查找使用者.
      *
      * @param string $email 電子郵件
-     * @return array<mixed>|null 使用者資料陣列或 null
+     * @return array<string, mixed>|null 使用者資料陣列或 null
      */
     public function findByEmail(string $email): ?array;
 
@@ -31,7 +31,7 @@ interface UserRepositoryInterface
      * 根據 UUID 查找使用者.
      *
      * @param string $uuid 使用者 UUID
-     * @return array<mixed>|null 使用者資料陣列或 null
+     * @return array<string, mixed>|null 使用者資料陣列或 null
      */
     public function findByUuid(string $uuid): ?array;
 
@@ -40,7 +40,7 @@ interface UserRepositoryInterface
      *
      * @param string $username 使用者名稱或電子郵件
      * @param string $password 密碼
-     * @return array<mixed>|null 驗證成功返回使用者資料，失敗返回 null
+     * @return array<string, mixed>|null 驗證成功返回使用者資料，失敗返回 null
      */
     public function validateCredentials(string $username, string $password): ?array;
 
@@ -70,8 +70,8 @@ interface UserRepositoryInterface
     /**
      * 建立新使用者.
      *
-     * @param array $data 使用者資料
-     * @return array<mixed> 建立的使用者資料
+     * @param array<string, mixed> $data 使用者資料
+     * @return array<string, mixed> 建立的使用者資料
      */
     public function create(array $data): array;
 
@@ -79,7 +79,7 @@ interface UserRepositoryInterface
      * 更新使用者資料.
      *
      * @param int $id 使用者 ID
-     * @param array $data 更新的資料
+     * @param array<string, mixed> $data 更新的資料
      */
     public function update(int $id, array $data): bool;
 
@@ -109,7 +109,7 @@ interface UserRepositoryInterface
      *
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
-     * @param array $filters 篩選條件
+     * @param array<string, mixed> $filters 篩選條件
      */
     public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array;
 
@@ -125,7 +125,7 @@ interface UserRepositoryInterface
      * 搜尋使用者.
      *
      * @param string $keyword 關鍵字
-     * @param array $fields 搜尋欄位
+     * @param array<string, mixed> $fields 搜尋欄位
      * @param int $limit 限制筆數
      */
     public function search(string $keyword, array $fields = ['username', 'email'], int $limit = 10): array;
@@ -133,7 +133,7 @@ interface UserRepositoryInterface
     /**
      * 統計使用者數量.
      *
-     * @param array $conditions 統計條件
+     * @param array<string, mixed> $conditions 統計條件
      */
     public function getStats(array $conditions = []): array;
 }

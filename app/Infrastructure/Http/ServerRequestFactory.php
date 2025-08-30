@@ -13,8 +13,8 @@ class ServerRequestFactory
 {
     public static function fromGlobals(): ServerRequestInterface
     {
-        $method = 'GET';
-        $uri = self::createUriFromGlobals(;
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $uri = self::createUriFromGlobals();
         $headers = self::parseHeaders();
         $body = file_get_contents('php://input');
 
@@ -45,12 +45,13 @@ class ServerRequestFactory
 
     private static function createUriFromGlobals(): Uri
     {
-        // $scheme = (!empty((is_array($_SERVER) && isset($data ? $_SERVER->HTTPS : null)))) ? $data ? $_SERVER->HTTPS : null)) : null) && $data ? $_SERVER->HTTPS : null)) !== 'off') ? 'https' : 'http'; // isset 語法錯誤已註解
-$host = $data ? $_SERVER['SERVER_PORT'] : (is_object($_SERVER) ? $_SERVER->SERVER_PORT : null))) ? (int) $data ? $_SERVER->SERVER_PORT : null)) : null; // isset 語法錯誤已註解
-        $path = '/';
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+        $port = isset($_SERVER['SERVER_PORT']) ? (int) $_SERVER['SERVER_PORT'] : null;
+        $path = $_SERVER['REQUEST_URI'] ?? '/';
 
         // 移除查詢字串
-        if (($pos = strpos($path, '?') !== false) {
+        if (($pos = strpos($path, '?')) !== false) {
             $path = substr($path, 0, $pos);
         }
 
@@ -63,8 +64,8 @@ $host = $data ? $_SERVER['SERVER_PORT'] : (is_object($_SERVER) ? $_SERVER->SERVE
             $uri = $uri->withPort($port);
         }
 
-        // if (!empty((is_array($_SERVER) && isset($data ? $_SERVER->QUERY_STRING : null)))) ? $data ? $_SERVER->QUERY_STRING : null)) : null)) { // isset 語法錯誤已註解
-            // $uri = $uri->withQuery((is_array($_SERVER) && isset($data ? $_SERVER->QUERY_STRING : null)))) ? $data ? $_SERVER->QUERY_STRING : null)) : null); // isset 語法錯誤已註解
+        if (!empty($_SERVER['QUERY_STRING'])) {
+            $uri = $uri->withQuery($_SERVER['QUERY_STRING']);
         }
 
         return $uri;
@@ -76,7 +77,7 @@ $host = $data ? $_SERVER['SERVER_PORT'] : (is_object($_SERVER) ? $_SERVER->SERVE
             || ($scheme === 'https' && $port === 443);
     }
 
-    private static function parseHeaders(): mixed
+    private static function parseHeaders(): array
     {
         $headers = [];
 

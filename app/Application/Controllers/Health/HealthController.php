@@ -38,8 +38,5 @@ class HealthController extends BaseController
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
-        } catch (Exception $e) {
-            // 錯誤處理待實現
-            throw $e;
     }
 }

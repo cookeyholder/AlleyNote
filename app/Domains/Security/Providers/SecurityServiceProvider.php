@@ -22,7 +22,7 @@ class SecurityServiceProvider
     /**
      * 取得所有 Security 服務定義.
      */
-    public static function getDefinitions(): mixed
+    public static function getDefinitions(): array
     {
         return [
             // Activity Log Repository Interface

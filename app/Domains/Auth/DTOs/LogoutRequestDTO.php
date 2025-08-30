@@ -24,17 +24,17 @@ final readonly class LogoutRequestDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            accessToken: '',
-            refreshToken: $data ? $data->refresh_token : null) ?? null,
-            revokeAllTokens: false,
-            sessionId: $data ? $data->session_id : null) ?? null,
+            accessToken: $data['access_token'] ?? '',
+            refreshToken: $data['refresh_token'] ?? null,
+            revokeAllTokens: $data['revoke_all_tokens'] ?? false,
+            sessionId: $data['session_id'] ?? null,
         );
     }
 
     /**
      * 轉換為陣列.
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         return [
             'access_token' => '[REDACTED]', // 不記錄 token

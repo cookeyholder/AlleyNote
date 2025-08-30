@@ -40,7 +40,7 @@ class Route implements RouteInterface
         $this->parameterNames = $this->extractParameterNames($pattern);
     }
 
-    public function getMethods(): mixed
+    public function getMethods(): array
     {
         return $this->methods;
     }
@@ -81,7 +81,7 @@ class Route implements RouteInterface
         return $this;
     }
 
-    public function getMiddlewares(): mixed
+    public function getMiddlewares(): array
     {
         return $this->middlewares;
     }
@@ -158,6 +158,15 @@ class Route implements RouteInterface
     {
         $clone = clone $this;
 
+        if (isset($attributes['name'])) {
+            $clone->name = $attributes['name'];
+        }
+
+        if (isset($attributes['middlewares']) && is_array($attributes['middlewares'])) {
+            $clone->middlewares = [];
+            $clone->addMiddlewares($attributes['middlewares']);
+        }
+
         return $clone;
     }
 
@@ -181,14 +190,14 @@ class Route implements RouteInterface
         } elseif (is_string($middleware)) {
             // 支援字串別名
             $this->middlewares[] = $middleware;
-        } elseif (is_array($middleware) && !empty($middleware)) {
+        } elseif (is_array($middleware)) {
             $this->addMiddlewares($middleware);
         }
 
         return $this;
     }
 
-    public function extractParameters(string $path): mixed
+    public function extractParameters(string $path): array
     {
         $result = $this->matchesPath($path);
 
@@ -227,7 +236,7 @@ class Route implements RouteInterface
      * @param string $pattern 路由模式
      * @return string[] 參數名稱陣列
      */
-    private function extractParameterNames(string $pattern): mixed
+    private function extractParameterNames(string $pattern): array
     {
         preg_match_all('/\{([^}]+)\}/', $pattern, $matches);
 

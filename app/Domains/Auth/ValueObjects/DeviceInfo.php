@@ -76,30 +76,25 @@ final readonly class DeviceInfo implements JsonSerializable
         $deviceId = self::generateDeviceId($userAgent, $ipAddress);
         $deviceName ??= self::generateDeviceName($parsedInfo);
 
-        // 確定設備類型，只有一個為 true
-        // $isMobile = (is_array($parsedInfo) && isset($data ? $parsedInfo->isMobile : null)))) ? (bool) $data ? $parsedInfo->isMobile : null)) : false; // isset 語法錯誤已註解
-        // $isTablet = (is_array($parsedInfo) && isset($data ? $parsedInfo->isTablet : null)))) ? (bool) $data ? $parsedInfo->isTablet : null)) : false; // isset 語法錯誤已註解
-        $isDesktop = !$isMobile && !$isTablet; // 如果不是 mobile 也不是 tablet，就是 desktop
-
         return new self(
             deviceId: $deviceId,
             deviceName: $deviceName,
             userAgent: $userAgent,
             ipAddress: $ipAddress,
-            // platform: (is_array($parsedInfo) && isset($data ? $parsedInfo->platform : null)))) ? $data ? $parsedInfo->platform : null)) : null, // isset 語法錯誤已註解
-            // browser: (is_array($parsedInfo) && isset($data ? $parsedInfo->browser : null)))) ? $data ? $parsedInfo->browser : null)) : null, // isset 語法錯誤已註解
-            // browserVersion: (is_array($parsedInfo) && isset($data ? $parsedInfo->browserVersion : null)))) ? $data ? $parsedInfo->browserVersion : null)) : null, // isset 語法錯誤已註解
-            // osVersion: (is_array($parsedInfo) && isset($data ? $parsedInfo->osVersion : null)))) ? $data ? $parsedInfo->osVersion : null)) : null, // isset 語法錯誤已註解
-            isMobile: $isMobile,
-            isTablet: $isTablet,
-            isDesktop: $isDesktop,
+            platform: $parsedInfo['platform'],
+            browser: $parsedInfo['browser'],
+            browserVersion: $parsedInfo['browserVersion'],
+            osVersion: $parsedInfo['osVersion'],
+            isMobile: $parsedInfo['isMobile'],
+            isTablet: $parsedInfo['isTablet'],
+            isDesktop: $parsedInfo['isDesktop'],
         );
     }
 
     /**
      * 從陣列建立裝置資訊.
      *
-     * @param array $data 裝置資料
+     * @param array<string, mixed> $data 裝置資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -112,18 +107,18 @@ final readonly class DeviceInfo implements JsonSerializable
         }
 
         return new self(
-            // deviceId: (is_array($data) && isset($data ? $data->device_id : null)))) ? $data ? $data->device_id : null)) : null, // isset 語法錯誤已註解
-            // deviceName: (is_array($data) && isset($data ? $data->device_name : null)))) ? $data ? $data->device_name : null)) : null, // isset 語法錯誤已註解
-            // userAgent: (is_array($data) && isset($data ? $data->user_agent : null)))) ? $data ? $data->user_agent : null)) : null, // isset 語法錯誤已註解
-            // ipAddress: (is_array($data) && isset($data ? $data->ip_address : null)))) ? $data ? $data->ip_address : null)) : null, // isset 語法錯誤已註解
-            platform: null,
-            browser: $data ? $data->browser : null) ?? null,
-            browserVersion: null,
-            osVersion: $data ? $data->os_version : null) ?? null,
-            isMobile: false,
-            isTablet: $data ? $data->is_tablet : null) ?? false,
-            isDesktop: true,
-        ;
+            deviceId: $data['device_id'],
+            deviceName: $data['device_name'],
+            userAgent: $data['user_agent'],
+            ipAddress: $data['ip_address'],
+            platform: $data['platform'] ?? null,
+            browser: $data['browser'] ?? null,
+            browserVersion: $data['browser_version'] ?? null,
+            osVersion: $data['os_version'] ?? null,
+            isMobile: $data['is_mobile'] ?? false,
+            isTablet: $data['is_tablet'] ?? false,
+            isDesktop: $data['is_desktop'] ?? true,
+        );
     }
 
     /**
@@ -292,9 +287,9 @@ final readonly class DeviceInfo implements JsonSerializable
     /**
      * 轉換為陣列格式.
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         return [
             'device_id' => $this->deviceId,
@@ -316,9 +311,9 @@ final readonly class DeviceInfo implements JsonSerializable
     /**
      * 轉換為摘要格式（隱藏敏感資訊）.
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function toSummary(): mixed
+    public function toSummary(): array
     {
         return [
             'device_id' => $this->deviceId,
@@ -333,9 +328,9 @@ final readonly class DeviceInfo implements JsonSerializable
     /**
      * JsonSerializable 實作.
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -433,22 +428,24 @@ final readonly class DeviceInfo implements JsonSerializable
     /**
      * 生成裝置名稱.
      *
-     * @param array $parsedInfo 解析後的裝置資訊
+     * @param array<string, mixed> $parsedInfo 解析後的裝置資訊
      */
     private static function generateDeviceName(array $parsedInfo): string
     {
-        $platform = 'Unknown';
-        $browser = $data ? $parsedInfo->browser : null) ?? 'Browser';
-$deviceType = $data";
+        $platform = $parsedInfo['platform'] ?? 'Unknown';
+        $browser = $parsedInfo['browser'] ?? 'Browser';
+        $deviceType = $parsedInfo['isMobile'] ? 'Mobile' : ($parsedInfo['isTablet'] ? 'Tablet' : 'Desktop');
+
+        return "{$platform} {$deviceType} ({$browser})";
     }
 
     /**
      * 解析使用者代理字串.
      *
      * @param string $userAgent 使用者代理字串
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    private static function parseUserAgent(string $userAgent): mixed
+    private static function parseUserAgent(string $userAgent): array
     {
         $info = [
             'platform' => null,
@@ -462,52 +459,52 @@ $deviceType = $data";
 
         // 平板檢測（先檢測平板，因為某些平板也會匹配行動裝置）
         $tabletPattern = '/iPad|Android.*Tablet|Windows.*Touch/i';
-            // // $data ? $info->isTablet : null)) = preg_match($tabletPattern, $userAgent) === 1; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+        $info['isTablet'] = preg_match($tabletPattern, $userAgent) === 1;
 
         // 行動裝置檢測（排除平板）
         $mobilePattern = '/Mobile|Android|iPhone|iPod|Windows Phone|BlackBerry/i';
-            // // $data ? $info->isMobile : null)) = !$data ? $info->isTablet : null)) && preg_match($mobilePattern, $userAgent) === 1; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+        $info['isMobile'] = !$info['isTablet'] && preg_match($mobilePattern, $userAgent) === 1;
 
         // 如果是行動裝置或平板，則不是桌面
-            // // $data ? $info->isDesktop : null)) = !$data ? $info->isMobile : null)) && !(is_array($info) && isset($data ? $info->isTablet : null)))) ? $data ? $info->isTablet : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+        $info['isDesktop'] = !$info['isMobile'] && !$info['isTablet'];
 
         // 平台檢測 (先檢測更具體的模式)
         if (preg_match('/iPad.*CPU OS ([0-9_]+)/i', $userAgent, $matches)) {
             // iPad 專用檢測
-            // // $data ? $info->platform : null)) = 'iOS'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $info->osVersion : null)) = str_replace('_', '.', $matches[1]); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $info['platform'] = 'iOS';
+            $info['osVersion'] = str_replace('_', '.', $matches[1]);
         } elseif (preg_match('/iPhone.*OS ([0-9_]+)/i', $userAgent, $matches)) {
             // iPhone 專用檢測
-            // // $data ? $info->platform : null)) = 'iOS'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $info->osVersion : null)) = str_replace('_', '.', $matches[1]); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $info['platform'] = 'iOS';
+            $info['osVersion'] = str_replace('_', '.', $matches[1]);
         } elseif (preg_match('/Android ([0-9.]+)/i', $userAgent, $matches)) {
-            // // $data ? $info->platform : null)) = 'Android'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $info->osVersion : null)) = $matches[1]; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $info['platform'] = 'Android';
+            $info['osVersion'] = $matches[1];
         } elseif (preg_match('/Windows NT ([0-9.]+)/i', $userAgent, $matches)) {
-            // // $data ? $info->platform : null)) = 'Windows'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $info->osVersion : null)) = $matches[1]; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $info['platform'] = 'Windows';
+            $info['osVersion'] = $matches[1];
         } elseif (preg_match('/Mac OS X ([0-9_.]+)/i', $userAgent, $matches)) {
-            // // $data ? $info->platform : null)) = 'macOS'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $info->osVersion : null)) = str_replace('_', '.', $matches[1]); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $info['platform'] = 'macOS';
+            $info['osVersion'] = str_replace('_', '.', $matches[1]);
         } elseif (preg_match('/Linux/i', $userAgent)) {
-            // // $data ? $info->platform : null)) = 'Linux'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $info['platform'] = 'Linux';
         }
 
         // 瀏覽器檢測
         if (preg_match('/Chrome\/([0-9.]+)/i', $userAgent, $matches)) {
-            // // $data ? $info->browser : null)) = 'Chrome'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $info->browserVersion : null)) = $matches[1]; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $info['browser'] = 'Chrome';
+            $info['browserVersion'] = $matches[1];
         } elseif (preg_match('/Firefox\/([0-9.]+)/i', $userAgent, $matches)) {
-            // // $data ? $info->browser : null)) = 'Firefox'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $info->browserVersion : null)) = $matches[1]; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $info['browser'] = 'Firefox';
+            $info['browserVersion'] = $matches[1];
         } elseif (preg_match('/Safari\/([0-9.]+)/i', $userAgent, $matches)) {
             if (!str_contains($userAgent, 'Chrome')) { // 避免誤判 Chrome
-            // // $data ? $info->browser : null)) = 'Safari'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $info->browserVersion : null)) = $matches[1]; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+                $info['browser'] = 'Safari';
+                $info['browserVersion'] = $matches[1];
             }
         } elseif (preg_match('/Edge\/([0-9.]+)/i', $userAgent, $matches)) {
-            // // $data ? $info->browser : null)) = 'Edge'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $info->browserVersion : null)) = $matches[1]; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $info['browser'] = 'Edge';
+            $info['browserVersion'] = $matches[1];
         }
 
         return $info;

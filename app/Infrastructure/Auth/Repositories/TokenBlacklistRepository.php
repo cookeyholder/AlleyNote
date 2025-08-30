@@ -54,14 +54,14 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $data = $entry->toDatabaseArray();
 
             return $stmt->execute([
-                // 'jti' => (is_array($data) && isset($data ? $data->jti : null)))) ? $data ? $data->jti : null)) : null, // isset 語法錯誤已註解
-                // 'token_type' => (is_array($data) && isset($data ? $data->token_type : null)))) ? $data ? $data->token_type : null)) : null, // isset 語法錯誤已註解
-                // 'user_id' => (is_array($data) && isset($data ? $data->user_id : null)))) ? $data ? $data->user_id : null)) : null, // isset 語法錯誤已註解
-                // 'expires_at' => (is_array($data) && isset($data ? $data->expires_at : null)))) ? $data ? $data->expires_at : null)) : null, // isset 語法錯誤已註解
-                // 'blacklisted_at' => (is_array($data) && isset($data ? $data->blacklisted_at : null)))) ? $data ? $data->blacklisted_at : null)) : null, // isset 語法錯誤已註解
-                // 'reason' => (is_array($data) && isset($data ? $data->reason : null)))) ? $data ? $data->reason : null)) : null, // isset 語法錯誤已註解
-                // 'device_id' => (is_array($data) && isset($data ? $data->device_id : null)))) ? $data ? $data->device_id : null)) : null, // isset 語法錯誤已註解
-                // 'metadata' => (is_array($data) && isset($data ? $data->metadata : null)))) ? $data ? $data->metadata : null)) : null, // isset 語法錯誤已註解
+                'jti' => $data['jti'],
+                'token_type' => $data['token_type'],
+                'user_id' => $data['user_id'],
+                'expires_at' => $data['expires_at'],
+                'blacklisted_at' => $data['blacklisted_at'],
+                'reason' => $data['reason'],
+                'device_id' => $data['device_id'],
+                'metadata' => $data['metadata'],
             ]);
         } catch (PDOException $e) {
             // 處理重複鍵值錯誤
@@ -185,9 +185,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      *
      * @param int $userId 使用者 ID
      * @param int|null $limit 限制數量，null 時不限制
-     * @return array<mixed> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
      */
-    public function findByUserId(int $userId, ?int $limit = null): mixed
+    public function findByUserId(int $userId, ?int $limit = null): array
     {
         try {
             $sql = '
@@ -226,9 +226,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      *
      * @param string $deviceId 裝置 ID
      * @param int|null $limit 限制數量，null 時不限制
-     * @return array<mixed> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
      */
-    public function findByDeviceId(string $deviceId, ?int $limit = null): mixed
+    public function findByDeviceId(string $deviceId, ?int $limit = null): array
     {
         try {
             $sql = '
@@ -267,9 +267,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      *
      * @param string $tokenType token 類型
      * @param int|null $limit 限制數量，null 時不限制
-     * @return array<mixed> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
      */
-    public function findByTokenType(string $tokenType, ?int $limit = null): mixed
+    public function findByTokenType(string $tokenType, ?int $limit = null): array
     {
         try {
             $sql = '
@@ -308,9 +308,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      *
      * @param string $reason 黑名單原因
      * @param int|null $limit 限制數量，null 時不限制
-     * @return array<mixed> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
      */
-    public function findByReason(string $reason, ?int $limit = null): mixed
+    public function findByReason(string $reason, ?int $limit = null): array
     {
         try {
             $sql = '
@@ -347,7 +347,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 批次將 token 加入黑名單.
      *
-     * @param array $entries 黑名單項目陣列
+     * @param array<int, TokenBlacklistEntry> $entries 黑名單項目陣列
      * @return int 成功加入的數量
      */
     public function batchAddToBlacklist(array $entries): int
@@ -374,14 +374,14 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 try {
                     $data = $entry->toDatabaseArray();
                     if ($stmt->execute([
-                        // 'jti' => (is_array($data) && isset($data ? $data->jti : null)))) ? $data ? $data->jti : null)) : null, // isset 語法錯誤已註解
-                        // 'token_type' => (is_array($data) && isset($data ? $data->token_type : null)))) ? $data ? $data->token_type : null)) : null, // isset 語法錯誤已註解
-                        // 'user_id' => (is_array($data) && isset($data ? $data->user_id : null)))) ? $data ? $data->user_id : null)) : null, // isset 語法錯誤已註解
-                        // 'expires_at' => (is_array($data) && isset($data ? $data->expires_at : null)))) ? $data ? $data->expires_at : null)) : null, // isset 語法錯誤已註解
-                        // 'blacklisted_at' => (is_array($data) && isset($data ? $data->blacklisted_at : null)))) ? $data ? $data->blacklisted_at : null)) : null, // isset 語法錯誤已註解
-                        // 'reason' => (is_array($data) && isset($data ? $data->reason : null)))) ? $data ? $data->reason : null)) : null, // isset 語法錯誤已註解
-                        // 'device_id' => (is_array($data) && isset($data ? $data->device_id : null)))) ? $data ? $data->device_id : null)) : null, // isset 語法錯誤已註解
-                        // 'metadata' => (is_array($data) && isset($data ? $data->metadata : null)))) ? $data ? $data->metadata : null)) : null, // isset 語法錯誤已註解
+                        'jti' => $data['jti'],
+                        'token_type' => $data['token_type'],
+                        'user_id' => $data['user_id'],
+                        'expires_at' => $data['expires_at'],
+                        'blacklisted_at' => $data['blacklisted_at'],
+                        'reason' => $data['reason'],
+                        'device_id' => $data['device_id'],
+                        'metadata' => $data['metadata'],
                     ])) {
                         $successCount++;
                     }
@@ -406,10 +406,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 批次檢查 token 是否在黑名單中.
      *
-     * @param array $jtis JTI 陣列
-     * @return array<mixed> JTI 為 key，是否在黑名單為值的陣列
+     * @param array<int, string> $jtis JTI 陣列
+     * @return array<string, bool> JTI 為 key，是否在黑名單為值的陣列
      */
-    public function batchIsBlacklisted(array $jtis): mixed
+    public function batchIsBlacklisted(array $jtis): array
     {
         if (empty($jtis)) {
             return [];
@@ -447,7 +447,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 批次從黑名單移除 token.
      *
-     * @param array $jtis JTI 陣列
+     * @param array<int, string> $jtis JTI 陣列
      * @return int 成功移除的數量
      */
     public function batchRemoveFromBlacklist(array $jtis): int
@@ -501,7 +501,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 'current_time' => $currentTime->format('Y-m-d H:i:s'),
             ];
             if ($excludeJti !== null) {
-            // // $data ? $params->exclude_jti : null)) = $excludeJti; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+                $params['exclude_jti'] = $excludeJti;
             }
             $stmt->execute($params);
 
@@ -571,12 +571,12 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             foreach ($tokens as $token) {
                 $entries[] = new TokenBlacklistEntry(
-                    // jti: (is_array($token) && isset($data ? $token->jti : null)))) ? $data ? $token->jti : null)) : null, // isset 語法錯誤已註解
+                    jti: $token['jti'],
                     tokenType: TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
                     expiresAt: $futureExpiry,
                     blacklistedAt: $now,
                     reason: $reason,
-                    // userId: (int) (is_array($token) && isset($data ? $token->user_id : null)))) ? $data ? $token->user_id : null)) : null, // isset 語法錯誤已註解
+                    userId: (int) $token['user_id'],
                     deviceId: $deviceId,
                 );
             }
@@ -596,7 +596,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function cleanup(?DateTime $beforeDate = null): int
     {
         try {
-            if (beforeDate === null) {
+            if ($beforeDate === null) {
                 $currentTime = new DateTime();
                 $sql = 'DELETE FROM token_blacklist WHERE expires_at <= :current_time';
                 $stmt = $this->pdo->prepare($sql);
@@ -652,9 +652,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 取得黑名單統計資訊.
      *
-     * @return array<mixed> 統計資訊
+     * @return array<string, mixed> 統計資訊
      */
-    public function getBlacklistStats(): mixed
+    public function getBlacklistStats(): array
     {
         try {
             // 總項目數
@@ -725,9 +725,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      * 取得特定使用者的黑名單統計.
      *
      * @param int $userId 使用者 ID
-     * @return array<mixed> 使用者統計資訊
+     * @return array<string, mixed> 使用者統計資訊
      */
-    public function getUserBlacklistStats(int $userId): mixed
+    public function getUserBlacklistStats(int $userId): array
     {
         try {
             $sql = '
@@ -767,9 +767,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      *
      * @param int $limit 限制數量，預設 100
      * @param DateTime|null $since 起始時間，null 時不限制
-     * @return array<mixed> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
      */
-    public function getRecentBlacklistEntries(int $limit = 100, ?DateTime $since = null): mixed
+    public function getRecentBlacklistEntries(int $limit = 100, ?DateTime $since = null): array
     {
         try {
             $sql = '
@@ -807,9 +807,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      * 取得高優先級的黑名單項目.
      *
      * @param int $limit 限制數量，預設 50
-     * @return array<mixed> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
      */
-    public function getHighPriorityEntries(int $limit = 50): mixed
+    public function getHighPriorityEntries(int $limit = 50): array
     {
         try {
             // 優先取得安全相關的項目
@@ -839,12 +839,12 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 搜尋黑名單項目.
      *
-     * @param array $criteria 搜尋條件
+     * @param array<string, mixed> $criteria 搜尋條件
      * @param int|null $limit 限制數量，null 時不限制
      * @param int $offset 偏移量，預設 0
-     * @return array<mixed> 搜尋結果
+     * @return array<int, TokenBlacklistEntry> 搜尋結果
      */
-    public function search(array $criteria, ?int $limit = null, int $offset = 0): mixed
+    public function search(array $criteria, ?int $limit = null, int $offset = 0): array
     {
         try {
             $sql = '
@@ -855,42 +855,42 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             $params = [];
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->user_id : null)))) ? $data ? $criteria->user_id : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['user_id'])) {
                 $sql .= ' AND user_id = :user_id';
-            // // $data ? $params->user_id : null)) = (int) (is_array($criteria) && isset($data ? $criteria->user_id : null)))) ? $data ? $criteria->user_id : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['user_id'] = (int) $criteria['user_id'];
             }
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->device_id : null)))) ? $data ? $criteria->device_id : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['device_id'])) {
                 $sql .= ' AND device_id = :device_id';
-            // // $data ? $params->device_id : null)) = (is_array($criteria) && isset($data ? $criteria->device_id : null)))) ? $data ? $criteria->device_id : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['device_id'] = $criteria['device_id'];
             }
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->token_type : null)))) ? $data ? $criteria->token_type : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['token_type'])) {
                 $sql .= ' AND token_type = :token_type';
-            // // $data ? $params->token_type : null)) = (is_array($criteria) && isset($data ? $criteria->token_type : null)))) ? $data ? $criteria->token_type : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['token_type'] = $criteria['token_type'];
             }
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->reason : null)))) ? $data ? $criteria->reason : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['reason'])) {
                 $sql .= ' AND reason = :reason';
-            // // $data ? $params->reason : null)) = (is_array($criteria) && isset($data ? $criteria->reason : null)))) ? $data ? $criteria->reason : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['reason'] = $criteria['reason'];
             }
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->date_from : null)))) ? $data ? $criteria->date_from : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['date_from'])) {
                 $sql .= ' AND blacklisted_at >= :date_from';
-            // // $data ? $params->date_from : null)) = (is_array($criteria) && isset($data ? $criteria->date_from : null)))) ? $data ? $criteria->date_from : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['date_from'] = $criteria['date_from'];
             }
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->date_to : null)))) ? $data ? $criteria->date_to : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['date_to'])) {
                 $sql .= ' AND blacklisted_at <= :date_to';
-            // // $data ? $params->date_to : null)) = (is_array($criteria) && isset($data ? $criteria->date_to : null)))) ? $data ? $criteria->date_to : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['date_to'] = $criteria['date_to'];
             }
 
             $sql .= ' ORDER BY blacklisted_at DESC';
 
             if ($limit !== null) {
                 $sql .= ' LIMIT :limit OFFSET :offset';
-            // // $data ? $params->limit : null)) = $limit; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $params->offset : null)) = $offset; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+                $params['limit'] = $limit;
+                $params['offset'] = $offset;
             }
 
             $stmt = $this->pdo->prepare($sql);
@@ -919,7 +919,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 計算搜尋結果總數.
      *
-     * @param array $criteria 搜尋條件
+     * @param array<string, mixed> $criteria 搜尋條件
      * @return int 總數
      */
     public function countSearch(array $criteria): int
@@ -928,34 +928,34 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $sql = 'SELECT COUNT(*) FROM token_blacklist WHERE 1=1';
             $params = [];
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->user_id : null)))) ? $data ? $criteria->user_id : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['user_id'])) {
                 $sql .= ' AND user_id = :user_id';
-            // // $data ? $params->user_id : null)) = (int) (is_array($criteria) && isset($data ? $criteria->user_id : null)))) ? $data ? $criteria->user_id : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['user_id'] = (int) $criteria['user_id'];
             }
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->device_id : null)))) ? $data ? $criteria->device_id : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['device_id'])) {
                 $sql .= ' AND device_id = :device_id';
-            // // $data ? $params->device_id : null)) = (is_array($criteria) && isset($data ? $criteria->device_id : null)))) ? $data ? $criteria->device_id : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['device_id'] = $criteria['device_id'];
             }
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->token_type : null)))) ? $data ? $criteria->token_type : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['token_type'])) {
                 $sql .= ' AND token_type = :token_type';
-            // // $data ? $params->token_type : null)) = (is_array($criteria) && isset($data ? $criteria->token_type : null)))) ? $data ? $criteria->token_type : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['token_type'] = $criteria['token_type'];
             }
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->reason : null)))) ? $data ? $criteria->reason : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['reason'])) {
                 $sql .= ' AND reason = :reason';
-            // // $data ? $params->reason : null)) = (is_array($criteria) && isset($data ? $criteria->reason : null)))) ? $data ? $criteria->reason : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['reason'] = $criteria['reason'];
             }
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->date_from : null)))) ? $data ? $criteria->date_from : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['date_from'])) {
                 $sql .= ' AND blacklisted_at >= :date_from';
-            // // $data ? $params->date_from : null)) = (is_array($criteria) && isset($data ? $criteria->date_from : null)))) ? $data ? $criteria->date_from : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['date_from'] = $criteria['date_from'];
             }
 
-            // if (!empty((is_array($criteria) && isset($data ? $criteria->date_to : null)))) ? $data ? $criteria->date_to : null)) : null)) { // isset 語法錯誤已註解
+            if (!empty($criteria['date_to'])) {
                 $sql .= ' AND blacklisted_at <= :date_to';
-            // // $data ? $params->date_to : null)) = (is_array($criteria) && isset($data ? $criteria->date_to : null)))) ? $data ? $criteria->date_to : null)) : null; // 語法錯誤已註解 // isset 語法錯誤已註解
+                $params['date_to'] = $criteria['date_to'];
             }
 
             $stmt = $this->pdo->prepare($sql);
@@ -998,9 +998,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 取得黑名單大小資訊.
      *
-     * @return array<mixed> 大小資訊
+     * @return array<string, mixed> 大小資訊
      */
-    public function getSizeInfo(): mixed
+    public function getSizeInfo(): array
     {
         try {
             $currentTime = new DateTime();
@@ -1021,9 +1021,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             ]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // $totalEntries = (int) (is_array($result) && isset($data ? $result->total_entries : null)))) ? $data ? $result->total_entries : null)) : null; // isset 語法錯誤已註解
-            // $activeEntries = (int) (is_array($result) && isset($data ? $result->active_entries : null)))) ? $data ? $result->active_entries : null)) : null; // isset 語法錯誤已註解
-            // $expiredEntries = (int) (is_array($result) && isset($data ? $result->expired_entries : null)))) ? $data ? $result->expired_entries : null)) : null; // isset 語法錯誤已註解
+            $totalEntries = (int) $result['total_entries'];
+            $activeEntries = (int) $result['active_entries'];
+            $expiredEntries = (int) $result['expired_entries'];
 
             // 粗略估算大小（每個項目平均約 200 bytes）
             $estimatedSizeMb = ($totalEntries * 200) / (1024 * 1024);
@@ -1049,9 +1049,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 最佳化黑名單儲存.
      *
-     * @return array<mixed> 最佳化結果
+     * @return array<string, mixed> 最佳化結果
      */
-    public function optimize(): mixed
+    public function optimize(): array
     {
         $startTime = microtime(true);
 
@@ -1083,9 +1083,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             return [
                 'cleaned_entries' => $cleanedEntries,
-                // 'compacted_size' => (is_array($newSizeInfo) && isset($data ? $newSizeInfo->estimated_size_mb : null)))) ? $data ? $newSizeInfo->estimated_size_mb : null)) : null, // isset 語法錯誤已註解
+                'compacted_size' => $newSizeInfo['estimated_size_mb'],
                 'execution_time' => round($executionTime, 2),
-                // 'total_entries_after' => (is_array($newSizeInfo) && isset($data ? $newSizeInfo->total_entries : null)))) ? $data ? $newSizeInfo->total_entries : null)) : null, // isset 語法錯誤已註解
+                'total_entries_after' => $newSizeInfo['total_entries'],
             ];
         } catch (Throwable $e) {
             $this->pdo->rollBack();
@@ -1104,27 +1104,27 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 從資料庫記錄建立 TokenBlacklistEntry.
      *
-     * @param array $row 資料庫記錄
+     * @param array<string, mixed> $row 資料庫記錄
      * @return TokenBlacklistEntry 黑名單項目
      */
     private function createEntryFromRow(array $row): TokenBlacklistEntry
     {
         $metadata = [];
-        // if (!empty((is_array($row) && isset($data ? $row->metadata : null)))) ? $data ? $row->metadata : null)) : null)) { // isset 語法錯誤已註解
-            // $decoded = json_decode((is_array($row) && isset($data ? $row->metadata : null)))) ? $data ? $row->metadata : null)) : null, true); // isset 語法錯誤已註解
-            if (is_array($decoded) && !empty($decoded)) {
+        if (!empty($row['metadata'])) {
+            $decoded = json_decode($row['metadata'], true);
+            if (is_array($decoded)) {
                 $metadata = $decoded;
             }
         }
 
         return new TokenBlacklistEntry(
-            // jti: (is_array($row) && isset($data ? $row->jti : null)))) ? $data ? $row->jti : null)) : null, // isset 語法錯誤已註解
-            // tokenType: (is_array($row) && isset($data ? $row->token_type : null)))) ? $data ? $row->token_type : null)) : null, // isset 語法錯誤已註解
-            // expiresAt: new DateTimeImmutable((is_array($row) && isset($data ? $row->expires_at : null)))) ? $data ? $row->expires_at : null)) : null), // isset 語法錯誤已註解
-            // blacklistedAt: new DateTimeImmutable((is_array($row) && isset($data ? $row->blacklisted_at : null)))) ? $data ? $row->blacklisted_at : null)) : null), // isset 語法錯誤已註解
-            // reason: (is_array($row) && isset($data ? $row->reason : null)))) ? $data ? $row->reason : null)) : null, // isset 語法錯誤已註解
-            // userId: $data ? $row->user_id : null)) !== null ? (int) $data ? $row->user_id : null)) : null, // 複雜賦值語法錯誤已註解
-            // deviceId: (is_array($row) && isset($data ? $row->device_id : null)))) ? $data ? $row->device_id : null)) : null, // isset 語法錯誤已註解
+            jti: $row['jti'],
+            tokenType: $row['token_type'],
+            expiresAt: new DateTimeImmutable($row['expires_at']),
+            blacklistedAt: new DateTimeImmutable($row['blacklisted_at']),
+            reason: $row['reason'],
+            userId: $row['user_id'] !== null ? (int) $row['user_id'] : null,
+            deviceId: $row['device_id'],
             metadata: $metadata,
         );
     }

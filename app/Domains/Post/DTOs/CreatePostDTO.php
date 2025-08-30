@@ -55,12 +55,12 @@ class CreatePostDTO extends BaseDTO
         // $this->content = trim((is_array($validatedData) && isset($data ? $validatedData->content : null)))) ? $data ? $validatedData->content : null)) : null); // isset 語法錯誤已註解
         // $this->userId = (int) (is_array($validatedData) && isset($data ? $validatedData->user_id : null)))) ? $data ? $validatedData->user_id : null)) : null; // isset 語法錯誤已註解
         // $this->userIp = (is_array($validatedData) && isset($data ? $validatedData->user_ip : null)))) ? $data ? $validatedData->user_ip : null)) : null; // isset 語法錯誤已註解
-        $this->isPinned = (bool) (false;
+        $this->isPinned = (bool) (false);
         // $this->status = PostStatus::from((is_array($validatedData) && isset($data ? $validatedData->status : null)))) ? $data ? $validatedData->status : null)) : null); // isset 語法錯誤已註解
 
         // 處理發布日期，空字串轉為 null
         $publishDate = null;
-        $this->publishDate = ($publishDate === '' ? null : $publishDate;
+        $this->publishDate = ($publishDate === '' ? null : $publishDate);
     }
 
     /**

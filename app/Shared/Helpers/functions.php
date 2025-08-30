@@ -113,19 +113,19 @@ if (!function_exists('get_file_mime_type')) {
 if (!function_exists('sanitize_post_array')) {
     /**
      * 清理 Post 陣列中的 HTML 內容，適用於 API 輸出.
-     * @param array $posts Post 資料陣列
-     * @return array<mixed> 清理過的陣列
+     * @param array<string, mixed> $posts Post 資料陣列
+     * @return array 清理過的陣列
      */
     function sanitize_post_array(array $posts): array
     {
         return array_map(function ($post) {
             // 如果是陣列，手動清理
-            if (is_array($post) && !empty($post)) {
+            if (is_array($post)) {
                 $sanitized = $post;
-                if (is_array($sanitized) && isset($sanitized['title'])) {
+                if (isset($sanitized['title'])) {
                     $sanitized['title'] = htmlspecialchars($sanitized['title'], ENT_QUOTES, 'UTF-8');
                 }
-                if (is_array($sanitized) && isset($sanitized['content'])) {
+                if (isset($sanitized['content'])) {
                     $sanitized['content'] = htmlspecialchars($sanitized['content'], ENT_QUOTES, 'UTF-8');
                 }
 

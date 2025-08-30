@@ -49,7 +49,7 @@ interface RouteCacheInterface
     /**
      * 取得快取統計資訊.
      *
-     * @return array<mixed>{hits: int, misses: int, size: int, created_at: int, last_used: int}
+     * @return array{hits: int, misses: int, size: int, created_at: int, last_used: int}
      */
     public function getStats(): array;
 }

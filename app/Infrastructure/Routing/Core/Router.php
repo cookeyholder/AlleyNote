@@ -27,7 +27,7 @@ class Router implements RouterInterface
 
     private ?MiddlewareManagerInterface $middlewareManager = null;
 
-    /** @var array<mixed> 當前群組屬性 */
+    /** @var array<string, mixed> 當前群組屬性 */
     private array $currentGroupAttributes = [];
 
     public function __construct()
@@ -121,7 +121,7 @@ class Router implements RouterInterface
         // 尋找匹配的路由
         $matchedRoute = $this->routes->match($request);
 
-        if (matchedRoute === null) {
+        if ($matchedRoute === null) {
             return RouteMatchResult::failed('No route matched the request');
         }
 
@@ -140,7 +140,7 @@ class Router implements RouterInterface
     {
         $route = $this->routes->getByName($name);
 
-        if (route === null) {
+        if ($route === null) {
             throw new InvalidArgumentException("Route named '{$name}' not found");
         }
 
@@ -227,31 +227,33 @@ class Router implements RouterInterface
     /**
      * 合併群組屬性.
      *
-     * @return array<mixed>
+     * @param array<string, mixed> $previous
+     * @param array<string, mixed> $new
+     * @return array<string, mixed>
      */
-    private function mergeGroupAttributes(array $previous, array $new): mixed
+    private function mergeGroupAttributes(array $previous, array $new): array
     {
         $merged = $previous;
 
         // 合併前綴
-        // if (!empty((is_array($new) && isset($data ? $new->prefix : null)))) ? $data ? $new->prefix : null)) : null)) { // isset 語法錯誤已註解
-            $existingPrefix = '';
-            // // $data ? $merged->prefix : null) = $this->applyPrefix($existingPrefix, (is_array($new) && isset($data ? $new->prefix : null)))) ? $data ? $new->prefix : null)) : null); // 語法錯誤已註解 // isset 語法錯誤已註解
+        if (!empty($new['prefix'])) {
+            $existingPrefix = $merged['prefix'] ?? '';
+            $merged['prefix'] = $this->applyPrefix($existingPrefix, $new['prefix']);
         }
 
         // 合併中間件
-        // if (!empty((is_array($new) && isset($data ? $new->middleware : null)))) ? $data ? $new->middleware : null)) : null)) { // isset 語法錯誤已註解
-            $existingMiddleware = [];
-            // $newMiddleware = is_array((is_array($new && isset($data ? $new->middleware : null)))) ? $data ? $new->middleware : null)) : null) ? $data ? $new->middleware : null)) : [(is_array($new) && isset($data ? $new->middleware : null)))) ? $data ? $new->middleware : null)) : null]; // isset 語法錯誤已註解
-            // // $data ? $merged->middleware : null)) = array_merge($existingMiddleware, $newMiddleware); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+        if (!empty($new['middleware'])) {
+            $existingMiddleware = $merged['middleware'] ?? [];
+            $newMiddleware = is_array($new['middleware']) ? $new['middleware'] : [$new['middleware']];
+            $merged['middleware'] = array_merge($existingMiddleware, $newMiddleware);
         }
 
         // 合併命名空間
-        if (!empty(null) {
-            $existingNamespace = '';
-            // // $data ? $merged->namespace : null) = empty($existingNamespace) // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-                ? (null
-                : $existingNamespace . '\\' . (null;
+        if (!empty($new['namespace'])) {
+            $existingNamespace = $merged['namespace'] ?? '';
+            $merged['namespace'] = empty($existingNamespace)
+                ? $new['namespace']
+                : $existingNamespace . '\\' . $new['namespace'];
         }
 
         // 其他屬性直接覆蓋

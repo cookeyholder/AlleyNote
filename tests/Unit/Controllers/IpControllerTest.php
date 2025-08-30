@@ -87,7 +87,7 @@ class IpControllerTest extends TestCase
 
         $response = $this->controller->create($request);
 
-        $this->assertEquals(201, (is_array($response) && isset((is_array($response) ? $response['status'] : (is_object($response) ? $response->status : null)))) ? (is_array($response) ? $response['status'] : (is_object($response) ? $response->status : null)) : null);
+        $this->assertEquals(201, $response['status'] ?? null);
         $this->assertArrayHasKey('data', $response);
     }
 
@@ -108,8 +108,8 @@ class IpControllerTest extends TestCase
 
         $response = $this->controller->create($request);
 
-        $this->assertEquals(400, (is_array($response) && isset((is_array($response) ? $response['status'] : (is_object($response) ? $response->status : null)))) ? (is_array($response) ? $response['status'] : (is_object($response) ? $response->status : null)) : null);
-        $this->assertStringContainsString('無效的 IP 位址', (is_array($response) && isset((is_array($response) ? $response['error'] : (is_object($response) ? $response->error : null)))) ? (is_array($response) ? $response['error'] : (is_object($response) ? $response->error : null)) : null);
+        $this->assertEquals(400, $response['status'] ?? null);
+        $this->assertStringContainsString('無效的 IP 位址', $response['error'] ?? '');
     }
 
     public function testCanListRulesByType(): void
@@ -137,9 +137,9 @@ class IpControllerTest extends TestCase
 
         $response = $this->controller->getByType(['type' => $type]);
 
-        $this->assertEquals(200, (is_array($response) && isset((is_array($response) ? $response['status'] : (is_object($response) ? $response->status : null)))) ? (is_array($response) ? $response['status'] : (is_object($response) ? $response->status : null)) : null);
-        $this->assertCount(2, (is_array($response) && isset((is_array($response) ? $response['data'] : (is_object($response) ? $response->data : null)))) ? (is_array($response) ? $response['data'] : (is_object($response) ? $response->data : null)) : null);
-        $this->assertEquals('192.168.1.1', (is_array($response) ? $response['data'] : (is_object($response) ? $response->data : null))[0]['ip_address']);
+        $this->assertEquals(200, $response['status'] ?? null);
+        $this->assertCount(2, $response['data'] ?? []);
+        $this->assertEquals('192.168.1.1', ($response['data'] ?? [])[0]['ip_address'] ?? null);
     }
 
     public function testCanCheckIpAccess(): void
@@ -153,8 +153,8 @@ class IpControllerTest extends TestCase
 
         $response = $this->controller->checkAccess(['ip' => $ip]);
 
-        $this->assertEquals(200, (is_array($response) && isset((is_array($response) ? $response['status'] : (is_object($response) ? $response->status : null)))) ? (is_array($response) ? $response['status'] : (is_object($response) ? $response->status : null)) : null);
-        $this->assertTrue((is_array($response) ? $response['data'] : (is_object($response) ? $response->data : null))['allowed']);
+        $this->assertEquals(200, $response['status'] ?? null);
+        $this->assertTrue(($response['data'] ?? [])['allowed'] ?? false);
     }
 
     public function testCannotCheckInvalidIp(): void
@@ -168,8 +168,8 @@ class IpControllerTest extends TestCase
 
         $response = $this->controller->checkAccess(['ip' => $ip]);
 
-        $this->assertEquals(400, (is_array($response) && isset((is_array($response) ? $response['status'] : (is_object($response) ? $response->status : null)))) ? (is_array($response) ? $response['status'] : (is_object($response) ? $response->status : null)) : null);
-        $this->assertEquals('無效的 IP 位址格式', (is_array($response) && isset((is_array($response) ? $response['error'] : (is_object($response) ? $response->error : null)))) ? (is_array($response) ? $response['error'] : (is_object($response) ? $response->error : null)) : null);
+        $this->assertEquals(400, $response['status'] ?? null);
+        $this->assertEquals('無效的 IP 位址格式', $response['error'] ?? null);
     }
 
     protected function tearDown(): void

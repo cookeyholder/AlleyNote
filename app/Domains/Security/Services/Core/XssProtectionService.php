@@ -48,7 +48,7 @@ class XssProtectionService
      */
     public function clean(?string $input): ?string
     {
-        if (input === null) {
+        if ($input === null) {
             return null;
         }
 
@@ -60,7 +60,7 @@ class XssProtectionService
      */
     public function cleanHtml(?string $input): ?string
     {
-        if (input === null) {
+        if ($input === null) {
             return null;
         }
 
@@ -72,7 +72,7 @@ class XssProtectionService
      */
     public function cleanStrict(?string $input): ?string
     {
-        if (input === null) {
+        if ($input === null) {
             return null;
         }
 
@@ -82,7 +82,7 @@ class XssProtectionService
     /**
      * 清理陣列中的指定欄位.
      */
-    public function cleanArray(array $input, array $keys): mixed
+    public function cleanArray(array $input, array $keys): array
     {
         foreach ($keys as $key) {
             if (isset($input[$key])) {
@@ -96,7 +96,7 @@ class XssProtectionService
     /**
      * 清理陣列中的 HTML 欄位.
      */
-    public function cleanHtmlArray(array $input, array $keys): mixed
+    public function cleanHtmlArray(array $input, array $keys): array
     {
         foreach ($keys as $key) {
             if (isset($input[$key])) {
@@ -112,7 +112,7 @@ class XssProtectionService
      */
     public function cleanForJs(?string $input): string
     {
-        if (input === null) {
+        if ($input === null) {
             return 'null';
         }
 
@@ -127,7 +127,7 @@ class XssProtectionService
      */
     public function cleanForUrl(?string $input): ?string
     {
-        if (input === null) {
+        if ($input === null) {
             return null;
         }
 
@@ -139,14 +139,14 @@ class XssProtectionService
      *
      * @deprecated 1.0.0 此方法為弱檢測，容易被繞過。請優先使用 cleanHtml() 進行過濾和淨化。
      */
-    public function detectXss(string $input): mixed
+    public function detectXss(string $input): array
     {
         $suspiciousPatterns = [
             'javascript:' => 'JavaScript URL scheme',
             'vbscript:' => 'VBScript URL scheme',
             'data:' => 'Data URL scheme',
-            ' 'Script tag',
-            '' => 'Script tag',
+            '<script' => 'Script tag',
+            '</script>' => 'Script tag',
             'onload=' => 'Event handler',
             'onerror=' => 'Event handler',
             'onclick=' => 'Event handler',
@@ -200,7 +200,7 @@ class XssProtectionService
     /**
      * 取得允許的 HTML 標籤清單.
      */
-    public function getAllowedHtmlTags(): mixed
+    public function getAllowedHtmlTags(): array
     {
         $definition = $this->purifier->config->getHTMLDefinition();
 
@@ -213,9 +213,9 @@ class XssProtectionService
     private function getCachePath(): string
     {
         // 允許透過環境變數設定，並提供一個合理的預設值
-        $cachePath = __DIR__ . '/../../../storage/cache/htmlpurifier';
+        $cachePath = $_ENV['HTMLPURIFIER_CACHE_PATH'] ?? __DIR__ . '/../../../storage/cache/htmlpurifier';
 
-        if (!is_dir($cachePath) {
+        if (!is_dir($cachePath)) {
             // @ 符號抑制錯誤，以處理多執行緒環境下的競爭條件
             // 權限設為 0750，只有擁有者和同群組使用者可以存取
             @mkdir($cachePath, 0o750, true);

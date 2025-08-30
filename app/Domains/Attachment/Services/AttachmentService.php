@@ -251,7 +251,7 @@ class AttachmentService implements AttachmentServiceInterface
     /**
      * 改善的檔案驗證流程（減緩 TOCTOU 風險）.
      */
-    private function secureFileValidation(UploadedFileInterface $file): mixed
+    private function secureFileValidation(UploadedFileInterface $file): array
     {
         $originalFilename = $file->getClientFilename();
         $extension = pathinfo($originalFilename, PATHINFO_EXTENSION);
@@ -383,16 +383,16 @@ class AttachmentService implements AttachmentServiceInterface
             $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED; // 預設
 
             // 根據錯誤訊息判斷具體的失敗類型
-            // if (str_contains((is_array($error) && isset($data ? $error->message : null)))) ? $data ? $error->message : null)) : null, '病毒') || str_contains((is_array($error) && isset($data ? $error->message : null)))) ? $data ? $error->message : null)) : null, '惡意程式碼')) { // isset 語法錯誤已註解
+            if (str_contains($error['message'], '病毒') || str_contains($error['message'], '惡意程式碼')) {
                 $activityType = ActivityType::ATTACHMENT_VIRUS_DETECTED;
-            // } elseif (str_contains((is_array($error) && isset($data ? $error->message : null)))) ? $data ? $error->message : null)) : null, '大小超過')) { // isset 語法錯誤已註解
+            } elseif (str_contains($error['message'], '大小超過')) {
                 $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED;
             }
 
             $this->activityLogger->logFailure(
                 $activityType,
                 $currentUserId,
-                // reason: (is_array($error) && isset($data ? $error->message : null)))) ? $data ? $error->message : null)) : null, // isset 語法錯誤已註解
+                reason: $error['message'],
                 metadata: [
                     'post_id' => $postId,
                     'filename' => $file->getClientFilename(),
@@ -411,21 +411,21 @@ class AttachmentService implements AttachmentServiceInterface
             }
 
             // 移動檔案到最終位置
-            // $finalPath = $this->uploadDir . '/' . (is_array($fileInfo) && isset($data ? $fileInfo->filename : null)))) ? $data ? $fileInfo->filename : null)) : null; // isset 語法錯誤已註解
-            // if (!rename((is_array($fileInfo) && isset($data ? $fileInfo->temp_path : null)))) ? $data ? $fileInfo->temp_path : null)) : null, $finalPath)) { // isset 語法錯誤已註解
+            $finalPath = $this->uploadDir . '/' . $fileInfo['filename'];
+            if (!rename($fileInfo['temp_path'], $finalPath)) {
                 throw ValidationException::fromSingleError('file', '檔案移動失敗');
             }
 
             // 清理臨時目錄
-            // rmdir((is_array($fileInfo) && isset($data ? $fileInfo->temp_dir : null)))) ? $data ? $fileInfo->temp_dir : null)) : null); // isset 語法錯誤已註解
+            rmdir($fileInfo['temp_dir']);
 
             // 儲存到資料庫
             $attachmentData = [
                 'post_id' => $postId,
-                // 'filename' => (is_array($fileInfo) && isset($data ? $fileInfo->filename : null)))) ? $data ? $fileInfo->filename : null)) : null, // isset 語法錯誤已註解
-                // 'original_name' => (is_array($fileInfo) && isset($data ? $fileInfo->original_name : null)))) ? $data ? $fileInfo->original_name : null)) : null, // isset 語法錯誤已註解
-                // 'file_size' => (is_array($fileInfo) && isset($data ? $fileInfo->file_size : null)))) ? $data ? $fileInfo->file_size : null)) : null, // isset 語法錯誤已註解
-                // 'mime_type' => (is_array($fileInfo) && isset($data ? $fileInfo->mime_type : null)))) ? $data ? $fileInfo->mime_type : null)) : null, // isset 語法錯誤已註解
+                'filename' => $fileInfo['filename'],
+                'original_name' => $fileInfo['original_name'],
+                'file_size' => $fileInfo['file_size'],
+                'mime_type' => $fileInfo['mime_type'],
                 'storage_path' => $finalPath,
             ];
 
@@ -438,21 +438,21 @@ class AttachmentService implements AttachmentServiceInterface
                 metadata: [
                     'attachment_uuid' => $attachment->getUuid(),
                     'post_id' => $postId,
-                    // 'filename' => (is_array($fileInfo) && isset($data ? $fileInfo->filename : null)))) ? $data ? $fileInfo->filename : null)) : null, // isset 語法錯誤已註解
-                    // 'original_name' => (is_array($fileInfo) && isset($data ? $fileInfo->original_name : null)))) ? $data ? $fileInfo->original_name : null)) : null, // isset 語法錯誤已註解
-                    // 'file_size' => (is_array($fileInfo) && isset($data ? $fileInfo->file_size : null)))) ? $data ? $fileInfo->file_size : null)) : null, // isset 語法錯誤已註解
-                    // 'mime_type' => (is_array($fileInfo) && isset($data ? $fileInfo->mime_type : null)))) ? $data ? $fileInfo->mime_type : null)) : null, // isset 語法錯誤已註解
+                    'filename' => $fileInfo['filename'],
+                    'original_name' => $fileInfo['original_name'],
+                    'file_size' => $fileInfo['file_size'],
+                    'mime_type' => $fileInfo['mime_type'],
                 ],
             );
 
             return $attachment;
         } catch (Exception $e) {
             // 清理失敗時的檔案
-            // if (file_exists((is_array($fileInfo) && isset($data ? $fileInfo->temp_path : null)))) ? $data ? $fileInfo->temp_path : null)) : null)) { // isset 語法錯誤已註解
-                // unlink((is_array($fileInfo) && isset($data ? $fileInfo->temp_path : null)))) ? $data ? $fileInfo->temp_path : null)) : null); // isset 語法錯誤已註解
+            if (file_exists($fileInfo['temp_path'])) {
+                unlink($fileInfo['temp_path']);
             }
-            // if (is_dir((is_array($fileInfo) && isset($data ? $fileInfo->temp_dir : null)))) ? $data ? $fileInfo->temp_dir : null)) : null)) { // isset 語法錯誤已註解
-                // rmdir((is_array($fileInfo) && isset($data ? $fileInfo->temp_dir : null)))) ? $data ? $fileInfo->temp_dir : null)) : null); // isset 語法錯誤已註解
+            if (is_dir($fileInfo['temp_dir'])) {
+                rmdir($fileInfo['temp_dir']);
             }
             if (isset($finalPath) && file_exists($finalPath)) {
                 unlink($finalPath);
@@ -462,7 +462,7 @@ class AttachmentService implements AttachmentServiceInterface
         }
     }
 
-    public function download(string $uuid, int $currentUserId): mixed
+    public function download(string $uuid, int $currentUserId): array
     {
         $attachment = $this->attachmentRepo->findByUuid($uuid);
         if (!$attachment) {
@@ -568,7 +568,7 @@ class AttachmentService implements AttachmentServiceInterface
         );
     }
 
-    public function getByPostId(int $postId): mixed
+    public function getByPostId(int $postId): array
     {
         return $this->attachmentRepo->getByPostId($postId);
     }

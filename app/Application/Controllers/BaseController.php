@@ -9,6 +9,9 @@ use Exception;
 
 abstract class BaseController
 {
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function jsonResponse(array $data, int $httpCode = 200): string
     {
         http_response_code($httpCode);
@@ -30,6 +33,9 @@ abstract class BaseController
         );
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function paginatedResponse(array $data, int $total, int $page, int $perPage): string
     {
         return $this->jsonResponse(ApiResponse::paginated($data, $total, $page, $perPage));

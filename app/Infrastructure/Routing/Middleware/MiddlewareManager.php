@@ -42,7 +42,7 @@ class MiddlewareManager implements MiddlewareManagerInterface
 
     public function add(MiddlewareInterface $middleware): self
     {
-        $this->middlewares[($middleware instanceof ReflectionNamedType ? $middleware->getName() : (string)$middleware)] = $middleware;
+        $this->middlewares[$middleware->getName()] = $middleware;
 
         return $this;
     }
@@ -82,18 +82,18 @@ class MiddlewareManager implements MiddlewareManagerInterface
         return $this->middlewares[$name] ?? null;
     }
 
-    public function getAll(): mixed
+    public function getAll(): array
     {
         return array_values($this->middlewares);
     }
 
-    public function getSorted(): mixed
+    public function getSorted(): array
     {
         $middlewares = $this->getAll();
 
         // 按優先順序排序（數值越小優先級越高）
         usort($middlewares, function (MiddlewareInterface $a, MiddlewareInterface $b): int {
-            return $a->getPriority()  $b->getPriority();
+            return $a->getPriority() <=> $b->getPriority();
         });
 
         return $middlewares;
@@ -124,7 +124,7 @@ class MiddlewareManager implements MiddlewareManagerInterface
      *
      * @return string[]
      */
-    public function getNames(): mixed
+    public function getNames(): array
     {
         return array_keys($this->middlewares);
     }
@@ -132,7 +132,7 @@ class MiddlewareManager implements MiddlewareManagerInterface
     /**
      * 批次設定中介軟體優先順序.
      *
-     * @param array $priorities 中介軟體名稱與優先順序對應表
+     * @param array<string, int> $priorities 中介軟體名稱與優先順序對應表
      */
     public function setPriorities(array $priorities): self
     {
@@ -149,7 +149,7 @@ class MiddlewareManager implements MiddlewareManagerInterface
     /**
      * 批次啟用/停用中介軟體.
      *
-     * @param array $states 中介軟體名稱與狀態對應表
+     * @param array<string, bool> $states 中介軟體名稱與狀態對應表
      */
     public function setStates(array $states): self
     {

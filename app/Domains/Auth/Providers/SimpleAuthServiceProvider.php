@@ -28,7 +28,7 @@ class SimpleAuthServiceProvider
     /**
      * 取得中介軟體和基本服務定義.
      */
-    public static function getDefinitions(): mixed
+    public static function getDefinitions(): array
     {
         return [
             // 基本配置和服務

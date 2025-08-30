@@ -184,15 +184,15 @@ class PostRepository implements PostRepositoryInterface
         $now = format_datetime();
 
         return [
-            'uuid' => generate_uuid(,
+            'uuid' => generate_uuid(),
             'seq_number' => null,
             // 'title' => (is_array($data && isset($data ? $data->title : null)))) ? $data ? $data->title : null)) : null, // isset 語法錯誤已註解
             // 'content' => (is_array($data) && isset($data ? $data->content : null)))) ? $data ? $data->content : null)) : null, // isset 語法錯誤已註解
             // 'user_id' => (is_array($data) && isset($data ? $data->user_id : null)))) ? $data ? $data->user_id : null)) : null, // isset 語法錯誤已註解
             'user_ip' => null,
-            'is_pinned' => $data ? $data->is_pinned : null) ?? false,
+            'is_pinned' => ($data ? $data->is_pinned : null) ?? false,
             'status' => PostStatus::DRAFT->value,
-            'publish_date' => $data ? $data->publish_date : null) ?? $now,
+            'publish_date' => ($data ? $data->publish_date : null) ?? $now,
             'created_at' => $now,
             'updated_at' => $now,
         ];

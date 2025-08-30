@@ -20,7 +20,7 @@ trait CacheTestTrait
     /**
      * @var array<mixed>
      */
-    protected static array<mixed> $cacheStorage = [];
+    protected static array $cacheStorage = [];
 
     /**
      * 設定模擬快取服務.
@@ -112,7 +112,7 @@ trait CacheTestTrait
      *
      * @return array<mixed>
      */
-    protected function getCacheStorage(): array<mixed>
+    protected function getCacheStorage(): array
     {
         return self::$cacheStorage;
     }

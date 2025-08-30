@@ -246,7 +246,7 @@ class CacheKeys
     /**
      * 解析快取鍵取得各部分.
      */
-    public static function parseKey(string $key): mixed
+    public static function parseKey(string $key): array
     {
         if (!self::isValidKey($key)) {
             return [];

@@ -24,7 +24,7 @@ interface JwtTokenServiceInterface
      *
      * @param int $userId 使用者ID
      * @param DeviceInfo $deviceInfo 裝置資訊
-     * @param array $customClaims 額外的自訂聲明
+     * @param array<string, mixed> $customClaims 額外的自訂聲明
      * @return TokenPair JWT token對
      *
      * @throws TokenGenerationException 當token產生失敗時

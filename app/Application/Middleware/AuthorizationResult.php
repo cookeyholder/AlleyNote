@@ -23,8 +23,8 @@ final readonly class AuthorizationResult implements JsonSerializable
      * @param bool $allowed 是否允許存取
      * @param string $reason 授權原因或拒絕原因
      * @param string $code 結果代碼
-     * @param array $appliedRules 應用的授權規則清單
-     * @param array $metadata 額外的元資料
+     * @param array<string> $appliedRules 應用的授權規則清單
+     * @param array<string, mixed> $metadata 額外的元資料
      */
     public function __construct(
         private bool $allowed,
@@ -77,9 +77,9 @@ final readonly class AuthorizationResult implements JsonSerializable
     /**
      * 取得應用的授權規則.
      *
-     * @return array<mixed> 規則清單
+     * @return array<string> 規則清單
      */
-    public function getAppliedRules(): mixed
+    public function getAppliedRules(): array
     {
         return $this->appliedRules;
     }
@@ -87,9 +87,9 @@ final readonly class AuthorizationResult implements JsonSerializable
     /**
      * 取得元資料.
      *
-     * @return array<mixed> 元資料
+     * @return array<string, mixed> 元資料
      */
-    public function getMetadata(): mixed
+    public function getMetadata(): array
     {
         return $this->metadata;
     }
@@ -122,8 +122,8 @@ final readonly class AuthorizationResult implements JsonSerializable
      *
      * @param string $reason 允許原因
      * @param string $code 結果代碼
-     * @param array $appliedRules 應用的規則
-     * @param array $metadata 元資料
+     * @param array<string> $appliedRules 應用的規則
+     * @param array<string, mixed> $metadata 元資料
      */
     public static function allow(
         string $reason = '存取被允許',
@@ -145,8 +145,8 @@ final readonly class AuthorizationResult implements JsonSerializable
      *
      * @param string $reason 拒絕原因
      * @param string $code 結果代碼
-     * @param array $appliedRules 應用的規則
-     * @param array $metadata 元資料
+     * @param array<string> $appliedRules 應用的規則
+     * @param array<string, mixed> $metadata 元資料
      */
     public static function deny(
         string $reason = '存取被拒絕',
@@ -233,9 +233,9 @@ final readonly class AuthorizationResult implements JsonSerializable
     /**
      * 轉換為陣列格式.
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function toArray(): mixed
+    public function toArray(): array
     {
         return [
             'allowed' => $this->allowed,
@@ -249,9 +249,9 @@ final readonly class AuthorizationResult implements JsonSerializable
     /**
      * JsonSerializable 實作.
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

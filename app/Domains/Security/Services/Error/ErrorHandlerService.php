@@ -49,7 +49,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $this->registerErrorHandlers();
     }
 
-    public function handleException(Throwable $e, bool $isPublicError = false): mixed
+    public function handleException(Throwable $e, bool $isPublicError = false): array
     {
         // 記錄完整錯誤到日誌
         $this->logException($e);
@@ -77,10 +77,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $sanitizedContext = $this->sanitizeLogData($context);
 
         $this->logger->warning('Security Event: ' . $event, array_merge([
-            'ip' => 'unknown',
-            'user_agent' => $data ? $_SERVER->HTTP_USER_AGENT : null) ?? 'unknown',
-            'uri' => 'unknown',
-            'method' => $data ? $_SERVER->REQUEST_METHOD : null) ?? 'unknown',
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+            'uri' => $_SERVER['REQUEST_URI'] ?? 'unknown',
+            'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
             'timestamp' => time(),
         ], $sanitizedContext));
     }
@@ -98,21 +98,21 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     public function logSuspiciousActivity(string $activity, array $context = []): void
     {
         $this->logger->error('Suspicious Activity: ' . $activity, array_merge([
-            'ip' => 'unknown',
-            'user_agent' => $data ? $_SERVER->HTTP_USER_AGENT : null) ?? 'unknown',
-            'referer' => 'unknown',
-            'timestamp' => time(,
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+            'referer' => $_SERVER['HTTP_REFERER'] ?? 'unknown',
+            'timestamp' => time(),
         ], $this->sanitizeLogData($context)));
     }
 
-    public function sanitizeLogData(array $data): mixed
+    public function sanitizeLogData(array $data): array
     {
         $sanitized = [];
 
         foreach ($data as $key => $value) {
             if ($this->isSensitiveKey($key)) {
                 $sanitized[$key] = '[REDACTED]';
-            } elseif (is_array($value) && !empty($value)) {
+            } elseif (is_array($value)) {
                 $sanitized[$key] = $this->sanitizeLogData($value);
             } elseif (is_string($value)) {
                 // 檢查是否可能是敏感資料
@@ -231,13 +231,13 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     {
         $error = error_get_last();
 
-        if ($error !== null && in_array($data ? $error->type : null)), [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE])) {
+        if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE])) {
             $exception = new ErrorException(
-                $data ? $error->message : null)),
+                $error['message'],
                 0,
-                $data ? $error->type : null)),
-                $data ? $error->file : null)),
-                $data ? $error->line : null)),
+                $error['type'],
+                $error['file'],
+                $error['line'],
             );
 
             $this->globalExceptionHandler($exception);

@@ -21,7 +21,7 @@ class IpController
         private OutputSanitizerInterface $sanitizer,
     ) {}
 
-    public function create(array $request): mixed
+    public function create(array $request): array
     {
         try {
             $dto = new CreateIpRuleDTO($this->validator, $request);
@@ -47,17 +47,16 @@ class IpController
                 'error' => '建立 IP 規則時發生錯誤',
             ];
         }
-        } catch (Exception $e) {
-            // 錯誤處理待實現
-            throw $e;
     }
 
-    public function getByType(array $request): mixed
+    public function getByType(array $request): array
     {
         try {
+            if (!isset($request['type'])) {
                 throw new InvalidArgumentException('必須指定名單類型');
+            }
 
-            $rules = $this->service->getRulesByType((int) $data ? $request->type : null)));
+            $rules = $this->service->getRulesByType((int) $request['type']);
 
             return [
                 'status' => 200,
@@ -77,22 +76,21 @@ class IpController
                 'error' => '取得 IP 規則時發生錯誤',
             ];
         }
-        } catch (Exception $e) {
-            // 錯誤處理待實現
-            throw $e;
     }
 
-    public function checkAccess(array $request): mixed
+    public function checkAccess(array $request): array
     {
         try {
+            if (!isset($request['ip'])) {
                 throw new InvalidArgumentException('必須提供 IP 位址');
+            }
 
-            $isAllowed = $this->service->isIpAllowed($data ? $request->ip : null)));
+            $isAllowed = $this->service->isIpAllowed($request['ip']);
 
             return [
                 'status' => 200,
                 'data' => [
-                    'ip' => $data ? $request->ip : null)),
+                    'ip' => $request['ip'],
                     'allowed' => $isAllowed,
                 ],
             ];
@@ -107,8 +105,5 @@ class IpController
                 'error' => '檢查 IP 存取權限時發生錯誤',
             ];
         }
-        } catch (Exception $e) {
-            // 錯誤處理待實現
-            throw $e;
     }
 }
