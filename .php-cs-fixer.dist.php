@@ -156,6 +156,14 @@ return $config
         'magic_constant_casing' => true,         // 魔術常數大小寫規範
         'magic_method_casing' => true,           // 魔術方法大小寫規範
         'native_function_casing' => true,        // PHP 內建函式大小寫規範
+
+        // PSR 標準加強規則
+        'psr_autoloading' => true,               // 確保 PSR-4 自動載入合規
+        'no_unused_imports' => true,             // 移除未使用的 use 語句
+        'ordered_imports' => [                   // Import 語句排序（已存在，確保配置）
+            'sort_algorithm' => 'alpha',
+            'imports_order' => ['class', 'function', 'const'],
+        ],
     ])
     ->setRiskyAllowed(true)
     ->setUsingCache(true)
