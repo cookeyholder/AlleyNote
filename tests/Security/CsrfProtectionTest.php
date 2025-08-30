@@ -63,7 +63,7 @@ class CsrfProtectionTest extends TestCase
         $activityLoggerMock->shouldReceive('log')->byDefault()->andReturn(true);
         $activityLoggerMock->shouldReceive('logFailure')->byDefault()->andReturn(true);
         $activityLoggerMock->shouldReceive('logSuccess')->byDefault()->andReturn(true);
-        
+
         $this->controller = new PostController(
             $this->postService,
             $this->validator,

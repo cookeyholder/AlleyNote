@@ -166,7 +166,6 @@ class PostRepositoryTest extends TestCase
     {
         $defaultData = [
             'uuid' => 'test-uuid-' . uniqid(),
-            'seq_number' => rand(1000, 9999),
             'title' => '測試文章標題',
             'content' => '測試文章內容',
             'user_id' => 1,
@@ -221,9 +220,13 @@ class PostRepositoryTest extends TestCase
 
     public function testFindPostByUuid(): void
     {
-        $uuid = 'test-uuid-12345';
+        $uuid = 'test-uuid-' . uniqid() . '-' . time();
         $data = $this->createTestPost(['uuid' => $uuid]);
-        $this->repository->create($data);
+        $createdPost = $this->repository->create($data);
+        
+        // 確保創建成功
+        $this->assertInstanceOf(Post::class, $createdPost);
+        $this->assertEquals($uuid, $createdPost->getUuid());
 
         $foundPost = $this->repository->findByUuid($uuid);
 
@@ -233,14 +236,14 @@ class PostRepositoryTest extends TestCase
 
     public function testFindPostBySeqNumber(): void
     {
-        $seqNumber = 12345;
-        $data = $this->createTestPost(['seq_number' => $seqNumber]);
-        $this->repository->create($data);
-
-        $foundPost = $this->repository->findBySeqNumber($seqNumber);
+        $data = $this->createTestPost();
+        $createdPost = $this->repository->create($data);
+        
+        // 使用創建後的 seq_number 來查詢
+        $foundPost = $this->repository->findBySeqNumber((int) $createdPost->getSeqNumber());
 
         $this->assertInstanceOf(Post::class, $foundPost);
-        $this->assertEquals($seqNumber, $foundPost->getSeqNumber());
+        $this->assertEquals($createdPost->getSeqNumber(), $foundPost->getSeqNumber());
     }
 
     public function testUpdatePost(): void

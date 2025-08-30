@@ -38,7 +38,7 @@ class UserRepository
             'password' => $data['password'],  // 密碼已在 AuthService 中雜湊
         ]);
 
-        return $this->findById($this->db->lastInsertId());
+        return $this->findById((string) $this->db->lastInsertId());
     }
 
     public function update(string $id, array $data): array

@@ -378,8 +378,20 @@ class PostControllerTest extends TestCase
     {
         // 準備測試資料
         $postId = 1;
+        $postData = [
+            'id' => $postId,
+            'title' => '測試文章',
+            'content' => '測試內容',
+            'status' => 'published',
+        ];
+        $post = new Post($postData);
 
-        // 設定服務層期望行為
+        // 設定服務層期望行為 - 先查找文章再刪除
+        $this->postService->shouldReceive('findById')
+            ->once()
+            ->with($postId)
+            ->andReturn($post);
+        
         $this->postService->shouldReceive('deletePost')
             ->once()
             ->with($postId)

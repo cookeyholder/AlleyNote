@@ -184,7 +184,7 @@ class PostRepository implements PostRepositoryInterface
         $now = format_datetime();
 
         return [
-            'uuid' => generate_uuid(),
+            'uuid' => $data['uuid'] ?? generate_uuid(),
             'seq_number' => $this->getNextSeqNumber(),
             'title' => $data['title'] ?? '',
             'content' => $data['content'] ?? '',

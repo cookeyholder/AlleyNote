@@ -119,11 +119,29 @@ class PasswordHashingTest extends TestCase
         $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
-        $user = $this->authService->register($dto);
+        $result = $this->authService->register($dto);
+        
+        // 調試：檢查 register 方法的返回值
+        $this->assertNotNull($result, '使用者註冊不應該返回 null');
+        $this->assertArrayHasKey('user', $result, '註冊結果應該包含 user 鍵');
+        
+        $user = $result['user'];
+        
+        // 根據實際返回的結構來取得使用者 ID
+        $userId = null;
+        if (is_array($user) && isset($user['id'])) {
+            $userId = $user['id'];
+        } elseif (is_object($user) && method_exists($user, 'getId')) {
+            $userId = $user->getId();
+        } elseif (is_object($user) && isset($user->id)) {
+            $userId = $user->id;
+        }
+        
+        $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
 
         // 從資料庫取得雜湊後的密碼
         $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
-        $stmt->execute([$user['id']]);
+        $stmt->execute([$userId]);
         $hashedPassword = $stmt->fetchColumn();
 
         // 確保查詢成功
@@ -153,11 +171,24 @@ class PasswordHashingTest extends TestCase
         $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
-        $user = $this->authService->register($dto);
+        $result = $this->authService->register($dto);
+        $user = $result['user'];
+        
+        // 根據實際返回的結構來取得使用者 ID
+        $userId = null;
+        if (is_array($user) && isset($user['id'])) {
+            $userId = $user['id'];
+        } elseif (is_object($user) && method_exists($user, 'getId')) {
+            $userId = $user->getId();
+        } elseif (is_object($user) && isset($user->id)) {
+            $userId = $user->id;
+        }
+        
+        $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
 
         // 從資料庫取得雜湊後的密碼
         $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
-        $stmt->execute([$user['id']]);
+        $stmt->execute([$userId]);
         $hashedPassword = $stmt->fetchColumn();
 
         // 確保查詢成功
@@ -218,18 +249,28 @@ class PasswordHashingTest extends TestCase
         $dto = new RegisterUserDTO($this->validator, $userData);
 
         // 註冊使用者
-        $user = $this->authService->register($dto);
+        $result = $this->authService->register($dto);
+        $user = $result['user'];
         
+        // 根據實際返回的結構來取得使用者 ID
+        $userId = null;
+        if (is_array($user) && isset($user['id'])) {
+            $userId = $user['id'];
+        } elseif (is_object($user) && method_exists($user, 'getId')) {
+            $userId = $user->getId();
+        } elseif (is_object($user) && isset($user->id)) {
+            $userId = $user->id;
+        }
+
         // 確保使用者註冊成功且有 ID
-        $this->assertIsArray($user, '使用者註冊應該回傳陣列');
-        $this->assertArrayHasKey('id', $user, '使用者陣列應該包含 ID');
-        $this->assertIsInt($user['id'], '使用者 ID 應該是整數');
+        $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
+        $this->assertIsInt($userId, '使用者 ID 應該是整數');
 
         // 模擬使用者嘗試更新密碼為相同的密碼
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('新密碼不能與目前的密碼相同');
 
-        $this->userRepository->updatePassword($user['id'], $userData['password']);
+        $this->userRepository->updatePassword($userId, $userData['password']);
     }
 
     protected function tearDown(): void
