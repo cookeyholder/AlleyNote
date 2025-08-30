@@ -7,8 +7,8 @@ namespace Tests;
 use Tests\Support\IntegrationTestCase;
 
 /**
- * 舊版 TestCase 類別，保持向後兼容性
- * 
+ * 舊版 TestCase 類別，保持向後兼容性.
+ *
  * @deprecated 建議使用 Tests\Support\IntegrationTestCase 或其他特定的測試基底類別
  */
 abstract class TestCase extends IntegrationTestCase
