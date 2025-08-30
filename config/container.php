@@ -15,6 +15,7 @@ use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\ServerRequestFactory;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
+use App\Shared\Cache\Providers\CacheServiceProvider;
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
 use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
@@ -65,6 +66,9 @@ return array_merge(
     // JWT 認證系統服務
     SimpleAuthServiceProvider::getDefinitions(),
 
+    // 快取系統服務
+    CacheServiceProvider::getDefinitions(),
+
     // 基本應用程式服務
     [
         // 環境配置
@@ -81,8 +85,46 @@ return array_merge(
         'log.level' => \DI\env('LOG_LEVEL', 'info'),
 
         // 快取配置
-        'cache.driver' => \DI\env('CACHE_DRIVER', 'file'),
+        'cache.default_driver' => \DI\env('CACHE_DEFAULT_DRIVER', 'memory'),
         'cache.path' => \DI\env('CACHE_PATH', __DIR__ . '/../storage/cache'),
+        
+        // 快取驅動設定
+        'cache.drivers.memory' => [
+            'enabled' => true,
+            'priority' => 90,
+            'max_size' => 1000,
+            'ttl' => 3600,
+        ],
+        'cache.drivers.file' => [
+            'enabled' => true,
+            'priority' => 50,
+            'ttl' => 3600,
+        ],
+        'cache.drivers.redis' => [
+            'enabled' => \DI\env('REDIS_ENABLED', false),
+            'priority' => 70,
+            'host' => \DI\env('REDIS_HOST', '127.0.0.1'),
+            'port' => \DI\env('REDIS_PORT', 6379),
+            'database' => \DI\env('REDIS_DATABASE', 0),
+            'timeout' => 2.0,
+            'prefix' => 'alleynote:cache:',
+        ],
+        
+        // 快取策略設定
+        'cache.strategy' => [
+            'min_ttl' => 60,
+            'max_ttl' => 86400,
+            'max_value_size' => 1024 * 1024,
+            'exclude_patterns' => ['temp:*', 'debug:*'],
+        ],
+        
+        // 快取管理器設定
+        'cache.manager' => [
+            'enable_sync' => false,
+            'sync_ttl' => 3600,
+            'max_retry_attempts' => 3,
+            'retry_delay' => 100,
+        ],
 
         // API 配置
         'api.base_url' => \DI\env('API_BASE_URL', 'http://localhost'),

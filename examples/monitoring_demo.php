@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * 監控系統使用範例
- * 
+ *
  * 展示如何在 AlleyNote 應用程式中使用監控服務
  */
 

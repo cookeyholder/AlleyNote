@@ -30,13 +30,13 @@ class ErrorTrackerServiceTest extends TestCase
     public function testRecordError(): void
     {
         $exception = new Exception('Test error message', 123);
-        
+
         $this->mockLogger->expects($this->once())
             ->method('error')
             ->with(
                 $this->equalTo('Test error message'),
                 $this->callback(function ($context) {
-                    return isset($context['exception_class']) 
+                    return isset($context['exception_class'])
                         && $context['exception_class'] === Exception::class;
                 })
             );
@@ -130,7 +130,7 @@ class ErrorTrackerServiceTest extends TestCase
         $this->assertArrayHasKey('levels', $stats);
         $this->assertArrayHasKey('error_types', $stats);
         $this->assertArrayHasKey('error_trend', $stats);
-        
+
         $this->assertEquals(3, $stats['total_errors']);
         $this->assertEquals(24, $stats['time_period_hours']);
     }

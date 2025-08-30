@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * 系統監控服務實作。
- * 
+ *
  * 提供全面的系統監控功能，包含記憶體、磁碟、資料庫等系統指標監控
  */
 class SystemMonitorService implements SystemMonitorInterface
@@ -115,11 +115,11 @@ class SystemMonitorService implements SystemMonitorInterface
     {
         try {
             $startTime = microtime(true);
-            
+
             // 測試資料庫連線
             $stmt = $this->database->query('SELECT 1 as test');
             $connected = $stmt !== false;
-            
+
             $connectionTime = round((microtime(true) - $startTime) * 1000, 2);
 
             $status = [
@@ -190,7 +190,7 @@ class SystemMonitorService implements SystemMonitorInterface
     public function logSystemMetrics(): void
     {
         $metrics = $this->getAllMetrics();
-        
+
         $this->logger->info('System metrics collected', [
             'memory_usage_mb' => $metrics['memory']['current_usage_mb'],
             'memory_usage_percent' => $metrics['memory']['usage_percentage'],
@@ -259,7 +259,7 @@ class SystemMonitorService implements SystemMonitorInterface
     private function parseMemoryLimit(string $memoryLimit): int
     {
         $memoryLimit = trim($memoryLimit);
-        
+
         if ($memoryLimit === '-1') {
             return PHP_INT_MAX;
         }
@@ -385,7 +385,7 @@ class SystemMonitorService implements SystemMonitorInterface
     {
         try {
             $errors = $this->config->validate();
-            
+
             if (empty($errors)) {
                 return ['status' => 'healthy', 'message' => 'Environment configuration is valid'];
             } else {
@@ -407,13 +407,13 @@ class SystemMonitorService implements SystemMonitorInterface
         ];
 
         $issues = [];
-        
+
         foreach ($logPaths as $type => $path) {
             if (file_exists($path)) {
                 if (!is_writable($path)) {
                     $issues[] = "Log file {$type} is not writable: {$path}";
                 }
-                
+
                 $size = filesize($path);
                 if ($size > 100 * 1024 * 1024) { // 100MB
                     $issues[] = "Log file {$type} is too large: " . round($size / 1024 / 1024, 1) . 'MB';

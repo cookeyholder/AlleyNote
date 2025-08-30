@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * 監控服務提供者。
- * 
+ *
  * 負責註冊所有監控相關的服務到 DI 容器中
  */
 class MonitoringServiceProvider
@@ -160,7 +160,7 @@ class MonitoringServiceProvider
         // 註冊關閉處理器（檢查致命錯誤）
         register_shutdown_function(function () use ($errorTracker, $performanceMonitor) {
             $error = error_get_last();
-            
+
             if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_RECOVERABLE_ERROR])) {
                 $errorTracker->recordCriticalError(
                     new \ErrorException(
@@ -208,7 +208,7 @@ class MonitoringServiceProvider
             if ($level === 'critical') {
                 // 這裡可以整合電子郵件、Slack、Discord 等通知系統
                 error_log("CRITICAL ERROR: {$message}");
-                
+
                 // 如果是在開發環境，可以顯示詳細資訊
                 if (($_ENV['APP_ENV'] ?? 'production') === 'development') {
                     if ($exception) {
@@ -250,14 +250,14 @@ class MonitoringServiceProvider
 
         // 註冊定期健康檢查（如果有排程系統的話）
         // 這裡只是示例，實際實作取決於使用的排程系統
-        
+
         // 檢查系統健康狀態
         $healthStatus = $systemMonitor->getSystemHealth();
-        
+
         if ($healthStatus['status'] !== 'healthy') {
             /** @var ErrorTrackerInterface $errorTracker */
             $errorTracker = $container->get(ErrorTrackerInterface::class);
-            
+
             $errorTracker->recordWarning('System health check failed', [
                 'health_status' => $healthStatus,
                 'check_time' => date('Y-m-d H:i:s'),

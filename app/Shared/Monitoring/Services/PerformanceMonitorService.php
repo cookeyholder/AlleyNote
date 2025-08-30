@@ -11,7 +11,7 @@ use Ramsey\Uuid\Uuid;
 
 /**
  * 效能監控服務實作。
- * 
+ *
  * 提供詳細的應用程式效能監控功能，包含操作追蹤、指標收集和效能分析
  */
 class PerformanceMonitorService implements PerformanceMonitorInterface
@@ -46,7 +46,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     public function startMonitoring(string $operation, array $context = []): string
     {
         $monitoringId = Uuid::uuid4()->toString();
-        
+
         $this->activeMonitoringSessions[$monitoringId] = [
             'operation' => $operation,
             'start_time' => microtime(true),
@@ -113,7 +113,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     public function recordMetric(string $name, float $value, string $unit = 'ms', array $tags = []): void
     {
         $metricKey = $this->buildMetricKey($name, $tags);
-        
+
         if (!isset($this->metrics[$metricKey])) {
             $this->metrics[$metricKey] = [];
         }
@@ -138,7 +138,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     public function incrementCounter(string $name, array $tags = []): void
     {
         $counterKey = $this->buildMetricKey($name, $tags);
-        
+
         if (!isset($this->counters[$counterKey])) {
             $this->counters[$counterKey] = 0;
         }
@@ -165,7 +165,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     public function recordHistogram(string $name, float $value, array $tags = []): void
     {
         $histogramKey = $this->buildMetricKey($name, $tags);
-        
+
         if (!isset($this->histograms[$histogramKey])) {
             $this->histograms[$histogramKey] = [];
         }
@@ -215,7 +215,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         // 按持續時間排序
         $sorted = $this->slowQueries;
         usort($sorted, fn($a, $b) => $b['duration'] <=> $a['duration']);
-        
+
         return array_slice($sorted, 0, $limit);
     }
 
@@ -239,7 +239,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         // 檢查記憶體使用
         $memoryUsage = memory_get_usage(true);
         $memoryLimit = $this->parseMemoryLimit(ini_get('memory_limit'));
-        
+
         if ($memoryLimit > 0 && $memoryUsage > $memoryLimit * 0.8) {
             $warnings[] = [
                 'type' => 'high_memory_usage',
@@ -370,7 +370,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private function getOperationStats(string $operation): array
     {
         $operationMetrics = [];
-        
+
         foreach ($this->metrics as $key => $metricData) {
             if (strpos($key, "operation.{$operation}.") === 0) {
                 $operationMetrics[$key] = $metricData;
@@ -408,7 +408,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
         foreach ($metrics as $key => $metricData) {
             $values = array_column($metricData, 'value');
-            
+
             if (!empty($values)) {
                 $summary[$key] = [
                     'count' => count($values),
@@ -481,7 +481,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private function parseMemoryLimit(string $memoryLimit): int
     {
         $memoryLimit = trim($memoryLimit);
-        
+
         if ($memoryLimit === '-1') {
             return 0;
         }

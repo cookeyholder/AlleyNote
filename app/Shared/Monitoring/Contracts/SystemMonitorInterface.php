@@ -6,7 +6,7 @@ namespace App\Shared\Monitoring\Contracts;
 
 /**
  * 系統監控介面。
- * 
+ *
  * 提供系統效能和資源監控功能，支援多種指標收集和即時監控
  */
 interface SystemMonitorInterface

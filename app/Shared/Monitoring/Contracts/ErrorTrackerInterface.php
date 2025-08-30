@@ -8,7 +8,7 @@ use Throwable;
 
 /**
  * 錯誤追蹤介面。
- * 
+ *
  * 提供應用程式錯誤和異常追蹤功能，支援錯誤分類、警告和通知
  */
 interface ErrorTrackerInterface

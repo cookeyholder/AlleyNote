@@ -11,7 +11,7 @@ use Throwable;
 
 /**
  * 錯誤追蹤服務實作。
- * 
+ *
  * 提供全面的錯誤追蹤和分析功能，包含錯誤分類、趨勢分析和警告機制
  */
 class ErrorTrackerService implements ErrorTrackerInterface
@@ -151,10 +151,10 @@ class ErrorTrackerService implements ErrorTrackerInterface
     public function getRecentErrors(int $limit = 50): array
     {
         $errors = $this->errorRecords;
-        
+
         // 按時間戳排序（最新的在前）
         usort($errors, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
-        
+
         return array_slice($errors, 0, $limit);
     }
 
@@ -191,7 +191,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         foreach ($recentErrors as $record) {
             $date = date('Y-m-d', $record['timestamp']);
             $level = $record['level'];
-            
+
             if (!isset($trends['level_trends'][$level])) {
                 $trends['level_trends'][$level] = [];
             }
@@ -206,7 +206,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             if (isset($record['context']['exception_class'])) {
                 $date = date('Y-m-d', $record['timestamp']);
                 $type = $record['context']['exception_class'];
-                
+
                 if (!isset($trends['type_trends'][$type])) {
                     $trends['type_trends'][$type] = [];
                 }
@@ -229,7 +229,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     public function hasCriticalErrors(int $minutes = 5): bool
     {
         $cutoffTime = time() - ($minutes * 60);
-        
+
         foreach ($this->errorRecords as $record) {
             if ($record['timestamp'] > $cutoffTime && $record['level'] === 'critical') {
                 return true;
@@ -249,7 +249,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $recentWarnings = [];
 
         $cutoffTime = time() - ($hours * 3600);
-        
+
         foreach ($this->errorRecords as $record) {
             if ($record['timestamp'] <= $cutoffTime) {
                 continue;
@@ -286,7 +286,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     {
         $cutoffTime = time() - ($daysToKeep * 24 * 3600);
         $originalCount = count($this->errorRecords);
-        
+
         $this->errorRecords = array_filter(
             $this->errorRecords,
             fn($record) => $record['timestamp'] > $cutoffTime
@@ -381,7 +381,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         foreach ($context as $key => $value) {
             $keyLower = strtolower((string) $key);
-            
+
             foreach ($sensitiveKeys as $sensitiveKey) {
                 if (strpos($keyLower, $sensitiveKey) !== false) {
                     $context[$key] = '[REDACTED]';
@@ -447,7 +447,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         for ($timestamp = $startDate; $timestamp <= $endDate; $timestamp += 24 * 3600) {
             $date = date('Y-m-d', $timestamp);
-            
+
             if (!isset($trends['daily_counts'][$date])) {
                 $trends['daily_counts'][$date] = 0;
             }
