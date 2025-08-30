@@ -33,7 +33,7 @@ class ValidatorFactory
     /**
      * 建立具有自訂配置的驗證器實例.
      *
-     * @param array<string, mixed> $config 自訂配置
+     * @param array $config 自訂配置
      */
     public function createWithConfig(array $config): ValidatorInterface
     {

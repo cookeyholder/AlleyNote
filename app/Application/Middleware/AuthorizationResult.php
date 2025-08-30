@@ -23,8 +23,8 @@ final readonly class AuthorizationResult implements JsonSerializable
      * @param bool $allowed 是否允許存取
      * @param string $reason 授權原因或拒絕原因
      * @param string $code 結果代碼
-     * @param array<string> $appliedRules 應用的授權規則清單
-     * @param array<string, mixed> $metadata 額外的元資料
+     * @param array $appliedRules 應用的授權規則清單
+     * @param array $metadata 額外的元資料
      */
     public function __construct(
         private bool $allowed,
@@ -122,8 +122,8 @@ final readonly class AuthorizationResult implements JsonSerializable
      *
      * @param string $reason 允許原因
      * @param string $code 結果代碼
-     * @param array<string> $appliedRules 應用的規則
-     * @param array<string, mixed> $metadata 元資料
+     * @param array $appliedRules 應用的規則
+     * @param array $metadata 元資料
      */
     public static function allow(
         string $reason = '存取被允許',
@@ -145,8 +145,8 @@ final readonly class AuthorizationResult implements JsonSerializable
      *
      * @param string $reason 拒絕原因
      * @param string $code 結果代碼
-     * @param array<string> $appliedRules 應用的規則
-     * @param array<string, mixed> $metadata 元資料
+     * @param array $appliedRules 應用的規則
+     * @param array $metadata 元資料
      */
     public static function deny(
         string $reason = '存取被拒絕',

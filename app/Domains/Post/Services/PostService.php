@@ -99,7 +99,7 @@ class PostService implements PostServiceInterface
      * 取得文章列表.
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
-     * @param array<string, mixed> $filters 篩選條件
+     * @param array $filters 篩選條件
      * @return array{items: Post[], total: int, page: int, per_page: int, last_page: int}
      */
     public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
@@ -142,7 +142,7 @@ class PostService implements PostServiceInterface
     /**
      * 設定文章標籤.
      * @param int $id 文章 ID
-     * @param array<int> $tagIds 標籤 ID 陣列
+     * @param array $tagIds 標籤 ID 陣列
      */
     public function setTags(int $id, array $tagIds): bool
     {

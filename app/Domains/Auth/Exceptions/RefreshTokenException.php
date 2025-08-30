@@ -67,7 +67,7 @@ class RefreshTokenException extends JwtException
      *
      * @param string $reason 失敗原因
      * @param string $customMessage 自定義錯誤訊息
-     * @param array<string, mixed> $additionalContext 額外上下文資訊
+     * @param array $additionalContext 額外上下文資訊
      */
     public function __construct(
         string $reason = self::REASON_NOT_FOUND,
@@ -320,7 +320,7 @@ class RefreshTokenException extends JwtException
      * 靜態工廠方法：儲存失敗.
      *
      * @param string $error 錯誤詳情
-     * @param array<string, mixed> $tokenData Token 資料
+     * @param array $tokenData Token 資料
      */
     public static function storageFailed(string $error, array $tokenData = []): self
     {

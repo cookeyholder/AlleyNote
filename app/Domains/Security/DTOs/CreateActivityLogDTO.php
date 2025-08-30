@@ -24,7 +24,7 @@ final class CreateActivityLogDTO implements JsonSerializable
         private ?string $targetType = null,
         private ?string $targetId = null,
         private ?string $description = null,
-        /** @var array<string, mixed>|null */
+        /** @var array|null */
         private ?array $metadata = null,
         private ?string $ipAddress = null,
         private ?string $userAgent = null,
@@ -40,9 +40,6 @@ final class CreateActivityLogDTO implements JsonSerializable
         }
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -240,9 +237,6 @@ final class CreateActivityLogDTO implements JsonSerializable
         return $new;
     }
 
-    /**
-     * @param array<string, mixed> $metadata
-     */
     public function withMetadata(array $metadata): self
     {
         $this->validateMetadata($metadata);
@@ -298,8 +292,6 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 驗證 metadata 是否可序列化.
-     *
-     * @param array<string, mixed> $metadata
      */
     private function validateMetadata(array $metadata): void
     {

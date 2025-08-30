@@ -132,7 +132,7 @@ class MiddlewareManager implements MiddlewareManagerInterface
     /**
      * 批次設定中介軟體優先順序.
      *
-     * @param array<string, int> $priorities 中介軟體名稱與優先順序對應表
+     * @param array $priorities 中介軟體名稱與優先順序對應表
      */
     public function setPriorities(array $priorities): self
     {
@@ -149,7 +149,7 @@ class MiddlewareManager implements MiddlewareManagerInterface
     /**
      * 批次啟用/停用中介軟體.
      *
-     * @param array<string, bool> $states 中介軟體名稱與狀態對應表
+     * @param array $states 中介軟體名稱與狀態對應表
      */
     public function setStates(array $states): self
     {

@@ -286,7 +286,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
     /**
      * 從陣列建立 JwtPayload 物件.
      *
-     * @param array<string, mixed> $payload 原始 payload 資料
+     * @param array $payload 原始 payload 資料
      *
      * @return JwtPayload JwtPayload 物件
      *

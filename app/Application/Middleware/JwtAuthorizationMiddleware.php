@@ -121,7 +121,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      *
      * @param int $userId 使用者 ID
      * @param string|null $userRole 使用者角色
-     * @param array<string> $userPermissions 使用者權限
+     * @param array $userPermissions 使用者權限
      * @param string $resource 資源名稱
      * @param string $action 操作名稱
      * @param ServerRequestInterface $request HTTP 請求物件
@@ -226,7 +226,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 基於權限的授權檢查.
      *
-     * @param array<string> $userPermissions 使用者權限
+     * @param array $userPermissions 使用者權限
      * @param string $resource 資源名稱
      * @param string $action 操作名稱
      * @return AuthorizationResult 授權結果
@@ -312,7 +312,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      *
      * @param int $userId 使用者 ID
      * @param string|null $userRole 使用者角色
-     * @param array<string> $userPermissions 使用者權限
+     * @param array $userPermissions 使用者權限
      * @param string $resource 資源名稱
      * @param string $action 操作名稱
      * @param ServerRequestInterface $request HTTP 請求物件
@@ -575,7 +575,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 從路徑片段中提取資源 ID.
      *
-     * @param array<string> $segments 路徑片段
+     * @param array $segments 路徑片段
      * @return int|null 資源 ID 或 null
      */
     private function extractResourceIdFromPath(array $segments): ?int
@@ -670,7 +670,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 檢查 IP 是否在指定清單中.
      *
      * @param string $ip 要檢查的 IP 位址
-     * @param array<string> $ipList IP 清單（支援 CIDR 格式）
+     * @param array $ipList IP 清單（支援 CIDR 格式）
      */
     private function isIpInList(string $ip, array $ipList): bool
     {
@@ -1070,7 +1070,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 設定授權配置.
      *
-     * @param array<string, mixed> $config 配置陣列
+     * @param array $config 配置陣列
      */
     public function setConfig(array $config): self
     {

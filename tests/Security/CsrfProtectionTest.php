@@ -7,6 +7,7 @@ namespace Tests\Security;
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
@@ -29,6 +30,8 @@ class CsrfProtectionTest extends TestCase
     private XssProtectionServiceInterface $xssProtection;
 
     private CsrfProtectionServiceInterface $csrfProtection;
+
+    private ActivityLoggingServiceInterface $activityLogger;
 
     private ServerRequestInterface $request;
 
@@ -54,14 +57,24 @@ class CsrfProtectionTest extends TestCase
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
         $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
         $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->request = Mockery::mock(ServerRequestInterface::class);
         $this->response = Mockery::mock(ResponseInterface::class);
         $this->stream = Mockery::mock(StreamInterface::class);
+
+        // 設定 ActivityLoggingService 預設行為
+        $this->activityLogger->shouldReceive('logFailure')
+            ->byDefault()
+            ->andReturn(true);
+        $this->activityLogger->shouldReceive('logSuccess')
+            ->byDefault()
+            ->andReturn(true);
 
         $this->controller = new PostController(
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger
         );
 
         // 設定預設回應行為

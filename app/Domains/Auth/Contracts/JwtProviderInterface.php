@@ -22,7 +22,7 @@ interface JwtProviderInterface
     /**
      * 生成 access token.
      *
-     * @param array<string, mixed> $payload Token payload
+     * @param array $payload Token payload
      * @param int|null $ttl Token 有效期（秒）
      * @return string JWT token
      *
@@ -33,7 +33,7 @@ interface JwtProviderInterface
     /**
      * 生成 refresh token.
      *
-     * @param array<string, mixed> $payload Token payload
+     * @param array $payload Token payload
      * @param int|null $ttl Token 有效期（秒）
      * @return string JWT token
      *

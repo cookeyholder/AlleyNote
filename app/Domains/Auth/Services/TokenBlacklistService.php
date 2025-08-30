@@ -137,7 +137,7 @@ final class TokenBlacklistService
     /**
      * 批次檢查 token 是否在黑名單中.
      *
-     * @param array<int, string> $jtis JTI 陣列
+     * @param array $jtis JTI 陣列
      * @return array<string, bool> JTI 為 key，是否在黑名單為值的陣列
      */
     public function batchCheckBlacklist(array $jtis): array
@@ -274,7 +274,7 @@ final class TokenBlacklistService
     /**
      * 批次從黑名單中移除 token.
      *
-     * @param array<int, string> $jtis JTI 陣列
+     * @param array $jtis JTI 陣列
      * @return int 成功移除的數量
      */
     public function batchRemoveFromBlacklist(array $jtis): int
@@ -415,7 +415,7 @@ final class TokenBlacklistService
     /**
      * 搜尋黑名單項目.
      *
-     * @param array<string, mixed> $criteria 搜尋條件
+     * @param array $criteria 搜尋條件
      * @param int|null $limit 限制數量
      * @param int $offset 偏移量
      * @return array<string, mixed> 搜尋結果

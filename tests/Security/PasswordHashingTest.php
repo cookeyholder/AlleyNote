@@ -40,6 +40,14 @@ class PasswordHashingTest extends TestCase
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
 
+        // 設定 ActivityLoggingService 預設行為
+        $this->activityLogger->shouldReceive('logFailure')
+            ->byDefault()
+            ->andReturn(true);
+        $this->activityLogger->shouldReceive('logSuccess')
+            ->byDefault()
+            ->andReturn(true);
+
         // 使用 SQLite 記憶體資料庫進行測試
         $this->db = new PDO('sqlite::memory:');
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

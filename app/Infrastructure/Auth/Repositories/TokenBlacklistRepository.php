@@ -347,7 +347,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 批次將 token 加入黑名單.
      *
-     * @param array<int, TokenBlacklistEntry> $entries 黑名單項目陣列
+     * @param array $entries 黑名單項目陣列
      * @return int 成功加入的數量
      */
     public function batchAddToBlacklist(array $entries): int
@@ -406,7 +406,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 批次檢查 token 是否在黑名單中.
      *
-     * @param array<int, string> $jtis JTI 陣列
+     * @param array $jtis JTI 陣列
      * @return array<string, bool> JTI 為 key，是否在黑名單為值的陣列
      */
     public function batchIsBlacklisted(array $jtis): array
@@ -447,7 +447,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 批次從黑名單移除 token.
      *
-     * @param array<int, string> $jtis JTI 陣列
+     * @param array $jtis JTI 陣列
      * @return int 成功移除的數量
      */
     public function batchRemoveFromBlacklist(array $jtis): int
@@ -839,7 +839,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 搜尋黑名單項目.
      *
-     * @param array<string, mixed> $criteria 搜尋條件
+     * @param array $criteria 搜尋條件
      * @param int|null $limit 限制數量，null 時不限制
      * @param int $offset 偏移量，預設 0
      * @return array<int, TokenBlacklistEntry> 搜尋結果
@@ -919,7 +919,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 計算搜尋結果總數.
      *
-     * @param array<string, mixed> $criteria 搜尋條件
+     * @param array $criteria 搜尋條件
      * @return int 總數
      */
     public function countSearch(array $criteria): int
@@ -1104,7 +1104,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 從資料庫記錄建立 TokenBlacklistEntry.
      *
-     * @param array<string, mixed> $row 資料庫記錄
+     * @param array $row 資料庫記錄
      * @return TokenBlacklistEntry 黑名單項目
      */
     private function createEntryFromRow(array $row): TokenBlacklistEntry

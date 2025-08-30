@@ -113,8 +113,8 @@ if (!function_exists('get_file_mime_type')) {
 if (!function_exists('sanitize_post_array')) {
     /**
      * 清理 Post 陣列中的 HTML 內容，適用於 API 輸出.
-     * @param array<string, mixed> $posts Post 資料陣列
-     * @return array 清理過的陣列
+     * @param array $posts Post 資料陣列
+     * @return array<string, mixed> 清理過的陣列
      */
     function sanitize_post_array(array $posts): array
     {

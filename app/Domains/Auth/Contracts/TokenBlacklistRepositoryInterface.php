@@ -85,7 +85,7 @@ interface TokenBlacklistRepositoryInterface
     /**
      * 批次將token加入黑名單.
      *
-     * @param array<int, TokenBlacklistEntry> $entries 黑名單項目陣列
+     * @param array $entries 黑名單項目陣列
      * @return int 成功加入的數量
      */
     public function batchAddToBlacklist(array $entries): int;
@@ -93,7 +93,7 @@ interface TokenBlacklistRepositoryInterface
     /**
      * 批次檢查token是否在黑名單中.
      *
-     * @param array<int, string> $jtis JTI陣列
+     * @param array $jtis JTI陣列
      * @return array<string, bool> JTI為key，是否在黑名單為值的陣列
      */
     public function batchIsBlacklisted(array $jtis): array;
@@ -101,7 +101,7 @@ interface TokenBlacklistRepositoryInterface
     /**
      * 批次從黑名單移除token.
      *
-     * @param array<int, string> $jtis JTI陣列
+     * @param array $jtis JTI陣列
      * @return int 成功移除的數量
      */
     public function batchRemoveFromBlacklist(array $jtis): int;
@@ -189,13 +189,13 @@ interface TokenBlacklistRepositoryInterface
     /**
      * 搜尋黑名單項目.
      *
-     * @param array<string, mixed> $criteria 搜尋條件
-     *                                       - user_id: 使用者ID
-     *                                       - device_id: 裝置ID
-     *                                       - token_type: token類型
-     *                                       - reason: 黑名單原因
-     *                                       - date_from: 起始日期
-     *                                       - date_to: 結束日期
+     * @param array $criteria 搜尋條件
+     *                        - user_id: 使用者ID
+     *                        - device_id: 裝置ID
+     *                        - token_type: token類型
+     *                        - reason: 黑名單原因
+     *                        - date_from: 起始日期
+     *                        - date_to: 結束日期
      * @param int|null $limit 限制數量，null時不限制
      * @param int $offset 偏移量，預設0
      * @return array<int, TokenBlacklistEntry> 搜尋結果
@@ -205,7 +205,7 @@ interface TokenBlacklistRepositoryInterface
     /**
      * 計算搜尋結果總數.
      *
-     * @param array<string, mixed> $criteria 搜尋條件
+     * @param array $criteria 搜尋條件
      * @return int 總數
      */
     public function countSearch(array $criteria): int;

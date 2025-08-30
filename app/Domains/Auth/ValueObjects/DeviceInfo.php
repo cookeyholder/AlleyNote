@@ -94,7 +94,7 @@ final readonly class DeviceInfo implements JsonSerializable
     /**
      * 從陣列建立裝置資訊.
      *
-     * @param array<string, mixed> $data 裝置資料
+     * @param array $data 裝置資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -428,7 +428,7 @@ final readonly class DeviceInfo implements JsonSerializable
     /**
      * 生成裝置名稱.
      *
-     * @param array<string, mixed> $parsedInfo 解析後的裝置資訊
+     * @param array $parsedInfo 解析後的裝置資訊
      */
     private static function generateDeviceName(array $parsedInfo): string
     {

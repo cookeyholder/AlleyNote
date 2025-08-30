@@ -27,7 +27,7 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array<string, mixed> $data 輸入資料
+     * @param array $data 輸入資料
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -235,7 +235,7 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 覆寫驗證方法以支援跨欄位驗證.
      *
-     * @param array<string, mixed> $data 輸入資料
+     * @param array $data 輸入資料
      * @return array 驗證通過的資料
      * @throws ValidationException 當驗證失敗時
      */

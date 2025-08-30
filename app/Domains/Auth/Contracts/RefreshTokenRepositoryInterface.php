@@ -195,7 +195,7 @@ interface RefreshTokenRepositoryInterface
     /**
      * 批次撤銷refresh token.
      *
-     * @param array<int, string> $jtis JTI陣列
+     * @param array $jtis JTI陣列
      * @param string $reason 撤銷原因
      * @return int 撤銷成功的數量
      */

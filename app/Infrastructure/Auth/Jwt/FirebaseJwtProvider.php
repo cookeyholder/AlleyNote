@@ -57,7 +57,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 產生 JWT access token.
      *
-     * @param array<string, mixed> $payload Token 載荷資料
+     * @param array $payload Token 載荷資料
      * @param int|null $ttl 存活時間（秒），null 使用預設值
      *
      * @return string JWT token 字串
@@ -74,7 +74,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 產生 JWT refresh token.
      *
-     * @param array<string, mixed> $payload Token 載荷資料
+     * @param array $payload Token 載荷資料
      * @param int|null $ttl 存活時間（秒），null 使用預設值
      *
      * @return string JWT token 字串
@@ -324,7 +324,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 產生 JWT token 的共用方法.
      *
-     * @param array<string, mixed> $payload Token 載荷資料
+     * @param array $payload Token 載荷資料
      * @param int $ttl 存活時間（秒）
      * @param string $type Token 類型
      *
@@ -377,7 +377,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 驗證必要欄位.
      *
-     * @param array<string, mixed> $payload Token 載荷
+     * @param array $payload Token 載荷
      *
      * @throws InvalidTokenException 當必要欄位缺失時
      */
@@ -399,7 +399,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 驗證 token 類型.
      *
-     * @param array<string, mixed> $payload Token 載荷
+     * @param array $payload Token 載荷
      * @param string $expectedType 預期類型
      *
      * @throws InvalidTokenException 當 token 類型不符合預期時
@@ -418,7 +418,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 驗證 issuer 和 audience.
      *
-     * @param array<string, mixed> $payload Token 載荷
+     * @param array $payload Token 載荷
      *
      * @throws TokenValidationException 當 issuer 或 audience 無效時
      */

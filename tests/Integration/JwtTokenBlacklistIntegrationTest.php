@@ -335,7 +335,7 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     /**
      * 建立 token_blacklist 資料表.
      */
-    private function createTokenBlacklistTable(): void
+    protected function createTokenBlacklistTable(): void
     {
         $sql = '
             CREATE TABLE token_blacklist (

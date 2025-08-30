@@ -60,7 +60,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * @param string $reason 加入黑名單的原因
      * @param int|null $userId 相關使用者 ID
      * @param string|null $deviceId 相關裝置 ID
-     * @param array<string, mixed> $metadata 額外的元資料
+     * @param array $metadata 額外的元資料
      *
      * @throws InvalidArgumentException 當參數無效時
      */
@@ -86,7 +86,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 從陣列建立黑名單項目.
      *
-     * @param array<string, mixed> $data 黑名單資料
+     * @param array $data 黑名單資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -153,7 +153,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * @param DateTimeImmutable $expiresAt 過期時間
      * @param string $securityReason 安全原因
      * @param int|null $userId 使用者 ID
-     * @param array<string, mixed> $metadata 額外資訊
+     * @param array $metadata 額外資訊
      */
     public static function forSecurityBreach(
         string $jti,
@@ -657,7 +657,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 驗證元資料.
      *
-     * @param array<string, mixed> $metadata 元資料
+     * @param array $metadata 元資料
      * @throws InvalidArgumentException 當元資料無效時
      */
     private function validateMetadata(array $metadata): void

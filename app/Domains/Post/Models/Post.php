@@ -35,9 +35,6 @@ class Post implements JsonSerializable
 
     private string $updatedAt;
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public function __construct(array $data)
     {
         $this->id = isset($data['id']) ? (int) $data['id'] : 0;
@@ -184,9 +181,6 @@ class Post implements JsonSerializable
         return $this->toArray();
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public static function fromArray(array $data): self
     {
         return new self($data);

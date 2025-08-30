@@ -62,8 +62,6 @@ class RouteMatchResult
 
     /**
      * 建立成功匹配的結果.
-     *
-     * @param array<string, string> $parameters
      */
     public static function success(RouteInterface $route, array $parameters = []): self
     {

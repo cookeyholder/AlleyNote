@@ -227,8 +227,6 @@ class Router implements RouterInterface
     /**
      * 合併群組屬性.
      *
-     * @param array<string, mixed> $previous
-     * @param array<string, mixed> $new
      * @return array<string, mixed>
      */
     private function mergeGroupAttributes(array $previous, array $new): array

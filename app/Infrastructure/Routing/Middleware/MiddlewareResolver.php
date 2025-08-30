@@ -83,7 +83,6 @@ class MiddlewareResolver
     /**
      * 解析中介軟體陣列.
      *
-     * @param array<string|MiddlewareInterface> $middlewares
      * @return MiddlewareInterface[]
      */
     public function resolveMultiple(array $middlewares): array

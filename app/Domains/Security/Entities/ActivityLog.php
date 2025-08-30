@@ -300,8 +300,6 @@ class ActivityLog
 
     /**
      * 從資料庫資料建立 ActivityLog 實體.
-     *
-     * @param array<string, mixed> $data
      */
     public static function fromDatabaseRow(array $data): self
     {

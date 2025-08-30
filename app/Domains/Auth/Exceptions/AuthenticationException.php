@@ -59,7 +59,7 @@ class AuthenticationException extends JwtException
      *
      * @param string $reason 失敗原因
      * @param string $customMessage 自定義錯誤訊息
-     * @param array<string, mixed> $additionalContext 額外上下文資訊
+     * @param array $additionalContext 額外上下文資訊
      */
     public function __construct(
         string $reason = self::REASON_INVALID_CREDENTIALS,
@@ -389,7 +389,7 @@ class AuthenticationException extends JwtException
     /**
      * 靜態工廠方法：憑證遺失.
      *
-     * @param array<string> $missingFields 遺失的欄位
+     * @param array $missingFields 遺失的欄位
      */
     public static function missingCredentials(array $missingFields = []): self
     {
@@ -428,7 +428,7 @@ class AuthenticationException extends JwtException
      * 靜態工廠方法：權限不足.
      *
      * @param string $requiredPrivilege 需要的權限
-     * @param array<string> $userPrivileges 用戶擁有的權限
+     * @param array $userPrivileges 用戶擁有的權限
      * @param int|null $userId 用戶 ID
      */
     public static function insufficientPrivileges(

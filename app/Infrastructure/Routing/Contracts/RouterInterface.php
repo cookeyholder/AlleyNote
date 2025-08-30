@@ -73,7 +73,7 @@ interface RouterInterface
     /**
      * 建立路由群組.
      *
-     * @param array<string, mixed> $attributes 群組屬性 (prefix, middleware, namespace, etc.)
+     * @param array $attributes 群組屬性 (prefix, middleware, namespace, etc.)
      */
     public function group(array $attributes, callable $callback): void;
 
@@ -89,8 +89,6 @@ interface RouterInterface
 
     /**
      * 根據路由名稱產生 URL.
-     *
-     * @param array<string, mixed> $parameters
      */
     public function url(string $name, array $parameters = []): string;
 

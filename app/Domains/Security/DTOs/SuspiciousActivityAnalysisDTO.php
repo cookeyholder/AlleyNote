@@ -23,10 +23,10 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
      * @param int $timeWindowMinutes 分析時間窗口（分鐘）
      * @param bool $isSuspicious 是否可疑
      * @param ActivitySeverity $severityLevel 嚴重程度等級
-     * @param array<string, int> $activityCounts 各活動類型計數
-     * @param array<string, int> $failureCounts 各活動類型失敗計數
-     * @param array<string, mixed> $detectionRules 觸發的檢測規則
-     * @param array<string, mixed> $metadata 額外的元數據
+     * @param array $activityCounts 各活動類型計數
+     * @param array $failureCounts 各活動類型失敗計數
+     * @param array $detectionRules 觸發的檢測規則
+     * @param array $metadata 額外的元數據
      * @param string|null $recommendedAction 建議的處理動作
      * @param float $confidenceScore 信心分數（0-1）
      */
