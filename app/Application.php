@@ -120,7 +120,7 @@ class Application
                 return null;
             }
 
-            public function getSize(): ?int
+            public function getSize(): int
             {
                 return strlen($this->content);
             }

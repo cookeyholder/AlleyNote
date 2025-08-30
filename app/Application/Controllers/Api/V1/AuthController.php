@@ -207,6 +207,20 @@ class AuthController extends BaseController
     {
         try {
             $data = $request->getParsedBody();
+
+            // 確保 $data 是陣列
+            if (!is_array($data)) {
+                $errorResponse = json_encode([
+                    'success' => false,
+                    'message' => 'Invalid request data format',
+                    'error_code' => 400,
+                ]) ?: '{"error": "JSON encoding failed"}';
+
+                $response->getBody()->write($errorResponse);
+
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
             $dto = new RegisterUserDTO($this->validator, $data);
             $user = $this->authService->register($dto);
 

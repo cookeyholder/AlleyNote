@@ -25,28 +25,28 @@ foreach ($files as $file) {
         $filePath = $file->getPathname();
         $content = file_get_contents($filePath);
         $originalContent = $content;
-        
+
         // 替換 namespace 宣告
         $content = preg_replace('/^namespace AlleyNote\\\\/m', 'namespace App\\', $content, -1, $namespaceCount);
-        
+
         // 替換 use 語句
         $content = preg_replace('/^use AlleyNote\\\\/m', 'use App\\', $content, -1, $useCount);
-        
+
         // 替換在程式碼中的完整類別名稱參考
         $content = preg_replace('/AlleyNote\\\\([A-Za-z0-9\\\\]+)::/', 'App\\\\$1::', $content, -1, $staticCount);
-        
+
         // 替換字串中的命名空間參考（如 DI 配置）
         $content = preg_replace('/"AlleyNote\\\\([^"]+)"/', '"App\\\\$1"', $content, -1, $stringCount);
         $content = preg_replace("/'AlleyNote\\\\([^']+)'/", "'App\\\\$1'", $content, -1, $singleStringCount);
-        
+
         $totalChanges = $namespaceCount + $useCount + $staticCount + $stringCount + $singleStringCount;
-        
+
         if ($content !== $originalContent) {
             file_put_contents($filePath, $content);
             $changedFiles++;
             echo "✅ 修復: " . str_replace(__DIR__ . '/../', '', $filePath) . " (變更: $totalChanges)\n";
         }
-        
+
         $processedFiles++;
     }
 }
@@ -71,25 +71,25 @@ foreach ($testFiles as $file) {
         $filePath = $file->getPathname();
         $content = file_get_contents($filePath);
         $originalContent = $content;
-        
+
         // 替換 use 語句
         $content = preg_replace('/^use AlleyNote\\\\/m', 'use App\\', $content, -1, $useCount);
-        
+
         // 替換在程式碼中的完整類別名稱參考
         $content = preg_replace('/AlleyNote\\\\([A-Za-z0-9\\\\]+)::/', 'App\\\\$1::', $content, -1, $staticCount);
-        
+
         // 替換字串中的命名空間參考
         $content = preg_replace('/"AlleyNote\\\\([^"]+)"/', '"App\\\\$1"', $content, -1, $stringCount);
         $content = preg_replace("/'AlleyNote\\\\([^']+)'/", "'App\\\\$1'", $content, -1, $singleStringCount);
-        
+
         $totalChanges = $useCount + $staticCount + $stringCount + $singleStringCount;
-        
+
         if ($content !== $originalContent) {
             file_put_contents($filePath, $content);
             $testChanged++;
             echo "✅ 修復測試: " . str_replace(__DIR__ . '/../', '', $filePath) . " (變更: $totalChanges)\n";
         }
-        
+
         $testProcessed++;
     }
 }

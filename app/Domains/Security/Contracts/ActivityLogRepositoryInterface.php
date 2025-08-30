@@ -35,6 +35,11 @@ interface ActivityLogRepositoryInterface
     public function findByUuid(string $uuid): ?array;
 
     /**
+     * 取得所有活動記錄.
+     */
+    public function findAll(int $limit = 20, int $offset = 0): array;
+
+    /**
      * 查詢使用者的活動記錄.
      */
     public function findByUser(

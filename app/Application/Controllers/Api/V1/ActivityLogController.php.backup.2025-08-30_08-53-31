@@ -23,7 +23,8 @@ class ActivityLogController extends BaseController
     public function __construct(
         private readonly ActivityLoggingServiceInterface $loggingService,
         private readonly ActivityLogRepositoryInterface $repository,
-    ) {}
+    ) {
+    }
 
     #[OA\Post(
         path: '/api/v1/activity-logs',

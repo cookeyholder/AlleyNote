@@ -9,6 +9,7 @@ use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Shared\Exceptions\ValidationException;
 use Exception;
@@ -28,6 +29,8 @@ class AttachmentUploadTest extends TestCase
 
     protected \App\Domains\Auth\Services\AuthorizationService|MockInterface $authService;
 
+    protected \App\Domains\Security\Contracts\ActivityLoggingServiceInterface|MockInterface $activityLogger;
+
     protected \App\Domains\Security\Contracts\LoggingSecurityServiceInterface|MockInterface $logger;
 
     protected string $uploadDir;
@@ -42,10 +45,14 @@ class AttachmentUploadTest extends TestCase
         // Mock authService
         $this->authService = Mockery::mock(AuthorizationService::class);
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
-        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->authService->shouldReceive('canUploadAttachment')->byDefault()->andReturn(true);
         $this->authService->shouldReceive('canDeleteAttachment')->byDefault()->andReturn(true);
         $this->authService->shouldReceive('isSuperAdmin')->byDefault()->andReturn(false);
+
+        // Mock activity logger
+        $this->activityLogger->shouldReceive('logSuccess')->byDefault()->andReturn(true);
+        $this->activityLogger->shouldReceive('logFailure')->byDefault()->andReturn(true);
+        $this->activityLogger->shouldReceive('log')->byDefault()->andReturn(true);
 
         // Mock logger
         $this->logger = Mockery::mock(LoggingSecurityServiceInterface::class);

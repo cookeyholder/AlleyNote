@@ -225,6 +225,38 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     }
 
     /**
+     * 取得所有活動記錄.
+     */
+    public function findAll(int $limit = 20, int $offset = 0): array
+    {
+        try {
+            $sql = 'SELECT ' . self::SELECT_FIELDS . ' 
+                    FROM ' . self::TABLE_NAME . ' 
+                    ORDER BY occurred_at DESC 
+                    LIMIT :limit OFFSET :offset';
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return array_map(function (array $row): array {
+                $entity = ActivityLog::fromDatabaseRow($row);
+
+                return $entity->toArray();
+            }, $results);
+        } catch (PDOException $e) {
+            throw new RuntimeException(
+                sprintf('Failed to retrieve activity logs: %s', $e->getMessage()),
+                0,
+                $e,
+            );
+        }
+    }
+
+    /**
      * 查詢使用者的活動記錄.
      */
     public function findByUser(
