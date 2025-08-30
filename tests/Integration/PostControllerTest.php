@@ -43,6 +43,9 @@ class PostControllerTest extends TestCase
     /** @var OutputSanitizerInterface&MockInterface */
     private OutputSanitizerInterface $sanitizer;
 
+    /** @var ActivityLoggingServiceInterface&MockInterface */
+    private ActivityLoggingServiceInterface $activityLogger;
+
     private mixed $request;
 
     private mixed $response;
@@ -62,7 +65,6 @@ class PostControllerTest extends TestCase
         $this->validator = Mockery::mock(ValidatorInterface::class);
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
-        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
 
         // 設定預設行為
         $this->xssProtection->shouldReceive('cleanArray')
@@ -77,13 +79,21 @@ class PostControllerTest extends TestCase
             ->byDefault()
             ->andReturn('new-token');
 
+        // 設定 activityLogger 預設行為
+        $this->activityLogger->shouldReceive('log')
+            ->byDefault()
+            ->andReturn(true);
+        $this->activityLogger->shouldReceive('logFailure')
+            ->byDefault()
+            ->andReturn(true);
+        $this->activityLogger->shouldReceive('logSuccess')
+            ->byDefault()
+            ->andReturn(true);
+
         // 設定 sanitizer 預設行為 - 返回原值
         $this->sanitizer->shouldReceive('sanitizeHtml')
             ->andReturnUsing(function ($input) {
                 return $input;
-                // 設置 ActivityLoggingService mock 期望
-                $this->activityLogger->shouldReceive('log')
-                    ->andReturn();
             })
             ->byDefault();
 

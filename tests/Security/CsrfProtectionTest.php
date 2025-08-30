@@ -7,6 +7,7 @@ namespace Tests\Security;
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
@@ -58,10 +59,16 @@ class CsrfProtectionTest extends TestCase
         $this->response = Mockery::mock(ResponseInterface::class);
         $this->stream = Mockery::mock(StreamInterface::class);
 
+        $activityLoggerMock = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $activityLoggerMock->shouldReceive('log')->byDefault()->andReturn(true);
+        $activityLoggerMock->shouldReceive('logFailure')->byDefault()->andReturn(true);
+        $activityLoggerMock->shouldReceive('logSuccess')->byDefault()->andReturn(true);
+        
         $this->controller = new PostController(
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $activityLoggerMock,
         );
 
         // 設定預設回應行為

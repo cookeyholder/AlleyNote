@@ -126,6 +126,10 @@ class PasswordHashingTest extends TestCase
         $stmt->execute([$user['id']]);
         $hashedPassword = $stmt->fetchColumn();
 
+        // 確保查詢成功
+        $this->assertNotFalse($hashedPassword, '無法從資料庫取得雜湊密碼');
+        $this->assertIsString($hashedPassword, '雜湊密碼必須是字串型別');
+
         // 驗證使用 Argon2id 演算法
         $this->assertStringStartsWith('$argon2id$', $hashedPassword);
 
@@ -155,6 +159,10 @@ class PasswordHashingTest extends TestCase
         $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
         $stmt->execute([$user['id']]);
         $hashedPassword = $stmt->fetchColumn();
+
+        // 確保查詢成功
+        $this->assertNotFalse($hashedPassword, '無法從資料庫取得雜湊密碼');
+        $this->assertIsString($hashedPassword, '雜湊密碼必須是字串型別');
 
         // 取得雜湊資訊
         $info = password_get_info($hashedPassword);
@@ -211,6 +219,11 @@ class PasswordHashingTest extends TestCase
 
         // 註冊使用者
         $user = $this->authService->register($dto);
+        
+        // 確保使用者註冊成功且有 ID
+        $this->assertIsArray($user, '使用者註冊應該回傳陣列');
+        $this->assertArrayHasKey('id', $user, '使用者陣列應該包含 ID');
+        $this->assertIsInt($user['id'], '使用者 ID 應該是整數');
 
         // 模擬使用者嘗試更新密碼為相同的密碼
         $this->expectException(InvalidArgumentException::class);

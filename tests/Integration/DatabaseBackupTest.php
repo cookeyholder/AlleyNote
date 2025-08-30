@@ -110,10 +110,10 @@ class DatabaseBackupTest extends TestCase
         $returnVar = 0;
 
         exec(sprintf(
-            '/bin/bash %s/scripts/restore_db.sh %s %s 2>&1',
+            'DB_PATH=%s /bin/bash %s/scripts/restore_db.sh %s 2>&1',
+            escapeshellarg($this->dbPath),
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->dbPath),
         ), $output, $returnVar);
 
         // 驗證還原是否成功

@@ -185,7 +185,7 @@ class PostRepository implements PostRepositoryInterface
 
         return [
             'uuid' => generate_uuid(),
-            'seq_number' => null,
+            'seq_number' => $this->getNextSeqNumber(),
             'title' => $data['title'] ?? '',
             'content' => $data['content'] ?? '',
             'user_id' => $data['user_id'] ?? 0,
@@ -196,6 +196,18 @@ class PostRepository implements PostRepositoryInterface
             'created_at' => $now,
             'updated_at' => $now,
         ];
+    }
+
+    /**
+     * 取得下一個序列號碼
+     */
+    private function getNextSeqNumber(): int
+    {
+        $sql = 'SELECT COALESCE(MAX(seq_number), 0) + 1 as next_seq FROM posts';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int) $result['next_seq'];
     }
 
     public function find(int $id): ?Post

@@ -42,10 +42,20 @@ class FileUploadSecurityTest extends TestCase
         // 初始化mock對象
         $this->authService = Mockery::mock(AuthorizationService::class);
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
-        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->attachmentRepo = Mockery::mock(AttachmentRepository::class);
         $this->postRepo = Mockery::mock(PostRepository::class);
         $this->cacheService = Mockery::mock(CacheService::class);
+
+        // 設定 activityLogger 預設行為
+        $this->activityLogger->shouldReceive('log')
+            ->byDefault()
+            ->andReturn(true);
+        $this->activityLogger->shouldReceive('logFailure')
+            ->byDefault()
+            ->andReturn(true);
+        $this->activityLogger->shouldReceive('logSuccess')
+            ->byDefault()
+            ->andReturn(true);
 
         $this->uploadDir = '/tmp/test-uploads';
 
