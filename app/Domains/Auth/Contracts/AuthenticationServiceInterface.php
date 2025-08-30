@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\Contracts;
+namespace App\Domains\Auth\Contracts;
 
-use AlleyNote\Domains\Auth\DTOs\LoginRequestDTO;
-use AlleyNote\Domains\Auth\DTOs\LoginResponseDTO;
-use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
-use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
-use AlleyNote\Domains\Auth\DTOs\RefreshResponseDTO;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\DTOs\LoginRequestDTO;
+use App\Domains\Auth\DTOs\LoginResponseDTO;
+use App\Domains\Auth\DTOs\LogoutRequestDTO;
+use App\Domains\Auth\DTOs\RefreshRequestDTO;
+use App\Domains\Auth\DTOs\RefreshResponseDTO;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use Exception;
 

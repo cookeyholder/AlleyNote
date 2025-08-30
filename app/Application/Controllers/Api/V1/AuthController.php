@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
-use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
-use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use AlleyNote\Domains\Auth\DTOs\LoginRequestDTO;
-use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
-use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\DTOs\LoginRequestDTO;
+use App\Domains\Auth\DTOs\LogoutRequestDTO;
+use App\Domains\Auth\DTOs\RefreshRequestDTO;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;

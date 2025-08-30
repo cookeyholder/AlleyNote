@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\DTOs;
+namespace App\Domains\Auth\DTOs;
 
 /**
  * 刷新請求 DTO.

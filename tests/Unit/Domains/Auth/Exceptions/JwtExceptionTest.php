@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Exceptions;
 
-use AlleyNote\Domains\Auth\Exceptions\JwtException;
+use App\Domains\Auth\Exceptions\JwtException;
 use Exception;
 use PHPUnit\Framework\TestCase;
 

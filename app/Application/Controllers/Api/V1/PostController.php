@@ -831,7 +831,7 @@ class PostController extends BaseController
             ),
         ],
     )]
-    public function togglePin(Request $request, Response $response, array $args): Response: Response
+    public function togglePin(Request $request, Response $response, array $args): Response
     {
         try {
             $id = (int) $args['id'];
@@ -999,7 +999,7 @@ class PostController extends BaseController
     /**
      * 刪除貼文.
      */
-    public function destroy(Request $request, Response $response, array $args): Response: Response
+    public function destroy(Request $request, Response $response, array $args): Response
     {
         try {
             $postId = (int) $args['id'];

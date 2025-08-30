@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Auth\Repositories;
 
-use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
-use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
+use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
+use App\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use DateTime;
 use DateTimeImmutable;
 use PDO;

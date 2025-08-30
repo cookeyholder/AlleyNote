@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Middleware;
 
-use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
-use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
-use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Exceptions\InvalidTokenException;
+use App\Domains\Auth\Exceptions\TokenExpiredException;
+use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use DateTimeImmutable;

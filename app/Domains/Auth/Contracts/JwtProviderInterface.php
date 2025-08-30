@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\Contracts;
+namespace App\Domains\Auth\Contracts;
 
-use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
-use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
-use AlleyNote\Domains\Auth\Exceptions\TokenGenerationException;
-use AlleyNote\Domains\Auth\Exceptions\TokenParsingException;
-use AlleyNote\Domains\Auth\Exceptions\TokenValidationException;
+use App\Domains\Auth\Exceptions\InvalidTokenException;
+use App\Domains\Auth\Exceptions\TokenExpiredException;
+use App\Domains\Auth\Exceptions\TokenGenerationException;
+use App\Domains\Auth\Exceptions\TokenParsingException;
+use App\Domains\Auth\Exceptions\TokenValidationException;
 use DateTimeImmutable;
 
 /**

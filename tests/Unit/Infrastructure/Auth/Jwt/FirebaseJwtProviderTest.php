@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Auth\Jwt;
 
-use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
-use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
-use AlleyNote\Domains\Auth\Exceptions\TokenParsingException;
-use AlleyNote\Domains\Auth\Exceptions\TokenValidationException;
+use App\Domains\Auth\Exceptions\InvalidTokenException;
+use App\Domains\Auth\Exceptions\TokenExpiredException;
+use App\Domains\Auth\Exceptions\TokenParsingException;
+use App\Domains\Auth\Exceptions\TokenValidationException;
 use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use App\Shared\Config\JwtConfig;
 use DateTimeImmutable;
