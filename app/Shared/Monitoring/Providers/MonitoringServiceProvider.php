@@ -49,16 +49,16 @@ class MonitoringServiceProvider
 
             // 效能監控服務
             PerformanceMonitorInterface::class => \DI\factory(function (ContainerInterface $c) {
-                return new PerformanceMonitorService(
-                    $c->get(LoggerInterface::class)
-                );
+                $logger = $c->get(LoggerInterface::class);
+                assert($logger instanceof LoggerInterface);
+                return new PerformanceMonitorService($logger);
             }),
 
             // 錯誤追蹤服務
             ErrorTrackerInterface::class => \DI\factory(function (ContainerInterface $c) {
-                return new ErrorTrackerService(
-                    $c->get(LoggerInterface::class)
-                );
+                $logger = $c->get(LoggerInterface::class);
+                assert($logger instanceof LoggerInterface);
+                return new ErrorTrackerService($logger);
             }),
 
             // 註冊具體實現類別的別名
@@ -74,25 +74,42 @@ class MonitoringServiceProvider
     {
         // 系統監控服務
         $container->set(SystemMonitorInterface::class, function (ContainerInterface $c) {
-            return new SystemMonitorService(
-                $c->get(LoggerInterface::class),
-                $c->get(\PDO::class),
-                $c->get(\App\Shared\Config\EnvironmentConfig::class)
-            );
+            $logger = $c->get(LoggerInterface::class);
+            if (!($logger instanceof LoggerInterface)) {
+                throw new \RuntimeException('Logger must implement LoggerInterface');
+            }
+
+            $database = $c->get(\PDO::class);
+            if (!($database instanceof \PDO)) {
+                throw new \RuntimeException('Database must be PDO instance');
+            }
+
+            $config = $c->get(\App\Shared\Config\EnvironmentConfig::class);
+            if (!($config instanceof \App\Shared\Config\EnvironmentConfig)) {
+                throw new \RuntimeException('Config must be EnvironmentConfig instance');
+            }
+
+            return new SystemMonitorService($logger, $database, $config);
         });
 
         // 效能監控服務
         $container->set(PerformanceMonitorInterface::class, function (ContainerInterface $c) {
-            return new PerformanceMonitorService(
-                $c->get(LoggerInterface::class)
-            );
+            $logger = $c->get(LoggerInterface::class);
+            if (!($logger instanceof LoggerInterface)) {
+                throw new \RuntimeException('Logger must implement LoggerInterface');
+            }
+
+            return new PerformanceMonitorService($logger);
         });
 
         // 錯誤追蹤服務
         $container->set(ErrorTrackerInterface::class, function (ContainerInterface $c) {
-            return new ErrorTrackerService(
-                $c->get(LoggerInterface::class)
-            );
+            $logger = $c->get(LoggerInterface::class);
+            if (!($logger instanceof LoggerInterface)) {
+                throw new \RuntimeException('Logger must implement LoggerInterface');
+            }
+
+            return new ErrorTrackerService($logger);
         });
 
         // 註冊具體實現類別的別名
@@ -125,90 +142,7 @@ class MonitoringServiceProvider
 
         // 暫時完全禁用錯誤處理器設置，避免測試中的 risky 警告
         // TODO: 在解決測試隔離問題後重新啟用
-        return;
-
-        // 設置預設的錯誤處理器
-        set_error_handler(function (int $severity, string $message, string $file = '', int $line = 0) use ($errorTracker) {
-            // 如果錯誤報告被關閉，則不處理
-            if (!(error_reporting() & $severity)) {
-                return false;
-            }
-
-            $context = [
-                'severity' => $severity,
-                'file' => $file,
-                'line' => $line,
-                'severity_name' => self::getErrorSeverityName($severity),
-            ];
-
-            switch ($severity) {
-                case E_ERROR:
-                case E_CORE_ERROR:
-                case E_COMPILE_ERROR:
-                case E_USER_ERROR:
-                    $errorTracker->recordError(
-                        new \ErrorException($message, 0, $severity, $file, $line),
-                        $context
-                    );
-                    break;
-
-                case E_WARNING:
-                case E_CORE_WARNING:
-                case E_COMPILE_WARNING:
-                case E_USER_WARNING:
-                    $errorTracker->recordWarning($message, $context);
-                    break;
-
-                default:
-                    $errorTracker->recordInfo($message, $context);
-                    break;
-            }
-
-            return true;
-        });
-
-        // 設置例外處理器
-        // 暫時完全禁用例外處理器設置，避免測試中的 risky 警告
-        // TODO: 在解決測試隔離問題後重新啟用
-        // set_exception_handler(function (\Throwable $exception) use ($errorTracker) {
-        //     $errorTracker->recordCriticalError($exception, [
-        //         'uncaught_exception' => true,
-        //         'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
-        //         'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
-        //     ]);
-        // });
-
-        // 註冊關閉處理器（檢查致命錯誤）
-        // 暫時完全禁用關閉處理器設置，避免測試中的 risky 警告
-        // TODO: 在解決測試隔離問題後重新啟用
-        /*register_shutdown_function(function () use ($errorTracker, $performanceMonitor) {
-            $error = error_get_last();
-
-            if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_RECOVERABLE_ERROR])) {
-                $errorTracker->recordCriticalError(
-                    new \ErrorException(
-                        $error['message'],
-                        0,
-                        $error['type'],
-                        $error['file'],
-                        $error['line']
-                    ),
-                    [
-                        'fatal_error' => true,
-                        'error_type' => self::getErrorSeverityName($error['type']),
-                    ]
-                );
-            }
-
-            // 記錄請求結束資訊
-            $performanceMonitor->recordMetric('request_completed', 1, 'count');
-
-            // 記錄記憶體使用情況
-            $performanceMonitor->recordMetric('request.memory_peak_usage', memory_get_peak_usage(true), 'bytes');
-            $performanceMonitor->recordMetric('request.memory_usage', memory_get_usage(true), 'bytes');
-            $performanceMonitor->recordMetric('request.execution_time', microtime(true) - ($_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true)), 'seconds');
-        });*/
-
+        
         // 設置預設的錯誤過濾器
         $errorTracker->setErrorFilter(function (string $level, string $message, array $context, ?\Throwable $exception) {
             // 過濾掉某些不重要的錯誤
@@ -289,28 +223,4 @@ class MonitoringServiceProvider
         }
     }
 
-    /**
-     * 取得錯誤嚴重程度名稱。
-     */
-    private static function getErrorSeverityName(int $severity): string
-    {
-        return match ($severity) {
-            E_ERROR => 'E_ERROR',
-            E_WARNING => 'E_WARNING',
-            E_PARSE => 'E_PARSE',
-            E_NOTICE => 'E_NOTICE',
-            E_CORE_ERROR => 'E_CORE_ERROR',
-            E_CORE_WARNING => 'E_CORE_WARNING',
-            E_COMPILE_ERROR => 'E_COMPILE_ERROR',
-            E_COMPILE_WARNING => 'E_COMPILE_WARNING',
-            E_USER_ERROR => 'E_USER_ERROR',
-            E_USER_WARNING => 'E_USER_WARNING',
-            E_USER_NOTICE => 'E_USER_NOTICE',
-            E_STRICT => 'E_STRICT',
-            E_RECOVERABLE_ERROR => 'E_RECOVERABLE_ERROR',
-            E_DEPRECATED => 'E_DEPRECATED',
-            E_USER_DEPRECATED => 'E_USER_DEPRECATED',
-            default => 'UNKNOWN',
-        };
-    }
 }

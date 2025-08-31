@@ -60,4 +60,14 @@ interface PerformanceMonitorInterface
      * 清除舊的效能資料。
      */
     public function cleanupOldData(int $daysToKeep = 7): int;
+
+    /**
+     * 設定慢查詢閾值。
+     */
+    public function setSlowQueryThreshold(float $threshold): void;
+
+    /**
+     * 設定慢操作閾值。
+     */
+    public function setSlowOperationThreshold(float $threshold): void;
 }

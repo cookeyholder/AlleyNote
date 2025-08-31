@@ -331,8 +331,8 @@ class CacheMonitor implements CacheMonitorInterface
             /** @var array<string, mixed> $validStats */
             $validStats = $stats;
 
-            $totalOperations = is_numeric($validStats['total_operations'] ?? 0) ? (int) ($validStats['total_operations']) : 0;
-            $successfulOperations = is_numeric($validStats['successful_operations'] ?? 0) ? (int) ($validStats['successful_operations']) : 0;
+            $totalOperations = is_numeric($validStats['total_operations'] ?? 0) ? (int) ($validStats['total_operations'] ?? 0) : 0;
+            $successfulOperations = is_numeric($validStats['successful_operations'] ?? 0) ? (int) ($validStats['successful_operations'] ?? 0) : 0;
 
             $avgDurationValue = $validStats['avg_duration'] ?? 0;
             $minDurationValue = $validStats['min_duration'] ?? 0;
@@ -396,11 +396,11 @@ class CacheMonitor implements CacheMonitorInterface
             $stats[$driver] = [
                 'total_errors' => $driverTotalErrors,
                 'errors_by_operation' => $errorsByOperation,
-                'recent_errors_count' => count($recentErrors),
+                'recent_errors_count' => is_array($recentErrors) ? count($recentErrors) : 0,
                 'error_rate' => $this->calculateErrorRate($driver),
             ];
 
-            $totalErrors += $driverTotalErrors;
+            $totalErrors += is_numeric($driverTotalErrors) ? (int) $driverTotalErrors : 0;
         }
 
         return [
@@ -435,7 +435,7 @@ class CacheMonitor implements CacheMonitorInterface
                 $issues[] = [
                     'driver' => $driver,
                     'details' => $details,
-                    'since' => date('Y-m-d H:i:s', $timestamp),
+                    'since' => date('Y-m-d H:i:s', is_numeric($timestamp) ? (int) $timestamp : time()),
                 ];
             }
         }
@@ -464,12 +464,12 @@ class CacheMonitor implements CacheMonitorInterface
 
         // 清理錯誤記錄
         foreach ($this->errorStats as $driver => &$errorData) {
-            $originalErrorCount = count($errorData['recent_errors']);
-            $errorData['recent_errors'] = array_filter(
+            $originalErrorCount = is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0;
+            $errorData['recent_errors'] = is_array($errorData['recent_errors']) ? array_filter(
                 $errorData['recent_errors'],
-                fn($error) => $error['timestamp'] > $cutoffTime
-            );
-            $cleaned += $originalErrorCount - count($errorData['recent_errors']);
+                fn($error) => is_array($error) && isset($error['timestamp']) && $error['timestamp'] > $cutoffTime
+            ) : [];
+            $cleaned += $originalErrorCount - (is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0);
         }
 
         $this->logger->info('快取監控資料清理完成', [
