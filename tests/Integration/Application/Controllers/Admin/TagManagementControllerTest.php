@@ -74,7 +74,7 @@ class TagManagementControllerTest extends TestCase
         if (!isset($data['success']) || $data['success'] !== true) {
             return false;
         }
-        
+
         $current = $data;
         foreach ($expectedKeys as $key => $value) {
             if (is_array($value)) {
