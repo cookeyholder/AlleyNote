@@ -215,7 +215,7 @@ class SystemMonitorService implements SystemMonitorInterface
         if ($memoryUsagePercent > 80) {
             $memoryLimitMb = is_array($metrics['memory'] ?? null) && is_numeric($metrics['memory']['limit_mb'] ?? 0)
                 ? (float) $metrics['memory']['limit_mb'] : 0.0;
-            
+
             $this->logger->warning('High memory usage detected', [
                 'usage_percent' => $memoryUsagePercent,
                 'used_mb' => $memoryUsageMb,

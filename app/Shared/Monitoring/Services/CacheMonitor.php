@@ -292,7 +292,7 @@ class CacheMonitor implements CacheMonitorInterface
 
             /** @var array<string, mixed> $validStats */
             $validStats = $driverStats;
-            
+
             $stats[$driver] = [
                 'hit_rate' => $validStats['hit_rate'] ?? 0.0,
                 'hits' => $validStats['hits'] ?? 0,
@@ -303,7 +303,7 @@ class CacheMonitor implements CacheMonitorInterface
 
             $totalReqValue = $validStats['total_requests'] ?? 0;
             $hitsValue = $validStats['hits'] ?? 0;
-            
+
             $totalRequests += is_numeric($totalReqValue) ? (int) $totalReqValue : 0;
             $totalHits += is_numeric($hitsValue) ? (int) $hitsValue : 0;
         }
@@ -425,13 +425,13 @@ class CacheMonitor implements CacheMonitorInterface
             $validHealth = $health;
 
             $isHealthy = is_bool($validHealth['healthy'] ?? false) ? $validHealth['healthy'] : false;
-            
+
             if ($isHealthy) {
                 $healthySystems++;
             } else {
                 $timestamp = is_int($validHealth['timestamp'] ?? 0) ? $validHealth['timestamp'] : time();
                 $details = is_array($validHealth['details'] ?? []) ? $validHealth['details'] : [];
-                
+
                 $issues[] = [
                     'driver' => $driver,
                     'details' => $details,
@@ -606,7 +606,7 @@ class CacheMonitor implements CacheMonitorInterface
         $stats = &$this->hitStats[$driver];
         $totalRequests = is_int($stats['total_requests'] ?? 0) ? $stats['total_requests'] : 0;
         $hits = is_int($stats['hits'] ?? 0) ? $stats['hits'] : 0;
-        
+
         $stats['hit_rate'] = $totalRequests > 0 ? ($hits / $totalRequests) * 100 : 0;
     }
 

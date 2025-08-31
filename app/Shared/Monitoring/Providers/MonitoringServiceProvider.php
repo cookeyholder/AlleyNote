@@ -142,7 +142,7 @@ class MonitoringServiceProvider
 
         // 暫時完全禁用錯誤處理器設置，避免測試中的 risky 警告
         // TODO: 在解決測試隔離問題後重新啟用
-        
+
         // 設置預設的錯誤過濾器
         $errorTracker->setErrorFilter(function (string $level, string $message, array $context, ?\Throwable $exception) {
             // 過濾掉某些不重要的錯誤
