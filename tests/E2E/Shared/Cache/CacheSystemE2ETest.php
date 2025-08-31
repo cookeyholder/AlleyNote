@@ -9,7 +9,7 @@ use App\Shared\Cache\Drivers\RedisCacheDriver;
 use App\Shared\Cache\Repositories\MemoryTagRepository;
 use App\Shared\Cache\Repositories\RedisTagRepository;
 use App\Shared\Cache\Services\CacheManager;
-use App\Shared\Cache\Services\TaggedCache;
+use App\Shared\Cache\Services\TaggedCacheManager;
 use App\Shared\Cache\Strategies\DefaultCacheStrategy;
 use App\Shared\Monitoring\Services\CacheMonitor;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +25,7 @@ final class CacheSystemE2ETest extends TestCase
 {
     private Client $redisClient;
     private CacheManager $cacheManager;
-    private TaggedCache $taggedCache;
+    private TaggedCacheManager $taggedCache;
     private CacheMonitor $cacheMonitor;
 
     protected function setUp(): void
