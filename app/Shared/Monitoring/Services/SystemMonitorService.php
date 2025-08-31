@@ -200,7 +200,7 @@ class SystemMonitorService implements SystemMonitorInterface
                 $memoryUsageMb = (float) $currentUsage;
             }
         }
-        
+
         $memoryUsagePercent = 0.0;
         if (is_array($metrics['memory'] ?? null)) {
             $memoryData = $metrics['memory'];
@@ -209,7 +209,7 @@ class SystemMonitorService implements SystemMonitorInterface
                 $memoryUsagePercent = (float) $usagePercent;
             }
         }
-        
+
         $diskUsagePercent = 0.0;
         if (is_array($metrics['disk'] ?? null)) {
             $diskData = $metrics['disk'];
@@ -218,7 +218,7 @@ class SystemMonitorService implements SystemMonitorInterface
                 $diskUsagePercent = (float) $diskUsage;
             }
         }
-        
+
         $dbConnected = false;
         if (is_array($metrics['database'] ?? null)) {
             $dbData = $metrics['database'];
@@ -227,7 +227,7 @@ class SystemMonitorService implements SystemMonitorInterface
                 $dbConnected = $connected;
             }
         }
-        
+
         $healthScore = 0.0;
         if (is_array($metrics['health'] ?? null)) {
             $healthData = $metrics['health'];
@@ -277,7 +277,7 @@ class SystemMonitorService implements SystemMonitorInterface
                     $diskTotalGb = (float) $totalGb;
                 }
             }
-            
+
             $this->logger->warning('High disk usage detected', [
                 'usage_percent' => $diskUsagePercent,
                 'used_gb' => $diskUsedGb,

@@ -680,11 +680,11 @@ class CacheMonitor implements CacheMonitorInterface
 
         $firstOp = reset($driverOps);
         $lastOp = end($driverOps);
-        
+
         if (!is_array($firstOp) || !is_array($lastOp)) {
             return 0.0;
         }
-        
+
         $firstTimestamp = is_numeric($firstOp['timestamp'] ?? 0) ? (float)$firstOp['timestamp'] : 0.0;
         $lastTimestamp = is_numeric($lastOp['timestamp'] ?? 0) ? (float)$lastOp['timestamp'] : 0.0;
         $timeSpan = $lastTimestamp - $firstTimestamp;
@@ -710,8 +710,8 @@ class CacheMonitor implements CacheMonitorInterface
     {
         // 簡化的 CSV 實作
         $csv = "快取監控報告\n";
-        $exportTimestamp = is_array($data['export_info'] ?? null) && isset($data['export_info']['timestamp']) 
-            ? (string)$data['export_info']['timestamp'] 
+        $exportTimestamp = is_array($data['export_info'] ?? null) && isset($data['export_info']['timestamp'])
+            ? (string)$data['export_info']['timestamp']
             : date('Y-m-d H:i:s');
         $csv .= "匯出時間," . $exportTimestamp . "\n\n";
 
@@ -789,21 +789,21 @@ class CacheMonitor implements CacheMonitorInterface
 
     /**
      * 計算成功率。
-     * 
+     *
      * @param array<string, mixed> $stats
      */
     private function calculateSuccessRate(array $stats): float
     {
         $totalOperations = $stats['total_operations'] ?? 0;
         $successfulOperations = $stats['successful_operations'] ?? 0;
-        
+
         if (!is_numeric($totalOperations) || !is_numeric($successfulOperations)) {
             return 0.0;
         }
-        
+
         $total = (float) $totalOperations;
         $successful = (float) $successfulOperations;
-        
+
         return $total > 0 ? ($successful / $total) * 100 : 0.0;
     }
 }
