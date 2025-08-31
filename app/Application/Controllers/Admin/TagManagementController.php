@@ -203,7 +203,7 @@ class TagManagementController extends BaseController
                 $driver = $this->cacheManager->getDriver($driverName);
                 if ($driver && $driver instanceof TaggedCacheInterface) {
                     // 使用 flushByTags 來刪除標籤下的所有快取
-                    $deletedCount = $driver->flushByTags($tagName);
+                    $deletedCount = $driver->flushByTags([$tagName]);
                     if ($deletedCount > 0) {
                         $deleted = true;
                         $affectedDrivers[] = $driverName;
@@ -431,9 +431,11 @@ class TagManagementController extends BaseController
                 $driver = $this->cacheManager->getDriver($driverName);
                 if ($driver && $driver instanceof TaggedCacheInterface) {
                     try {
-                        $driver->flush($tagName);
-                        $flushed = true;
-                        $affectedDrivers[] = $driverName;
+                        $flushedCount = $driver->flushByTags([$tagName]);
+                        if ($flushedCount > 0) {
+                            $flushed = true;
+                            $affectedDrivers[] = $driverName;
+                        }
                     } catch (Exception $e) {
                         $this->logger?->warning("無法從 {$driverName} 驅動清除標籤 {$tagName}", [
                             'error' => $e->getMessage(),
@@ -483,6 +485,9 @@ class TagManagementController extends BaseController
     {
         try {
             $body = json_decode((string) $request->getBody(), true);
+            if (!is_array($body)) {
+                throw new InvalidArgumentException('請求主體必須是有效的 JSON 格式');
+            }
             $tags = $body['tags'] ?? [];
 
             if (!is_array($tags) || empty($tags)) {
@@ -504,9 +509,11 @@ class TagManagementController extends BaseController
                     $driver = $this->cacheManager->getDriver($driverName);
                     if ($driver && $driver instanceof TaggedCacheInterface) {
                         try {
-                            $driver->flush($tagName);
-                            $flushed = true;
-                            $affectedDrivers[] = $driverName;
+                            $flushedCount = $driver->flushByTags([$tagName]);
+                            if ($flushedCount > 0) {
+                                $flushed = true;
+                                $affectedDrivers[] = $driverName;
+                            }
                         } catch (Exception $e) {
                             $this->logger?->warning("無法從 {$driverName} 驅動清除標籤 {$tagName}", [
                                 'error' => $e->getMessage(),
@@ -574,12 +581,14 @@ class TagManagementController extends BaseController
                 if ($driver && $driver instanceof TaggedCacheInterface) {
                     try {
                         $tagStats = $driver->getTagStatistics();
-                        if ($tagStats) {
+                        if (!empty($tagStats)) {
                             $statistics['drivers'][$driverName] = $tagStats;
-                            $statistics['total_tags'] += count($tagStats['tags'] ?? []);
-                            $statistics['total_cache_entries'] += array_sum(
-                                array_column($tagStats['tags'] ?? [], 'key_count'),
-                            );
+                            $tagsArray = $tagStats['tags'] ?? [];
+                            if (is_array($tagsArray)) {
+                                $statistics['total_tags'] += count($tagsArray);
+                                $keyCounts = array_column($tagsArray, 'key_count');
+                                $statistics['total_cache_entries'] += array_sum($keyCounts);
+                            }
                         }
                     } catch (Exception $e) {
                         $this->logger?->warning("無法從 {$driverName} 驅動取得統計資訊", [
@@ -624,6 +633,10 @@ class TagManagementController extends BaseController
     {
         try {
             $body = json_decode((string) $request->getBody(), true);
+            if (!is_array($body)) {
+                throw new InvalidArgumentException('請求內容必須是有效的 JSON');
+            }
+            
             $groupName = $body['name'] ?? '';
             $tags = $body['tags'] ?? [];
 
@@ -635,19 +648,25 @@ class TagManagementController extends BaseController
                 throw new InvalidArgumentException('標籤必須是陣列');
             }
 
+            // 確保所有標籤都是字串
+            $validTags = array_filter($tags, 'is_string');
+            if (count($validTags) !== count($tags)) {
+                throw new InvalidArgumentException('所有標籤必須是字串');
+            }
+
             if (!$this->groupManager) {
                 throw new RuntimeException('群組管理器未初始化');
             }
 
             // 建立群組
-            $this->groupManager->group($groupName, $tags);
+            $this->groupManager->group($groupName, $validTags);
 
             $responseData = [
                 'success' => true,
                 'data' => [
                     'message' => '標籤群組已成功建立',
                     'group' => $groupName,
-                    'tags' => $tags,
+                    'tags' => $validTags,
                 ],
                 'timestamp' => time(),
             ];
