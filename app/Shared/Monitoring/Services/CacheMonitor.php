@@ -138,7 +138,7 @@ class CacheMonitor implements CacheMonitorInterface
         $this->recordOperation('get', $driver, true, $duration, ['result' => 'hit', 'key' => $key]);
     }
 
-    public function recordMiss(string $driver, string $key, float $duration): void
+    public function recordMiss(string $driver, string $key, float $duration = 0.0): void
     {
         if (!isset($this->hitStats[$driver])) {
             $this->hitStats[$driver] = [
@@ -385,6 +385,69 @@ class CacheMonitor implements CacheMonitorInterface
         return $cleaned;
     }
 
+    public function getMetrics(): array
+    {
+        $stats = $this->calculateGlobalStats();
+
+        return [
+            'total_hits' => array_sum(array_column($this->hitStats, 'hits')),
+            'total_misses' => array_sum(array_column($this->hitStats, 'misses')),
+            'total_sets' => $this->getOperationCount('set'),
+            'total_deletes' => $this->getOperationCount('delete'),
+            'total_errors' => array_sum(array_column($this->errorStats, 'total_errors')),
+            'total_operations' => $stats['total_operations'],
+            'success_rate' => $stats['success_rate'],
+            'avg_duration' => $stats['avg_duration'],
+            'hit_rate' => $stats['global_hit_rate'],
+        ];
+    }
+
+    public function getDriverPerformance(): array
+    {
+        $performance = [];
+
+        // 獲取所有驅動程式（來自操作統計和錯誤統計）
+        $allDrivers = array_unique(array_merge(
+            array_keys($this->operationStats),
+            array_keys($this->errorStats)
+        ));
+
+        foreach ($allDrivers as $driver) {
+            $stats = $this->operationStats[$driver] ?? [
+                'total_operations' => 0,
+                'total_duration' => 0.0,
+                'avg_duration' => 0.0,
+                'min_duration' => 0.0,
+                'max_duration' => 0.0,
+                'successful_operations' => 0,
+            ];
+
+            $performance[$driver] = [
+                'total_operations' => $stats['total_operations'],
+                'total_time' => $stats['total_duration'],
+                'avg_time' => $stats['avg_duration'],
+                'min_time' => $stats['min_duration'],
+                'max_time' => $stats['max_duration'],
+                'success_rate' => $stats['total_operations'] > 0
+                    ? ($stats['successful_operations'] / $stats['total_operations']) * 100
+                    : 0,
+                'total_errors' => $this->errorStats[$driver]['total_errors'] ?? 0,
+            ];
+        }
+
+        return $performance;
+    }
+
+    public function getHealth(): array
+    {
+        return $this->getHealthOverview();
+    }
+
+    public function reset(): void
+    {
+        $this->initializeStats();
+    }
+
     public function exportData(string $format = 'json', ?string $timeRange = null): string
     {
         $data = [
@@ -590,6 +653,18 @@ class CacheMonitor implements CacheMonitorInterface
             'errors_by_operation' => [],
             'recent_errors' => [],
         ];
+    }
+
+    /**
+     * 取得特定操作的總數。
+     */
+    private function getOperationCount(string $operation): int
+    {
+        $count = 0;
+        foreach ($this->operationStats as $stats) {
+            $count += $stats['operations'][$operation] ?? 0;
+        }
+        return $count;
     }
 
     /**

@@ -79,4 +79,14 @@ interface CacheManagerInterface
      * 清理所有驅動的過期項目。
      */
     public function cleanup(): array;
+
+    /**
+     * 取得指定的驅動程式。
+     */
+    public function getDriver(string $name): ?CacheDriverInterface;
+
+    /**
+     * 取得所有可用的驅動程式。
+     */
+    public function getDrivers(): array;
 }

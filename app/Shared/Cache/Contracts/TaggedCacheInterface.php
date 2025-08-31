@@ -147,6 +147,14 @@ interface TaggedCacheInterface
     public function getTagStatistics(): array;
 
     /**
+     * 檢查標籤是否存在
+     *
+     * @param string $tag 標籤名稱
+     * @return bool 是否存在
+     */
+    public function tagExists(string $tag): bool;
+
+    /**
      * 建立新的標籤化快取實例
      *
      * @param string|array<string> $tags 標籤或標籤陣列

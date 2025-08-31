@@ -41,6 +41,22 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     }
 
     /**
+     * 設定慢查詢閾值。
+     */
+    public function setSlowQueryThreshold(float $threshold): void
+    {
+        $this->slowQueryThreshold = $threshold;
+    }
+
+    /**
+     * 設定慢操作閾值（別名方法）。
+     */
+    public function setSlowOperationThreshold(float $threshold): void
+    {
+        $this->setSlowQueryThreshold($threshold);
+    }
+
+    /**
      * 開始監控一個操作。
      */
     public function startMonitoring(string $operation, array $context = []): string

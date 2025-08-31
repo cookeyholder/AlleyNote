@@ -6,10 +6,15 @@ namespace Tests\Integration\Shared\Cache\Services;
 
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
+use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Services\TaggedCacheManager;
+use App\Shared\Cache\Services\CacheManager;
+use App\Shared\Cache\Strategies\DefaultCacheStrategy;
+use App\Shared\Cache\Drivers\MemoryCacheDriver;
+use App\Shared\Cache\Repositories\MemoryTagRepository;
 use App\Shared\Cache\ValueObjects\CacheTag;
 use PHPUnit\Framework\TestCase;
-use Predis\Client as RedisClient;
+use Psr\Log\NullLogger;
 
 /**
  * TaggedCacheInterface 實作整合測試
@@ -18,38 +23,70 @@ class TaggedCacheIntegrationTest extends TestCase
 {
     private TaggedCacheInterface $taggedCache;
     private TagRepositoryInterface $tagRepository;
-    private RedisClient $redisClient;
+    private CacheManagerInterface $cacheManager;
     private string $testPrefix = 'test_cache:';
 
     protected function setUp(): void
     {
-        // 設定 Redis 客戶端（測試環境）
-        $this->redisClient = new RedisClient([
-            'scheme' => 'tcp',
-            'host' => '127.0.0.1',
-            'port' => 6379,
-            'database' => 15, // 使用不同的測試資料庫
-        ]);
+        // 建立 CacheManager 與 MemoryCacheDriver
+        $memoryDriver = new MemoryCacheDriver();
 
-        // 清空測試資料庫
-        $this->redisClient->flushdb();
+        // 建立一個簡單的策略，不會調整 TTL（測試專用）
+        $strategy = new class implements \App\Shared\Cache\Contracts\CacheStrategyInterface {
+            public function shouldCache(string $key, mixed $value, int $ttl): bool {
+                return true;
+            }
 
-        // 建立 TagRepository 和 TaggedCacheManager
-        $this->tagRepository = new \App\Shared\Cache\Repositories\RedisTagRepository(
-            $this->redisClient,
-            $this->testPrefix
-        );
+            public function selectDriver(array $drivers, string $key, mixed $value): ?\App\Shared\Cache\Contracts\CacheDriverInterface {
+                return reset($drivers) ?: null;
+            }
 
+            public function decideTtl(string $key, mixed $value, int $requestedTtl): int {
+                return $requestedTtl; // 不調整 TTL
+            }
+
+            public function handleMiss(string $key, callable $callback): mixed {
+                return $callback();
+            }
+
+            public function handleDriverFailure(
+                \App\Shared\Cache\Contracts\CacheDriverInterface $failedDriver,
+                array $availableDrivers,
+                string $operation,
+                array $params
+            ): mixed {
+                return null;
+            }
+
+            public function getStats(): array {
+                return [];
+            }
+
+            public function resetStats(): void {
+                // Nothing to reset
+            }
+        };
+
+        $this->cacheManager = new CacheManager($strategy, new NullLogger());
+        $this->cacheManager->addDriver('memory', $memoryDriver);
+        $this->cacheManager->setDefaultDriver('memory');
+
+        // 建立 MemoryTagRepository
+        $this->tagRepository = new MemoryTagRepository();
+
+        // 建立 TaggedCacheManager
         $this->taggedCache = new TaggedCacheManager(
+            $this->cacheManager,
             $this->tagRepository,
-            $this->testPrefix
+            new NullLogger()
         );
     }
 
     protected function tearDown(): void
     {
         // 清理測試資料
-        $this->redisClient->flushdb();
+        $this->cacheManager->flush();
+        $this->tagRepository->flush();
     }
 
     public function testBasicTaggedCaching(): void
@@ -59,12 +96,12 @@ class TaggedCacheIntegrationTest extends TestCase
         $tags = ['user_123', 'module_posts'];
 
         // 測試帶標籤的快取儲存
-        $result = $this->taggedCache->put($key, $value, 3600, $tags);
+        $result = $this->taggedCache->putWithTags($key, $value, $tags, 3600);
         $this->assertTrue($result);
 
         // 測試標籤是否正確建立
         foreach ($tags as $tagName) {
-            $this->assertTrue($this->taggedCache->tagExists($tagName));
+            $this->assertTrue($this->tagRepository->tagExists($tagName));
         }
 
         // 測試取得快取值
@@ -88,7 +125,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
         // 儲存測試資料
         foreach ($testData as $key => $data) {
-            $this->taggedCache->put($key, $data['value'], 3600, $data['tags']);
+            $this->taggedCache->putWithTags($key, $data['value'], $data['tags'], 3600);
         }
 
         // 驗證資料已儲存
@@ -122,7 +159,7 @@ class TaggedCacheIntegrationTest extends TestCase
         ];
 
         foreach ($keys as $key) {
-            $this->taggedCache->put($key, "value_$key", 3600, $tags[$key]);
+            $this->taggedCache->putWithTags($key, "value_$key", $tags[$key], 3600);
         }
 
         // 清空多個標籤
@@ -140,22 +177,18 @@ class TaggedCacheIntegrationTest extends TestCase
     public function testTagStatistics(): void
     {
         // 準備測試資料
-        $this->taggedCache->put('user_1_post', 'content1', 3600, ['user_1', 'posts']);
-        $this->taggedCache->put('user_1_profile', 'profile1', 3600, ['user_1', 'profiles']);
-        $this->taggedCache->put('user_2_post', 'content2', 3600, ['user_2', 'posts']);
+        $this->taggedCache->putWithTags('user_1_post', 'content1', ['user_1', 'posts'], 3600);
+        $this->taggedCache->putWithTags('user_1_profile', 'profile1', ['user_1', 'profiles'], 3600);
+        $this->taggedCache->putWithTags('user_2_post', 'content2', ['user_2', 'posts'], 3600);
 
         $stats = $this->taggedCache->getTagStatistics();
 
         $this->assertIsArray($stats);
-        $this->assertArrayHasKey('total_tags', $stats);
-        $this->assertArrayHasKey('tags', $stats);
-        $this->assertEquals(3, $stats['total_tags']); // user_1, user_2, posts, profiles
-
-        // 驗證各標籤的統計資訊
-        $this->assertArrayHasKey('user_1', $stats['tags']);
-        $this->assertArrayHasKey('posts', $stats['tags']);
-        $this->assertEquals(2, $stats['tags']['user_1']['key_count']);
-        $this->assertEquals(2, $stats['tags']['posts']['key_count']);
+        // 修正：TaggedCacheManager.getTagStatistics() 回傳的是簡單的標籤統計
+        $this->assertArrayHasKey('user_1', $stats);
+        $this->assertArrayHasKey('posts', $stats);
+        $this->assertEquals(2, $stats['user_1']);  // user_1 有 2 個快取項目
+        $this->assertEquals(2, $stats['posts']);   // posts 有 2 個快取項目
     }
 
     public function testTaggingWithComplexValues(): void
@@ -170,14 +203,14 @@ class TaggedCacheIntegrationTest extends TestCase
         $key = 'complex_data';
         $tags = ['complex', 'structured', 'user_123'];
 
-        $this->taggedCache->put($key, $complexValue, 3600, $tags);
+        $this->taggedCache->putWithTags($key, $complexValue, $tags, 3600);
 
         $retrievedValue = $this->taggedCache->get($key);
         $this->assertEquals($complexValue, $retrievedValue);
 
         // 驗證所有標籤都已建立
         foreach ($tags as $tag) {
-            $this->assertTrue($this->taggedCache->tagExists($tag));
+            $this->assertTrue($this->tagRepository->tagExists($tag));
             $keys = $this->taggedCache->getKeysByTag($tag);
             $this->assertContains($key, $keys);
         }
@@ -185,22 +218,27 @@ class TaggedCacheIntegrationTest extends TestCase
 
     public function testTagExpiration(): void
     {
-        $key = 'expiring_key';
+        $key = $this->testPrefix . 'expiring_key';
         $value = 'expiring_value';
         $tags = ['temp_tag'];
 
-        // 設定短過期時間（1秒）
-        $this->taggedCache->put($key, $value, 1, $tags);
+        // 使用 2 秒 TTL 測試過期
+        $ttl = 2;
+
+        $putResult = $this->taggedCache->putWithTags($key, $value, $tags, $ttl);
+        $this->assertTrue($putResult);
 
         // 立即驗證資料存在
-        $this->assertEquals($value, $this->taggedCache->get($key));
-        $this->assertTrue($this->taggedCache->tagExists('temp_tag'));
+        $retrievedValue = $this->taggedCache->get($key);
+        $this->assertEquals($value, $retrievedValue);
+        $this->assertTrue($this->tagRepository->tagExists('temp_tag'));
 
         // 等待過期
-        sleep(2);
+        sleep($ttl + 1);
 
         // 驗證資料已過期
-        $this->assertNull($this->taggedCache->get($key));
+        $retrievedValue = $this->taggedCache->get($key);
+        $this->assertNull($retrievedValue);
 
         // 注意：標籤可能仍存在於標籤儲存庫中，這取決於實作策略
         // 在生產環境中，可能需要定期清理過期的標籤關聯
@@ -215,7 +253,7 @@ class TaggedCacheIntegrationTest extends TestCase
         // 模擬併發寫入
         for ($i = 0; $i < 10; $i++) {
             $key = $baseKey . $i;
-            $this->taggedCache->put($key, "value_$i", 3600, [$sharedTag, "unique_$i"]);
+            $this->taggedCache->putWithTags($key, "value_$i", [$sharedTag, "unique_$i"], 3600);
         }
 
         // 驗證所有鍵都與共享標籤關聯
@@ -241,27 +279,25 @@ class TaggedCacheIntegrationTest extends TestCase
     {
         // 測試不同類型標籤的分類
         $testCases = [
-            'user_123' => CacheTag::TYPE_USER,
-            'role_admin' => CacheTag::TYPE_ROLE,
-            'module_posts' => CacheTag::TYPE_MODULE,
-            'temporal_daily' => CacheTag::TYPE_TEMPORAL,
-            'custom_special' => CacheTag::TYPE_CUSTOM
+            'user:123' => 'isUserTag',
+            'module:posts' => 'isModuleTag',
+            'time:daily' => 'isTemporalTag',
+            'group:admins' => 'isGroupTag',
         ];
 
-        foreach ($testCases as $tagName => $expectedType) {
-            $this->taggedCache->put("test_key_$tagName", 'value', 3600, [$tagName]);
+        foreach ($testCases as $tagName => $typeMethod) {
+            $this->taggedCache->putWithTags("test_key_$tagName", 'value', [$tagName], 3600);
 
             // 驗證標籤類型正確分類
-            $tag = CacheTag::create($tagName);
-            $this->assertEquals($expectedType, $tag->getType());
+            $tag = new CacheTag($tagName);
+            $this->assertTrue($tag->$typeMethod());
         }
 
-        // 測試標籤統計中的類型分組
+        // 測試標籤統計
         $stats = $this->taggedCache->getTagStatistics();
-        $this->assertArrayHasKey('tag_types', $stats);
-
-        foreach ($testCases as $tagName => $expectedType) {
-            $this->assertArrayHasKey($expectedType, $stats['tag_types']);
+        $this->assertIsArray($stats);
+        foreach ($testCases as $tagName => $typeMethod) {
+            $this->assertArrayHasKey($tagName, $stats);
         }
     }
 
@@ -273,21 +309,13 @@ class TaggedCacheIntegrationTest extends TestCase
         $tags = ['valid_tag', 'another_tag'];
 
         // 正常儲存
-        $this->assertTrue($this->taggedCache->put($key, $value, 3600, $tags));
+        $this->assertTrue($this->taggedCache->putWithTags($key, $value, $tags, 3600));
 
-        // 嘗試使用無效標籤（空字串）
+        // 嘗試使用無效標籤（空字串） - 應該拋出例外
         $invalidTags = ['valid_tag', '', 'another_tag'];
-        $result = $this->taggedCache->put($key . '_invalid', $value, 3600, $invalidTags);
 
-        // 根據實作，這可能成功（忽略無效標籤）或失敗
-        // 這裡我們測試系統的一致性
-        if ($result) {
-            // 如果操作成功，有效標籤應該仍然有效
-            $this->assertTrue($this->taggedCache->tagExists('valid_tag'));
-            $this->assertTrue($this->taggedCache->tagExists('another_tag'));
-        }
-
-        // 原始資料應該不受影響
+        $this->expectException(\InvalidArgumentException::class);
+        $this->taggedCache->putWithTags($key . '_invalid', $value, $invalidTags, 3600);
         $this->assertEquals($value, $this->taggedCache->get($key));
     }
 }

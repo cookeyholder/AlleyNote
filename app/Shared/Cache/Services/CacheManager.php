@@ -202,6 +202,8 @@ class CacheManager implements CacheManagerInterface
         $this->logger->debug('快取未命中', ['key' => $key]);
 
         return $default;
+    }
+
     public function put(string $key, mixed $value, int $ttl = 3600): bool
     {
         $this->stats['total_puts']++;
@@ -238,7 +240,7 @@ class CacheManager implements CacheManagerInterface
 
             // 記錄監控資料
             if ($this->monitor) {
-                $this->monitor->recordOperation('put', $driverName, $success, $duration, [
+                $this->monitor->recordOperation('set', $driverName, $success, $duration, [
                     'key' => $key,
                     'ttl' => $adjustedTtl,
                     'value_size' => strlen(serialize($value)),
@@ -257,11 +259,11 @@ class CacheManager implements CacheManagerInterface
             $duration = (microtime(true) - $driverStartTime) * 1000;
 
             if ($this->monitor) {
-                $this->monitor->recordError($driverName, 'put', $e->getMessage(), [
+                $this->monitor->recordError($driverName, 'set', $e->getMessage(), [
                     'key' => $key,
                     'ttl' => $adjustedTtl,
                 ]);
-                $this->monitor->recordOperation('put', $driverName, false, $duration, [
+                $this->monitor->recordOperation('set', $driverName, false, $duration, [
                     'error' => $e->getMessage(),
                 ]);
             }
@@ -333,7 +335,7 @@ class CacheManager implements CacheManagerInterface
 
                 // 記錄監控資料
                 if ($this->monitor) {
-                    $this->monitor->recordOperation('forget', $name, $result, $duration, [
+                    $this->monitor->recordOperation('delete', $name, $result, $duration, [
                         'key' => $key,
                     ]);
                 }
@@ -345,10 +347,10 @@ class CacheManager implements CacheManagerInterface
                 $duration = (microtime(true) - $driverStartTime) * 1000;
 
                 if ($this->monitor) {
-                    $this->monitor->recordError($name, 'forget', $e->getMessage(), [
+                    $this->monitor->recordError($name, 'delete', $e->getMessage(), [
                         'key' => $key,
                     ]);
-                    $this->monitor->recordOperation('forget', $name, false, $duration, [
+                    $this->monitor->recordOperation('delete', $name, false, $duration, [
                         'error' => $e->getMessage(),
                     ]);
                 }

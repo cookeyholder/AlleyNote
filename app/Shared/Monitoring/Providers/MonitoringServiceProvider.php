@@ -30,7 +30,9 @@ class MonitoringServiceProvider
             // 系統監控服務
             SystemMonitorInterface::class => \DI\factory(function (ContainerInterface $c) {
                 return new SystemMonitorService(
-                    $c->get(LoggerInterface::class)
+                    $c->get(LoggerInterface::class),
+                    $c->get(\PDO::class),
+                    $c->get(\App\Shared\Config\EnvironmentConfig::class)
                 );
             }),
 
@@ -62,7 +64,9 @@ class MonitoringServiceProvider
         // 系統監控服務
         $container->set(SystemMonitorInterface::class, function (ContainerInterface $c) {
             return new SystemMonitorService(
-                $c->get(LoggerInterface::class)
+                $c->get(LoggerInterface::class),
+                $c->get(\PDO::class),
+                $c->get(\App\Shared\Config\EnvironmentConfig::class)
             );
         });
 
@@ -178,11 +182,12 @@ class MonitoringServiceProvider
             }
 
             // 記錄請求結束資訊
-            $performanceMonitor->recordMetric('request_completed', 1, [
-                'memory_peak_usage' => memory_get_peak_usage(true),
-                'memory_usage' => memory_get_usage(true),
-                'execution_time' => microtime(true) - ($_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true)),
-            ]);
+            $performanceMonitor->recordMetric('request_completed', 1, 'count');
+
+            // 記錄記憶體使用情況
+            $performanceMonitor->recordMetric('request.memory_peak_usage', memory_get_peak_usage(true), 'bytes');
+            $performanceMonitor->recordMetric('request.memory_usage', memory_get_usage(true), 'bytes');
+            $performanceMonitor->recordMetric('request.execution_time', microtime(true) - ($_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true)), 'seconds');
         });
 
         // 設置預設的錯誤過濾器
@@ -233,7 +238,7 @@ class MonitoringServiceProvider
         $performanceMonitor->setSlowOperationThreshold(2.0); // 2 秒
 
         // 記錄應用程式啟動指標
-        $performanceMonitor->recordMetric('app_startup', microtime(true), [
+        $performanceMonitor->recordMetric('app_startup', microtime(true), 'seconds', [
             'php_version' => PHP_VERSION,
             'memory_limit' => ini_get('memory_limit'),
             'max_execution_time' => ini_get('max_execution_time'),
@@ -252,7 +257,7 @@ class MonitoringServiceProvider
         // 這裡只是示例，實際實作取決於使用的排程系統
 
         // 檢查系統健康狀態
-        $healthStatus = $systemMonitor->getSystemHealth();
+        $healthStatus = $systemMonitor->getHealthCheck();
 
         if ($healthStatus['status'] !== 'healthy') {
             /** @var ErrorTrackerInterface $errorTracker */

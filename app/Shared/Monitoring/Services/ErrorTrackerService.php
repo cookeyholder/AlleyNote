@@ -87,7 +87,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      */
     public function getErrorStats(int $hours = 24): array
     {
-        $cutoffTime = time() - ($hours * 3600);
+        $cutoffTime = microtime(true) - ($hours * 3600);
         $recentErrors = array_filter(
             $this->errorRecords,
             fn($record) => $record['timestamp'] > $cutoffTime
@@ -163,7 +163,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      */
     public function getErrorTrends(int $days = 7): array
     {
-        $cutoffTime = time() - ($days * 24 * 3600);
+        $cutoffTime = microtime(true) - ($days * 24 * 3600);
         $recentErrors = array_filter(
             $this->errorRecords,
             fn($record) => $record['timestamp'] > $cutoffTime
@@ -180,7 +180,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         // 按日期分組
         foreach ($recentErrors as $record) {
-            $date = date('Y-m-d', $record['timestamp']);
+            $date = date('Y-m-d', (int)$record['timestamp']);
             if (!isset($trends['daily_counts'][$date])) {
                 $trends['daily_counts'][$date] = 0;
             }
@@ -189,7 +189,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         // 按等級和日期分組
         foreach ($recentErrors as $record) {
-            $date = date('Y-m-d', $record['timestamp']);
+            $date = date('Y-m-d', (int)$record['timestamp']);
             $level = $record['level'];
 
             if (!isset($trends['level_trends'][$level])) {
@@ -204,7 +204,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         // 按錯誤類型和日期分組
         foreach ($recentErrors as $record) {
             if (isset($record['context']['exception_class'])) {
-                $date = date('Y-m-d', $record['timestamp']);
+                $date = date('Y-m-d', (int)$record['timestamp']);
                 $type = $record['context']['exception_class'];
 
                 if (!isset($trends['type_trends'][$type])) {
@@ -228,7 +228,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      */
     public function hasCriticalErrors(int $minutes = 5): bool
     {
-        $cutoffTime = time() - ($minutes * 60);
+        $cutoffTime = microtime(true) - ($minutes * 60);
 
         foreach ($this->errorRecords as $record) {
             if ($record['timestamp'] > $cutoffTime && $record['level'] === 'critical') {
@@ -248,7 +248,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $recentCritical = [];
         $recentWarnings = [];
 
-        $cutoffTime = time() - ($hours * 3600);
+        $cutoffTime = microtime(true) - ($hours * 3600);
 
         foreach ($this->errorRecords as $record) {
             if ($record['timestamp'] <= $cutoffTime) {
@@ -284,7 +284,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      */
     public function cleanupOldErrors(int $daysToKeep = 30): int
     {
-        $cutoffTime = time() - ($daysToKeep * 24 * 3600);
+        $cutoffTime = microtime(true) - ($daysToKeep * 24 * 3600);
         $originalCount = count($this->errorRecords);
 
         $this->errorRecords = array_filter(
@@ -335,7 +335,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         }
 
         $errorId = Uuid::uuid4()->toString();
-        $timestamp = time();
+        $timestamp = microtime(true); // 使用 microtime 獲得更精確的時間戳
 
         $record = [
             'id' => $errorId,
@@ -343,7 +343,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             'message' => $message,
             'context' => $this->sanitizeContext($context),
             'timestamp' => $timestamp,
-            'formatted_time' => date('Y-m-d H:i:s', $timestamp),
+            'formatted_time' => date('Y-m-d H:i:s.u', (int)$timestamp), // 顯示微秒
             'request_id' => $_SERVER['HTTP_X_REQUEST_ID'] ?? null,
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null,
             'client_ip' => $_SERVER['REMOTE_ADDR'] ?? null,

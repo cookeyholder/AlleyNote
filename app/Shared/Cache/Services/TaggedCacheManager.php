@@ -401,6 +401,17 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
+     * 檢查標籤是否存在
+     *
+     * @param string $tag 標籤名稱
+     * @return bool 是否存在
+     */
+    public function tagExists(string $tag): bool
+    {
+        return $this->tagRepository->tagExists($tag);
+    }
+
+    /**
      * 記錄標籤化快取存取
      *
      * @param string $operation 操作類型

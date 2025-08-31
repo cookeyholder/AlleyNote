@@ -8,6 +8,8 @@ use App\Application\Controllers\Admin\TagManagementController;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
+use App\Shared\Cache\Drivers\MemoryCacheDriver;
+use App\Shared\Cache\Drivers\RedisCacheDriver;
 use App\Shared\Cache\Services\CacheGroupManager;
 use App\Shared\Cache\ValueObjects\CacheTag;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -63,7 +65,7 @@ class TagManagementControllerTest extends TestCase
 
         $this->request->method('getQueryParams')->willReturn($queryParams);
 
-        $mockDriver = $this->createMock(TaggedCacheInterface::class);
+        $mockDriver = $this->createMock(MemoryCacheDriver::class);
         $mockDriver->method('getAllTags')->willReturn(['user_123', 'user_456', 'module_posts']);
         $mockDriver->method('getTagStatistics')->willReturn([
             'total_tags' => 3,
@@ -99,7 +101,7 @@ class TagManagementControllerTest extends TestCase
     {
         $args = ['tag' => 'user_123'];
 
-        $mockDriver = $this->createMock(TaggedCacheInterface::class);
+        $mockDriver = $this->createMock(MemoryCacheDriver::class);
         $mockDriver->method('tagExists')->with('user_123')->willReturn(true);
         $mockDriver->method('getKeysByTag')->with('user_123')->willReturn(['key1', 'key2', 'key3']);
         $mockDriver->method('getTagStatistics')->willReturn([
@@ -138,11 +140,11 @@ class TagManagementControllerTest extends TestCase
     {
         $args = ['tag' => 'user_123'];
 
-        $mockDriver1 = $this->createMock(TaggedCacheInterface::class);
+        $mockDriver1 = $this->createMock(MemoryCacheDriver::class);
         $mockDriver1->method('tagExists')->with('user_123')->willReturn(true);
         $mockDriver1->method('flushByTags')->with('user_123')->willReturn(5);
 
-        $mockDriver2 = $this->createMock(TaggedCacheInterface::class);
+        $mockDriver2 = $this->createMock(MemoryCacheDriver::class);
         $mockDriver2->method('tagExists')->with('user_123')->willReturn(false);
 
         $this->cacheManager->method('getDriver')
@@ -177,7 +179,7 @@ class TagManagementControllerTest extends TestCase
         $requestBody = json_encode(['tags' => ['user_123', 'module_posts']]);
         $this->request->method('getBody')->willReturn($this->createStreamWithContent($requestBody));
 
-        $mockDriver = $this->createMock(TaggedCacheInterface::class);
+        $mockDriver = $this->createMock(MemoryCacheDriver::class);
         $mockDriver->method('tagExists')
             ->willReturnMap([
                 ['user_123', true],
@@ -219,7 +221,7 @@ class TagManagementControllerTest extends TestCase
 
     public function testGetTagStatistics(): void
     {
-        $mockDriver1 = $this->createMock(TaggedCacheInterface::class);
+        $mockDriver1 = $this->createMock(MemoryCacheDriver::class);
         $mockDriver1->method('getTagStatistics')->willReturn([
             'total_tags' => 2,
             'tags' => [
@@ -228,7 +230,7 @@ class TagManagementControllerTest extends TestCase
             ]
         ]);
 
-        $mockDriver2 = $this->createMock(TaggedCacheInterface::class);
+        $mockDriver2 = $this->createMock(MemoryCacheDriver::class);
         $mockDriver2->method('getTagStatistics')->willReturn([
             'total_tags' => 1,
             'tags' => [
@@ -276,7 +278,7 @@ class TagManagementControllerTest extends TestCase
 
         $this->groupManager->method('hasGroup')->with('test_group')->willReturn(false);
 
-        $mockGroupCache = $this->createMock(TaggedCacheInterface::class);
+        $mockGroupCache = $this->createMock(MemoryCacheDriver::class);
         $this->groupManager->expects($this->once())
             ->method('group')
             ->with('test_group', ['tag1', 'tag2'])
@@ -365,8 +367,9 @@ class TagManagementControllerTest extends TestCase
 
     public function testErrorHandling(): void
     {
-        // 測試當沒有可用驅動時的錯誤處理
-        $this->cacheManager->method('getDriver')->willReturn(null);
+        // 測試當 getDriver 拋出例外時的錯誤處理
+        $this->cacheManager->method('getDriver')
+            ->willThrowException(new \RuntimeException('驅動程式故障'));
 
         $this->logger->expects($this->once())
             ->method('error')
