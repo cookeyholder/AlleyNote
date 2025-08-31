@@ -523,9 +523,7 @@ class CacheMonitor implements CacheMonitorInterface
                 'avg_time' => $stats['avg_duration'],
                 'min_time' => $stats['min_duration'],
                 'max_time' => $stats['max_duration'],
-                'success_rate' => is_numeric($stats['total_operations'] ?? 0) && $stats['total_operations'] > 0
-                    ? (is_numeric($stats['successful_operations'] ?? 0) ? (float)$stats['successful_operations'] : 0) / (is_numeric($stats['total_operations'] ?? 0) ? (float)$stats['total_operations'] : 1) * 100
-                    : 0,
+                'success_rate' => $this->calculateSuccessRate($stats),
                 'total_errors' => $this->errorStats[$driver]['total_errors'] ?? 0,
             ];
         }
@@ -604,8 +602,8 @@ class CacheMonitor implements CacheMonitorInterface
         }
 
         $stats = &$this->hitStats[$driver];
-        $totalRequests = is_int($stats['total_requests'] ?? 0) ? $stats['total_requests'] : 0;
-        $hits = is_int($stats['hits'] ?? 0) ? $stats['hits'] : 0;
+        $totalRequests = is_numeric($stats['total_requests'] ?? 0) ? (float)($stats['total_requests']) : 0.0;
+        $hits = is_numeric($stats['hits'] ?? 0) ? (float)($stats['hits']) : 0.0;
 
         $stats['hit_rate'] = $totalRequests > 0 ? ($hits / $totalRequests) * 100 : 0;
     }
@@ -641,18 +639,18 @@ class CacheMonitor implements CacheMonitorInterface
         $totalErrors = 0;
 
         foreach ($this->operationStats as $stats) {
-            $totalOps += $stats['total_operations'];
-            $totalSuccessful += $stats['successful_operations'];
-            $totalDuration += $stats['total_duration'];
+            $totalOps += is_numeric($stats['total_operations'] ?? 0) ? (float)$stats['total_operations'] : 0;
+            $totalSuccessful += is_numeric($stats['successful_operations'] ?? 0) ? (float)$stats['successful_operations'] : 0;
+            $totalDuration += is_numeric($stats['total_duration'] ?? 0) ? (float)$stats['total_duration'] : 0;
         }
 
         foreach ($this->hitStats as $stats) {
-            $totalRequests += $stats['total_requests'];
-            $totalHits += $stats['hits'];
+            $totalRequests += is_numeric($stats['total_requests'] ?? 0) ? (float)$stats['total_requests'] : 0;
+            $totalHits += is_numeric($stats['hits'] ?? 0) ? (float)$stats['hits'] : 0;
         }
 
         foreach ($this->errorStats as $stats) {
-            $totalErrors += $stats['total_errors'];
+            $totalErrors += is_numeric($stats['total_errors'] ?? 0) ? (float)$stats['total_errors'] : 0;
         }
 
         return [
@@ -682,7 +680,14 @@ class CacheMonitor implements CacheMonitorInterface
 
         $firstOp = reset($driverOps);
         $lastOp = end($driverOps);
-        $timeSpan = $lastOp['timestamp'] - $firstOp['timestamp'];
+        
+        if (!is_array($firstOp) || !is_array($lastOp)) {
+            return 0.0;
+        }
+        
+        $firstTimestamp = is_numeric($firstOp['timestamp'] ?? 0) ? (float)$firstOp['timestamp'] : 0.0;
+        $lastTimestamp = is_numeric($lastOp['timestamp'] ?? 0) ? (float)$lastOp['timestamp'] : 0.0;
+        $timeSpan = $lastTimestamp - $firstTimestamp;
 
         return $timeSpan > 0 ? count($driverOps) / $timeSpan : 0.0;
     }
@@ -692,8 +697,8 @@ class CacheMonitor implements CacheMonitorInterface
      */
     private function calculateErrorRate(string $driver): float
     {
-        $totalOps = $this->operationStats[$driver]['total_operations'] ?? 0;
-        $totalErrors = $this->errorStats[$driver]['total_errors'] ?? 0;
+        $totalOps = is_numeric($this->operationStats[$driver]['total_operations'] ?? 0) ? (float)($this->operationStats[$driver]['total_operations']) : 0.0;
+        $totalErrors = is_numeric($this->errorStats[$driver]['total_errors'] ?? 0) ? (float)($this->errorStats[$driver]['total_errors']) : 0.0;
 
         return $totalOps > 0 ? ($totalErrors / $totalOps) * 100 : 0;
     }
@@ -705,7 +710,10 @@ class CacheMonitor implements CacheMonitorInterface
     {
         // 簡化的 CSV 實作
         $csv = "快取監控報告\n";
-        $csv .= "匯出時間," . $data['export_info']['timestamp'] . "\n\n";
+        $exportTimestamp = is_array($data['export_info'] ?? null) && isset($data['export_info']['timestamp']) 
+            ? (string)$data['export_info']['timestamp'] 
+            : date('Y-m-d H:i:s');
+        $csv .= "匯出時間," . $exportTimestamp . "\n\n";
 
         // 可以根據需要擴展 CSV 格式
         return $csv . "請使用 JSON 格式取得完整資料\n";
@@ -777,5 +785,25 @@ class CacheMonitor implements CacheMonitorInterface
             'max_history_size' => 1000,
             'max_recent_errors' => 50,
         ];
+    }
+
+    /**
+     * 計算成功率。
+     * 
+     * @param array<string, mixed> $stats
+     */
+    private function calculateSuccessRate(array $stats): float
+    {
+        $totalOperations = $stats['total_operations'] ?? 0;
+        $successfulOperations = $stats['successful_operations'] ?? 0;
+        
+        if (!is_numeric($totalOperations) || !is_numeric($successfulOperations)) {
+            return 0.0;
+        }
+        
+        $total = (float) $totalOperations;
+        $successful = (float) $successfulOperations;
+        
+        return $total > 0 ? ($successful / $total) * 100 : 0.0;
     }
 }

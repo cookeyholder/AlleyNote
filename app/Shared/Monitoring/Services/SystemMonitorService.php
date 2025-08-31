@@ -192,16 +192,50 @@ class SystemMonitorService implements SystemMonitorInterface
         $metrics = $this->getAllMetrics();
 
         // 安全地存取陣列元素
-        $memoryUsageMb = is_array($metrics['memory'] ?? null) && is_numeric($metrics['memory']['current_usage_mb'] ?? 0)
-            ? (float) $metrics['memory']['current_usage_mb'] : 0.0;
-        $memoryUsagePercent = is_array($metrics['memory'] ?? null) && is_numeric($metrics['memory']['usage_percentage'] ?? 0)
-            ? (float) $metrics['memory']['usage_percentage'] : 0.0;
-        $diskUsagePercent = is_array($metrics['disk'] ?? null) && is_numeric($metrics['disk']['usage_percentage'] ?? 0)
-            ? (float) $metrics['disk']['usage_percentage'] : 0.0;
-        $dbConnected = is_array($metrics['database'] ?? null) && is_bool($metrics['database']['connected'] ?? false)
-            ? $metrics['database']['connected'] : false;
-        $healthScore = is_array($metrics['health'] ?? null) && is_numeric($metrics['health']['health_score'] ?? 0)
-            ? (float) $metrics['health']['health_score'] : 0.0;
+        $memoryUsageMb = 0.0;
+        if (is_array($metrics['memory'] ?? null)) {
+            $memoryData = $metrics['memory'];
+            $currentUsage = $memoryData['current_usage_mb'] ?? 0;
+            if (is_numeric($currentUsage)) {
+                $memoryUsageMb = (float) $currentUsage;
+            }
+        }
+        
+        $memoryUsagePercent = 0.0;
+        if (is_array($metrics['memory'] ?? null)) {
+            $memoryData = $metrics['memory'];
+            $usagePercent = $memoryData['usage_percentage'] ?? 0;
+            if (is_numeric($usagePercent)) {
+                $memoryUsagePercent = (float) $usagePercent;
+            }
+        }
+        
+        $diskUsagePercent = 0.0;
+        if (is_array($metrics['disk'] ?? null)) {
+            $diskData = $metrics['disk'];
+            $diskUsage = $diskData['usage_percentage'] ?? 0;
+            if (is_numeric($diskUsage)) {
+                $diskUsagePercent = (float) $diskUsage;
+            }
+        }
+        
+        $dbConnected = false;
+        if (is_array($metrics['database'] ?? null)) {
+            $dbData = $metrics['database'];
+            $connected = $dbData['connected'] ?? false;
+            if (is_bool($connected)) {
+                $dbConnected = $connected;
+            }
+        }
+        
+        $healthScore = 0.0;
+        if (is_array($metrics['health'] ?? null)) {
+            $healthData = $metrics['health'];
+            $score = $healthData['health_score'] ?? 0;
+            if (is_numeric($score)) {
+                $healthScore = (float) $score;
+            }
+        }
 
         $this->logger->info('System metrics collected', [
             'memory_usage_mb' => $memoryUsageMb,
@@ -213,8 +247,14 @@ class SystemMonitorService implements SystemMonitorInterface
 
         // 記錄警告
         if ($memoryUsagePercent > 80) {
-            $memoryLimitMb = is_array($metrics['memory'] ?? null) && is_numeric($metrics['memory']['limit_mb'] ?? 0)
-                ? (float) $metrics['memory']['limit_mb'] : 0.0;
+            $memoryLimitMb = 0.0;
+            if (is_array($metrics['memory'] ?? null)) {
+                $memoryData = $metrics['memory'];
+                $limitMb = $memoryData['limit_mb'] ?? 0;
+                if (is_numeric($limitMb)) {
+                    $memoryLimitMb = (float) $limitMb;
+                }
+            }
 
             $this->logger->warning('High memory usage detected', [
                 'usage_percent' => $memoryUsagePercent,
@@ -223,11 +263,25 @@ class SystemMonitorService implements SystemMonitorInterface
             ]);
         }
 
-        if ($metrics['disk']['usage_percentage'] > 85) {
+        if ($diskUsagePercent > 85) {
+            $diskUsedGb = 0.0;
+            $diskTotalGb = 0.0;
+            if (is_array($metrics['disk'] ?? null)) {
+                $diskData = $metrics['disk'];
+                $usedGb = $diskData['used_gb'] ?? 0;
+                $totalGb = $diskData['total_gb'] ?? 0;
+                if (is_numeric($usedGb)) {
+                    $diskUsedGb = (float) $usedGb;
+                }
+                if (is_numeric($totalGb)) {
+                    $diskTotalGb = (float) $totalGb;
+                }
+            }
+            
             $this->logger->warning('High disk usage detected', [
-                'usage_percent' => $metrics['disk']['usage_percentage'],
-                'used_gb' => $metrics['disk']['used_gb'],
-                'total_gb' => $metrics['disk']['total_gb'],
+                'usage_percent' => $diskUsagePercent,
+                'used_gb' => $diskUsedGb,
+                'total_gb' => $diskTotalGb,
             ]);
         }
     }
@@ -318,16 +372,18 @@ class SystemMonitorService implements SystemMonitorInterface
 
             // 取得資料庫檔案大小
             $dbPath = $this->config->get('DB_DATABASE');
-            if (is_file($dbPath)) {
+            if (is_string($dbPath) && is_file($dbPath)) {
                 $fileSize = filesize($dbPath);
-                $stats['database_file_size_bytes'] = $fileSize;
-                $stats['database_file_size_mb'] = round($fileSize / 1024 / 1024, 2);
+                if ($fileSize !== false) {
+                    $stats['database_file_size_bytes'] = $fileSize;
+                    $stats['database_file_size_mb'] = round($fileSize / 1024 / 1024, 2);
+                }
             }
 
             // 取得表格數量
             $stmt = $this->database->query("SELECT COUNT(*) as table_count FROM sqlite_master WHERE type='table'");
             $result = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
-            if ($result) {
+            if (is_array($result) && isset($result['table_count']) && is_numeric($result['table_count'])) {
                 $stats['table_count'] = (int) $result['table_count'];
             }
 
