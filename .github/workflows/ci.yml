@@ -77,7 +77,7 @@ jobs:
         run: |
           if [ -f "vendor/bin/phpunit" ]; then
             echo "🧪 執行單元測試..."
-            composer test:coverage --coverage-clover=coverage.xml
+            vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
           else
             echo "⚠️  PHPUnit 未安裝，跳過測試"
           fi
