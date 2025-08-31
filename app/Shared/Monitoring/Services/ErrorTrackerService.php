@@ -193,7 +193,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
             if (!is_array($record)) {
                 continue;
             }
-            $timestamp = is_int($record['timestamp'] ?? 0) ? $record['timestamp'] : time();
+            $timestampValue = $record['timestamp'] ?? 0;
+            $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int)$timestampValue : time();
             $date = date('Y-m-d', $timestamp);
             if (!isset($trends['daily_counts'][$date])) {
                 $trends['daily_counts'][$date] = 0;
@@ -206,7 +207,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
             if (!is_array($record)) {
                 continue;
             }
-            $timestamp = is_int($record['timestamp'] ?? 0) ? $record['timestamp'] : time();
+            $timestampValue = $record['timestamp'] ?? 0;
+            $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int)$timestampValue : time();
             $date = date('Y-m-d', $timestamp);
             $level = is_string($record['level'] ?? '') ? $record['level'] : 'unknown';
 
@@ -227,7 +229,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
             /** @var array<string, mixed> $context */
             $context = $record['context'];
             if (isset($context['exception_class']) && is_string($context['exception_class'])) {
-                $timestamp = is_int($record['timestamp'] ?? 0) ? $record['timestamp'] : time();
+                $timestampValue = $record['timestamp'] ?? 0;
+                $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int)$timestampValue : time();
                 $date = date('Y-m-d', $timestamp);
                 $type = $context['exception_class'];
 
@@ -295,8 +298,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
                 'time_period_hours' => $hours,
             ],
             'top_issues' => [
-                'error_types' => array_slice($stats['error_types'], 0, 5, true),
-                'error_files' => array_slice($stats['top_error_files'], 0, 5, true),
+                'error_types' => is_array($stats['error_types']) ? array_slice($stats['error_types'], 0, 5, true) : [],
+                'error_files' => is_array($stats['top_error_files']) ? array_slice($stats['top_error_files'], 0, 5, true) : [],
             ],
             'recent_critical' => array_slice($recentCritical, 0, 10),
             'health_status' => $this->determineHealthStatus($stats),

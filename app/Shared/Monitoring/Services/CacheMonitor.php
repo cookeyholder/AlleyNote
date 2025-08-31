@@ -602,8 +602,12 @@ class CacheMonitor implements CacheMonitorInterface
         }
 
         $stats = &$this->hitStats[$driver];
-        $totalRequests = is_numeric($stats['total_requests'] ?? 0) ? (float)($stats['total_requests']) : 0.0;
-        $hits = is_numeric($stats['hits'] ?? 0) ? (float)($stats['hits']) : 0.0;
+        
+        $totalRequestsValue = $stats['total_requests'] ?? 0;
+        $hitsValue = $stats['hits'] ?? 0;
+        
+        $totalRequests = is_numeric($totalRequestsValue) ? (float)$totalRequestsValue : 0.0;
+        $hits = is_numeric($hitsValue) ? (float)$hitsValue : 0.0;
 
         $stats['hit_rate'] = $totalRequests > 0 ? ($hits / $totalRequests) * 100 : 0;
     }
@@ -639,18 +643,26 @@ class CacheMonitor implements CacheMonitorInterface
         $totalErrors = 0;
 
         foreach ($this->operationStats as $stats) {
-            $totalOps += is_numeric($stats['total_operations'] ?? 0) ? (float)$stats['total_operations'] : 0;
-            $totalSuccessful += is_numeric($stats['successful_operations'] ?? 0) ? (float)$stats['successful_operations'] : 0;
-            $totalDuration += is_numeric($stats['total_duration'] ?? 0) ? (float)$stats['total_duration'] : 0;
+            $totalOpsValue = $stats['total_operations'] ?? 0;
+            $successfulOpsValue = $stats['successful_operations'] ?? 0;
+            $durationValue = $stats['total_duration'] ?? 0;
+            
+            $totalOps += is_numeric($totalOpsValue) ? (float)$totalOpsValue : 0;
+            $totalSuccessful += is_numeric($successfulOpsValue) ? (float)$successfulOpsValue : 0;
+            $totalDuration += is_numeric($durationValue) ? (float)$durationValue : 0;
         }
 
         foreach ($this->hitStats as $stats) {
-            $totalRequests += is_numeric($stats['total_requests'] ?? 0) ? (float)$stats['total_requests'] : 0;
-            $totalHits += is_numeric($stats['hits'] ?? 0) ? (float)$stats['hits'] : 0;
+            $requestsValue = $stats['total_requests'] ?? 0;
+            $hitsValue = $stats['hits'] ?? 0;
+            
+            $totalRequests += is_numeric($requestsValue) ? (float)$requestsValue : 0;
+            $totalHits += is_numeric($hitsValue) ? (float)$hitsValue : 0;
         }
 
         foreach ($this->errorStats as $stats) {
-            $totalErrors += is_numeric($stats['total_errors'] ?? 0) ? (float)$stats['total_errors'] : 0;
+            $errorsValue = $stats['total_errors'] ?? 0;
+            $totalErrors += is_numeric($errorsValue) ? (float)$errorsValue : 0;
         }
 
         return [
@@ -685,8 +697,11 @@ class CacheMonitor implements CacheMonitorInterface
             return 0.0;
         }
 
-        $firstTimestamp = is_numeric($firstOp['timestamp'] ?? 0) ? (float)$firstOp['timestamp'] : 0.0;
-        $lastTimestamp = is_numeric($lastOp['timestamp'] ?? 0) ? (float)$lastOp['timestamp'] : 0.0;
+        $firstTimestampValue = $firstOp['timestamp'] ?? 0;
+        $lastTimestampValue = $lastOp['timestamp'] ?? 0;
+        
+        $firstTimestamp = is_numeric($firstTimestampValue) ? (float)$firstTimestampValue : 0.0;
+        $lastTimestamp = is_numeric($lastTimestampValue) ? (float)$lastTimestampValue : 0.0;
         $timeSpan = $lastTimestamp - $firstTimestamp;
 
         return $timeSpan > 0 ? count($driverOps) / $timeSpan : 0.0;
@@ -697,8 +712,11 @@ class CacheMonitor implements CacheMonitorInterface
      */
     private function calculateErrorRate(string $driver): float
     {
-        $totalOps = is_numeric($this->operationStats[$driver]['total_operations'] ?? 0) ? (float)($this->operationStats[$driver]['total_operations']) : 0.0;
-        $totalErrors = is_numeric($this->errorStats[$driver]['total_errors'] ?? 0) ? (float)($this->errorStats[$driver]['total_errors']) : 0.0;
+        $totalOpsValue = $this->operationStats[$driver]['total_operations'] ?? 0;
+        $totalErrorsValue = $this->errorStats[$driver]['total_errors'] ?? 0;
+        
+        $totalOps = is_numeric($totalOpsValue) ? (float)$totalOpsValue : 0.0;
+        $totalErrors = is_numeric($totalErrorsValue) ? (float)$totalErrorsValue : 0.0;
 
         return $totalOps > 0 ? ($totalErrors / $totalOps) * 100 : 0;
     }
@@ -710,9 +728,13 @@ class CacheMonitor implements CacheMonitorInterface
     {
         // 簡化的 CSV 實作
         $csv = "快取監控報告\n";
-        $exportTimestamp = is_array($data['export_info'] ?? null) && isset($data['export_info']['timestamp'])
-            ? (string)$data['export_info']['timestamp']
-            : date('Y-m-d H:i:s');
+        $exportTimestamp = date('Y-m-d H:i:s');
+        if (is_array($data['export_info'] ?? null) && isset($data['export_info']['timestamp'])) {
+            $timestampValue = $data['export_info']['timestamp'];
+            if (is_string($timestampValue) || is_numeric($timestampValue)) {
+                $exportTimestamp = (string)$timestampValue;
+            }
+        }
         $csv .= "匯出時間," . $exportTimestamp . "\n\n";
 
         // 可以根據需要擴展 CSV 格式
@@ -770,7 +792,12 @@ class CacheMonitor implements CacheMonitorInterface
     {
         $count = 0;
         foreach ($this->operationStats as $stats) {
-            $count += $stats['operations'][$operation] ?? 0;
+            $operationValue = 0;
+            if (is_array($stats['operations'] ?? null) && isset($stats['operations'][$operation])) {
+                $operationCount = $stats['operations'][$operation];
+                $operationValue = is_numeric($operationCount) ? (int)$operationCount : 0;
+            }
+            $count += $operationValue;
         }
         return $count;
     }
