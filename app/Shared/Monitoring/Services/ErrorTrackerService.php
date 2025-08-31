@@ -453,8 +453,11 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
             $hourlyCount = 0;
             foreach ($errors as $error) {
-                if ($error['timestamp'] >= $hourStart && $error['timestamp'] < $hourEnd) {
-                    $hourlyCount++;
+                if (is_array($error) && isset($error['timestamp']) && is_numeric($error['timestamp'])) {
+                    $errorTimestamp = (int)$error['timestamp'];
+                    if ($errorTimestamp >= $hourStart && $errorTimestamp < $hourEnd) {
+                        $hourlyCount++;
+                    }
                 }
             }
 
@@ -469,6 +472,17 @@ class ErrorTrackerService implements ErrorTrackerInterface
      */
     private function fillMissingDates(array $trends, int $days): array
     {
+        // 確保必要的陣列結構存在
+        if (!isset($trends['daily_counts']) || !is_array($trends['daily_counts'])) {
+            $trends['daily_counts'] = [];
+        }
+        if (!isset($trends['level_trends']) || !is_array($trends['level_trends'])) {
+            $trends['level_trends'] = [];
+        }
+        if (!isset($trends['type_trends']) || !is_array($trends['type_trends'])) {
+            $trends['type_trends'] = [];
+        }
+        
         $endDate = time();
         $startDate = $endDate - ($days * 24 * 3600);
 
@@ -479,26 +493,40 @@ class ErrorTrackerService implements ErrorTrackerInterface
                 $trends['daily_counts'][$date] = 0;
             }
 
-            foreach ($trends['level_trends'] as $level => &$levelData) {
-                if (!isset($levelData[$date])) {
-                    $levelData[$date] = 0;
+            if (is_array($trends['level_trends'])) {
+                foreach ($trends['level_trends'] as $level => &$levelData) {
+                    if (is_array($levelData) && !isset($levelData[$date])) {
+                        $levelData[$date] = 0;
+                    }
                 }
             }
 
-            foreach ($trends['type_trends'] as $type => &$typeData) {
-                if (!isset($typeData[$date])) {
-                    $typeData[$date] = 0;
+            if (is_array($trends['type_trends'])) {
+                foreach ($trends['type_trends'] as $type => &$typeData) {
+                    if (is_array($typeData) && !isset($typeData[$date])) {
+                        $typeData[$date] = 0;
+                    }
                 }
             }
         }
 
         // 排序日期
-        ksort($trends['daily_counts']);
-        foreach ($trends['level_trends'] as &$levelData) {
-            ksort($levelData);
+        if (is_array($trends['daily_counts'])) {
+            ksort($trends['daily_counts']);
         }
-        foreach ($trends['type_trends'] as &$typeData) {
-            ksort($typeData);
+        if (is_array($trends['level_trends'])) {
+            foreach ($trends['level_trends'] as &$levelData) {
+                if (is_array($levelData)) {
+                    ksort($levelData);
+                }
+            }
+        }
+        if (is_array($trends['type_trends'])) {
+            foreach ($trends['type_trends'] as &$typeData) {
+                if (is_array($typeData)) {
+                    ksort($typeData);
+                }
+            }
         }
 
         return $trends;
@@ -509,10 +537,17 @@ class ErrorTrackerService implements ErrorTrackerInterface
      */
     private function determineHealthStatus(array $stats): array
     {
-        $criticalCount = $stats['levels']['critical'] ?? 0;
-        $errorCount = $stats['levels']['error'] ?? 0;
-        $warningCount = $stats['levels']['warning'] ?? 0;
-        $totalErrors = $stats['total_errors'];
+        $levels = is_array($stats['levels'] ?? null) ? $stats['levels'] : [];
+        
+        $criticalValue = $levels['critical'] ?? 0;
+        $errorValue = $levels['error'] ?? 0;
+        $warningValue = $levels['warning'] ?? 0;
+        $totalValue = $stats['total_errors'] ?? 0;
+        
+        $criticalCount = is_numeric($criticalValue) ? (int)$criticalValue : 0;
+        $errorCount = is_numeric($errorValue) ? (int)$errorValue : 0;
+        $warningCount = is_numeric($warningValue) ? (int)$warningValue : 0;
+        $totalErrors = is_numeric($totalValue) ? (int)$totalValue : 0;
 
         if ($criticalCount > 0) {
             return [
