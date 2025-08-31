@@ -230,7 +230,7 @@ class CacheGroupManagerTest extends TestCase
             });
 
         $results = $this->groupManager->flushMultipleGroups($groups);
-        
+
         // 驗證結果結構
         $this->assertIsArray($results);
         $this->assertArrayHasKey('group1', $results);
@@ -353,7 +353,7 @@ class CacheGroupManagerTest extends TestCase
             ->willReturnCallback(function($tags) {
                 return is_array($tags) ? 1 : 0;
             });
-        
+
         $clearedCount = $this->groupManager->flushGroup($groupName);
         $this->assertEquals(1, $clearedCount);
 

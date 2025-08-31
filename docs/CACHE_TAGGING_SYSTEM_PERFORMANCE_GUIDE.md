@@ -63,28 +63,28 @@ class OptimizedGroupStrategy
     {
         // 將用戶資料分成多個小分組，而不是一個大分組
         $groupManager = app(CacheGroupManager::class);
-        
+
         // 基本資料分組
         $basicGroup = $groupManager->group("user_basic_{$userId}", [
             CacheTag::user($userId)->getName(),
             'profile',
             'basic'
         ]);
-        
+
         // 偏好設定分組
         $preferencesGroup = $groupManager->group("user_preferences_{$userId}", [
             CacheTag::user($userId)->getName(),
             'preferences',
             'settings'
         ]);
-        
+
         return $basicGroup;
     }
 
     public function createContentGroups(string $contentType): array
     {
         $groupManager = app(CacheGroupManager::class);
-        
+
         return [
             // 熱門內容分組（快速存取）
             'hot' => $groupManager->group("{$contentType}_hot", [
@@ -92,7 +92,7 @@ class OptimizedGroupStrategy
                 'hot',
                 'priority:high'
             ]),
-            
+
             // 一般內容分組
             'normal' => $groupManager->group("{$contentType}_normal", [
                 CacheTag::module($contentType)->getName(),
@@ -112,24 +112,24 @@ class SmartGroupDependencies
     public function setupUserGroupHierarchy(int $userId): void
     {
         $groupManager = app(CacheGroupManager::class);
-        
+
         // 建立分層結構
         $userGroup = "user_{$userId}";
         $userPostsGroup = "user_posts_{$userId}";
         $userCommentsGroup = "user_comments_{$userId}";
-        
+
         // 設定依賴關係：用戶基本資料 -> 用戶內容
         $groupManager->setDependencies($userGroup, [
             $userPostsGroup,
             $userCommentsGroup
         ]);
-        
+
         // 設定失效規則
         $groupManager->setInvalidationRules($userGroup, [
             'max_age' => 3600,
             'invalidate_on' => ['user_profile_update', 'user_status_change']
         ]);
-        
+
         // 內容相關分組的獨立失效規則
         $groupManager->setInvalidationRules($userPostsGroup, [
             'max_age' => 1800,  // 更短的快取時間
@@ -153,10 +153,10 @@ class TagIndexOptimization
     {
         // 定期清理未使用的標籤
         $this->cleanupUnusedTags();
-        
+
         // 合併相似標籤
         $this->mergeSimilarTags();
-        
+
         // 壓縮標籤索引
         $this->compressTagIndex();
     }
@@ -164,19 +164,19 @@ class TagIndexOptimization
     private function cleanupUnusedTags(): int
     {
         $cleaned = $this->cache->cleanupUnusedTags();
-        
+
         Log::info('標籤清理完成', [
             'cleaned_count' => $cleaned,
             'timestamp' => now()
         ]);
-        
+
         return $cleaned;
     }
 
     private function mergeSimilarTags(): void
     {
         $stats = $this->cache->getTagStatistics();
-        
+
         foreach ($stats as $tag => $count) {
             // 如果標籤使用次數很少，考慮合併到更通用的標籤
             if ($count < 5 && $this->isMergeableTag($tag)) {
@@ -195,7 +195,7 @@ class TagIndexOptimization
     {
         // 將細分標籤的快取項目移動到更通用的標籤下
         $keys = $this->cache->getKeysByTag($specificTag);
-        
+
         foreach ($keys as $key) {
             $this->cache->removeTagsFromKey($key, $specificTag);
             $this->cache->addTagsToKey($key, 'user:session');
@@ -215,7 +215,7 @@ class BatchOperations
     {
         $groupManager = app(CacheGroupManager::class);
         $results = [];
-        
+
         // 收集所有要清空的分組
         $groupsToFlush = [];
         foreach ($userIds as $userId) {
@@ -223,10 +223,10 @@ class BatchOperations
             $groupsToFlush[] = "user_posts_{$userId}";
             $groupsToFlush[] = "user_comments_{$userId}";
         }
-        
+
         // 批次清空
         $totalCleared = $groupManager->flushGroups($groupsToFlush, false);
-        
+
         return [
             'cleared_groups' => count($groupsToFlush),
             'cleared_items' => $totalCleared,
@@ -238,7 +238,7 @@ class BatchOperations
     {
         $cache = app(TaggedCacheInterface::class);
         $results = [];
-        
+
         foreach ($operations as $operation) {
             switch ($operation['type']) {
                 case 'flush':
@@ -246,19 +246,19 @@ class BatchOperations
                     break;
                 case 'add_tags':
                     $results[] = $cache->addTagsToKey(
-                        $operation['key'], 
+                        $operation['key'],
                         $operation['tags']
                     );
                     break;
                 case 'remove_tags':
                     $results[] = $cache->removeTagsFromKey(
-                        $operation['key'], 
+                        $operation['key'],
                         $operation['tags']
                     );
                     break;
             }
         }
-        
+
         return $results;
     }
 }
@@ -283,7 +283,7 @@ class CachePerformanceMonitor
             'group_stats' => $this->getGroupStats(),
             'performance_stats' => $this->getPerformanceStats()
         ];
-        
+
         $this->reportMetrics($metrics);
         return $metrics;
     }
@@ -301,7 +301,7 @@ class CachePerformanceMonitor
     private function getTagStats(): array
     {
         $tagStats = $this->cache->getTagStatistics();
-        
+
         return [
             'total_tags' => count($tagStats),
             'most_used_tags' => array_slice(
@@ -315,7 +315,7 @@ class CachePerformanceMonitor
     private function getGroupStats(): array
     {
         $groupStats = $this->groupManager->getGroupStatistics();
-        
+
         return [
             'total_groups' => $groupStats['total_groups'],
             'groups_with_dependencies' => count($groupStats['dependencies']),
@@ -350,7 +350,7 @@ class CacheAlertSystem
     public function checkAlerts(array $metrics): array
     {
         $alerts = [];
-        
+
         // 檢查命中率
         if ($metrics['cache_stats']['hit_rate'] < self::THRESHOLDS['hit_rate_min']) {
             $alerts[] = [
@@ -360,7 +360,7 @@ class CacheAlertSystem
                 'suggestion' => '檢查快取策略和 TTL 設定'
             ];
         }
-        
+
         // 檢查記憶體使用
         if ($metrics['cache_stats']['memory_usage'] > self::THRESHOLDS['memory_usage_max']) {
             $alerts[] = [
@@ -370,7 +370,7 @@ class CacheAlertSystem
                 'suggestion' => '執行快取清理或增加記憶體限制'
             ];
         }
-        
+
         // 檢查未使用標籤
         $unusedTagsCount = count($metrics['tag_stats']['unused_tags']);
         if ($unusedTagsCount > 50) {
@@ -381,7 +381,7 @@ class CacheAlertSystem
                 'suggestion' => '執行標籤清理操作'
             ];
         }
-        
+
         return $alerts;
     }
 }
@@ -398,10 +398,10 @@ class LayeredCacheStrategy
 {
     // L1: 記憶體快取（最快，容量小）
     private MemoryCacheDriver $l1Cache;
-    
+
     // L2: Redis 快取（快，容量中）
     private RedisCacheDriver $l2Cache;
-    
+
     // L3: 資料庫快取（慢，容量大）
     private DatabaseCacheDriver $l3Cache;
 
@@ -413,7 +413,7 @@ class LayeredCacheStrategy
             $this->recordHit('l1');
             return $value;
         }
-        
+
         // L2 快取檢查
         $value = $this->l2Cache->get($key);
         if ($value !== null) {
@@ -422,7 +422,7 @@ class LayeredCacheStrategy
             $this->l1Cache->put($key, $value, min($ttl, 300));
             return $value;
         }
-        
+
         // L3 快取檢查
         $value = $this->l3Cache->get($key);
         if ($value !== null) {
@@ -432,7 +432,7 @@ class LayeredCacheStrategy
             $this->l1Cache->put($key, $value, min($ttl, 300));
             return $value;
         }
-        
+
         // 快取未命中，執行回調
         if ($callback) {
             $value = $callback();
@@ -442,7 +442,7 @@ class LayeredCacheStrategy
             $this->recordMiss();
             return $value;
         }
-        
+
         return null;
     }
 }
@@ -465,7 +465,7 @@ class TTLOptimizationStrategy
     public function getTTL(string $dataType, array $context = []): int
     {
         $baseTTL = self::TTL_PROFILES[$dataType] ?? 3600;
-        
+
         // 根據上下文調整 TTL
         if (isset($context['priority'])) {
             switch ($context['priority']) {
@@ -475,7 +475,7 @@ class TTLOptimizationStrategy
                     return $baseTTL / 2;  // 低優先級資料快取較短
             }
         }
-        
+
         // 根據使用頻率調整
         if (isset($context['access_frequency'])) {
             $frequency = $context['access_frequency'];
@@ -485,7 +485,7 @@ class TTLOptimizationStrategy
                 return $baseTTL * 0.5;  // 低頻存取資料縮短快取時間
             }
         }
-        
+
         return $baseTTL;
     }
 }
@@ -503,9 +503,9 @@ class CacheErrorHandling
     {
         try {
             $cache = app(TaggedCacheInterface::class);
-            
+
             return $cache->remember($key, $fallback, $ttl);
-            
+
         } catch (CacheException $e) {
             // 快取操作失敗，記錄錯誤並降級
             $this->logger->warning('快取操作失敗，使用降級策略', [
@@ -513,9 +513,9 @@ class CacheErrorHandling
                 'error' => $e->getMessage(),
                 'fallback' => 'direct_database_query'
             ]);
-            
+
             $this->metrics->increment('cache.errors.degraded');
-            
+
             // 直接執行回調函數
             return $fallback();
         }
@@ -526,15 +526,15 @@ class CacheErrorHandling
         try {
             $cache = app(TaggedCacheInterface::class);
             return $cache->flushByTags($tags);
-            
+
         } catch (CacheException $e) {
             $this->logger->error('快取清空失敗', [
                 'tags' => $tags,
                 'error' => $e->getMessage()
             ]);
-            
+
             $this->metrics->increment('cache.errors.flush_failed');
-            
+
             // 返回 0 表示沒有清空任何項目
             return 0;
         }
@@ -550,19 +550,19 @@ class CachePerformanceBenchmark
     public function runBenchmarks(): array
     {
         $results = [];
-        
+
         // 測試基本操作效能
         $results['basic_operations'] = $this->benchmarkBasicOperations();
-        
+
         // 測試標籤操作效能
         $results['tag_operations'] = $this->benchmarkTagOperations();
-        
+
         // 測試分組操作效能
         $results['group_operations'] = $this->benchmarkGroupOperations();
-        
+
         // 測試大數據量效能
         $results['bulk_operations'] = $this->benchmarkBulkOperations();
-        
+
         return $results;
     }
 
@@ -570,21 +570,21 @@ class CachePerformanceBenchmark
     {
         $cache = app(TaggedCacheInterface::class);
         $iterations = 10000;
-        
+
         // PUT 操作基準測試
         $start = microtime(true);
         for ($i = 0; $i < $iterations; $i++) {
             $cache->put("bench_key_{$i}", "value_{$i}", 3600);
         }
         $putTime = microtime(true) - $start;
-        
+
         // GET 操作基準測試
         $start = microtime(true);
         for ($i = 0; $i < $iterations; $i++) {
             $cache->get("bench_key_{$i}");
         }
         $getTime = microtime(true) - $start;
-        
+
         return [
             'put_ops_per_second' => $iterations / $putTime,
             'get_ops_per_second' => $iterations / $getTime,
@@ -597,7 +597,7 @@ class CachePerformanceBenchmark
     {
         $cache = app(TaggedCacheInterface::class);
         $iterations = 1000;
-        
+
         // 標籤設定基準測試
         $start = microtime(true);
         for ($i = 0; $i < $iterations; $i++) {
@@ -605,12 +605,12 @@ class CachePerformanceBenchmark
             $taggedCache->put("tagged_key_{$i}", "value_{$i}", 3600);
         }
         $taggedPutTime = microtime(true) - $start;
-        
+
         // 標籤清空基準測試
         $start = microtime(true);
         $cleared = $cache->flushByTags(['benchmark']);
         $flushTime = microtime(true) - $start;
-        
+
         return [
             'tagged_put_ops_per_second' => $iterations / $taggedPutTime,
             'flush_by_tags_time_ms' => $flushTime * 1000,
@@ -633,12 +633,12 @@ class CacheMaintenanceScheduler
         $this->schedule(function() {
             $this->lightweightCleanup();
         })->hourly();
-        
+
         // 每日執行的深度清理
         $this->schedule(function() {
             $this->deepCleanup();
         })->daily();
-        
+
         // 每週執行的統計分析
         $this->schedule(function() {
             $this->weeklyAnalysis();
@@ -649,13 +649,13 @@ class CacheMaintenanceScheduler
     {
         $cache = app(TaggedCacheInterface::class);
         $groupManager = app(CacheGroupManager::class);
-        
+
         // 清理未使用的標籤
         $cleanedTags = $cache->cleanupUnusedTags();
-        
+
         // 清理過期分組
         $cleanedGroups = $groupManager->cleanupExpiredGroups();
-        
+
         Log::info('輕量級快取清理完成', [
             'cleaned_tags' => $cleanedTags,
             'cleaned_groups' => $cleanedGroups
@@ -666,13 +666,13 @@ class CacheMaintenanceScheduler
     {
         $cache = app(TaggedCacheInterface::class);
         $groupManager = app(CacheGroupManager::class);
-        
+
         // 分析和優化標籤使用
         $this->analyzeTagUsage();
-        
+
         // 重組快取分組
         $this->reorganizeGroups();
-        
+
         // 更新統計資料
         $this->updateStatistics();
     }
@@ -692,10 +692,10 @@ class CachePerformanceReporter
             'optimization_suggestions' => $this->generateOptimizationSuggestions(),
             'usage_patterns' => $this->generateUsagePatterns()
         ];
-        
+
         // 發送報告給系統管理員
         $this->sendReport($report);
-        
+
         return $report;
     }
 
@@ -703,7 +703,7 @@ class CachePerformanceReporter
     {
         $monitor = new CachePerformanceMonitor();
         $metrics = $monitor->collectMetrics();
-        
+
         return [
             'total_cache_operations' => $metrics['performance_stats']['operations_count'],
             'average_hit_rate' => $metrics['cache_stats']['hit_rate'],

@@ -464,7 +464,7 @@ class CacheGroupManager
         $escapedPattern = str_replace('*', $placeholder, $pattern);
         $quotedPattern = preg_quote($escapedPattern, '/');
         $regex = '/^' . str_replace($placeholder, '.*', $quotedPattern) . '$/';
-        
+
         return preg_match($regex, $text) === 1;
     }
 }

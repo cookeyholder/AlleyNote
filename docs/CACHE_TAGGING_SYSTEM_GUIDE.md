@@ -223,7 +223,7 @@ class UserService
     {
         // 建立用戶快取分組
         $userGroup = $this->cacheManager->userGroup($userId, ['profile']);
-        
+
         return $userGroup->remember("user_data_{$userId}", function() use ($userId) {
             return $this->fetchUserFromDatabase($userId);
         }, 3600);
@@ -233,10 +233,10 @@ class UserService
     {
         // 更新數據庫
         $this->updateUserInDatabase($userId, $data);
-        
+
         // 清空用戶相關快取
         $this->cacheManager->flushGroup("user_{$userId}");
-        
+
         // 也清空相關的快取
         $this->cacheManager->triggerInvalidationRules(['user_update']);
     }
@@ -253,7 +253,7 @@ class PostService
     public function getRecentPosts(int $limit = 10): array
     {
         $postsGroup = $this->cacheManager->moduleGroup('posts', ['recent']);
-        
+
         return $postsGroup->remember("recent_posts_{$limit}", function() use ($limit) {
             return $this->fetchRecentPostsFromDatabase($limit);
         }, 900); // 15 分鐘快取
@@ -267,7 +267,7 @@ class PostService
             CacheTag::user($userId)->getName(),
             CacheTag::module('posts')->getName()
         ]);
-        
+
         return $userPostsCache->remember("user_posts_{$userId}", function() use ($userId) {
             return $this->fetchUserPostsFromDatabase($userId);
         }, 1800); // 30 分鐘快取
@@ -276,14 +276,14 @@ class PostService
     public function createPost(int $userId, array $postData): int
     {
         $postId = $this->createPostInDatabase($userId, $postData);
-        
+
         // 清空相關快取
         $cache = app(TaggedCacheInterface::class);
         $cache->flushByTags([
             CacheTag::user($userId)->getName(),
             CacheTag::module('posts')->getName()
         ]);
-        
+
         return $postId;
     }
 }
@@ -302,11 +302,11 @@ class HierarchicalCacheExample
         $this->cacheManager->group('system', ['global']);
         $this->cacheManager->group('users', ['user_data']);
         $this->cacheManager->group('user_123', ['user:123']);
-        
+
         // 設定依賴關係：system -> users -> user_123
         $this->cacheManager->setDependencies('system', ['users']);
         $this->cacheManager->setDependencies('users', ['user_123']);
-        
+
         // 設定失效規則
         $this->cacheManager->setInvalidationRules('user_123', [
             'max_age' => 3600,
@@ -350,10 +350,10 @@ $tooGeneralGroup = $groupManager->group('all_user_data', ['users']); // 過度�
 $this->scheduledTask(function() {
     $cache = app(TaggedCacheInterface::class);
     $groupManager = app(CacheGroupManager::class);
-    
+
     $cleanedTags = $cache->cleanupUnusedTags();
     $cleanedGroups = $groupManager->cleanupExpiredGroups();
-    
+
     Log::info("快取清理完成", [
         'cleaned_tags' => $cleanedTags,
         'cleaned_groups' => $cleanedGroups
@@ -400,7 +400,7 @@ return [
         'prefix' => 'alleynote:tagged:',
         'ttl' => 3600,
     ],
-    
+
     'group_manager' => [
         'max_groups' => 1000,
         'default_ttl' => 3600,

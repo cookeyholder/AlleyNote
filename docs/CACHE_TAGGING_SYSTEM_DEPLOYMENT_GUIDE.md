@@ -422,13 +422,13 @@ class CacheMetricsCollector
     public function exportPrometheusMetrics(): string
     {
         $metrics = $this->collectMetrics();
-        
+
         $output = [];
         foreach ($metrics as $name => $value) {
             $output[] = "# TYPE {$name} gauge";
             $output[] = "{$name} {$value}";
         }
-        
+
         return implode("\n", $output);
     }
 }
@@ -450,16 +450,16 @@ class CachePerformanceMiddleware
     {
         $startTime = microtime(true);
         $startMemory = memory_get_usage(true);
-        
+
         // 記錄快取操作開始
         $this->recordCacheOperationStart($request);
-        
+
         $response = $next($request);
-        
+
         // 計算效能指標
         $executionTime = microtime(true) - $startTime;
         $memoryUsage = memory_get_usage(true) - $startMemory;
-        
+
         // 記錄效能指標
         $this->recordPerformanceMetrics([
             'execution_time' => $executionTime,
@@ -467,7 +467,7 @@ class CachePerformanceMiddleware
             'request_path' => $request->getPathInfo(),
             'cache_operations' => $this->getCacheOperationCount(),
         ]);
-        
+
         return $response;
     }
 }
@@ -755,7 +755,7 @@ class CacheDiagnosticsCommand extends Command
     private function checkCacheConfiguration(): void
     {
         $config = config('cache');
-        
+
         if (!$config) {
             $this->error('✗ 快取配置遺失');
             return;
@@ -803,10 +803,10 @@ class CachePerformanceAnalysisCommand extends Command
     {
         $redis = app('redis');
         $info = $redis->info('memory');
-        
+
         $usedMemory = $info['used_memory_human'];
         $maxMemory = $info['maxmemory_human'] ?? 'unlimited';
-        
+
         $this->table(['指標', '值'], [
             ['使用記憶體', $usedMemory],
             ['最大記憶體', $maxMemory],
