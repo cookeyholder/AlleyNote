@@ -523,8 +523,8 @@ class CacheMonitor implements CacheMonitorInterface
                 'avg_time' => $stats['avg_duration'],
                 'min_time' => $stats['min_duration'],
                 'max_time' => $stats['max_duration'],
-                'success_rate' => $stats['total_operations'] > 0
-                    ? ($stats['successful_operations'] / $stats['total_operations']) * 100
+                'success_rate' => is_numeric($stats['total_operations'] ?? 0) && $stats['total_operations'] > 0
+                    ? (is_numeric($stats['successful_operations'] ?? 0) ? (float)$stats['successful_operations'] : 0) / (is_numeric($stats['total_operations'] ?? 0) ? (float)$stats['total_operations'] : 1) * 100
                     : 0,
                 'total_errors' => $this->errorStats[$driver]['total_errors'] ?? 0,
             ];
@@ -559,7 +559,7 @@ class CacheMonitor implements CacheMonitorInterface
         ];
 
         return match ($format) {
-            'json' => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+            'json' => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '',
             'csv' => $this->convertToCsv($data),
             default => throw new \InvalidArgumentException("不支援的匯出格式: {$format}"),
         };

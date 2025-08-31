@@ -199,7 +199,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     /**
      * 取得效能統計資料。
      */
-    public function getPerformanceStats(string $operation = null): array
+    public function getPerformanceStats(?string $operation = null): array
     {
         $stats = [
             'active_sessions' => count($this->activeMonitoringSessions),
@@ -416,7 +416,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     /**
      * 計算指標摘要。
      */
-    private function calculateMetricsSummary(array $metricsSubset = null): array
+    private function calculateMetricsSummary(?array $metricsSubset = null): array
     {
         $metrics = $metricsSubset ?? $this->metrics;
         $summary = [];
