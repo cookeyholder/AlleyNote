@@ -191,20 +191,35 @@ class SystemMonitorService implements SystemMonitorInterface
     {
         $metrics = $this->getAllMetrics();
 
+        // 安全地存取陣列元素
+        $memoryUsageMb = is_array($metrics['memory'] ?? null) && is_numeric($metrics['memory']['current_usage_mb'] ?? 0)
+            ? (float) $metrics['memory']['current_usage_mb'] : 0.0;
+        $memoryUsagePercent = is_array($metrics['memory'] ?? null) && is_numeric($metrics['memory']['usage_percentage'] ?? 0)
+            ? (float) $metrics['memory']['usage_percentage'] : 0.0;
+        $diskUsagePercent = is_array($metrics['disk'] ?? null) && is_numeric($metrics['disk']['usage_percentage'] ?? 0)
+            ? (float) $metrics['disk']['usage_percentage'] : 0.0;
+        $dbConnected = is_array($metrics['database'] ?? null) && is_bool($metrics['database']['connected'] ?? false)
+            ? $metrics['database']['connected'] : false;
+        $healthScore = is_array($metrics['health'] ?? null) && is_numeric($metrics['health']['health_score'] ?? 0)
+            ? (float) $metrics['health']['health_score'] : 0.0;
+
         $this->logger->info('System metrics collected', [
-            'memory_usage_mb' => $metrics['memory']['current_usage_mb'],
-            'memory_usage_percent' => $metrics['memory']['usage_percentage'],
-            'disk_usage_percent' => $metrics['disk']['usage_percentage'],
-            'database_connected' => $metrics['database']['connected'],
-            'health_score' => $metrics['health']['health_score'],
+            'memory_usage_mb' => $memoryUsageMb,
+            'memory_usage_percent' => $memoryUsagePercent,
+            'disk_usage_percent' => $diskUsagePercent,
+            'database_connected' => $dbConnected,
+            'health_score' => $healthScore,
         ]);
 
         // 記錄警告
-        if ($metrics['memory']['usage_percentage'] > 80) {
+        if ($memoryUsagePercent > 80) {
+            $memoryLimitMb = is_array($metrics['memory'] ?? null) && is_numeric($metrics['memory']['limit_mb'] ?? 0)
+                ? (float) $metrics['memory']['limit_mb'] : 0.0;
+            
             $this->logger->warning('High memory usage detected', [
-                'usage_percent' => $metrics['memory']['usage_percentage'],
-                'used_mb' => $metrics['memory']['current_usage_mb'],
-                'limit_mb' => $metrics['memory']['limit_mb'],
+                'usage_percent' => $memoryUsagePercent,
+                'used_mb' => $memoryUsageMb,
+                'limit_mb' => $memoryLimitMb,
             ]);
         }
 

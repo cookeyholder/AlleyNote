@@ -114,8 +114,13 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         // 按錯誤類型分組
         foreach ($recentErrors as $record) {
-            if (isset($record['context']['exception_class'])) {
-                $type = $record['context']['exception_class'];
+            if (!is_array($record) || !is_array($record['context'] ?? null)) {
+                continue;
+            }
+            /** @var array<string, mixed> $context */
+            $context = $record['context'];
+            if (isset($context['exception_class']) && is_string($context['exception_class'])) {
+                $type = $context['exception_class'];
                 if (!isset($stats['error_types'][$type])) {
                     $stats['error_types'][$type] = 0;
                 }
@@ -125,8 +130,13 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         // 按檔案位置分組
         foreach ($recentErrors as $record) {
-            if (isset($record['context']['file'])) {
-                $file = basename($record['context']['file']);
+            if (!is_array($record) || !is_array($record['context'] ?? null)) {
+                continue;
+            }
+            /** @var array<string, mixed> $context */
+            $context = $record['context'];
+            if (isset($context['file']) && is_string($context['file'])) {
+                $file = basename($context['file']);
                 if (!isset($stats['top_error_files'][$file])) {
                     $stats['top_error_files'][$file] = 0;
                 }
@@ -180,7 +190,11 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         // 按日期分組
         foreach ($recentErrors as $record) {
-            $date = date('Y-m-d', (int)$record['timestamp']);
+            if (!is_array($record)) {
+                continue;
+            }
+            $timestamp = is_int($record['timestamp'] ?? 0) ? $record['timestamp'] : time();
+            $date = date('Y-m-d', $timestamp);
             if (!isset($trends['daily_counts'][$date])) {
                 $trends['daily_counts'][$date] = 0;
             }
@@ -189,8 +203,12 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         // 按等級和日期分組
         foreach ($recentErrors as $record) {
-            $date = date('Y-m-d', (int)$record['timestamp']);
-            $level = $record['level'];
+            if (!is_array($record)) {
+                continue;
+            }
+            $timestamp = is_int($record['timestamp'] ?? 0) ? $record['timestamp'] : time();
+            $date = date('Y-m-d', $timestamp);
+            $level = is_string($record['level'] ?? '') ? $record['level'] : 'unknown';
 
             if (!isset($trends['level_trends'][$level])) {
                 $trends['level_trends'][$level] = [];
@@ -203,9 +221,15 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         // 按錯誤類型和日期分組
         foreach ($recentErrors as $record) {
-            if (isset($record['context']['exception_class'])) {
-                $date = date('Y-m-d', (int)$record['timestamp']);
-                $type = $record['context']['exception_class'];
+            if (!is_array($record) || !is_array($record['context'] ?? null)) {
+                continue;
+            }
+            /** @var array<string, mixed> $context */
+            $context = $record['context'];
+            if (isset($context['exception_class']) && is_string($context['exception_class'])) {
+                $timestamp = is_int($record['timestamp'] ?? 0) ? $record['timestamp'] : time();
+                $date = date('Y-m-d', $timestamp);
+                $type = $context['exception_class'];
 
                 if (!isset($trends['type_trends'][$type])) {
                     $trends['type_trends'][$type] = [];

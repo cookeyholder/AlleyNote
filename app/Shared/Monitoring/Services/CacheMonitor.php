@@ -286,16 +286,26 @@ class CacheMonitor implements CacheMonitorInterface
         $totalHits = 0;
 
         foreach ($this->hitStats as $driver => $driverStats) {
+            if (!is_array($driverStats)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $validStats */
+            $validStats = $driverStats;
+            
             $stats[$driver] = [
-                'hit_rate' => $driverStats['hit_rate'],
-                'hits' => $driverStats['hits'],
-                'misses' => $driverStats['misses'],
-                'total_requests' => $driverStats['total_requests'],
-                'avg_hit_duration' => $driverStats['avg_hit_duration'],
+                'hit_rate' => $validStats['hit_rate'] ?? 0.0,
+                'hits' => $validStats['hits'] ?? 0,
+                'misses' => $validStats['misses'] ?? 0,
+                'total_requests' => $validStats['total_requests'] ?? 0,
+                'avg_hit_duration' => $validStats['avg_hit_duration'] ?? 0.0,
             ];
 
-            $totalRequests += $driverStats['total_requests'];
-            $totalHits += $driverStats['hits'];
+            $totalReqValue = $validStats['total_requests'] ?? 0;
+            $hitsValue = $validStats['hits'] ?? 0;
+            
+            $totalRequests += is_numeric($totalReqValue) ? (int) $totalReqValue : 0;
+            $totalHits += is_numeric($hitsValue) ? (int) $hitsValue : 0;
         }
 
         $globalHitRate = $totalRequests > 0 ? ($totalHits / $totalRequests) * 100 : 0;
@@ -314,13 +324,27 @@ class CacheMonitor implements CacheMonitorInterface
         $comparison = [];
 
         foreach ($this->operationStats as $driver => $stats) {
+            if (!is_array($stats)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $validStats */
+            $validStats = $stats;
+
+            $totalOperations = is_numeric($validStats['total_operations'] ?? 0) ? (int) ($validStats['total_operations']) : 0;
+            $successfulOperations = is_numeric($validStats['successful_operations'] ?? 0) ? (int) ($validStats['successful_operations']) : 0;
+
+            $avgDurationValue = $validStats['avg_duration'] ?? 0;
+            $minDurationValue = $validStats['min_duration'] ?? 0;
+            $maxDurationValue = $validStats['max_duration'] ?? 0;
+
             $comparison[$driver] = [
-                'avg_duration' => $stats['avg_duration'],
-                'min_duration' => $stats['min_duration'],
-                'max_duration' => $stats['max_duration'],
-                'total_operations' => $stats['total_operations'],
-                'success_rate' => $stats['total_operations'] > 0
-                    ? ($stats['successful_operations'] / $stats['total_operations']) * 100
+                'avg_duration' => is_numeric($avgDurationValue) ? (float) $avgDurationValue : 0.0,
+                'min_duration' => is_numeric($minDurationValue) ? (float) $minDurationValue : 0.0,
+                'max_duration' => is_numeric($maxDurationValue) ? (float) $maxDurationValue : 0.0,
+                'total_operations' => $totalOperations,
+                'success_rate' => $totalOperations > 0
+                    ? ($successfulOperations / $totalOperations) * 100
                     : 0,
                 'operations_per_second' => $this->calculateOperationsPerSecond($driver),
             ];
@@ -358,14 +382,25 @@ class CacheMonitor implements CacheMonitorInterface
         $totalErrors = 0;
 
         foreach ($this->errorStats as $driver => $driverErrors) {
+            if (!is_array($driverErrors)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $validErrors */
+            $validErrors = $driverErrors;
+
+            $driverTotalErrors = is_int($validErrors['total_errors'] ?? 0) ? $validErrors['total_errors'] : 0;
+            $errorsByOperation = is_array($validErrors['errors_by_operation'] ?? []) ? $validErrors['errors_by_operation'] : [];
+            $recentErrors = is_array($validErrors['recent_errors'] ?? []) ? $validErrors['recent_errors'] : [];
+
             $stats[$driver] = [
-                'total_errors' => $driverErrors['total_errors'],
-                'errors_by_operation' => $driverErrors['errors_by_operation'],
-                'recent_errors_count' => count($driverErrors['recent_errors']),
+                'total_errors' => $driverTotalErrors,
+                'errors_by_operation' => $errorsByOperation,
+                'recent_errors_count' => count($recentErrors),
                 'error_rate' => $this->calculateErrorRate($driver),
             ];
 
-            $totalErrors += $driverErrors['total_errors'];
+            $totalErrors += $driverTotalErrors;
         }
 
         return [
@@ -382,13 +417,25 @@ class CacheMonitor implements CacheMonitorInterface
         $issues = [];
 
         foreach ($this->healthRecords as $driver => $health) {
-            if ($health['healthy']) {
+            if (!is_array($health)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $validHealth */
+            $validHealth = $health;
+
+            $isHealthy = is_bool($validHealth['healthy'] ?? false) ? $validHealth['healthy'] : false;
+            
+            if ($isHealthy) {
                 $healthySystems++;
             } else {
+                $timestamp = is_int($validHealth['timestamp'] ?? 0) ? $validHealth['timestamp'] : time();
+                $details = is_array($validHealth['details'] ?? []) ? $validHealth['details'] : [];
+                
                 $issues[] = [
                     'driver' => $driver,
-                    'details' => $health['details'],
-                    'since' => date('Y-m-d H:i:s', (int)$health['timestamp']),
+                    'details' => $details,
+                    'since' => date('Y-m-d H:i:s', $timestamp),
                 ];
             }
         }
@@ -552,10 +599,15 @@ class CacheMonitor implements CacheMonitorInterface
      */
     private function updateHitRate(string $driver): void
     {
+        if (!isset($this->hitStats[$driver]) || !is_array($this->hitStats[$driver])) {
+            return;
+        }
+
         $stats = &$this->hitStats[$driver];
-        $stats['hit_rate'] = $stats['total_requests'] > 0
-            ? ($stats['hits'] / $stats['total_requests']) * 100
-            : 0;
+        $totalRequests = is_int($stats['total_requests'] ?? 0) ? $stats['total_requests'] : 0;
+        $hits = is_int($stats['hits'] ?? 0) ? $stats['hits'] : 0;
+        
+        $stats['hit_rate'] = $totalRequests > 0 ? ($hits / $totalRequests) * 100 : 0;
     }
 
     /**
