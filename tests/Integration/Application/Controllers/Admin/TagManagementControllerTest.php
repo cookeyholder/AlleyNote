@@ -206,7 +206,7 @@ class TagManagementControllerTest extends TestCase
             ]);
 
         // 移除 logger 期待，因為實際實現中沒有 info 日誌
-        
+
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {

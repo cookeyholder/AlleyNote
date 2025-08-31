@@ -636,7 +636,7 @@ class TagManagementController extends BaseController
             if (!is_array($body)) {
                 throw new InvalidArgumentException('請求內容必須是有效的 JSON');
             }
-            
+
             $groupName = $body['name'] ?? '';
             $tags = $body['tags'] ?? [];
 
