@@ -178,7 +178,6 @@ class CacheGroupManagerTest extends TestCase
 
         $stats = $this->groupManager->getGroupStatistics();
 
-        $this->assertIsArray($stats);
         $this->assertArrayHasKey('total_groups', $stats);
         $this->assertArrayHasKey('groups', $stats);
         $this->assertEquals(2, $stats['total_groups']);
@@ -232,7 +231,6 @@ class CacheGroupManagerTest extends TestCase
         $results = $this->groupManager->flushMultipleGroups($groups);
 
         // 驗證結果結構
-        $this->assertIsArray($results);
         $this->assertArrayHasKey('group1', $results);
         $this->assertArrayHasKey('group2', $results);
         $this->assertEquals(2, $results['group1']); // 1 tag * 2 items
@@ -260,7 +258,7 @@ class CacheGroupManagerTest extends TestCase
                     $tag = $tags[0];
                     // 如果是 user_* 分組標籤，返回 2
                     // 注意：CacheTag::group("user_123") 經過 normalizeName 後變成 "group_user_123"
-                    if (strpos($tag, 'group_user_') === 0) {
+                    if (is_string($tag) && strpos($tag, 'group_user_') === 0) {
                         return 2;
                     }
                 }

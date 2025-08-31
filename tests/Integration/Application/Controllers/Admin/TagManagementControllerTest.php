@@ -26,7 +26,6 @@ class TagManagementControllerTest extends TestCase
 {
     private TagManagementController $controller;
     private CacheManagerInterface&MockObject $cacheManager;
-    private TagRepositoryInterface&MockObject $tagRepository;
     private CacheGroupManager&MockObject $groupManager;
     private LoggerInterface&MockObject $logger;
     private ServerRequestInterface&MockObject $request;
@@ -38,7 +37,6 @@ class TagManagementControllerTest extends TestCase
         parent::setUp();
 
         $this->cacheManager = $this->createMock(CacheManagerInterface::class);
-        $this->tagRepository = $this->createMock(TagRepositoryInterface::class);
         $this->groupManager = $this->createMock(CacheGroupManager::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
@@ -64,8 +62,33 @@ class TagManagementControllerTest extends TestCase
         if (!is_string($content)) {
             return null;
         }
-        $decoded = json_decode(is_string($content) ? $content : "", true);
+        $decoded = json_decode($content, true);
         return is_array($decoded) ? $decoded : null;
+    }
+
+    /**
+     * 驗證響應資料結構
+     */
+    private function validateResponse(array $data, array $expectedKeys): bool
+    {
+        if (!isset($data['success']) || $data['success'] !== true) {
+            return false;
+        }
+        
+        $current = $data;
+        foreach ($expectedKeys as $key => $value) {
+            if (is_array($value)) {
+                if (!isset($current[$key]) || !is_array($current[$key])) {
+                    return false;
+                }
+                $current = $current[$key];
+            } else {
+                if (!isset($current[$key]) || $current[$key] !== $value) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public function testListTags(): void
@@ -103,7 +126,9 @@ class TagManagementControllerTest extends TestCase
                 $data = $this->safeJsonDecode($content);
                 return $data !== null &&
                        isset($data['success']) && $data['success'] === true &&
+                       isset($data['data']) && is_array($data['data']) &&
                        isset($data['data']['tags']) && is_array($data['data']['tags']) && count($data['data']['tags']) === 2 && // 只有 user 相關標籤
+                       isset($data['data']['pagination']) && is_array($data['data']['pagination']) &&
                        isset($data['data']['pagination']['total']) && $data['data']['pagination']['total'] === 2;
             }));
 
@@ -139,11 +164,13 @@ class TagManagementControllerTest extends TestCase
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
-                $data = json_decode(is_string($content) ? $content : "", true);
-                return $data['success'] === true &&
-                       $data['data']['name'] === 'user_123' &&
-                       $data['data']['key_count'] === 3 &&
-                       $data['data']['type'] === 'user';
+                $data = $this->safeJsonDecode($content);
+                return $data !== null &&
+                       isset($data['success']) && $data['success'] === true &&
+                       isset($data['data']) && is_array($data['data']) &&
+                       isset($data['data']['name']) && $data['data']['name'] === 'user_123' &&
+                       isset($data['data']['key_count']) && $data['data']['key_count'] === 3 &&
+                       isset($data['data']['type']) && $data['data']['type'] === 'user';
             }));
 
         $result = $this->controller->getTag($this->request, $this->response, $args);
@@ -178,10 +205,11 @@ class TagManagementControllerTest extends TestCase
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
-                $data = json_decode(is_string($content) ? $content : "", true);
-                return $data['success'] === true &&
-                       $data['data']['tag'] === 'user_123' &&
-                       $data['data']['cleared_count'] === 5;
+                $data = $this->safeJsonDecode($content);
+                return $data !== null &&
+                       isset($data['success']) && isset($data['success']) && $data['success'] === true  &&
+                       isset($data['data']['tag']) && $data['data']['tag'] === 'user_123' &&
+                       isset($data['data']['cleared_count']) && $data['data']['cleared_count'] === 5;
             }));
 
         $result = $this->controller->flushTag($this->request, $this->response, $args);
@@ -222,9 +250,10 @@ class TagManagementControllerTest extends TestCase
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
-                $data = json_decode(is_string($content) ? $content : "", true);
-                return $data['success'] === true &&
-                       $data['data']['total_cleared'] === 10 &&
+                $data = $this->safeJsonDecode($content);
+                return $data !== null &&
+                       isset($data['success']) && isset($data['success']) && $data['success'] === true  &&
+                       isset($data['data']['total_cleared']) && $data['data']['total_cleared'] === 10 &&
                        isset($data['data']['results']['user_123']) &&
                        isset($data['data']['results']['module_posts']);
             }));
@@ -267,8 +296,8 @@ class TagManagementControllerTest extends TestCase
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
-                $data = json_decode(is_string($content) ? $content : "", true);
-                return $data['success'] === true &&
+                $data = $this->safeJsonDecode($content);
+                return $data !== null && isset($data['success']) && isset($data['success']) && $data['success'] === true  &&
                        isset($data['data']['drivers']) &&
                        isset($data['data']['summary']) &&
                        isset($data['data']['tag_types']) &&
@@ -312,8 +341,8 @@ class TagManagementControllerTest extends TestCase
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
-                $data = json_decode(is_string($content) ? $content : "", true);
-                return $data['success'] === true &&
+                $data = $this->safeJsonDecode($content);
+                return $data !== null && isset($data['success']) && isset($data['success']) && $data['success'] === true  &&
                        $data['data']['group_name'] === 'test_group';
             }));
 
@@ -335,8 +364,8 @@ class TagManagementControllerTest extends TestCase
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
-                $data = json_decode(is_string($content) ? $content : "", true);
-                return $data['success'] === true &&
+                $data = $this->safeJsonDecode($content);
+                return $data !== null && isset($data['success']) && isset($data['success']) && $data['success'] === true  &&
                        count($data['data']['groups']) === 2 &&
                        isset($data['data']['statistics']);
             }));
@@ -368,8 +397,8 @@ class TagManagementControllerTest extends TestCase
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
-                $data = json_decode(is_string($content) ? $content : "", true);
-                return $data['success'] === true &&
+                $data = $this->safeJsonDecode($content);
+                return $data !== null && isset($data['success']) && isset($data['success']) && $data['success'] === true  &&
                        $data['data']['group_name'] === 'test_group' &&
                        $data['data']['cleared_count'] === 8 &&
                        $data['data']['cascade'] === true;
@@ -395,8 +424,8 @@ class TagManagementControllerTest extends TestCase
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
-                $data = json_decode(is_string($content) ? $content : "", true);
-                return $data['success'] === false &&
+                $data = $this->safeJsonDecode($content);
+                return $data !== null && isset($data['success']) && isset($data['success']) && $data['success'] === false  &&
                        isset($data['error']);
             }));
 
@@ -421,8 +450,8 @@ class TagManagementControllerTest extends TestCase
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
-                $data = json_decode(is_string($content) ? $content : "", true);
-                return $data['success'] === false &&
+                $data = $this->safeJsonDecode($content);
+                return $data !== null && isset($data['success']) && isset($data['success']) && $data['success'] === false  &&
                        $data['error']['details'] === '標籤名稱不能為空';
             }));
 

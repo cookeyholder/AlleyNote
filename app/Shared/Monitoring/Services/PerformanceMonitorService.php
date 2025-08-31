@@ -89,21 +89,21 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         }
 
         $session = $this->activeMonitoringSessions[$monitoringId];
-        
+
         if (!is_array($session)) {
             $this->logger->warning('Invalid monitoring session data', ['monitoring_id' => $monitoringId]);
             return;
         }
-        
+
         $sessionStartTime = $session['start_time'] ?? 0;
         $startTime = is_numeric($sessionStartTime) ? (float)$sessionStartTime : microtime(true);
-        
+
         $sessionStartMemory = $session['start_memory'] ?? 0;
         $startMemory = is_numeric($sessionStartMemory) ? (int)$sessionStartMemory : memory_get_usage(true);
-        
+
         $operationValue = $session['operation'] ?? '';
         $operation = is_string($operationValue) ? $operationValue : 'unknown';
-        
+
         $endTime = microtime(true);
         $endMemory = memory_get_usage(true);
 
@@ -289,7 +289,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $currentTime = microtime(true);
         foreach ($this->activeMonitoringSessions as $id => $session) {
             $sessionStartTime = $session['start_time'] ?? $currentTime;
-            $duration = is_numeric($sessionStartTime) 
+            $duration = is_numeric($sessionStartTime)
                 ? ($currentTime - (float)$sessionStartTime) * 1000
                 : 0;
             if ($duration > 30000) { // 30 秒
@@ -453,8 +453,8 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                     'max' => max($values),
                     'avg' => array_sum($values) / count($values),
                     'total' => array_sum($values),
-                    'unit' => (is_array($metricData) && isset($metricData[0]) && is_array($metricData[0]) && isset($metricData[0]['unit'])) 
-                        ? $metricData[0]['unit'] 
+                    'unit' => (is_array($metricData) && isset($metricData[0]) && is_array($metricData[0]) && isset($metricData[0]['unit']))
+                        ? $metricData[0]['unit']
                         : 'unknown',
                 ];
             }
@@ -513,11 +513,11 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
         $lowerValue = $values[$lower] ?? 0;
         $upperValue = $values[$upper] ?? 0;
-        
+
         if (!is_numeric($lowerValue) || !is_numeric($upperValue)) {
             return 0.0;
         }
-        
+
         $weight = $index - $lower;
         return (float)$lowerValue * (1 - $weight) + (float)$upperValue * $weight;
     }

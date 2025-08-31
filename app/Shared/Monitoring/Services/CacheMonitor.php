@@ -602,10 +602,10 @@ class CacheMonitor implements CacheMonitorInterface
         }
 
         $stats = &$this->hitStats[$driver];
-        
+
         $totalRequestsValue = $stats['total_requests'] ?? 0;
         $hitsValue = $stats['hits'] ?? 0;
-        
+
         $totalRequests = is_numeric($totalRequestsValue) ? (float)$totalRequestsValue : 0.0;
         $hits = is_numeric($hitsValue) ? (float)$hitsValue : 0.0;
 
@@ -646,7 +646,7 @@ class CacheMonitor implements CacheMonitorInterface
             $totalOpsValue = $stats['total_operations'] ?? 0;
             $successfulOpsValue = $stats['successful_operations'] ?? 0;
             $durationValue = $stats['total_duration'] ?? 0;
-            
+
             $totalOps += is_numeric($totalOpsValue) ? (float)$totalOpsValue : 0;
             $totalSuccessful += is_numeric($successfulOpsValue) ? (float)$successfulOpsValue : 0;
             $totalDuration += is_numeric($durationValue) ? (float)$durationValue : 0;
@@ -655,7 +655,7 @@ class CacheMonitor implements CacheMonitorInterface
         foreach ($this->hitStats as $stats) {
             $requestsValue = $stats['total_requests'] ?? 0;
             $hitsValue = $stats['hits'] ?? 0;
-            
+
             $totalRequests += is_numeric($requestsValue) ? (float)$requestsValue : 0;
             $totalHits += is_numeric($hitsValue) ? (float)$hitsValue : 0;
         }
@@ -699,7 +699,7 @@ class CacheMonitor implements CacheMonitorInterface
 
         $firstTimestampValue = $firstOp['timestamp'] ?? 0;
         $lastTimestampValue = $lastOp['timestamp'] ?? 0;
-        
+
         $firstTimestamp = is_numeric($firstTimestampValue) ? (float)$firstTimestampValue : 0.0;
         $lastTimestamp = is_numeric($lastTimestampValue) ? (float)$lastTimestampValue : 0.0;
         $timeSpan = $lastTimestamp - $firstTimestamp;
@@ -714,7 +714,7 @@ class CacheMonitor implements CacheMonitorInterface
     {
         $totalOpsValue = $this->operationStats[$driver]['total_operations'] ?? 0;
         $totalErrorsValue = $this->errorStats[$driver]['total_errors'] ?? 0;
-        
+
         $totalOps = is_numeric($totalOpsValue) ? (float)$totalOpsValue : 0.0;
         $totalErrors = is_numeric($totalErrorsValue) ? (float)$totalErrorsValue : 0.0;
 

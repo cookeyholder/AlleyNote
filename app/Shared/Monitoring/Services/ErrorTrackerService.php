@@ -482,7 +482,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         if (!isset($trends['type_trends']) || !is_array($trends['type_trends'])) {
             $trends['type_trends'] = [];
         }
-        
+
         $endDate = time();
         $startDate = $endDate - ($days * 24 * 3600);
 
@@ -538,12 +538,12 @@ class ErrorTrackerService implements ErrorTrackerInterface
     private function determineHealthStatus(array $stats): array
     {
         $levels = is_array($stats['levels'] ?? null) ? $stats['levels'] : [];
-        
+
         $criticalValue = $levels['critical'] ?? 0;
         $errorValue = $levels['error'] ?? 0;
         $warningValue = $levels['warning'] ?? 0;
         $totalValue = $stats['total_errors'] ?? 0;
-        
+
         $criticalCount = is_numeric($criticalValue) ? (int)$criticalValue : 0;
         $errorCount = is_numeric($errorValue) ? (int)$errorValue : 0;
         $warningCount = is_numeric($warningValue) ? (int)$warningValue : 0;

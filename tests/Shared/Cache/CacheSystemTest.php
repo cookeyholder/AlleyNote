@@ -41,7 +41,10 @@ class CacheSystemTest extends TestCase
     {
         // 清理測試檔案
         if (is_dir($this->tempDir)) {
-            array_map('unlink', glob($this->tempDir . '/*'));
+            $files = glob($this->tempDir . '/*');
+            if ($files !== false) {
+                array_map('unlink', $files);
+            }
             rmdir($this->tempDir);
         }
     }

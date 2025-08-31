@@ -24,9 +24,6 @@ use Psr\Log\NullLogger;
 final class CacheSystemE2ETest extends TestCase
 {
     private Client $redisClient;
-    private CacheManager $cacheManager;
-    private TaggedCacheManager $taggedCache;
-    private CacheMonitor $cacheMonitor;
 
     protected function setUp(): void
     {
@@ -55,9 +52,6 @@ final class CacheSystemE2ETest extends TestCase
         } catch (\Exception $e) {
             $this->markTestSkipped('Redis connection failed: ' . $e->getMessage());
         }
-
-        // 建立相依性（在實際應用中，這些會透過 DI 容器注入）
-        $this->initializeDependencies();
     }
 
     /**
@@ -84,10 +78,5 @@ final class CacheSystemE2ETest extends TestCase
     public function testDummy(): void
     {
         $this->markTestSkipped('E2E tests require proper Redis setup and full implementation');
-    }
-
-    private function initializeDependencies(): void
-    {
-        // Placeholder for now
     }
 }

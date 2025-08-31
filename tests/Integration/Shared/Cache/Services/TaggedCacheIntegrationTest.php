@@ -85,7 +85,7 @@ class TaggedCacheIntegrationTest extends TestCase
     protected function tearDown(): void
     {
         // 清理測試資料
-        $this->cacheManager->flush();
+        $this->cacheManager->clear();
         $this->tagRepository->flush();
     }
 
@@ -183,7 +183,6 @@ class TaggedCacheIntegrationTest extends TestCase
 
         $stats = $this->taggedCache->getTagStatistics();
 
-        $this->assertIsArray($stats);
         // 修正：TaggedCacheManager.getTagStatistics() 回傳的是簡單的標籤統計
         $this->assertArrayHasKey('user_1', $stats);
         $this->assertArrayHasKey('posts', $stats);
@@ -295,7 +294,6 @@ class TaggedCacheIntegrationTest extends TestCase
 
         // 測試標籤統計
         $stats = $this->taggedCache->getTagStatistics();
-        $this->assertIsArray($stats);
         foreach ($testCases as $tagName => $typeMethod) {
             $this->assertArrayHasKey($tagName, $stats);
         }
