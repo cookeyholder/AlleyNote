@@ -16,7 +16,7 @@ class CacheMonitorController extends BaseController
         private CacheMonitorInterface $cacheMonitor,
         private CacheManagerInterface $cacheManager
     ) {
-        parent::__construct();
+        // 不調用 parent::__construct()，因為 BaseController 沒有構造函式
     }
 
     /**
@@ -25,21 +25,20 @@ class CacheMonitorController extends BaseController
     public function getStats(Request $request, Response $response): Response
     {
         try {
+            $stats = $this->cacheManager->getStats();
+            $health = $this->cacheManager->getHealthStatus();
+
             $data = [
-                'metrics' => $this->cacheMonitor->getMetrics(),
-                'health' => $this->cacheMonitor->getHealth(),
-                'uptime' => time() - $this->cacheMonitor->getStartTime(),
+                'stats' => $stats,
+                'health' => $health,
                 'timestamp' => time(),
             ];
 
             return $this->json($response, $data);
         } catch (\Exception $e) {
-            $this->logger->error('取得快取統計資料失敗', [
-                'error' => $e->getMessage(),
-            ]);
-
             return $this->json($response, [
                 'error' => '無法取得快取統計資料',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -50,139 +49,98 @@ class CacheMonitorController extends BaseController
     public function getMetrics(Request $request, Response $response): Response
     {
         try {
-            $metrics = $this->cacheMonitor->getMetrics();
+            $queryParams = $request->getQueryParams();
+            $timeRange = is_string($queryParams['timeRange'] ?? '1h') ? $queryParams['timeRange'] ?? '1h' : '1h';
 
-            // 計算額外的統計資料
-            $totalOperations = array_sum([
-                $metrics['total_hits'] ?? 0,
-                $metrics['total_misses'] ?? 0,
-                $metrics['total_sets'] ?? 0,
-                $metrics['total_deletes'] ?? 0,
-            ]);
-
-            $hitRate = $totalOperations > 0
-                ? round(($metrics['total_hits'] / $totalOperations) * 100, 2)
-                : 0;
-
-            $data = [
-                'basic_metrics' => $metrics,
-                'calculated_metrics' => [
-                    'total_operations' => $totalOperations,
-                    'hit_rate_percentage' => $hitRate,
-                    'miss_rate_percentage' => round(100 - $hitRate, 2),
-                ],
-                'driver_performance' => $this->cacheMonitor->getDriverPerformance(),
-                'timestamp' => time(),
+            $metrics = [
+                'hitRate' => $this->cacheMonitor->getHitRateStats($timeRange),
+                'performance' => $this->cacheMonitor->getDriverPerformanceComparison(),
+                'capacity' => $this->cacheMonitor->getCacheCapacityStats(),
+                'errors' => $this->cacheMonitor->getErrorStats($timeRange),
+                'slowOperations' => $this->cacheMonitor->getSlowCacheOperations(10, 100),
             ];
 
-            return $this->json($response, $data);
+            return $this->json($response, $metrics);
         } catch (\Exception $e) {
-            $this->logger->error('取得快取指標失敗', [
-                'error' => $e->getMessage(),
-            ]);
-
             return $this->json($response, [
                 'error' => '無法取得快取指標',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * 取得快取健康狀況
+     * 取得快取健康狀態
      */
     public function getHealth(Request $request, Response $response): Response
     {
         try {
-            $health = $this->cacheMonitor->getHealth();
+            $healthOverview = $this->cacheMonitor->getHealthOverview();
+            $driverHealth = $this->cacheManager->getHealthStatus();
 
-            // 判斷整體健康狀況
-            $overallHealth = 'healthy';
-            foreach ($health as $driver => $status) {
-                if ($status !== 'healthy') {
-                    $overallHealth = 'degraded';
-                    break;
-                }
-            }
-
-            $data = [
-                'overall_status' => $overallHealth,
-                'driver_status' => $health,
-                'checked_at' => time(),
+            $healthData = [
+                'overview' => $healthOverview,
+                'drivers' => $driverHealth,
+                'timestamp' => time(),
             ];
 
-            // 根據健康狀況設定適當的 HTTP 狀態碼
-            $statusCode = $overallHealth === 'healthy' ? 200 : 503;
-
-            return $this->json($response, $data, $statusCode);
+            return $this->json($response, $healthData);
         } catch (\Exception $e) {
-            $this->logger->error('取得快取健康狀況失敗', [
-                'error' => $e->getMessage(),
-            ]);
-
             return $this->json($response, [
-                'error' => '無法取得快取健康狀況',
+                'error' => '無法取得健康狀態',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * 重設統計資料
+     * 重置統計資料
      */
     public function resetStats(Request $request, Response $response): Response
     {
         try {
-            $this->cacheMonitor->reset();
-
-            $this->logger->info('快取統計資料已重設');
+            // 清理舊的監控資料
+            $cleaned = $this->cacheMonitor->cleanup(0);
 
             return $this->json($response, [
-                'message' => '快取統計資料已重設',
-                'reset_at' => time(),
+                'message' => '統計資料已重置',
+                'cleanedRecords' => $cleaned,
             ]);
         } catch (\Exception $e) {
-            $this->logger->error('重設快取統計資料失敗', [
-                'error' => $e->getMessage(),
-            ]);
-
             return $this->json($response, [
-                'error' => '無法重設快取統計資料',
+                'error' => '無法重置統計資料',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * 清空所有快取
+     * 清空快取
      */
     public function flushCache(Request $request, Response $response): Response
     {
         try {
-            $result = $this->cacheManager->flush();
+            $success = $this->cacheManager->clear();
 
-            if ($result) {
-                $this->logger->info('所有快取已透過 API 清空');
-
+            if ($success) {
                 return $this->json($response, [
-                    'message' => '所有快取已成功清空',
-                    'flushed_at' => time(),
+                    'message' => '快取已清空',
                 ]);
             } else {
                 return $this->json($response, [
-                    'error' => '快取清空失敗',
+                    'error' => '清空快取失敗',
                 ], 500);
             }
         } catch (\Exception $e) {
-            $this->logger->error('透過 API 清空快取失敗', [
-                'error' => $e->getMessage(),
-            ]);
-
             return $this->json($response, [
                 'error' => '無法清空快取',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * 取得快取驅動資訊
+     * 取得驅動資訊
      */
     public function getDriverInfo(Request $request, Response $response): Response
     {
@@ -191,29 +149,22 @@ class CacheMonitorController extends BaseController
             $driverInfo = [];
 
             foreach ($drivers as $name => $driver) {
-                $driverInfo[$name] = [
-                    'class' => get_class($driver),
-                    'available' => $this->cacheManager->isDriverAvailable($name),
-                ];
+                if (is_object($driver) && method_exists($driver, 'isAvailable')) {
+                    $driverInfo[] = [
+                        'name' => $name,
+                        'class' => get_class($driver),
+                        'available' => $driver->isAvailable(),
+                    ];
+                }
             }
 
-            $data = [
-                'drivers' => $driverInfo,
-                'default_driver' => $this->cacheManager->getDefaultDriver(),
-                'available_drivers' => array_keys(array_filter(
-                    $driverInfo,
-                    fn($info) => $info['available']
-                )),
-            ];
-
-            return $this->json($response, $data);
-        } catch (\Exception $e) {
-            $this->logger->error('取得快取驅動資訊失敗', [
-                'error' => $e->getMessage(),
-            ]);
-
             return $this->json($response, [
-                'error' => '無法取得快取驅動資訊',
+                'drivers' => $driverInfo,
+            ]);
+        } catch (\Exception $e) {
+            return $this->json($response, [
+                'error' => '無法取得驅動資訊',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

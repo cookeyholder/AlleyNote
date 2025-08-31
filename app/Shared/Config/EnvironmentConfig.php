@@ -78,11 +78,18 @@ final class EnvironmentConfig
         }
 
         if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
-            return $this->parseValue($_ENV[$key]);
+            $envVar = $_ENV[$key];
+            if (is_string($envVar)) {
+                return $this->parseValue($envVar);
+            }
         }
 
         if (isset($this->config[$key])) {
-            return $this->parseValue($this->config[$key]);
+            $configValue = $this->config[$key];
+            if (is_string($configValue)) {
+                return $this->parseValue($configValue);
+            }
+            return $configValue;
         }
 
         return $default;
@@ -166,7 +173,12 @@ final class EnvironmentConfig
     private function detectEnvironment(): string
     {
         // 從環境變數檢測
-        $env = getenv('APP_ENV') ?: $_ENV['APP_ENV'] ?? 'development';
+        $env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
+
+        // 確保返回值是字串
+        if (!is_string($env)) {
+            $env = 'development';
+        }
 
         // 檢測是否在測試模式
         if (defined('PHPUNIT_RUNNING') || (function_exists('running_tests') && running_tests())) {
@@ -310,7 +322,11 @@ final class EnvironmentConfig
         }
 
         if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
-            return $this->parseValue($_ENV[$key]);
+            $envVar = $_ENV[$key];
+            if (is_string($envVar)) {
+                return $this->parseValue($envVar);
+            }
+            return $envVar;
         }
 
         // 從配置檔案中取得
@@ -366,7 +382,8 @@ final class EnvironmentConfig
         ];
 
         foreach ($sensitiveKeys as $key => $defaultValue) {
-            if (str_contains($this->get($key, ''), $defaultValue)) {
+            $value = $this->get($key, '');
+            if (is_string($value) && str_contains($value, $defaultValue)) {
                 $errors[] = "生產環境必須修改 {$key} 的預設值";
             }
         }
@@ -383,7 +400,7 @@ final class EnvironmentConfig
 
         // 測試環境應該使用記憶體資料庫
         $dbDatabase = $this->get('DB_DATABASE', '');
-        if ($dbDatabase !== ':memory:' && !str_contains($dbDatabase, 'test')) {
+        if (is_string($dbDatabase) && $dbDatabase !== ':memory:' && !str_contains($dbDatabase, 'test')) {
             $errors[] = '測試環境建議使用記憶體資料庫或測試專用資料庫';
         }
 

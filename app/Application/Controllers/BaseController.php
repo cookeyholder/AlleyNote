@@ -6,9 +6,25 @@ namespace App\Application\Controllers;
 
 use App\Shared\Http\ApiResponse;
 use Exception;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class BaseController
 {
+    /**
+     * 建立JSON回應
+     *
+     * @param ResponseInterface $response
+     * @param array<string, mixed> $data
+     * @param int $status
+     * @return ResponseInterface
+     */
+    protected function json(ResponseInterface $response, array $data, int $status = 200): ResponseInterface
+    {
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?: '{}';
+        $response->getBody()->write($json);
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
+    }
     /**
      * @param array<string, mixed> $data
      */

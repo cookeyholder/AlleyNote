@@ -36,10 +36,12 @@ class CacheMonitor implements CacheMonitorInterface
     /** @var array<string, mixed> 設定 */
     private array $config;
 
-    public function __construct(LoggerInterface $logger = null, array $config = [])
+    public function __construct(?LoggerInterface $logger = null, array $config = [])
     {
         $this->logger = $logger ?? new NullLogger();
-        $this->config = array_merge($this->getDefaultConfig(), $config);
+        /** @var array<string, mixed> $mergedConfig */
+        $mergedConfig = array_merge($this->getDefaultConfig(), $config);
+        $this->config = $mergedConfig;
         $this->initializeStats();
     }
 
@@ -58,29 +60,46 @@ class CacheMonitor implements CacheMonitorInterface
         }
 
         $driverStats = &$this->operationStats[$driver];
-        $driverStats['operations'][$operation] = ($driverStats['operations'][$operation] ?? 0) + 1;
-        $driverStats['total_operations']++;
+        /** @var array<string, int> $operations */
+        $operations = $driverStats['operations'] ?? [];
+        $operations[$operation] = ($operations[$operation] ?? 0) + 1;
+        $driverStats['operations'] = $operations;
+
+        /** @var int $totalOps */
+        $totalOps = $driverStats['total_operations'] ?? 0;
+        $driverStats['total_operations'] = $totalOps + 1;
 
         if ($success) {
-            $driverStats['successful_operations']++;
+            /** @var int $successOps */
+            $successOps = $driverStats['successful_operations'] ?? 0;
+            $driverStats['successful_operations'] = $successOps + 1;
         } else {
-            $driverStats['failed_operations']++;
+            /** @var int $failOps */
+            $failOps = $driverStats['failed_operations'] ?? 0;
+            $driverStats['failed_operations'] = $failOps + 1;
         }
 
         // 更新效能統計
-        $driverStats['total_duration'] += $duration;
-        $driverStats['avg_duration'] = $driverStats['total_duration'] / $driverStats['total_operations'];
+        /** @var float $totalDuration */
+        $totalDuration = $driverStats['total_duration'] ?? 0.0;
+        $driverStats['total_duration'] = $totalDuration + $duration;
+        /** @var int $totalOpsForAvg */
+        $totalOpsForAvg = $driverStats['total_operations'] ?? 1;
+        $driverStats['avg_duration'] = $driverStats['total_duration'] / max(1, $totalOpsForAvg);
 
-        if ($duration > $driverStats['max_duration']) {
+        $maxDuration = $driverStats['max_duration'] ?? 0.0;
+        if ($duration > $maxDuration) {
             $driverStats['max_duration'] = $duration;
         }
 
-        if ($duration < $driverStats['min_duration'] || $driverStats['min_duration'] === 0) {
+        $minDuration = $driverStats['min_duration'] ?? 0.0;
+        if ($duration < $minDuration || $minDuration === 0.0) {
             $driverStats['min_duration'] = $duration;
         }
 
         // 記錄操作歷史（限制數量以避免記憶體過度使用）
-        if (count($this->operationHistory) >= $this->config['max_history_size']) {
+        $maxHistorySize = $this->config['max_history_size'] ?? 1000;
+        if (count($this->operationHistory) >= $maxHistorySize) {
             array_shift($this->operationHistory);
         }
 
@@ -94,12 +113,13 @@ class CacheMonitor implements CacheMonitorInterface
         ];
 
         // 記錄慢操作
-        if ($duration > $this->config['slow_operation_threshold']) {
+        $slowThreshold = $this->config['slow_operation_threshold'] ?? 1.0;
+        if ($duration > $slowThreshold) {
             $this->logger->warning('慢速快取操作', [
                 'operation' => $operation,
                 'driver' => $driver,
                 'duration' => $duration,
-                'threshold' => $this->config['slow_operation_threshold'],
+                'threshold' => $slowThreshold,
                 'context' => $context,
             ]);
         }
@@ -128,11 +148,22 @@ class CacheMonitor implements CacheMonitorInterface
             ];
         }
 
-        $this->hitStats[$driver]['hits']++;
-        $this->hitStats[$driver]['total_requests']++;
-        $this->hitStats[$driver]['total_hit_duration'] += $duration;
-        $this->hitStats[$driver]['avg_hit_duration'] =
-            $this->hitStats[$driver]['total_hit_duration'] / $this->hitStats[$driver]['hits'];
+        $hitStats = &$this->hitStats[$driver];
+        /** @var int $hits */
+        $hits = $hitStats['hits'] ?? 0;
+        $hitStats['hits'] = $hits + 1;
+
+        /** @var int $totalReqs */
+        $totalReqs = $hitStats['total_requests'] ?? 0;
+        $hitStats['total_requests'] = $totalReqs + 1;
+
+        /** @var float $totalHitDuration */
+        $totalHitDuration = $hitStats['total_hit_duration'] ?? 0.0;
+        $hitStats['total_hit_duration'] = $totalHitDuration + $duration;
+
+        /** @var int $currentHits */
+        $currentHits = $hitStats['hits'] ?? 1;
+        $hitStats['avg_hit_duration'] = $hitStats['total_hit_duration'] / max(1, $currentHits);
 
         $this->updateHitRate($driver);
         $this->recordOperation('get', $driver, true, $duration, ['result' => 'hit', 'key' => $key]);
@@ -151,8 +182,14 @@ class CacheMonitor implements CacheMonitorInterface
             ];
         }
 
-        $this->hitStats[$driver]['misses']++;
-        $this->hitStats[$driver]['total_requests']++;
+        $missStats = &$this->hitStats[$driver];
+        /** @var int $misses */
+        $misses = $missStats['misses'] ?? 0;
+        $missStats['misses'] = $misses + 1;
+
+        /** @var int $totalReqs */
+        $totalReqs = $missStats['total_requests'] ?? 0;
+        $missStats['total_requests'] = $totalReqs + 1;
 
         $this->updateHitRate($driver);
         $this->recordOperation('get', $driver, true, $duration, ['result' => 'miss', 'key' => $key]);
@@ -170,21 +207,32 @@ class CacheMonitor implements CacheMonitorInterface
             ];
         }
 
-        $this->errorStats[$driver]['total_errors']++;
-        $this->errorStats[$driver]['errors_by_operation'][$operation] =
-            ($this->errorStats[$driver]['errors_by_operation'][$operation] ?? 0) + 1;
+        $errorStats = &$this->errorStats[$driver];
+        /** @var int $totalErrors */
+        $totalErrors = $errorStats['total_errors'] ?? 0;
+        $errorStats['total_errors'] = $totalErrors + 1;
+
+        /** @var array<string, int> $errorsByOp */
+        $errorsByOp = $errorStats['errors_by_operation'] ?? [];
+        $errorsByOp[$operation] = ($errorsByOp[$operation] ?? 0) + 1;
+        $errorStats['errors_by_operation'] = $errorsByOp;
 
         // 保留最近的錯誤記錄
-        if (count($this->errorStats[$driver]['recent_errors']) >= $this->config['max_recent_errors']) {
-            array_shift($this->errorStats[$driver]['recent_errors']);
+        /** @var array<array<string, mixed>> $recentErrors */
+        $recentErrors = $errorStats['recent_errors'] ?? [];
+        /** @var int $maxRecentErrors */
+        $maxRecentErrors = $this->config['max_recent_errors'] ?? 10;
+        if (count($recentErrors) >= $maxRecentErrors) {
+            array_shift($recentErrors);
         }
 
-        $this->errorStats[$driver]['recent_errors'][] = [
+        $recentErrors[] = [
             'timestamp' => $timestamp,
             'operation' => $operation,
             'error' => $error,
             'context' => $context,
         ];
+        $errorStats['recent_errors'] = $recentErrors;
 
         $this->logger->error('快取錯誤', [
             'driver' => $driver,

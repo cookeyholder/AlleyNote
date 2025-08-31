@@ -58,12 +58,22 @@ class PrefixedCacheManager implements CacheManagerInterface
 
     public function prefix(string $prefix): CacheManagerInterface
     {
-        return new static($this->manager, $this->prefix . $prefix);
+        return new self($this->manager, $this->prefix . $prefix);
     }
 
     public function driver(?string $driver = null): CacheDriverInterface
     {
         return $this->manager->driver($driver);
+    }
+
+    public function getDriver(string $name): ?CacheDriverInterface
+    {
+        return $this->manager->getDriver($name);
+    }
+
+    public function getDrivers(): array
+    {
+        return $this->manager->getDrivers();
     }
 
     public function getStats(): array

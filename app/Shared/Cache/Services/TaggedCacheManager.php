@@ -53,7 +53,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     public function put(string $key, mixed $value, int $ttl = 3600): bool
     {
         // 先設定快取值
-        $success = $this->cacheManager->put($key, $value, $ttl);
+        $success = $this->cacheManager->set($key, $value, $ttl);
 
         if ($success && !empty($this->tags)) {
             // 設定標籤關聯
@@ -88,7 +88,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         $keyTags = $this->tagRepository->getTags($key);
 
         // 先刪除快取值
-        $success = $this->cacheManager->forget($key);
+        $success = $this->cacheManager->delete($key);
 
         if ($success) {
             // 刪除標籤關聯
@@ -107,7 +107,7 @@ class TaggedCacheManager implements TaggedCacheInterface
      */
     public function flush(): bool
     {
-        $success = $this->cacheManager->flush();
+        $success = $this->cacheManager->clear();
 
         if ($success) {
             // 清空所有標籤關聯
@@ -180,7 +180,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         foreach ($tagsArray as $tag) {
             $keys = $this->tagRepository->getKeysByTag($tag);
             foreach ($keys as $key) {
-                $this->cacheManager->forget($key);
+                $this->cacheManager->delete($key);
                 $deletedKeys[] = $key;
             }
         }
@@ -226,7 +226,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         }
 
         // 先設定快取值
-        $success = $this->cacheManager->put($key, $value, $ttl);
+        $success = $this->cacheManager->set($key, $value, $ttl);
 
         if ($success) {
             // 設定標籤關聯

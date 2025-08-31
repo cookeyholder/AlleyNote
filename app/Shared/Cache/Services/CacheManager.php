@@ -23,7 +23,7 @@ class CacheManager implements CacheManagerInterface
     /** @var array<string, CacheDriverInterface> 註冊的驅動 */
     private array $drivers = [];
 
-    /** @var array<string> 驅動優先級 */
+    /** @var array<string, int> 驅動優先級 */
     private array $driverPriority = [];
 
     /** @var string 預設驅動名稱 */
@@ -58,16 +58,18 @@ class CacheManager implements CacheManagerInterface
 
     public function __construct(
         CacheStrategyInterface $strategy,
-        LoggerInterface $logger = null,
+        ?LoggerInterface $logger = null,
         array $config = [],
-        CacheMonitorInterface $monitor = null,
-        TagRepositoryInterface $tagRepository = null
+        ?CacheMonitorInterface $monitor = null,
+        ?TagRepositoryInterface $tagRepository = null
     ) {
         $this->strategy = $strategy;
         $this->logger = $logger ?? new NullLogger();
         $this->monitor = $monitor;
         $this->tagRepository = $tagRepository;
-        $this->config = array_merge($this->getDefaultConfig(), $config);
+        /** @var array<string, mixed> $mergedConfig */
+        $mergedConfig = array_merge($this->getDefaultConfig(), $config);
+        $this->config = $mergedConfig;
     }
 
     public function addDriver(string $name, CacheDriverInterface $driver, int $priority = 10): void
@@ -240,7 +242,8 @@ class CacheManager implements CacheManagerInterface
 
             // 記錄監控資料
             if ($this->monitor) {
-                $this->monitor->recordOperation('set', $driverName, $success, $duration, [
+                $driverNameForMonitor = $driverName === false ? 'unknown' : $driverName;
+                $this->monitor->recordOperation('set', $driverNameForMonitor, $success, $duration, [
                     'key' => $key,
                     'ttl' => $adjustedTtl,
                     'value_size' => strlen(serialize($value)),
@@ -258,24 +261,26 @@ class CacheManager implements CacheManagerInterface
         } catch (\Exception $e) {
             $duration = (microtime(true) - $driverStartTime) * 1000;
 
+            $driverNameForMonitor = $driverName === false ? 'unknown' : $driverName;
             if ($this->monitor) {
-                $this->monitor->recordError($driverName, 'set', $e->getMessage(), [
+                $this->monitor->recordError($driverNameForMonitor, 'set', $e->getMessage(), [
                     'key' => $key,
                     'ttl' => $adjustedTtl,
                 ]);
-                $this->monitor->recordOperation('set', $driverName, false, $duration, [
+                $this->monitor->recordOperation('set', $driverNameForMonitor, false, $duration, [
                     'error' => $e->getMessage(),
                 ]);
             }
 
-            $success = $this->handleDriverError($driverName, $e, 'put', [
+            $safeDriverName = $driverName === false ? 'unknown' : $driverName;
+            $success = $this->handleDriverError($safeDriverName, $e, 'put', [
                 'key' => $key,
                 'value' => $value,
                 'ttl' => $adjustedTtl,
             ]);
         }
 
-        return $success;
+        return (bool) $success;
     }
 
     public function has(string $key): bool
@@ -420,7 +425,9 @@ class CacheManager implements CacheManagerInterface
         $result = [];
 
         foreach ($keys as $key) {
-            $result[$key] = $this->get($key);
+            if (is_string($key)) {
+                $result[$key] = $this->get($key);
+            }
         }
 
         return $result;
@@ -577,7 +584,9 @@ class CacheManager implements CacheManagerInterface
             try {
                 $startTime = microtime(true);
                 $value = $callback();
-                $this->put($key, $value, $this->config['warmup_ttl'] ?? 7200);
+                $warmupTtl = $this->config['warmup_ttl'] ?? 7200;
+                $ttl = is_int($warmupTtl) ? $warmupTtl : 7200;
+                $this->put($key, $value, $ttl);
                 $endTime = microtime(true);
 
                 $results[$key] = [
@@ -657,7 +666,7 @@ class CacheManager implements CacheManagerInterface
                 // 如果有標籤倉庫，使用 TaggedCacheManager
                 if ($this->tagRepository !== null) {
                     return new TaggedCacheManager(
-                        $driver->tags($tags),
+                        $this,  // 傳入當前的 CacheManager 實例
                         $this->tagRepository,
                         $this->logger
                     );
@@ -723,6 +732,7 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 根據優先級取得可用驅動。
+     * @return array<string, CacheDriverInterface>
      */
     private function getOrderedAvailableDrivers(): array
     {
@@ -748,7 +758,8 @@ class CacheManager implements CacheManagerInterface
         }
 
         $currentPriority = $this->driverPriority[$currentDriver] ?? 0;
-        $ttl = $this->config['sync_ttl'] ?? 3600;
+        $syncTtl = $this->config['sync_ttl'] ?? 3600;
+        $ttl = is_int($syncTtl) ? $syncTtl : 3600;
 
         foreach ($this->driverPriority as $name => $priority) {
             if ($priority > $currentPriority && $this->drivers[$name]->isAvailable()) {
@@ -802,6 +813,7 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 取得預設設定。
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {
@@ -820,7 +832,9 @@ class CacheManager implements CacheManagerInterface
      */
     public function updateConfig(array $config): void
     {
-        $this->config = array_merge($this->config, $config);
+        /** @var array<string, mixed> $mergedConfig */
+        $mergedConfig = array_merge($this->config, $config);
+        $this->config = $mergedConfig;
 
         $this->logger->debug('快取管理器設定已更新', [
             'config' => $config,

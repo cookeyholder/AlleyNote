@@ -39,10 +39,13 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     public function __construct(array $config = [])
     {
-        $this->minTtl = $config['min_ttl'] ?? 60;
-        $this->maxTtl = $config['max_ttl'] ?? 86400;
-        $this->excludePatterns = $config['exclude_patterns'] ?? [];
-        $this->maxValueSize = $config['max_value_size'] ?? 1024 * 1024; // 1MB
+        $this->minTtl = is_int($config['min_ttl'] ?? null) ? $config['min_ttl'] : 60;
+        $this->maxTtl = is_int($config['max_ttl'] ?? null) ? $config['max_ttl'] : 86400;
+
+        $patterns = $config['exclude_patterns'] ?? [];
+        $this->excludePatterns = is_array($patterns) ? array_filter($patterns, 'is_string') : [];
+
+        $this->maxValueSize = is_int($config['max_value_size'] ?? null) ? $config['max_value_size'] : 1024 * 1024; // 1MB
     }
 
     public function shouldCache(string $key, mixed $value, int $ttl): bool
@@ -198,11 +201,14 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             }
 
             try {
+                $key = is_string($params['key'] ?? null) ? $params['key'] : '';
+                $ttl = is_int($params['ttl'] ?? null) ? $params['ttl'] : 3600;
+
                 return match ($operation) {
-                    'get' => $driver->get($params['key'] ?? '', $params['default'] ?? null),
-                    'put' => $driver->put($params['key'] ?? '', $params['value'] ?? null, $params['ttl'] ?? 3600),
-                    'has' => $driver->has($params['key'] ?? ''),
-                    'forget' => $driver->forget($params['key'] ?? ''),
+                    'get' => $driver->get($key, $params['default'] ?? null),
+                    'put' => $driver->put($key, $params['value'] ?? null, $ttl),
+                    'has' => $driver->has($key),
+                    'forget' => $driver->forget($key),
                     'flush' => $driver->flush(),
                     default => null,
                 };

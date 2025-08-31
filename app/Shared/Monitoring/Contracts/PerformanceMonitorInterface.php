@@ -44,7 +44,7 @@ interface PerformanceMonitorInterface
     /**
      * 取得效能統計資料。
      */
-    public function getPerformanceStats(string $operation = null): array;
+    public function getPerformanceStats(?string $operation = null): array;
 
     /**
      * 取得慢查詢記錄。

@@ -29,7 +29,7 @@ class CacheGroupManager
 
     /**
      * 分組自動失效規則
-     * @var array<string, array<string>>
+     * @var array<string, array<string>|array<string, mixed>>
      */
     private array $invalidationRules = [];
 
@@ -85,15 +85,16 @@ class CacheGroupManager
      */
     public function setDependencies(string $parentGroup, array|string $childGroups): void
     {
+        /** @var array<string> $childGroupsArray */
         $childGroupsArray = is_array($childGroups) ? $childGroups : [$childGroups];
 
         if (!isset($this->dependencies[$parentGroup])) {
             $this->dependencies[$parentGroup] = [];
         }
 
-        $this->dependencies[$parentGroup] = array_unique(
+        $this->dependencies[$parentGroup] = array_values(array_unique(
             array_merge($this->dependencies[$parentGroup], $childGroupsArray)
-        );
+        ));
 
         $this->logger->debug('設定分組依賴關係', [
             'parent_group' => $parentGroup,
@@ -111,6 +112,7 @@ class CacheGroupManager
      */
     public function setInvalidationRule(string $triggerPattern, array|string $targetGroups): void
     {
+        /** @var array<string> $targetGroupsArray */
         $targetGroupsArray = is_array($targetGroups) ? $targetGroups : [$targetGroups];
 
         $this->invalidationRules[$triggerPattern] = $targetGroupsArray;
@@ -146,7 +148,14 @@ class CacheGroupManager
         // 如果啟用級聯清空，清空依賴的子分組
         if ($cascade && isset($this->dependencies[$groupName])) {
             foreach ($this->dependencies[$groupName] as $childGroup) {
-                $clearedCount += $this->flushGroup($childGroup, true);
+                if (is_string($childGroup)) {
+                    $clearedCount += $this->flushGroup($childGroup, true);
+                } else {
+                    $this->logger->warning('Invalid child group type', [
+                        'group_name' => $groupName,
+                        'child_group' => $childGroup,
+                    ]);
+                }
             }
         }
 
@@ -164,9 +173,11 @@ class CacheGroupManager
     public function checkInvalidationRules(string $key): void
     {
         foreach ($this->invalidationRules as $pattern => $targetGroups) {
-            if ($this->matchPattern($key, $pattern)) {
+            if ($this->matchPattern($key, $pattern) && is_array($targetGroups)) {
                 foreach ($targetGroups as $group) {
-                    $this->flushGroup($group);
+                    if (is_string($group)) {
+                        $this->flushGroup($group);
+                    }
                 }
 
                 $this->logger->info('觸發自動失效規則', [
@@ -251,7 +262,7 @@ class CacheGroupManager
         // 清理依賴關係
         unset($this->dependencies[$groupName]);
         foreach ($this->dependencies as $parent => &$children) {
-            $children = array_filter($children, static fn($child) => $child !== $groupName);
+            $children = array_values(array_filter($children, static fn(string $child): bool => $child !== $groupName));
         }
         unset($children);
 
@@ -373,7 +384,21 @@ class CacheGroupManager
      */
     public function getInvalidationRules(string $groupName): array
     {
-        return $this->invalidationRules[$groupName] ?? [];
+        $rules = $this->invalidationRules[$groupName] ?? [];
+
+        // 確保返回的是 string-indexed array
+        if (!is_array($rules)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($rules as $key => $value) {
+            if (is_string($key)) {
+                $result[$key] = $value;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -402,7 +427,7 @@ class CacheGroupManager
         }
 
         // 檢查最大年齡規則
-        if (isset($rules['max_age'])) {
+        if (isset($rules['max_age']) && is_int($rules['max_age'])) {
             $group = $this->getGroup($groupName);
             if ($group && $this->isGroupExpired($groupName, $rules['max_age'])) {
                 return true;
@@ -422,6 +447,7 @@ class CacheGroupManager
     private function isGroupExpired(string $groupName, int $maxAge): bool
     {
         // 這裡應該檢查分組的建立時間，但為了簡化，我們使用一個簡單的實作
+        /** @var array<string, int> $groupCreationTimes */
         static $groupCreationTimes = [];
 
         if (!isset($groupCreationTimes[$groupName])) {
@@ -429,7 +455,8 @@ class CacheGroupManager
             return false;
         }
 
-        return (time() - $groupCreationTimes[$groupName]) > $maxAge;
+        $creationTime = $groupCreationTimes[$groupName];
+        return (time() - $creationTime) > $maxAge;
     }
 
     /**

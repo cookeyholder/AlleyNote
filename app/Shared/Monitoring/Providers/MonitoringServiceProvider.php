@@ -29,11 +29,22 @@ class MonitoringServiceProvider
         return [
             // 系統監控服務
             SystemMonitorInterface::class => \DI\factory(function (ContainerInterface $c) {
-                return new SystemMonitorService(
-                    $c->get(LoggerInterface::class),
-                    $c->get(\PDO::class),
-                    $c->get(\App\Shared\Config\EnvironmentConfig::class)
-                );
+                $logger = $c->get(LoggerInterface::class);
+                if (!($logger instanceof LoggerInterface)) {
+                    throw new \RuntimeException('Logger 型別錯誤');
+                }
+
+                $database = $c->get(\PDO::class);
+                if (!($database instanceof \PDO)) {
+                    throw new \RuntimeException('Database 型別錯誤');
+                }
+
+                $config = $c->get(\App\Shared\Config\EnvironmentConfig::class);
+                if (!($config instanceof \App\Shared\Config\EnvironmentConfig)) {
+                    throw new \RuntimeException('Config 型別錯誤');
+                }
+
+                return new SystemMonitorService($logger, $database, $config);
             }),
 
             // 效能監控服務

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Admin;
 
+use App\Application\Controllers\BaseController;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
-use App\Shared\Cache\Contracts\TagRepositoryInterface;
 use App\Shared\Cache\Services\CacheGroupManager;
 use App\Shared\Cache\ValueObjects\CacheTag;
 use Psr\Http\Message\ResponseInterface;
@@ -18,14 +18,14 @@ use Psr\Log\LoggerInterface;
  *
  * 提供快取標籤管理的 REST API 端點
  */
-class TagManagementController
+class TagManagementController extends BaseController
 {
     public function __construct(
         private CacheManagerInterface $cacheManager,
-        private ?TagRepositoryInterface $tagRepository = null,
         private ?CacheGroupManager $groupManager = null,
         private ?LoggerInterface $logger = null
     ) {
+        // 不調用 parent::__construct()，因為 BaseController 沒有構造函式
     }
 
     /**
@@ -37,9 +37,9 @@ class TagManagementController
     {
         try {
             $queryParams = $request->getQueryParams();
-            $page = max(1, (int) ($queryParams['page'] ?? 1));
-            $limit = min(100, max(10, (int) ($queryParams['limit'] ?? 20)));
-            $search = $queryParams['search'] ?? '';
+            $page = max(1, isset($queryParams['page']) && is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
+            $limit = min(100, max(10, isset($queryParams['limit']) && is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 20));
+            $search = isset($queryParams['search']) && is_string($queryParams['search']) ? $queryParams['search'] : '';
 
             $tags = [];
             $totalTags = 0;
@@ -51,16 +51,26 @@ class TagManagementController
                     $driverTags = $driver->getAllTags();
                     $tagStats = $driver->getTagStatistics();
 
-                    foreach ($driverTags as $tag) {
-                        if (empty($search) || stripos($tag, $search) !== false) {
-                            $tags[] = [
-                                'name' => $tag,
-                                'driver' => $driverName,
-                                'key_count' => $tagStats['tags'][$tag]['key_count'] ?? 0,
-                                'sample_keys' => $tagStats['tags'][$tag]['sample_keys'] ?? [],
-                                'type' => $this->getTagType($tag),
-                                'created_at' => $this->getTagCreatedAt($tag),
-                            ];
+                    if ($driverTags) {
+                        foreach ($driverTags as $tag) {
+                            if (empty($search) || stripos($tag, $search) !== false) {
+                                $tagData = [
+                                    'name' => $tag,
+                                    'driver' => $driverName,
+                                    'key_count' => 0,
+                                    'sample_keys' => [],
+                                    'type' => $this->getTagType($tag),
+                                    'created_at' => $this->getTagCreatedAt($tag),
+                                ];
+
+                                // 安全地取得統計資料
+                                if ($tagStats && isset($tagStats['tags'][$tag]) && is_array($tagStats['tags'][$tag])) {
+                                    $tagData['key_count'] = $tagStats['tags'][$tag]['key_count'] ?? 0;
+                                    $tagData['sample_keys'] = $tagStats['tags'][$tag]['sample_keys'] ?? [];
+                                }
+
+                                $tags[] = $tagData;
+                            }
                         }
                     }
                     break; // 使用第一個可用的驅動
@@ -104,8 +114,7 @@ class TagManagementController
             ];
         }
 
-        $response->getBody()->write(json_encode($responseData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return $response->withHeader('Content-Type', 'application/json');
+        return $this->json($response, $responseData);
     }
 
     /**
@@ -116,7 +125,7 @@ class TagManagementController
     public function getTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $tagName = urldecode($args['tag'] ?? '');
+            $tagName = isset($args['tag']) && is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
                 throw new \InvalidArgumentException('標籤名稱不能為空');
@@ -128,30 +137,15 @@ class TagManagementController
             foreach (['redis', 'memory'] as $driverName) {
                 $driver = $this->cacheManager->getDriver($driverName);
                 if ($driver && $driver instanceof TaggedCacheInterface) {
-                    if ($driver->tagExists($tagName)) {
-                        $keys = $driver->getKeysByTag($tagName);
-                        $tagStats = $driver->getTagStatistics();
+                    $tagStats = $driver->getTagStatistics();
 
-                        $keyDetails = [];
-                        foreach (array_slice($keys, 0, 50) as $key) { // 限制顯示前50個鍵
-                            $value = $driver->get($key);
-                            $keyDetails[] = [
-                                'key' => $key,
-                                'has_value' => $value !== null,
-                                'value_type' => gettype($value),
-                                'value_size' => is_string($value) ? strlen($value) : strlen(serialize($value)),
-                            ];
-                        }
-
+                    if ($tagStats && isset($tagStats['tags'][$tagName])) {
                         $tagInfo = [
                             'name' => $tagName,
                             'driver' => $driverName,
-                            'exists' => true,
-                            'key_count' => count($keys),
+                            'statistics' => $tagStats['tags'][$tagName],
                             'type' => $this->getTagType($tagName),
                             'created_at' => $this->getTagCreatedAt($tagName),
-                            'keys' => $keyDetails,
-                            'total_memory_usage' => array_sum(array_column($keyDetails, 'value_size')),
                         ];
                         break;
                     }
@@ -159,7 +153,7 @@ class TagManagementController
             }
 
             if (!$tagInfo) {
-                throw new \RuntimeException('標籤不存在或不可用');
+                throw new \RuntimeException('標籤不存在');
             }
 
             $responseData = [
@@ -170,449 +164,261 @@ class TagManagementController
 
         } catch (\Exception $e) {
             $this->logger?->error('取得標籤詳細資訊失敗', [
-                'tag' => $args['tag'] ?? '',
+                'tag' => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
 
             $responseData = [
                 'success' => false,
                 'error' => [
-                    'message' => '取得標籤資訊失敗',
+                    'message' => '取得標籤詳細資訊失敗',
                     'details' => $e->getMessage(),
                 ],
                 'timestamp' => time(),
             ];
         }
 
-        $response->getBody()->write(json_encode($responseData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return $response->withHeader('Content-Type', 'application/json');
+        return $this->json($response, $responseData);
     }
 
     /**
-     * 清空特定標籤的所有快取
+     * 刪除標籤
      *
      * DELETE /admin/cache/tags/{tag}
      */
-    public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function deleteTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $tagName = urldecode($args['tag'] ?? '');
+            $tagName = isset($args['tag']) && is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
                 throw new \InvalidArgumentException('標籤名稱不能為空');
             }
 
-            $totalCleared = 0;
-            $driversAffected = [];
+            $deleted = false;
+            $affectedDrivers = [];
 
-            // 清空所有驅動中的標籤
-            foreach (['redis', 'memory', 'file'] as $driverName) {
+            // 從所有支援標籤的驅動刪除標籤
+            foreach (['redis', 'memory'] as $driverName) {
                 $driver = $this->cacheManager->getDriver($driverName);
                 if ($driver && $driver instanceof TaggedCacheInterface) {
-                    if ($driver->tagExists($tagName)) {
-                        $cleared = $driver->flushByTags($tagName);
-                        $totalCleared += $cleared;
-                        $driversAffected[] = $driverName;
-
-                        $this->logger?->info('標籤快取已清空', [
-                            'tag' => $tagName,
-                            'driver' => $driverName,
-                            'cleared_count' => $cleared,
-                        ]);
+                    // 使用 flushByTags 來刪除標籤下的所有快取
+                    $deletedCount = $driver->flushByTags($tagName);
+                    if ($deletedCount > 0) {
+                        $deleted = true;
+                        $affectedDrivers[] = $driverName;
                     }
                 }
+            }
+
+            if (!$deleted) {
+                throw new \RuntimeException('標籤刪除失敗或標籤不存在');
             }
 
             $responseData = [
                 'success' => true,
                 'data' => [
+                    'message' => '標籤已成功刪除',
                     'tag' => $tagName,
-                    'cleared_count' => $totalCleared,
-                    'drivers_affected' => $driversAffected,
+                    'affected_drivers' => $affectedDrivers,
                 ],
-                'message' => "標籤 '{$tagName}' 的 {$totalCleared} 個快取項目已清空",
                 'timestamp' => time(),
             ];
 
         } catch (\Exception $e) {
-            $this->logger?->error('清空標籤快取失敗', [
-                'tag' => $args['tag'] ?? '',
+            $this->logger?->error('刪除標籤失敗', [
+                'tag' => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
 
             $responseData = [
                 'success' => false,
                 'error' => [
-                    'message' => '清空標籤快取失敗',
+                    'message' => '刪除標籤失敗',
                     'details' => $e->getMessage(),
                 ],
                 'timestamp' => time(),
             ];
         }
 
-        $response->getBody()->write(json_encode($responseData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return $response->withHeader('Content-Type', 'application/json');
+        return $this->json($response, $responseData);
     }
 
     /**
-     * 批量清空多個標籤
+     * 清理過期標籤
      *
-     * DELETE /admin/cache/tags
-     * Body: {"tags": ["tag1", "tag2", ...]}
+     * POST /admin/cache/tags/cleanup
      */
-    public function flushTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function cleanupTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-            $body = json_decode((string) $request->getBody(), true);
-            $tags = $body['tags'] ?? [];
+            $cleanedTags = [];
+            $totalCleaned = 0;
 
-            if (!is_array($tags) || empty($tags)) {
-                throw new \InvalidArgumentException('必須提供標籤陣列');
-            }
-
-            $results = [];
-            $totalCleared = 0;
-
-            foreach ($tags as $tagName) {
-                if (!is_string($tagName) || empty($tagName)) {
-                    continue;
-                }
-
-                $tagCleared = 0;
-                $driversAffected = [];
-
-                foreach (['redis', 'memory', 'file'] as $driverName) {
-                    $driver = $this->cacheManager->getDriver($driverName);
-                    if ($driver && $driver instanceof TaggedCacheInterface) {
-                        if ($driver->tagExists($tagName)) {
-                            $cleared = $driver->flushByTags($tagName);
-                            $tagCleared += $cleared;
-                            $driversAffected[] = $driverName;
-                        }
-                    }
-                }
-
-                $results[$tagName] = [
-                    'cleared_count' => $tagCleared,
-                    'drivers_affected' => $driversAffected,
-                ];
-                $totalCleared += $tagCleared;
-            }
-
-            $this->logger?->info('批量清空標籤快取', [
-                'tags' => $tags,
-                'total_cleared' => $totalCleared,
-                'results' => $results,
-            ]);
-
-            $responseData = [
-                'success' => true,
-                'data' => [
-                    'total_cleared' => $totalCleared,
-                    'results' => $results,
-                ],
-                'message' => "批量清空 " . count($tags) . " 個標籤，共 {$totalCleared} 個快取項目",
-                'timestamp' => time(),
-            ];
-
-        } catch (\Exception $e) {
-            $this->logger?->error('批量清空標籤快取失敗', [
-                'error' => $e->getMessage(),
-            ]);
-
-            $responseData = [
-                'success' => false,
-                'error' => [
-                    'message' => '批量清空標籤快取失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ];
-        }
-
-        $response->getBody()->write(json_encode($responseData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return $response->withHeader('Content-Type', 'application/json');
-    }
-
-    /**
-     * 取得標籤統計資訊
-     *
-     * GET /admin/cache/tags/statistics
-     */
-    public function getTagStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
-        try {
-            $statistics = [
-                'drivers' => [],
-                'summary' => [
-                    'total_tags' => 0,
-                    'total_keys' => 0,
-                    'total_memory_usage' => 0,
-                ],
-                'tag_types' => [
-                    'user' => 0,
-                    'module' => 0,
-                    'temporal' => 0,
-                    'group' => 0,
-                    'custom' => 0,
-                ],
-            ];
-
-            foreach (['redis', 'memory', 'file'] as $driverName) {
+            // 從所有支援標籤的驅動清理過期標籤
+            foreach (['redis', 'memory'] as $driverName) {
                 $driver = $this->cacheManager->getDriver($driverName);
                 if ($driver && $driver instanceof TaggedCacheInterface) {
-                    $driverStats = $driver->getTagStatistics();
-                    $statistics['drivers'][$driverName] = $driverStats;
-
-                    $statistics['summary']['total_tags'] += $driverStats['total_tags'];
-
-                    foreach ($driverStats['tags'] as $tag => $tagData) {
-                        $statistics['summary']['total_keys'] += $tagData['key_count'];
-
-                        // 統計標籤類型
-                        $tagType = $this->getTagType($tag);
-                        if (isset($statistics['tag_types'][$tagType])) {
-                            $statistics['tag_types'][$tagType]++;
-                        }
-                    }
+                    // 使用 cleanupUnusedTags 來清理未使用的標籤
+                    $cleaned = $driver->cleanupUnusedTags();
+                    $cleanedTags[$driverName] = [$cleaned . ' unused tags'];
+                    $totalCleaned += $cleaned;
                 }
             }
-
-            // 分組統計（如果有分組管理器）
-            if ($this->groupManager) {
-                $groupStats = $this->groupManager->getGroupStatistics();
-                $statistics['groups'] = $groupStats;
-            }
-
-            $responseData = [
-                'success' => true,
-                'data' => $statistics,
-                'timestamp' => time(),
-            ];
-
-        } catch (\Exception $e) {
-            $this->logger?->error('取得標籤統計失敗', [
-                'error' => $e->getMessage(),
-            ]);
-
-            $responseData = [
-                'success' => false,
-                'error' => [
-                    'message' => '取得標籤統計失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ];
-        }
-
-        $response->getBody()->write(json_encode($responseData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return $response->withHeader('Content-Type', 'application/json');
-    }
-
-    /**
-     * 建立快取分組
-     *
-     * POST /admin/cache/groups
-     * Body: {"name": "group_name", "tags": ["tag1", "tag2"], "dependencies": [...]}
-     */
-    public function createGroup(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
-        try {
-            $body = json_decode((string) $request->getBody(), true);
-            $groupName = $body['name'] ?? '';
-            $tags = $body['tags'] ?? [];
-            $dependencies = $body['dependencies'] ?? [];
-
-            if (empty($groupName)) {
-                throw new \InvalidArgumentException('分組名稱不能為空');
-            }
-
-            if (!$this->groupManager) {
-                throw new \RuntimeException('分組管理器不可用');
-            }
-
-            if ($this->groupManager->hasGroup($groupName)) {
-                throw new \InvalidArgumentException('分組已存在');
-            }
-
-            // 建立分組
-            $group = $this->groupManager->group($groupName, $tags);
-
-            // 設定依賴關係
-            if (!empty($dependencies)) {
-                foreach ($dependencies as $dependency) {
-                    if (is_array($dependency) && isset($dependency['parent'], $dependency['children'])) {
-                        $this->groupManager->setDependencies($dependency['parent'], $dependency['children']);
-                    }
-                }
-            }
-
-            $this->logger?->info('快取分組已建立', [
-                'group_name' => $groupName,
-                'tags' => $tags,
-                'dependencies' => $dependencies,
-            ]);
 
             $responseData = [
                 'success' => true,
                 'data' => [
-                    'group_name' => $groupName,
-                    'tags' => $tags,
-                    'dependencies' => $dependencies,
+                    'message' => '標籤清理完成',
+                    'total_cleaned' => $totalCleaned,
+                    'cleaned_by_driver' => $cleanedTags,
                 ],
-                'message' => "分組 '{$groupName}' 已成功建立",
                 'timestamp' => time(),
             ];
 
         } catch (\Exception $e) {
-            $this->logger?->error('建立快取分組失敗', [
+            $this->logger?->error('清理標籤失敗', [
                 'error' => $e->getMessage(),
             ]);
 
             $responseData = [
                 'success' => false,
                 'error' => [
-                    'message' => '建立分組失敗',
+                    'message' => '清理標籤失敗',
                     'details' => $e->getMessage(),
                 ],
                 'timestamp' => time(),
             ];
         }
 
-        $response->getBody()->write(json_encode($responseData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return $response->withHeader('Content-Type', 'application/json');
+        return $this->json($response, $responseData);
     }
 
     /**
-     * 取得所有分組列表
+     * 取得標籤群組列表
      *
      * GET /admin/cache/groups
      */
     public function listGroups(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-            if (!$this->groupManager) {
-                throw new \RuntimeException('分組管理器不可用');
-            }
+            $groups = [];
 
-            $groups = $this->groupManager->getAllGroups();
-            $statistics = $this->groupManager->getGroupStatistics();
+            if ($this->groupManager) {
+                $allGroups = $this->groupManager->getAllGroups();
+
+                if ($allGroups) {
+                    foreach ($allGroups as $groupName => $groupData) {
+                        if (is_string($groupName) && is_array($groupData)) {
+                            $groups[] = [
+                                'name' => $groupName,
+                                'tags' => $groupData['tags'] ?? [],
+                                'created_at' => $groupData['created_at'] ?? null,
+                            ];
+                        }
+                    }
+                }
+            }
 
             $responseData = [
                 'success' => true,
                 'data' => [
                     'groups' => $groups,
-                    'statistics' => $statistics,
+                    'total' => count($groups),
                 ],
                 'timestamp' => time(),
             ];
 
         } catch (\Exception $e) {
-            $this->logger?->error('取得分組列表失敗', [
+            $this->logger?->error('取得標籤群組失敗', [
                 'error' => $e->getMessage(),
             ]);
 
             $responseData = [
                 'success' => false,
                 'error' => [
-                    'message' => '取得分組列表失敗',
+                    'message' => '取得標籤群組失敗',
                     'details' => $e->getMessage(),
                 ],
                 'timestamp' => time(),
             ];
         }
 
-        $response->getBody()->write(json_encode($responseData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return $response->withHeader('Content-Type', 'application/json');
+        return $this->json($response, $responseData);
     }
 
     /**
-     * 清空特定分組
+     * 刪除標籤群組
      *
      * DELETE /admin/cache/groups/{group}
      */
-    public function flushGroup(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function deleteGroup(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $groupName = urldecode($args['group'] ?? '');
-            $cascade = filter_var($request->getQueryParams()['cascade'] ?? 'true', FILTER_VALIDATE_BOOLEAN);
+            $groupName = isset($args['group']) && is_string($args['group']) ? urldecode($args['group']) : '';
 
             if (empty($groupName)) {
-                throw new \InvalidArgumentException('分組名稱不能為空');
+                throw new \InvalidArgumentException('群組名稱不能為空');
             }
 
             if (!$this->groupManager) {
-                throw new \RuntimeException('分組管理器不可用');
+                throw new \RuntimeException('群組管理器未設定');
             }
 
-            if (!$this->groupManager->hasGroup($groupName)) {
-                throw new \InvalidArgumentException('分組不存在');
-            }
-
-            $clearedCount = $this->groupManager->flushGroup($groupName, $cascade);
-
-            $this->logger?->info('快取分組已清空', [
-                'group_name' => $groupName,
-                'cascade' => $cascade,
-                'cleared_count' => $clearedCount,
-            ]);
+            $this->groupManager->removeGroup($groupName);
 
             $responseData = [
                 'success' => true,
                 'data' => [
-                    'group_name' => $groupName,
-                    'cleared_count' => $clearedCount,
-                    'cascade' => $cascade,
+                    'message' => '標籤群組已成功刪除',
+                    'group' => $groupName,
                 ],
-                'message' => "分組 '{$groupName}' 的 {$clearedCount} 個項目已清空",
                 'timestamp' => time(),
             ];
 
         } catch (\Exception $e) {
-            $this->logger?->error('清空快取分組失敗', [
-                'group' => $args['group'] ?? '',
+            $this->logger?->error('刪除標籤群組失敗', [
+                'group' => $groupName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
 
             $responseData = [
                 'success' => false,
                 'error' => [
-                    'message' => '清空分組失敗',
+                    'message' => '刪除標籤群組失敗',
                     'details' => $e->getMessage(),
                 ],
                 'timestamp' => time(),
             ];
         }
 
-        $response->getBody()->write(json_encode($responseData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return $response->withHeader('Content-Type', 'application/json');
+        return $this->json($response, $responseData);
     }
 
     /**
-     * 判斷標籤類型
+     * 取得標籤類型
      */
-    private function getTagType(string $tag): string
+    private function getTagType(string $tagName): string
     {
-        if (str_starts_with($tag, 'user_')) {
+        if (str_starts_with($tagName, 'user:')) {
             return 'user';
-        } elseif (str_starts_with($tag, 'module_')) {
-            return 'module';
-        } elseif (str_starts_with($tag, 'time_') || str_starts_with($tag, 'temporal_')) {
-            return 'temporal';
-        } elseif (str_starts_with($tag, 'group_')) {
-            return 'group';
         }
-
-        return 'custom';
+        if (str_starts_with($tagName, 'post:')) {
+            return 'post';
+        }
+        if (str_starts_with($tagName, 'category:')) {
+            return 'category';
+        }
+        return 'other';
     }
 
     /**
-     * 取得標籤建立時間（模擬）
+     * 取得標籤建立時間
      */
-    private function getTagCreatedAt(string $tag): string
+    private function getTagCreatedAt(string $tagName): null
     {
-        // 在實際應用中，這裡應該從標籤倉庫取得真實的建立時間
-        // 目前使用模擬值
-        return date('Y-m-d H:i:s');
+        // 這裡可以從資料庫或其他來源取得實際的建立時間
+        // 目前返回 null
+        return null;
     }
 }

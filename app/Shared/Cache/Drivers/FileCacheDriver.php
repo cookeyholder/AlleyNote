@@ -209,7 +209,7 @@ class FileCacheDriver implements CacheDriverInterface
     public function increment(string $key, int $value = 1): int
     {
         $current = $this->get($key, 0);
-        $newValue = (int) $current + $value;
+        $newValue = (is_int($current) || is_numeric($current)) ? (int) $current + $value : $value;
         $this->put($key, $newValue);
         return $newValue;
     }
@@ -217,7 +217,7 @@ class FileCacheDriver implements CacheDriverInterface
     public function decrement(string $key, int $value = 1): int
     {
         $current = $this->get($key, 0);
-        $newValue = (int) $current - $value;
+        $newValue = (is_int($current) || is_numeric($current)) ? (int) $current - $value : -$value;
         $this->put($key, $newValue);
         return $newValue;
     }

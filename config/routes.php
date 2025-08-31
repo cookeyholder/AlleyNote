@@ -194,4 +194,3 @@ return function (RouterInterface $router): void {
     // 加載標籤管理路由
     $tagManagementRoutes = require __DIR__ . '/routes/tag-management.php';
     $tagManagementRoutes($app);
-};

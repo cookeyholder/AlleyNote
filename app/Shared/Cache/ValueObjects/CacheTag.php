@@ -35,7 +35,13 @@ class CacheTag
         // 轉換為小寫，移除多餘空白，替換特殊字符
         $normalized = strtolower(trim($name));
         $normalized = preg_replace('/[^a-z0-9_\-\.]/', '_', $normalized);
+        if ($normalized === null) {
+            $normalized = '';
+        }
         $normalized = preg_replace('/_{2,}/', '_', $normalized);
+        if ($normalized === null) {
+            $normalized = '';
+        }
 
         return trim($normalized, '_');
     }

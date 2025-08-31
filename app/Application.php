@@ -70,6 +70,10 @@ class Application
         // 從容器獲取並驗證環境配置
         $config = $this->container->get(EnvironmentConfig::class);
 
+        if (!$config instanceof EnvironmentConfig) {
+            throw new Exception('無法獲取有效的環境配置');
+        }
+
         // 驗證配置的完整性
         $errors = $config->validate();
         if (!empty($errors)) {
@@ -131,11 +135,13 @@ class Application
         // 記錄錯誤到監控系統
         try {
             $errorTracker = $this->container->get(ErrorTrackerInterface::class);
-            $errorTracker->recordCriticalError($e, [
-                'context' => 'application_exception',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
-                'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
-            ]);
+            if ($errorTracker instanceof ErrorTrackerInterface) {
+                $errorTracker->recordCriticalError($e, [
+                    'context' => 'application_exception',
+                    'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
+                    'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
+                ]);
+            }
         } catch (\Exception $monitoringException) {
             // 如果監控系統本身出錯，記錄到錯誤日誌
             error_log("Monitoring system error: " . $monitoringException->getMessage());
