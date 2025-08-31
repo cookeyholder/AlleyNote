@@ -17,7 +17,12 @@ abstract class BaseController
      */
     protected function json(ResponseInterface $response, array $data, int $status = 200): ResponseInterface
     {
-        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?: '{}';
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        if ($json === false) {
+            // JSON 編碼失敗時的回退處理
+            $json = '{"success":false,"error":{"message":"JSON encoding failed"}}';
+        }
+
         $response->getBody()->write($json);
 
         return $response->withHeader('Content-Type', 'application/json')->withStatus($status);

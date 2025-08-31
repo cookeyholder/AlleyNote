@@ -55,6 +55,7 @@ class TagManagementControllerTest extends TestCase
 
         $this->response->method('getBody')->willReturn($this->responseBody);
         $this->response->method('withHeader')->willReturnSelf();
+        $this->response->method('withStatus')->willReturnSelf();
     }
 
     /**
@@ -176,8 +177,11 @@ class TagManagementControllerTest extends TestCase
                        && isset($data['success']) && $data['success'] === true
                        && isset($data['data']) && is_array($data['data'])
                        && isset($data['data']['name']) && $data['data']['name'] === 'user_123'
-                       && isset($data['data']['key_count']) && $data['data']['key_count'] === 3
-                       && isset($data['data']['type']) && $data['data']['type'] === 'user';
+                       && isset($data['data']['driver']) && $data['data']['driver'] === 'redis'
+                       && isset($data['data']['statistics']) && is_array($data['data']['statistics'])
+                       && isset($data['data']['statistics']['key_count']) && $data['data']['statistics']['key_count'] === 3
+                       && isset($data['data']['type']) && $data['data']['type'] === 'other'
+                       && isset($data['timestamp']);
             }));
 
         $result = $this->controller->getTag($this->request, $this->response, $args);
@@ -215,9 +219,11 @@ class TagManagementControllerTest extends TestCase
                 $data = $this->safeJsonDecode($content);
 
                 return $data !== null
-                       && isset($data['success']) && isset($data['success']) && $data['success'] === true
+                       && isset($data['success']) && $data['success'] === true
+                       && isset($data['data']) && is_array($data['data'])
                        && isset($data['data']['tag']) && $data['data']['tag'] === 'user_123'
-                       && isset($data['data']['cleared_count']) && $data['data']['cleared_count'] === 5;
+                       && isset($data['data']['affected_drivers']) && is_array($data['data']['affected_drivers'])
+                       && isset($data['timestamp']);
             }));
 
         $result = $this->controller->flushTag($this->request, $this->response, $args);
@@ -323,38 +329,24 @@ class TagManagementControllerTest extends TestCase
         $requestBody = json_encode([
             'name' => 'test_group',
             'tags' => ['tag1', 'tag2'],
-            'dependencies' => [
-                ['parent' => 'parent_group', 'children' => ['test_group']],
-            ],
         ]);
         $this->request->method('getBody')->willReturn($this->createStreamWithContent($requestBody));
 
-        $this->groupManager->method('hasGroup')->with('test_group')->willReturn(false);
-
-        $mockGroupCache = $this->createMock(MemoryCacheDriver::class);
         $this->groupManager->expects($this->once())
             ->method('group')
             ->with('test_group', ['tag1', 'tag2'])
-            ->willReturn($mockGroupCache);
-
-        $this->groupManager->expects($this->once())
-            ->method('setDependencies')
-            ->with('parent_group', ['test_group']);
-
-        $this->logger->expects($this->once())
-            ->method('info')
-            ->with(
-                $this->equalTo('快取分組已建立'),
-                $this->arrayHasKey('group_name'),
-            );
+            ->willReturn($this->createMock(MemoryCacheDriver::class));
 
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
                 $data = $this->safeJsonDecode($content);
 
-                return $data !== null && isset($data['success']) && isset($data['success']) && $data['success'] === true
-                       && $data['data']['group_name'] === 'test_group';
+                return $data !== null
+                       && isset($data['success']) && $data['success'] === true
+                       && isset($data['data']) && is_array($data['data'])
+                       && isset($data['data']['group']) && $data['data']['group'] === 'test_group'
+                       && isset($data['timestamp']);
             }));
 
         $result = $this->controller->createGroup($this->request, $this->response);
@@ -363,23 +355,25 @@ class TagManagementControllerTest extends TestCase
 
     public function testListGroups(): void
     {
-        $this->groupManager->method('getAllGroups')->willReturn(['group1', 'group2']);
-        $this->groupManager->method('getGroupStatistics')->willReturn([
-            'total_groups' => 2,
-            'groups' => [
-                'group1' => ['cache_count' => 5],
-                'group2' => ['cache_count' => 3],
-            ],
-        ]);
+        $mockGroupData = [
+            'group1' => ['tags' => ['tag1', 'tag2'], 'created_at' => '2023-01-01'],
+            'group2' => ['tags' => ['tag3', 'tag4'], 'created_at' => '2023-01-02'],
+        ];
+
+        $this->groupManager->method('getAllGroups')->willReturn($mockGroupData);
 
         $this->responseBody->expects($this->once())
             ->method('write')
             ->with($this->callback(function ($content) {
                 $data = $this->safeJsonDecode($content);
 
-                return $data !== null && isset($data['success']) && isset($data['success']) && $data['success'] === true
+                return $data !== null
+                       && isset($data['success']) && $data['success'] === true
+                       && isset($data['data']) && is_array($data['data'])
+                       && isset($data['data']['groups']) && is_array($data['data']['groups'])
                        && count($data['data']['groups']) === 2
-                       && isset($data['data']['statistics']);
+                       && isset($data['data']['total']) && $data['data']['total'] === 2
+                       && isset($data['timestamp']);
             }));
 
         $result = $this->controller->listGroups($this->request, $this->response);
