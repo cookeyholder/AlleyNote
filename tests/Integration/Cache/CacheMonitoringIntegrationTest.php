@@ -33,7 +33,7 @@ class CacheMonitoringIntegrationTest extends TestCase
             ],
             $this->cacheMonitor
         );
-        
+
         // 手動添加記憶體驅動
         $this->cacheManager->addDriver('memory', new MemoryCacheDriver());
         $this->cacheManager->setDefaultDriver('memory');
@@ -43,27 +43,27 @@ class CacheMonitoringIntegrationTest extends TestCase
     {
         // 確認監控器已連接
         $this->assertInstanceOf(CacheMonitor::class, $this->cacheMonitor);
-        
+
         // 執行快取操作
         $putResult = $this->cacheManager->put('test_key', 'test_value', 3600);
         $this->assertTrue($putResult, 'put 操作應該成功');
-        
+
         $value = $this->cacheManager->get('test_key');
         $this->assertEquals('test_value', $value, 'get 操作應該返回正確的值');
-        
+
         $this->assertTrue($this->cacheManager->has('test_key'), 'has 操作應該返回 true');
-        
+
         $deleteResult = $this->cacheManager->forget('test_key');
         $this->assertTrue($deleteResult, 'forget 操作應該成功');
 
         // 檢查監控資料
         $metrics = $this->cacheMonitor->getMetrics();
-        
+
         // 由於我們執行了 put, get, has, forget，應該記錄這些操作
         $this->assertGreaterThanOrEqual(1, $metrics['total_sets'], '應該記錄至少1次 set 操作');
         $this->assertGreaterThanOrEqual(1, $metrics['total_hits'], '應該記錄至少1次 hit');
         $this->assertGreaterThanOrEqual(1, $metrics['total_deletes'], '應該記錄至少1次 delete 操作');
-        
+
         // 檢查驅動效能資料
         $performance = $this->cacheMonitor->getDriverPerformance();
         $this->assertArrayHasKey('memory', $performance, '應該有 memory 驅動的效能資料');
@@ -104,13 +104,13 @@ class CacheMonitoringIntegrationTest extends TestCase
         // 執行一些成功的操作
         $this->cacheManager->put('health_test', 'value');
         $this->cacheManager->get('health_test');
-        
+
         // 手動記錄健康狀態
         $this->cacheMonitor->recordHealthStatus('memory', true);
 
         $health = $this->cacheMonitor->getHealth();
         $this->assertIsArray($health);
-        
+
         // 檢查健康總覽
         $this->assertArrayHasKey('overall_health', $health);
         $this->assertArrayHasKey('healthy_drivers', $health);
@@ -125,7 +125,7 @@ class CacheMonitoringIntegrationTest extends TestCase
         // 記錄初始操作數
         $initialMetrics = $this->cacheMonitor->getMetrics();
         $initialOperations = $initialMetrics['total_operations'];
-        
+
         $testData = [
             'small_data' => 'small',
             'medium_data' => str_repeat('x', 1000),
@@ -139,7 +139,7 @@ class CacheMonitoringIntegrationTest extends TestCase
 
         $performance = $this->cacheMonitor->getDriverPerformance();
         $memoryPerf = $performance['memory'];
-        
+
         $finalMetrics = $this->cacheMonitor->getMetrics();
         $operationsDelta = $finalMetrics['total_operations'] - $initialOperations;
 
@@ -209,7 +209,7 @@ class CacheMonitoringIntegrationTest extends TestCase
         // 檢查操作增量（至少應該增加 6 次操作）
         $operationsDelta = $metrics['total_operations'] - $initialOperations;
         $this->assertGreaterThanOrEqual(6, $operationsDelta);
-        
+
         // 檢查驅動效能統計
         $memoryPerf = $performance['memory'];
         $this->assertGreaterThan(0, $memoryPerf['total_time']);
