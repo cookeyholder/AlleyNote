@@ -19,7 +19,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     /** @var array<string, array> 進行中的監控會話 */
     private array $activeMonitoringSessions = [];
 
-    /** @var array<string, float> 效能指標暫存 */
+    /** @var array<string, array<int, array<string, mixed>>> 效能指標暫存 */
     private array $metrics = [];
 
     /** @var array<string, int> 計數器暫存 */
@@ -89,37 +89,51 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         }
 
         $session = $this->activeMonitoringSessions[$monitoringId];
+        
+        if (!is_array($session)) {
+            $this->logger->warning('Invalid monitoring session data', ['monitoring_id' => $monitoringId]);
+            return;
+        }
+        
+        $sessionStartTime = $session['start_time'] ?? 0;
+        $startTime = is_numeric($sessionStartTime) ? (float)$sessionStartTime : microtime(true);
+        
+        $sessionStartMemory = $session['start_memory'] ?? 0;
+        $startMemory = is_numeric($sessionStartMemory) ? (int)$sessionStartMemory : memory_get_usage(true);
+        
+        $operationValue = $session['operation'] ?? '';
+        $operation = is_string($operationValue) ? $operationValue : 'unknown';
+        
         $endTime = microtime(true);
         $endMemory = memory_get_usage(true);
 
-        $duration = ($endTime - $session['start_time']) * 1000; // 轉換為毫秒
-        $memoryDiff = $endMemory - $session['start_memory'];
+        $duration = ($endTime - $startTime) * 1000; // 轉換為毫秒
+        $memoryDiff = $endMemory - $startMemory;
 
         // 記錄效能指標
-        $this->recordMetric("operation.{$session['operation']}.duration", $duration, 'ms', [
-            'operation' => $session['operation'],
+        $this->recordMetric("operation.{$operation}.duration", $duration, 'ms', [
+            'operation' => $operation,
         ]);
 
-        $this->recordMetric("operation.{$session['operation']}.memory_delta", $memoryDiff, 'bytes', [
-            'operation' => $session['operation'],
+        $this->recordMetric("operation.{$operation}.memory_delta", $memoryDiff, 'bytes', [
+            'operation' => $operation,
         ]);
 
         // 檢查是否為慢操作
         if ($duration > $this->slowQueryThreshold) {
-            $this->recordSlowOperation($session['operation'], $duration, array_merge($session['context'], $context));
+            $sessionContext = is_array($session['context'] ?? null) ? $session['context'] : [];
+            $mergedContext = array_merge($sessionContext, $context);
+            $this->recordSlowOperation($operation, $duration, $mergedContext);
         }
 
-        // 記錄詳細資訊
-        $this->logger->info("Operation completed: {$session['operation']}", [
-            'monitoring_id' => $monitoringId,
-            'duration_ms' => round($duration, 2),
-            'memory_delta_bytes' => $memoryDiff,
-            'memory_delta_mb' => round($memoryDiff / 1024 / 1024, 2),
-            'context' => array_merge($session['context'], $context),
+                // 記錄詳細資訊
+        $this->logger->info("Operation completed: {$operation}", [
+            'operation' => $operation,
+            'duration_ms' => (float)$duration,
+            'status' => 'success',
+            'memory_peak' => memory_get_peak_usage(true),
+            'context' => $context
         ]);
-
-        // 移除會話
-        unset($this->activeMonitoringSessions[$monitoringId]);
     }
 
     /**
@@ -133,12 +147,15 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $this->metrics[$metricKey] = [];
         }
 
-        $this->metrics[$metricKey][] = [
+        $metricsForKey = $this->metrics[$metricKey];
+        assert(is_array($metricsForKey));
+        $metricsForKey[] = [
             'value' => $value,
             'unit' => $unit,
             'tags' => $tags,
             'timestamp' => microtime(true),
         ];
+        $this->metrics[$metricKey] = $metricsForKey;
 
         $this->logger->debug("Recorded metric: {$name}", [
             'value' => $value,
@@ -158,7 +175,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $this->counters[$counterKey] = 0;
         }
 
-        $this->counters[$counterKey]++;
+        $currentCounter = $this->counters[$counterKey];
+        assert(is_int($currentCounter) || is_float($currentCounter));
+        $this->counters[$counterKey] = $currentCounter + 1;
 
         $this->logger->debug("Incremented counter: {$name}", [
             'current_value' => $this->counters[$counterKey],
@@ -269,7 +288,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         // 檢查長時間運行的操作
         $currentTime = microtime(true);
         foreach ($this->activeMonitoringSessions as $id => $session) {
-            $duration = ($currentTime - $session['start_time']) * 1000;
+            $sessionStartTime = $session['start_time'] ?? $currentTime;
+            $duration = is_numeric($sessionStartTime) 
+                ? ($currentTime - (float)$sessionStartTime) * 1000
+                : 0;
             if ($duration > 30000) { // 30 秒
                 $warnings[] = [
                     'type' => 'long_running_operation',
@@ -321,7 +343,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $originalHistogramCount = count($histogramData);
             $this->histograms[$key] = array_filter(
                 $histogramData,
-                fn($histogram) => $histogram['timestamp'] > $cutoffTime
+                fn($histogram) => is_array($histogram) && isset($histogram['timestamp']) && is_numeric($histogram['timestamp']) && $histogram['timestamp'] > $cutoffTime
             );
             $cleanedCount += $originalHistogramCount - count($this->histograms[$key]);
 
@@ -352,7 +374,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
         ksort($tags);
         $tagString = implode(',', array_map(
-            fn($k, $v) => "{$k}={$v}",
+            fn($k, $v) => $k . '=' . (is_scalar($v) ? (string)$v : 'complex'),
             array_keys($tags),
             array_values($tags)
         ));
@@ -374,7 +396,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
         $this->logger->warning("Slow operation detected: {$operation}", [
             'duration_ms' => round($duration, 2),
-            'threshold_ms' => $this->slowQueryThreshold,
+            'threshold_ms' => (float)$this->slowQueryThreshold,
             'context' => $context,
         ]);
     }
@@ -422,7 +444,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $summary = [];
 
         foreach ($metrics as $key => $metricData) {
-            $values = array_column($metricData, 'value');
+            $values = is_array($metricData) ? array_column($metricData, 'value') : [];
 
             if (!empty($values)) {
                 $summary[$key] = [
@@ -431,7 +453,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                     'max' => max($values),
                     'avg' => array_sum($values) / count($values),
                     'total' => array_sum($values),
-                    'unit' => $metricData[0]['unit'] ?? 'unknown',
+                    'unit' => (is_array($metricData) && isset($metricData[0]) && is_array($metricData[0]) && isset($metricData[0]['unit'])) 
+                        ? $metricData[0]['unit'] 
+                        : 'unknown',
                 ];
             }
         }
@@ -479,15 +503,23 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         }
 
         $index = ($percentile / 100) * ($count - 1);
-        $lower = floor($index);
-        $upper = ceil($index);
+        $lower = (int)floor($index);
+        $upper = (int)ceil($index);
 
         if ($lower === $upper) {
-            return (float) $values[(int) $lower];
+            $value = $values[$lower] ?? 0;
+            return is_numeric($value) ? (float)$value : 0.0;
         }
 
+        $lowerValue = $values[$lower] ?? 0;
+        $upperValue = $values[$upper] ?? 0;
+        
+        if (!is_numeric($lowerValue) || !is_numeric($upperValue)) {
+            return 0.0;
+        }
+        
         $weight = $index - $lower;
-        return (float) ($values[(int) $lower] * (1 - $weight) + $values[(int) $upper] * $weight);
+        return (float)$lowerValue * (1 - $weight) + (float)$upperValue * $weight;
     }
 
     /**
