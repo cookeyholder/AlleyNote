@@ -42,7 +42,7 @@ interface CacheStrategyInterface
         CacheDriverInterface $failedDriver,
         array $availableDrivers,
         string $operation,
-        array $params
+        array $params,
     ): mixed;
 
     /**

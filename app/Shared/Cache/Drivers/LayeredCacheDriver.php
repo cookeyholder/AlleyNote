@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Shared\Cache\Drivers;
 
 use App\Shared\Cache\Contracts\CacheDriverInterface;
+use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * 多層快取驅動。
@@ -32,7 +34,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function __construct(array $layers)
     {
         if (empty($layers)) {
-            throw new \InvalidArgumentException('至少需要一個快取層級');
+            throw new InvalidArgumentException('至少需要一個快取層級');
         }
 
         $this->layers = array_values($layers);
@@ -58,6 +60,7 @@ class LayeredCacheDriver implements CacheDriverInterface
         }
 
         $this->stats['misses']++;
+
         return $default;
     }
 
@@ -228,6 +231,7 @@ class LayeredCacheDriver implements CacheDriverInterface
         }
 
         $this->stats['deletes'] += $totalDeleted;
+
         return $totalDeleted;
     }
 
@@ -245,7 +249,7 @@ class LayeredCacheDriver implements CacheDriverInterface
             }
         }
 
-        throw new \RuntimeException('沒有可用的快取層級');
+        throw new RuntimeException('沒有可用的快取層級');
     }
 
     public function decrement(string $key, int $value = 1): int
@@ -262,7 +266,7 @@ class LayeredCacheDriver implements CacheDriverInterface
             }
         }
 
-        throw new \RuntimeException('沒有可用的快取層級');
+        throw new RuntimeException('沒有可用的快取層級');
     }
 
     public function remember(string $key, callable $callback, int $ttl = 3600): mixed
@@ -390,6 +394,7 @@ class LayeredCacheDriver implements CacheDriverInterface
         if ($key !== false) {
             unset($this->layers[$key]);
             $this->layers = array_values($this->layers); // 重新索引
+
             return true;
         }
 

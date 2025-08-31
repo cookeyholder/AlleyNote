@@ -4,20 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\E2E\Shared\Cache;
 
-use App\Shared\Cache\Drivers\MemoryCacheDriver;
-use App\Shared\Cache\Drivers\RedisCacheDriver;
-use App\Shared\Cache\Repositories\MemoryTagRepository;
-use App\Shared\Cache\Repositories\RedisTagRepository;
-use App\Shared\Cache\Services\CacheManager;
-use App\Shared\Cache\Services\TaggedCacheManager;
-use App\Shared\Cache\Strategies\DefaultCacheStrategy;
-use App\Shared\Monitoring\Services\CacheMonitor;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
-use Psr\Log\NullLogger;
 
 /**
- * End-to-End 快取系統測試
+ * End-to-End 快取系統測試.
  *
  * 這些測試驗證完整的快取系統在類似生產環境的條件下是否能正確運作
  */
@@ -28,9 +20,9 @@ final class CacheSystemE2ETest extends TestCase
     protected function setUp(): void
     {
         // 檢查是否在 Docker 容器內或 Redis 是否可用
-        $isDockerEnvironment = getenv('DOCKER_CONTAINER') === 'true' ||
-                              is_file('/.dockerenv') ||
-                              $this->isRedisAvailable();
+        $isDockerEnvironment = getenv('DOCKER_CONTAINER') === 'true'
+                              || is_file('/.dockerenv')
+                              || $this->isRedisAvailable();
 
         if (!$isDockerEnvironment) {
             $this->markTestSkipped('E2E tests require Redis connection or Docker environment');
@@ -49,13 +41,13 @@ final class CacheSystemE2ETest extends TestCase
             $this->redisClient->ping();
             // 清空測試環境
             $this->redisClient->flushdb();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->markTestSkipped('Redis connection failed: ' . $e->getMessage());
         }
     }
 
     /**
-     * 檢查 Redis 是否可用
+     * 檢查 Redis 是否可用.
      */
     private function isRedisAvailable(): bool
     {
@@ -66,8 +58,9 @@ final class CacheSystemE2ETest extends TestCase
                 'port' => 6379,
             ]);
             $testClient->ping();
+
             return true;
-        } catch (\Exception) {
+        } catch (Exception) {
             return false;
         }
     }

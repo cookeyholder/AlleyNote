@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Shared\Monitoring\Services;
 
 use App\Shared\Monitoring\Services\ErrorTrackerService;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Exception;
-use ErrorException;
 
 /**
  * ErrorTrackerService 測試類別。
@@ -16,6 +15,7 @@ use ErrorException;
 class ErrorTrackerServiceTest extends TestCase
 {
     private ErrorTrackerService $errorTracker;
+
     private LoggerInterface $mockLogger;
 
     protected function setUp(): void
@@ -38,7 +38,7 @@ class ErrorTrackerServiceTest extends TestCase
                 $this->callback(function ($context) {
                     return isset($context['exception_class'])
                         && $context['exception_class'] === Exception::class;
-                })
+                }),
             );
 
         $errorId = $this->errorTracker->recordError($exception, ['test_context' => 'value']);
@@ -96,7 +96,7 @@ class ErrorTrackerServiceTest extends TestCase
                 $this->equalTo('Critical error'),
                 $this->callback(function ($context) {
                     return isset($context['exception_class']);
-                })
+                }),
             );
 
         // 添加通知處理器以測試通知機制

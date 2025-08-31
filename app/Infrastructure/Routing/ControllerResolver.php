@@ -149,6 +149,7 @@ class ControllerResolver
             {
                 /** @var array<string, array<string>> $headers */
                 $headers = $this->headers;
+
                 return $headers;
             }
 
@@ -161,6 +162,7 @@ class ControllerResolver
             {
                 /** @var array<string> $header */
                 $header = $this->headers[$name] ?? [];
+
                 return $header;
             }
 
@@ -284,6 +286,7 @@ class ControllerResolver
             {
                 /** @var array<string, array<string>> $headers */
                 $headers = $this->headers;
+
                 return $headers;
             }
 
@@ -296,6 +299,7 @@ class ControllerResolver
             {
                 /** @var array<string> $header */
                 $header = $this->headers[$name] ?? [];
+
                 return $header;
             }
 

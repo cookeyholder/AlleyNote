@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Shared\Cache\Repositories;
 
 use App\Shared\Cache\Repositories\MemoryTagRepository;
-use App\Shared\Cache\ValueObjects\CacheTag;
 use PHPUnit\Framework\TestCase;
 
 /**
- * MemoryTagRepository 測試（修正版）
+ * MemoryTagRepository 測試（修正版）.
  */
 class MemoryTagRepositoryTest extends TestCase
 {
@@ -128,7 +127,7 @@ class MemoryTagRepositoryTest extends TestCase
         $testData = [
             'key1' => ['user:123', 'module:posts'],
             'key2' => ['user:456', 'module:comments'],
-            'key3' => ['temporal:daily']
+            'key3' => ['temporal:daily'],
         ];
 
         foreach ($testData as $key => $tags) {
@@ -165,7 +164,7 @@ class MemoryTagRepositoryTest extends TestCase
             'key2' => ['user:123'],
             'key3' => ['module:posts'],
             'key4' => ['module:posts'],
-            'key5' => ['module:posts']
+            'key5' => ['module:posts'],
         ];
 
         foreach ($testData as $key => $tags) {
@@ -201,7 +200,7 @@ class MemoryTagRepositoryTest extends TestCase
     {
         $testData = [
             'key1' => ['user:123', 'module:posts'],
-            'key2' => ['user:456', 'module:comments']
+            'key2' => ['user:456', 'module:comments'],
         ];
 
         foreach ($testData as $key => $tags) {

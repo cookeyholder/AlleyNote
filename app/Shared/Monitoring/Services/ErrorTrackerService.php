@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Monitoring\Services;
 
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Throwable;
@@ -29,9 +30,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
     private int $maxRecords = 1000;
 
     public function __construct(
-        private LoggerInterface $logger
-    ) {
-    }
+        private LoggerInterface $logger,
+    ) {}
 
     /**
      * 記錄一個錯誤。
@@ -90,7 +90,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $cutoffTime = microtime(true) - ($hours * 3600);
         $recentErrors = array_filter(
             $this->errorRecords,
-            fn($record) => $record['timestamp'] > $cutoffTime
+            fn($record) => $record['timestamp'] > $cutoffTime,
         );
 
         $stats = [
@@ -176,7 +176,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $cutoffTime = microtime(true) - ($days * 24 * 3600);
         $recentErrors = array_filter(
             $this->errorRecords,
-            fn($record) => $record['timestamp'] > $cutoffTime
+            fn($record) => $record['timestamp'] > $cutoffTime,
         );
 
         $trends = [
@@ -194,7 +194,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
                 continue;
             }
             $timestampValue = $record['timestamp'] ?? 0;
-            $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int)$timestampValue : time();
+            $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int) $timestampValue : time();
             $date = date('Y-m-d', $timestamp);
             if (!isset($trends['daily_counts'][$date])) {
                 $trends['daily_counts'][$date] = 0;
@@ -208,7 +208,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
                 continue;
             }
             $timestampValue = $record['timestamp'] ?? 0;
-            $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int)$timestampValue : time();
+            $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int) $timestampValue : time();
             $date = date('Y-m-d', $timestamp);
             $level = is_string($record['level'] ?? '') ? $record['level'] : 'unknown';
 
@@ -230,7 +230,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             $context = $record['context'];
             if (isset($context['exception_class']) && is_string($context['exception_class'])) {
                 $timestampValue = $record['timestamp'] ?? 0;
-                $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int)$timestampValue : time();
+                $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int) $timestampValue : time();
                 $date = date('Y-m-d', $timestamp);
                 $type = $context['exception_class'];
 
@@ -316,12 +316,12 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         $this->errorRecords = array_filter(
             $this->errorRecords,
-            fn($record) => $record['timestamp'] > $cutoffTime
+            fn($record) => $record['timestamp'] > $cutoffTime,
         );
 
         $cleanedCount = $originalCount - count($this->errorRecords);
 
-        $this->logger->info("Error records cleanup completed", [
+        $this->logger->info('Error records cleanup completed', [
             'days_kept' => $daysToKeep,
             'records_cleaned' => $cleanedCount,
             'records_remaining' => count($this->errorRecords),
@@ -370,7 +370,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             'message' => $message,
             'context' => $this->sanitizeContext($context),
             'timestamp' => $timestamp,
-            'formatted_time' => date('Y-m-d H:i:s.u', (int)$timestamp), // 顯示微秒
+            'formatted_time' => date('Y-m-d H:i:s.u', (int) $timestamp), // 顯示微秒
             'request_id' => $_SERVER['HTTP_X_REQUEST_ID'] ?? null,
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null,
             'client_ip' => $_SERVER['REMOTE_ADDR'] ?? null,
@@ -428,7 +428,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         foreach ($this->notificationHandlers as $handler) {
             try {
                 $handler($level, $message, $context, $exception);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error('Notification handler failed', [
                     'handler_error' => $e->getMessage(),
                     'original_level' => $level,
@@ -454,7 +454,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             $hourlyCount = 0;
             foreach ($errors as $error) {
                 if (is_array($error) && isset($error['timestamp']) && is_numeric($error['timestamp'])) {
-                    $errorTimestamp = (int)$error['timestamp'];
+                    $errorTimestamp = (int) $error['timestamp'];
                     if ($errorTimestamp >= $hourStart && $errorTimestamp < $hourEnd) {
                         $hourlyCount++;
                     }
@@ -544,10 +544,10 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $warningValue = $levels['warning'] ?? 0;
         $totalValue = $stats['total_errors'] ?? 0;
 
-        $criticalCount = is_numeric($criticalValue) ? (int)$criticalValue : 0;
-        $errorCount = is_numeric($errorValue) ? (int)$errorValue : 0;
-        $warningCount = is_numeric($warningValue) ? (int)$warningValue : 0;
-        $totalErrors = is_numeric($totalValue) ? (int)$totalValue : 0;
+        $criticalCount = is_numeric($criticalValue) ? (int) $criticalValue : 0;
+        $errorCount = is_numeric($errorValue) ? (int) $errorValue : 0;
+        $warningCount = is_numeric($warningValue) ? (int) $warningValue : 0;
+        $totalErrors = is_numeric($totalValue) ? (int) $totalValue : 0;
 
         if ($criticalCount > 0) {
             return [
@@ -576,7 +576,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         } else {
             return [
                 'status' => 'healthy',
-                'message' => "系統運行正常",
+                'message' => '系統運行正常',
                 'score' => 100,
             ];
         }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Shared\Cache\Services;
 
-use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Services\CacheGroupManager;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -12,12 +11,14 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
- * CacheGroupManager 測試（修正版）
+ * CacheGroupManager 測試（修正版）.
  */
 class CacheGroupManagerTest extends TestCase
 {
     private CacheGroupManager $groupManager;
+
     private TaggedCacheInterface&MockObject $taggedCache;
+
     private LoggerInterface&MockObject $logger;
 
     protected function setUp(): void
@@ -80,7 +81,7 @@ class CacheGroupManagerTest extends TestCase
 
         // 模擬標籤清空回傳計數（注意：flushByTags 需要接收陣列）
         $this->taggedCache->method('flushByTags')
-            ->with($this->callback(function($tagsParam) {
+            ->with($this->callback(function ($tagsParam) {
                 return is_array($tagsParam) && in_array('group_test_group', $tagsParam);
             }))
             ->willReturn(5);
@@ -106,12 +107,13 @@ class CacheGroupManagerTest extends TestCase
 
         // 模擬清空操作 - 注意 flushByTags 接收陣列參數
         $this->taggedCache->method('flushByTags')
-            ->willReturnCallback(function($tags) {
+            ->willReturnCallback(function ($tags) {
                 if (is_array($tags) && in_array('group_parent_group', $tags)) {
                     return 3;
                 } elseif (is_array($tags) && in_array('group_child_group', $tags)) {
                     return 2;
                 }
+
                 return 0;
             });
 
@@ -221,10 +223,11 @@ class CacheGroupManagerTest extends TestCase
 
         // 模擬清空回傳值
         $this->taggedCache->method('flushByTags')
-            ->willReturnCallback(function($tags) {
+            ->willReturnCallback(function ($tags) {
                 if (is_array($tags)) {
                     return count($tags) * 2; // 每個標籤清空 2 個項目
                 }
+
                 return 0;
             });
 
@@ -252,7 +255,7 @@ class CacheGroupManagerTest extends TestCase
 
         // 模擬清空 - 每個分組清空 2 個項目
         $this->taggedCache->method('flushByTags')
-            ->willReturnCallback(function($tags) {
+            ->willReturnCallback(function ($tags) {
                 // 檢查是否為分組標籤
                 if (is_array($tags) && count($tags) === 1) {
                     $tag = $tags[0];
@@ -262,6 +265,7 @@ class CacheGroupManagerTest extends TestCase
                         return 2;
                     }
                 }
+
                 return 0;
             });
 
@@ -275,7 +279,7 @@ class CacheGroupManagerTest extends TestCase
         $tags = ['tag1'];
         $rules = [
             'max_age' => 3600,
-            'invalidate_on' => ['user_update']
+            'invalidate_on' => ['user_update'],
         ];
 
         $this->groupManager->group($groupName, $tags);
@@ -348,7 +352,7 @@ class CacheGroupManagerTest extends TestCase
 
         // 4. 清空分組（設定 mock 回傳值）
         $this->taggedCache->method('flushByTags')
-            ->willReturnCallback(function($tags) {
+            ->willReturnCallback(function ($tags) {
                 return is_array($tags) ? 1 : 0;
             });
 

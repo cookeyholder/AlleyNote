@@ -17,9 +17,8 @@ class PrefixedCacheManager implements CacheManagerInterface
 {
     public function __construct(
         private CacheManagerInterface $manager,
-        private string $prefix
-    ) {
-    }
+        private string $prefix,
+    ) {}
 
     public function get(string $key, mixed $default = null): mixed
     {

@@ -4,26 +4,31 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Shared\Cache\Services;
 
+use App\Shared\Cache\Contracts\CacheDriverInterface;
+use App\Shared\Cache\Contracts\CacheManagerInterface;
+use App\Shared\Cache\Contracts\CacheStrategyInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
-use App\Shared\Cache\Contracts\CacheManagerInterface;
-use App\Shared\Cache\Services\TaggedCacheManager;
-use App\Shared\Cache\Services\CacheManager;
-use App\Shared\Cache\Strategies\DefaultCacheStrategy;
 use App\Shared\Cache\Drivers\MemoryCacheDriver;
 use App\Shared\Cache\Repositories\MemoryTagRepository;
+use App\Shared\Cache\Services\CacheManager;
+use App\Shared\Cache\Services\TaggedCacheManager;
 use App\Shared\Cache\ValueObjects\CacheTag;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 /**
- * TaggedCacheInterface 實作整合測試
+ * TaggedCacheInterface 實作整合測試.
  */
 class TaggedCacheIntegrationTest extends TestCase
 {
     private TaggedCacheInterface $taggedCache;
+
     private TagRepositoryInterface $tagRepository;
+
     private CacheManagerInterface $cacheManager;
+
     private string $testPrefix = 'test_cache:';
 
     protected function setUp(): void
@@ -32,37 +37,43 @@ class TaggedCacheIntegrationTest extends TestCase
         $memoryDriver = new MemoryCacheDriver();
 
         // 建立一個簡單的策略，不會調整 TTL（測試專用）
-        $strategy = new class implements \App\Shared\Cache\Contracts\CacheStrategyInterface {
-            public function shouldCache(string $key, mixed $value, int $ttl): bool {
+        $strategy = new class implements CacheStrategyInterface {
+            public function shouldCache(string $key, mixed $value, int $ttl): bool
+            {
                 return true;
             }
 
-            public function selectDriver(array $drivers, string $key, mixed $value): ?\App\Shared\Cache\Contracts\CacheDriverInterface {
+            public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
+            {
                 return reset($drivers) ?: null;
             }
 
-            public function decideTtl(string $key, mixed $value, int $requestedTtl): int {
+            public function decideTtl(string $key, mixed $value, int $requestedTtl): int
+            {
                 return $requestedTtl; // 不調整 TTL
             }
 
-            public function handleMiss(string $key, callable $callback): mixed {
+            public function handleMiss(string $key, callable $callback): mixed
+            {
                 return $callback();
             }
 
             public function handleDriverFailure(
-                \App\Shared\Cache\Contracts\CacheDriverInterface $failedDriver,
+                CacheDriverInterface $failedDriver,
                 array $availableDrivers,
                 string $operation,
-                array $params
+                array $params,
             ): mixed {
                 return null;
             }
 
-            public function getStats(): array {
+            public function getStats(): array
+            {
                 return [];
             }
 
-            public function resetStats(): void {
+            public function resetStats(): void
+            {
                 // Nothing to reset
             }
         };
@@ -78,7 +89,7 @@ class TaggedCacheIntegrationTest extends TestCase
         $this->taggedCache = new TaggedCacheManager(
             $this->cacheManager,
             $this->tagRepository,
-            new NullLogger()
+            new NullLogger(),
         );
     }
 
@@ -196,7 +207,7 @@ class TaggedCacheIntegrationTest extends TestCase
         $complexValue = [
             'id' => 123,
             'data' => ['nested' => 'value'],
-            'timestamp' => time()
+            'timestamp' => time(),
         ];
 
         $key = 'complex_data';
@@ -312,7 +323,7 @@ class TaggedCacheIntegrationTest extends TestCase
         // 嘗試使用無效標籤（空字串） - 應該拋出例外
         $invalidTags = ['valid_tag', '', 'another_tag'];
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->taggedCache->putWithTags($key . '_invalid', $value, $invalidTags, 3600);
         $this->assertEquals($value, $this->taggedCache->get($key));
     }

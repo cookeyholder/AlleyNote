@@ -39,7 +39,7 @@ final class EnvironmentConfig
 
         if (!in_array($this->environment, self::VALID_ENVIRONMENTS, true)) {
             throw new InvalidArgumentException(
-                "無效的環境: {$this->environment}。支援的環境: " . implode(', ', self::VALID_ENVIRONMENTS)
+                "無效的環境: {$this->environment}。支援的環境: " . implode(', ', self::VALID_ENVIRONMENTS),
             );
         }
     }
@@ -89,6 +89,7 @@ final class EnvironmentConfig
             if (is_string($configValue)) {
                 return $this->parseValue($configValue);
             }
+
             return $configValue;
         }
 
@@ -143,6 +144,7 @@ final class EnvironmentConfig
     public function all(): array
     {
         $this->load();
+
         return $this->config;
     }
 
@@ -305,7 +307,7 @@ final class EnvironmentConfig
 
         if (!empty($missing)) {
             throw new Exception(
-                "環境配置缺少必要項目: " . implode(', ', $missing)
+                '環境配置缺少必要項目: ' . implode(', ', $missing),
             );
         }
     }
@@ -326,6 +328,7 @@ final class EnvironmentConfig
             if (is_string($envVar)) {
                 return $this->parseValue($envVar);
             }
+
             return $envVar;
         }
 

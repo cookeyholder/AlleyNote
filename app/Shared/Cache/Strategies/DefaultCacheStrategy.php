@@ -6,6 +6,8 @@ namespace App\Shared\Cache\Strategies;
 
 use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\CacheStrategyInterface;
+use Exception;
+use InvalidArgumentException;
 
 /**
  * 預設快取策略。
@@ -56,6 +58,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         foreach ($this->excludePatterns as $pattern) {
             if ($this->matchesPattern($key, $pattern)) {
                 $this->stats['cache_denied']++;
+
                 return false;
             }
         }
@@ -64,22 +67,26 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $serializedValue = serialize($value);
         if (strlen($serializedValue) > $this->maxValueSize) {
             $this->stats['cache_denied']++;
+
             return false;
         }
 
         // 檢查 TTL 範圍
         if ($ttl > 0 && ($ttl < $this->minTtl || $ttl > $this->maxTtl)) {
             $this->stats['cache_denied']++;
+
             return false;
         }
 
         // 檢查值類型
         if (is_resource($value) || (is_object($value) && !method_exists($value, '__sleep'))) {
             $this->stats['cache_denied']++;
+
             return false;
         }
 
         $this->stats['cache_allowed']++;
+
         return true;
     }
 
@@ -149,7 +156,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
         // 大資料縮短快取時間
         if ($valueSize > 10240) {
-            $adjustedTtl = max($this->minTtl, (int)($adjustedTtl * 0.5));
+            $adjustedTtl = max($this->minTtl, (int) ($adjustedTtl * 0.5));
         }
 
         // 根據鍵類型調整
@@ -175,7 +182,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         for ($i = 0; $i < $maxRetries; $i++) {
             try {
                 return $callback();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 if ($i === $maxRetries - 1) {
                     throw $e;
                 }
@@ -190,7 +197,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         CacheDriverInterface $failedDriver,
         array $availableDrivers,
         string $operation,
-        array $params
+        array $params,
     ): mixed {
         $this->stats['failure_handles']++;
 
@@ -212,7 +219,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                     'flush' => $driver->flush(),
                     default => null,
                 };
-            } catch (\Exception) {
+            } catch (Exception) {
                 // 繼續嘗試下一個驅動
                 continue;
             }
@@ -260,6 +267,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     private function matchesPattern(string $key, string $pattern): bool
     {
         $pattern = str_replace(['*', '?'], ['.*', '.'], $pattern);
+
         return preg_match('/^' . $pattern . '$/', $key) === 1;
     }
 
@@ -283,6 +291,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         if ($key !== false) {
             unset($this->excludePatterns[$key]);
             $this->excludePatterns = array_values($this->excludePatterns);
+
             return true;
         }
 
@@ -303,7 +312,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     public function setTtlRange(int $minTtl, int $maxTtl): void
     {
         if ($minTtl <= 0 || $maxTtl <= 0 || $minTtl > $maxTtl) {
-            throw new \InvalidArgumentException('無效的 TTL 範圍');
+            throw new InvalidArgumentException('無效的 TTL 範圍');
         }
 
         $this->minTtl = $minTtl;
@@ -316,7 +325,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     public function setMaxValueSize(int $maxValueSize): void
     {
         if ($maxValueSize <= 0) {
-            throw new \InvalidArgumentException('最大值大小必須大於 0');
+            throw new InvalidArgumentException('最大值大小必須大於 0');
         }
 
         $this->maxValueSize = $maxValueSize;

@@ -7,6 +7,7 @@ namespace App\Shared\Cache\Providers;
 use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\CacheStrategyInterface;
+use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
 use App\Shared\Cache\Drivers\FileCacheDriver;
 use App\Shared\Cache\Drivers\MemoryCacheDriver;
@@ -17,9 +18,14 @@ use App\Shared\Cache\Services\CacheGroupManager;
 use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Services\DefaultCacheStrategy;
 use App\Shared\Contracts\CacheServiceInterface;
+use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
 use DI\Container;
-use DI\ContainerBuilder;
+use Exception;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Redis;
+use RuntimeException;
 
 /**
  * 快取服務提供者。
@@ -62,6 +68,7 @@ class CacheServiceProvider
         $this->container->set(CacheStrategyInterface::class, function (Container $container) {
             $strategyConfig = $this->config['strategy'] ?? [];
             assert(is_array($strategyConfig), 'Strategy config must be an array');
+
             return new DefaultCacheStrategy($strategyConfig);
         });
     }
@@ -84,6 +91,7 @@ class CacheServiceProvider
             if (!is_int($maxItems)) {
                 $maxItems = 1000;
             }
+
             return new MemoryCacheDriver($maxItems);
         });
 
@@ -100,13 +108,14 @@ class CacheServiceProvider
             if (!is_string($path)) {
                 $path = $this->getDefaultCachePath();
             }
+
             return new FileCacheDriver($path);
         });
 
         // Redis 快取驅動
         $this->container->set('cache.driver.redis', function (Container $container) {
             if (!extension_loaded('redis')) {
-                throw new \RuntimeException('Redis 擴充功能未安裝');
+                throw new RuntimeException('Redis 擴充功能未安裝');
             }
 
             $driversConfig = $this->config['drivers'] ?? [];
@@ -116,6 +125,7 @@ class CacheServiceProvider
 
             /** @var array<string, mixed> $redisConfig */
             $redisConfig = $driversConfig['redis'] ?? [];
+
             return new RedisCacheDriver($redisConfig);
         });
 
@@ -219,7 +229,7 @@ class CacheServiceProvider
                 $priority = $drivers['redis']['priority'] ?? 70;
                 assert(is_int($priority), 'Priority must be an integer');
                 $manager->addDriver('redis', $driver, $priority);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Redis 連線失敗，記錄但不中斷啟動
                 if ($container->has(LoggerInterface::class)) {
                     $logger = $container->get(LoggerInterface::class);
@@ -246,13 +256,14 @@ class CacheServiceProvider
     public static function getDefinitions(): array
     {
         return [
-            CacheStrategyInterface::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            CacheStrategyInterface::class => \DI\factory(function (ContainerInterface $c) {
                 /** @var array<string, mixed> $config */
                 $config = $c->has('cache.strategy') ? $c->get('cache.strategy') : [];
+
                 return new DefaultCacheStrategy($config);
             }),
 
-            'cache.driver.memory' => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            'cache.driver.memory' => \DI\factory(function (ContainerInterface $c) {
                 $config = $c->has('cache.drivers.memory') ? $c->get('cache.drivers.memory') : [];
                 if (!is_array($config)) {
                     $config = [];
@@ -260,10 +271,11 @@ class CacheServiceProvider
                 $maxItems = isset($config['max_size']) && is_int($config['max_size'])
                     ? $config['max_size']
                     : 1000;
+
                 return new MemoryCacheDriver($maxItems);
             }),
 
-            'cache.driver.file' => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            'cache.driver.file' => \DI\factory(function (ContainerInterface $c) {
                 $config = $c->has('cache.drivers.file') ? $c->get('cache.drivers.file') : [];
                 if (!is_array($config)) {
                     $config = [];
@@ -272,17 +284,19 @@ class CacheServiceProvider
                 $path = isset($config['path']) && is_string($config['path'])
                     ? $config['path']
                     : (is_string($defaultPath) ? $defaultPath : '/tmp/cache');
+
                 return new FileCacheDriver($path);
             }),
 
-            'cache.driver.redis' => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            'cache.driver.redis' => \DI\factory(function (ContainerInterface $c) {
                 if (!extension_loaded('redis')) {
-                    throw new \RuntimeException('Redis 擴充功能未安裝');
+                    throw new RuntimeException('Redis 擴充功能未安裝');
                 }
                 $config = $c->has('cache.drivers.redis') ? $c->get('cache.drivers.redis') : [];
                 if (!is_array($config)) {
                     $config = [];
                 }
+
                 return new RedisCacheDriver($config);
             }),
 
@@ -291,91 +305,98 @@ class CacheServiceProvider
             RedisCacheDriver::class => \DI\get('cache.driver.redis'),
 
             // 標籤倉庫
-            'cache.tag.repository.memory' => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            'cache.tag.repository.memory' => \DI\factory(function (ContainerInterface $c) {
                 return new MemoryTagRepository();
             }),
 
-            'cache.tag.repository.redis' => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            'cache.tag.repository.redis' => \DI\factory(function (ContainerInterface $c) {
                 if (!extension_loaded('redis')) {
-                    throw new \RuntimeException('Redis 擴充功能未安裝');
+                    throw new RuntimeException('Redis 擴充功能未安裝');
                 }
                 $redis = null;
                 if ($c->has('redis')) {
                     $redis = $c->get('redis');
                 }
-                if (!($redis instanceof \Redis)) {
-                    throw new \RuntimeException('Redis 實例不可用');
+                if (!($redis instanceof Redis)) {
+                    throw new RuntimeException('Redis 實例不可用');
                 }
+
                 return new RedisTagRepository($redis);
             }),
 
-            TagRepositoryInterface::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            TagRepositoryInterface::class => \DI\factory(function (ContainerInterface $c) {
                 // 根據是否有 Redis 來選擇標籤倉庫
                 if (extension_loaded('redis')) {
                     try {
                         return $c->get('cache.tag.repository.redis');
-                    } catch (\Exception) {
+                    } catch (Exception) {
                         return $c->get('cache.tag.repository.memory');
                     }
                 }
+
                 return $c->get('cache.tag.repository.memory');
             }),
 
             // 快取分組管理器
-            CacheGroupManager::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            CacheGroupManager::class => \DI\factory(function (ContainerInterface $c) {
                 $taggedCache = $c->get(CacheManagerInterface::class);
                 // 型別檢查
                 if (!is_object($taggedCache) || !method_exists($taggedCache, 'tags')) {
-                    throw new \RuntimeException('快取管理器不支援標籤功能');
+                    throw new RuntimeException('快取管理器不支援標籤功能');
                 }
                 $tagsResult = $taggedCache->tags([]);
-                if (!($tagsResult instanceof \App\Shared\Cache\Contracts\TaggedCacheInterface)) {
-                    throw new \RuntimeException('tags() 必須回傳 TaggedCacheInterface');
+                if (!($tagsResult instanceof TaggedCacheInterface)) {
+                    throw new RuntimeException('tags() 必須回傳 TaggedCacheInterface');
                 }
                 $logger = $c->has(LoggerInterface::class) ? $c->get(LoggerInterface::class) : null;
                 if (!($logger instanceof LoggerInterface)) {
-                    $logger = new \Psr\Log\NullLogger();
+                    $logger = new NullLogger();
                 }
+
                 return new CacheGroupManager($tagsResult, $logger);
             }),
 
-            CacheManagerInterface::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            CacheManagerInterface::class => \DI\factory(function (ContainerInterface $c) {
                 $strategy = $c->get(CacheStrategyInterface::class);
-                if (!($strategy instanceof \App\Shared\Cache\Contracts\CacheStrategyInterface)) {
-                    throw new \RuntimeException('快取策略型別錯誤');
+                if (!($strategy instanceof CacheStrategyInterface)) {
+                    throw new RuntimeException('快取策略型別錯誤');
                 }
                 $logger = $c->has(LoggerInterface::class) ? $c->get(LoggerInterface::class) : null;
                 if ($logger !== null && !($logger instanceof LoggerInterface)) {
-                    $logger = new \Psr\Log\NullLogger();
+                    $logger = new NullLogger();
                 }
                 $config = $c->has('cache.manager') ? $c->get('cache.manager') : [];
                 if (!is_array($config)) {
                     $config = [];
                 }
                 $tagRepository = null;
+
                 try {
                     $tagRepositoryTmp = $c->get(TagRepositoryInterface::class);
-                    if ($tagRepositoryTmp instanceof \App\Shared\Cache\Contracts\TagRepositoryInterface) {
+                    if ($tagRepositoryTmp instanceof TagRepositoryInterface) {
                         $tagRepository = $tagRepositoryTmp;
                     }
-                } catch (\Exception) {}
+                } catch (Exception) {
+                }
                 $monitor = null;
+
                 try {
-                    $monitorTmp = $c->get(\App\Shared\Monitoring\Contracts\CacheMonitorInterface::class);
-                    if ($monitorTmp instanceof \App\Shared\Monitoring\Contracts\CacheMonitorInterface) {
+                    $monitorTmp = $c->get(CacheMonitorInterface::class);
+                    if ($monitorTmp instanceof CacheMonitorInterface) {
                         $monitor = $monitorTmp;
                     }
-                } catch (\Exception) {}
+                } catch (Exception) {
+                }
                 $manager = new CacheManager($strategy, $logger, $config, $monitor, $tagRepository);
                 // 新增記憶體驅動
                 $memoryDriver = $c->get('cache.driver.memory');
-                if ($memoryDriver instanceof \App\Shared\Cache\Contracts\CacheDriverInterface) {
+                if ($memoryDriver instanceof CacheDriverInterface) {
                     $memoryPriority = $c->has('cache.drivers.memory.priority') ? $c->get('cache.drivers.memory.priority') : 90;
                     $manager->addDriver('memory', $memoryDriver, is_int($memoryPriority) ? $memoryPriority : 90);
                 }
                 // 新增檔案驅動
                 $fileDriver = $c->get('cache.driver.file');
-                if ($fileDriver instanceof \App\Shared\Cache\Contracts\CacheDriverInterface) {
+                if ($fileDriver instanceof CacheDriverInterface) {
                     $filePriority = $c->has('cache.drivers.file.priority') ? $c->get('cache.drivers.file.priority') : 50;
                     $manager->addDriver('file', $fileDriver, is_int($filePriority) ? $filePriority : 50);
                 }
@@ -383,11 +404,11 @@ class CacheServiceProvider
                 if (extension_loaded('redis')) {
                     try {
                         $redisDriver = $c->get('cache.driver.redis');
-                        if ($redisDriver instanceof \App\Shared\Cache\Contracts\CacheDriverInterface) {
+                        if ($redisDriver instanceof CacheDriverInterface) {
                             $redisPriority = $c->has('cache.drivers.redis.priority') ? $c->get('cache.drivers.redis.priority') : 70;
                             $manager->addDriver('redis', $redisDriver, is_int($redisPriority) ? $redisPriority : 70);
                         }
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         if ($logger instanceof LoggerInterface) {
                             $logger->warning('Redis 快取驅動不可用', ['error' => $e->getMessage()]);
                         }
@@ -398,6 +419,7 @@ class CacheServiceProvider
                 if (is_string($defaultDriver) && $manager->getDriver($defaultDriver)) {
                     $manager->setDefaultDriver($defaultDriver);
                 }
+
                 return $manager;
             }),
 
@@ -496,6 +518,7 @@ class CacheConfigBuilder
     public function defaultDriver(string $driver): self
     {
         $this->config['default_driver'] = $driver;
+
         return $this;
     }
 
@@ -513,6 +536,7 @@ class CacheConfigBuilder
             'max_size' => 1000,
             'ttl' => 3600,
         ], $config);
+
         return $this;
     }
 
@@ -535,6 +559,7 @@ class CacheConfigBuilder
             $this->config['drivers'] = [];
         }
         $this->config['drivers']['file'] = array_merge($defaultConfig, $config);
+
         return $this;
     }
 
@@ -555,6 +580,7 @@ class CacheConfigBuilder
             'timeout' => 2.0,
             'prefix' => 'alleynote:cache:',
         ], $config);
+
         return $this;
     }
 
@@ -569,6 +595,7 @@ class CacheConfigBuilder
             'max_value_size' => 1024 * 1024,
             'exclude_patterns' => ['temp:*', 'debug:*'],
         ], $config);
+
         return $this;
     }
 
@@ -583,6 +610,7 @@ class CacheConfigBuilder
             'max_retry_attempts' => 3,
             'retry_delay' => 100,
         ], $config);
+
         return $this;
     }
 

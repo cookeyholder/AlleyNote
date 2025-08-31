@@ -9,17 +9,18 @@ use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
 use App\Shared\Cache\ValueObjects\CacheTag;
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 /**
- * 標籤化快取管理器
+ * 標籤化快取管理器.
  *
  * 提供基於標籤的快取管理功能，支援批量操作和自動失效
  */
 class TaggedCacheManager implements TaggedCacheInterface
 {
     /**
-     * 當前標籤集合
+     * 當前標籤集合.
      * @var array<string>
      */
     private array $tags = [];
@@ -28,12 +29,11 @@ class TaggedCacheManager implements TaggedCacheInterface
         private CacheManagerInterface $cacheManager,
         private TagRepositoryInterface $tagRepository,
         private LoggerInterface $logger,
-        private ?CacheMonitorInterface $monitor = null
-    ) {
-    }
+        private ?CacheMonitorInterface $monitor = null,
+    ) {}
 
     /**
-     * 取得快取資料
+     * 取得快取資料.
      */
     public function get(string $key, mixed $default = null): mixed
     {
@@ -48,7 +48,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 設定快取資料
+     * 設定快取資料.
      */
     public function put(string $key, mixed $value, int $ttl = 3600): bool
     {
@@ -73,7 +73,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 檢查快取是否存在
+     * 檢查快取是否存在.
      */
     public function has(string $key): bool
     {
@@ -81,7 +81,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 刪除快取
+     * 刪除快取.
      */
     public function forget(string $key): bool
     {
@@ -103,7 +103,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 清空所有標籤化快取
+     * 清空所有標籤化快取.
      */
     public function flush(): bool
     {
@@ -119,7 +119,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 記憶化取得
+     * 記憶化取得.
      */
     public function remember(string $key, callable $callback, int $ttl = 3600): mixed
     {
@@ -132,19 +132,21 @@ class TaggedCacheManager implements TaggedCacheInterface
         try {
             $value = $callback();
             $this->put($key, $value, $ttl);
+
             return $value;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('標籤化快取記憶化失敗', [
                 'key' => $key,
                 'tags' => $this->tags,
                 'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
 
     /**
-     * 增加新標籤到快取管理器
+     * 增加新標籤到快取管理器.
      */
     public function addTags(string|array $tags): TaggedCacheInterface
     {
@@ -162,7 +164,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 取得當前快取管理器的所有標籤
+     * 取得當前快取管理器的所有標籤.
      */
     public function getTags(): array
     {
@@ -170,7 +172,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 按標籤清空快取
+     * 按標籤清空快取.
      */
     public function flushByTags(string|array $tags): int
     {
@@ -199,7 +201,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 取得標籤下的所有快取鍵
+     * 取得標籤下的所有快取鍵.
      */
     public function getTaggedKeys(): array
     {
@@ -216,7 +218,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     // ========== 進階標籤功能實作 ==========
 
     /**
-     * 使用指定標籤存放快取項目
+     * 使用指定標籤存放快取項目.
      */
     public function putWithTags(string $key, mixed $value, array $tags, int $ttl = 3600): bool
     {
@@ -246,7 +248,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 取得指定標籤的所有快取鍵
+     * 取得指定標籤的所有快取鍵.
      */
     public function getKeysByTag(string $tag): array
     {
@@ -254,7 +256,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 取得快取項目的所有標籤
+     * 取得快取項目的所有標籤.
      */
     public function getTagsByKey(string $key): array
     {
@@ -262,7 +264,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 為現有快取項目添加標籤
+     * 為現有快取項目添加標籤.
      */
     public function addTagsToKey(string $key, string|array $tags): bool
     {
@@ -287,7 +289,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 從快取項目移除標籤
+     * 從快取項目移除標籤.
      */
     public function removeTagsFromKey(string $key, string|array $tags): bool
     {
@@ -303,7 +305,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 檢查快取項目是否包含指定標籤
+     * 檢查快取項目是否包含指定標籤.
      */
     public function hasTag(string $key, string $tag): bool
     {
@@ -311,7 +313,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 取得所有系統標籤
+     * 取得所有系統標籤.
      */
     public function getAllTags(): array
     {
@@ -319,7 +321,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 清除未使用的標籤
+     * 清除未使用的標籤.
      */
     public function cleanupUnusedTags(): int
     {
@@ -335,7 +337,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 取得標籤統計資訊
+     * 取得標籤統計資訊.
      */
     public function getTagStatistics(): array
     {
@@ -343,7 +345,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 建立新的標籤化快取實例
+     * 建立新的標籤化快取實例.
      */
     public function tags(string|array $tags): TaggedCacheInterface
     {
@@ -355,7 +357,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 批量設定帶標籤的快取
+     * 批量設定帶標籤的快取.
      *
      * @param array<string, mixed> $items 快取項目 key => value
      * @param array<string> $tags 標籤陣列
@@ -380,7 +382,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 按標籤批量獲取快取
+     * 按標籤批量獲取快取.
      *
      * @param string $tag 標籤
      * @return array<string, mixed> 快取項目 key => value
@@ -401,7 +403,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 檢查標籤是否存在
+     * 檢查標籤是否存在.
      *
      * @param string $tag 標籤名稱
      * @return bool 是否存在
@@ -412,7 +414,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     }
 
     /**
-     * 記錄標籤化快取存取
+     * 記錄標籤化快取存取.
      *
      * @param string $operation 操作類型
      * @param string $key 快取鍵

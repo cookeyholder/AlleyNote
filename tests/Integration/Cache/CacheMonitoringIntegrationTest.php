@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Cache;
 
-use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Drivers\MemoryCacheDriver;
+use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Strategies\DefaultCacheStrategy;
 use App\Shared\Monitoring\Services\CacheMonitor;
 use PHPUnit\Framework\TestCase;
@@ -14,6 +14,7 @@ use Psr\Log\NullLogger;
 class CacheMonitoringIntegrationTest extends TestCase
 {
     private CacheManager $cacheManager;
+
     private CacheMonitor $cacheMonitor;
 
     protected function setUp(): void
@@ -31,7 +32,7 @@ class CacheMonitoringIntegrationTest extends TestCase
                 ],
                 'default' => 'memory',
             ],
-            $this->cacheMonitor
+            $this->cacheMonitor,
         );
 
         // 手動添加記憶體驅動

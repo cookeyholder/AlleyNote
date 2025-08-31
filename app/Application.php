@@ -8,8 +8,8 @@ use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Infrastructure\Routing\RouteDispatcher;
 use App\Shared\Config\EnvironmentConfig;
-use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
+use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
 use DI\ContainerBuilder;
 use Exception;
 use Psr\Container\ContainerInterface;
@@ -78,9 +78,12 @@ class Application
         $errors = $config->validate();
         if (!empty($errors)) {
             $errorMessage = "環境配置錯誤:\n" . implode("\n", $errors);
+
             throw new Exception($errorMessage);
         }
-    }    /**
+    }
+
+    /**
      * 初始化 DI 容器.
      */
     private function initializeContainer(): void
@@ -142,9 +145,9 @@ class Application
                     'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
                 ]);
             }
-        } catch (\Exception $monitoringException) {
+        } catch (Exception $monitoringException) {
             // 如果監控系統本身出錯，記錄到錯誤日誌
-            error_log("Monitoring system error: " . $monitoringException->getMessage());
+            error_log('Monitoring system error: ' . $monitoringException->getMessage());
         }
 
         // 建立基本的錯誤回應（使用匿名類別實作）

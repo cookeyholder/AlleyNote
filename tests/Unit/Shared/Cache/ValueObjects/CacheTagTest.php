@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Shared\Cache\ValueObjects;
 
 use App\Shared\Cache\ValueObjects\CacheTag;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * CacheTag 值物件測試（修正版）
+ * CacheTag 值物件測試（修正版）.
  */
 class CacheTagTest extends TestCase
 {
@@ -67,19 +68,19 @@ class CacheTagTest extends TestCase
 
     public function testTagValidation(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         new CacheTag('');
     }
 
     public function testTagValidationTooLong(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         new CacheTag(str_repeat('a', 51));
     }
 
     public function testTagValidationReserved(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         new CacheTag('system');
     }
 
@@ -116,7 +117,7 @@ class CacheTagTest extends TestCase
         $tags = [
             new CacheTag('tag1'),
             new CacheTag('tag2'),
-            new CacheTag('tag3')
+            new CacheTag('tag3'),
         ];
 
         $names = CacheTag::toArray($tags);
@@ -196,7 +197,7 @@ class CacheTagTest extends TestCase
             'mixed-Case_With.Dots' => 'mixed-case_with.dots',
             '  leading_trailing  ' => 'leading_trailing',
             'multiple___underscores' => 'multiple_underscores',
-            'special@chars#here%' => 'special_chars_here'
+            'special@chars#here%' => 'special_chars_here',
         ];
 
         foreach ($testCases as $input => $expected) {
@@ -211,21 +212,21 @@ class CacheTagTest extends TestCase
         try {
             new CacheTag('');
             $this->fail('應該拋出異常');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->assertStringContainsString('不能為空', $e->getMessage());
         }
 
         try {
             new CacheTag(str_repeat('x', 51));
             $this->fail('應該拋出異常');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->assertStringContainsString('不能超過 50 個字符', $e->getMessage());
         }
 
         try {
             new CacheTag('admin');
             $this->fail('應該拋出異常');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->assertStringContainsString('系統保留字', $e->getMessage());
         }
     }

@@ -7,6 +7,7 @@ namespace App\Application\Controllers\Admin;
 use App\Application\Controllers\BaseController;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
+use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -14,13 +15,13 @@ class CacheMonitorController extends BaseController
 {
     public function __construct(
         private CacheMonitorInterface $cacheMonitor,
-        private CacheManagerInterface $cacheManager
+        private CacheManagerInterface $cacheManager,
     ) {
         // 不調用 parent::__construct()，因為 BaseController 沒有構造函式
     }
 
     /**
-     * 取得快取效能統計資料
+     * 取得快取效能統計資料.
      */
     public function getStats(Request $request, Response $response): Response
     {
@@ -35,7 +36,7 @@ class CacheMonitorController extends BaseController
             ];
 
             return $this->json($response, $data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json($response, [
                 'error' => '無法取得快取統計資料',
                 'message' => $e->getMessage(),
@@ -44,7 +45,7 @@ class CacheMonitorController extends BaseController
     }
 
     /**
-     * 取得詳細的快取指標
+     * 取得詳細的快取指標.
      */
     public function getMetrics(Request $request, Response $response): Response
     {
@@ -61,7 +62,7 @@ class CacheMonitorController extends BaseController
             ];
 
             return $this->json($response, $metrics);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json($response, [
                 'error' => '無法取得快取指標',
                 'message' => $e->getMessage(),
@@ -70,7 +71,7 @@ class CacheMonitorController extends BaseController
     }
 
     /**
-     * 取得快取健康狀態
+     * 取得快取健康狀態.
      */
     public function getHealth(Request $request, Response $response): Response
     {
@@ -85,7 +86,7 @@ class CacheMonitorController extends BaseController
             ];
 
             return $this->json($response, $healthData);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json($response, [
                 'error' => '無法取得健康狀態',
                 'message' => $e->getMessage(),
@@ -94,7 +95,7 @@ class CacheMonitorController extends BaseController
     }
 
     /**
-     * 重置統計資料
+     * 重置統計資料.
      */
     public function resetStats(Request $request, Response $response): Response
     {
@@ -106,7 +107,7 @@ class CacheMonitorController extends BaseController
                 'message' => '統計資料已重置',
                 'cleanedRecords' => $cleaned,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json($response, [
                 'error' => '無法重置統計資料',
                 'message' => $e->getMessage(),
@@ -115,7 +116,7 @@ class CacheMonitorController extends BaseController
     }
 
     /**
-     * 清空快取
+     * 清空快取.
      */
     public function flushCache(Request $request, Response $response): Response
     {
@@ -131,7 +132,7 @@ class CacheMonitorController extends BaseController
                     'error' => '清空快取失敗',
                 ], 500);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json($response, [
                 'error' => '無法清空快取',
                 'message' => $e->getMessage(),
@@ -140,7 +141,7 @@ class CacheMonitorController extends BaseController
     }
 
     /**
-     * 取得驅動資訊
+     * 取得驅動資訊.
      */
     public function getDriverInfo(Request $request, Response $response): Response
     {
@@ -161,7 +162,7 @@ class CacheMonitorController extends BaseController
             return $this->json($response, [
                 'drivers' => $driverInfo,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json($response, [
                 'error' => '無法取得驅動資訊',
                 'message' => $e->getMessage(),

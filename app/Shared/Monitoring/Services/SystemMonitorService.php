@@ -6,6 +6,7 @@ namespace App\Shared\Monitoring\Services;
 
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
+use Exception;
 use PDO;
 use Psr\Log\LoggerInterface;
 
@@ -19,9 +20,8 @@ class SystemMonitorService implements SystemMonitorInterface
     public function __construct(
         private LoggerInterface $logger,
         private PDO $database,
-        private EnvironmentConfig $config
-    ) {
-    }
+        private EnvironmentConfig $config,
+    ) {}
 
     /**
      * 取得系統基本資訊。
@@ -135,7 +135,7 @@ class SystemMonitorService implements SystemMonitorInterface
             }
 
             return $status;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Database status check failed', [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -292,6 +292,7 @@ class SystemMonitorService implements SystemMonitorInterface
     public function isSystemHealthy(): bool
     {
         $health = $this->getHealthCheck();
+
         return $health['overall_status'] === 'healthy' && $health['health_score'] >= 80;
     }
 
@@ -319,6 +320,7 @@ class SystemMonitorService implements SystemMonitorInterface
     {
         $extensions = get_loaded_extensions();
         sort($extensions);
+
         return $extensions;
     }
 
@@ -356,6 +358,7 @@ class SystemMonitorService implements SystemMonitorInterface
         // 備選方案
         if (is_file('/proc/cpuinfo')) {
             $cpuinfo = file_get_contents('/proc/cpuinfo');
+
             return substr_count($cpuinfo ?: '', 'processor');
         }
 
@@ -388,7 +391,7 @@ class SystemMonitorService implements SystemMonitorInterface
             }
 
             return $stats;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ['error' => $e->getMessage()];
         }
     }
@@ -410,7 +413,7 @@ class SystemMonitorService implements SystemMonitorInterface
             } else {
                 return ['status' => 'critical', 'message' => 'Database connection is very slow', 'response_time_ms' => round($connectionTime, 2)];
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ['status' => 'critical', 'message' => 'Database connection failed: ' . $e->getMessage()];
         }
     }
@@ -462,7 +465,7 @@ class SystemMonitorService implements SystemMonitorInterface
             } else {
                 return ['status' => 'warning', 'message' => 'Environment configuration has issues', 'errors' => $errors];
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ['status' => 'critical', 'message' => 'Environment configuration check failed: ' . $e->getMessage()];
         }
     }

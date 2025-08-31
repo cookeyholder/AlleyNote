@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Shared\Monitoring\Services;
 
 use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
-use PDO;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -35,9 +34,8 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private float $slowQueryThreshold = 1000.0;
 
     public function __construct(
-        private LoggerInterface $logger
-    ) {
-    }
+        private LoggerInterface $logger,
+    ) {}
 
     /**
      * 設定慢查詢閾值。
@@ -85,6 +83,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         if (!isset($this->activeMonitoringSessions[$monitoringId])) {
             $this->logger->warning("Attempted to end non-existent monitoring session: {$monitoringId}");
+
             return;
         }
 
@@ -92,14 +91,15 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
         if (!is_array($session)) {
             $this->logger->warning('Invalid monitoring session data', ['monitoring_id' => $monitoringId]);
+
             return;
         }
 
         $sessionStartTime = $session['start_time'] ?? 0;
-        $startTime = is_numeric($sessionStartTime) ? (float)$sessionStartTime : microtime(true);
+        $startTime = is_numeric($sessionStartTime) ? (float) $sessionStartTime : microtime(true);
 
         $sessionStartMemory = $session['start_memory'] ?? 0;
-        $startMemory = is_numeric($sessionStartMemory) ? (int)$sessionStartMemory : memory_get_usage(true);
+        $startMemory = is_numeric($sessionStartMemory) ? (int) $sessionStartMemory : memory_get_usage(true);
 
         $operationValue = $session['operation'] ?? '';
         $operation = is_string($operationValue) ? $operationValue : 'unknown';
@@ -126,13 +126,13 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $this->recordSlowOperation($operation, $duration, $mergedContext);
         }
 
-                // 記錄詳細資訊
+        // 記錄詳細資訊
         $this->logger->info("Operation completed: {$operation}", [
             'operation' => $operation,
-            'duration_ms' => (float)$duration,
+            'duration_ms' => (float) $duration,
             'status' => 'success',
             'memory_peak' => memory_get_peak_usage(true),
-            'context' => $context
+            'context' => $context,
         ]);
     }
 
@@ -290,7 +290,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         foreach ($this->activeMonitoringSessions as $id => $session) {
             $sessionStartTime = $session['start_time'] ?? $currentTime;
             $duration = is_numeric($sessionStartTime)
-                ? ($currentTime - (float)$sessionStartTime) * 1000
+                ? ($currentTime - (float) $sessionStartTime) * 1000
                 : 0;
             if ($duration > 30000) { // 30 秒
                 $warnings[] = [
@@ -319,7 +319,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $originalCount = count($this->slowQueries);
         $this->slowQueries = array_filter(
             $this->slowQueries,
-            fn($query) => $query['timestamp'] > $cutoffTime
+            fn($query) => $query['timestamp'] > $cutoffTime,
         );
         $cleanedCount += $originalCount - count($this->slowQueries);
 
@@ -328,7 +328,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $originalMetricCount = count($metricData);
             $this->metrics[$key] = array_filter(
                 $metricData,
-                fn($metric) => $metric['timestamp'] > $cutoffTime
+                fn($metric) => $metric['timestamp'] > $cutoffTime,
             );
             $cleanedCount += $originalMetricCount - count($this->metrics[$key]);
 
@@ -343,7 +343,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $originalHistogramCount = count($histogramData);
             $this->histograms[$key] = array_filter(
                 $histogramData,
-                fn($histogram) => is_array($histogram) && isset($histogram['timestamp']) && is_numeric($histogram['timestamp']) && $histogram['timestamp'] > $cutoffTime
+                fn($histogram) => is_array($histogram) && isset($histogram['timestamp']) && is_numeric($histogram['timestamp']) && $histogram['timestamp'] > $cutoffTime,
             );
             $cleanedCount += $originalHistogramCount - count($this->histograms[$key]);
 
@@ -353,7 +353,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             }
         }
 
-        $this->logger->info("Performance data cleanup completed", [
+        $this->logger->info('Performance data cleanup completed', [
             'days_kept' => $daysToKeep,
             'items_cleaned' => $cleanedCount,
         ]);
@@ -374,9 +374,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
         ksort($tags);
         $tagString = implode(',', array_map(
-            fn($k, $v) => $k . '=' . (is_scalar($v) ? (string)$v : 'complex'),
+            fn($k, $v) => $k . '=' . (is_scalar($v) ? (string) $v : 'complex'),
             array_keys($tags),
-            array_values($tags)
+            array_values($tags),
         ));
 
         return "{$name}[{$tagString}]";
@@ -396,7 +396,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
         $this->logger->warning("Slow operation detected: {$operation}", [
             'duration_ms' => round($duration, 2),
-            'threshold_ms' => (float)$this->slowQueryThreshold,
+            'threshold_ms' => (float) $this->slowQueryThreshold,
             'context' => $context,
         ]);
     }
@@ -503,12 +503,13 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         }
 
         $index = ($percentile / 100) * ($count - 1);
-        $lower = (int)floor($index);
-        $upper = (int)ceil($index);
+        $lower = (int) floor($index);
+        $upper = (int) ceil($index);
 
         if ($lower === $upper) {
             $value = $values[$lower] ?? 0;
-            return is_numeric($value) ? (float)$value : 0.0;
+
+            return is_numeric($value) ? (float) $value : 0.0;
         }
 
         $lowerValue = $values[$lower] ?? 0;
@@ -519,7 +520,8 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         }
 
         $weight = $index - $lower;
-        return (float)$lowerValue * (1 - $weight) + (float)$upperValue * $weight;
+
+        return (float) $lowerValue * (1 - $weight) + (float) $upperValue * $weight;
     }
 
     /**

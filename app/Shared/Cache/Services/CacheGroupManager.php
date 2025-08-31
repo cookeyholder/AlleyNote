@@ -9,14 +9,14 @@ use App\Shared\Cache\ValueObjects\CacheTag;
 use Psr\Log\LoggerInterface;
 
 /**
- * 快取分組管理器
+ * 快取分組管理器.
  *
  * 提供快取分組管理功能，支援分組內的快取關聯性和自動失效
  */
 class CacheGroupManager
 {
     /**
-     * 分組快取實例
+     * 分組快取實例.
      * @var array<string, TaggedCacheInterface>
      */
     private array $groups = [];
@@ -28,19 +28,18 @@ class CacheGroupManager
     private array $dependencies = [];
 
     /**
-     * 分組自動失效規則
+     * 分組自動失效規則.
      * @var array<string, array<string>|array<string, mixed>>
      */
     private array $invalidationRules = [];
 
     public function __construct(
         private TaggedCacheInterface $taggedCache,
-        private LoggerInterface $logger
-    ) {
-    }
+        private LoggerInterface $logger,
+    ) {}
 
     /**
-     * 建立快取分組
+     * 建立快取分組.
      *
      * @param string $groupName 分組名稱
      * @param array<string> $tags 分組標籤
@@ -65,7 +64,7 @@ class CacheGroupManager
     }
 
     /**
-     * 取得快取分組
+     * 取得快取分組.
      *
      * @param string $groupName 分組名稱
      * @return TaggedCacheInterface|null 分組快取實例
@@ -93,7 +92,7 @@ class CacheGroupManager
         }
 
         $this->dependencies[$parentGroup] = array_values(array_unique(
-            array_merge($this->dependencies[$parentGroup], $childGroupsArray)
+            array_merge($this->dependencies[$parentGroup], $childGroupsArray),
         ));
 
         $this->logger->debug('設定分組依賴關係', [
@@ -103,7 +102,7 @@ class CacheGroupManager
     }
 
     /**
-     * 設定自動失效規則
+     * 設定自動失效規則.
      *
      * 當觸發條件滿足時，目標分組會自動失效
      *
@@ -124,7 +123,7 @@ class CacheGroupManager
     }
 
     /**
-     * 清空分組快取
+     * 清空分組快取.
      *
      * @param string $groupName 分組名稱
      * @param bool $cascade 是否級聯清空依賴的子分組
@@ -166,7 +165,7 @@ class CacheGroupManager
     }
 
     /**
-     * 檢查並觸發自動失效規則
+     * 檢查並觸發自動失效規則.
      *
      * @param string $key 快取鍵
      */
@@ -190,7 +189,7 @@ class CacheGroupManager
     }
 
     /**
-     * 取得分組統計資訊
+     * 取得分組統計資訊.
      *
      * @return array<string, mixed> 統計資訊
      */
@@ -219,7 +218,7 @@ class CacheGroupManager
     }
 
     /**
-     * 取得所有分組名稱
+     * 取得所有分組名稱.
      *
      * @return array<string> 分組名稱陣列
      */
@@ -229,7 +228,7 @@ class CacheGroupManager
     }
 
     /**
-     * 檢查分組是否存在
+     * 檢查分組是否存在.
      *
      * @param string $groupName 分組名稱
      * @return bool 是否存在
@@ -240,7 +239,7 @@ class CacheGroupManager
     }
 
     /**
-     * 移除分組
+     * 移除分組.
      *
      * @param string $groupName 分組名稱
      * @param bool $flushCache 是否清空分組快取
@@ -275,7 +274,7 @@ class CacheGroupManager
     }
 
     /**
-     * 建立使用者相關的快取分組
+     * 建立使用者相關的快取分組.
      *
      * @param int $userId 使用者 ID
      * @param array<string> $additionalTags 額外標籤
@@ -291,7 +290,7 @@ class CacheGroupManager
     }
 
     /**
-     * 建立模組相關的快取分組
+     * 建立模組相關的快取分組.
      *
      * @param string $moduleName 模組名稱
      * @param array<string> $additionalTags 額外標籤
@@ -307,7 +306,7 @@ class CacheGroupManager
     }
 
     /**
-     * 建立時間相關的快取分組
+     * 建立時間相關的快取分組.
      *
      * @param string $period 時間週期
      * @param array<string> $additionalTags 額外標籤
@@ -323,7 +322,7 @@ class CacheGroupManager
     }
 
     /**
-     * 批量清空多個分組
+     * 批量清空多個分組.
      *
      * @param array<string> $groupNames 分組名稱陣列
      * @param bool $cascade 是否級聯清空
@@ -341,7 +340,7 @@ class CacheGroupManager
     }
 
     /**
-     * 按模式清空分組
+     * 按模式清空分組.
      *
      * @param string $pattern 分組名稱模式（支援 * 萬用字元）
      * @param bool $cascade 是否級聯清空
@@ -361,7 +360,7 @@ class CacheGroupManager
     }
 
     /**
-     * 設定分組失效規則
+     * 設定分組失效規則.
      *
      * @param string $groupName 分組名稱
      * @param array<string, mixed> $rules 失效規則
@@ -377,7 +376,7 @@ class CacheGroupManager
     }
 
     /**
-     * 取得分組失效規則
+     * 取得分組失效規則.
      *
      * @param string $groupName 分組名稱
      * @return array<string, mixed> 失效規則
@@ -413,7 +412,7 @@ class CacheGroupManager
     }
 
     /**
-     * 檢查分組是否應該失效
+     * 檢查分組是否應該失效.
      *
      * @param string $groupName 分組名稱
      * @return bool 是否應該失效
@@ -452,15 +451,17 @@ class CacheGroupManager
 
         if (!isset($groupCreationTimes[$groupName])) {
             $groupCreationTimes[$groupName] = time();
+
             return false;
         }
 
         $creationTime = $groupCreationTimes[$groupName];
+
         return (time() - $creationTime) > $maxAge;
     }
 
     /**
-     * 批量清空多個分組
+     * 批量清空多個分組.
      *
      * @param array<string> $groupNames 分組名稱陣列
      * @param bool $cascade 是否級聯清空
@@ -478,7 +479,7 @@ class CacheGroupManager
     }
 
     /**
-     * 檢查模式匹配
+     * 檢查模式匹配.
      *
      * @param string $text 要匹配的文字
      * @param string $pattern 匹配模式（支援 * 萬用字元）

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Tests\Unit\Shared\Config;
 
 use App\Shared\Config\EnvironmentConfig;
-use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 final class EnvironmentConfigSimpleTest extends TestCase
 {
     private string $testConfigPath;
+
     private array $originalEnv = [];
 
     protected function setUp(): void
@@ -23,13 +23,13 @@ final class EnvironmentConfigSimpleTest extends TestCase
             'APP_NAME', 'APP_ENV', 'APP_DEBUG', 'APP_URL', 'APP_KEY',
             'DB_CONNECTION', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD',
             'JWT_PRIVATE_KEY', 'JWT_PUBLIC_KEY',
-            'FORCE_HTTPS', 'ADMIN_PASSWORD'
+            'FORCE_HTTPS', 'ADMIN_PASSWORD',
         ];
 
         foreach ($envKeys as $key) {
             $this->originalEnv[$key] = [
                 'env' => $_ENV[$key] ?? null,
-                'getenv' => getenv($key) ?: null
+                'getenv' => getenv($key) ?: null,
             ];
 
             // 清空環境變數以確保從檔案載入
@@ -39,7 +39,7 @@ final class EnvironmentConfigSimpleTest extends TestCase
 
         // 建立測試配置目錄
         $this->testConfigPath = sys_get_temp_dir() . '/alleynote-test-' . uniqid();
-        mkdir($this->testConfigPath, 0755, true);
+        mkdir($this->testConfigPath, 0o755, true);
     }
 
     protected function tearDown(): void

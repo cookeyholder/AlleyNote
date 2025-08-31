@@ -7,26 +7,26 @@ namespace App\Shared\Cache\Repositories;
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
 
 /**
- * 記憶體標籤儲存庫
+ * 記憶體標籤儲存庫.
  *
  * 在記憶體中管理快取標籤的關聯性，適用於開發和測試環境
  */
 class MemoryTagRepository implements TagRepositoryInterface
 {
     /**
-     * 快取鍵到標籤的對應
+     * 快取鍵到標籤的對應.
      * @var array<string, array<string, int>> key => [tag => expiry_time]
      */
     private array $keyToTags = [];
 
     /**
-     * 標籤到快取鍵的對應
+     * 標籤到快取鍵的對應.
      * @var array<string, array<string, int>> tag => [key => expiry_time]
      */
     private array $tagToKeys = [];
 
     /**
-     * 為快取鍵設定標籤
+     * 為快取鍵設定標籤.
      */
     public function setTags(string $key, array $tags, int $ttl = 3600): bool
     {
@@ -51,7 +51,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 取得快取鍵的所有標籤
+     * 取得快取鍵的所有標籤.
      */
     public function getTags(string $key): array
     {
@@ -77,7 +77,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 為快取鍵添加標籤
+     * 為快取鍵添加標籤.
      */
     public function addTags(string $key, array $tags): bool
     {
@@ -111,7 +111,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 從快取鍵移除標籤
+     * 從快取鍵移除標籤.
      */
     public function removeTags(string $key, array $tags): bool
     {
@@ -145,16 +145,17 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 檢查快取鍵是否包含指定標籤
+     * 檢查快取鍵是否包含指定標籤.
      */
     public function hasTag(string $key, string $tag): bool
     {
         $tags = $this->getTags($key);
+
         return in_array($tag, $tags, true);
     }
 
     /**
-     * 取得指定標籤的所有快取鍵
+     * 取得指定標籤的所有快取鍵.
      */
     public function getKeysByTag(string $tag): array
     {
@@ -180,7 +181,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 按標籤刪除快取鍵記錄
+     * 按標籤刪除快取鍵記錄.
      */
     public function deleteByTags(string|array $tags): array
     {
@@ -199,7 +200,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 刪除快取鍵的標籤記錄
+     * 刪除快取鍵的標籤記錄.
      */
     public function deleteKey(string $key): bool
     {
@@ -226,16 +227,17 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 取得所有標籤
+     * 取得所有標籤.
      */
     public function getAllTags(): array
     {
         $this->cleanupExpiredData();
+
         return array_keys($this->tagToKeys);
     }
 
     /**
-     * 清除未使用的標籤
+     * 清除未使用的標籤.
      */
     public function cleanupUnusedTags(): int
     {
@@ -254,7 +256,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 取得標籤統計資訊
+     * 取得標籤統計資訊.
      */
     public function getTagStatistics(): array
     {
@@ -269,16 +271,17 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 檢查標籤是否存在
+     * 檢查標籤是否存在.
      */
     public function tagExists(string $tag): bool
     {
         $this->cleanupExpiredData();
+
         return isset($this->tagToKeys[$tag]) && !empty($this->tagToKeys[$tag]);
     }
 
     /**
-     * 更新快取鍵的過期時間
+     * 更新快取鍵的過期時間.
      */
     public function touch(string $key, int $ttl): bool
     {
@@ -301,17 +304,18 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 清除所有標籤記錄
+     * 清除所有標籤記錄.
      */
     public function flush(): bool
     {
         $this->keyToTags = [];
         $this->tagToKeys = [];
+
         return true;
     }
 
     /**
-     * 正規化標籤陣列
+     * 正規化標籤陣列.
      *
      * @param array<string> $tags
      * @return array<string>
@@ -322,7 +326,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 清理指定快取鍵的過期標籤
+     * 清理指定快取鍵的過期標籤.
      */
     private function cleanupExpiredTags(string $key): void
     {
@@ -352,7 +356,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 清理指定標籤的過期快取鍵
+     * 清理指定標籤的過期快取鍵.
      */
     private function cleanupExpiredKeys(string $tag): void
     {
@@ -382,7 +386,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * 清理所有過期資料
+     * 清理所有過期資料.
      */
     private function cleanupExpiredData(): void
     {

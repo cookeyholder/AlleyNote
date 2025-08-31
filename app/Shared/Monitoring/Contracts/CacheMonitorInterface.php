@@ -25,7 +25,7 @@ interface CacheMonitorInterface
         string $driver,
         bool $success,
         float $duration,
-        array $context = []
+        array $context = [],
     ): void;
 
     /**

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Shared\Cache\ValueObjects;
 
+use InvalidArgumentException;
+
 /**
- * 快取標籤值物件
+ * 快取標籤值物件.
  *
  * 表示快取項目的標籤，提供標籤驗證和正規化功能
  */
@@ -20,7 +22,7 @@ class CacheTag
     }
 
     /**
-     * 取得標籤名稱
+     * 取得標籤名稱.
      */
     public function getName(): string
     {
@@ -28,7 +30,7 @@ class CacheTag
     }
 
     /**
-     * 正規化標籤名稱
+     * 正規化標籤名稱.
      */
     private function normalizeName(string $name): string
     {
@@ -47,31 +49,31 @@ class CacheTag
     }
 
     /**
-     * 驗證標籤名稱
+     * 驗證標籤名稱.
      */
     private function validateName(string $name): void
     {
         if (empty($name)) {
-            throw new \InvalidArgumentException('標籤名稱不能為空');
+            throw new InvalidArgumentException('標籤名稱不能為空');
         }
 
         if (strlen($name) > 50) {
-            throw new \InvalidArgumentException('標籤名稱不能超過 50 個字符');
+            throw new InvalidArgumentException('標籤名稱不能超過 50 個字符');
         }
 
         if (!preg_match('/^[a-z0-9_\-\.]+$/', $name)) {
-            throw new \InvalidArgumentException('標籤名稱只能包含英文字母、數字、底線、連字號和點號');
+            throw new InvalidArgumentException('標籤名稱只能包含英文字母、數字、底線、連字號和點號');
         }
 
         // 保留標籤名稱檢查
         $reserved = ['all', 'none', 'cache', 'tag', 'key', 'system', 'admin'];
         if (in_array($name, $reserved, true)) {
-            throw new \InvalidArgumentException("標籤名稱 '{$name}' 為系統保留字");
+            throw new InvalidArgumentException("標籤名稱 '{$name}' 為系統保留字");
         }
     }
 
     /**
-     * 轉換為字串
+     * 轉換為字串.
      */
     public function __toString(): string
     {
@@ -79,7 +81,7 @@ class CacheTag
     }
 
     /**
-     * 比較兩個標籤是否相等
+     * 比較兩個標籤是否相等.
      */
     public function equals(CacheTag $other): bool
     {
@@ -87,7 +89,7 @@ class CacheTag
     }
 
     /**
-     * 從字串陣列建立標籤陣列
+     * 從字串陣列建立標籤陣列.
      *
      * @param array<string> $names 標籤名稱陣列
      * @return array<CacheTag> 標籤陣列
@@ -98,7 +100,7 @@ class CacheTag
     }
 
     /**
-     * 將標籤陣列轉換為字串陣列
+     * 將標籤陣列轉換為字串陣列.
      *
      * @param array<CacheTag> $tags 標籤陣列
      * @return array<string> 字串陣列
@@ -109,20 +111,21 @@ class CacheTag
     }
 
     /**
-     * 檢查標籤名稱是否有效
+     * 檢查標籤名稱是否有效.
      */
     public static function isValidName(string $name): bool
     {
         try {
             new self($name);
+
             return true;
-        } catch (\InvalidArgumentException) {
+        } catch (InvalidArgumentException) {
             return false;
         }
     }
 
     /**
-     * 建立標籤群組標籤
+     * 建立標籤群組標籤.
      *
      * @param string $group 群組名稱
      * @return self 群組標籤
@@ -133,7 +136,7 @@ class CacheTag
     }
 
     /**
-     * 建立使用者相關標籤
+     * 建立使用者相關標籤.
      *
      * @param int $userId 使用者 ID
      * @return self 使用者標籤
@@ -144,7 +147,7 @@ class CacheTag
     }
 
     /**
-     * 建立模組相關標籤
+     * 建立模組相關標籤.
      *
      * @param string $module 模組名稱
      * @return self 模組標籤
@@ -155,7 +158,7 @@ class CacheTag
     }
 
     /**
-     * 建立時間相關標籤
+     * 建立時間相關標籤.
      *
      * @param string $period 時間週期 (daily, weekly, monthly)
      * @return self 時間標籤
@@ -166,7 +169,7 @@ class CacheTag
     }
 
     /**
-     * 檢查是否為群組標籤
+     * 檢查是否為群組標籤.
      */
     public function isGroupTag(): bool
     {
@@ -174,7 +177,7 @@ class CacheTag
     }
 
     /**
-     * 檢查是否為使用者標籤
+     * 檢查是否為使用者標籤.
      */
     public function isUserTag(): bool
     {
@@ -182,7 +185,7 @@ class CacheTag
     }
 
     /**
-     * 檢查是否為模組標籤
+     * 檢查是否為模組標籤.
      */
     public function isModuleTag(): bool
     {
@@ -190,7 +193,7 @@ class CacheTag
     }
 
     /**
-     * 檢查是否為時間標籤
+     * 檢查是否為時間標籤.
      */
     public function isTemporalTag(): bool
     {

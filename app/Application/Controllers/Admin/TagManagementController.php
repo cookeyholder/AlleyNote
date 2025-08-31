@@ -8,13 +8,15 @@ use App\Application\Controllers\BaseController;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Services\CacheGroupManager;
-use App\Shared\Cache\ValueObjects\CacheTag;
+use Exception;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 /**
- * 標籤管理控制器
+ * 標籤管理控制器.
  *
  * 提供快取標籤管理的 REST API 端點
  */
@@ -23,13 +25,13 @@ class TagManagementController extends BaseController
     public function __construct(
         private CacheManagerInterface $cacheManager,
         private ?CacheGroupManager $groupManager = null,
-        private ?LoggerInterface $logger = null
+        private ?LoggerInterface $logger = null,
     ) {
         // 不調用 parent::__construct()，因為 BaseController 沒有構造函式
     }
 
     /**
-     * 取得所有標籤列表
+     * 取得所有標籤列表.
      *
      * GET /admin/cache/tags
      */
@@ -97,8 +99,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger?->error('取得標籤列表失敗', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -118,7 +119,7 @@ class TagManagementController extends BaseController
     }
 
     /**
-     * 取得特定標籤詳細資訊
+     * 取得特定標籤詳細資訊.
      *
      * GET /admin/cache/tags/{tag}
      */
@@ -128,7 +129,7 @@ class TagManagementController extends BaseController
             $tagName = isset($args['tag']) && is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
-                throw new \InvalidArgumentException('標籤名稱不能為空');
+                throw new InvalidArgumentException('標籤名稱不能為空');
             }
 
             $tagInfo = null;
@@ -153,7 +154,7 @@ class TagManagementController extends BaseController
             }
 
             if (!$tagInfo) {
-                throw new \RuntimeException('標籤不存在');
+                throw new RuntimeException('標籤不存在');
             }
 
             $responseData = [
@@ -161,8 +162,7 @@ class TagManagementController extends BaseController
                 'data' => $tagInfo,
                 'timestamp' => time(),
             ];
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger?->error('取得標籤詳細資訊失敗', [
                 'tag' => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
@@ -182,7 +182,7 @@ class TagManagementController extends BaseController
     }
 
     /**
-     * 刪除標籤
+     * 刪除標籤.
      *
      * DELETE /admin/cache/tags/{tag}
      */
@@ -192,7 +192,7 @@ class TagManagementController extends BaseController
             $tagName = isset($args['tag']) && is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
-                throw new \InvalidArgumentException('標籤名稱不能為空');
+                throw new InvalidArgumentException('標籤名稱不能為空');
             }
 
             $deleted = false;
@@ -212,7 +212,7 @@ class TagManagementController extends BaseController
             }
 
             if (!$deleted) {
-                throw new \RuntimeException('標籤刪除失敗或標籤不存在');
+                throw new RuntimeException('標籤刪除失敗或標籤不存在');
             }
 
             $responseData = [
@@ -224,8 +224,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger?->error('刪除標籤失敗', [
                 'tag' => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
@@ -245,7 +244,7 @@ class TagManagementController extends BaseController
     }
 
     /**
-     * 清理過期標籤
+     * 清理過期標籤.
      *
      * POST /admin/cache/tags/cleanup
      */
@@ -275,8 +274,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger?->error('清理標籤失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -295,7 +293,7 @@ class TagManagementController extends BaseController
     }
 
     /**
-     * 取得標籤群組列表
+     * 取得標籤群組列表.
      *
      * GET /admin/cache/groups
      */
@@ -328,8 +326,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger?->error('取得標籤群組失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -348,7 +345,7 @@ class TagManagementController extends BaseController
     }
 
     /**
-     * 刪除標籤群組
+     * 刪除標籤群組.
      *
      * DELETE /admin/cache/groups/{group}
      */
@@ -358,11 +355,11 @@ class TagManagementController extends BaseController
             $groupName = isset($args['group']) && is_string($args['group']) ? urldecode($args['group']) : '';
 
             if (empty($groupName)) {
-                throw new \InvalidArgumentException('群組名稱不能為空');
+                throw new InvalidArgumentException('群組名稱不能為空');
             }
 
             if (!$this->groupManager) {
-                throw new \RuntimeException('群組管理器未設定');
+                throw new RuntimeException('群組管理器未設定');
             }
 
             $this->groupManager->removeGroup($groupName);
@@ -375,8 +372,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger?->error('刪除標籤群組失敗', [
                 'group' => $groupName ?? 'unknown',
                 'error' => $e->getMessage(),
@@ -396,7 +392,7 @@ class TagManagementController extends BaseController
     }
 
     /**
-     * 取得標籤類型
+     * 取得標籤類型.
      */
     private function getTagType(string $tagName): string
     {
@@ -409,11 +405,12 @@ class TagManagementController extends BaseController
         if (str_starts_with($tagName, 'category:')) {
             return 'category';
         }
+
         return 'other';
     }
 
     /**
-     * 取得標籤建立時間
+     * 取得標籤建立時間.
      */
     private function getTagCreatedAt(string $tagName): null
     {

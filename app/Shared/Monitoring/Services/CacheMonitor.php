@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Monitoring\Services;
 
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -50,7 +51,7 @@ class CacheMonitor implements CacheMonitorInterface
         string $driver,
         bool $success,
         float $duration,
-        array $context = []
+        array $context = [],
     ): void {
         $timestamp = microtime(true);
 
@@ -458,7 +459,7 @@ class CacheMonitor implements CacheMonitorInterface
         $originalCount = count($this->operationHistory);
         $this->operationHistory = array_filter(
             $this->operationHistory,
-            fn($op) => $op['timestamp'] > $cutoffTime
+            fn($op) => $op['timestamp'] > $cutoffTime,
         );
         $cleaned += $originalCount - count($this->operationHistory);
 
@@ -467,7 +468,7 @@ class CacheMonitor implements CacheMonitorInterface
             $originalErrorCount = is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0;
             $errorData['recent_errors'] = is_array($errorData['recent_errors']) ? array_filter(
                 $errorData['recent_errors'],
-                fn($error) => is_array($error) && isset($error['timestamp']) && $error['timestamp'] > $cutoffTime
+                fn($error) => is_array($error) && isset($error['timestamp']) && $error['timestamp'] > $cutoffTime,
             ) : [];
             $cleaned += $originalErrorCount - (is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0);
         }
@@ -504,7 +505,7 @@ class CacheMonitor implements CacheMonitorInterface
         // 獲取所有驅動程式（來自操作統計和錯誤統計）
         $allDrivers = array_unique(array_merge(
             array_keys($this->operationStats),
-            array_keys($this->errorStats)
+            array_keys($this->errorStats),
         ));
 
         foreach ($allDrivers as $driver) {
@@ -559,7 +560,7 @@ class CacheMonitor implements CacheMonitorInterface
         return match ($format) {
             'json' => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '',
             'csv' => $this->convertToCsv($data),
-            default => throw new \InvalidArgumentException("不支援的匯出格式: {$format}"),
+            default => throw new InvalidArgumentException("不支援的匯出格式: {$format}"),
         };
     }
 
@@ -606,8 +607,8 @@ class CacheMonitor implements CacheMonitorInterface
         $totalRequestsValue = $stats['total_requests'] ?? 0;
         $hitsValue = $stats['hits'] ?? 0;
 
-        $totalRequests = is_numeric($totalRequestsValue) ? (float)$totalRequestsValue : 0.0;
-        $hits = is_numeric($hitsValue) ? (float)$hitsValue : 0.0;
+        $totalRequests = is_numeric($totalRequestsValue) ? (float) $totalRequestsValue : 0.0;
+        $hits = is_numeric($hitsValue) ? (float) $hitsValue : 0.0;
 
         $stats['hit_rate'] = $totalRequests > 0 ? ($hits / $totalRequests) * 100 : 0;
     }
@@ -647,22 +648,22 @@ class CacheMonitor implements CacheMonitorInterface
             $successfulOpsValue = $stats['successful_operations'] ?? 0;
             $durationValue = $stats['total_duration'] ?? 0;
 
-            $totalOps += is_numeric($totalOpsValue) ? (float)$totalOpsValue : 0;
-            $totalSuccessful += is_numeric($successfulOpsValue) ? (float)$successfulOpsValue : 0;
-            $totalDuration += is_numeric($durationValue) ? (float)$durationValue : 0;
+            $totalOps += is_numeric($totalOpsValue) ? (float) $totalOpsValue : 0;
+            $totalSuccessful += is_numeric($successfulOpsValue) ? (float) $successfulOpsValue : 0;
+            $totalDuration += is_numeric($durationValue) ? (float) $durationValue : 0;
         }
 
         foreach ($this->hitStats as $stats) {
             $requestsValue = $stats['total_requests'] ?? 0;
             $hitsValue = $stats['hits'] ?? 0;
 
-            $totalRequests += is_numeric($requestsValue) ? (float)$requestsValue : 0;
-            $totalHits += is_numeric($hitsValue) ? (float)$hitsValue : 0;
+            $totalRequests += is_numeric($requestsValue) ? (float) $requestsValue : 0;
+            $totalHits += is_numeric($hitsValue) ? (float) $hitsValue : 0;
         }
 
         foreach ($this->errorStats as $stats) {
             $errorsValue = $stats['total_errors'] ?? 0;
-            $totalErrors += is_numeric($errorsValue) ? (float)$errorsValue : 0;
+            $totalErrors += is_numeric($errorsValue) ? (float) $errorsValue : 0;
         }
 
         return [
@@ -700,8 +701,8 @@ class CacheMonitor implements CacheMonitorInterface
         $firstTimestampValue = $firstOp['timestamp'] ?? 0;
         $lastTimestampValue = $lastOp['timestamp'] ?? 0;
 
-        $firstTimestamp = is_numeric($firstTimestampValue) ? (float)$firstTimestampValue : 0.0;
-        $lastTimestamp = is_numeric($lastTimestampValue) ? (float)$lastTimestampValue : 0.0;
+        $firstTimestamp = is_numeric($firstTimestampValue) ? (float) $firstTimestampValue : 0.0;
+        $lastTimestamp = is_numeric($lastTimestampValue) ? (float) $lastTimestampValue : 0.0;
         $timeSpan = $lastTimestamp - $firstTimestamp;
 
         return $timeSpan > 0 ? count($driverOps) / $timeSpan : 0.0;
@@ -715,8 +716,8 @@ class CacheMonitor implements CacheMonitorInterface
         $totalOpsValue = $this->operationStats[$driver]['total_operations'] ?? 0;
         $totalErrorsValue = $this->errorStats[$driver]['total_errors'] ?? 0;
 
-        $totalOps = is_numeric($totalOpsValue) ? (float)$totalOpsValue : 0.0;
-        $totalErrors = is_numeric($totalErrorsValue) ? (float)$totalErrorsValue : 0.0;
+        $totalOps = is_numeric($totalOpsValue) ? (float) $totalOpsValue : 0.0;
+        $totalErrors = is_numeric($totalErrorsValue) ? (float) $totalErrorsValue : 0.0;
 
         return $totalOps > 0 ? ($totalErrors / $totalOps) * 100 : 0;
     }
@@ -732,10 +733,10 @@ class CacheMonitor implements CacheMonitorInterface
         if (is_array($data['export_info'] ?? null) && isset($data['export_info']['timestamp'])) {
             $timestampValue = $data['export_info']['timestamp'];
             if (is_string($timestampValue) || is_numeric($timestampValue)) {
-                $exportTimestamp = (string)$timestampValue;
+                $exportTimestamp = (string) $timestampValue;
             }
         }
-        $csv .= "匯出時間," . $exportTimestamp . "\n\n";
+        $csv .= '匯出時間,' . $exportTimestamp . "\n\n";
 
         // 可以根據需要擴展 CSV 格式
         return $csv . "請使用 JSON 格式取得完整資料\n";
@@ -795,10 +796,11 @@ class CacheMonitor implements CacheMonitorInterface
             $operationValue = 0;
             if (is_array($stats['operations'] ?? null) && isset($stats['operations'][$operation])) {
                 $operationCount = $stats['operations'][$operation];
-                $operationValue = is_numeric($operationCount) ? (int)$operationCount : 0;
+                $operationValue = is_numeric($operationCount) ? (int) $operationCount : 0;
             }
             $count += $operationValue;
         }
+
         return $count;
     }
 

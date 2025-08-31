@@ -43,18 +43,21 @@ class FileCacheDriver implements CacheDriverInterface
 
         if (!file_exists($filePath)) {
             $this->stats['misses']++;
+
             return $default;
         }
 
         $content = file_get_contents($filePath);
         if ($content === false) {
             $this->stats['misses']++;
+
             return $default;
         }
 
         $data = unserialize($content);
         if (!is_array($data) || !isset($data['value'], $data['expires_at'])) {
             $this->stats['misses']++;
+
             return $default;
         }
 
@@ -62,10 +65,12 @@ class FileCacheDriver implements CacheDriverInterface
         if ($data['expires_at'] !== 0 && time() > $data['expires_at']) {
             unlink($filePath);
             $this->stats['misses']++;
+
             return $default;
         }
 
         $this->stats['hits']++;
+
         return $data['value'];
     }
 
@@ -110,6 +115,7 @@ class FileCacheDriver implements CacheDriverInterface
         // 檢查過期
         if ($data['expires_at'] !== 0 && time() > $data['expires_at']) {
             unlink($filePath);
+
             return false;
         }
 
@@ -125,6 +131,7 @@ class FileCacheDriver implements CacheDriverInterface
             if ($result) {
                 $this->stats['deletes']++;
             }
+
             return $result;
         }
 
@@ -159,6 +166,7 @@ class FileCacheDriver implements CacheDriverInterface
         foreach ($keys as $key) {
             $result[$key] = $this->get($key);
         }
+
         return $result;
     }
 
@@ -170,6 +178,7 @@ class FileCacheDriver implements CacheDriverInterface
                 $success = false;
             }
         }
+
         return $success;
     }
 
@@ -181,6 +190,7 @@ class FileCacheDriver implements CacheDriverInterface
                 $success = false;
             }
         }
+
         return $success;
     }
 
@@ -211,6 +221,7 @@ class FileCacheDriver implements CacheDriverInterface
         $current = $this->get($key, 0);
         $newValue = (is_int($current) || is_numeric($current)) ? (int) $current + $value : $value;
         $this->put($key, $newValue);
+
         return $newValue;
     }
 
@@ -219,6 +230,7 @@ class FileCacheDriver implements CacheDriverInterface
         $current = $this->get($key, 0);
         $newValue = (is_int($current) || is_numeric($current)) ? (int) $current - $value : -$value;
         $this->put($key, $newValue);
+
         return $newValue;
     }
 
@@ -305,6 +317,7 @@ class FileCacheDriver implements CacheDriverInterface
     {
         $hash = hash('sha256', $key);
         $subDir = substr($hash, 0, 2);
+
         return $this->cachePath . '/' . $subDir . '/' . $hash . self::CACHE_EXTENSION;
     }
 
@@ -314,6 +327,7 @@ class FileCacheDriver implements CacheDriverInterface
     private function getKeyFromFilePath(string $filePath): string
     {
         $fileName = basename($filePath, self::CACHE_EXTENSION);
+
         return $fileName; // 這裡返回雜湊值，實際應用中可能需要維護鍵對映
     }
 
@@ -323,7 +337,7 @@ class FileCacheDriver implements CacheDriverInterface
     private function ensureDirectoryExists(string $path): void
     {
         if (!is_dir($path)) {
-            mkdir($path, 0755, true);
+            mkdir($path, 0o755, true);
         }
     }
 
@@ -333,6 +347,7 @@ class FileCacheDriver implements CacheDriverInterface
     private function matchesPattern(string $key, string $pattern): bool
     {
         $pattern = str_replace(['*', '?'], ['.*', '.'], $pattern);
+
         return preg_match('/^' . $pattern . '$/', $key) === 1;
     }
 
@@ -342,6 +357,7 @@ class FileCacheDriver implements CacheDriverInterface
     private function getTotalFiles(): int
     {
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
+
         return $files !== false ? count($files) : 0;
     }
 

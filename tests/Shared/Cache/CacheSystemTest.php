@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Shared\Cache;
 
-use App\Shared\Cache\Contracts\CacheManagerInterface;
-use App\Shared\Cache\Drivers\MemoryCacheDriver;
 use App\Shared\Cache\Drivers\FileCacheDriver;
+use App\Shared\Cache\Drivers\MemoryCacheDriver;
 use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Services\DefaultCacheStrategy;
 use PHPUnit\Framework\TestCase;
@@ -15,13 +14,15 @@ use Psr\Log\NullLogger;
 class CacheSystemTest extends TestCase
 {
     private CacheManager $cacheManager;
+
     private DefaultCacheStrategy $strategy;
+
     private string $tempDir;
 
     protected function setUp(): void
     {
         $this->tempDir = sys_get_temp_dir() . '/alleynote_cache_test_' . uniqid();
-        mkdir($this->tempDir, 0777, true);
+        mkdir($this->tempDir, 0o777, true);
 
         $this->strategy = new DefaultCacheStrategy();
         $this->cacheManager = new CacheManager($this->strategy, new NullLogger());

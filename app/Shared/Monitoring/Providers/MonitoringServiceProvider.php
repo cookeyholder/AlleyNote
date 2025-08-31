@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Monitoring\Providers;
 
+use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
 use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
 use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
@@ -11,8 +12,11 @@ use App\Shared\Monitoring\Services\ErrorTrackerService;
 use App\Shared\Monitoring\Services\PerformanceMonitorService;
 use App\Shared\Monitoring\Services\SystemMonitorService;
 use DI\Container;
+use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
+use Throwable;
 
 /**
  * 監控服務提供者。
@@ -31,17 +35,17 @@ class MonitoringServiceProvider
             SystemMonitorInterface::class => \DI\factory(function (ContainerInterface $c) {
                 $logger = $c->get(LoggerInterface::class);
                 if (!($logger instanceof LoggerInterface)) {
-                    throw new \RuntimeException('Logger 型別錯誤');
+                    throw new RuntimeException('Logger 型別錯誤');
                 }
 
-                $database = $c->get(\PDO::class);
-                if (!($database instanceof \PDO)) {
-                    throw new \RuntimeException('Database 型別錯誤');
+                $database = $c->get(PDO::class);
+                if (!($database instanceof PDO)) {
+                    throw new RuntimeException('Database 型別錯誤');
                 }
 
-                $config = $c->get(\App\Shared\Config\EnvironmentConfig::class);
-                if (!($config instanceof \App\Shared\Config\EnvironmentConfig)) {
-                    throw new \RuntimeException('Config 型別錯誤');
+                $config = $c->get(EnvironmentConfig::class);
+                if (!($config instanceof EnvironmentConfig)) {
+                    throw new RuntimeException('Config 型別錯誤');
                 }
 
                 return new SystemMonitorService($logger, $database, $config);
@@ -51,6 +55,7 @@ class MonitoringServiceProvider
             PerformanceMonitorInterface::class => \DI\factory(function (ContainerInterface $c) {
                 $logger = $c->get(LoggerInterface::class);
                 assert($logger instanceof LoggerInterface);
+
                 return new PerformanceMonitorService($logger);
             }),
 
@@ -58,6 +63,7 @@ class MonitoringServiceProvider
             ErrorTrackerInterface::class => \DI\factory(function (ContainerInterface $c) {
                 $logger = $c->get(LoggerInterface::class);
                 assert($logger instanceof LoggerInterface);
+
                 return new ErrorTrackerService($logger);
             }),
 
@@ -67,6 +73,7 @@ class MonitoringServiceProvider
             ErrorTrackerService::class => \DI\get(ErrorTrackerInterface::class),
         ];
     }
+
     /**
      * 註冊監控服務到容器（舊版方法，保留向後相容）。
      */
@@ -76,17 +83,17 @@ class MonitoringServiceProvider
         $container->set(SystemMonitorInterface::class, function (ContainerInterface $c) {
             $logger = $c->get(LoggerInterface::class);
             if (!($logger instanceof LoggerInterface)) {
-                throw new \RuntimeException('Logger must implement LoggerInterface');
+                throw new RuntimeException('Logger must implement LoggerInterface');
             }
 
-            $database = $c->get(\PDO::class);
-            if (!($database instanceof \PDO)) {
-                throw new \RuntimeException('Database must be PDO instance');
+            $database = $c->get(PDO::class);
+            if (!($database instanceof PDO)) {
+                throw new RuntimeException('Database must be PDO instance');
             }
 
-            $config = $c->get(\App\Shared\Config\EnvironmentConfig::class);
-            if (!($config instanceof \App\Shared\Config\EnvironmentConfig)) {
-                throw new \RuntimeException('Config must be EnvironmentConfig instance');
+            $config = $c->get(EnvironmentConfig::class);
+            if (!($config instanceof EnvironmentConfig)) {
+                throw new RuntimeException('Config must be EnvironmentConfig instance');
             }
 
             return new SystemMonitorService($logger, $database, $config);
@@ -96,7 +103,7 @@ class MonitoringServiceProvider
         $container->set(PerformanceMonitorInterface::class, function (ContainerInterface $c) {
             $logger = $c->get(LoggerInterface::class);
             if (!($logger instanceof LoggerInterface)) {
-                throw new \RuntimeException('Logger must implement LoggerInterface');
+                throw new RuntimeException('Logger must implement LoggerInterface');
             }
 
             return new PerformanceMonitorService($logger);
@@ -106,7 +113,7 @@ class MonitoringServiceProvider
         $container->set(ErrorTrackerInterface::class, function (ContainerInterface $c) {
             $logger = $c->get(LoggerInterface::class);
             if (!($logger instanceof LoggerInterface)) {
-                throw new \RuntimeException('Logger must implement LoggerInterface');
+                throw new RuntimeException('Logger must implement LoggerInterface');
             }
 
             return new ErrorTrackerService($logger);
@@ -144,7 +151,7 @@ class MonitoringServiceProvider
         // TODO: 在解決測試隔離問題後重新啟用
 
         // 設置預設的錯誤過濾器
-        $errorTracker->setErrorFilter(function (string $level, string $message, array $context, ?\Throwable $exception) {
+        $errorTracker->setErrorFilter(function (string $level, string $message, array $context, ?Throwable $exception) {
             // 過濾掉某些不重要的錯誤
             $ignoredMessages = [
                 'Undefined variable',
@@ -162,7 +169,7 @@ class MonitoringServiceProvider
         });
 
         // 設置預設的通知處理器（用於關鍵錯誤）
-        $errorTracker->addNotificationHandler(function (string $level, string $message, array $context, ?\Throwable $exception) {
+        $errorTracker->addNotificationHandler(function (string $level, string $message, array $context, ?Throwable $exception) {
             if ($level === 'critical') {
                 // 這裡可以整合電子郵件、Slack、Discord 等通知系統
                 error_log("CRITICAL ERROR: {$message}");
@@ -170,9 +177,9 @@ class MonitoringServiceProvider
                 // 如果是在開發環境，可以顯示詳細資訊
                 if (($_ENV['APP_ENV'] ?? 'production') === 'development') {
                     if ($exception) {
-                        error_log("Exception details: " . $exception->__toString());
+                        error_log('Exception details: ' . $exception->__toString());
                     }
-                    error_log("Context: " . json_encode($context, JSON_PRETTY_PRINT));
+                    error_log('Context: ' . json_encode($context, JSON_PRETTY_PRINT));
                 }
             }
         });
@@ -222,5 +229,4 @@ class MonitoringServiceProvider
             ]);
         }
     }
-
 }
