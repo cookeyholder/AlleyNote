@@ -1,83 +1,83 @@
 permissions:
-  contents: read
+    contents: read
 name: Continuous Integration
 
 on:
-  push:
-    branches: [main, develop, feature/*]
-  pull_request:
-    branches: [main, develop]
+    push:
+        branches: [main, develop, feature/*]
+    pull_request:
+        branches: [main, develop]
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    name: Tests (PHP ${{ matrix.php-versions }})
+    tests:
+        runs-on: ubuntu-latest
+        name: Tests (PHP ${{ matrix.php-versions }})
 
-    strategy:
-      fail-fast: false
-      matrix:
-        php-versions: ["8.4"]
+        strategy:
+            fail-fast: false
+            matrix:
+                php-versions: ["8.4"]
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-versions }}
-          extensions: pdo, sqlite3, json, gd, curl
-          tools: composer, phpunit
-          coverage: xdebug
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-versions }}
+                  extensions: pdo, sqlite3, json, gd, curl
+                  tools: composer, phpunit
+                  coverage: xdebug
 
-      - name: Cache Composer packages
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ matrix.php-versions }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-${{ matrix.php-versions }}-
+            - name: Cache Composer packages
+              uses: actions/cache@v4
+              with:
+                  path: vendor
+                  key: ${{ runner.os }}-php-${{ matrix.php-versions }}-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-versions }}-
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-progress --no-interaction
 
-      - name: Run Composer Security Audit
-        run: |
-          echo "🔍 執行相依套件安全掃描..."
-          composer audit --format=json > security-audit.json || {
-            echo "❌ 發現安全漏洞！"
-            echo "詳細資訊："
-            composer audit
-            echo ""
-            echo "請執行以下指令更新套件："
-            echo "composer update"
-            exit 1
-          }
-          echo "✅ 相依套件安全掃描通過"
+            - name: Run Composer Security Audit
+              run: |
+                  echo "🔍 執行相依套件安全掃描..."
+                  composer audit --format=json > security-audit.json || {
+                    echo "❌ 發現安全漏洞！"
+                    echo "詳細資訊："
+                    composer audit
+                    echo ""
+                    echo "請執行以下指令更新套件："
+                    echo "composer update"
+                    exit 1
+                  }
+                  echo "✅ 相依套件安全掃描通過"
 
-      - name: Run code style check
-        run: |
-          if [ -f "vendor/bin/php-cs-fixer" ]; then
-            echo "🎨 執行程式碼風格檢查..."
-            composer cs-check
-          else
-            echo "⚠️  PHP-CS-Fixer 未安裝，跳過程式碼風格檢查"
-          fi
+            - name: Run code style check
+              run: |
+                  if [ -f "vendor/bin/php-cs-fixer" ]; then
+                    echo "🎨 執行程式碼風格檢查..."
+                    composer cs-check
+                  else
+                    echo "⚠️  PHP-CS-Fixer 未安裝，跳過程式碼風格檢查"
+                  fi
 
-      - name: Run static analysis
-        run: |
-          if [ -f "vendor/bin/phpstan" ]; then
-            echo "🔬 執行靜態分析..."
-            composer analyse || true
-          else
-            echo "⚠️  PHPStan 未安裝，跳過靜態分析"
-          fi
+            - name: Run static analysis
+              run: |
+                  if [ -f "vendor/bin/phpstan" ]; then
+                    echo "🔬 執行靜態分析..."
+                    composer analyse || true
+                  else
+                    echo "⚠️  PHPStan 未安裝，跳過靜態分析"
+                  fi
 
-      - name: Run tests
-        run: |
-          if [ -f "vendor/bin/phpunit" ]; then
-            echo "🧪 執行單元測試..."
-            vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
-          else
-            echo "⚠️  PHPUnit 未安裝，跳過測試"
-          fi
+            - name: Run tests
+              run: |
+                  if [ -f "vendor/bin/phpunit" ]; then
+                    echo "🧪 執行單元測試..."
+                    vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+                  else
+                    echo "⚠️  PHPUnit 未安裝，跳過測試"
+                  fi
