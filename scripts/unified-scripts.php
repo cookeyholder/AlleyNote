@@ -34,7 +34,7 @@ use AlleyNote\Scripts\Consolidated\DefaultScriptConfiguration;
 use AlleyNote\Scripts\Consolidated\DefaultScriptExecutor;
 use AlleyNote\Scripts\Consolidated\DefaultScriptAnalyzer;
 
-function main(array $argv): int
+function main(array<mixed> $argv): int
 {
     $projectRoot = dirname(__DIR__);
 
@@ -71,7 +71,7 @@ function main(array $argv): int
     }
 }
 
-function parseOptions(array $args): array
+function parseOptions(array<mixed> $args): array<mixed>
 {
     $options = [];
 
@@ -92,16 +92,16 @@ function handleListCommand(ScriptManager $manager): AlleyNote\Scripts\Consolidat
     $commands = $manager->listCommands();
 
     echo "\n📋 可用的腳本類別:\n";
-    foreach ($commands['categories'] as $category => $description) {
+    foreach ((is_array($commands) ? $commands['categories'] : (is_object($commands) ? $commands->categories : null)) as $category => $description) {
         echo "  • {$category}: {$description}\n";
     }
 
     echo "\n🔗 命令別名:\n";
-    foreach ($commands['aliases'] as $alias => $category) {
+    foreach ((is_array($commands) ? $commands['aliases'] : (is_object($commands) ? $commands->aliases : null)) as $alias => $category) {
         echo "  • {$alias} → {$category}\n";
     }
 
-    echo "\n📁 發現的腳本檔案: " . count($commands['available_scripts']) . " 個\n";
+    echo "\n📁 發現的腳本檔案: " . count((is_array($commands) ? $commands['available_scripts'] : (is_object($commands) ? $commands->available_scripts : null))) . " 個\n";
 
     return new AlleyNote\Scripts\Consolidated\ScriptResult(
         success: true,
@@ -167,7 +167,7 @@ function displayResult(AlleyNote\Scripts\Consolidated\ScriptResult $result): voi
     if (!empty($result->details)) {
         echo "\n📋 詳細資訊:\n";
         foreach ($result->details as $key => $value) {
-            if (is_array($value)) {
+            if (is_array($value) && !empty($value)) {
                 echo "  • {$key}: " . json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n";
             } else {
                 echo "  • {$key}: {$value}\n";

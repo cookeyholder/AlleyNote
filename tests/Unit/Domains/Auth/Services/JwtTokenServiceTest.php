@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Services;
 
-use AlleyNote\Domains\Auth\Contracts\JwtProviderInterface;
-use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
-use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
-use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
-use AlleyNote\Domains\Auth\Exceptions\TokenGenerationException;
-use AlleyNote\Domains\Auth\Services\JwtTokenService;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
-use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
-use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
-use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
+use App\Domains\Auth\Contracts\JwtProviderInterface;
+use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
+use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\Exceptions\InvalidTokenException;
+use App\Domains\Auth\Exceptions\TokenGenerationException;
+use App\Domains\Auth\Services\JwtTokenService;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\ValueObjects\JwtPayload;
+use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
+use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Shared\Config\JwtConfig;
 use DateTimeImmutable;
 use Exception;

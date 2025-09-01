@@ -43,30 +43,30 @@ class CreatePostDTO extends BaseDTO
         // 添加文章專用驗證規則
         $this->addPostValidationRules();
 
-        // 預處理狀態值
-        if (!isset($data['status']) || empty($data['status'])) {
-            $data['status'] = PostStatus::DRAFT->value;
-        }
-
         // 預處理 is_pinned 預設值
         if (!isset($data['is_pinned'])) {
             $data['is_pinned'] = false;
         }
 
+        // 預處理狀態值
+        if (!isset($data['status'])) {
+            $data['status'] = PostStatus::DRAFT->value;
+        }
+
         // 驗證資料
         $validatedData = $this->validate($data);
 
-        // 直接從驗證過的資料設定屬性，無需額外的類型檢查
-        $this->title = trim($validatedData['title']);
-        $this->content = trim($validatedData['content']);
-        $this->userId = (int) $validatedData['user_id'];
-        $this->userIp = $validatedData['user_ip'];
-        $this->isPinned = (bool) ($validatedData['is_pinned'] ?? false);
+        // 設定屬性
+        $this->title = $this->getString($validatedData, 'title') ?? '';
+        $this->content = $this->getString($validatedData, 'content') ?? '';
+        $this->userId = $this->getInt($validatedData, 'user_id') ?? 0;
+        $this->userIp = $this->getString($validatedData, 'user_ip') ?? '';
+        $this->isPinned = $this->getBool($validatedData, 'is_pinned') ?? false;
         $this->status = PostStatus::from($validatedData['status']);
 
         // 處理發布日期，空字串轉為 null
-        $publishDate = $validatedData['publish_date'] ?? null;
-        $this->publishDate = ($publishDate === '') ? null : $publishDate;
+        $publishDate = $this->getString($validatedData, 'publish_date');
+        $this->publishDate = (!empty($publishDate)) ? $publishDate : null;
     }
 
     /**
@@ -86,7 +86,7 @@ class CreatePostDTO extends BaseDTO
 
             // 檢查長度
             $length = mb_strlen($title, 'UTF-8');
-            if ($length < $minLength || $length > $maxLength) {
+            if ($length > $maxLength) {
                 return false;
             }
 
@@ -189,7 +189,7 @@ class CreatePostDTO extends BaseDTO
             'content' => 'required|string|post_content:1',
             'user_id' => 'required|user_id',
             'user_ip' => 'required|ip_address',
-            'is_pinned' => 'boolean',
+            'is_pinned' => 'nullable|boolean',
             'status' => 'required|string|post_status',
             'publish_date' => 'rfc3339_datetime',
         ];

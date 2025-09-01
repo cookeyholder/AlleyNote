@@ -13,7 +13,7 @@ use RuntimeException;
  */
 class Stream implements StreamInterface
 {
-    private $stream;
+    private mixed $stream;
 
     private bool $seekable;
 

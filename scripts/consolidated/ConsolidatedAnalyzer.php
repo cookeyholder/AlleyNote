@@ -18,13 +18,13 @@ final readonly class ConsolidatedAnalyzer
         private AnalysisConfig $config
     ) {}
 
-    public function analyze(array $options = []): ScriptResult
+    public function analyze(array<mixed> $options = []): ScriptResult
     {
         $startTime = microtime(true);
         $details = [];
 
         try {
-            $type = $options['type'] ?? 'full';
+            $type = (is_array($options) ? $options['type'] : (is_object($options) ? $options->type : null)) ?? 'full';
 
             $result = match ($type) {
                 'full' => $this->performFullAnalysis(),
@@ -35,9 +35,9 @@ final readonly class ConsolidatedAnalyzer
             };
 
             return new ScriptResult(
-                success: $result['success'],
-                message: $result['message'],
-                details: array_merge($details, $result['details']),
+                success: (is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)),
+                message: (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)),
+                details: array_merge($details, (is_array($result) ? $result['details'] : (is_object($result) ? $result->details : null))),
                 executionTime: microtime(true) - $startTime
             );
         } catch (\Throwable $e) {
@@ -51,7 +51,7 @@ final readonly class ConsolidatedAnalyzer
         }
     }
 
-    private function performFullAnalysis(): array
+    private function performFullAnalysis(): array<mixed>
     {
         $command = "cd {$this->projectRoot} && php scripts/scan-project-architecture.php";
         $output = shell_exec($command);
@@ -63,7 +63,7 @@ final readonly class ConsolidatedAnalyzer
         ];
     }
 
-    private function performArchitectureAnalysis(): array
+    private function performArchitectureAnalysis(): array<mixed>
     {
         // 實作架構分析邏輯
         return [
@@ -73,7 +73,7 @@ final readonly class ConsolidatedAnalyzer
         ];
     }
 
-    private function performModernPhpAnalysis(): array
+    private function performModernPhpAnalysis(): array<mixed>
     {
         // 實作現代 PHP 分析邏輯
         return [
@@ -83,7 +83,7 @@ final readonly class ConsolidatedAnalyzer
         ];
     }
 
-    private function performDddAnalysis(): array
+    private function performDddAnalysis(): array<mixed>
     {
         // 實作 DDD 分析邏輯
         return [

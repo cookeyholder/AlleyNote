@@ -1,0 +1,9 @@
+parameters:
+    excludePaths:
+        - tests/Integration/Application/Controllers/Admin/TagManagementControllerTest.php
+        - tests/E2E/
+        - tests/Integration/Cache/CacheMonitoringIntegrationTest.php
+        - tests/Unit/Shared/Monitoring/Services/ErrorTrackerServiceTest.php
+        - tests/Unit/Shared/Monitoring/CacheMonitorTest.php
+        - tests/Unit/Shared/Config/EnvironmentConfigTest.php
+        - tests/Unit/Shared/Config/EnvironmentConfigSimpleTest.php

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Exceptions;
 
-use AlleyNote\Domains\Auth\Exceptions\RefreshTokenException;
+use App\Domains\Auth\Exceptions\RefreshTokenException;
 use PHPUnit\Framework\TestCase;
 
 /**

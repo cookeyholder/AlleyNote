@@ -1,8 +1,8 @@
 # AlleyNote API 文件
 
-**版本**: v3.0  
-**基礎 URL**: `https://your-domain.com/api`  
-**API 版本**: RESTful API v3.0  
+**版本**: v3.0
+**基礎 URL**: `https://your-domain.com/api`
+**API 版本**: RESTful API v3.0
 **更新日期**: 2025-08-28
 
 ---
@@ -17,9 +17,10 @@
 6. [認證 API](#認證-api)
 7. [附件 API](#附件-api)
 8. [IP 規則 API](#ip-規則-api)
-9. [API 文件產生](#api-文件產生)
-10. [錯誤代碼](#錯誤代碼)
-11. [速率限制](#速率限制)
+9. [使用者活動記錄 API](#使用者活動記錄-api)
+10. [API 文件產生](#api-文件產生)
+11. [錯誤代碼](#錯誤代碼)
+12. [速率限制](#速率限制)
 
 ---
 
@@ -30,7 +31,7 @@ AlleyNote API v3.0 提供完整的公布欄網站功能，基於 DDD 架構設�
 ### 新版本特色（v3.0）
 
 - ✅ **DDD 架構**: 領域驅動設計，161 classes, 37 interfaces
-- ✅ **統一腳本系統**: 9 core classes，85% 程式碼精簡  
+- ✅ **統一腳本系統**: 9 core classes，85% 程式碼精簡
 - ✅ **完整測試覆蓋**: 1,213 tests, 87.5% coverage
 - ✅ **強型別驗證**: 29 種內建驗證規則，繁體中文錯誤訊息
 - ✅ **統一錯誤格式**: 標準化的 API 錯誤回應
@@ -598,6 +599,303 @@ X-CSRF-TOKEN: token_here
 
 ---
 
+## 使用者活動記錄 API
+
+使用者活動記錄 API 提供完整的使用者行為監控和分析功能，支援實時記錄、批次處理和異常檢測。
+
+### 🔍 基礎資訊
+
+- **基礎路徑**: `/api/v1/activity-logs`
+- **認證要求**: Session 認證
+- **支援格式**: JSON
+- **版本**: v1.0
+
+### 📝 記錄新活動
+
+```http
+POST /api/v1/activity-logs
+Content-Type: application/json
+
+{
+    "action_type": "auth.login.success",
+    "user_id": 123,
+    "description": "使用者登入成功",
+    "metadata": {
+        "login_method": "password",
+        "remember_me": true,
+        "ip_address": "192.168.1.100",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    }
+}
+```
+
+**回應範例:**
+
+```json
+{
+    "success": true,
+    "message": "Activity logged successfully",
+    "data": {
+        "id": 12345,
+        "uuid": "550e8400-e29b-41d4-a716-446655440000",
+        "action_type": "auth.login.success",
+        "action_category": "authentication",
+        "user_id": 123,
+        "status": "success",
+        "description": "使用者登入成功",
+        "created_at": "2024-12-27T10:30:00Z"
+    }
+}
+```
+
+**請求欄位:**
+
+| 欄位 | 類型 | 必填 | 驗證規則 | 說明 |
+|------|------|------|----------|------|
+| `action_type` | string | 是 | required, valid_activity_type | 活動類型 (21 種預定義類型) |
+| `user_id` | integer | 否 | sometimes, integer | 使用者 ID，匿名活動可省略 |
+| `target_type` | string | 否 | sometimes, string, max_length:50 | 目標類型 (如 post, user, file) |
+| `target_id` | string | 否 | sometimes, string, max_length:255 | 目標 ID |
+| `description` | string | 否 | sometimes, string, max_length:1000 | 活動描述 |
+| `metadata` | object | 否 | sometimes, array | 額外的元資料 |
+
+### 📦 批次記錄活動
+
+```http
+POST /api/v1/activity-logs/batch
+Content-Type: application/json
+
+{
+    "logs": [
+        {
+            "action_type": "post.viewed",
+            "user_id": 123,
+            "target_type": "post",
+            "target_id": "456",
+            "metadata": {"view_duration": 30}
+        },
+        {
+            "action_type": "attachment.downloaded",
+            "user_id": 123,
+            "target_type": "attachment",
+            "target_id": "789",
+            "metadata": {"file_size": 1024000}
+        }
+    ]
+}
+```
+
+**回應範例:**
+
+```json
+{
+    "success": true,
+    "message": "Batch logging completed",
+    "data": {
+        "processed": 2,
+        "successful": 2,
+        "failed": 0,
+        "results": [
+            {
+                "index": 0,
+                "success": true,
+                "id": 12346,
+                "uuid": "550e8400-e29b-41d4-a716-446655440001"
+            },
+            {
+                "index": 1,
+                "success": true,
+                "id": 12347,
+                "uuid": "550e8400-e29b-41d4-a716-446655440002"
+            }
+        ]
+    }
+}
+```
+
+### 🔍 查詢活動記錄
+
+```http
+GET /api/v1/activity-logs?user_id=123&limit=50&page=1&action_category=authentication
+```
+
+**查詢參數:**
+
+| 參數 | 類型 | 必填 | 說明 |
+|------|------|------|------|
+| `user_id` | integer | 否 | 過濾特定使用者的活動 |
+| `action_type` | string | 否 | 過濾特定活動類型 |
+| `action_category` | string | 否 | 過濾活動類別 (authentication, content, file_management, security) |
+| `status` | string | 否 | 過濾狀態 (success, failed, error, blocked) |
+| `date_from` | string | 否 | 起始日期 (YYYY-MM-DD) |
+| `date_to` | string | 否 | 結束日期 (YYYY-MM-DD) |
+| `limit` | integer | 否 | 每頁記錄數 (預設 20，最大 100) |
+| `page` | integer | 否 | 頁碼 (預設 1) |
+| `order_by` | string | 否 | 排序欄位 (occurred_at, created_at) |
+| `order` | string | 否 | 排序方向 (asc, desc) |
+
+**回應範例:**
+
+```json
+{
+    "success": true,
+    "data": {
+        "items": [
+            {
+                "id": 12345,
+                "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                "action_type": "auth.login.success",
+                "action_category": "authentication",
+                "user_id": 123,
+                "status": "success",
+                "description": "使用者登入成功",
+                "ip_address": "192.168.1.100",
+                "occurred_at": "2024-12-27T10:30:00Z",
+                "created_at": "2024-12-27T10:30:00Z"
+            }
+        ],
+        "pagination": {
+            "current_page": 1,
+            "per_page": 20,
+            "total": 1,
+            "total_pages": 1,
+            "has_more": false
+        }
+    }
+}
+```
+
+### 📊 活動統計分析
+
+```http
+GET /api/v1/activity-logs/stats?user_id=123&period=7d
+```
+
+**回應範例:**
+
+```json
+{
+    "success": true,
+    "data": {
+        "period": "7d",
+        "total_activities": 1250,
+        "success_rate": 98.4,
+        "categories": {
+            "authentication": 125,
+            "content": 800,
+            "file_management": 250,
+            "security": 75
+        },
+        "daily_trend": [
+            {"date": "2024-12-21", "count": 150},
+            {"date": "2024-12-22", "count": 180},
+            {"date": "2024-12-23", "count": 200}
+        ],
+        "top_activities": [
+            {"type": "post.viewed", "count": 400},
+            {"type": "attachment.downloaded", "count": 200}
+        ]
+    }
+}
+```
+
+### 🚨 可疑活動檢測
+
+```http
+POST /api/v1/activity-logs/analyze-suspicious
+Content-Type: application/json
+
+{
+    "user_id": 123,
+    "time_window_minutes": 60,
+    "include_patterns": ["frequency", "failure_rate", "ip_behavior"]
+}
+```
+
+**回應範例:**
+
+```json
+{
+    "success": true,
+    "data": {
+        "is_suspicious": true,
+        "risk_score": 85,
+        "analysis_time": "2024-12-27T10:30:00Z",
+        "detected_patterns": [
+            {
+                "type": "high_failure_rate",
+                "description": "登入失敗率異常 (60% 在過去 1 小時)",
+                "risk_score": 75,
+                "details": {
+                    "failure_rate": 0.6,
+                    "threshold": 0.3,
+                    "failed_attempts": 12,
+                    "total_attempts": 20
+                }
+            },
+            {
+                "type": "unusual_activity_frequency",
+                "description": "活動頻率異常高",
+                "risk_score": 65,
+                "details": {
+                    "current_rate": "5 actions/minute",
+                    "normal_rate": "1 action/minute",
+                    "deviation": "400%"
+                }
+            }
+        ],
+        "recommendations": [
+            "考慮暫時限制該使用者的操作",
+            "增強身份驗證要求",
+            "監控後續活動模式"
+        ]
+    }
+}
+```
+
+### 📋 支援的活動類型
+
+| 類型 | 類別 | 描述 |
+|------|------|------|
+| `auth.login.success` | authentication | 登入成功 |
+| `auth.login.failed` | authentication | 登入失敗 |
+| `auth.logout` | authentication | 登出 |
+| `auth.password.changed` | authentication | 密碼變更 |
+| `post.created` | content | 文章建立 |
+| `post.updated` | content | 文章更新 |
+| `post.deleted` | content | 文章刪除 |
+| `post.viewed` | content | 文章檢視 |
+| `attachment.uploaded` | file_management | 附件上傳 |
+| `attachment.downloaded` | file_management | 附件下載 |
+| `attachment.deleted` | file_management | 附件刪除 |
+| `security.access_denied` | security | 存取被拒 |
+| `security.ip_blocked` | security | IP 被封鎖 |
+| `security.suspicious_activity` | security | 可疑活動 |
+
+### ⚠️ 錯誤處理
+
+```json
+{
+    "success": false,
+    "message": "Validation failed",
+    "errors": {
+        "action_type": ["活動類型必須是有效的預定義類型之一"]
+    },
+    "error_code": 422
+}
+```
+
+**常見錯誤代碼:**
+
+- `400` - 請求格式錯誤
+- `401` - 未認證
+- `403` - 權限不足
+- `422` - 驗證失敗
+- `429` - 請求過於頻繁
+- `500` - 伺服器內部錯誤
+
+---
+
 ## API 文件產生
 
 ### 🚀 使用統一腳本產生 API 文件
@@ -620,7 +918,7 @@ docker compose exec web php scripts/unified-scripts.php swagger:serve
 產生的 API 文件可透過以下方式存取：
 
 - **JSON 格式**: `http://localhost/api-docs.json`
-- **YAML 格式**: `http://localhost/api-docs.yaml`  
+- **YAML 格式**: `http://localhost/api-docs.yaml`
 - **Swagger UI**: `http://localhost/docs` (如果有啟用)
 
 ### 自動化整合
@@ -634,7 +932,7 @@ API 文件會在以下情況自動更新：
 
 - **OpenAPI 版本**: 3.0.3
 - **支援格式**: JSON, YAML
-- **包含內容**: 
+- **包含內容**:
   - 完整端點清單
   - 請求/回應範例
   - 資料模型定義
@@ -802,6 +1100,6 @@ X-CSRF-TOKEN: abc123def456
 
 ---
 
-*API 版本: v2.0*  
-*文件版本: v2.0*  
+*API 版本: v2.0*
+*文件版本: v2.0*
 *維護者: AlleyNote 開發團隊*

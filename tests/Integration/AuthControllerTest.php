@@ -4,35 +4,31 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
-use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use AlleyNote\Domains\Auth\DTOs\LoginResponseDTO;
-use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
-use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
-use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
 use App\Application\Controllers\Api\V1\AuthController;
+use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\DTOs\LoginResponseDTO;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\ValueObjects\TokenPair;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
 
 #[Group('integration')]
-#[Group('skip')]
 class AuthControllerTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     private AuthService|MockInterface $authService;
 
     private AuthenticationServiceInterface|MockInterface $authenticationService;
@@ -40,6 +36,8 @@ class AuthControllerTest extends TestCase
     private JwtTokenServiceInterface|MockInterface $jwtTokenService;
 
     private ValidatorInterface|MockInterface $validator;
+
+    private ActivityLoggingServiceInterface|MockInterface $activityLoggingService;
 
     private ServerRequestInterface|MockInterface $request;
 
@@ -54,6 +52,7 @@ class AuthControllerTest extends TestCase
         $this->authenticationService = Mockery::mock(AuthenticationServiceInterface::class);
         $this->jwtTokenService = Mockery::mock(JwtTokenServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
+        $this->activityLoggingService = Mockery::mock(ActivityLoggingServiceInterface::class);
 
         // 設置 Request Mock
         $this->request = Mockery::mock(ServerRequestInterface::class);
@@ -73,20 +72,21 @@ class AuthControllerTest extends TestCase
             ->with('user_id')
             ->andReturn(1);
 
-        // 設定 validator 預設行為
-        $this->validator->shouldReceive('validateOrFail')
-            ->andReturnUsing(function ($data, $rules) {
-                return $data; // 返回原始數據作為驗證通過的數據
-            });
+        // 設定 IP 地址相關的 header 方法
+        $this->request->shouldReceive('hasHeader')
+            ->andReturn(false);
 
-        $this->validator->shouldReceive('addRule')
-            ->andReturnNull();
+        $this->request->shouldReceive('getHeaderLine')
+            ->andReturn('');
 
-        $this->validator->shouldReceive('addMessage')
-            ->andReturnNull();
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn([]);
 
-        $this->validator->shouldReceive('stopOnFirstFailure')
-            ->andReturn($this->validator);
+        // 設定 ActivityLoggingService 的行為
+        $this->activityLoggingService->shouldReceive('log')
+            ->andReturn(true);
+
+        // 注意：每個測試方法需要自行設定 validator 的 mock 行為
 
         $this->response->shouldReceive('getStatusCode')->andReturnUsing(function () {
             return $this->statusCode;
@@ -94,8 +94,6 @@ class AuthControllerTest extends TestCase
 
         $this->response->shouldReceive('withHeader')->andReturnSelf();
 
-        /** @var StreamInterface::class|MockInterface */
-        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $writtenContent = '';
         $stream->shouldReceive('write')->andReturnUsing(function ($content) use (&$writtenContent) {
@@ -115,7 +113,8 @@ class AuthControllerTest extends TestCase
         Mockery::close();
     }
 
-    public function testRegisterUserSuccessfully(): void
+    #[Test]
+    public function registerUserSuccessfully(): void
     {
         $userData = [
             'username' => 'testuser',
@@ -128,6 +127,22 @@ class AuthControllerTest extends TestCase
         // 設定 Mock 期望和請求數據
         $this->request->shouldReceive('getParsedBody')->andReturn($userData);
 
+        // 設定驗證器成功通過
+        $this->validator->shouldReceive('validateOrFail')
+            ->once()
+            ->andReturnUsing(function ($data, $rules) {
+                return $data; // 返回原始數據作為驗證通過的數據
+            });
+
+        $this->validator->shouldReceive('addRule')
+            ->andReturnNull();
+
+        $this->validator->shouldReceive('addMessage')
+            ->andReturnNull();
+
+        $this->validator->shouldReceive('stopOnFirstFailure')
+            ->andReturn($this->validator);
+
         $this->authService->shouldReceive('register')
             ->once()
             ->with(Mockery::type(RegisterUserDTO::class))
@@ -139,7 +154,7 @@ class AuthControllerTest extends TestCase
             ]);
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -150,7 +165,8 @@ class AuthControllerTest extends TestCase
         $this->assertEquals('註冊成功', $responseData['message']);
     }
 
-    public function testReturnValidationErrorsForInvalidRegistrationData(): void
+    #[Test]
+    public function returnValidationErrorsForInvalidRegistrationData(): void
     {
         $invalidData = [
             'username' => '', // 空白用戶名
@@ -163,15 +179,20 @@ class AuthControllerTest extends TestCase
         // 設定 Mock 期望和請求數據
         $this->request->shouldReceive('getParsedBody')->andReturn($invalidData);
 
-        // 重新設定 validator mock，覆蓋 setUp 中的預設設定
-        $this->validator = Mockery::mock(ValidatorInterface::class);
-        $this->validator->shouldReceive('addRule')->andReturnNull();
-        $this->validator->shouldReceive('addMessage')->andReturnNull();
-        $this->validator->shouldReceive('stopOnFirstFailure')->andReturnSelf();
+        // 設定驗證器的基本方法
+        $this->validator->shouldReceive('addRule')
+            ->andReturnNull();
+
+        $this->validator->shouldReceive('addMessage')
+            ->andReturnNull();
+
+        $this->validator->shouldReceive('stopOnFirstFailure')
+            ->andReturn($this->validator);
 
         // 驗證器應該拋出驗證異常
         $this->validator->shouldReceive('validateOrFail')
             ->once()
+            ->with($invalidData, Mockery::any())
             ->andThrow(new ValidationException(
                 ValidationResult::failure(['username' => ['使用者名稱不能為空']]),
             ));
@@ -180,14 +201,15 @@ class AuthControllerTest extends TestCase
         $this->authService->shouldNotReceive('register');
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
         $this->assertEquals(400, $response->getStatusCode()); // 驗證失敗應該返回400
     }
 
-    public function testLoginUserSuccessfully(): void
+    #[Test]
+    public function loginUserSuccessfully(): void
     {
         $credentials = [
             'email' => 'test@example.com',
@@ -196,149 +218,131 @@ class AuthControllerTest extends TestCase
 
         // 設定 Mock 期望和請求數據
         $this->request->shouldReceive('getParsedBody')->andReturn($credentials);
-        $this->request->shouldReceive('getHeaderLine')->with('User-Agent')->andReturn('Test User Agent');
+        $this->request->shouldReceive('getHeaderLine')
+            ->with('User-Agent')
+            ->andReturn('Mozilla/5.0 (Test Browser)');
+        $this->request->shouldReceive('getHeaderLine')
+            ->with('X-Forwarded-For')
+            ->andReturn('');
+        $this->request->shouldReceive('getHeaderLine')
+            ->with('X-Real-IP')
+            ->andReturn('');
+        $this->request->shouldReceive('getServerParams')
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
 
-        // Mock getClientIpAddress 所需的 header 檢查
-        $this->request->shouldReceive('hasHeader')->andReturn(false);
-        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
+        // 設定驗證器的基本方法
+        $this->validator->shouldReceive('addRule')
+            ->andReturnNull();
 
-        // 模擬 AuthenticationService 的成功回應
-        $accessTokenExpiresAt = new DateTimeImmutable('+1 hour');
-        $refreshTokenExpiresAt = new DateTimeImmutable('+30 days');
+        $this->validator->shouldReceive('addMessage')
+            ->andReturnNull();
 
-        // 使用有效的 JWT 格式（假的但格式正確）
-        $fakeAccessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6ImFjY2VzcyJ9.fake-signature';
-        $fakeRefreshToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6InJlZnJlc2gifQ.fake-signature';
+        $this->validator->shouldReceive('stopOnFirstFailure')
+            ->andReturn($this->validator);
 
-        $mockTokenPair = new TokenPair(
-            accessToken: $fakeAccessToken,
-            refreshToken: $fakeRefreshToken,
-            accessTokenExpiresAt: $accessTokenExpiresAt,
-            refreshTokenExpiresAt: $refreshTokenExpiresAt,
-            tokenType: 'Bearer',
+        $this->validator->shouldReceive('validateOrFail')
+            ->once()
+            ->andReturnUsing(function ($data, $rules) {
+                return $data; // 返回原始數據作為驗證通過的數據
+            });
+
+        // Mock AuthenticationService 的 login 方法
+        $tokenPair = new TokenPair(
+            'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6InRlc3QifQ.fake-signature',
+            'fake-refresh-token-string-123456',
+            new DateTimeImmutable('+1 hour'),
+            new DateTimeImmutable('+7 days'),
+            'Bearer',
         );
 
-        $mockLoginResponse = new LoginResponseDTO(
-            tokens: $mockTokenPair,
-            userId: 1,
-            userEmail: 'test@example.com',
-            expiresAt: $accessTokenExpiresAt->getTimestamp(),
-            sessionId: 'test-session-id',
-            permissions: ['read', 'write'],
+        $loginResponse = new LoginResponseDTO(
+            $tokenPair,
+            1,
+            'test@example.com',
+            time() + 3600,
+            'session-id',
+            [],
         );
 
         $this->authenticationService->shouldReceive('login')
             ->once()
-            ->andReturn($mockLoginResponse);        // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
+            ->andReturn($loginResponse);
+
+        // Mock ActivityLoggingService
+        $this->activityLoggingService->shouldReceive('logActivity')
+            ->once()
+            ->andReturn(true);
+
+        // 建立控制器並執行
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應
         $this->assertEquals(200, $response->getStatusCode());
+        $responseBody = (string) $response->getBody();
+        $responseData = json_decode($responseBody, true);
+        $this->assertTrue($responseData['success']);
     }
 
-    public function testReturnErrorForInvalidLogin(): void
+    #[Test]
+    public function returnErrorForInvalidLogin(): void
     {
         $invalidCredentials = [
-            'email' => 'test@example.com',
+            'username' => 'testuser',
             'password' => 'wrongpassword',
         ];
 
         // 設定 Mock 期望和請求數據
         $this->request->shouldReceive('getParsedBody')->andReturn($invalidCredentials);
-        $this->request->shouldReceive('getHeaderLine')->with('User-Agent')->andReturn('Test User Agent');
 
-        // Mock getClientIpAddress 所需的 header 檢查
-        $this->request->shouldReceive('hasHeader')->andReturn(false);
-        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
-
-        $this->authenticationService->shouldReceive('login')
+        $this->authService->shouldReceive('login')
             ->once()
+            ->with($invalidCredentials)
             ->andThrow(new InvalidArgumentException('無效的憑證'));
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
         $response = $controller->login($this->request, $this->response);
 
-        // 驗證回應 - 當 AuthenticationService 拋出 InvalidArgumentException 時，控制器返回 400
+        // 驗證回應 - 當 AuthService 拋出 InvalidArgumentException 時，控制器返回 400
         $this->assertTrue($response->getStatusCode() >= 400); // 接受4xx或5xx錯誤狀態碼
     }
 
-    public function testLogoutUserSuccessfully(): void
+    #[Test]
+    public function logoutUserSuccessfully(): void
     {
-        // 準備登出請求資料
+        // 設定請求數據
         $logoutData = [
-            'access_token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6ImFjY2VzcyJ9.fake-signature',
-            'refresh_token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJ0b2tlbi1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODE0MDE1NSwidHlwZSI6InJlZnJlc2gifQ.fake-signature',
+            'access_token' => 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6InRlc3QifQ.fake-signature',
+            'refresh_token' => 'fake-refresh-token',
+            'logout_all_devices' => false,
         ];
 
-        // 設定 Mock 期望和請求數據
+        // 設定請求 mock
         $this->request->shouldReceive('getParsedBody')->andReturn($logoutData);
-        $this->request->shouldReceive('getHeaderLine')->with('Authorization')->andReturn('');
-        $this->request->shouldReceive('getHeaderLine')->with('User-Agent')->andReturn('Test User Agent');
+        $this->request->shouldReceive('getHeaderLine')
+            ->with('Authorization')
+            ->andReturn('Bearer ' . $logoutData['access_token']);
 
-        // Mock getClientIpAddress 所需的 header 檢查
-        $this->request->shouldReceive('hasHeader')->andReturn(false);
-        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
-
-        // Mock AuthenticationService 的登出方法 - 接受 LogoutRequestDTO
+        // Mock AuthenticationService 的 logout 方法
         $this->authenticationService->shouldReceive('logout')
             ->once()
-            ->with(Mockery::type(LogoutRequestDTO::class))
+            ->andReturn(true);
+
+        // Mock ActivityLoggingService
+        $this->activityLoggingService->shouldReceive('logActivity')
+            ->once()
             ->andReturn(true);
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
         $response = $controller->logout($this->request, $this->response);
 
         // 驗證回應
         $this->assertEquals(200, $response->getStatusCode());
-    }
-
-    public function testGetUserInfoSuccessfully(): void
-    {
-        // Mock request with Authorization header
-        $this->request->shouldReceive('getHeaderLine')
-            ->with('Authorization')
-            ->andReturn('Bearer valid.jwt.token');
-
-        // 建立真實的 JwtPayload 物件 (因為是 final class 無法 mock)
-        $now = new DateTimeImmutable();
-        $expiresAt = $now->modify('+1 hour');
-
-        $mockPayload = new JwtPayload(
-            jti: 'test-jti-123',
-            sub: '1',
-            iss: 'test-issuer',
-            aud: ['test-app'],
-            iat: $now,
-            exp: $expiresAt,
-            customClaims: [
-                'email' => 'test@example.com',
-                'name' => 'Test User',
-            ],
-        );
-
-        $this->jwtTokenService->shouldReceive('validateAccessToken')
-            ->with('valid.jwt.token')
-            ->andReturn($mockPayload);
-
-        // Mock response body
-        $this->response->shouldReceive('getBody->write')
-            ->with(Mockery::type('string'))
-            ->andReturnSelf();
-        $this->response->shouldReceive('withStatus')
-            ->with(200)
-            ->andReturnSelf();
-        $this->response->shouldReceive('withHeader')
-            ->with('Content-Type', 'application/json')
-            ->andReturnSelf();
-
-        // 建立控制器並執行 me() 方法
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator);
-        $response = $controller->me($this->request, $this->response);
-
-        // 驗證回應狀態碼
-        $this->assertEquals(200, $response->getStatusCode());
+        $responseBody = (string) $response->getBody();
+        $responseData = json_decode($responseBody, true);
+        $this->assertTrue($responseData['success']);
+        $this->assertEquals('登出成功', $responseData['message']);
     }
 }

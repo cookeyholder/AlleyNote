@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\Entities;
+namespace App\Domains\Auth\Entities;
 
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use InvalidArgumentException;
 use JsonSerializable;

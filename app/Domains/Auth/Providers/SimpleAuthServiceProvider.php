@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Providers;
 
-use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
-use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
-use AlleyNote\Domains\Auth\Services\JwtTokenService;
-use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
-use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
-use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Application\Middleware\JwtAuthorizationMiddleware;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
+use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\Services\JwtTokenService;
+use App\Domains\Auth\Services\TokenBlacklistService;
 use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
+use App\Infrastructure\Auth\Repositories\RefreshTokenRepository;
+use App\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use App\Shared\Config\JwtConfig;
 use PDO;
 use Psr\Container\ContainerInterface;

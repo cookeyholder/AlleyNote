@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\IpRepositoryInterface;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Domains\Security\Models\IpList;
@@ -21,6 +22,8 @@ class IpServiceTest extends TestCase
 
     private IpRepositoryInterface $repository;
 
+    private ActivityLoggingServiceInterface $activityLogger;
+
     private ValidatorInterface $validator;
 
     private IpService $service;
@@ -29,6 +32,7 @@ class IpServiceTest extends TestCase
     {
         parent::setUp();
         $this->repository = Mockery::mock(IpRepositoryInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
 
         // 設定 Validator Mock 的通用預期
@@ -39,7 +43,7 @@ class IpServiceTest extends TestCase
             ->zeroOrMoreTimes()
             ->andReturnSelf();
 
-        $this->service = new IpService($this->repository);
+        $this->service = new IpService($this->repository, $this->activityLogger);
     }
 
     public function testCanCreateIpRule(): void

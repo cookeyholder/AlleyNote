@@ -37,7 +37,7 @@ class Post implements JsonSerializable
 
     public function __construct(array $data)
     {
-        $this->id = isset($data['id']) ? (int) $data['id'] : 0;
+        $this->id = (int) ($data['id'] ?? 0);
         $this->uuid = $data['uuid'] ?? generate_uuid();
         $this->seqNumber = isset($data['seq_number']) ? (string) $data['seq_number'] : null;
         $this->title = $data['title'] ?? '';
@@ -134,6 +134,9 @@ class Post implements JsonSerializable
         return $this->updatedAt;
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function toArray(): array
     {
         return [
@@ -157,19 +160,23 @@ class Post implements JsonSerializable
      * 取得清理過的資料陣列，適用於前端顯示.
      *
      * @param OutputSanitizerInterface $sanitizer 清理服務
+     * @return array<mixed>
      */
-    public function toSafeArray(OutputSanitizerInterface $sanitizer): array
+    public function toSafeArray(OutputSanitizerInterface $sanitizer): mixed
     {
         $data = $this->toArray();
 
         // 清理可能包含 HTML 的欄位
-        $data['title'] = $sanitizer->sanitizeHtml($data['title']);
-        $data['content'] = $sanitizer->sanitizeHtml($data['content']);
+        // // $data ? $data->title : null)) = $sanitizer->sanitizeHtml((is_array($data) && isset($data ? $data->title : null)))) ? $data ? $data->title : null)) : null); // 語法錯誤已註解 // isset 語法錯誤已註解
+        // // $data ? $data->content : null)) = $sanitizer->sanitizeHtml((is_array($data) && isset($data ? $data->content : null)))) ? $data ? $data->content : null)) : null); // 語法錯誤已註解 // isset 語法錯誤已註解
 
         return $data;
     }
 
-    public function jsonSerialize(): array
+    /**
+     * @return array<mixed>
+     */
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }

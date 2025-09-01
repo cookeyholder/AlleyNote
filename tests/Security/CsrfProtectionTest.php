@@ -7,12 +7,13 @@ namespace Tests\Security;
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -20,8 +21,6 @@ use Tests\TestCase;
 
 class CsrfProtectionTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     private PostServiceInterface $postService;
 
     private ValidatorInterface $validator;
@@ -60,10 +59,16 @@ class CsrfProtectionTest extends TestCase
         $this->response = Mockery::mock(ResponseInterface::class);
         $this->stream = Mockery::mock(StreamInterface::class);
 
+        $activityLoggerMock = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $activityLoggerMock->shouldReceive('log')->byDefault()->andReturn(true);
+        $activityLoggerMock->shouldReceive('logFailure')->byDefault()->andReturn(true);
+        $activityLoggerMock->shouldReceive('logSuccess')->byDefault()->andReturn(true);
+
         $this->controller = new PostController(
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $activityLoggerMock,
         );
 
         // 設定預設回應行為
@@ -139,7 +144,8 @@ class CsrfProtectionTest extends TestCase
             ->byDefault();
     }
 
-    public function testShouldRejectRequestWithoutCsrfToken(): void
+    #[Test]
+    public function shouldRejectRequestWithoutCsrfToken(): void
     {
         // 準備測試資料
         $postData = [
@@ -187,7 +193,8 @@ class CsrfProtectionTest extends TestCase
         $this->assertTrue($response->getStatusCode() === 201 || $response->getStatusCode() === 403);
     }
 
-    public function testShouldRejectRequestWithInvalidCsrfToken(): void
+    #[Test]
+    public function shouldRejectRequestWithInvalidCsrfToken(): void
     {
         // 準備測試資料
         $postData = [
@@ -235,7 +242,8 @@ class CsrfProtectionTest extends TestCase
         $this->assertTrue($response->getStatusCode() === 201 || $response->getStatusCode() === 403);
     }
 
-    public function testShouldAcceptRequestWithValidCsrfToken(): void
+    #[Test]
+    public function shouldAcceptRequestWithValidCsrfToken(): void
     {
         // 準備測試資料
         $postData = [

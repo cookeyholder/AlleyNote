@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Auth\Repositories;
 
-use AlleyNote\Domains\Auth\Entities\RefreshToken;
-use AlleyNote\Domains\Auth\Exceptions\RefreshTokenException;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
-use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
+use App\Domains\Auth\Entities\RefreshToken;
+use App\Domains\Auth\Exceptions\RefreshTokenException;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Infrastructure\Auth\Repositories\RefreshTokenRepository;
 use DateTime;
 use PDO;
 use PDOException;

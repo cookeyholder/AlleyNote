@@ -16,7 +16,10 @@
 .phpunit.cache
 coverage/
 .idea/
-.vscode/
+# VS Code user settings (keep project settings)
+.vscode/settings.json.user
+.vscode/launch.json
+.vscode/tasks.json.user
 *.sqlite
 *.sqlite3
 *.sqlite-journal

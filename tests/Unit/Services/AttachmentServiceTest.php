@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
+use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Models\Post;
 use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use App\Shared\Exceptions\ValidationException;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use Psr\Http\Message\StreamInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\UploadedFileInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -22,8 +23,6 @@ use Tests\TestCase;
 
 class AttachmentServiceTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     protected AttachmentService $service;
 
     protected string $uploadDir;
@@ -35,6 +34,8 @@ class AttachmentServiceTest extends TestCase
     protected CacheService|MockInterface $attachmentCache;
 
     protected AuthorizationService|MockInterface $authService;
+
+    protected ActivityLoggingServiceInterface|MockInterface $activityLogger;
 
     protected function setUp(): void
     {
@@ -48,18 +49,50 @@ class AttachmentServiceTest extends TestCase
         $this->postRepo = Mockery::mock(PostRepository::class);
         $this->attachmentCache = Mockery::mock(CacheService::class);
         $this->authService = Mockery::mock(AuthorizationService::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
 
         $this->service = new AttachmentService(
             $this->attachmentRepo,
             $this->postRepo,
             $this->authService,
+            $this->activityLogger,
             $this->uploadDir,
         );
 
-        // 不要在 setUp 中設定 create 的預期，讓各個測試自己設定
+        // 設置AttachmentRepository mock期望
+        $this->attachmentRepo->shouldReceive('create')
+            ->andReturn(new Attachment([
+                'id' => 1,
+                'uuid' => 'test-uuid',
+                'post_id' => 1,
+                'filename' => 'test.jpg',
+                'original_name' => 'test.jpg',
+                'file_size' => 1024,
+                'mime_type' => 'image/jpeg',
+                'storage_path' => '/uploads/test.jpg',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]));
+
+        $this->attachmentRepo->shouldReceive('findById')
+            ->andReturn(null);
+
+        $this->attachmentRepo->shouldReceive('delete')
+            ->andReturn(true);
+
+        // 設置 ActivityLoggingService mock 期望
+        $this->activityLogger->shouldReceive('log')
+            ->andReturn();
+        $this->activityLogger->shouldReceive('logSuccess')
+            ->andReturn();
+        $this->activityLogger->shouldReceive('logFailure')
+            ->andReturn();
     }
 
-    public function testShouldUploadFileSuccessfully(): void
+    #[Test]
+    public function shouldUploadFileSuccessfully(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -79,12 +112,6 @@ class AttachmentServiceTest extends TestCase
             ->andReturn(false);
 
         // 模擬文章存在且用戶是文章擁有者
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var mixed */
         $post = Mockery::mock(Post::class);
         $post->shouldReceive('getId')->andReturn($postId);
         $post->shouldReceive('getUserId')->andReturn(1); // 文章擁有者是 userId = 1
@@ -94,18 +121,27 @@ class AttachmentServiceTest extends TestCase
             ->with($postId)
             ->andReturn($post);
 
+        // 模擬檔案上傳
+        $file->shouldReceive('moveTo')
+            ->andReturnUsing(function ($path) {
+                // 實際建立檔案並設定權限
+                file_put_contents($path, 'test content');
+                chmod($path, 0o644);
+
+                return null;
+            });
+
         // 模擬附件建立
         $this->attachmentRepo->shouldReceive('create')
             ->once()
-            ->withArgs(function ($args) use ($postId) {
-                return is_array($args)
-                    && $args['post_id'] === $postId
-                    && $args['original_name'] === 'test.jpg'
-                    && isset($args['filename'])
-                    && isset($args['file_size'])
-                    && isset($args['mime_type'])
-                    && isset($args['storage_path']);
-            })
+            ->with(Mockery::subset([
+                'post_id' => $postId,
+                'original_name' => 'test.jpg',
+                'filename' => Mockery::any(),
+                'file_size' => Mockery::any(),
+                'mime_type' => Mockery::any(),
+                'storage_path' => Mockery::any(),
+            ]))
             ->andReturn(Mockery::mock('App\Domains\Attachment\Models\Attachment'));
 
         // 執行測試
@@ -115,7 +151,8 @@ class AttachmentServiceTest extends TestCase
         $this->assertNotNull($result);
     }
 
-    public function testShouldRejectInvalidFileType(): void
+    #[Test]
+    public function shouldRejectInvalidFileType(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -133,12 +170,6 @@ class AttachmentServiceTest extends TestCase
             ->andReturn(false);
 
         // 模擬文章存在且用戶是文章擁有者
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var mixed */
         $post = Mockery::mock(Post::class);
         $post->shouldReceive('getId')->andReturn($postId);
         $post->shouldReceive('getUserId')->andReturn(1); // 文章擁有者是 userId = 1
@@ -156,7 +187,8 @@ class AttachmentServiceTest extends TestCase
         $this->service->upload($postId, $file, 1); // userId = 1
     }
 
-    public function testShouldRejectOversizedFile(): void
+    #[Test]
+    public function shouldRejectOversizedFile(): void
     {
         // 準備測試資料
         $postId = 1;
@@ -174,12 +206,6 @@ class AttachmentServiceTest extends TestCase
             ->andReturn(false);
 
         // 模擬文章存在且用戶是文章擁有者
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var Post::class|MockInterface */
-        /** @var mixed */
         $post = Mockery::mock(Post::class);
         $post->shouldReceive('getId')->andReturn($postId);
         $post->shouldReceive('getUserId')->andReturn(1); // 文章擁有者是 userId = 1
@@ -197,7 +223,8 @@ class AttachmentServiceTest extends TestCase
         $this->service->upload($postId, $file, 1); // userId = 1
     }
 
-    public function testShouldRejectUploadToNonExistentPost(): void
+    #[Test]
+    public function shouldRejectUploadToNonExistentPost(): void
     {
         // 準備測試資料
         $postId = 999;
@@ -234,8 +261,7 @@ class AttachmentServiceTest extends TestCase
         int $size,
         int $error,
     ): UploadedFileInterface {
-        // Create stream mock
-        $stream = Mockery::mock(StreamInterface::class);
+        $stream = Mockery::mock('Psr\Http\Message\StreamInterface');
         $stream->shouldReceive('getContents')->andReturn('test content');
         $stream->shouldReceive('rewind')->andReturnNull();
 

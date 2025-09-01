@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\UI;
+
+use PHPUnit\Framework\Attributes\Test;
 
 class UserExperienceTest extends UITestCase
 {
-    public function testShouldMeetAccessibilityStandards(): void
+    #[Test]
+    public function shouldMeetAccessibilityStandards(): void
     {
         // 啟動瀏覽器
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -40,7 +45,8 @@ class UserExperienceTest extends UITestCase
         $this->browserAction('close');
     }
 
-    public function testShouldProvideGoodUserInteraction(): void
+    #[Test]
+    public function shouldProvideGoodUserInteraction(): void
     {
         // 啟動瀏覽器
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -61,7 +67,8 @@ class UserExperienceTest extends UITestCase
         $this->browserAction('close');
     }
 
-    public function testShouldPerformWell(): void
+    #[Test]
+    public function shouldPerformWell(): void
     {
         // 啟動瀏覽器
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -79,7 +86,8 @@ class UserExperienceTest extends UITestCase
         $this->browserAction('close');
     }
 
-    public function testShouldHandleErrors(): void
+    #[Test]
+    public function shouldHandleErrors(): void
     {
         // 啟動瀏覽器
         $this->browserAction('launch', 'http://localhost:8080/posts');

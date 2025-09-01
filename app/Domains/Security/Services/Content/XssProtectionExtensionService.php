@@ -139,7 +139,7 @@ class XssProtectionExtensionService
     private function protectPostTitle(string $input, array $options): array
     {
         // 標題不允許任何 HTML
-        $cleaned = $this->baseXssProtection->cleanStrict($input);
+        $cleaned = $this->baseXssProtection->strictClean($input);
 
         // 長度限制
         if (strlen($cleaned) > $this->config['max_title_length']) {
@@ -221,7 +221,7 @@ class XssProtectionExtensionService
     private function protectSearchQuery(string $input, array $options): array
     {
         // 搜尋查詢完全不允許 HTML
-        $cleaned = $this->baseXssProtection->cleanStrict($input);
+        $cleaned = $this->baseXssProtection->strictClean($input);
 
         // 移除特殊字元
         $cleaned = preg_replace('/[<>"\']/', '', $cleaned);
@@ -281,12 +281,12 @@ class XssProtectionExtensionService
         $cleaned = $this->cleanJsonRecursively($decoded);
 
         return [
-            'protected_content' => json_encode($cleaned, JSON_UNESCAPED_UNICODE),
+            'protected_content' => (json_encode($cleaned, JSON_UNESCAPED_UNICODE) ?? ''),
             'context' => 'json_data',
             'protection_level' => 'enhanced',
             'modifications' => $decoded !== $cleaned ? [['type' => 'json_sanitization', 'description' => 'JSON 資料已清理']] : [],
             'warnings' => [],
-            'security_score' => $this->calculateSecurityScore($input, json_encode($cleaned)),
+            'security_score' => $this->calculateSecurityScore($input, (json_encode($cleaned) ?? '')),
         ];
     }
 
@@ -343,7 +343,7 @@ class XssProtectionExtensionService
     /**
      * 遞迴清理 JSON 資料.
      */
-    private function cleanJsonRecursively($data)
+    private function cleanJsonRecursively(mixed $data)
     {
         if (is_array($data)) {
             return array_map([$this, 'cleanJsonRecursively'], $data);

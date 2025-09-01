@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Entities;
 
-use AlleyNote\Domains\Auth\Entities\RefreshToken;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\Entities\RefreshToken;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;

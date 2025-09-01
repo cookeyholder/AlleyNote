@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\UI;
+
+use PHPUnit\Framework\Attributes\Test;
 
 class PostUITest extends UITestCase
 {
-    public function testShouldDisplayPostList(): void
+    #[Test]
+    public function shouldDisplayPostList(): void
     {
         // 使用 browserAction 工具來測試文章列表頁面
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -25,7 +30,8 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    public function testShouldCreateNewPost(): void
+    #[Test]
+    public function shouldCreateNewPost(): void
     {
         // 登入系統
         $this->login();
@@ -65,7 +71,8 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    public function testShouldEditExistingPost(): void
+    #[Test]
+    public function shouldEditExistingPost(): void
     {
         // 登入系統
         $this->login();
@@ -97,7 +104,8 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    public function testShouldDeletePost(): void
+    #[Test]
+    public function shouldDeletePost(): void
     {
         // 登入系統
         $this->login();
@@ -124,7 +132,8 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    public function testShouldHandleResponsiveLayout(): void
+    #[Test]
+    public function shouldHandleResponsiveLayout(): void
     {
         // 測試不同螢幕尺寸下的版面配置
         $this->browserAction('launch', 'http://localhost:8080/posts');
@@ -145,7 +154,8 @@ class PostUITest extends UITestCase
         $this->browserAction('close');
     }
 
-    public function testShouldSupportDarkMode(): void
+    #[Test]
+    public function shouldSupportDarkMode(): void
     {
         // 測試深色模式切換
         $this->browserAction('launch', 'http://localhost:8080/posts');

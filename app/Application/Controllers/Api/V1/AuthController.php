@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
-use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
-use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use AlleyNote\Domains\Auth\DTOs\LoginRequestDTO;
-use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
-use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Application\Controllers\BaseController;
+use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\DTOs\LoginRequestDTO;
+use App\Domains\Auth\DTOs\LogoutRequestDTO;
+use App\Domains\Auth\DTOs\RefreshRequestDTO;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Domains\Security\DTOs\CreateActivityLogDTO;
+use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
@@ -38,6 +41,7 @@ class AuthController extends BaseController
         private AuthenticationServiceInterface $authenticationService,
         private JwtTokenServiceInterface $jwtTokenService,
         private ValidatorInterface $validator,
+        private ActivityLoggingServiceInterface $activityLoggingService,
     ) {}
 
     /**
@@ -203,8 +207,38 @@ class AuthController extends BaseController
     {
         try {
             $data = $request->getParsedBody();
+
+            // 確保 $data 是陣列
+            if (!is_array($data)) {
+                $errorResponse = json_encode([
+                    'success' => false,
+                    'message' => 'Invalid request data format',
+                    'error_code' => 400,
+                ]) ?: '{"error": "JSON encoding failed"}';
+
+                $response->getBody()->write($errorResponse);
+
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
             $dto = new RegisterUserDTO($this->validator, $data);
             $user = $this->authService->register($dto);
+
+            // 記錄成功註冊活動
+            $activityDto = CreateActivityLogDTO::success(
+                actionType: ActivityType::USER_REGISTERED,
+                userId: $user['id'],
+                metadata: [
+                    'email' => $user['email'],
+                    'username' => $user['username'],
+                    'registration_timestamp' => date('c'),
+                ],
+            )->withNetworkInfo(
+                $this->getClientIpAddress($request),
+                $request->getHeaderLine('User-Agent') ?: 'Unknown',
+            );
+
+            $this->activityLoggingService->log($activityDto);
 
             $responseData = [
                 'success' => true,
@@ -212,7 +246,7 @@ class AuthController extends BaseController
                 'data' => $user,
             ];
 
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(201)
@@ -223,7 +257,7 @@ class AuthController extends BaseController
                 'error' => $e->getMessage(),
             ];
 
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(400)
@@ -233,7 +267,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(404)
@@ -243,7 +277,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(400)
@@ -254,7 +288,7 @@ class AuthController extends BaseController
                 'error' => '系統發生錯誤',
             ];
 
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(500)
@@ -337,7 +371,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少必要的登入資料',
                 ];
-                $response->getBody()->write(json_encode($responseData));
+                $response->getBody()->write((json_encode($responseData) ?? ''));
 
                 return $response
                     ->withStatus(400)
@@ -357,6 +391,19 @@ class AuthController extends BaseController
             // 執行 JWT 認證登入
             $loginResponse = $this->authenticationService->login($loginRequest, $deviceInfo);
 
+            // 記錄成功登入活動
+            $activityDto = CreateActivityLogDTO::success(
+                actionType: ActivityType::LOGIN_SUCCESS,
+                userId: $loginResponse->userId,
+                metadata: [
+                    'email' => $loginRequest->email,
+                    'device_info' => $deviceInfo->toArray(),
+                    'login_timestamp' => date('c'),
+                ],
+            )->withNetworkInfo($deviceInfo->getIpAddress(), $deviceInfo->getUserAgent());
+
+            $this->activityLoggingService->log($activityDto);
+
             // 使用 DTO 內建的 toArray 方法
             $result = [
                 'success' => true,
@@ -364,48 +411,68 @@ class AuthController extends BaseController
                 ...$loginResponse->toArray(),
             ];
 
-            $response->getBody()->write(json_encode($result));
+            $response->getBody()->write((json_encode($result) ?? ''));
 
             return $response
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
+            // 記錄登入失敗 - 驗證錯誤
+            if (isset($credentials['email'])) {
+                $this->logLoginFailure($request, $credentials['email'], $e->getMessage());
+            }
+
             $responseData = [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
+            // 記錄登入失敗 - 使用者不存在
+            if (isset($credentials['email'])) {
+                $this->logLoginFailure($request, $credentials['email'], '使用者名稱或密碼錯誤');
+            }
+
             $responseData = [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
+            // 記錄登入失敗 - 密碼錯誤或其他驗證失敗
+            if (isset($credentials['email'])) {
+                $this->logLoginFailure($request, $credentials['email'], '使用者名稱或密碼錯誤');
+            }
+
             $responseData = [
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
+            // 記錄登入失敗 - 系統錯誤
+            if (isset($credentials['email'])) {
+                $this->logLoginFailure($request, $credentials['email'], '系統發生錯誤');
+            }
+
             $responseData = [
                 'success' => false,
                 'error' => '系統發生錯誤',
             ];
 
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(500)
@@ -481,12 +548,29 @@ class AuthController extends BaseController
             // 執行登出
             $this->authenticationService->logout($logoutRequest);
 
+            // 記錄成功登出活動
+            // 注意：此時可能無法取得使用者ID，因為token可能已失效
+            $activityDto = CreateActivityLogDTO::success(
+                actionType: ActivityType::LOGOUT,
+                userId: null, // 登出時通常無法確定使用者ID
+                description: '使用者登出',
+                metadata: [
+                    'logout_timestamp' => date('c'),
+                    'logout_all_devices' => $requestData['logout_all_devices'] ?? false,
+                ],
+            )->withNetworkInfo(
+                $this->getClientIpAddress($request),
+                $request->getHeaderLine('User-Agent') ?: 'Unknown',
+            );
+
+            $this->activityLoggingService->log($activityDto);
+
             $responseData = [
                 'success' => true,
                 'message' => '登出成功',
             ];
 
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(200)
@@ -496,7 +580,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(400)
@@ -506,7 +590,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(404)
@@ -516,7 +600,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(400)
@@ -526,7 +610,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => '系統發生錯誤',
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(500)
@@ -574,7 +658,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少有效的 Authorization header',
                 ];
-                $response->getBody()->write(json_encode($responseData));
+                $response->getBody()->write((json_encode($responseData) ?? ''));
 
                 return $response
                     ->withStatus(401)
@@ -606,7 +690,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => 'Token 無效或使用者不存在',
                 ];
-                $response->getBody()->write(json_encode($responseData));
+                $response->getBody()->write((json_encode($responseData) ?? ''));
 
                 return $response
                     ->withStatus(401)
@@ -628,7 +712,7 @@ class AuthController extends BaseController
                 ],
             ];
 
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(200)
@@ -638,7 +722,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(400)
@@ -648,7 +732,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(404)
@@ -658,7 +742,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(400)
@@ -668,7 +752,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => '系統發生錯誤',
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(500)
@@ -745,7 +829,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少必要的 refresh_token',
                 ];
-                $response->getBody()->write(json_encode($responseData));
+                $response->getBody()->write((json_encode($responseData) ?? ''));
 
                 return $response
                     ->withStatus(400)
@@ -771,7 +855,7 @@ class AuthController extends BaseController
                 ...$refreshResponse->toArray(),
             ];
 
-            $response->getBody()->write(json_encode($result));
+            $response->getBody()->write((json_encode($result) ?? ''));
 
             return $response
                 ->withStatus(200)
@@ -781,7 +865,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(400)
@@ -791,7 +875,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(404)
@@ -801,7 +885,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(400)
@@ -811,11 +895,37 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => '系統發生錯誤',
             ];
-            $response->getBody()->write(json_encode($responseData));
+            $response->getBody()->write((json_encode($responseData) ?? ''));
 
             return $response
                 ->withStatus(500)
                 ->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * 記錄登入失敗活動.
+     */
+    private function logLoginFailure(Request $request, string $email, string $errorMessage): void
+    {
+        try {
+            $activityDto = CreateActivityLogDTO::failure(
+                actionType: ActivityType::LOGIN_FAILED,
+                description: $errorMessage,
+                metadata: [
+                    'email' => $email,
+                    'error_message' => $errorMessage,
+                    'timestamp' => date('c'),
+                ],
+            )->withNetworkInfo(
+                $this->getClientIpAddress($request),
+                $request->getHeaderLine('User-Agent') ?: 'Unknown',
+            );
+
+            $this->activityLoggingService->log($activityDto);
+        } catch (Exception $e) {
+            // 記錄活動失敗不應該影響主要流程，只記錄錯誤
+            error_log('Failed to log login failure activity: ' . $e->getMessage());
         }
     }
 }

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Infrastructure\Auth\Repositories;
+namespace App\Infrastructure\Auth\Repositories;
 
-use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
-use AlleyNote\Domains\Auth\Entities\RefreshToken;
-use AlleyNote\Domains\Auth\Exceptions\RefreshTokenException;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
+use App\Domains\Auth\Entities\RefreshToken;
+use App\Domains\Auth\Exceptions\RefreshTokenException;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use PDO;
 use PDOException;

@@ -9,6 +9,8 @@ use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use Exception;
@@ -51,6 +53,7 @@ class AttachmentService implements AttachmentServiceInterface
         private AttachmentRepository $attachmentRepo,
         private PostRepository $postRepo,
         private AuthorizationService $authService,
+        private ActivityLoggingServiceInterface $activityLogger,
         private string $uploadDir,
     ) {}
 
@@ -355,11 +358,51 @@ class AttachmentService implements AttachmentServiceInterface
     public function upload(int $postId, UploadedFileInterface $file, int $currentUserId): Attachment
     {
         if (!$this->canAccessPost($currentUserId, $postId)) {
+            // 記錄權限檢查失敗
+            $this->activityLogger->logFailure(
+                ActivityType::ATTACHMENT_PERMISSION_DENIED,
+                $currentUserId,
+                reason: '嘗試上傳附件到無權限的文章',
+                metadata: [
+                    'post_id' => $postId,
+                    'filename' => $file->getClientFilename(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getClientMediaType(),
+                ],
+            );
+
             throw ValidationException::fromSingleError('post_id', '無權限上傳附件到此公告');
         }
 
         // 使用改善的檔案驗證流程
-        $fileInfo = $this->secureFileValidation($file);
+        try {
+            $fileInfo = $this->secureFileValidation($file);
+        } catch (ValidationException $e) {
+            // 記錄不同類型的驗證失敗
+            $error = $e->getErrors()[0] ?? ['message' => $e->getMessage()];
+            $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED; // 預設
+
+            // 根據錯誤訊息判斷具體的失敗類型
+            if (str_contains($error['message'], '病毒') || str_contains($error['message'], '惡意程式碼')) {
+                $activityType = ActivityType::ATTACHMENT_VIRUS_DETECTED;
+            } elseif (str_contains($error['message'], '大小超過')) {
+                $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED;
+            }
+
+            $this->activityLogger->logFailure(
+                $activityType,
+                $currentUserId,
+                reason: $error['message'],
+                metadata: [
+                    'post_id' => $postId,
+                    'filename' => $file->getClientFilename(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getClientMediaType(),
+                ],
+            );
+
+            throw $e;
+        }
 
         try {
             // 確保上傳目錄存在
@@ -388,6 +431,20 @@ class AttachmentService implements AttachmentServiceInterface
 
             $attachment = $this->attachmentRepo->create($attachmentData);
 
+            // 記錄成功上傳
+            $this->activityLogger->logSuccess(
+                ActivityType::ATTACHMENT_UPLOADED,
+                $currentUserId,
+                metadata: [
+                    'attachment_uuid' => $attachment->getUuid(),
+                    'post_id' => $postId,
+                    'filename' => $fileInfo['filename'],
+                    'original_name' => $fileInfo['original_name'],
+                    'file_size' => $fileInfo['file_size'],
+                    'mime_type' => $fileInfo['mime_type'],
+                ],
+            );
+
             return $attachment;
         } catch (Exception $e) {
             // 清理失敗時的檔案
@@ -405,11 +462,27 @@ class AttachmentService implements AttachmentServiceInterface
         }
     }
 
-    public function download(string $uuid): array
+    public function download(string $uuid, int $currentUserId): array
     {
         $attachment = $this->attachmentRepo->findByUuid($uuid);
         if (!$attachment) {
             throw new NotFoundException('找不到指定的附件');
+        }
+
+        // 檢查權限
+        if (!$this->canAccessAttachment($currentUserId, $uuid)) {
+            $this->activityLogger->logFailure(
+                ActivityType::ATTACHMENT_PERMISSION_DENIED,
+                $currentUserId,
+                reason: '嘗試下載無權限的附件',
+                metadata: [
+                    'attachment_uuid' => $uuid,
+                    'post_id' => $attachment->getPostId(),
+                    'filename' => $attachment->getOriginalName(),
+                ],
+            );
+
+            throw ValidationException::fromSingleError('permission', '您沒有權限下載此附件');
         }
 
         $filePath = "{$this->uploadDir}/{$attachment->getStoragePath()}";
@@ -426,6 +499,19 @@ class AttachmentService implements AttachmentServiceInterface
             throw new NotFoundException('找不到附件檔案');
         }
 
+        // 記錄成功下載
+        $this->activityLogger->logSuccess(
+            ActivityType::ATTACHMENT_DOWNLOADED,
+            $currentUserId,
+            metadata: [
+                'attachment_uuid' => $uuid,
+                'post_id' => $attachment->getPostId(),
+                'filename' => $attachment->getOriginalName(),
+                'file_size' => $attachment->getFileSize(),
+                'mime_type' => $attachment->getMimeType(),
+            ],
+        );
+
         return [
             'path' => $filePath,
             'name' => $attachment->getOriginalName(),
@@ -438,6 +524,13 @@ class AttachmentService implements AttachmentServiceInterface
     {
         // 檢查使用者是否有權限操作此附件
         if (!$this->canAccessAttachment($currentUserId, $uuid)) {
+            $this->activityLogger->logFailure(
+                ActivityType::ATTACHMENT_PERMISSION_DENIED,
+                $currentUserId,
+                reason: '嘗試刪除無權限的附件',
+                metadata: ['attachment_uuid' => $uuid],
+            );
+
             throw ValidationException::fromSingleError('permission', '您沒有權限刪除此附件');
         }
 
@@ -461,6 +554,18 @@ class AttachmentService implements AttachmentServiceInterface
         }
 
         $this->attachmentRepo->delete($attachment->getId());
+
+        // 記錄成功刪除
+        $this->activityLogger->logSuccess(
+            ActivityType::ATTACHMENT_DELETED,
+            $currentUserId,
+            metadata: [
+                'attachment_uuid' => $uuid,
+                'post_id' => $attachment->getPostId(),
+                'filename' => $attachment->getOriginalName(),
+                'file_size' => $attachment->getFileSize(),
+            ],
+        );
     }
 
     public function getByPostId(int $postId): array

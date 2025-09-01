@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\ValueObjects;
 
-use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
+use App\Domains\Auth\ValueObjects\TokenPair;
 use DateInterval;
 use DateTimeImmutable;
 use InvalidArgumentException;

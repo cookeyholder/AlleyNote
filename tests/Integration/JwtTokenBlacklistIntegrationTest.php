@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
-use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
-use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
+use App\Domains\Auth\Services\TokenBlacklistService;
+use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
+use App\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use DateTimeImmutable;
 use PDO;
 use PHPUnit\Framework\Attributes\Group;
@@ -335,7 +335,7 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     /**
      * 建立 token_blacklist 資料表.
      */
-    private function createTokenBlacklistTable(): void
+    protected function createTokenBlacklistTable(): void
     {
         $sql = '
             CREATE TABLE token_blacklist (

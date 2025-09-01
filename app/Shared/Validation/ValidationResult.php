@@ -23,9 +23,9 @@ class ValidationResult implements JsonSerializable
 
     /**
      * @param bool $isValid 是否驗證通過
-     * @param array $errors 錯誤訊息陣列，格式為 ['field' => ['error1', 'error2']]
-     * @param array $validatedData 驗證通過的資料
-     * @param array $failedRules 失敗的規則，格式為 ['field' => ['rule1', 'rule2']]
+     * @param array<string, mixed> $errors 錯誤訊息陣列，格式為 ['field' => ['error1', 'error2']]
+     * @param array<string, mixed> $validatedData 驗證通過的資料
+     * @param array<string, mixed> $failedRules 失敗的規則，格式為 ['field' => ['rule1', 'rule2']]
      */
     public function __construct(
         bool $isValid,
@@ -42,7 +42,7 @@ class ValidationResult implements JsonSerializable
     /**
      * 建立驗證成功的結果.
      *
-     * @param array $validatedData 驗證通過的資料
+     * @param array<string, mixed> $validatedData 驗證通過的資料
      */
     public static function success(array $validatedData): self
     {
@@ -52,8 +52,8 @@ class ValidationResult implements JsonSerializable
     /**
      * 建立驗證失敗的結果.
      *
-     * @param array $errors 錯誤訊息
-     * @param array $failedRules 失敗的規則
+     * @param array<string, mixed> $errors 錯誤訊息
+     * @param array<string, mixed> $failedRules 失敗的規則
      */
     public static function failure(array $errors, array $failedRules = []): self
     {

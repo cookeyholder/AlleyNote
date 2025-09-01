@@ -192,7 +192,7 @@ class FileRouteCache implements RouteCacheInterface
      */
     private function saveStats(): void
     {
-        $content = json_encode($this->stats, JSON_PRETTY_PRINT);
+        $content = (json_encode($this->stats, JSON_PRETTY_PRINT) ?? '') ?: '';
         file_put_contents($this->getStatsFile(), $content, LOCK_EX);
     }
 }

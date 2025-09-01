@@ -29,12 +29,12 @@ class HealthController extends BaseController
             ];
 
             $successResponse = $this->successResponse($healthData, '系統運行正常');
-            $response->getBody()->write($successResponse);
+            $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             $errorResponse = $this->handleException($e);
-            $response->getBody()->write($errorResponse);
+            $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }

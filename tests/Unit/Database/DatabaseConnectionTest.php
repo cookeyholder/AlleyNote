@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Database;
 
 use App\Infrastructure\Database\DatabaseConnection;
 use PDO;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseConnectionTest extends TestCase
@@ -14,7 +17,8 @@ class DatabaseConnectionTest extends TestCase
         DatabaseConnection::reset();
     }
 
-    public function testCreatesSingletonPdoInstance(): void
+    #[Test]
+    public function createsSingletonPdoInstance(): void
     {
         $connection1 = DatabaseConnection::getInstance();
         $connection2 = DatabaseConnection::getInstance();
@@ -23,7 +27,8 @@ class DatabaseConnectionTest extends TestCase
         $this->assertSame($connection1, $connection2);
     }
 
-    public function testExecutesQuerySuccessfully(): void
+    #[Test]
+    public function executesQuerySuccessfully(): void
     {
         $pdo = DatabaseConnection::getInstance();
 

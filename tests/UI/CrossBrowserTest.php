@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\UI;
+
+use PHPUnit\Framework\Attributes\Test;
 
 class CrossBrowserTest extends UITestCase
 {
@@ -22,7 +26,8 @@ class CrossBrowserTest extends UITestCase
         ],
     ];
 
-    public function testBrowserAction(): void
+    #[Test]
+    public function browserAction(): void
     {
         foreach ($this->browsers as $browser) {
             // 使用特定瀏覽器的 User Agent 啟動測試

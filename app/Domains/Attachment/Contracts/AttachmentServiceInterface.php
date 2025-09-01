@@ -11,7 +11,7 @@ interface AttachmentServiceInterface
 {
     public function upload(int $postId, UploadedFileInterface $file, int $currentUserId): Attachment;
 
-    public function download(string $uuid): array;
+    public function download(string $uuid, int $currentUserId): array;
 
     public function delete(string $uuid, int $currentUserId): void;
 

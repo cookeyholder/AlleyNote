@@ -9,13 +9,14 @@ use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Shared\Exceptions\ValidationException;
 use Exception;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
@@ -24,13 +25,13 @@ use Tests\TestCase;
 #[Group('failing')]
 class AttachmentUploadTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     protected AttachmentService $attachmentService;
 
     protected \App\Domains\Auth\Services\AuthorizationService|MockInterface $authService;
 
-    protected LoggingSecurityServiceInterface|MockInterface $logger;
+    protected \App\Domains\Security\Contracts\ActivityLoggingServiceInterface|MockInterface $activityLogger;
+
+    protected \App\Domains\Security\Contracts\LoggingSecurityServiceInterface|MockInterface $logger;
 
     protected string $uploadDir;
 
@@ -43,9 +44,15 @@ class AttachmentUploadTest extends TestCase
         parent::setUp();
         // Mock authService
         $this->authService = Mockery::mock(AuthorizationService::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->authService->shouldReceive('canUploadAttachment')->byDefault()->andReturn(true);
         $this->authService->shouldReceive('canDeleteAttachment')->byDefault()->andReturn(true);
         $this->authService->shouldReceive('isSuperAdmin')->byDefault()->andReturn(false);
+
+        // Mock activity logger
+        $this->activityLogger->shouldReceive('logSuccess')->byDefault()->andReturn(true);
+        $this->activityLogger->shouldReceive('logFailure')->byDefault()->andReturn(true);
+        $this->activityLogger->shouldReceive('log')->byDefault()->andReturn(true);
 
         // Mock logger
         $this->logger = Mockery::mock(LoggingSecurityServiceInterface::class);
@@ -61,7 +68,13 @@ class AttachmentUploadTest extends TestCase
         $this->postRepo = new PostRepository($this->db, $this->cache, $this->logger);
 
         // 初始化測試對象
-        $this->attachmentService = new AttachmentService($this->attachmentRepo, $this->postRepo, $this->authService, $this->uploadDir);
+        $this->attachmentService = new AttachmentService(
+            $this->attachmentRepo,
+            $this->postRepo,
+            $this->authService,
+            $this->activityLogger,
+            $this->uploadDir,
+        );
 
         $this->createTestTables();
 
@@ -88,12 +101,6 @@ class AttachmentUploadTest extends TestCase
 
     protected function createUploadedFileMock(string $filename, string $mimeType, int $size): UploadedFileInterface
     {
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')
             ->andReturn($filename);
@@ -101,12 +108,6 @@ class AttachmentUploadTest extends TestCase
             ->andReturn($mimeType);
         $file->shouldReceive('getSize')
             ->andReturn($size);
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')
             ->andReturn(str_repeat('x', $size));
@@ -129,7 +130,8 @@ class AttachmentUploadTest extends TestCase
         return $file;
     }
 
-    public function testShould_handle_concurrent_uploads(): void
+    #[Test]
+    public function should_handle_concurrent_uploads(): void
     {
         $postId = 1;
 
@@ -154,7 +156,8 @@ class AttachmentUploadTest extends TestCase
         $this->assertEquals(3, $successfulUploads, '所有上傳應該成功完成');
     }
 
-    public function testShould_handle_large_file_upload(): void
+    #[Test]
+    public function should_handle_large_file_upload(): void
     {
         $postId = 1;
         $fileSize = 10 * 1024 * 1024; // 10MB
@@ -171,7 +174,8 @@ class AttachmentUploadTest extends TestCase
         $this->assertEquals($fileSize, $attachment->getFileSize());
     }
 
-    public function testShould_validate_file_types(): void
+    #[Test]
+    public function should_validate_file_types(): void
     {
         $postId = 1;
         $invalidTypes = [
@@ -193,26 +197,15 @@ class AttachmentUploadTest extends TestCase
         }
     }
 
-    public function testShould_handle_disk_full_error(): void
+    #[Test]
+    public function should_handle_disk_full_error(): void
     {
         $postId = 1;
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
 
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')->andReturn(true);
@@ -228,26 +221,15 @@ class AttachmentUploadTest extends TestCase
         $this->attachmentService->upload($postId, $file, 1);
     }
 
-    public function testShould_handle_permission_error(): void
+    #[Test]
+    public function should_handle_permission_error(): void
     {
         $postId = 1;
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var UploadedFileInterface::class|MockInterface */
-        /** @var mixed */
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
 
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var StreamInterface::class|MockInterface */
-        /** @var mixed */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
         $stream->shouldReceive('rewind')->andReturn(true);

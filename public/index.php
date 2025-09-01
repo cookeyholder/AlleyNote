@@ -17,8 +17,8 @@ ini_set('display_errors', '1');
 date_default_timezone_set('Asia/Taipei');
 
 // 取得請求資訊
-$requestUri = $_SERVER['REQUEST_URI'] ?? '/';
-$requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+$requestUri = (is_array($_SERVER) ? $_SERVER['REQUEST_URI'] : (is_object($_SERVER) ? $_SERVER->REQUEST_URI : null)) ?? '/';
+$requestMethod = (is_array($_SERVER) ? $_SERVER['REQUEST_METHOD'] : (is_object($_SERVER) ? $_SERVER->REQUEST_METHOD : null)) ?? 'GET';
 
 // 移除查詢參數
 $path = parse_url($requestUri, PHP_URL_PATH);
@@ -103,7 +103,9 @@ function generateApiDocs(): void
             $apiDoc = json_decode($jsonContent, true);
 
             // 驗證文件格式
-            if ($apiDoc && isset($apiDoc['openapi']) && isset($apiDoc['paths'])) {
+            if ($apiDoc &&
+                (is_array($apiDoc) ? isset($apiDoc['openapi']) : (is_object($apiDoc) ? isset($apiDoc->openapi) : false)) &&
+                (is_array($apiDoc) ? isset($apiDoc['paths']) : (is_object($apiDoc) ? isset($apiDoc->paths) : false))) {
                 header('Content-Type: application/json');
                 header('Access-Control-Allow-Origin: *');
                 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
@@ -183,7 +185,7 @@ function showSwaggerUI(): void
 <!DOCTYPE html>
 <html>
 <head>
-    <title>API Documentation</title>
+    <title>API Documentation
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
 </head>
 <body>

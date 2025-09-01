@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Contracts;
 
-use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
-use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
-use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\ValueObjects\JwtPayload;
+use App\Domains\Auth\ValueObjects\TokenPair;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
@@ -334,6 +334,6 @@ class JwtTokenServiceInterfaceTest extends TestCase
 
     public function testInterfaceIsInCorrectNamespace(): void
     {
-        $this->assertEquals('AlleyNote\Domains\Auth\Contracts', $this->interfaceReflection->getNamespaceName());
+        $this->assertEquals('App\Domains\Auth\Contracts', $this->interfaceReflection->getNamespaceName());
     }
 }

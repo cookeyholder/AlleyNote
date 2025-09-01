@@ -4,20 +4,29 @@ declare(strict_types=1);
 
 /**
  * DI 容器配置檔案
- * 
+ *
  * 定義應用程式所有服務的依賴注入配置
  */
 
 use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
+use App\Domains\Security\Providers\SecurityServiceProvider;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\ServerRequestFactory;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
-use PDO;
+use App\Shared\Cache\Providers\CacheServiceProvider;
+use App\Shared\Config\EnvironmentConfig;
+use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
+use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
+use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
+use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Log\LoggerInterface;
 
 return array_merge(
     // 基本 HTTP 服務
@@ -38,18 +47,27 @@ return array_merge(
         // HTTP 工廠
         ServerRequestFactory::class => \DI\create(ServerRequestFactory::class),
 
+        // 環境配置
+        EnvironmentConfig::class => \DI\factory(function () {
+            return new EnvironmentConfig();
+        }),
+
         // 資料庫連線
-        PDO::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+        \PDO::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
             $dbPath = $c->get('db.path');
-            return new PDO('sqlite:' . $dbPath);
+            return new \PDO('sqlite:' . $dbPath);
         }),
     ],
 
     // 路由系統服務
     RoutingServiceProvider::getDefinitions(),
+    SecurityServiceProvider::getDefinitions(),
 
     // JWT 認證系統服務
     SimpleAuthServiceProvider::getDefinitions(),
+
+    // 快取系統服務
+    CacheServiceProvider::getDefinitions(),
 
     // 基本應用程式服務
     [
@@ -67,8 +85,46 @@ return array_merge(
         'log.level' => \DI\env('LOG_LEVEL', 'info'),
 
         // 快取配置
-        'cache.driver' => \DI\env('CACHE_DRIVER', 'file'),
+        'cache.default_driver' => \DI\env('CACHE_DEFAULT_DRIVER', 'memory'),
         'cache.path' => \DI\env('CACHE_PATH', __DIR__ . '/../storage/cache'),
+
+        // 快取驅動設定
+        'cache.drivers.memory' => [
+            'enabled' => true,
+            'priority' => 90,
+            'max_size' => 1000,
+            'ttl' => 3600,
+        ],
+        'cache.drivers.file' => [
+            'enabled' => true,
+            'priority' => 50,
+            'ttl' => 3600,
+        ],
+        'cache.drivers.redis' => [
+            'enabled' => \DI\env('REDIS_ENABLED', false),
+            'priority' => 70,
+            'host' => \DI\env('REDIS_HOST', '127.0.0.1'),
+            'port' => \DI\env('REDIS_PORT', 6379),
+            'database' => \DI\env('REDIS_DATABASE', 0),
+            'timeout' => 2.0,
+            'prefix' => 'alleynote:cache:',
+        ],
+
+        // 快取策略設定
+        'cache.strategy' => [
+            'min_ttl' => 60,
+            'max_ttl' => 86400,
+            'max_value_size' => 1024 * 1024,
+            'exclude_patterns' => ['temp:*', 'debug:*'],
+        ],
+
+        // 快取管理器設定
+        'cache.manager' => [
+            'enable_sync' => false,
+            'sync_ttl' => 3600,
+            'max_retry_attempts' => 3,
+            'retry_delay' => 100,
+        ],
 
         // API 配置
         'api.base_url' => \DI\env('API_BASE_URL', 'http://localhost'),
@@ -79,18 +135,69 @@ return array_merge(
         'security.session_lifetime' => \DI\env('SESSION_LIFETIME', 3600),
     ],
 
-    // 第三方服務配置（為將來擴展準備）
+    // 第三方服務配置
     [
-        // Monolog Logger（如果需要）
-        // Monolog\Logger::class => \DI\factory(function (ContainerInterface $c) {
-        //     $logger = new \Monolog\Logger($c->get('app.name'));
-        //     $logger->pushHandler(new \Monolog\Handler\StreamHandler($c->get('log.path')));
-        //     return $logger;
-        // }),
+        // Monolog Logger
+        LoggerInterface::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            $logger = new Logger($c->get('app.name'));
+            $handler = new StreamHandler($c->get('log.path'), Logger::DEBUG);
+            $logger->pushHandler($handler);
+            return $logger;
+        }),
+
+        // Logger 別名
+        Logger::class => \DI\get(LoggerInterface::class),
 
         // PDO 連線（如果需要）
         // PDO::class => \DI\factory(function (ContainerInterface $c) {
         //     return new PDO('sqlite:' . $c->get('db.path'));
         // }),
-    ]
+
+        // Cache Monitor Controller
+        \App\Application\Controllers\Admin\CacheMonitorController::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
+            return new \App\Application\Controllers\Admin\CacheMonitorController(
+                $container->get(\App\Shared\Monitoring\Contracts\CacheMonitorInterface::class),
+                $container->get(\App\Shared\Cache\Contracts\CacheManagerInterface::class)
+            );
+        }),
+
+        // Tag Management Controller
+        \App\Application\Controllers\Admin\TagManagementController::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
+            $cacheManager = $container->get(\App\Shared\Cache\Contracts\CacheManagerInterface::class);
+
+            $tagRepository = null;
+            try {
+                $tagRepository = $container->get(\App\Shared\Cache\Contracts\TagRepositoryInterface::class);
+            } catch (\Exception) {
+                // 標籤倉庫不可用
+            }
+
+            $groupManager = null;
+            try {
+                $groupManager = $container->get(\App\Shared\Cache\Services\CacheGroupManager::class);
+            } catch (\Exception) {
+                // 分組管理器不可用
+            }
+
+            $logger = null;
+            try {
+                $logger = $container->get(\Psr\Log\LoggerInterface::class);
+            } catch (\Exception) {
+                // 記錄器不可用
+            }
+
+            return new \App\Application\Controllers\Admin\TagManagementController(
+                $cacheManager,
+                $tagRepository,
+                $groupManager,
+                $logger
+            );
+        }),
+    ],
+
+    // 快取服務
+    CacheServiceProvider::getDefinitions(),
+
+    // 監控服務
+    MonitoringServiceProvider::getDefinitions()
 );

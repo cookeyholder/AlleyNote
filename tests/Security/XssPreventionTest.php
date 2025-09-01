@@ -7,12 +7,13 @@ namespace Tests\Security;
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -20,8 +21,6 @@ use Tests\TestCase;
 
 class XssPreventionTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
-
     private PostServiceInterface $postService;
 
     private ValidatorInterface $validator;
@@ -31,6 +30,8 @@ class XssPreventionTest extends TestCase
     private XssProtectionServiceInterface $xssProtection;
 
     private CsrfProtectionServiceInterface $csrfProtection;
+
+    private ActivityLoggingServiceInterface $activityLogger;
 
     private ServerRequestInterface $request;
 
@@ -53,6 +54,7 @@ class XssPreventionTest extends TestCase
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
         $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
         $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->request = Mockery::mock(ServerRequestInterface::class);
         $this->response = Mockery::mock(ResponseInterface::class);
         $this->stream = Mockery::mock(StreamInterface::class);
@@ -61,6 +63,7 @@ class XssPreventionTest extends TestCase
             $this->postService,
             $this->validator,
             $this->sanitizer,
+            $this->activityLogger,
         );
 
         // 設定預設回應行為
@@ -130,9 +133,21 @@ class XssPreventionTest extends TestCase
                 return $data; // 返回原始資料作為驗證過的資料
             })
             ->byDefault();
+
+        // 設定 ActivityLogger 的預設期望值
+        $this->activityLogger->shouldReceive('logFailure')
+            ->withAnyArgs()
+            ->andReturn(true)
+            ->byDefault();
+
+        $this->activityLogger->shouldReceive('logSuccess')
+            ->withAnyArgs()
+            ->andReturn(true)
+            ->byDefault();
     }
 
-    public function testShouldEscapeHtmlInPostTitle(): void
+    #[Test]
+    public function shouldEscapeHtmlInPostTitle(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
         $maliciousTitle = '<script>alert("XSS");</script>惡意標題';
@@ -189,7 +204,8 @@ class XssPreventionTest extends TestCase
         $this->assertNotNull($responseData['data']['title']);
     }
 
-    public function testShouldEscapeHtmlInPostContent(): void
+    #[Test]
+    public function shouldEscapeHtmlInPostContent(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
         $maliciousContent = '<img src="x" onerror="alert(\'XSS\')">';
@@ -246,7 +262,8 @@ class XssPreventionTest extends TestCase
         $this->assertNotNull($responseData['data']['content']);
     }
 
-    public function testShouldHandleEncodedXssAttempts(): void
+    #[Test]
+    public function shouldHandleEncodedXssAttempts(): void
     {
         // 準備編碼的 XSS 攻擊程式碼
         $encodedXss = htmlentities('<script>alert("XSS");</script>', ENT_QUOTES, 'UTF-8');

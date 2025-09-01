@@ -26,9 +26,24 @@ class AuthEndpointTest extends TestCase
 {
     private Application $app;
 
+    /** @var callable|null 原始錯誤處理器 */
+    private $originalErrorHandler;
+
+    /** @var callable|null 原始異常處理器 */
+    private $originalExceptionHandler;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        // 設定測試環境變數
+        $_ENV['APP_ENV'] = 'testing';
+        $_ENV['DB_CONNECTION'] = 'sqlite';
+        $_ENV['DB_DATABASE'] = ':memory:';
+
+        // 保存原始的錯誤處理器和異常處理器
+        $this->originalErrorHandler = set_error_handler(null);
+        $this->originalExceptionHandler = set_exception_handler(null);
 
         // 初始化應用程式
         $this->app = new Application();
@@ -270,9 +285,22 @@ class AuthEndpointTest extends TestCase
      */
     protected function tearDown(): void
     {
-        parent::tearDown();
+        // 移除任何設置的錯誤處理器和異常處理器
+        restore_error_handler();
+        restore_exception_handler();
 
-        // 清理 $_SERVER 環境變數
-        unset($_POST);
+        // 恢復原始處理器（如果存在）
+        if ($this->originalErrorHandler !== null) {
+            set_error_handler($this->originalErrorHandler);
+        }
+
+        if ($this->originalExceptionHandler !== null) {
+            set_exception_handler($this->originalExceptionHandler);
+        }
+
+        // 清理環境變數
+        unset($_POST, $_ENV['APP_ENV'], $_ENV['DB_CONNECTION'], $_ENV['DB_DATABASE']);
+
+        parent::tearDown();
     }
 }

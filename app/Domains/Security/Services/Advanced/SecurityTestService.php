@@ -578,27 +578,27 @@ class SecurityTestService implements SecurityTestInterface
     {
         // 建立簡單的模擬檔案物件
         return new class {
-            public function getClientFilename()
+            public function getClientFilename(): string
             {
                 return 'test.txt';
             }
 
-            public function getClientMediaType()
+            public function getClientMediaType(): string
             {
                 return 'text/plain';
             }
 
-            public function getSize()
+            public function getSize(): int
             {
                 return 100;
             }
 
-            public function getError()
+            public function getError(): int
             {
                 return UPLOAD_ERR_OK;
             }
 
-            public function getStream()
+            public function getStream(): string
             {
                 return 'test content';
             }

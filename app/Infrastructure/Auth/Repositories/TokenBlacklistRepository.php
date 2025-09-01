@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Infrastructure\Auth\Repositories;
+namespace App\Infrastructure\Auth\Repositories;
 
-use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
-use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
+use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTime;
 use DateTimeImmutable;
 use PDO;

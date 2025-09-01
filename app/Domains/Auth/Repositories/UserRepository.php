@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domains\Auth\Repositories;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
@@ -38,7 +40,7 @@ class UserRepository
             'password' => $data['password'],  // 密碼已在 AuthService 中雜湊
         ]);
 
-        return $this->findById($this->db->lastInsertId());
+        return $this->findById((int) $this->db->lastInsertId());
     }
 
     public function update(string $id, array $data): array
@@ -75,7 +77,7 @@ class UserRepository
         return $stmt->execute(['id' => $id]);
     }
 
-    public function findById(string $id): ?array
+    public function findById(int $id): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
         $stmt->execute(['id' => $id]);

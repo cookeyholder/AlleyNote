@@ -68,9 +68,9 @@ class UpdatePostDTO extends BaseDTO
         $validatedData = $this->validatePartialData($filteredData);
 
         // 設定屬性（全部都是可選的）
-        $this->title = isset($validatedData['title']) ? trim($validatedData['title']) : null;
-        $this->content = isset($validatedData['content']) ? trim($validatedData['content']) : null;
-        $this->isPinned = isset($validatedData['is_pinned']) ? $this->convertToBoolean($validatedData['is_pinned']) : null;
+        $this->title = isset($validatedData['title']) ? $this->getString($validatedData, 'title') : null;
+        $this->content = isset($validatedData['content']) ? $this->getString($validatedData, 'content') : null;
+        $this->isPinned = isset($validatedData['is_pinned']) ? $this->getBool($validatedData, 'is_pinned') : null;
 
         // 處理狀態
         if (isset($validatedData['status'])) {
@@ -81,8 +81,8 @@ class UpdatePostDTO extends BaseDTO
 
         // 處理發布日期，空字串轉為 null
         if (isset($validatedData['publish_date'])) {
-            $publishDate = $validatedData['publish_date'];
-            $this->publishDate = ($publishDate === '') ? null : $publishDate;
+            $publishDate = $this->getString($validatedData, 'publish_date');
+            $this->publishDate = (!empty($publishDate)) ? $publishDate : null;
         } else {
             $this->publishDate = null;
         }
@@ -109,7 +109,7 @@ class UpdatePostDTO extends BaseDTO
 
             // 檢查長度
             $length = mb_strlen($title, 'UTF-8');
-            if ($length < $minLength || $length > $maxLength) {
+            if ($length > $maxLength) {
                 return false;
             }
 
@@ -217,10 +217,10 @@ class UpdatePostDTO extends BaseDTO
      * 動態驗證資料（只驗證提供的欄位）.
      *
      * @param array $data 要驗證的資料
-     * @return array 驗證通過的資料
+     * @return array<mixed> 驗證通過的資料
      * @throws ValidationException 當驗證失敗時
      */
-    protected function validatePartialData(array $data): array
+    protected function validatePartialData(array $data): mixed
     {
         $rules = [];
         $availableRules = $this->getValidationRules();
@@ -282,7 +282,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 取得更新的欄位名稱列表.
      */
-    public function getUpdatedFields(): array
+    public function getUpdatedFields(): mixed
     {
         return array_keys($this->toArray());
     }

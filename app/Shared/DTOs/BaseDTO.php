@@ -48,7 +48,7 @@ abstract class BaseDTO implements JsonSerializable
     /**
      * 驗證資料.
      *
-     * @param array $data 輸入資料
+     * @param array<string, mixed> $data 輸入資料
      * @throws ValidationException 當驗證失敗時
      * @return array 驗證通過的資料
      */
@@ -92,9 +92,13 @@ abstract class BaseDTO implements JsonSerializable
     {
         $value = $this->getValue($data, $key, $default);
         if ($value === null) {
-            return null;
+            return $default;
         }
 
-        return is_bool($value) ? $value : in_array($value, [1, '1', 'true', 'on', 'yes'], true);
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        return in_array($value, [1, '1', 'true', 'on', 'yes'], true);
     }
 }

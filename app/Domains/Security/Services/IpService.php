@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Services;
 
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\IpRepositoryInterface;
+use App\Domains\Security\Contracts\IpServiceInterface;
+use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
+use App\Domains\Security\Enums\ActivityType;
 use App\Domains\Security\Models\IpList;
+use Exception;
 use InvalidArgumentException;
 use RuntimeException;
 
-class IpService
+class IpService implements IpServiceInterface
 {
     public function __construct(
         private IpRepositoryInterface $repository,
+        private ActivityLoggingServiceInterface $activityLogger,
     ) {}
 
     public function createIpRule(CreateIpRuleDTO $dto): IpList
@@ -22,6 +28,7 @@ class IpService
         $data = $dto->toArray();
 
         // 轉換 action 為內部使用的 type 欄位
+        $isBlocked = $data['action'] === 'block';
         $data['type'] = $data['action'] === 'allow' ? 1 : 0; // 1=白名單，0=黑名單
         unset($data['action']); // 移除 action 欄位
 
@@ -29,6 +36,9 @@ class IpService
         if (!$result instanceof IpList) {
             throw new RuntimeException('建立 IP 規則失敗');
         }
+
+        // 記錄 IP 封鎖/解封事件
+        $this->logIpRuleEvent($result, $isBlocked);
 
         return $result;
     }
@@ -60,5 +70,34 @@ class IpService
         }
 
         return $this->repository->getByType($type);
+    }
+
+    /**
+     * 記錄 IP 規則事件.
+     */
+    private function logIpRuleEvent(IpList $ipRule, bool $isBlocked): void
+    {
+        try {
+            $activityType = $isBlocked ? ActivityType::IP_BLOCKED : ActivityType::IP_UNBLOCKED;
+            $description = $isBlocked
+                ? "IP 位址已被封鎖: {$ipRule->getIpAddress()}"
+                : "IP 位址已被加入白名單: {$ipRule->getIpAddress()}";
+
+            $dto = CreateActivityLogDTO::securityEvent(
+                actionType: $activityType,
+                description: $description,
+                metadata: [
+                    'ip_rule_id' => $ipRule->getId(),
+                    'ip_address' => $ipRule->getIpAddress(),
+                    'rule_type' => $isBlocked ? 'blacklist' : 'whitelist',
+                    'created_at' => $ipRule->getCreatedAt(),
+                ],
+            );
+
+            $this->activityLogger->log($dto);
+        } catch (Exception $e) {
+            // 記錄失敗不應影響主要業務邏輯，靜默處理
+            error_log('Failed to log IP rule event: ' . $e->getMessage());
+        }
     }
 }

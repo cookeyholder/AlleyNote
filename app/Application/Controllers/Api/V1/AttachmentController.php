@@ -136,9 +136,9 @@ class AttachmentController
             $files = $request->getUploadedFiles();
 
             if (!isset($files['file'])) {
-                $response->getBody()->write(json_encode([
+                $response->getBody()->write((json_encode([
                     'error' => '缺少上傳檔案',
-                ]));
+                ]) ?: ''));
 
                 return $response
                     ->withStatus(400)
@@ -147,25 +147,26 @@ class AttachmentController
 
             $attachment = $this->attachmentService->upload($postId, $files['file'], $currentUserId);
 
-            $response->getBody()->write(json_encode([
+            $jsonResponse = json_encode([
                 'data' => $attachment->toArray(),
-            ]));
+            ]);
+            $response->getBody()->write($jsonResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -253,6 +254,11 @@ class AttachmentController
             ),
         ],
     )]
+    /**
+     * 下載附件.
+     *
+     * @param array<string, mixed> $args 路由參數
+     */
     public function download(Request $request, Response $response, array $args): Response
     {
         // 這個方法需要實作檔案下載邏輯
@@ -267,25 +273,25 @@ class AttachmentController
             // 2. 檢查檔案權限
             // 3. 讀取檔案並回傳
 
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => '檔案下載功能尚未實作',
-            ]));
+            ]) ?: ''));
 
             return $response
                 ->withStatus(501)
                 ->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -348,12 +354,12 @@ class AttachmentController
         $postId = (int) $request->getAttribute('post_id');
         $attachments = $this->attachmentService->getByPostId($postId);
 
-        $response->getBody()->write(json_encode([
+        $response->getBody()->write((json_encode([
             'data' => array_map(
                 fn($attachment) => $attachment->toArray(),
                 $attachments,
             ),
-        ]));
+        ]) ?: '{"error": "JSON encoding failed"}'));
 
         return $response
             ->withStatus(200)
@@ -430,17 +436,17 @@ class AttachmentController
 
             return $response->withStatus(204);
         } catch (ValidationException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
-            $response->getBody()->write(json_encode([
+            $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
-            ]));
+            ]) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)

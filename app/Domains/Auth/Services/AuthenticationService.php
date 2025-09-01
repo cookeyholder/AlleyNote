@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\Services;
+namespace App\Domains\Auth\Services;
 
-use AlleyNote\Domains\Auth\Contracts\AuthenticationServiceInterface;
-use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
-use AlleyNote\Domains\Auth\DTOs\LoginRequestDTO;
-use AlleyNote\Domains\Auth\DTOs\LoginResponseDTO;
-use AlleyNote\Domains\Auth\DTOs\LogoutRequestDTO;
-use AlleyNote\Domains\Auth\DTOs\RefreshRequestDTO;
-use AlleyNote\Domains\Auth\DTOs\RefreshResponseDTO;
-use AlleyNote\Domains\Auth\Exceptions\AuthenticationException;
-use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
-use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
+use App\Domains\Auth\DTOs\LoginRequestDTO;
+use App\Domains\Auth\DTOs\LoginResponseDTO;
+use App\Domains\Auth\DTOs\LogoutRequestDTO;
+use App\Domains\Auth\DTOs\RefreshRequestDTO;
+use App\Domains\Auth\DTOs\RefreshResponseDTO;
+use App\Domains\Auth\Exceptions\AuthenticationException;
+use App\Domains\Auth\Exceptions\InvalidTokenException;
+use App\Domains\Auth\Exceptions\TokenExpiredException;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use Throwable;
 
