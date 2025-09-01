@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\Exceptions;
+namespace App\Domains\Auth\Exceptions;
 
 /**
  * Token 已過期例外.

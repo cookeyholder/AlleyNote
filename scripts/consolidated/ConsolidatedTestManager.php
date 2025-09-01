@@ -18,13 +18,13 @@ final readonly class ConsolidatedTestManager
         private TestingConfig $config
     ) {}
 
-    public function manage(array $options = []): ScriptResult
+    public function manage(array<mixed> $options = []): ScriptResult
     {
         $startTime = microtime(true);
         $details = [];
 
         try {
-            $action = $options['action'] ?? 'run';
+            $action = (is_array($options) ? $options['action'] : (is_object($options) ? $options->action : null)) ?? 'run';
 
             $result = match ($action) {
                 'run' => $this->runTests($options),
@@ -35,9 +35,9 @@ final readonly class ConsolidatedTestManager
             };
 
             return new ScriptResult(
-                success: $result['success'],
-                message: $result['message'],
-                details: array_merge($details, $result['details']),
+                success: (is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)),
+                message: (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)),
+                details: array_merge($details, (is_array($result) ? $result['details'] : (is_object($result) ? $result->details : null))),
                 executionTime: microtime(true) - $startTime
             );
         } catch (\Throwable $e) {
@@ -51,7 +51,7 @@ final readonly class ConsolidatedTestManager
         }
     }
 
-    private function runTests(array $options): array
+    private function runTests(array<mixed> $options): array<mixed>
     {
         $command = "cd {$this->projectRoot} && ./vendor/bin/phpunit";
 
@@ -68,7 +68,7 @@ final readonly class ConsolidatedTestManager
         ];
     }
 
-    private function generateCoverage(array $options): array
+    private function generateCoverage(array<mixed> $options): array<mixed>
     {
         // 實作覆蓋率生成邏輯
         return [
@@ -78,7 +78,7 @@ final readonly class ConsolidatedTestManager
         ];
     }
 
-    private function migrateTests(array $options): array
+    private function migrateTests(array<mixed> $options): array<mixed>
     {
         // 實作測試遷移邏輯
         return [
@@ -88,7 +88,7 @@ final readonly class ConsolidatedTestManager
         ];
     }
 
-    private function cleanTestArtifacts(array $options): array
+    private function cleanTestArtifacts(array<mixed> $options): array<mixed>
     {
         // 實作測試清理邏輯
         return [

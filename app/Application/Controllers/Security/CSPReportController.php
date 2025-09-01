@@ -249,7 +249,7 @@ class CSPReportController
             $alertData['timeframe'],
         );
 
-        error_log('CSP ALERT: ' . json_encode($alertData));
+        error_log('CSP ALERT: ' . (json_encode($alertData) ?? ''));
 
         // 可以在這裡添加其他警報機制
         // $this->sendSlackAlert($message, $alertData);

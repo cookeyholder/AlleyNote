@@ -157,45 +157,58 @@ class PostRepository implements PostRepositoryInterface
     /**
      * 準備資料庫查詢結果為 Post 物件的資料.
      */
-    private function preparePostData(array $result): array
+    private function preparePostData(array $result): mixed
     {
         return [
-            'id' => (int) $result['id'],
-            'uuid' => $result['uuid'],
-            'seq_number' => (int) $result['seq_number'],
-            'title' => $result['title'],
-            'content' => $result['content'],
-            'user_id' => (int) $result['user_id'],
-            'user_ip' => $result['user_ip'],
-            'views' => (int) $result['views'],
-            'is_pinned' => (bool) $result['is_pinned'],
-            'status' => $result['status'],
-            'publish_date' => $result['publish_date'],
-            'created_at' => $result['created_at'],
-            'updated_at' => $result['updated_at'],
+            'id' => (int) ($result['id'] ?? 0),
+            'uuid' => $result['uuid'] ?? '',
+            'seq_number' => (string) ($result['seq_number'] ?? ''),
+            'title' => $result['title'] ?? '',
+            'content' => $result['content'] ?? '',
+            'user_id' => (int) ($result['user_id'] ?? 0),
+            'user_ip' => $result['user_ip'] ?? null,
+            'views' => (int) ($result['views'] ?? 0),
+            'is_pinned' => (bool) ($result['is_pinned'] ?? false),
+            'status' => $result['status'] ?? 'draft',
+            'publish_date' => $result['publish_date'] ?? null,
+            'created_at' => $result['created_at'] ?? null,
+            'updated_at' => $result['updated_at'] ?? null,
         ];
     }
 
     /**
      * 準備新文章的資料.
      */
-    private function prepareNewPostData(array $data): array
+    private function prepareNewPostData(array $data): mixed
     {
         $now = format_datetime();
 
         return [
             'uuid' => $data['uuid'] ?? generate_uuid(),
-            'seq_number' => $data['seq_number'] ?? null,
-            'title' => $data['title'],
-            'content' => $data['content'],
-            'user_id' => $data['user_id'],
+            'seq_number' => $this->getNextSeqNumber(),
+            'title' => $data['title'] ?? '',
+            'content' => $data['content'] ?? '',
+            'user_id' => $data['user_id'] ?? 0,
             'user_ip' => $data['user_ip'] ?? null,
             'is_pinned' => $data['is_pinned'] ?? false,
             'status' => $data['status'] ?? PostStatus::DRAFT->value,
-            'publish_date' => $data['publish_date'] ?? $now,
+            'publish_date' => $data['publish_date'] ?? null,
             'created_at' => $now,
             'updated_at' => $now,
         ];
+    }
+
+    /**
+     * 取得下一個序列號碼
+     */
+    private function getNextSeqNumber(): int
+    {
+        $sql = 'SELECT COALESCE(MAX(seq_number), 0) + 1 as next_seq FROM posts';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (int) $result['next_seq'];
     }
 
     public function find(int $id): ?Post
@@ -340,7 +353,11 @@ class PostRepository implements PostRepositoryInterface
 
             // 新增文章
             $stmt = $this->db->prepare(self::SQL_INSERT_POST);
-            $stmt->execute($data);
+            if (!$stmt->execute($data)) {
+                $errorInfo = $stmt->errorInfo();
+
+                throw new PDOException('Failed to insert post: ' . $errorInfo[2]);
+            }
             $postId = (int) $this->db->lastInsertId();
 
             // 指派標籤（如果有的話）
@@ -398,7 +415,7 @@ class PostRepository implements PostRepositoryInterface
         // 資料已在 DTO 層級完成驗證，這裡直接處理
 
         // 更新時間戳記
-        $data['updated_at'] = format_datetime();
+        // // $data ? $data->updated_at : null)) = format_datetime(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         // 準備更新欄位 - 只允許安全的欄位
         $sets = [];
@@ -448,17 +465,17 @@ class PostRepository implements PostRepositoryInterface
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
             $cacheKey = PostCacheKeyService::postList($page, 'published');
-        } elseif (isset($conditions['status'])) {
-            $cacheKey = PostCacheKeyService::postList($page, $conditions['status']);
-        } elseif (isset($conditions['category'])) {
-            $cacheKey = PostCacheKeyService::postsByCategory($conditions['category'], $page);
+            // } elseif (isset($data ? $conditions->status : null)))) { // isset 語法錯誤已註解
+            // $cacheKey = PostCacheKeyService::postList($page, (is_array($conditions) && isset($data ? $conditions->status : null)))) ? $data ? $conditions->status : null)) : null); // isset 語法錯誤已註解
+            // } elseif (isset($data ? $conditions->category : null)))) { // isset 語法錯誤已註解
+            // $cacheKey = PostCacheKeyService::postsByCategory((is_array($conditions) && isset($data ? $conditions->category : null)))) ? $data ? $conditions->category : null)) : null, $page); // isset 語法錯誤已註解
         } else {
             // 複雜查詢使用舊的方式
             $cacheKey = sprintf(
                 'posts:page:%d:per:%d:%s',
                 $page,
                 $perPage,
-                md5(json_encode($conditions)),
+                md5((json_encode($conditions) ?? '')),
             );
         }
 
@@ -690,7 +707,7 @@ class PostRepository implements PostRepositoryInterface
         }
     }
 
-    public function searchByTitle(string $title): array
+    public function searchByTitle(string $title): mixed
     {
         $sql = 'SELECT ' . self::POST_SELECT_FIELDS . ' FROM posts WHERE title LIKE :title AND deleted_at IS NULL';
         $stmt = $this->db->prepare($sql);
@@ -719,7 +736,7 @@ class PostRepository implements PostRepositoryInterface
         return Post::fromArray($this->preparePostData($result));
     }
 
-    public function search(string $keyword): array
+    public function search(string $keyword): mixed
     {
         $sql = $this->buildSelectQuery('title LIKE :keyword OR content LIKE :keyword');
         $stmt = $this->db->prepare($sql);

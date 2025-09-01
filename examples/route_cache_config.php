@@ -46,14 +46,14 @@ function createRouterWithCache(string $environment = 'development'): Router
     $router->setMiddlewareManager($middlewareManager);
 
     // 根據環境配置快取
-    $cacheConfig = $cacheConfigs[$environment] ?? $cacheConfigs['development'];
+    $cacheConfig = $cacheConfigs[$environment] ?? (is_array($cacheConfigs) ? $cacheConfigs['development'] : (is_object($cacheConfigs) ? $cacheConfigs->development : null));
     $cacheFactory = new RouteCacheFactory();
 
     try {
         $cache = $cacheFactory->create($cacheConfig);
         $router->setCache($cache);
 
-        echo "✓ 已設定 {$environment} 環境快取: {$cacheConfig['driver']} (TTL: {$cacheConfig['ttl']}s)\n";
+        echo "✓ 已設定 {$environment} 環境快取: {(is_array($cacheConfig) ? $cacheConfig['driver'] : (is_object($cacheConfig) ? $cacheConfig->driver : null))} (TTL: {(is_array($cacheConfig) ? $cacheConfig['ttl'] : (is_object($cacheConfig) ? $cacheConfig->ttl : null))}s)\n";
     } catch (Exception $e) {
         echo "✗ 快取設定失敗: {$e->getMessage()}\n";
     }
@@ -113,28 +113,28 @@ function registerRoutes(Router $router): void
 function displayCacheStats(Router $router): void
 {
     $cache = $router->getCache();
-    if ($cache === null) {
+    if (cache === null) {
         echo "沒有配置快取\n";
         return;
     }
 
     $stats = $cache->getStats();
     echo "\n=== 快取統計 ===\n";
-    echo "快取命中: {$stats['hits']}\n";
-    echo "快取未命中: {$stats['misses']}\n";
-    echo "資料大小: {$stats['size']} bytes\n";
+    echo "快取命中: {(is_array($stats) ? $stats['hits'] : (is_object($stats) ? $stats->hits : null))}\n";
+    echo "快取未命中: {(is_array($stats) ? $stats['misses'] : (is_object($stats) ? $stats->misses : null))}\n";
+    echo "資料大小: {(is_array($stats) ? $stats['size'] : (is_object($stats) ? $stats->size : null))} bytes\n";
 
-    if ($stats['hits'] + $stats['misses'] > 0) {
-        $hitRatio = ($stats['hits'] / ($stats['hits'] + $stats['misses'])) * 100;
+    if ((is_array($stats) ? $stats['hits'] : (is_object($stats) ? $stats->hits : null)) + (is_array($stats) ? $stats['misses'] : (is_object($stats) ? $stats->misses : null)) > 0) {
+        $hitRatio = ((is_array($stats) ? $stats['hits'] : (is_object($stats) ? $stats->hits : null)) / ((is_array($stats) ? $stats['hits'] : (is_object($stats) ? $stats->hits : null)) + (is_array($stats) ? $stats['misses'] : (is_object($stats) ? $stats->misses : null)))) * 100;
         echo "命中率: " . number_format($hitRatio, 2) . "%\n";
     }
 
-    if ($stats['created_at'] > 0) {
-        echo "建立時間: " . date('Y-m-d H:i:s', $stats['created_at']) . "\n";
+    if ((is_array($stats) ? $stats['created_at'] : (is_object($stats) ? $stats->created_at : null)) > 0) {
+        echo "建立時間: " . date('Y-m-d H:i:s', (is_array($stats) ? $stats['created_at'] : (is_object($stats) ? $stats->created_at : null))) . "\n";
     }
 
-    if ($stats['last_used'] > 0) {
-        echo "最後使用: " . date('Y-m-d H:i:s', $stats['last_used']) . "\n";
+    if ((is_array($stats) ? $stats['last_used'] : (is_object($stats) ? $stats->last_used : null)) > 0) {
+        echo "最後使用: " . date('Y-m-d H:i:s', (is_array($stats) ? $stats['last_used'] : (is_object($stats) ? $stats->last_used : null))) . "\n";
     }
 
     echo "快取路徑: " . $cache->getCachePath() . "\n";

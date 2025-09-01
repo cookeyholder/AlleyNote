@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Exceptions;
 
-use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
+use App\Domains\Auth\Exceptions\TokenExpiredException;
 use PHPUnit\Framework\TestCase;
 
 /**

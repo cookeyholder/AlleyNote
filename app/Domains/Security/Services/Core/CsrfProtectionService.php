@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Core;
 
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
+use App\Domains\Security\DTOs\CreateActivityLogDTO;
+use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Exceptions\CsrfTokenException;
 use Exception;
 
-class CsrfProtectionService
+class CsrfProtectionService implements CsrfProtectionServiceInterface
 {
     private const TOKEN_LENGTH = 32;
 
@@ -16,6 +20,10 @@ class CsrfProtectionService
     private const TOKEN_POOL_SIZE = 5; // 權杖池大小
 
     private const TOKEN_POOL_KEY = 'csrf_token_pool';
+
+    public function __construct(
+        private ActivityLoggingServiceInterface $activityLogger,
+    ) {}
 
     public function generateToken(): string
     {
@@ -45,15 +53,23 @@ class CsrfProtectionService
     public function validateToken(?string $token): void
     {
         if (empty($token)) {
+            $this->logCsrfAttack($token);
+
             throw new CsrfTokenException('缺少 CSRF token');
         }
 
-        // 檢查權杖池模式
-        if (isset($_SESSION[self::TOKEN_POOL_KEY]) && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
-            $this->validateTokenFromPool($token);
-        } else {
-            // 降級到單一權杖模式
-            $this->validateSingleToken($token);
+        try {
+            // 檢查權杖池模式
+            if (isset($_SESSION[self::TOKEN_POOL_KEY]) && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
+                $this->validateTokenFromPool($token);
+            } else {
+                // 降級到單一權杖模式
+                $this->validateSingleToken($token);
+            }
+        } catch (CsrfTokenException $e) {
+            $this->logCsrfAttack($token);
+
+            throw $e;
         }
     }
 
@@ -230,5 +246,50 @@ class CsrfProtectionService
             'max_size' => self::TOKEN_POOL_SIZE,
             'tokens' => $tokens,
         ];
+    }
+
+    /**
+     * 從請求中取得 CSRF token.
+     *
+     * @return string|null 如果找到 token 則返回，否則返回 null
+     */
+    public function getTokenFromRequest(): ?string
+    {
+        // 從請求標頭、POST 資料或查詢參數中尋找 token
+        $token = $_POST['_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? $_GET['_token'] ?? null;
+
+        // 確保返回類型是 string|null
+        return is_string($token) ? $token : null;
+    }
+
+    /**
+     * 記錄 CSRF 攻擊事件.
+     */
+    private function logCsrfAttack(?string $attemptedToken): void
+    {
+        try {
+            $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
+            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+
+            // 確保類型正確
+            $ipAddress = is_string($ipAddress) ? $ipAddress : null;
+            $userAgent = is_string($userAgent) ? $userAgent : null;
+
+            $dto = CreateActivityLogDTO::securityEvent(
+                actionType: ActivityType::CSRF_ATTACK_BLOCKED,
+                ipAddress: $ipAddress,
+                userAgent: $userAgent,
+                description: 'CSRF token validation failed',
+                metadata: [
+                    'attempted_token' => $attemptedToken ? substr($attemptedToken, 0, 8) . '...' : null,
+                    'referer' => $_SERVER['HTTP_REFERER'] ?? null,
+                    'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
+                ],
+            );
+
+            $this->activityLogger->log($dto);
+        } catch (Exception) {
+            // 記錄失敗不應影響主要功能
+        }
     }
 }

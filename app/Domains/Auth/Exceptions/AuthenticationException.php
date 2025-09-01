@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\Exceptions;
+namespace App\Domains\Auth\Exceptions;
 
 /**
  * 身份驗證失敗例外.

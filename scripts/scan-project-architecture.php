@@ -4,9 +4,9 @@
  * 專案架構快速掃描腳本
  * 用於分析整個專案的結構、命名空間、類別關係等
  * 基於 Context7 MCP 查詢的最新分析技術和 DDD 最佳實踐
- * 
+ *
  * 使用方法: php scripts/scan-project-architecture.php
- * 
+ *
  * 新增功能（基於 Context7 MCP）:
  * - 現代 PHP 語法檢查
  * - 型別宣告一致性分析
@@ -281,11 +281,11 @@ class ProjectArchitectureScanner
     private function analyzeInterfaceImplementations(): void
     {
         foreach ($this->analysis['classes'] as $className => $classInfo) {
-            if (!empty($classInfo['implements'])) {
-                foreach ($classInfo['implements'] as $interface) {
+            if (!empty((is_array($classInfo) ? $classInfo['implements'] : (is_object($classInfo) ? $classInfo->implements : null)))) {
+                foreach ((is_array($classInfo) ? $classInfo['implements'] : (is_object($classInfo) ? $classInfo->implements : null)) as $interface) {
                     $this->analysis['interface_implementations'][$interface][] = [
                         'class' => $className,
-                        'file' => $classInfo['file']
+                        'file' => (is_array($classInfo) ? $classInfo['file'] : (is_object($classInfo) ? $classInfo->file : null))
                     ];
                 }
             }
@@ -295,7 +295,7 @@ class ProjectArchitectureScanner
     private function analyzeTestCoverage(): void
     {
         foreach ($this->analysis['classes'] as $className => $classInfo) {
-            $file = $classInfo['file'];
+            $file = (is_array($classInfo) ? $classInfo['file'] : (is_object($classInfo) ? $classInfo->file : null));
 
             // 跳過測試檔案本身
             if (str_contains($file, 'tests/') || str_ends_with($className, 'Test')) {
@@ -322,10 +322,10 @@ class ProjectArchitectureScanner
 
         foreach ($this->analysis['classes'] as $testClass => $testInfo) {
             if (
-                str_contains($testInfo['file'], 'tests/') &&
+                str_contains((is_array($testInfo) ? $testInfo['file'] : (is_object($testInfo) ? $testInfo->file : null)), 'tests/') &&
                 (in_array($testClass, $possibleTestNames) || str_contains($testClass, $className))
             ) {
-                $testFiles[] = $testInfo['file'];
+                $testFiles[] = (is_array($testInfo) ? $testInfo['file'] : (is_object($testInfo) ? $testInfo->file : null));
             }
         }
 
@@ -335,7 +335,7 @@ class ProjectArchitectureScanner
     private function analyzeConstructorDependencies(): void
     {
         foreach ($this->analysis['classes'] as $className => $classInfo) {
-            $content = file_get_contents($this->projectRoot . '/' . $classInfo['file']);
+            $content = file_get_contents($this->projectRoot . '/' . (is_array($classInfo) ? $classInfo['file'] : (is_object($classInfo) ? $classInfo->file : null)));
 
             // 提取建構子依賴
             if (preg_match('/public function __construct\s*\(([^)]*)\)/', $content, $matches)) {
@@ -344,7 +344,7 @@ class ProjectArchitectureScanner
 
                 if (!empty($dependencies)) {
                     $this->analysis['constructor_dependencies'][$className] = [
-                        'file' => $classInfo['file'],
+                        'file' => (is_array($classInfo) ? $classInfo['file'] : (is_object($classInfo) ? $classInfo->file : null)),
                         'dependencies' => $dependencies
                     ];
                 }
@@ -465,40 +465,40 @@ class ProjectArchitectureScanner
             $report .= "## 📊 程式碼品質指標\n\n";
             $report .= "| 指標 | 數值 | 狀態 |\n";
             $report .= "|------|------|------|\n";
-            $report .= sprintf("| 總類別數 | %d | - |\n", $metrics['total_classes']);
+            $report .= sprintf("| 總類別數 | %d | - |\n", (is_array($metrics) ? $metrics['total_classes'] : (is_object($metrics) ? $metrics->total_classes : null)));
             $report .= sprintf(
                 "| 介面與類別比例 | %.2f%% | %s |\n",
-                $metrics['interface_to_class_ratio'],
-                $metrics['interface_to_class_ratio'] >= 20 ? '✅ 良好' : '⚠️ 可改善'
+                (is_array($metrics) ? $metrics['interface_to_class_ratio'] : (is_object($metrics) ? $metrics->interface_to_class_ratio : null)),
+                (is_array($metrics) ? $metrics['interface_to_class_ratio'] : (is_object($metrics) ? $metrics->interface_to_class_ratio : null)) >= 20 ? '✅ 良好' : '⚠️ 可改善'
             );
             $report .= sprintf(
                 "| 平均依賴數/類別 | %.2f | %s |\n",
-                $metrics['average_dependencies_per_class'],
-                $metrics['average_dependencies_per_class'] <= 5 ? '✅ 良好' : '⚠️ 過多'
+                (is_array($metrics) ? $metrics['average_dependencies_per_class'] : (is_object($metrics) ? $metrics->average_dependencies_per_class : null)),
+                (is_array($metrics) ? $metrics['average_dependencies_per_class'] : (is_object($metrics) ? $metrics->average_dependencies_per_class : null)) <= 5 ? '✅ 良好' : '⚠️ 過多'
             );
             $report .= sprintf(
                 "| 現代 PHP 採用率 | %.2f%% | %s |\n",
-                $metrics['modern_php_adoption_rate'],
-                $metrics['modern_php_adoption_rate'] >= 50 ? '✅ 良好' : '⚠️ 待升級'
+                (is_array($metrics) ? $metrics['modern_php_adoption_rate'] : (is_object($metrics) ? $metrics->modern_php_adoption_rate : null)),
+                (is_array($metrics) ? $metrics['modern_php_adoption_rate'] : (is_object($metrics) ? $metrics->modern_php_adoption_rate : null)) >= 50 ? '✅ 良好' : '⚠️ 待升級'
             );
             $report .= sprintf(
                 "| PSR-4 合規率 | %.2f%% | %s |\n",
-                $metrics['psr4_compliance_rate'],
-                $metrics['psr4_compliance_rate'] >= 90 ? '✅ 良好' : '❌ 需修正'
+                (is_array($metrics) ? $metrics['psr4_compliance_rate'] : (is_object($metrics) ? $metrics->psr4_compliance_rate : null)),
+                (is_array($metrics) ? $metrics['psr4_compliance_rate'] : (is_object($metrics) ? $metrics->psr4_compliance_rate : null)) >= 90 ? '✅ 良好' : '❌ 需修正'
             );
             $report .= sprintf(
                 "| DDD 結構完整性 | %.2f%% | %s |\n",
-                $metrics['ddd_structure_completeness'],
-                $metrics['ddd_structure_completeness'] >= 70 ? '✅ 良好' : '⚠️ 可改善'
+                (is_array($metrics) ? $metrics['ddd_structure_completeness'] : (is_object($metrics) ? $metrics->ddd_structure_completeness : null)),
+                (is_array($metrics) ? $metrics['ddd_structure_completeness'] : (is_object($metrics) ? $metrics->ddd_structure_completeness : null)) >= 70 ? '✅ 良好' : '⚠️ 可改善'
             );
             $report .= "\n";
 
             // 添加到摘要
             $summary .= "📊 品質指標:\n";
-            $summary .= "- 總類別數: {$metrics['total_classes']}\n";
-            $summary .= "- 介面比例: {$metrics['interface_to_class_ratio']}%\n";
-            $summary .= "- 現代 PHP 採用率: {$metrics['modern_php_adoption_rate']}%\n";
-            $summary .= "- PSR-4 合規率: {$metrics['psr4_compliance_rate']}%\n\n";
+            $summary .= "- 總類別數: " . (is_array($metrics) ? $metrics['total_classes'] : (is_object($metrics) ? $metrics->total_classes : 'N/A')) . "\n";
+            $summary .= "- 介面比例: " . (is_array($metrics) ? $metrics['interface_to_class_ratio'] : (is_object($metrics) ? $metrics->interface_to_class_ratio : 'N/A')) . "%\n";
+            $summary .= "- 現代 PHP 採用率: " . (is_array($metrics) ? $metrics['modern_php_adoption_rate'] : (is_object($metrics) ? $metrics->modern_php_adoption_rate : 'N/A')) . "%\n";
+            $summary .= "- PSR-4 合規率: " . (is_array($metrics) ? $metrics['psr4_compliance_rate'] : (is_object($metrics) ? $metrics->psr4_compliance_rate : 'N/A')) . "%\n\n";
         }
 
         // DDD 邊界上下文分析（新增）
@@ -632,16 +632,16 @@ class ProjectArchitectureScanner
         $report .= "\n## 🔑 重要類別清單\n\n";
         foreach ($this->analysis['classes'] as $className => $info) {
             if (
-                str_contains($info['file'], 'Controller') ||
-                str_contains($info['file'], 'Service') ||
-                str_contains($info['file'], 'Repository')
+                str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Controller') ||
+                str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Service') ||
+                str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Repository')
             ) {
-                $report .= "- **$className**: `{$info['file']}`\n";
-                if ($info['extends']) {
-                    $report .= "  - 繼承: {$info['extends']}\n";
+                $report .= "- **$className**: `" . (is_array($info) ? $info['file'] : (is_object($info) ? $info->file : 'N/A')) . "`\n";
+                if ((is_array($info) ? $info['extends'] : (is_object($info) ? $info->extends : null))) {
+                    $report .= "  - 繼承: " . (is_array($info) ? $info['extends'] : (is_object($info) ? $info->extends : 'N/A')) . "\n";
                 }
-                if (!empty($info['implements'])) {
-                    $report .= "  - 實作: " . implode(', ', $info['implements']) . "\n";
+                if (!empty((is_array($info) ? $info['implements'] : (is_object($info) ? $info->implements : null)))) {
+                    $report .= "  - 實作: " . implode(', ', (is_array($info) ? $info['implements'] : (is_object($info) ? $info->implements : null))) . "\n";
                 }
             }
         }
@@ -652,15 +652,15 @@ class ProjectArchitectureScanner
             foreach ($this->analysis['interface_implementations'] as $interface => $implementations) {
                 $report .= "### `$interface`\n";
                 foreach ($implementations as $impl) {
-                    $report .= "- {$impl['class']} (`{$impl['file']}`)\n";
+                    $report .= "- " . (is_array($impl) ? $impl['class'] : (is_object($impl) ? $impl->class : 'N/A')) . " (`" . (is_array($impl) ? $impl['file'] : (is_object($impl) ? $impl->file : 'N/A')) . "`)\n";
                 }
                 $report .= "\n";
             }
         }
 
         // 測試覆蓋分析
-        $testedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => $coverage['has_tests']);
-        $untestedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => !$coverage['has_tests']);
+        $testedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => (is_array($coverage) ? $coverage['has_tests'] : (is_object($coverage) ? $coverage->has_tests : null)));
+        $untestedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => !(is_array($coverage) ? $coverage['has_tests'] : (is_object($coverage) ? $coverage->has_tests : null)));
 
         $report .= "\n## 🧪 測試覆蓋分析\n\n";
         $report .= "- **有測試的類別**: " . count($testedClasses) . " 個\n";
@@ -669,8 +669,8 @@ class ProjectArchitectureScanner
         if (!empty($untestedClasses)) {
             $report .= "### 缺少測試的重要類別\n";
             foreach (array_slice($untestedClasses, 0, 20) as $className => $info) {
-                if (str_contains($info['file'], 'Service') || str_contains($info['file'], 'Repository')) {
-                    $report .= "- **$className**: `{$info['file']}`\n";
+                if (str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Service') || str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Repository')) {
+                    $report .= "- **$className**: `" . (is_array($info) ? $info['file'] : (is_object($info) ? $info->file : 'N/A')) . "`\n";
                 }
             }
             $report .= "\n";
@@ -681,15 +681,15 @@ class ProjectArchitectureScanner
             $report .= "\n## 💉 依賴注入分析\n\n";
             $heavyDeps = array_filter(
                 $this->analysis['constructor_dependencies'],
-                fn($deps) => count($deps['dependencies']) >= 3
+                fn($deps) => count((is_array($deps) ? $deps['dependencies'] : (is_object($deps) ? $deps->dependencies : null))) >= 3
             );
 
             if (!empty($heavyDeps)) {
                 $report .= "### 依賴較多的類別 (≥3個依賴)\n";
                 foreach ($heavyDeps as $className => $info) {
-                    $report .= "- **$className** (" . count($info['dependencies']) . " 個依賴)\n";
-                    foreach ($info['dependencies'] as $dep) {
-                        $report .= "  - `{$dep['type']}` \${$dep['name']}\n";
+                    $report .= "- **$className** (" . count((is_array($info) ? $info['dependencies'] : (is_object($info) ? $info->dependencies : []))) . " 個依賴)\n";
+                    foreach ((is_array($info) ? $info['dependencies'] : (is_object($info) ? $info->dependencies : [])) as $dep) {
+                        $report .= "  - `" . (is_array($dep) ? $dep['type'] : (is_object($dep) ? $dep->type : 'N/A')) . "` $" . (is_array($dep) ? $dep['name'] : (is_object($dep) ? $dep->name : 'N/A')) . "\n";
                     }
                     $report .= "\n";
                 }
@@ -717,7 +717,8 @@ class ProjectArchitectureScanner
 
         $summary .= "🏗️ DDD 架構:\n";
         foreach ($this->analysis['ddd_structure'] as $layer => $structure) {
-            $fileCount = isset($structure['files']) ? count($structure['files']) : 0;
+            $files = is_array($structure) ? ($structure['files'] ?? []) : (is_object($structure) ? ($structure->files ?? []) : []);
+            $fileCount = count($files);
             $summary .= "- $layer: $fileCount 個檔案\n";
         }
 
@@ -732,8 +733,8 @@ class ProjectArchitectureScanner
         }
 
         // 測試覆蓋統計
-        $testedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => $coverage['has_tests']);
-        $untestedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => !$coverage['has_tests']);
+        $testedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => (is_array($coverage) ? $coverage['has_tests'] : (is_object($coverage) ? $coverage->has_tests : null)));
+        $untestedClasses = array_filter($this->analysis['test_coverage'], fn($coverage) => !(is_array($coverage) ? $coverage['has_tests'] : (is_object($coverage) ? $coverage->has_tests : null)));
 
         $summary .= "\n🧪 測試覆蓋:\n";
         $summary .= "- 有測試: " . count($testedClasses) . " 個類別\n";
@@ -750,7 +751,7 @@ class ProjectArchitectureScanner
         // 依賴注入統計
         $heavyDeps = array_filter(
             $this->analysis['constructor_dependencies'],
-            fn($deps) => count($deps['dependencies']) >= 3
+            fn($deps) => count((is_array($deps) ? $deps['dependencies'] : (is_object($deps) ? $deps->dependencies : null))) >= 3
         );
         if (!empty($heavyDeps)) {
             $summary .= "\n💉 重依賴類別 (≥3個依賴): " . count($heavyDeps) . " 個\n";
@@ -765,12 +766,12 @@ class ProjectArchitectureScanner
         $importantClasses = [];
         foreach ($this->analysis['classes'] as $className => $info) {
             if (
-                str_contains($info['file'], 'Controller') ||
-                str_contains($info['file'], 'Service') ||
-                str_contains($info['file'], 'Repository')
+                str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Controller') ||
+                str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Service') ||
+                str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Repository')
             ) {
-                if (!str_contains($info['file'], 'Test')) {
-                    $importantClasses[] = "$className ({$info['file']})";
+                if (!str_contains((is_array($info) ? $info['file'] : (is_object($info) ? $info->file : null)), 'Test')) {
+                    $importantClasses[] = "$className (" . (is_array($info) ? $info['file'] : (is_object($info) ? $info->file : 'N/A')) . ")";
                 }
             }
         }
@@ -891,17 +892,29 @@ class ProjectArchitectureScanner
 
                 // 根據命名慣例分類 DDD 組件
                 if (str_contains($fileName, 'Entity') || str_contains($content, 'implements EntityInterface')) {
-                    $context['entities'][] = $fileName;
+                    if (is_array($context) && isset($context['entities'])) {
+                        $context['entities'][] = $fileName;
+                    }
                 } elseif (str_contains($fileName, 'ValueObject') || str_contains($content, 'ValueObject')) {
-                    $context['value_objects'][] = $fileName;
+                    if (is_array($context) && isset($context['value_objects'])) {
+                        $context['value_objects'][] = $fileName;
+                    }
                 } elseif (str_contains($fileName, 'Aggregate') || str_contains($content, 'AggregateRoot')) {
-                    $context['aggregates'][] = $fileName;
+                    if (is_array($context) && isset($context['aggregates'])) {
+                        $context['aggregates'][] = $fileName;
+                    }
                 } elseif (str_contains($fileName, 'Repository') || str_contains($content, 'RepositoryInterface')) {
-                    $context['repositories'][] = $fileName;
+                    if (is_array($context) && isset($context['repositories'])) {
+                        $context['repositories'][] = $fileName;
+                    }
                 } elseif (str_contains($fileName, 'Service') || str_contains($content, 'DomainService')) {
-                    $context['services'][] = $fileName;
+                    if (is_array($context) && isset($context['services'])) {
+                        $context['services'][] = $fileName;
+                    }
                 } elseif (str_contains($fileName, 'Event') || str_contains($content, 'DomainEvent')) {
-                    $context['events'][] = $fileName;
+                    if (is_array($context) && isset($context['events'])) {
+                        $context['events'][] = $fileName;
+                    }
                 }
             }
         }

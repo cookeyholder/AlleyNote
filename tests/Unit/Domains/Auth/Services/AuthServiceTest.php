@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Services;
 
-use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use AlleyNote\Domains\Auth\Exceptions\TokenGenerationException;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
-use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
+use App\Domains\Auth\Exceptions\TokenGenerationException;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Shared\Contracts\ValidatorInterface;
 use DateTimeImmutable;
 use Exception;

@@ -53,7 +53,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->uri->getPath();
     }
 
-    public function withRequestTarget($requestTarget): self
+    public function withRequestTarget(mixed $requestTarget): self
     {
         $new = clone $this;
         $new->uri = $this->uri->withPath($requestTarget);
@@ -66,7 +66,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->method;
     }
 
-    public function withMethod($method): self
+    public function withMethod(mixed $method): self
     {
         $new = clone $this;
         $new->method = $method;
@@ -79,7 +79,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->uri;
     }
 
-    public function withUri(UriInterface $uri, $preserveHost = false): self
+    public function withUri(UriInterface $uri, mixed $preserveHost = false): self
     {
         $new = clone $this;
         $new->uri = $uri;
@@ -135,7 +135,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->parsedBody;
     }
 
-    public function withParsedBody($data): self
+    public function withParsedBody(mixed $data): self
     {
         $new = clone $this;
         $new->parsedBody = $data;
@@ -148,12 +148,12 @@ class ServerRequest implements ServerRequestInterface
         return $this->attributes;
     }
 
-    public function getAttribute($name, $default = null)
+    public function getAttribute($name, mixed $default = null)
     {
         return $this->attributes[$name] ?? $default;
     }
 
-    public function withAttribute($name, $value): self
+    public function withAttribute($name, mixed $value): self
     {
         $new = clone $this;
         $new->attributes[$name] = $value;
@@ -161,7 +161,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function withoutAttribute($name): self
+    public function withoutAttribute(mixed $name): self
     {
         $new = clone $this;
         unset($new->attributes[$name]);
@@ -175,7 +175,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->protocolVersion;
     }
 
-    public function withProtocolVersion($version): self
+    public function withProtocolVersion(mixed $version): self
     {
         $new = clone $this;
         $new->protocolVersion = $version;
@@ -188,22 +188,22 @@ class ServerRequest implements ServerRequestInterface
         return $this->headers;
     }
 
-    public function hasHeader($name): bool
+    public function hasHeader(mixed $name): bool
     {
         return isset($this->headers[strtolower($name)]);
     }
 
-    public function getHeader($name): array
+    public function getHeader(mixed $name): array
     {
         return $this->headers[strtolower($name)] ?? [];
     }
 
-    public function getHeaderLine($name): string
+    public function getHeaderLine(mixed $name): string
     {
         return implode(', ', $this->getHeader($name));
     }
 
-    public function withHeader($name, $value): self
+    public function withHeader($name, mixed $value): self
     {
         $new = clone $this;
         $new->headers[strtolower($name)] = is_array($value) ? $value : [$value];
@@ -211,7 +211,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function withAddedHeader($name, $value): self
+    public function withAddedHeader($name, mixed $value): self
     {
         $new = clone $this;
         $name = strtolower($name);
@@ -223,7 +223,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function withoutHeader($name): self
+    public function withoutHeader(mixed $name): self
     {
         $new = clone $this;
         unset($new->headers[strtolower($name)]);
@@ -236,7 +236,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->body;
     }
 
-    public function withBody($body): self
+    public function withBody(mixed $body): self
     {
         $new = clone $this;
         $new->body = $body;

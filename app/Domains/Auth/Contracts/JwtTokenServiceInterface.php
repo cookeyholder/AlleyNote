@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\Contracts;
+namespace App\Domains\Auth\Contracts;
 
-use AlleyNote\Domains\Auth\Exceptions\InvalidTokenException;
-use AlleyNote\Domains\Auth\Exceptions\TokenExpiredException;
-use AlleyNote\Domains\Auth\Exceptions\TokenGenerationException;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
-use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
-use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
+use App\Domains\Auth\Exceptions\InvalidTokenException;
+use App\Domains\Auth\Exceptions\TokenExpiredException;
+use App\Domains\Auth\Exceptions\TokenGenerationException;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\ValueObjects\JwtPayload;
+use App\Domains\Auth\ValueObjects\TokenPair;
 
 /**
  * JWT Token 服務介面.

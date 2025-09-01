@@ -26,7 +26,7 @@ use OpenApi\Generator;
 /**
  * 解析命令列參數
  */
-function parseArguments(array $argv): array
+function parseArguments(array<mixed> $argv): array<mixed>
 {
     $options = [
         'output' => __DIR__ . '/../public',
@@ -42,25 +42,25 @@ function parseArguments(array $argv): array
         $arg = $argv[$i];
 
         if (str_starts_with($arg, '--output=')) {
-            $options['output'] = substr($arg, 9);
+            (is_array($options) ? $options['output'] : (is_object($options) ? $options->output : null)) = substr($arg, 9);
         } elseif (str_starts_with($arg, '--format=')) {
             $format = substr($arg, 9);
             if (in_array($format, ['json', 'yaml', 'both'])) {
-                $options['format'] = $format;
+                (is_array($options) ? $options['format'] : (is_object($options) ? $options->format : null)) = $format;
             }
         } elseif (str_starts_with($arg, '--env=')) {
             $env = substr($arg, 6);
             if (in_array($env, ['development', 'staging', 'production'])) {
-                $options['env'] = $env;
+                (is_array($options) ? $options['env'] : (is_object($options) ? $options->env : null)) = $env;
             }
         } elseif ($arg === '--validate') {
-            $options['validate'] = true;
+            (is_array($options) ? $options['validate'] : (is_object($options) ? $options->validate : null)) = true;
         } elseif ($arg === '--verbose' || $arg === '-v') {
-            $options['verbose'] = true;
+            (is_array($options) ? $options['verbose'] : (is_object($options) ? $options->verbose : null)) = true;
         } elseif ($arg === '--quiet' || $arg === '-q') {
-            $options['quiet'] = true;
+            (is_array($options) ? $options['quiet'] : (is_object($options) ? $options->quiet : null)) = true;
         } elseif ($arg === '--help' || $arg === '-h') {
-            $options['help'] = true;
+            (is_array($options) ? $options['help'] : (is_object($options) ? $options->help : null)) = true;
         }
     }
 
@@ -108,7 +108,7 @@ EOF;
 /**
  * 驗證 API 文件
  */
-function validateApiDoc(array $apiDoc, ConsoleOutput $output): bool
+function validateApiDoc(array<mixed> $apiDoc, ConsoleOutput $output): bool
 {
     $errors = [];
 
@@ -121,42 +121,42 @@ function validateApiDoc(array $apiDoc, ConsoleOutput $output): bool
     }
 
     // 檢查 OpenAPI 版本
-    if (isset($apiDoc['openapi'])) {
-        if (!preg_match('/^3\.\d+\.\d+$/', $apiDoc['openapi'])) {
-            $errors[] = "OpenAPI 版本格式不正確: " . $apiDoc['openapi'];
+    if (isset((is_array($apiDoc) ? $apiDoc['openapi'] : (is_object($apiDoc) ? $apiDoc->openapi : null)))) {
+        if (!preg_match('/^3\.\d+\.\d+$/', (is_array($apiDoc) ? $apiDoc['openapi'] : (is_object($apiDoc) ? $apiDoc->openapi : null)))) {
+            $errors[] = "OpenAPI 版本格式不正確: " . (is_array($apiDoc) ? $apiDoc['openapi'] : (is_object($apiDoc) ? $apiDoc->openapi : null));
         }
     }
 
     // 檢查 info 欄位
-    if (isset($apiDoc['info'])) {
+    if (isset((is_array($apiDoc) ? $apiDoc['info'] : (is_object($apiDoc) ? $apiDoc->info : null)))) {
         $requiredInfoFields = ['title', 'version'];
         foreach ($requiredInfoFields as $field) {
-            if (!isset($apiDoc['info'][$field]) || empty($apiDoc['info'][$field])) {
+            if (!isset((is_array($apiDoc) ? $apiDoc['info'] : (is_object($apiDoc) ? $apiDoc->info : null))[$field]) || empty((is_array($apiDoc) ? $apiDoc['info'] : (is_object($apiDoc) ? $apiDoc->info : null))[$field])) {
                 $errors[] = "info.{$field} 欄位缺失或為空";
             }
         }
     }
 
     // 檢查路徑數量
-    $pathCount = count($apiDoc['paths'] ?? []);
+    $pathCount = count((is_array($apiDoc) ? $apiDoc['paths'] : (is_object($apiDoc) ? $apiDoc->paths : null)) ?? []);
     if ($pathCount === 0) {
         $errors[] = "沒有找到任何 API 路徑";
     }
 
     // 檢查每個路徑的操作
-    foreach ($apiDoc['paths'] ?? [] as $path => $methods) {
+    foreach ((is_array($apiDoc) ? $apiDoc['paths'] : (is_object($apiDoc) ? $apiDoc->paths : null)) ?? [] as $path => $methods) {
         foreach ($methods as $method => $operation) {
             if (!in_array($method, ['get', 'post', 'put', 'delete', 'patch', 'head', 'options', 'trace'])) {
                 continue;
             }
 
             // 檢查操作是否有 summary
-            if (!isset($operation['summary']) || empty($operation['summary'])) {
+            if (!isset((is_array($operation) ? $operation['summary'] : (is_object($operation) ? $operation->summary : null))) || empty((is_array($operation) ? $operation['summary'] : (is_object($operation) ? $operation->summary : null)))) {
                 $errors[] = "{$method} {$path} 缺少 summary";
             }
 
             // 檢查操作是否有 responses
-            if (!isset($operation['responses']) || empty($operation['responses'])) {
+            if (!isset((is_array($operation) ? $operation['responses'] : (is_object($operation) ? $operation->responses : null))) || empty((is_array($operation) ? $operation['responses'] : (is_object($operation) ? $operation->responses : null)))) {
                 $errors[] = "{$method} {$path} 缺少 responses";
             }
         }
@@ -178,7 +178,7 @@ function validateApiDoc(array $apiDoc, ConsoleOutput $output): bool
 /**
  * 取得檔案統計資訊
  */
-function getFileStats(string $file): array
+function getFileStats(string $file): array<mixed>
 {
     if (!file_exists($file)) {
         return ['size' => 0, 'lines' => 0];
@@ -207,18 +207,18 @@ function formatFileSize(int $bytes): string
 /**
  * 主程式
  */
-function main(array $argv): void
+function main(array<mixed> $argv): void
 {
     // 解析參數
     $options = parseArguments($argv);
 
     // 設定輸出物件
-    $verbosity = $options['quiet'] ? ConsoleOutput::VERBOSITY_QUIET : ($options['verbose'] ? ConsoleOutput::VERBOSITY_VERBOSE : ConsoleOutput::VERBOSITY_NORMAL);
+    $verbosity = (is_array($options) ? $options['quiet'] : (is_object($options) ? $options->quiet : null)) ? ConsoleOutput::VERBOSITY_QUIET : ((is_array($options) ? $options['verbose'] : (is_object($options) ? $options->verbose : null)) ? ConsoleOutput::VERBOSITY_VERBOSE : ConsoleOutput::VERBOSITY_NORMAL);
     $output = new ConsoleOutput($verbosity);
 
     try {
         // 顯示幫助
-        if ($options['help']) {
+        if ((is_array($options) ? $options['help'] : (is_object($options) ? $options->help : null))) {
             showHelp();
             return;
         }
@@ -226,7 +226,7 @@ function main(array $argv): void
         $output->title("AlleyNote API 文件產生器");
 
         // 設定環境變數
-        $_ENV['APP_ENV'] = $options['env'];
+        (is_array($_ENV) ? $_ENV['APP_ENV'] : (is_object($_ENV) ? $_ENV->APP_ENV : null)) = (is_array($options) ? $options['env'] : (is_object($options) ? $options->env : null));
 
         // 設定要掃描的目錄
         // 掃描路徑
@@ -245,7 +245,7 @@ function main(array $argv): void
                 $phpFiles = glob($path . '/*.php');
                 $fileCount = count($phpFiles);
                 $totalFiles += $fileCount;
-                if ($options['verbose']) {
+                if ((is_array($options) ? $options['verbose'] : (is_object($options) ? $options->verbose : null))) {
                     $output->info("  - {$path} ({$fileCount} 個 PHP 檔案)");
                 }
             }
@@ -268,7 +268,7 @@ function main(array $argv): void
         }
 
         // 確保輸出目錄存在
-        $outputDir = realpath($options['output']) ?: $options['output'];
+        $outputDir = realpath((is_array($options) ? $options['output'] : (is_object($options) ? $options->output : null))) ?: (is_array($options) ? $options['output'] : (is_object($options) ? $options->output : null));
         if (!is_dir($outputDir)) {
             if (!mkdir($outputDir, 0755, true)) {
                 throw new RuntimeException("無法建立輸出目錄：{$outputDir}");
@@ -280,7 +280,7 @@ function main(array $argv): void
         $apiDoc = json_decode($openapi->toJson(), true);
 
         // 驗證文件
-        if ($options['validate']) {
+        if ((is_array($options) ? $options['validate'] : (is_object($options) ? $options->validate : null))) {
             $output->info("驗證 API 文件...");
             if (!validateApiDoc($apiDoc, $output)) {
                 exit(1);
@@ -291,7 +291,7 @@ function main(array $argv): void
         // 根據格式選項產生檔案
         $generatedFiles = [];
 
-        if ($options['format'] === 'json' || $options['format'] === 'both') {
+        if ((is_array($options) ? $options['format'] : (is_object($options) ? $options->format : null)) === 'json' || (is_array($options) ? $options['format'] : (is_object($options) ? $options->format : null)) === 'both') {
             $jsonFile = $outputDir . '/api-docs.json';
             $jsonContent = json_encode($apiDoc, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
@@ -303,7 +303,7 @@ function main(array $argv): void
             $generatedFiles[] = $jsonFile;
         }
 
-        if ($options['format'] === 'yaml' || $options['format'] === 'both') {
+        if ((is_array($options) ? $options['format'] : (is_object($options) ? $options->format : null)) === 'yaml' || (is_array($options) ? $options['format'] : (is_object($options) ? $options->format : null)) === 'both') {
             $yamlFile = $outputDir . '/api-docs.yaml';
             $yamlContent = $openapi->toYaml();
 
@@ -316,10 +316,10 @@ function main(array $argv): void
         }
 
         // 統計資訊
-        $pathCount = count($apiDoc['paths'] ?? []);
-        $schemaCount = count($apiDoc['components']['schemas'] ?? []);
-        $serverCount = count($apiDoc['servers'] ?? []);
-        $tagCount = count($apiDoc['tags'] ?? []);
+        $pathCount = count((is_array($apiDoc) ? $apiDoc['paths'] : (is_object($apiDoc) ? $apiDoc->paths : null)) ?? []);
+        $schemaCount = count((is_array($apiDoc) ? $apiDoc['components'] : (is_object($apiDoc) ? $apiDoc->components : null))['schemas'] ?? []);
+        $serverCount = count((is_array($apiDoc) ? $apiDoc['servers'] : (is_object($apiDoc) ? $apiDoc->servers : null)) ?? []);
+        $tagCount = count((is_array($apiDoc) ? $apiDoc['tags'] : (is_object($apiDoc) ? $apiDoc->tags : null)) ?? []);
 
         $output->newLine();
         $output->subtitle("產生結果");
@@ -327,18 +327,18 @@ function main(array $argv): void
         $output->info("Schema 數量：{$schemaCount}");
         $output->info("伺服器設定：{$serverCount}");
         $output->info("標籤數量：{$tagCount}");
-        $output->info("OpenAPI 版本：" . ($apiDoc['openapi'] ?? '未知'));
-        $output->info("API 標題：" . ($apiDoc['info']['title'] ?? '未知'));
-        $output->info("API 版本：" . ($apiDoc['info']['version'] ?? '未知'));
+        $output->info("OpenAPI 版本：" . ((is_array($apiDoc) ? $apiDoc['openapi'] : (is_object($apiDoc) ? $apiDoc->openapi : null)) ?? '未知'));
+        $output->info("API 標題：" . ((is_array($apiDoc) ? $apiDoc['info'] : (is_object($apiDoc) ? $apiDoc->info : null))['title'] ?? '未知'));
+        $output->info("API 版本：" . ((is_array($apiDoc) ? $apiDoc['info'] : (is_object($apiDoc) ? $apiDoc->info : null))['version'] ?? '未知'));
 
         // 詳細統計 (verbose 模式)
-        if ($options['verbose']) {
+        if ((is_array($options) ? $options['verbose'] : (is_object($options) ? $options->verbose : null))) {
             $output->newLine();
             $output->subtitle("詳細統計");
 
             // 按 HTTP 方法統計
             $methodStats = [];
-            foreach ($apiDoc['paths'] ?? [] as $path => $methods) {
+            foreach ((is_array($apiDoc) ? $apiDoc['paths'] : (is_object($apiDoc) ? $apiDoc->paths : null)) ?? [] as $path => $methods) {
                 foreach ($methods as $method => $operation) {
                     if (in_array($method, ['get', 'post', 'put', 'delete', 'patch', 'head', 'options', 'trace'])) {
                         $methodStats[$method] = ($methodStats[$method] ?? 0) + 1;
@@ -352,11 +352,11 @@ function main(array $argv): void
             }
 
             // 按標籤統計
-            if (!empty($apiDoc['tags'])) {
+            if (!empty((is_array($apiDoc) ? $apiDoc['tags'] : (is_object($apiDoc) ? $apiDoc->tags : null)))) {
                 $output->newLine();
                 $output->info("標籤列表：");
-                foreach ($apiDoc['tags'] as $tag) {
-                    $output->info("  - " . ($tag['name'] ?? '未命名') . ": " . ($tag['description'] ?? '無描述'));
+                foreach ((is_array($apiDoc) ? $apiDoc['tags'] : (is_object($apiDoc) ? $apiDoc->tags : null)) as $tag) {
+                    $output->info("  - " . ((is_array($tag) ? $tag['name'] : (is_object($tag) ? $tag->name : null)) ?? '未命名') . ": " . ((is_array($tag) ? $tag['description'] : (is_object($tag) ? $tag->description : null)) ?? '無描述'));
                 }
             }
 
@@ -365,8 +365,8 @@ function main(array $argv): void
             $output->info("檔案大小：");
             foreach ($generatedFiles as $file) {
                 $stats = getFileStats($file);
-                $formattedSize = formatFileSize($stats['size']);
-                $output->info("  " . basename($file) . ": {$formattedSize} ({$stats['lines']} 行)");
+                $formattedSize = formatFileSize((is_array($stats) ? $stats['size'] : (is_object($stats) ? $stats->size : null)));
+                $output->info("  " . basename($file) . ": {$formattedSize} ({(is_array($stats) ? $stats['lines'] : (is_object($stats) ? $stats->lines : null))} 行)");
             }
         }
 
@@ -376,10 +376,10 @@ function main(array $argv): void
         $output->listItem("🌐 Swagger UI：http://localhost/api/docs/ui");
         $output->listItem("📄 JSON 文件：http://localhost/api/docs");
 
-        if (in_array($options['format'], ['json', 'both'])) {
+        if (in_array((is_array($options) ? $options['format'] : (is_object($options) ? $options->format : null)), ['json', 'both'])) {
             $output->listItem("📁 本地 JSON：{$outputDir}/api-docs.json");
         }
-        if (in_array($options['format'], ['yaml', 'both'])) {
+        if (in_array((is_array($options) ? $options['format'] : (is_object($options) ? $options->format : null)), ['yaml', 'both'])) {
             $output->listItem("📁 本地 YAML：{$outputDir}/api-docs.yaml");
         }
 
@@ -396,7 +396,7 @@ function main(array $argv): void
         $output->error("錯誤訊息：{$e->getMessage()}");
         $output->error("檔案：{$e->getFile()}:{$e->getLine()}");
 
-        if ($options['verbose']) {
+        if ((is_array($options) ? $options['verbose'] : (is_object($options) ? $options->verbose : null))) {
             $output->newLine();
             $output->info("詳細錯誤堆疊：");
             $output->line($e->getTraceAsString());

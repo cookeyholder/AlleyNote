@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Services;
 
-use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
-use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
-use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
+use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\Services\TokenBlacklistService;
+use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;

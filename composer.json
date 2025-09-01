@@ -30,12 +30,12 @@
     "squizlabs/php_codesniffer": "^3.8",
     "friendsofphp/php-cs-fixer": "^3.86",
     "phpstan/phpstan": "^2.1",
-    "phpstan/phpstan-mockery": "^2.0"
+    "phpstan/phpstan-mockery": "^2.0",
+    "predis/predis": "^3.2"
   },
   "autoload": {
     "psr-4": {
-      "App\\": "app/",
-      "AlleyNote\\": "app/"
+      "App\\": "app/"
     },
     "files": [
       "app/Shared/Helpers/functions.php"

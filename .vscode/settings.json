@@ -1,0 +1,47 @@
+{
+    // === PHP Intelephense 基本設定 ===
+    "intelephense.phpdoc.template": {
+        "@property ": "${1:${TYPE}} ${2:${NAME}} - ${3:Description}",
+        "@return ": "${1:${TYPE}} ${2:Description}",
+        "@param ": "${1:${TYPE}} ${2:${NAME}} - ${3:Description}",
+        "@throws ": "${1:${TYPE}} ${2:Description}",
+        "@var ": "${1:${TYPE}} ${2:Description}"
+    },
+
+    // === PHP Intelephense 與 php-cs-fixer 相容性設定 ===
+    // 停用 Intelephense 的程式碼格式化功能
+    "intelephense.format.enable": false,
+
+    // PHP 檔案專用設定
+    "[php]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": null,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "never",
+            "source.organizeImports": "never"
+        }
+    },
+
+    // 確保只有 php-cs-fixer 處理 PHP 程式碼格式化
+    "php-cs-fixer.executablePath": "./vendor/bin/php-cs-fixer",
+    "php-cs-fixer.onsave": true,
+    "php-cs-fixer.config": ".php-cs-fixer.php",
+    "php-cs-fixer.allowRisky": false,
+
+    // 編輯器一般設定（確保與 php-cs-fixer 規則一致）
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+
+    // PHPStan 設定
+    "php.validate.executablePath": "",
+    "php.suggest.basic": false,
+
+    // 檔案關聯
+    "files.associations": {
+        "*.php": "php"
+    }
+}

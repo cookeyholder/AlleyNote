@@ -157,7 +157,7 @@ return [
                 'php_version' => PHP_VERSION,
                 'memory_limit' => ini_get('memory_limit'),
                 'max_execution_time' => ini_get('max_execution_time'),
-                'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown',
+                'server_software' => (is_array($_SERVER) ? $_SERVER['SERVER_SOFTWARE'] : (is_object($_SERVER) ? $_SERVER->SERVER_SOFTWARE : null)) ?? 'Unknown',
                 'system_time' => date('c'),
                 'uptime' => 'N/A' // TODO: 實作系統運行時間
             ];

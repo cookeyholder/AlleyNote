@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Contracts;
 
-use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
-use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
+use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -487,7 +487,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
 
     public function testInterfaceIsInCorrectNamespace(): void
     {
-        $this->assertEquals('AlleyNote\Domains\Auth\Contracts', $this->interfaceReflection->getNamespaceName());
+        $this->assertEquals('App\Domains\Auth\Contracts', $this->interfaceReflection->getNamespaceName());
     }
 
     public function testMethodsArePublic(): void

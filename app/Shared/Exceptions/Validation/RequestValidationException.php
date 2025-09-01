@@ -32,7 +32,7 @@ class RequestValidationException extends ValidationException
         return new self('缺少必要欄位', $errors);
     }
 
-    public static function invalidFieldType(string $field, string $expectedType, $actualValue): self
+    public static function invalidFieldType(string $field, string $expectedType, mixed $actualValue): self
     {
         $actualType = gettype($actualValue);
         $errors = [$field => "欄位 '{$field}' 應為 {$expectedType} 類型，實際為 {$actualType}"];
@@ -83,7 +83,7 @@ class RequestValidationException extends ValidationException
         return new self('欄位值不在允許範圍內', $errors);
     }
 
-    public static function numericRangeError(string $field, $value, $min = null, $max = null): self
+    public static function numericRangeError(string $field, $value, $min = null, mixed $max = null): self
     {
         $message = "欄位 '{$field}' 的值 '{$value}' 超出允許範圍";
 
@@ -100,7 +100,7 @@ class RequestValidationException extends ValidationException
         return new self('數值範圍錯誤', $errors);
     }
 
-    public static function duplicateValue(string $field, $value): self
+    public static function duplicateValue(string $field, mixed $value): self
     {
         $errors = [$field => "值 '{$value}' 已存在，不能重複"];
 

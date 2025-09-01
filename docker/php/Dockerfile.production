@@ -28,7 +28,12 @@ COPY composer.json composer.lock ./
 COPY src/ ./src/
 COPY public/ ./public/
 COPY database/ ./database/
+COPY scripts/ ./scripts/
 COPY .env.example ./.env
+
+# 複製並設定啟動腳本
+COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # 安裝生產環境相依套件
 RUN composer install --no-dev --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader
@@ -50,8 +55,11 @@ USER www-data
 # 暴露埠口
 EXPOSE 9000
 
-# 啟動 PHP-FPM
-CMD ["php-fpm"]
+# 設定啟動腳本為入口點
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+# 預設執行 Web 伺服器
+CMD ["web"]
 
 # 開發環境映像檔
 FROM base AS development

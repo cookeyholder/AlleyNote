@@ -18,13 +18,13 @@ final readonly class ConsolidatedMaintainer
         private MaintenanceConfig $config
     ) {}
 
-    public function maintain(array $options = []): ScriptResult
+    public function maintain(array<mixed> $options = []): ScriptResult
     {
         $startTime = microtime(true);
         $details = [];
 
         try {
-            $task = $options['task'] ?? 'all';
+            $task = (is_array($options) ? $options['task'] : (is_object($options) ? $options->task : null)) ?? 'all';
 
             $result = match ($task) {
                 'all' => $this->performAllMaintenance($options),
@@ -36,9 +36,9 @@ final readonly class ConsolidatedMaintainer
             };
 
             return new ScriptResult(
-                success: $result['success'],
-                message: $result['message'],
-                details: array_merge($details, $result['details']),
+                success: (is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)),
+                message: (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)),
+                details: array_merge($details, (is_array($result) ? $result['details'] : (is_object($result) ? $result->details : null))),
                 executionTime: microtime(true) - $startTime
             );
         } catch (\Throwable $e) {
@@ -52,7 +52,7 @@ final readonly class ConsolidatedMaintainer
         }
     }
 
-    private function performAllMaintenance(array $options): array
+    private function performAllMaintenance(array<mixed> $options): array<mixed>
     {
         $results = [];
 
@@ -68,7 +68,7 @@ final readonly class ConsolidatedMaintainer
             $results[] = $this->optimizeDatabase($options);
         }
 
-        $allSuccessful = array_reduce($results, fn($carry, $result) => $carry && $result['success'], true);
+        $allSuccessful = array_reduce($results, fn($carry, $result) => $carry && (is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)), true);
 
         return [
             'success' => $allSuccessful,
@@ -77,7 +77,7 @@ final readonly class ConsolidatedMaintainer
         ];
     }
 
-    private function clearCache(array $options): array
+    private function clearCache(array<mixed> $options): array<mixed>
     {
         $command = "cd {$this->projectRoot} && php scripts/cache-cleanup.sh";
         $output = shell_exec($command);
@@ -89,7 +89,7 @@ final readonly class ConsolidatedMaintainer
         ];
     }
 
-    private function rotateLogs(array $options): array
+    private function rotateLogs(array<mixed> $options): array<mixed>
     {
         // 實作日誌輪轉邏輯
         return [
@@ -99,7 +99,7 @@ final readonly class ConsolidatedMaintainer
         ];
     }
 
-    private function optimizeDatabase(array $options): array
+    private function optimizeDatabase(array<mixed> $options): array<mixed>
     {
         // 實作資料庫最佳化邏輯
         return [
@@ -109,7 +109,7 @@ final readonly class ConsolidatedMaintainer
         ];
     }
 
-    private function performCleanup(array $options): array
+    private function performCleanup(array<mixed> $options): array<mixed>
     {
         // 實作清理邏輯
         return [

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\DTOs;
+namespace App\Domains\Auth\DTOs;
 
-use AlleyNote\Domains\Auth\ValueObjects\TokenPair;
+use App\Domains\Auth\ValueObjects\TokenPair;
 
 /**
  * 刷新回應 DTO.

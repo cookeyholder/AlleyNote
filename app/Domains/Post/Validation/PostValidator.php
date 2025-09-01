@@ -205,7 +205,7 @@ class PostValidator extends Validator
     /**
      * 建立 Post 建立時的驗證規則.
      */
-    public static function getCreatePostRules(): array
+    public static function getCreatePostRules(): mixed
     {
         return [
             'title' => 'required|post_title:1,255',
@@ -221,7 +221,7 @@ class PostValidator extends Validator
     /**
      * 建立 Post 更新時的驗證規則.
      */
-    public static function getUpdatePostRules(): array
+    public static function getUpdatePostRules(): mixed
     {
         return [
             'title' => 'post_title:1,255',
@@ -237,7 +237,7 @@ class PostValidator extends Validator
      *
      * @param array $data 要驗證的資料
      */
-    public static function getDynamicUpdateRules(array $data): array
+    public static function getDynamicUpdateRules(array $data): mixed
     {
         $rules = [];
         $availableRules = self::getUpdatePostRules();
@@ -273,15 +273,6 @@ class PostValidator extends Validator
         $validatedData = $result->getValidatedData();
 
         // 檢查發布日期與狀態的一致性
-        if (isset($validatedData['publish_date']) && isset($validatedData['status'])) {
-            $publishDate = $validatedData['publish_date'];
-            $status = $validatedData['status'];
-
-            if ($publishDate && !$this->checkRule($publishDate, 'publish_date_future', [$status])) {
-                $result->addError('publish_date', '發布日期不能早於當前時間');
-                $result->addFailedRule('publish_date', 'publish_date_future');
-            }
-        }
 
         return $result;
     }

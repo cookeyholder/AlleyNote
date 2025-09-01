@@ -16,7 +16,7 @@ class ApiResponse
         ];
     }
 
-    public static function error(string $message, int $code = 400, $errors = null): array
+    public static function error(string $message, int $code = 400, mixed $errors = null): array
     {
         return [
             'success' => false,

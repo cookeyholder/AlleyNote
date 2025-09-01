@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Tests\Unit\Models;
 
 use App\Domains\Post\Models\Post;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Factory\PostFactory;
 use Tests\TestCase;
 
 class PostTest extends TestCase
 {
-    public function testCorrectlyInitializesWithValidData(): void
+    #[Test]
+    public function correctlyInitializesWithValidData(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
@@ -25,13 +27,14 @@ class PostTest extends TestCase
 
         $this->assertEquals($data['uuid'], $post->getUuid());
         $this->assertEquals($data['seq_number'], $post->getSeqNumber());
-        $this->assertEquals(htmlspecialchars($data['title'], ENT_QUOTES, 'UTF-8'), $post->getTitle());
-        $this->assertEquals(htmlspecialchars($data['content'], ENT_QUOTES, 'UTF-8'), $post->getContent());
+        $this->assertEquals($data['title'], $post->getTitle());
+        $this->assertEquals($data['content'], $post->getContent());
         $this->assertEquals($data['user_id'], $post->getUserId());
         $this->assertEquals($data['user_ip'], $post->getUserIp());
     }
 
-    public function testHandlesNullableFieldsCorrectly(): void
+    #[Test]
+    public function handlesNullableFieldsCorrectly(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
@@ -47,7 +50,8 @@ class PostTest extends TestCase
         $this->assertNull($post->getPublishDate());
     }
 
-    public function testSetsDefaultValuesCorrectly(): void
+    #[Test]
+    public function setsDefaultValuesCorrectly(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',
@@ -69,7 +73,8 @@ class PostTest extends TestCase
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[\+\-]\d{2}:\d{2}$/', $post->getUpdatedAt());
     }
 
-    public function testStoresRawHtmlInTitleAndContent(): void
+    #[Test]
+    public function storesRawHtmlInTitleAndContent(): void
     {
         $data = PostFactory::make([
             'uuid' => 'test-uuid',

@@ -138,6 +138,32 @@ return $config
         'trim_array_spaces' => true,
         'unary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
+
+        // 新增的程式碼品質規則
+        'strict_comparison' => true,              // 強制使用嚴格比較 (=== 而非 ==)
+        'no_superfluous_phpdoc_tags' => [        // 移除多餘的 PHPDoc 標籤
+            'allow_mixed' => true,
+            'allow_unused_params' => false,
+        ],
+        'phpdoc_types_order' => [                // PHPDoc 類型排序
+            'null_adjustment' => 'always_last',
+            'sort_algorithm' => 'none',
+        ],
+
+        // 命名規範相關規則
+        'class_reference_name_casing' => true,   // 確保類別引用使用正確大小寫
+        'constant_case' => true,                 // 確保 PHP 常數使用正確大小寫
+        'magic_constant_casing' => true,         // 魔術常數大小寫規範
+        'magic_method_casing' => true,           // 魔術方法大小寫規範
+        'native_function_casing' => true,        // PHP 內建函式大小寫規範
+
+        // PSR 標準加強規則
+        'psr_autoloading' => true,               // 確保 PSR-4 自動載入合規
+        'no_unused_imports' => true,             // 移除未使用的 use 語句
+        'ordered_imports' => [                   // Import 語句排序（已存在，確保配置）
+            'sort_algorithm' => 'alpha',
+            'imports_order' => ['class', 'function', 'const'],
+        ],
     ])
     ->setRiskyAllowed(true)
     ->setUsingCache(true)

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
 use App\Infrastructure\Services\CacheService;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CacheServiceTest extends TestCase
@@ -15,7 +18,8 @@ class CacheServiceTest extends TestCase
         $this->cacheService = new CacheService();
     }
 
-    public function testStoreAndRetrieveData(): void
+    #[Test]
+    public function storeAndRetrieveData(): void
     {
         $key = 'test_key';
         $value = ['id' => 1, 'name' => '測試資料'];
@@ -28,7 +32,8 @@ class CacheServiceTest extends TestCase
         $this->assertEquals($value, $result);
     }
 
-    public function testHandleConnectionFailure(): void
+    #[Test]
+    public function handleConnectionFailure(): void
     {
         $key = 'test_key';
         $value = ['id' => 1, 'name' => '測試資料'];
@@ -40,7 +45,8 @@ class CacheServiceTest extends TestCase
         $this->assertEquals($value, $result);
     }
 
-    public function testHandleConcurrentRequests(): void
+    #[Test]
+    public function handleConcurrentRequests(): void
     {
         $key = 'test_key';
         $value = ['id' => 1, 'name' => '測試資料'];
@@ -58,14 +64,16 @@ class CacheServiceTest extends TestCase
         }
     }
 
-    public function testClearCache(): void
+    #[Test]
+    public function clearCache(): void
     {
         $result = $this->cacheService->clear();
 
         $this->assertTrue($result);
     }
 
-    public function testDeleteSpecificKey(): void
+    #[Test]
+    public function deleteSpecificKey(): void
     {
         $result = $this->cacheService->delete('test_key');
 

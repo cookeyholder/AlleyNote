@@ -18,13 +18,13 @@ final readonly class ConsolidatedDeployer
         private DeploymentConfig $config
     ) {}
 
-    public function deploy(array $options = []): ScriptResult
+    public function deploy(array<mixed> $options = []): ScriptResult
     {
         $startTime = microtime(true);
         $details = [];
 
         try {
-            $environment = $options['environment'] ?? $this->config->environment;
+            $environment = (is_array($options) ? $options['environment'] : (is_object($options) ? $options->environment : null)) ?? $this->config->environment;
 
             $result = match ($environment) {
                 'production' => $this->deployToProduction($options),
@@ -34,9 +34,9 @@ final readonly class ConsolidatedDeployer
             };
 
             return new ScriptResult(
-                success: $result['success'],
-                message: $result['message'],
-                details: array_merge($details, $result['details']),
+                success: (is_array($result) ? $result['success'] : (is_object($result) ? $result->success : null)),
+                message: (is_array($result) ? $result['message'] : (is_object($result) ? $result->message : null)),
+                details: array_merge($details, (is_array($result) ? $result['details'] : (is_object($result) ? $result->details : null))),
                 executionTime: microtime(true) - $startTime
             );
         } catch (\Throwable $e) {
@@ -50,7 +50,7 @@ final readonly class ConsolidatedDeployer
         }
     }
 
-    private function deployToProduction(array $options): array
+    private function deployToProduction(array<mixed> $options): array<mixed>
     {
         // 實作生產環境部署邏輯
         return [
@@ -60,7 +60,7 @@ final readonly class ConsolidatedDeployer
         ];
     }
 
-    private function deployToStaging(array $options): array
+    private function deployToStaging(array<mixed> $options): array<mixed>
     {
         // 實作預備環境部署邏輯
         return [
@@ -70,7 +70,7 @@ final readonly class ConsolidatedDeployer
         ];
     }
 
-    private function deployToDevelopment(array $options): array
+    private function deployToDevelopment(array<mixed> $options): array<mixed>
     {
         // 實作開發環境部署邏輯
         return [

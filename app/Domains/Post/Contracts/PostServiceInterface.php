@@ -47,7 +47,7 @@ interface PostServiceInterface
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
      * @param array $filters 篩選條件
-     * @return array{
+     * @return array<mixed>{
      *     items: Post[],
      *     total: int,
      *     page: int,

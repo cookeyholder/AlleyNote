@@ -78,14 +78,15 @@ class PostServiceTest extends TestCase
 
         $this->repository->shouldReceive('create')
             ->once()
-            ->with(Mockery::on(function ($data) {
-                return $data['title'] === '測試文章'
-                    && $data['content'] === '這是測試內容'
-                    && $data['user_id'] === 1
-                    && $data['user_ip'] === '192.168.1.1'
-                    && $data['status'] === PostStatus::DRAFT->value
-                    && isset($data['created_at']);
-            }))
+            ->with([
+                'title' => '測試文章',
+                'content' => '這是測試內容',
+                'user_id' => 1,
+                'user_ip' => '192.168.1.1',
+                'is_pinned' => false,
+                'status' => PostStatus::DRAFT->value,
+                'publish_date' => null,
+            ])
             ->andReturn($expectedPost);
 
         $result = $this->service->createPost($dto);
@@ -141,11 +142,10 @@ class PostServiceTest extends TestCase
 
         $this->repository->shouldReceive('update')
             ->once()
-            ->with($id, Mockery::on(function ($data) {
-                return $data['title'] === '更新的標題'
-                    && $data['content'] === '更新的內容'
-                    && isset($data['updated_at']);
-            }))
+            ->with($id, [
+                'title' => '更新的標題',
+                'content' => '更新的內容',
+            ])
             ->andReturn($updatedPost);
 
         $result = $this->service->updatePost($id, $dto);

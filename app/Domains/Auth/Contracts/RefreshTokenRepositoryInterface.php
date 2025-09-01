@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\Contracts;
+namespace App\Domains\Auth\Contracts;
 
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 
 /**

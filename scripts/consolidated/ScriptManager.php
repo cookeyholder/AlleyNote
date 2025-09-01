@@ -18,7 +18,7 @@ use RuntimeException;
  */
 final readonly class ScriptManager
 {
-    private const array SCRIPT_CATEGORIES = [
+    private const array<mixed> SCRIPT_CATEGORIES = [
         'error-fixing' => 'PHPStan 錯誤修復工具',
         'testing' => '測試遷移和管理工具',
         'analysis' => '專案架構分析工具',
@@ -26,7 +26,7 @@ final readonly class ScriptManager
         'maintenance' => '維護和清理工具',
     ];
 
-    private const array COMMAND_ALIASES = [
+    private const array<mixed> COMMAND_ALIASES = [
         'fix' => 'error-fixing',
         'test' => 'testing',
         'scan' => 'analysis',
@@ -49,10 +49,10 @@ final readonly class ScriptManager
      * 執行指定的腳本類別或具體腳本
      * 
      * @param string $command 命令或類別名稱
-     * @param array<string, mixed> $options 執行選項
+     * @param array<mixed> $options 執行選項
      * @return ScriptResult 執行結果
      */
-    public function execute(string $command, array $options = []): ScriptResult
+    public function execute(string $command, array<mixed> $options = []): ScriptResult
     {
         $resolvedCategory = $this->resolveCommand($command);
 
@@ -69,7 +69,7 @@ final readonly class ScriptManager
     /**
      * 列出所有可用的腳本類別和命令
      */
-    public function listCommands(): array
+    public function listCommands(): array<mixed>
     {
         return [
             'categories' => self::SCRIPT_CATEGORIES,
@@ -96,7 +96,7 @@ final readonly class ScriptManager
         return self::COMMAND_ALIASES[$command] ?? $command;
     }
 
-    private function executeErrorFixing(array $options): ScriptResult
+    private function executeErrorFixing(array<mixed> $options): ScriptResult
     {
         $fixer = new ConsolidatedErrorFixer(
             $this->projectRoot,
@@ -106,7 +106,7 @@ final readonly class ScriptManager
         return $fixer->fix($options);
     }
 
-    private function executeTesting(array $options): ScriptResult
+    private function executeTesting(array<mixed> $options): ScriptResult
     {
         $tester = new ConsolidatedTestManager(
             $this->projectRoot,
@@ -116,7 +116,7 @@ final readonly class ScriptManager
         return $tester->manage($options);
     }
 
-    private function executeAnalysis(array $options): ScriptResult
+    private function executeAnalysis(array<mixed> $options): ScriptResult
     {
         $analyzer = new ConsolidatedAnalyzer(
             $this->projectRoot,
@@ -126,7 +126,7 @@ final readonly class ScriptManager
         return $analyzer->analyze($options);
     }
 
-    private function executeDeployment(array $options): ScriptResult
+    private function executeDeployment(array<mixed> $options): ScriptResult
     {
         $deployer = new ConsolidatedDeployer(
             $this->projectRoot,
@@ -136,7 +136,7 @@ final readonly class ScriptManager
         return $deployer->deploy($options);
     }
 
-    private function executeMaintenance(array $options): ScriptResult
+    private function executeMaintenance(array<mixed> $options): ScriptResult
     {
         $maintainer = new ConsolidatedMaintainer(
             $this->projectRoot,
@@ -155,7 +155,7 @@ final readonly class ScriptResult
     public function __construct(
         public bool $success,
         public string $message,
-        public array $details = [],
+        public array<mixed> $details = [],
         public float $executionTime = 0.0,
         public int $exitCode = 0
     ) {}
@@ -229,8 +229,8 @@ final readonly class ModernPhpAdoption
 {
     public function __construct(
         public float $adoptionRate,
-        public array $modernFeatures,
-        public array $suggestions
+        public array<mixed> $modernFeatures,
+        public array<mixed> $suggestions
     ) {}
 
     public function isGood(): bool
@@ -252,13 +252,13 @@ interface ScriptConfigurationInterface
 
 interface ScriptExecutorInterface
 {
-    public function execute(string $command, array $args = []): ScriptResult;
-    public function executeBackground(string $command, array $args = []): string; // 回傳 process ID
+    public function execute(string $command, array<mixed> $args = []): ScriptResult;
+    public function executeBackground(string $command, array<mixed> $args = []): string; // 回傳 process ID
 }
 
 interface ScriptAnalyzerInterface
 {
-    public function scanAvailableScripts(): array;
+    public function scanAvailableScripts(): array<mixed>;
     public function countPHPStanErrors(): int;
     public function getTestStatus(): TestStatus;
     public function getArchitectureMetrics(): ArchitectureMetrics;
@@ -272,7 +272,7 @@ final readonly class ErrorFixingConfig
     public function __construct(
         public bool $autoFix = true,
         public int $maxLevel = 8,
-        public array $excludePaths = [],
+        public array<mixed> $excludePaths = [],
         public bool $useBleedingEdge = true
     ) {}
 }
@@ -283,7 +283,7 @@ final readonly class TestingConfig
         public string $framework = 'phpunit',
         public bool $coverage = true,
         public string $coverageFormat = 'html',
-        public array $testSuites = []
+        public array<mixed> $testSuites = []
     ) {}
 }
 
@@ -293,7 +293,7 @@ final readonly class AnalysisConfig
         public bool $deepScan = true,
         public bool $dddAnalysis = true,
         public bool $modernPhpCheck = true,
-        public array $metrics = []
+        public array<mixed> $metrics = []
     ) {}
 }
 
@@ -303,7 +303,7 @@ final readonly class DeploymentConfig
         public string $environment = 'production',
         public bool $backup = true,
         public bool $ssl = true,
-        public array $deploymentSteps = []
+        public array<mixed> $deploymentSteps = []
     ) {}
 }
 

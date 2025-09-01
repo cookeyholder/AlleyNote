@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\ValueObjects;
+namespace App\Domains\Auth\ValueObjects;
 
 use DateTimeImmutable;
 use InvalidArgumentException;

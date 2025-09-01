@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use AlleyNote\Domains\Auth\Entities\RefreshToken;
-use AlleyNote\Domains\Auth\Services\TokenBlacklistService;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
-use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
-use AlleyNote\Infrastructure\Auth\Repositories\RefreshTokenRepository;
-use AlleyNote\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
+use App\Domains\Auth\Entities\RefreshToken;
+use App\Domains\Auth\Services\TokenBlacklistService;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
+use App\Infrastructure\Auth\Repositories\RefreshTokenRepository;
+use App\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use DateTime;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\Group;
@@ -43,8 +43,6 @@ class JwtAuthenticationIntegrationTest extends TestCase
 
     /**
      * 測試 RefreshToken Repository 基本操作.
-     *
-     * @test
      */
     public function canManageRefreshTokens(): void
     {

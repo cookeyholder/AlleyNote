@@ -14,7 +14,7 @@ use InvalidArgumentException;
  */
 final readonly class ConsolidatedErrorFixer
 {
-    private const array ERROR_TYPES = [
+    private const array<mixed> ERROR_TYPES = [
         'type-hints' => '型別提示修復',
         'undefined-variables' => '未定義變數修復',
         'property-access' => '屬性存取修復',
@@ -31,7 +31,7 @@ final readonly class ConsolidatedErrorFixer
     /**
      * 執行錯誤修復
      */
-    public function fix(array $options = []): ScriptResult
+    public function fix(array<mixed> $options = []): ScriptResult
     {
         $startTime = microtime(true);
         $fixedErrors = 0;
@@ -40,7 +40,7 @@ final readonly class ConsolidatedErrorFixer
         try {
             // 1. 掃瞄當前錯誤
             $errors = $this->scanCurrentErrors();
-            $details['initial_errors'] = count($errors);
+            (is_array($details) ? $details['initial_errors'] : (is_object($details) ? $details->initial_errors : null)) = count($errors);
 
             if (empty($errors)) {
                 return new ScriptResult(
@@ -62,8 +62,8 @@ final readonly class ConsolidatedErrorFixer
 
             // 3. 驗證修復結果
             $remainingErrors = $this->scanCurrentErrors();
-            $details['remaining_errors'] = count($remainingErrors);
-            $details['fixed_total'] = $fixedErrors;
+            (is_array($details) ? $details['remaining_errors'] : (is_object($details) ? $details->remaining_errors : null)) = count($remainingErrors);
+            (is_array($details) ? $details['fixed_total'] : (is_object($details) ? $details->fixed_total : null)) = $fixedErrors;
 
             $success = count($remainingErrors) < count($errors);
 
@@ -89,35 +89,35 @@ final readonly class ConsolidatedErrorFixer
     /**
      * 掃瞄目前的 PHPStan 錯誤
      */
-    private function scanCurrentErrors(): array
+    private function scanCurrentErrors(): array<mixed>
     {
         $command = "cd {$this->projectRoot} && ./vendor/bin/phpstan analyse --error-format=json --no-progress";
         $output = shell_exec($command);
 
-        if ($output === null) {
+        if (output === null) {
             throw new RuntimeException('無法執行 PHPStan 分析');
         }
 
         $result = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
 
-        return $result['files'] ?? [];
+        return (is_array($result) ? $result['files'] : (is_object($result) ? $result->files : null)) ?? [];
     }
 
     /**
      * 將錯誤按類型分類
      */
-    private function categorizeErrors(array $errors): array
+    private function categorizeErrors(array<mixed> $errors): array<mixed>
     {
         $categorized = [];
 
         foreach ($errors as $file => $fileErrors) {
-            foreach ($fileErrors['messages'] ?? [] as $error) {
-                $category = $this->determineErrorCategory($error['message']);
+            foreach ((is_array($fileErrors) ? $fileErrors['messages'] : (is_object($fileErrors) ? $fileErrors->messages : null)) ?? [] as $error) {
+                $category = $this->determineErrorCategory((is_array($error) ? $error['message'] : (is_object($error) ? $error->message : null)));
                 $categorized[$category][] = [
                     'file' => $file,
-                    'line' => $error['line'],
-                    'message' => $error['message'],
-                    'identifier' => $error['identifier'] ?? null,
+                    'line' => (is_array($error) ? $error['line'] : (is_object($error) ? $error->line : null)),
+                    'message' => (is_array($error) ? $error['message'] : (is_object($error) ? $error->message : null)),
+                    'identifier' => (is_array($error) ? $error['identifier'] : (is_object($error) ? $error->identifier : null)) ?? null,
                 ];
             }
         }
@@ -144,7 +144,7 @@ final readonly class ConsolidatedErrorFixer
     /**
      * 修復特定類型的錯誤
      */
-    private function fixErrorCategory(string $category, array $errors): int
+    private function fixErrorCategory(string $category, array<mixed> $errors): int
     {
         return match ($category) {
             'type-hints' => $this->fixTypeHints($errors),
@@ -157,7 +157,7 @@ final readonly class ConsolidatedErrorFixer
         };
     }
 
-    private function fixTypeHints(array $errors): int
+    private function fixTypeHints(array<mixed> $errors): int
     {
         $fixed = 0;
         foreach ($errors as $error) {
@@ -169,7 +169,7 @@ final readonly class ConsolidatedErrorFixer
         return $fixed;
     }
 
-    private function fixUndefinedVariables(array $errors): int
+    private function fixUndefinedVariables(array<mixed> $errors): int
     {
         $fixed = 0;
         foreach ($errors as $error) {
@@ -181,7 +181,7 @@ final readonly class ConsolidatedErrorFixer
         return $fixed;
     }
 
-    private function fixPropertyAccess(array $errors): int
+    private function fixPropertyAccess(array<mixed> $errors): int
     {
         $fixed = 0;
         foreach ($errors as $error) {
@@ -193,7 +193,7 @@ final readonly class ConsolidatedErrorFixer
         return $fixed;
     }
 
-    private function fixMethodCalls(array $errors): int
+    private function fixMethodCalls(array<mixed> $errors): int
     {
         $fixed = 0;
         foreach ($errors as $error) {
@@ -205,7 +205,7 @@ final readonly class ConsolidatedErrorFixer
         return $fixed;
     }
 
-    private function fixNamespaceImports(array $errors): int
+    private function fixNamespaceImports(array<mixed> $errors): int
     {
         $fixed = 0;
         foreach ($errors as $error) {
@@ -217,7 +217,7 @@ final readonly class ConsolidatedErrorFixer
         return $fixed;
     }
 
-    private function fixDeprecatedFeatures(array $errors): int
+    private function fixDeprecatedFeatures(array<mixed> $errors): int
     {
         $fixed = 0;
         foreach ($errors as $error) {
@@ -230,37 +230,37 @@ final readonly class ConsolidatedErrorFixer
     }
 
     // 具體的修復方法實作
-    private function addMissingTypeHint(array $error): bool
+    private function addMissingTypeHint(array<mixed> $error): bool
     {
         // TODO: 實作型別提示自動添加邏輯
         return false;
     }
 
-    private function initializeVariable(array $error): bool
+    private function initializeVariable(array<mixed> $error): bool
     {
         // TODO: 實作變數初始化邏輯
         return false;
     }
 
-    private function addMissingProperty(array $error): bool
+    private function addMissingProperty(array<mixed> $error): bool
     {
         // TODO: 實作屬性宣告邏輯
         return false;
     }
 
-    private function fixMethodCall(array $error): bool
+    private function fixMethodCall(array<mixed> $error): bool
     {
         // TODO: 實作方法呼叫修復邏輯
         return false;
     }
 
-    private function addMissingImport(array $error): bool
+    private function addMissingImport(array<mixed> $error): bool
     {
         // TODO: 實作匯入語句自動添加邏輯
         return false;
     }
 
-    private function modernizeDeprecatedCode(array $error): bool
+    private function modernizeDeprecatedCode(array<mixed> $error): bool
     {
         // TODO: 實作程式碼現代化邏輯
         return false;

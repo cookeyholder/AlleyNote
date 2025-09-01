@@ -113,7 +113,7 @@ return [
                                 'errors' => [
                                     'type' => 'object',
                                     'additionalProperties' => [
-                                        'type' => 'array',
+                                        'type' => 'array<mixed>',
                                         'items' => ['type' => 'string']
                                     ],
                                     'example' => [

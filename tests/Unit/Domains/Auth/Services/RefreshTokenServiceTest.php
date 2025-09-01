@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Services;
 
-use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
-use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
-use AlleyNote\Domains\Auth\Services\RefreshTokenService;
-use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
+use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\Services\RefreshTokenService;
+use App\Domains\Auth\ValueObjects\JwtPayload;
 use DateTimeImmutable;
 use Exception;
 use Mockery;

@@ -27,7 +27,7 @@ class SwaggerController
 
             $json = $openapi->toJson();
 
-            $response->getBody()->write($json);
+            $response->getBody()->write(($json ?: ''));
 
             return $response
                 ->withStatus(200)
@@ -44,7 +44,7 @@ class SwaggerController
                 'trace' => $e->getTraceAsString(),
             ];
 
-            $response->getBody()->write(json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            $response->getBody()->write(((json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?? '') ?: ''));
 
             return $response
                 ->withStatus(500)
@@ -59,7 +59,7 @@ class SwaggerController
     {
         $html = $this->generateSwaggerUiHtml();
 
-        $response->getBody()->write($html);
+        $response->getBody()->write(($html ?: ''));
 
         return $response
             ->withStatus(200)
@@ -121,7 +121,7 @@ class SwaggerController
             ],
         ];
 
-        $response->getBody()->write(json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $response->getBody()->write(((json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?? '') ?: ''));
 
         return $response
             ->withStatus(200)

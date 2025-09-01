@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Exceptions;
 
-use AlleyNote\Domains\Auth\Exceptions\TokenGenerationException;
+use App\Domains\Auth\Exceptions\TokenGenerationException;
 use PHPUnit\Framework\TestCase;
 
 /**

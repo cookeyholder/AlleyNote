@@ -151,7 +151,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         ];
 
         // 記錄到日誌檔案
-        error_log('CSP Violation: ' . json_encode($logData));
+        error_log('CSP Violation: ' . (json_encode($logData) ?? ''));
 
         // 如果設定了監控服務，也可以發送到那裡
         if (isset($this->config['csp']['monitoring_endpoint'])) {
@@ -171,7 +171,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                 'http' => [
                     'method' => 'POST',
                     'header' => 'Content-Type: application/json',
-                    'content' => json_encode($data),
+                    'content' => (json_encode($data) ?? ''),
                     'timeout' => 5,
                 ],
             ]);

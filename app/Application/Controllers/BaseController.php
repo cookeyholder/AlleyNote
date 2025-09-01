@@ -6,23 +6,45 @@ namespace App\Application\Controllers;
 
 use App\Shared\Http\ApiResponse;
 use Exception;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class BaseController
 {
+    /**
+     * 建立JSON回應.
+     *
+     * @param array<string, mixed> $data
+     */
+    protected function json(ResponseInterface $response, array $data, int $status = 200): ResponseInterface
+    {
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        if ($json === false) {
+            // JSON 編碼失敗時的回退處理
+            $json = '{"success":false,"error":{"message":"JSON encoding failed"}}';
+        }
+
+        $response->getBody()->write($json);
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function jsonResponse(array $data, int $httpCode = 200): string
     {
         http_response_code($httpCode);
         header('Content-Type: application/json; charset=utf-8');
 
-        return json_encode($data, JSON_UNESCAPED_UNICODE);
+        return (json_encode($data, JSON_UNESCAPED_UNICODE) ?? '') ?: '{}';
     }
 
-    protected function successResponse($data = null, string $message = 'Success'): string
+    protected function successResponse(mixed $data = null, string $message = 'Success'): string
     {
         return $this->jsonResponse(ApiResponse::success($data, $message));
     }
 
-    protected function errorResponse(string $message, int $httpCode = 400, $errors = null): string
+    protected function errorResponse(string $message, int $httpCode = 400, mixed $errors = null): string
     {
         return $this->jsonResponse(
             ApiResponse::error($message, $httpCode, $errors),
@@ -30,6 +52,9 @@ abstract class BaseController
         );
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function paginatedResponse(array $data, int $total, int $page, int $perPage): string
     {
         return $this->jsonResponse(ApiResponse::paginated($data, $total, $page, $perPage));

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\Contracts;
+namespace App\Domains\Auth\Contracts;
 
-use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
+use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTime;
 
 /**

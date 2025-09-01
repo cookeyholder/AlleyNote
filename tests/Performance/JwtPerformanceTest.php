@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Performance;
 
-use AlleyNote\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
-use AlleyNote\Domains\Auth\ValueObjects\JwtPayload;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Shared\Config\JwtConfig;
 use DI\ContainerBuilder;
 use Exception;

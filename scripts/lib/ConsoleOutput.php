@@ -86,7 +86,7 @@ class ConsoleOutput
     /**
      * 應用顏色和樣式到文字
      */
-    private function colorize(string $text, array $styles): string
+    private function colorize(string $text, array<mixed> $styles): string
     {
         if (!$this->colorSupport) {
             return $text;
@@ -113,7 +113,7 @@ class ConsoleOutput
     /**
      * 輸出訊息
      */
-    private function write(string $message, array $styles = [], int $verbosity = self::VERBOSITY_NORMAL): void
+    private function write(string $message, array<mixed> $styles = [], int $verbosity = self::VERBOSITY_NORMAL): void
     {
         if ($this->verbosity < $verbosity) {
             return;
@@ -206,7 +206,7 @@ class ConsoleOutput
     /**
      * 輸出表格標頭
      */
-    public function tableHeader(array $headers): void
+    public function tableHeader(array<mixed> $headers): void
     {
         $row = '| ' . implode(' | ', $headers) . ' |';
         $separator = '+' . str_repeat('-', strlen($row) - 2) . '+';
@@ -219,7 +219,7 @@ class ConsoleOutput
     /**
      * 輸出表格行
      */
-    public function tableRow(array $cells): void
+    public function tableRow(array<mixed> $cells): void
     {
         $row = '| ' . implode(' | ', $cells) . ' |';
         $this->write($row, ['white']);

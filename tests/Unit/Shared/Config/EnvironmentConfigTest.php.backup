@@ -1,0 +1,398 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Shared\Config;
+
+use App\Shared\Config\EnvironmentConfig;
+use Exception;
+use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
+
+/**
+ * EnvironmentConfig 測試類別.
+ */
+class EnvironmentConfigTest extends TestCase
+{
+    private string $testCon    public function testParseValueTypes(): void
+    {
+        $this->createTestEnvFile('development', [
+            'APP_NAME=TestApp',
+            'APP_ENV=development',
+            'DB_CONNECTION=sqlite',
+            'JWT_PRIVATE_KEY=test-private-key',
+            'JWT_PUBLIC_KEY=test-public-key',
+            'BOOLEAN_TRUE=true',
+            'BOOLEAN_FALSE=false',
+            'INTEGER_VALUE=42',
+            'FLOAT_VALUE=3.14',
+            'STRING_VALUE="quoted string"',
+            'NULL_VALUE=null',
+        ]);
+
+        $config = new EnvironmentConfig('development', $this->testConfigPath);e array $originalEnv = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // 保存和清空所有相關的環境變數
+        $envKeys = [
+            'APP_NAME', 'APP_ENV', 'APP_DEBUG', 'APP_URL', 'APP_KEY',
+            'DB_CONNECTION', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD',
+            'JWT_PRIVATE_KEY', 'JWT_PUBLIC_KEY',
+            'FORCE_HTTPS', 'ADMIN_PASSWORD'
+        ];
+
+        foreach ($envKeys as $key) {
+            $this->originalEnv[$key] = [
+                'env' => $_ENV[$key] ?? null,
+                'getenv' => getenv($key) ?: null
+            ];
+            
+            // 清空環境變數以確保從檔案載入
+            unset($_ENV[$key]);
+            putenv("{$key}=");
+        }
+
+        // 建立測試配置目錄
+        $this->testConfigPath = sys_get_temp_dir() . '/alleynote-test-' . uniqid();
+        mkdir($this->testConfigPath, 0755, true);
+    }
+
+    protected function tearDown(): void
+    {
+        // 恢復原始環境變數
+        foreach ($this->originalEnv as $key => $values) {
+            if ($values['env'] === null) {
+                unset($_ENV[$key]);
+            } else {
+                $_ENV[$key] = $values['env'];
+            }
+
+            if ($values['getenv'] === null) {
+                putenv("{$key}=");
+            } else {
+                putenv("{$key}={$values['getenv']}");
+            }
+        }
+
+        // 清理測試配置目錄
+        $this->removeDirectory($this->testConfigPath);
+
+        parent::tearDown();
+    }
+
+    public function testConstructorWithValidEnvironment(): void
+    {
+        $config = new EnvironmentConfig('development');
+
+        $this->assertEquals('development', $config->getEnvironment());
+        $this->assertTrue($config->isDevelopment());
+        $this->assertFalse($config->isProduction());
+        $this->assertFalse($config->isTesting());
+    }
+
+    public function testConstructorWithInvalidEnvironment(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('無效的環境: invalid');
+
+        new EnvironmentConfig('invalid');
+    }
+
+    public function testEnvironmentDetection(): void
+    {
+        // 測試從環境變數檢測
+        $_ENV['APP_ENV'] = 'production';
+        putenv('APP_ENV=production');
+
+        $config = new EnvironmentConfig();
+        $this->assertEquals('production', $config->getEnvironment());
+        $this->assertTrue($config->isProduction());
+    }
+
+    public function testLoadFromValidFile(): void
+    {
+        // 建立測試環境檔案
+        $this->createTestEnvFile('development', [
+            'APP_NAME=TestApp',
+            'APP_ENV=development',
+            'APP_DEBUG=true',
+            'DB_CONNECTION=sqlite',
+            'JWT_PRIVATE_KEY=test-private-key',
+            'JWT_PUBLIC_KEY=test-public-key',
+            '# 註解應該被忽略',
+            '',
+            'CUSTOM_VALUE="quoted value"',
+            'NUMERIC_VALUE=123',
+            'BOOLEAN_VALUE=false',
+            'NULL_VALUE=null',
+        ]);
+
+        $config = new EnvironmentConfig('development', $this->testConfigPath);
+        $config->load();
+
+        $this->assertEquals('TestApp', $config->get('APP_NAME'));
+        $this->assertTrue($config->get('APP_DEBUG'));
+        $this->assertEquals('sqlite', $config->get('DB_CONNECTION'));
+        $this->assertEquals('quoted value', $config->get('CUSTOM_VALUE'));
+        $this->assertEquals(123, $config->get('NUMERIC_VALUE'));
+        $this->assertFalse($config->get('BOOLEAN_VALUE'));
+        $this->assertNull($config->get('NULL_VALUE'));
+    }
+
+    public function testLoadFromNonExistentFile(): void
+    {
+        $config = new EnvironmentConfig('development', $this->testConfigPath);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('環境配置檔案不存在');
+
+        $config->load();
+    }
+
+    public function testGetWithDefault(): void
+    {
+        $this->createTestEnvFile('development', [
+            'APP_NAME=TestApp',
+            'APP_ENV=development',
+            'DB_CONNECTION=sqlite',
+            'JWT_PRIVATE_KEY=test-private-key',
+            'JWT_PUBLIC_KEY=test-public-key',
+            'EXISTING_KEY=existing_value',
+        ]);
+
+        $config = new EnvironmentConfig('development', $this->testConfigPath);
+
+        $this->assertEquals('existing_value', $config->get('EXISTING_KEY'));
+        $this->assertEquals('default_value', $config->get('NON_EXISTENT_KEY', 'default_value'));
+        $this->assertNull($config->get('NON_EXISTENT_KEY'));
+    }
+
+    public function testSetAndGet(): void
+    {
+        $this->createTestEnvFile('development', [
+            'APP_NAME=TestApp',
+            'APP_ENV=development',
+            'APP_DEBUG=true',
+            'DB_CONNECTION=sqlite',
+            'JWT_PRIVATE_KEY=test-private-key',
+            'JWT_PUBLIC_KEY=test-public-key',
+        ]);
+
+        $config = new EnvironmentConfig('development', $this->testConfigPath);
+
+        $config->set('TEST_KEY', 'test_value');
+        $this->assertEquals('test_value', $config->get('TEST_KEY'));
+
+        // 驗證環境變數也被設定了
+        $this->assertEquals('test_value', $_ENV['TEST_KEY']);
+        $this->assertEquals('test_value', getenv('TEST_KEY'));
+    }
+
+    public function testValidateWithValidConfig(): void
+    {
+        $this->createTestEnvFile('production', [
+            'APP_NAME=AlleyNote',
+            'APP_ENV=production',
+            'APP_DEBUG=false',
+            'APP_KEY=base64:SomeRealProductionKeyThatIsNotDefault',
+            'DB_CONNECTION=sqlite',
+            'JWT_PRIVATE_KEY=real-private-key-not-default',
+            'JWT_PUBLIC_KEY=valid-public-key',
+            'FORCE_HTTPS=true',
+            'ADMIN_PASSWORD=StrongAdminPassword123',
+        ]);
+
+        $config = new EnvironmentConfig('production', $this->testConfigPath);
+        $errors = $config->validate();
+
+        $this->assertEmpty($errors, '應該沒有驗證錯誤，但有錯誤：' . implode('; ', $errors));
+    }
+
+    public function testValidateWithMissingRequiredKeys(): void
+    {
+        $this->createTestEnvFile('development', [
+            'APP_NAME=TestApp',
+            // 故意遺漏必要的配置項目：APP_ENV, DB_CONNECTION, JWT_PRIVATE_KEY, JWT_PUBLIC_KEY
+        ]);
+
+        $config = new EnvironmentConfig('development', $this->testConfigPath);
+        $errors = $config->validate();
+
+        $this->assertNotEmpty($errors);
+        $errorString = implode(', ', $errors);
+        $this->assertStringContainsString('APP_ENV', $errorString);
+        $this->assertStringContainsString('DB_CONNECTION', $errorString);
+        $this->assertStringContainsString('JWT_PRIVATE_KEY', $errorString);
+        $this->assertStringContainsString('JWT_PUBLIC_KEY', $errorString);
+    }
+
+    public function testProductionEnvironmentValidation(): void
+    {
+        $this->createTestEnvFile('production', [
+            'APP_NAME=AlleyNote',
+            'APP_ENV=production',
+            'APP_DEBUG=true', // 錯誤：生產環境不應該啟用偵錯
+            'DB_CONNECTION=sqlite',
+            'JWT_PRIVATE_KEY=valid-private-key',
+            'JWT_PUBLIC_KEY=valid-public-key',
+            'FORCE_HTTPS=false', // 錯誤：生產環境應該使用 HTTPS
+            'APP_KEY=base64:CHANGE-THIS-TO-REAL-PRODUCTION-KEY', // 錯誤：使用預設值
+        ]);
+
+        $config = new EnvironmentConfig('production', $this->testConfigPath);
+        $errors = $config->validate();
+
+        $this->assertNotEmpty($errors);
+        $errorString = implode(', ', $errors);
+        $this->assertStringContainsString('APP_DEBUG', $errorString);
+        $this->assertStringContainsString('FORCE_HTTPS', $errorString);
+        $this->assertStringContainsString('APP_KEY', $errorString);
+    }
+
+    public function testTestingEnvironmentValidation(): void
+    {
+        $this->createTestEnvFile('testing', [
+            'APP_NAME=AlleyNote',
+            'APP_ENV=testing',
+            'DB_CONNECTION=sqlite',
+            'DB_DATABASE=/var/www/html/database/alleynote.sqlite3', // 警告：測試環境建議使用記憶體資料庫
+            'JWT_PRIVATE_KEY=valid-private-key',
+            'JWT_PUBLIC_KEY=valid-public-key',
+        ]);
+
+        $config = new EnvironmentConfig('testing', $this->testConfigPath);
+        $errors = $config->validate();
+
+        $this->assertNotEmpty($errors);
+        $this->assertStringContainsString('記憶體資料庫', implode(', ', $errors));
+    }
+
+    public function testDevelopmentEnvironmentValidation(): void
+    {
+        $this->createTestEnvFile('development', [
+            'APP_NAME=AlleyNote',
+            'APP_ENV=development',
+            'APP_DEBUG=false', // 警告：開發環境建議啟用偵錯
+            'DB_CONNECTION=sqlite',
+            'JWT_PRIVATE_KEY=valid-private-key',
+            'JWT_PUBLIC_KEY=valid-public-key',
+        ]);
+
+        $config = new EnvironmentConfig('development', $this->testConfigPath);
+        $errors = $config->validate();
+
+        $this->assertNotEmpty($errors);
+        $this->assertStringContainsString('APP_DEBUG', implode(', ', $errors));
+    }
+
+    public function testGetAllConfig(): void
+    {
+        $this->createTestEnvFile('development', [
+            'APP_NAME=TestApp',
+            'APP_ENV=development',
+            'APP_DEBUG=true',
+            'DB_CONNECTION=sqlite',
+            'JWT_PRIVATE_KEY=test-private-key',
+            'JWT_PUBLIC_KEY=test-public-key',
+            'CUSTOM_KEY=custom_value',
+        ]);
+
+        $config = new EnvironmentConfig('development', $this->testConfigPath);
+        $allConfig = $config->all();
+
+        $this->assertIsArray($allConfig);
+        $this->assertArrayHasKey('APP_NAME', $allConfig);
+        $this->assertArrayHasKey('CUSTOM_KEY', $allConfig);
+        $this->assertEquals('TestApp', $allConfig['APP_NAME']);
+        $this->assertEquals('custom_value', $allConfig['CUSTOM_KEY']);
+    }
+
+    public function testParseValueTypes(): void
+    {
+        $this->createTestEnvFile('development', [
+            'APP_NAME=TestApp',
+            'APP_DEBUG=true',
+            'DB_CONNECTION=sqlite',
+            'JWT_PRIVATE_KEY=test-private-key',
+            'JWT_PUBLIC_KEY=test-public-key',
+            'STRING_VALUE=hello',
+            'INTEGER_VALUE=42',
+            'FLOAT_VALUE=3.14',
+            'BOOLEAN_TRUE=true',
+            'BOOLEAN_FALSE=false',
+            'NULL_VALUE=null',
+            'QUOTED_STRING="hello world"',
+            'SINGLE_QUOTED_STRING=\'single quotes\'',
+        ]);
+
+        $config = new EnvironmentConfig('development', $this->testConfigPath);
+
+        $this->assertIsString($config->get('STRING_VALUE'));
+        $this->assertIsInt($config->get('INTEGER_VALUE'));
+        $this->assertIsFloat($config->get('FLOAT_VALUE'));
+        $this->assertIsBool($config->get('BOOLEAN_TRUE'));
+        $this->assertIsBool($config->get('BOOLEAN_FALSE'));
+        $this->assertNull($config->get('NULL_VALUE'));
+        $this->assertEquals('hello world', $config->get('QUOTED_STRING'));
+        $this->assertEquals('single quotes', $config->get('SINGLE_QUOTED_STRING'));
+
+        $this->assertTrue($config->get('BOOLEAN_TRUE'));
+        $this->assertFalse($config->get('BOOLEAN_FALSE'));
+        $this->assertEquals(42, $config->get('INTEGER_VALUE'));
+        $this->assertEquals(3.14, $config->get('FLOAT_VALUE'));
+    }
+
+    public function testEnvironmentVariablePriority(): void
+    {
+        // 建立測試配置檔
+        $this->createTestEnvFile('development', [
+            'APP_NAME=FileValue',
+            'APP_ENV=development',
+            'DB_CONNECTION=sqlite',
+            'JWT_PRIVATE_KEY=test-private-key',
+            'JWT_PUBLIC_KEY=test-public-key',
+            'TEST_KEY=file_value',
+        ]);
+
+        // 設定環境變數
+        $_ENV['TEST_KEY'] = 'env_value';
+        putenv('TEST_KEY=env_value');
+
+        $config = new EnvironmentConfig('development', $this->testConfigPath);
+
+    /**
+     * 建立測試環境檔案.
+     */
+    private function createTestEnvFile(string $environment, array $lines): void
+    {
+        $filePath = $this->testConfigPath . "/.env.{$environment}";
+        $content = implode("\n", $lines);
+        file_put_contents($filePath, $content);
+    }
+
+    /**
+     * 遞迴刪除目錄.
+     */
+    private function removeDirectory(string $path): void
+    {
+        if (!is_dir($path)) {
+            return;
+        }
+
+        $files = array_diff(scandir($path), ['.', '..']);
+
+        foreach ($files as $file) {
+            $filePath = $path . '/' . $file;
+            if (is_dir($filePath)) {
+                $this->removeDirectory($filePath);
+            } else {
+                unlink($filePath);
+            }
+        }
+
+        rmdir($path);
+    }
+}

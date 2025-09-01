@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace AlleyNote\Domains\Auth\Services;
+namespace App\Domains\Auth\Services;
 
-use AlleyNote\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
-use AlleyNote\Domains\Auth\ValueObjects\TokenBlacklistEntry;
+use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;

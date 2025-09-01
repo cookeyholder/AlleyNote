@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Auth\Contracts;
 
-use AlleyNote\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
-use AlleyNote\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
+use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -420,6 +420,6 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
 
     public function testInterfaceIsInCorrectNamespace(): void
     {
-        $this->assertEquals('AlleyNote\Domains\Auth\Contracts', $this->interfaceReflection->getNamespaceName());
+        $this->assertEquals('App\Domains\Auth\Contracts', $this->interfaceReflection->getNamespaceName());
     }
 }

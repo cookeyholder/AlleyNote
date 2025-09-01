@@ -6,6 +6,7 @@ namespace Tests\Unit\Services\Security;
 
 use App\Domains\Auth\Services\SessionSecurityService;
 use App\Domains\User\Entities\User;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class SessionSecurityServiceTest extends TestCase
@@ -34,7 +35,8 @@ class SessionSecurityServiceTest extends TestCase
         unset($_ENV['APP_ENV']);
     }
 
-    public function testInitializesSecureSessionInProduction(): void
+    #[Test]
+    public function initializesSecureSessionInProduction(): void
     {
         $_ENV['APP_ENV'] = 'production';
 
@@ -47,7 +49,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertEquals('ALLEYNOTE_SESSION', session_name());
     }
 
-    public function testInitializesSecureSessionInDevelopment(): void
+    #[Test]
+    public function initializesSecureSessionInDevelopment(): void
     {
         $_ENV['APP_ENV'] = 'development';
 
@@ -57,7 +60,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertEquals('0', ini_get('session.cookie_secure')); // Development = not secure
     }
 
-    public function testSetsUserSessionWithUserAgentBinding(): void
+    #[Test]
+    public function setsUserSessionWithUserAgentBinding(): void
     {
         $this->service->initializeSecureSession();
 
@@ -75,7 +79,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertFalse($_SESSION['requires_ip_verification']);
     }
 
-    public function testValidatesUserAgentCorrectly(): void
+    #[Test]
+    public function validatesUserAgentCorrectly(): void
     {
         $this->service->initializeSecureSession();
 
@@ -89,7 +94,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertFalse($this->service->validateSessionUserAgent('Different Browser'));
     }
 
-    public function testValidatesSessionIpCorrectly(): void
+    #[Test]
+    public function validatesSessionIpCorrectly(): void
     {
         $this->service->initializeSecureSession();
 
@@ -103,7 +109,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertFalse($this->service->validateSessionIp('192.168.1.2'));
     }
 
-    public function testPerformsComprehensiveSecurityCheck(): void
+    #[Test]
+    public function performsComprehensiveSecurityCheck(): void
     {
         $this->service->initializeSecureSession();
 
@@ -119,7 +126,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertNull($result['action_type']);
     }
 
-    public function testDetectsUserAgentChange(): void
+    #[Test]
+    public function detectsUserAgentChange(): void
     {
         $this->service->initializeSecureSession();
 
@@ -134,7 +142,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertStringContainsString('瀏覽器指紋不符', $result['message']);
     }
 
-    public function testDetectsIpChange(): void
+    #[Test]
+    public function detectsIpChange(): void
     {
         $this->service->initializeSecureSession();
 
@@ -151,7 +160,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertStringContainsString('IP 位址變更', $result['message']);
     }
 
-    public function testHandlesIpVerificationFlow(): void
+    #[Test]
+    public function handlesIpVerificationFlow(): void
     {
         $this->service->initializeSecureSession();
 
@@ -171,7 +181,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertEquals($newIp, $_SESSION['user_ip']);
     }
 
-    public function testDetectsExpiredSession(): void
+    #[Test]
+    public function detectsExpiredSession(): void
     {
         $this->service->initializeSecureSession();
 
@@ -183,7 +194,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertFalse($this->service->isSessionValid());
     }
 
-    public function testUpdatesActivityTime(): void
+    #[Test]
+    public function updatesActivityTime(): void
     {
         $this->service->initializeSecureSession();
 
@@ -197,7 +209,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertGreaterThan($originalActivity, $_SESSION['last_activity']);
     }
 
-    public function testDestroysSessionSecurely(): void
+    #[Test]
+    public function destroysSessionSecurely(): void
     {
         $this->service->initializeSecureSession();
         $this->service->setUserSession(123, '192.168.1.1', 'Test Browser');
@@ -208,7 +221,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertEmpty($_SESSION);
     }
 
-    public function testRegeneratesSessionId(): void
+    #[Test]
+    public function regeneratesSessionId(): void
     {
         $this->service->initializeSecureSession();
         $oldSessionId = session_id();
@@ -219,7 +233,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertNotEquals($oldSessionId, $newSessionId);
     }
 
-    public function testHandlesMissingSessionData(): void
+    #[Test]
+    public function handlesMissingSessionData(): void
     {
         $this->service->initializeSecureSession();
 
@@ -229,7 +244,8 @@ class SessionSecurityServiceTest extends TestCase
         $this->assertFalse($result['valid']);
     }
 
-    public function testHandlesIpVerificationTimeout(): void
+    #[Test]
+    public function handlesIpVerificationTimeout(): void
     {
         $this->service->initializeSecureSession();
 
