@@ -1,83 +1,26 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-08-30 22:34:32
+**生成時間**: 2025-09-03 01:00:16
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 201 | - |
-| 介面與類別比例 | 20.90% | ✅ 良好 |
+| 總類別數 | 222 | - |
+| 介面與類別比例 | 22.97% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 65.17% | ✅ 良好 |
-| PSR-4 合規率 | 68.53% | ❌ 需修正 |
-| DDD 結構完整性 | 80.00% | ✅ 良好 |
-
-## 🎯 DDD 邊界上下文分析
-
-### Attachment 上下文
-
-| 組件類型 | 數量 | 項目 |
-|----------|------|------|
-| 實體 | 0 | - |
-| 值物件 | 0 | - |
-| 聚合 | 0 | - |
-| 儲存庫 | 2 | AttachmentRepositoryInterface, AttachmentRepository |
-| 領域服務 | 4 | FileSecurityServiceInterface, AttachmentServiceInterface, AttachmentService... |
-| 領域事件 | 0 | - |
-
-### Auth 上下文
-
-| 組件類型 | 數量 | 項目 |
-|----------|------|------|
-| 實體 | 0 | - |
-| 值物件 | 16 | RefreshTokenRepositoryInterface, AuthenticationServiceInterface, JwtTokenServiceInterface... |
-| 聚合 | 0 | - |
-| 儲存庫 | 4 | UserRepositoryInterface, AuthServiceProvider, SimpleAuthServiceProvider... |
-| 領域服務 | 8 | SessionSecurityServiceInterface, AuthorizationServiceInterface, PasswordSecurityServiceInterface... |
-| 領域事件 | 0 | - |
-
-### Post 上下文
-
-| 組件類型 | 數量 | 項目 |
-|----------|------|------|
-| 實體 | 0 | - |
-| 值物件 | 0 | - |
-| 聚合 | 0 | - |
-| 儲存庫 | 3 | PostRepositoryInterface, PostRepository, PostService |
-| 領域服務 | 4 | PostServiceInterface, ContentModerationService, RichTextProcessorService... |
-| 領域事件 | 0 | - |
-
-### Security 上下文
-
-| 組件類型 | 數量 | 項目 |
-|----------|------|------|
-| 實體 | 0 | - |
-| 值物件 | 0 | - |
-| 聚合 | 0 | - |
-| 儲存庫 | 8 | IpRepositoryInterface, ActivityLogRepositoryInterface, SecurityServiceProvider... |
-| 領域服務 | 14 | ErrorHandlerServiceInterface, SecurityHeaderServiceInterface, LoggingSecurityServiceInterface... |
-| 領域事件 | 0 | - |
-
-### storage 上下文
-
-| 組件類型 | 數量 | 項目 |
-|----------|------|------|
-| 實體 | 0 | - |
-| 值物件 | 0 | - |
-| 聚合 | 0 | - |
-| 儲存庫 | 0 | - |
-| 領域服務 | 0 | - |
-| 領域事件 | 0 | - |
+| 現代 PHP 採用率 | 59.91% | ✅ 良好 |
+| PSR-4 合規率 | 73.46% | ❌ 需修正 |
+| DDD 結構完整性 | 0.00% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 250 | ✅ 更安全的條件分支 |
+| Match 表達式 (PHP 8.0+) | 234 | ✅ 更安全的條件分支 |
 | 唯讀屬性 (PHP 8.1+) | 103 | ✅ 提升資料不變性 |
+| 空安全運算子 (PHP 8.0+) | 70 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
-| 空安全運算子 (PHP 8.0+) | 56 | ✅ 防止 null 指標異常 |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
 | 聯合型別 (PHP 8.0+) | 17 | ✅ 更靈活的型別定義 |
 | 列舉型別 (PHP 8.1+) | 5 | ✅ 型別安全的常數 |
@@ -233,6 +176,30 @@
 - `app/Shared`
 - `app/Shared/.`
 - `app/Shared/..`
+- `app/Shared/Cache`
+- `app/Shared/Cache/.`
+- `app/Shared/Cache/..`
+- `app/Shared/Cache/Drivers`
+- `app/Shared/Cache/Drivers/.`
+- `app/Shared/Cache/Drivers/..`
+- `app/Shared/Cache/Strategies`
+- `app/Shared/Cache/Strategies/.`
+- `app/Shared/Cache/Strategies/..`
+- `app/Shared/Cache/Contracts`
+- `app/Shared/Cache/Contracts/.`
+- `app/Shared/Cache/Contracts/..`
+- `app/Shared/Cache/Providers`
+- `app/Shared/Cache/Providers/.`
+- `app/Shared/Cache/Providers/..`
+- `app/Shared/Cache/Repositories`
+- `app/Shared/Cache/Repositories/.`
+- `app/Shared/Cache/Repositories/..`
+- `app/Shared/Cache/Services`
+- `app/Shared/Cache/Services/.`
+- `app/Shared/Cache/Services/..`
+- `app/Shared/Cache/ValueObjects`
+- `app/Shared/Cache/ValueObjects/.`
+- `app/Shared/Cache/ValueObjects/..`
 - `app/Shared/Config`
 - `app/Shared/Config/.`
 - `app/Shared/Config/..`
@@ -257,6 +224,18 @@
 - `app/Shared/Http`
 - `app/Shared/Http/.`
 - `app/Shared/Http/..`
+- `app/Shared/Monitoring`
+- `app/Shared/Monitoring/.`
+- `app/Shared/Monitoring/..`
+- `app/Shared/Monitoring/Contracts`
+- `app/Shared/Monitoring/Contracts/.`
+- `app/Shared/Monitoring/Contracts/..`
+- `app/Shared/Monitoring/Providers`
+- `app/Shared/Monitoring/Providers/.`
+- `app/Shared/Monitoring/Providers/..`
+- `app/Shared/Monitoring/Services`
+- `app/Shared/Monitoring/Services/.`
+- `app/Shared/Monitoring/Services/..`
 - `app/Shared/Helpers`
 - `app/Shared/Helpers/.`
 - `app/Shared/Helpers/..`
@@ -284,6 +263,9 @@
 - `app/Application/Controllers/Health`
 - `app/Application/Controllers/Health/.`
 - `app/Application/Controllers/Health/..`
+- `app/Application/Controllers/Admin`
+- `app/Application/Controllers/Admin/.`
+- `app/Application/Controllers/Admin/..`
 - `app/Application/Controllers/Api`
 - `app/Application/Controllers/Api/.`
 - `app/Application/Controllers/Api/..`
@@ -341,36 +323,12 @@
 - `app/Infrastructure/Services`
 - `app/Infrastructure/Services/.`
 - `app/Infrastructure/Services/..`
-- `certbot-data`
-- `certbot-data/.`
-- `certbot-data/..`
 - `config`
 - `config/.`
 - `config/..`
 - `config/routes`
 - `config/routes/.`
 - `config/routes/..`
-- `docs`
-- `docs/.`
-- `docs/..`
-- `docs/archive`
-- `docs/archive/.`
-- `docs/archive/..`
-- `logs`
-- `logs/.`
-- `logs/..`
-- `logs/redis`
-- `logs/redis/.`
-- `logs/redis/..`
-- `logs/certbot`
-- `logs/certbot/.`
-- `logs/certbot/..`
-- `logs/nginx`
-- `logs/nginx/.`
-- `logs/nginx/..`
-- `logs/mysql`
-- `logs/mysql/.`
-- `logs/mysql/..`
 - `examples`
 - `examples/.`
 - `examples/..`
@@ -383,21 +341,6 @@
 - `scripts/lib`
 - `scripts/lib/.`
 - `scripts/lib/..`
-- `.github`
-- `.github/.`
-- `.github/..`
-- `.github/workflows`
-- `.github/workflows/.`
-- `.github/workflows/..`
-- `.github/chatmodes`
-- `.github/chatmodes/.`
-- `.github/chatmodes/..`
-- `ssl-data`
-- `ssl-data/.`
-- `ssl-data/..`
-- `.vscode`
-- `.vscode/.`
-- `.vscode/..`
 
 ## 🏷️ 命名空間分析
 
@@ -588,7 +531,41 @@
 - app/Domains/Attachment/Services/AttachmentService.php
 - app/Domains/Attachment/Services/FileSecurityService.php
 
+### `App\Shared\Cache\Drivers`
+- app/Shared/Cache/Drivers/MemoryCacheDriver.php
+- app/Shared/Cache/Drivers/FileCacheDriver.php
+- app/Shared/Cache/Drivers/RedisCacheDriver.php
+- app/Shared/Cache/Drivers/LayeredCacheDriver.php
+
+### `App\Shared\Cache\Strategies`
+- app/Shared/Cache/Strategies/DefaultCacheStrategy.php
+
+### `App\Shared\Cache\Contracts`
+- app/Shared/Cache/Contracts/TagRepositoryInterface.php
+- app/Shared/Cache/Contracts/CacheStrategyInterface.php
+- app/Shared/Cache/Contracts/CacheDriverInterface.php
+- app/Shared/Cache/Contracts/CacheManagerInterface.php
+- app/Shared/Cache/Contracts/TaggedCacheInterface.php
+
+### `App\Shared\Cache\Providers`
+- app/Shared/Cache/Providers/CacheServiceProvider.php
+
+### `App\Shared\Cache\Repositories`
+- app/Shared/Cache/Repositories/RedisTagRepository.php
+- app/Shared/Cache/Repositories/MemoryTagRepository.php
+
+### `App\Shared\Cache\Services`
+- app/Shared/Cache/Services/DefaultCacheStrategy.php
+- app/Shared/Cache/Services/CacheGroupManager.php
+- app/Shared/Cache/Services/TaggedCacheManager.php
+- app/Shared/Cache/Services/CacheManager.php
+- app/Shared/Cache/Services/PrefixedCacheManager.php
+
+### `App\Shared\Cache\ValueObjects`
+- app/Shared/Cache/ValueObjects/CacheTag.php
+
 ### `App\Shared\Config`
+- app/Shared/Config/EnvironmentConfig.php
 - app/Shared/Config/JwtConfig.php
 
 ### `App\Shared\Contracts`
@@ -617,6 +594,21 @@
 ### `App\Shared\Http`
 - app/Shared/Http/ApiResponse.php
 
+### `App\Shared\Monitoring\Contracts`
+- app/Shared/Monitoring/Contracts/ErrorTrackerInterface.php
+- app/Shared/Monitoring/Contracts/PerformanceMonitorInterface.php
+- app/Shared/Monitoring/Contracts/SystemMonitorInterface.php
+- app/Shared/Monitoring/Contracts/CacheMonitorInterface.php
+
+### `App\Shared\Monitoring\Providers`
+- app/Shared/Monitoring/Providers/MonitoringServiceProvider.php
+
+### `App\Shared\Monitoring\Services`
+- app/Shared/Monitoring/Services/SystemMonitorService.php
+- app/Shared/Monitoring/Services/CacheMonitor.php
+- app/Shared/Monitoring/Services/PerformanceMonitorService.php
+- app/Shared/Monitoring/Services/ErrorTrackerService.php
+
 ### `App\Shared\Validation`
 - app/Shared/Validation/Validator.php
 - app/Shared/Validation/ValidationResult.php
@@ -639,6 +631,10 @@
 
 ### `App\Application\Controllers\Health`
 - app/Application/Controllers/Health/HealthController.php
+
+### `App\Application\Controllers\Admin`
+- app/Application/Controllers/Admin/TagManagementController.php
+- app/Application/Controllers/Admin/CacheMonitorController.php
 
 ### `App\Application\Controllers`
 - app/Application/Controllers/PostController.php
@@ -766,41 +762,12 @@
 
 ## 🏗️ DDD 架構分析
 
-### Application 層
-**子目錄**: .., Middleware, Middleware/., Middleware/.., Controllers, Controllers/., Controllers/.., Controllers/Security, Controllers/Security/., Controllers/Security/.., Controllers/Web, Controllers/Web/., Controllers/Web/.., Controllers/Health, Controllers/Health/., Controllers/Health/.., Controllers/Api, Controllers/Api/., Controllers/Api/.., Controllers/Api/V1, Controllers/Api/V1/., Controllers/Api/V1/..
-**檔案數量**: 16
-
-### Domains 層
-**子目錄**: .., Post, Post/., Post/.., Post/Contracts, Post/Contracts/., Post/Contracts/.., Post/Enums, Post/Enums/., Post/Enums/.., Post/Repositories, Post/Repositories/., Post/Repositories/.., Post/Models, Post/Models/., Post/Models/.., Post/Exceptions, Post/Exceptions/., Post/Exceptions/.., Post/DTOs, Post/DTOs/., Post/DTOs/.., Post/Services, Post/Services/., Post/Services/.., Post/Validation, Post/Validation/., Post/Validation/.., Security, Security/., Security/.., Security/Contracts, Security/Contracts/., Security/Contracts/.., Security/Providers, Security/Providers/., Security/Providers/.., Security/Enums, Security/Enums/., Security/Enums/.., Security/Repositories, Security/Repositories/., Security/Repositories/.., Security/Models, Security/Models/., Security/Models/.., Security/DTOs, Security/DTOs/., Security/DTOs/.., Security/Services, Security/Services/., Security/Services/.., Security/Services/Advanced, Security/Services/Advanced/., Security/Services/Advanced/.., Security/Services/Core, Security/Services/Core/., Security/Services/Core/.., Security/Services/Secrets, Security/Services/Secrets/., Security/Services/Secrets/.., Security/Services/Content, Security/Services/Content/., Security/Services/Content/.., Security/Services/Headers, Security/Services/Headers/., Security/Services/Headers/.., Security/Services/Error, Security/Services/Error/., Security/Services/Error/.., Security/Services/Logging, Security/Services/Logging/., Security/Services/Logging/.., Security/Entities, Security/Entities/., Security/Entities/.., Auth, Auth/., Auth/.., Auth/Contracts, Auth/Contracts/., Auth/Contracts/.., Auth/Providers, Auth/Providers/., Auth/Providers/.., Auth/Repositories, Auth/Repositories/., Auth/Repositories/.., Auth/Models, Auth/Models/., Auth/Models/.., Auth/Exceptions, Auth/Exceptions/., Auth/Exceptions/.., Auth/DTOs, Auth/DTOs/., Auth/DTOs/.., Auth/Services, Auth/Services/., Auth/Services/.., Auth/Services/Advanced, Auth/Services/Advanced/., Auth/Services/Advanced/.., Auth/Entities, Auth/Entities/., Auth/Entities/.., Auth/ValueObjects, Auth/ValueObjects/., Auth/ValueObjects/.., Attachment, Attachment/., Attachment/.., Attachment/Contracts, Attachment/Contracts/., Attachment/Contracts/.., Attachment/Enums, Attachment/Enums/., Attachment/Enums/.., Attachment/Repositories, Attachment/Repositories/., Attachment/Repositories/.., Attachment/Models, Attachment/Models/., Attachment/Models/.., Attachment/DTOs, Attachment/DTOs/., Attachment/DTOs/.., Attachment/Services, Attachment/Services/., Attachment/Services/.., storage, storage/., storage/.., storage/cache, storage/cache/., storage/cache/.., storage/cache/htmlpurifier, storage/cache/htmlpurifier/., storage/cache/htmlpurifier/..
-**檔案數量**: 106
-
-### Infrastructure 層
-**子目錄**: .., Database, Database/., Database/.., Cache, Cache/., Cache/.., Config, Config/., Config/.., Auth, Auth/., Auth/.., Auth/Jwt, Auth/Jwt/., Auth/Jwt/.., Auth/Repositories, Auth/Repositories/., Auth/Repositories/.., OpenApi, OpenApi/., OpenApi/.., Http, Http/., Http/.., Routing, Routing/., Routing/.., Routing/Middleware, Routing/Middleware/., Routing/Middleware/.., Routing/Core, Routing/Core/., Routing/Core/.., Routing/Cache, Routing/Cache/., Routing/Cache/.., Routing/Contracts, Routing/Contracts/., Routing/Contracts/.., Routing/Providers, Routing/Providers/., Routing/Providers/.., Routing/Exceptions, Routing/Exceptions/., Routing/Exceptions/.., Services, Services/., Services/..
-**檔案數量**: 46
-
-### Shared 層
-**子目錄**: .., Config, Config/., Config/.., Contracts, Contracts/., Contracts/.., OpenApi, OpenApi/., OpenApi/.., Exceptions, Exceptions/., Exceptions/.., Exceptions/Validation, Exceptions/Validation/., Exceptions/Validation/.., Schemas, Schemas/., Schemas/.., DTOs, DTOs/., DTOs/.., Http, Http/., Http/.., Helpers, Helpers/., Helpers/.., Validation, Validation/., Validation/.., Validation/Factory, Validation/Factory/., Validation/Factory/..
-**檔案數量**: 20
-
 
 ## 📊 類別統計
 
-- **類別總數**: 201
-- **介面總數**: 42
+- **類別總數**: 222
+- **介面總數**: 51
 - **Trait 總數**: 0
-
-## ⚠️ 發現的架構問題
-
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\RefreshTokenRepository
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/AuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\TokenBlacklistRepository
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Jwt\FirebaseJwtProvider
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\RefreshTokenRepository
-- ❌ Domain層不應依賴Infrastructure層: app/Domains/Auth/Providers/SimpleAuthServiceProvider.php -> App\Infrastructure\Auth\Repositories\TokenBlacklistRepository
-- ⚠️  可能的循環依賴: app/Application/Controllers/Health/HealthController.php -> App\Application\Controllers\BaseController
-- ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/ActivityLogController.php -> App\Application\Controllers\BaseController
-- ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/AuthController.php -> App\Application\Controllers\BaseController
-- ⚠️  可能的循環依賴: app/Application/Controllers/Api/V1/PostController.php -> App\Application\Controllers\BaseController
 
 ## 🔑 重要類別清單
 
@@ -874,11 +841,43 @@
   - 實作: AttachmentServiceInterface
 - **FileSecurityService**: `app/Domains/Attachment/Services/FileSecurityService.php`
   - 實作: FileSecurityServiceInterface
+- **DefaultCacheStrategy**: `app/Shared/Cache/Services/DefaultCacheStrategy.php`
+  - 實作: CacheStrategyInterface
+- **CacheServiceProvider**: `app/Shared/Cache/Providers/CacheServiceProvider.php`
+  - 實作: 
+- **CacheConfigBuilder**: `app/Shared/Cache/Providers/CacheServiceProvider.php`
+  - 實作: 
+- **RedisTagRepository**: `app/Shared/Cache/Repositories/RedisTagRepository.php`
+  - 實作: TagRepositoryInterface
+- **MemoryTagRepository**: `app/Shared/Cache/Repositories/MemoryTagRepository.php`
+  - 實作: TagRepositoryInterface
+- **CacheGroupManager**: `app/Shared/Cache/Services/CacheGroupManager.php`
+  - 實作: 
+- **TaggedCacheManager**: `app/Shared/Cache/Services/TaggedCacheManager.php`
+  - 實作: TaggedCacheInterface
+- **PrefixedCacheManager**: `app/Shared/Cache/Services/PrefixedCacheManager.php`
+  - 實作: CacheManagerInterface
+- **MonitoringServiceProvider**: `app/Shared/Monitoring/Providers/MonitoringServiceProvider.php`
+  - 實作: 
+- **SystemMonitorService**: `app/Shared/Monitoring/Services/SystemMonitorService.php`
+  - 實作: SystemMonitorInterface
+- **CacheMonitor**: `app/Shared/Monitoring/Services/CacheMonitor.php`
+  - 實作: CacheMonitorInterface
+- **PerformanceMonitorService**: `app/Shared/Monitoring/Services/PerformanceMonitorService.php`
+  - 實作: PerformanceMonitorInterface
+- **ErrorTrackerService**: `app/Shared/Monitoring/Services/ErrorTrackerService.php`
+  - 實作: ErrorTrackerInterface
 - **CSPReportController**: `app/Application/Controllers/Security/CSPReportController.php`
   - 實作: 
 - **SwaggerController**: `app/Application/Controllers/Web/SwaggerController.php`
   - 實作: 
 - **HealthController**: `app/Application/Controllers/TestController.php`
+  - 實作: 
+- **TagManagementController**: `app/Application/Controllers/Admin/TagManagementController.php`
+  - 繼承: BaseController
+  - 實作: 
+- **CacheMonitorController**: `app/Application/Controllers/Admin/CacheMonitorController.php`
+  - 繼承: BaseController
   - 實作: 
 - **PostController**: `app/Application/Controllers/Api/V1/PostController.php`
   - 繼承: BaseController
@@ -914,6 +913,7 @@
 ### ``
 - CreateUserActivityLogsTable (`database/migrations/20250829000000_create_user_activity_logs_table.php`)
 - CreateTokenBlacklistTable (`database/migrations/20250825165750_create_token_blacklist_table.php`)
+- AddCompositeIndexesToUserActivityLogs (`database/migrations/20241227000002_add_composite_indexes_to_user_activity_logs.php`)
 - CreateRefreshTokensTable (`database/migrations/20250825165731_create_refresh_tokens_table.php`)
 - InitialSchema (`database/migrations/20250823051608_initial_schema.php`)
 - AddTokenHashToRefreshTokensTable (`database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php`)
@@ -965,6 +965,12 @@
 - AttachmentRepository (`app/Domains/Attachment/Repositories/AttachmentRepository.php`)
 - Attachment (`app/Domains/Attachment/Models/Attachment.php`)
 - CreateAttachmentDTO (`app/Domains/Attachment/DTOs/CreateAttachmentDTO.php`)
+- CacheServiceProvider (`app/Shared/Cache/Providers/CacheServiceProvider.php`)
+- CacheConfigBuilder (`app/Shared/Cache/Providers/CacheServiceProvider.php`)
+- CacheGroupManager (`app/Shared/Cache/Services/CacheGroupManager.php`)
+- CacheManager (`app/Infrastructure/Cache/CacheManager.php`)
+- CacheTag (`app/Shared/Cache/ValueObjects/CacheTag.php`)
+- EnvironmentConfig (`app/Shared/Config/EnvironmentConfig.php`)
 - JwtConfig (`app/Shared/Config/JwtConfig.php`)
 - OpenApiConfig (`app/Shared/OpenApi/OpenApiConfig.php`)
 - NotFoundException (`app/Shared/Exceptions/NotFoundException.php`)
@@ -976,11 +982,14 @@
 - PostRequestSchema (`app/Shared/Schemas/PostRequestSchema.php`)
 - AuthSchema (`app/Shared/Schemas/AuthSchema.php`)
 - ApiResponse (`app/Shared/Http/ApiResponse.php`)
+- MonitoringServiceProvider (`app/Shared/Monitoring/Providers/MonitoringServiceProvider.php`)
 - ValidatorFactory (`app/Shared/Validation/Factory/ValidatorFactory.php`)
 - AuthorizationMiddleware (`app/Application/Middleware/AuthorizationMiddleware.php`)
 - CSPReportController (`app/Application/Controllers/Security/CSPReportController.php`)
 - SwaggerController (`app/Application/Controllers/Web/SwaggerController.php`)
 - HealthController (`app/Application/Controllers/TestController.php`)
+- TagManagementController (`app/Application/Controllers/Admin/TagManagementController.php`)
+- CacheMonitorController (`app/Application/Controllers/Admin/CacheMonitorController.php`)
 - PostController (`app/Application/Controllers/Api/V1/PostController.php`)
 - IpController (`app/Application/Controllers/Api/V1/IpController.php`)
 - ActivityLogController (`scripts/rebuild-activity-controller.php`)
@@ -988,7 +997,6 @@
 - AttachmentController (`app/Application/Controllers/Api/V1/AttachmentController.php`)
 - BaseController (`app/Application/Controllers/BaseController.php`)
 - DatabaseConnection (`app/Infrastructure/Database/DatabaseConnection.php`)
-- CacheManager (`app/Infrastructure/Cache/CacheManager.php`)
 - CacheKeys (`app/Infrastructure/Cache/CacheKeys.php`)
 - ContainerFactory (`app/Infrastructure/Config/ContainerFactory.php`)
 - OpenApiSpec (`app/Infrastructure/OpenApi/OpenApiSpec.php`)
@@ -1053,7 +1061,6 @@
 - BulkPHPStanFixer (`scripts/bulk-phpstan-fixer.php`)
 - PropertyGenericSyntaxFixer (`scripts/fix-property-generic-syntax.php`)
 - EnhancedPhpstanFixer (`scripts/enhanced-phpstan-fixer.php`)
-- BulkSyntaxFixer (`bulk-syntax-fixer.php`)
 
 ### `PostRepositoryInterface`
 - PostRepository (`app/Domains/Post/Repositories/PostRepository.php`)
@@ -1132,6 +1139,39 @@
 ### `FileSecurityServiceInterface`
 - FileSecurityService (`app/Domains/Attachment/Services/FileSecurityService.php`)
 
+### `CacheDriverInterface`
+- MemoryCacheDriver (`app/Shared/Cache/Drivers/MemoryCacheDriver.php`)
+- FileCacheDriver (`app/Shared/Cache/Drivers/FileCacheDriver.php`)
+- RedisCacheDriver (`app/Shared/Cache/Drivers/RedisCacheDriver.php`)
+- LayeredCacheDriver (`app/Shared/Cache/Drivers/LayeredCacheDriver.php`)
+
+### `TaggedCacheInterface`
+- MemoryCacheDriver (`app/Shared/Cache/Drivers/MemoryCacheDriver.php`)
+- RedisCacheDriver (`app/Shared/Cache/Drivers/RedisCacheDriver.php`)
+- TaggedCacheManager (`app/Shared/Cache/Services/TaggedCacheManager.php`)
+
+### `CacheStrategyInterface`
+- DefaultCacheStrategy (`app/Shared/Cache/Services/DefaultCacheStrategy.php`)
+
+### `TagRepositoryInterface`
+- RedisTagRepository (`app/Shared/Cache/Repositories/RedisTagRepository.php`)
+- MemoryTagRepository (`app/Shared/Cache/Repositories/MemoryTagRepository.php`)
+
+### `CacheManagerInterface`
+- PrefixedCacheManager (`app/Shared/Cache/Services/PrefixedCacheManager.php`)
+
+### `SystemMonitorInterface`
+- SystemMonitorService (`app/Shared/Monitoring/Services/SystemMonitorService.php`)
+
+### `CacheMonitorInterface`
+- CacheMonitor (`app/Shared/Monitoring/Services/CacheMonitor.php`)
+
+### `PerformanceMonitorInterface`
+- PerformanceMonitorService (`app/Shared/Monitoring/Services/PerformanceMonitorService.php`)
+
+### `ErrorTrackerInterface`
+- ErrorTrackerService (`app/Shared/Monitoring/Services/ErrorTrackerService.php`)
+
 ### `ValidatorInterface`
 - Validator (`app/Shared/Validation/Validator.php`)
 
@@ -1204,7 +1244,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 201 個
+- **缺少測試的類別**: 222 個
 
 ### 缺少測試的重要類別
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
@@ -1300,6 +1340,22 @@
   - `AuthorizationService` $authService
   - `ActivityLoggingServiceInterface` $activityLogger
 
+- **TaggedCacheManager** (4 個依賴)
+  - `CacheManagerInterface` $cacheManager
+  - `TagRepositoryInterface` $tagRepository
+  - `LoggerInterface` $logger
+  - `CacheMonitorInterface` $monitor
+
+- **SystemMonitorService** (3 個依賴)
+  - `LoggerInterface` $logger
+  - `PDO` $database
+  - `EnvironmentConfig` $config
+
+- **TagManagementController** (3 個依賴)
+  - `CacheManagerInterface` $cacheManager
+  - `CacheGroupManager` $groupManager
+  - `LoggerInterface` $logger
+
 - **PostController** (4 個依賴)
   - `PostServiceInterface` $postService
   - `ValidatorInterface` $validator
@@ -1384,6 +1440,7 @@
 
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250829000000_create_user_activity_logs_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250825165750_create_token_blacklist_table.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20241227000002_add_composite_indexes_to_user_activity_logs.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250825165731_create_refresh_tokens_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250823051608_initial_schema.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php 中使用)
@@ -1399,6 +1456,4 @@
     ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache') (在 .php-cs-fixer.dist.php 中使用)
 - ❓ 找不到類別/介面: DI\ContainerBuilder (在 app/Application.php 中使用)
 - ❓ 找不到類別/介面: App\Domains\Post\Enums\PostStatus (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ❓ 找不到類別/介面: ($id) {
-            $sql = $this->buildSelectQuery('id = ?') (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ... 還有 157 個
+- ... 還有 171 個

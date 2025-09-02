@@ -46,6 +46,7 @@
 # 測試覆蓋率報告
 coverage/
 /backend/storage/coverage/
+/backend/coverage-reports/
 
 # IDE 設定
 .idea/
