@@ -1020,7 +1020,7 @@ A: 詳見 [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)。
 - **[CHANGELOG.md](CHANGELOG.md)**: 版本更新日誌
 
 ### 📊 規劃文件
-- **[AlleyNote公布欄網站規格書.md](AlleyNote公布欄網站規格書.md)**: 系統規格
+- **[AlleyNote公布欄網站規格書.md](docs/architecture/AlleyNote公布欄網站規格書.md)**: 系統規格
 - **[USER_ACTIVITY_LOGGING_SPEC.md](docs/USER_ACTIVITY_LOGGING_SPEC.md)**: 使用者活動記錄規格 ⭐
 - **[CACHE_TAGGING_SYSTEM_API_REFERENCE.md](docs/CACHE_TAGGING_SYSTEM_API_REFERENCE.md)**: 快取系統 API 參考 ⭐
 
