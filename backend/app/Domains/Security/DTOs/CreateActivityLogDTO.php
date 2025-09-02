@@ -311,7 +311,7 @@ final class CreateActivityLogDTO implements JsonSerializable
             );
         }
 
-        // 檢查 metadata 大小不超過 64KB（MySQL TEXT 欄位限制）
+        // 檢查 metadata 大小不超過 64KB（文字欄位限制）
         $json = (json_encode($metadata) ?? '') ?: '';
         $jsonSize = $json !== false ? strlen($json) : 0;
         if ($jsonSize > 65535) {

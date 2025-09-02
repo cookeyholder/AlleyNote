@@ -1,12 +1,17 @@
 # 使用者活動記錄系統使用指南
 
+**版本**: v4.0
+**更新日期**: 2025-09-03
+**架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD)
+**系統版本**: Docker 28.3.3, Docker Compose v2.39.2
+
 ## 概述
 
-本指南提供 AlleyNote 使用者活動記錄系統的實用說明，包括基本使用方法、進階功能配置和最佳實踐建議。
+本指南提供 AlleyNote 前後端分離架構中使用者活動記錄系統的實用說明，包括 API 使用方法、前端記錄整合、進階功能配置和最佳實踐建議。
 
 ## 快速開始
 
-### 基本記錄操作
+### 後端基本記錄操作 (PHP 8.4.12)
 
 ```php
 use App\Domains\Security\Services\ActivityLoggingService;
@@ -15,39 +20,84 @@ use App\Domains\Security\Enums\ActivityType;
 // 取得服務實例
 $activityLogger = $container->get(ActivityLoggingService::class);
 
-// 記錄使用者登入成功
-$success = $activityLogger->logSuccess(
-    actionType: ActivityType::LOGIN_SUCCESS,
+// 記錄 API 使用者登入成功
+$success = $activityLogger->logApiSuccess(
+    actionType: ActivityType::API_LOGIN_SUCCESS,
     userId: 123,
     metadata: [
-        'ip_address' => '192.168.1.100',
-        'user_agent' => $request->getHeaderLine('User-Agent')
+        'ip_address' => $request->getAttribute('client_ip'),
+        'user_agent' => $request->getHeaderLine('User-Agent'),
+        'api_version' => '4.0',
+        'frontend_version' => $request->getHeaderLine('X-Frontend-Version')
     ]
 );
 
 if (!$success) {
     // 處理記錄失敗的情況
-    $logger->warning('Failed to log user activity');
+    $logger->warning('Failed to log API user activity');
 }
 ```
 
-### 使用 DTO 進行詳細記錄
+### 前端活動記錄 (Vue.js 3 Composition API)
+
+```javascript
+// composables/useActivityLogger.js
+import { ref } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { apiClient } from '@/api/client'
+
+export function useActivityLogger() {
+    const authStore = useAuthStore()
+    const isLogging = ref(false)
+
+    const logActivity = async (actionType, metadata = {}) => {
+        if (!authStore.isAuthenticated) return false
+
+        isLogging.value = true
+        try {
+            const response = await apiClient.post('/api/activity-logs', {
+                action_type: actionType,
+                metadata: {
+                    ...metadata,
+                    frontend_url: window.location.href,
+                    viewport_size: `${window.innerWidth}x${window.innerHeight}`,
+                    timestamp: new Date().toISOString()
+                }
+            })
+
+            return response.data.success
+        } catch (error) {
+            console.warn('Failed to log activity:', error)
+            return false
+        } finally {
+            isLogging.value = false
+        }
+    }
+
+    return {
+        logActivity,
+        isLogging
+    }
+}
+```
+
+### 使用 DTO 進行詳細記錄 (PHP 8.4.12)
 
 ```php
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 
-// 建立詳細的活動記錄 DTO
+// 建立詳細的 API 活動記錄 DTO
 $dto = new CreateActivityLogDTO(
-    actionType: ActivityType::POST_CREATED,
+    actionType: ActivityType::ANNOUNCEMENT_CREATED,
     userId: 123,
-    sessionId: session_id(),
-    targetType: 'post',
+    sessionId: $request->getAttribute('session_id'),
+    targetType: 'announcement',
     targetId: '456',
-    description: '使用者建立新文章',
+    description: '使用者透過 API 建立新公告',
     metadata: [
-        'post_title' => '我的第一篇文章',
+        'announcement_title' => '重要通知',
         'category' => 'general',
-        'word_count' => 500
+        'word_count' => 500,
     ],
     ipAddress: '192.168.1.100',
     userAgent: 'Mozilla/5.0...',

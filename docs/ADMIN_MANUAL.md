@@ -2,6 +2,10 @@
 
 > 📚 **完整指南**：AlleyNote 系統的日常管理、維護和故障排除手冊
 
+**版本**: v4.0
+**最後更新**: 2025-01-20
+**適用版本**: PHP 8.4.12 + Docker 28.3.3
+
 ---
 
 ## 📑 目錄
@@ -21,13 +25,21 @@
 
 ## 🏗️ 系統概述
 
-### AlleyNote 系統架構
-AlleyNote 是基於 Docker 容器化部署的公告系統，包含以下核心組件：
+### AlleyNote 系統架構 (前後端分離)
+AlleyNote 是基於 Docker 容器化部署的前後端分離公告系統，包含以下核心組件：
 
-- **Web 應用**：PHP 8.4.11 + SQLite 資料庫
-- **Web 伺服器**：Nginx（負載均衡和 SSL 終止）
-- **快取系統**：Redis（會話和應用程式快取）
-- **SSL 管理**：Certbot（自動憑證管理）
+- **後端**: PHP 8.4.12 DDD 架構 + SQLite 資料庫
+- **前端**: Vue.js 3 Composition API
+- **Web 伺服器**: Nginx（負載均衡和 SSL 終止）
+- **容器化**: Docker 28.3.3 & Docker Compose v2.39.2
+- **快取系統**: Redis（會話和應用程式快取）
+- **SSL 管理**: Certbot（自動憑證管理）
+
+### 當前系統狀態
+- **PHP 環境**: PHP 8.4.12 (Xdebug 3.4.5, Zend OPcache v8.4.12)
+- **測試覆蓋**: 138 個測試檔案，1,372 個通過測試
+- **架構模式**: Domain-Driven Design (DDD)
+- **API 風格**: RESTful API
 
 ### 核心功能
 - 文章發布和管理
@@ -35,6 +47,7 @@ AlleyNote 是基於 Docker 容器化部署的公告系統，包含以下核心�
 - 用戶認證和權限控制
 - IP 存取控制
 - 自動備份和還原
+- 前後端分離架構
 
 ---
 
@@ -42,7 +55,7 @@ AlleyNote 是基於 Docker 容器化部署的公告系統，包含以下核心�
 
 ### 查看用戶列表
 ```bash
-# 進入容器
+# 進入後端容器
 docker-compose exec web bash
 
 # 查看所有用戶
@@ -54,27 +67,30 @@ sqlite3 database/alleynote.db "SELECT role, COUNT(*) as count FROM users GROUP B
 
 ### 創建管理員用戶
 ```bash
-# 方法一：使用 SQLite 命令
-docker-compose exec web sqlite3 database/alleynote.db
-```
-```sql
--- 插入新的管理員用戶（密碼需要先雜湊）
-INSERT INTO users (email, password, role, created_at) 
-VALUES ('admin@yourdomain.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', datetime('now'));
+# 使用 PHP 8.4.12 建立雜湊密碼
+docker-compose exec web php -r "
+\$email = 'admin@yourdomain.com';
+\$password = 'secure_password_123';
+\$hashedPassword = password_hash(\$password, PASSWORD_ARGON2ID);
 
--- 檢查用戶是否創建成功
-SELECT * FROM users WHERE email = 'admin@yourdomain.com';
+\$pdo = new PDO('sqlite:database/alleynote.db');
+\$stmt = \$pdo->prepare('INSERT INTO users (email, password, role, created_at) VALUES (?, ?, ?, datetime(\"now\"))');
+\$result = \$stmt->execute([\$email, \$hashedPassword, 'admin']);
+
+echo \$result ? '管理員創建成功' : '管理員創建失敗';
+echo \"\n\";
+"
 ```
 
 ### 密碼重設
 ```bash
-# 進入 PHP 容器
+# 使用 PHP 8.4 的 readonly 屬性和新語法
 docker-compose exec web php -r "
 \$email = 'user@example.com';
-\$newPassword = 'new_password';
-\$hashedPassword = password_hash(\$newPassword, PASSWORD_DEFAULT);
+\$newPassword = 'new_secure_password';
+\$hashedPassword = password_hash(\$newPassword, PASSWORD_ARGON2ID);
 
-\$pdo = new PDO('sqlite:/var/www/html/database/alleynote.db');
+\$pdo = new PDO('sqlite:database/alleynote.db');
 \$stmt = \$pdo->prepare('UPDATE users SET password = ? WHERE email = ?');
 \$result = \$stmt->execute([\$hashedPassword, \$email]);
 
@@ -106,16 +122,16 @@ UPDATE users SET status = 'active' WHERE email = 'user@example.com';
 ```bash
 # 查看所有文章
 docker-compose exec web sqlite3 database/alleynote.db "
-SELECT id, title, status, created_at, user_id 
-FROM posts 
-ORDER BY created_at DESC 
+SELECT id, title, status, created_at, user_id
+FROM posts
+ORDER BY created_at DESC
 LIMIT 20;
 "
 
 # 查看文章統計
 docker-compose exec web sqlite3 database/alleynote.db "
-SELECT status, COUNT(*) as count 
-FROM posts 
+SELECT status, COUNT(*) as count
+FROM posts
 GROUP BY status;
 "
 ```
@@ -136,7 +152,7 @@ SELECT id, title, is_pinned FROM posts WHERE is_pinned = 1;
 ```bash
 # 查看附件使用情況
 docker-compose exec web sqlite3 database/alleynote.db "
-SELECT 
+SELECT
     COUNT(*) as total_files,
     SUM(file_size) as total_size,
     AVG(file_size) as avg_size
@@ -145,9 +161,9 @@ FROM attachments;
 
 # 查看大型附件
 docker-compose exec web sqlite3 database/alleynote.db "
-SELECT filename, file_size, created_at 
-FROM attachments 
-WHERE file_size > 1048576 
+SELECT filename, file_size, created_at
+FROM attachments
+WHERE file_size > 1048576
 ORDER BY file_size DESC;
 "
 
@@ -222,20 +238,20 @@ error_log = /var/www/html/logs/php_errors.log
 ```bash
 # 查看 IP 黑白名單
 docker-compose exec web sqlite3 database/alleynote.db "
-SELECT ip_address, type, description, created_at 
-FROM ip_lists 
+SELECT ip_address, type, description, created_at
+FROM ip_lists
 ORDER BY created_at DESC;
 "
 
 # 新增 IP 到黑名單
 docker-compose exec web sqlite3 database/alleynote.db "
-INSERT INTO ip_lists (ip_address, type, description, created_by, created_at) 
+INSERT INTO ip_lists (ip_address, type, description, created_by, created_at)
 VALUES ('192.168.1.100', 'blacklist', '惡意行為', 1, datetime('now'));
 "
 
 # 新增 IP 到白名單
 docker-compose exec web sqlite3 database/alleynote.db "
-INSERT INTO ip_lists (ip_address, type, description, created_by, created_at) 
+INSERT INTO ip_lists (ip_address, type, description, created_by, created_at)
 VALUES ('10.0.0.0/8', 'whitelist', '內部網路', 1, datetime('now'));
 "
 ```
@@ -244,16 +260,16 @@ VALUES ('10.0.0.0/8', 'whitelist', '內部網路', 1, datetime('now'));
 ```bash
 # 查看最近登入記錄
 docker-compose exec web sqlite3 database/alleynote.db "
-SELECT user_id, ip_address, user_agent, created_at 
-FROM login_logs 
-ORDER BY created_at DESC 
+SELECT user_id, ip_address, user_agent, created_at
+FROM login_logs
+ORDER BY created_at DESC
 LIMIT 50;
 "
 
 # 查看失敗登入嘗試
 docker-compose exec web sqlite3 database/alleynote.db "
 SELECT ip_address, COUNT(*) as attempts, MAX(created_at) as last_attempt
-FROM failed_login_attempts 
+FROM failed_login_attempts
 WHERE created_at > datetime('now', '-24 hours')
 GROUP BY ip_address
 HAVING attempts > 5
@@ -523,9 +539,9 @@ docker-compose exec web sqlite3 database/alleynote.db "ANALYZE;"
 
 # 4. 檢查資料庫統計
 docker-compose exec web sqlite3 database/alleynote.db "
-SELECT name, COUNT(*) as row_count 
-FROM sqlite_master m JOIN pragma_table_info(m.name) p 
-WHERE m.type='table' 
+SELECT name, COUNT(*) as row_count
+FROM sqlite_master m JOIN pragma_table_info(m.name) p
+WHERE m.type='table'
 GROUP BY name;
 "
 ```

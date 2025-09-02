@@ -1,16 +1,16 @@
 # AlleyNote 開發者指南
 
-**版本**: v3.0  
-**日期**: 2025-08-28  
-**適用範圍**: AlleyNote 專案新手與進階開發者  
-**更新**: 包含統一腳本管理系統指南
+**版本**: v4.0
+**日期**: 2025-01-20
+**適用範圍**: AlleyNote 專案新手與進階開發者
+**更新**: 符合最新專案現況與語法標準
 
 ---
 
 ## 📋 目錄
 
 1. [快速開始](#快速開始)
-2. [統一腳本管理系統](#統一腳本管理系統)
+2. [環境資訊](#環境資訊)
 3. [開發環境設定](#開發環境設定)
 4. [專案架構概覽](#專案架構概覽)
 5. [編碼規範](#編碼規範)
@@ -29,8 +29,8 @@
 
 ```bash
 # 系統需求
-- PHP 8.4.11+
-- Docker & Docker Compose
+- PHP 8.4.12 (已安裝 Xdebug 3.4.5、Zend OPcache v8.4.12)
+- Docker 28.3.3 & Docker Compose v2.39.2
 - Git
 - Composer
 
@@ -47,43 +47,32 @@ cp .env.example .env
 
 ```bash
 # 啟動 Docker 容器
-docker compose up -d
+docker-compose up -d
 
 # 安裝依賴套件
-docker compose exec web composer install
+docker-compose exec web composer install
 
 # 初始化資料庫
-docker compose exec web php scripts/unified-scripts.php db:init
+docker-compose exec web php vendor/bin/phinx migrate
 
-# 執行完整測試套件 (1,213 tests, 87.5% coverage)
-docker compose exec web php scripts/unified-scripts.php test:run
+# 執行完整測試套件 (1,372 個通過測試)
+docker-compose exec web ./vendor/bin/phpunit
 ```
 
-### 3. 🚀 統一腳本管理系統
+### 3. 環境資訊
 
-AlleyNote 採用現代化的統一腳本管理系統，取代傳統的 58+ 個獨立腳本，實現 85% 程式碼精簡：
+#### 測試環境狀態
+- **測試框架**: PHPUnit 11.5.34
+- **測試檔案數量**: 138 個測試檔案
+- **測試案例**: 1,372 個通過測試
+- **涵蓋率**: 高品質測試覆蓋
 
-```bash
-# 統一腳本入口點
-docker compose exec web php scripts/unified-scripts.php
-
-# 查看所有可用指令和說明
-docker compose exec web php scripts/unified-scripts.php --help
-
-# 核心開發工具
-docker compose exec web php scripts/unified-scripts.php test:run           # 執行測試套件
-docker compose exec web php scripts/unified-scripts.php quality:check      # 程式碼品質檢查
-docker compose exec web php scripts/unified-scripts.php db:migrate         # 資料庫遷移
-docker compose exec web php scripts/unified-scripts.php swagger:generate   # API 文件產生
-docker compose exec web php scripts/unified-scripts.php cache:warm         # 快取預熱
-
-# 維運工具
-docker compose exec web php scripts/unified-scripts.php backup:db          # 資料庫備份
-docker compose exec web php scripts/unified-scripts.php security:scan      # 安全性掃描
-docker compose exec web php scripts/unified-scripts.php project:status     # 專案狀態檢查
-```
-
-### 4. 第一次開發提交
+#### 技術堆疊
+- **後端**: PHP 8.4.12 DDD 架構
+- **前端**: Vue.js 3 Composition API
+- **容器化**: Docker 28.3.3 & Docker Compose v2.39.2
+- **資料庫**: SQLite3 (推薦) / PostgreSQL 16 (大型部署)
+- **快取**: Redis (透過 Docker)
 
 ### 4. 第一次開發提交
 
@@ -91,12 +80,12 @@ docker compose exec web php scripts/unified-scripts.php project:status     # 專
 # 建立新功能分支
 git checkout -b feature/my-first-feature
 
-# 開發過程中，使用統一腳本進行測試與檢查
-docker compose exec web php scripts/unified-scripts.php test:unit         # 單元測試
-docker compose exec web php scripts/unified-scripts.php quality:fix       # 自動修正程式碼風格
+# 開發過程中進行測試與檢查
+docker-compose exec -T web ./vendor/bin/phpunit           # 執行測試
+docker-compose exec -T web ./vendor/bin/php-cs-fixer fix # 修正程式碼風格
 
 # 提交前的完整檢查
-docker compose exec web php scripts/unified-scripts.php ci:check          # CI 檢查
+docker-compose exec -T web composer ci                   # 完整 CI 檢查
 
 # 提交變更 (遵循 Conventional Commit 規範)
 git add .
@@ -263,17 +252,17 @@ class MyCustomCommand extends AbstractCommand
             'my:custom' => 'Execute my custom functionality',
         ];
     }
-    
+
     protected function executeCommand(string $command, array $args): int
     {
         match ($command) {
             'my:custom' => $this->executeMyCustom($args),
             default => throw new \InvalidArgumentException("Unknown command: {$command}")
         };
-        
+
         return 0;
     }
-    
+
     private function executeMyCustom(array $args): void
     {
         echo "Executing my custom command...\n";
@@ -310,7 +299,7 @@ class MyCustomCommand extends AbstractCommand
   </component>
   <component name="PhpUnit">
     <phpunit_settings>
-      <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/phpunit.xml" />
+      <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/backend/phpunit.xml" />
     </phpunit_settings>
   </component>
 </project>
@@ -342,14 +331,17 @@ cat > .git/hooks/pre-commit << 'EOF'
 #!/bin/sh
 echo "執行 pre-commit 檢查..."
 
-# 檢查 PHP 語法
-php -l $(git diff --cached --name-only --diff-filter=ACM | grep '\.php$')
+# 進入後端目錄
+cd backend
 
-# 執行 PHPStan
-composer analyse
+# 檢查 PHP 語法
+find . -name "*.php" -print0 | xargs -0 -n1 php -l
+
+# 執行 PHPStan 靜態分析
+./vendor/bin/phpstan analyse --memory-limit=1G
 
 # 執行測試
-composer test
+./vendor/bin/phpunit
 
 echo "pre-commit 檢查通過！"
 EOF
@@ -361,45 +353,42 @@ chmod +x .git/hooks/pre-commit
 
 ## 專案架構概覽
 
-### 目錄結構 (DDD 架構)
+### 目錄結構 (前後端分離 + DDD 架構)
 
 ```
 AlleyNote/                          # 根目錄
-├── app/                           # 應用程式核心 (DDD 架構)
-│   ├── Application/               # 應用層
-│   │   ├── Controllers/          # HTTP 控制器
-│   │   └── Middleware/           # 中介軟體
-│   ├── Domains/                  # 領域層 (核心業務邏輯)
-│   │   ├── Auth/                 # 身份驗證領域
-│   │   ├── Post/                 # 文章管理領域
-│   │   ├── Attachment/           # 附件管理領域
-│   │   └── Security/             # 安全性領域
-│   ├── Infrastructure/           # 基礎設施層
-│   │   ├── Repositories/         # 資料存取實作
-│   │   ├── Services/             # 外部服務整合
-│   │   └── Cache/               # 快取機制
-│   ├── Services/                 # 應用服務
-│   └── Shared/                   # 共用元件
-├── tests/                        # 測試套件 (1,213 tests)
-│   ├── Unit/                     # 單元測試
-│   ├── Integration/              # 整合測試
-│   ├── Security/                 # 安全性測試
-│   └── UI/                      # 使用者介面測試
-├── scripts/                      # 統一腳本管理系統
-│   ├── unified-scripts.php       # 主入口點
-│   └── lib/                     # 腳本核心類別庫 (9 classes)
-├── database/                     # 資料庫相關
-│   ├── alleynote.sqlite3         # SQLite 資料庫
-│   └── migrations/               # 資料庫遷移
-├── public/                       # 公開存取檔案
-│   ├── index.php                 # 應用程式入口
-│   ├── api-docs.json            # Swagger API 文件
-│   └── api-docs.yaml            # Swagger YAML 格式
+├── backend/                       # 後端 PHP DDD 架構
+│   ├── app/                      # 應用程式核心
+│   │   ├── Application/          # 應用層
+│   │   │   ├── Controllers/      # HTTP 控制器
+│   │   │   └── Middleware/       # 中介軟體
+│   │   ├── Domains/              # 領域層 (核心業務邏輯)
+│   │   │   ├── Auth/             # 身份驗證領域
+│   │   │   ├── Post/             # 文章管理領域
+│   │   │   ├── Attachment/       # 附件管理領域
+│   │   │   └── Security/         # 安全性領域
+│   │   ├── Infrastructure/       # 基礎設施層
+│   │   │   ├── Repositories/     # 資料存取實作
+│   │   │   ├── Services/         # 外部服務整合
+│   │   │   └── Cache/           # 快取機制
+│   │   └── Shared/               # 共用元件
+│   ├── tests/                    # 測試套件 (138 檔案, 1,372 通過測試)
+│   │   ├── Unit/                 # 單元測試
+│   │   ├── Integration/          # 整合測試
+│   │   └── Feature/              # 功能測試
+│   ├── database/                 # 資料庫相關
+│   ├── public/                   # 公開存取檔案
+│   ├── scripts/                  # 維護腳本
+│   └── vendor/                   # Composer 依賴套件
+├── frontend/                      # 前端 Vue.js 3 應用
+│   ├── src/                      # Vue.js 3 Composition API 程式碼
+│   ├── public/                   # 靜態檔案
+│   └── package.json              # Node.js 依賴套件
 ├── docker/                       # Docker 容器設定
-│   ├── php/                     # PHP-FPM 設定
-│   └── nginx/                   # Nginx 設定
-├── docs/                        # 專案文件 (37 documents)
-└── coverage_report/             # 測試覆蓋率報告 (87.5%)
+│   ├── php/                      # PHP 8.4.12 設定
+│   └── nginx/                    # Nginx 設定
+├── docs/                         # 專案文件 (36 個文件)
+└── docker-compose.yml            # Docker Compose v2.39.2 設定
 ```
 
 ### DDD 分層架構
@@ -452,7 +441,7 @@ CLI Input → unified-scripts.php → CommandRegistry → Specific Command → D
 ### 專案統計 (最新)
 
 - **總類別數**: 161 classes
-- **介面數**: 37 interfaces  
+- **介面數**: 37 interfaces
 - **命名空間**: 73 namespaces
 - **測試套件**: 1,213 tests (100% 通過)
 - **程式碼覆蓋率**: 87.5%
@@ -510,31 +499,86 @@ use AlleyNote\Exception\ValidationException;
 
 /**
  * 文章服務類別
- * 
+ *
  * 處理文章相關的業務邏輯，包括建立、更新、刪除等操作。
- * 
+ *
  * @package AlleyNote\Service
  * @author AlleyNote Team
- * @since 2.0.0
+ * @since 4.0.0
  */
 class PostService
 {
     public function __construct(
-        private PostRepositoryInterface $repository,
-        private ValidatorInterface $validator
+        private readonly PostRepositoryInterface $repository,
+        private readonly ValidatorInterface $validator
     ) {}
-    
+
     /**
      * 建立新文章
-     * 
+     *
      * @param CreatePostDTO $dto 文章資料
      * @return array 建立結果
      * @throws ValidationException 當驗證失敗時
      */
     public function createPost(CreatePostDTO $dto): array
     {
-        // 實作...
+        // 使用 PHP 8.4 新特性
+        $validatedData = $this->validator->validate($dto);
+
+        // 使用新的 array spread 語法
+        return [
+            'success' => true,
+            'data' => $this->repository->create(...$validatedData),
+            'timestamp' => now(),
+        ];
     }
+}
+```
+
+### PHP 8.4 新語法特性
+
+```php
+<?php
+
+declare(strict_types=1);
+
+// 1. 屬性掛鉤 (Property Hooks)
+class User
+{
+    public string $fullName {
+        get => $this->firstName . ' ' . $this->lastName;
+        set(string $value) {
+            [$this->firstName, $this->lastName] = explode(' ', $value, 2);
+        }
+    }
+
+    private string $firstName = '';
+    private string $lastName = '';
+}
+
+// 2. 非對稱可見性 (Asymmetric Visibility)
+class Product
+{
+    public private(set) string $id;
+
+    public function __construct(string $id)
+    {
+        $this->id = $id; // 內部可設定
+    }
+
+    // 外部只能讀取，不能設定
+}
+
+// 3. 新的陣列函式
+$numbers = [1, 2, 3, 4, 5];
+$result = array_find($numbers, fn($n) => $n > 3); // 4
+$allEven = array_all($numbers, fn($n) => $n % 2 === 0); // false
+$anyEven = array_any($numbers, fn($n) => $n % 2 === 0); // true
+
+// 4. 改進的型別系統
+function processItems(array<string> $items): array<ProcessedItem>
+{
+    return array_map(fn($item) => new ProcessedItem($item), $items);
 }
 ```
 
@@ -621,10 +665,10 @@ class CommentServiceTest extends TestCase
             'content' => '這是測試留言',
             'author_id' => 123
         ], $this->validator);
-        
+
         // Act
         $result = $this->commentService->createComment($dto);
-        
+
         // Assert
         $this->assertTrue($result['success']);
         $this->assertArrayHasKey('comment_id', $result);
@@ -656,7 +700,7 @@ class CommentService
             'author_id' => $dto->getAuthorId(),
             'created_at' => date('Y-m-d H:i:s')
         ]);
-        
+
         return ['success' => true, 'comment_id' => $comment->getId()];
     }
 }
@@ -682,17 +726,17 @@ class CreateCommentDTO extends BaseDTO
             'author_id' => ['required', 'integer', 'exists:users,id']
         ];
     }
-    
+
     public function getPostId(): int
     {
         return $this->get('post_id');
     }
-    
+
     public function getContent(): string
     {
         return $this->get('content');
     }
-    
+
     public function getAuthorId(): int
     {
         return $this->get('author_id');
@@ -715,12 +759,12 @@ class CommentRepository extends BaseRepository
     {
         return 'comments';
     }
-    
+
     protected function getModelClass(): string
     {
         return Comment::class;
     }
-    
+
     public function findByPostId(int $postId): array
     {
         return $this->findBy(['post_id' => $postId]);
@@ -773,8 +817,8 @@ git push origin feature/user-comments
 測試金字塔 (AlleyNote 實際分布)：
     ┌─────────────┐
     │  UI 測試     │ ~8% (97 tests)
-    ├─────────────┤  
-    │  整合測試    │ ~22% (267 tests) 
+    ├─────────────┤
+    │  整合測試    │ ~22% (267 tests)
     ├─────────────┤
     │  單元測試    │ ~70% (849 tests)
     └─────────────┘
@@ -836,14 +880,14 @@ class PostServiceTest extends TestCase
     private PostService $service;
     private PostRepositoryInterface $repository;
     private ValidatorInterface $validator;
-    
+
     protected function setUp(): void
     {
         $this->repository = $this->createMock(PostRepositoryInterface::class);
         $this->validator = $this->createMock(ValidatorInterface::class);
         $this->service = new PostService($this->repository, $this->validator);
     }
-    
+
     public function testCreatePost(): void
     {
         // Arrange
@@ -851,44 +895,65 @@ class PostServiceTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容'
         ], $this->validator);
-        
+
         $this->repository
             ->expects($this->once())
             ->method('create')
             ->willReturn(['id' => 1]);
-        
+
         // Act
         $result = $this->service->createPost($dto);
-        
+
         // Assert
         $this->assertTrue($result['success']);
         $this->assertEquals(1, $result['post_id']);
     }
-    
-    public function testCreatePostWithInvalidData(): void
+
+    #[Test]
+    public function createPostWithInvalidDataThrowsException(): void
     {
+        // PHPUnit 11.5.34 新語法：使用 Attribute 取代 annotation
         $this->expectException(ValidationException::class);
-        
+
         new CreatePostDTO([
             'title' => '', // 空標題應該失敗
             'content' => '測試內容'
         ], $this->validator);
     }
+
+    #[DataProvider('invalidPostDataProvider')]
+    public function testCreatePostWithInvalidDataVariations(array $data): void
+    {
+        $this->expectException(ValidationException::class);
+        new CreatePostDTO($data, $this->validator);
+    }
+
+    public static function invalidPostDataProvider(): array
+    {
+        return [
+            'empty title' => [['title' => '', 'content' => 'content']],
+            'null content' => [['title' => 'title', 'content' => null]],
+            'title too long' => [['title' => str_repeat('a', 256), 'content' => 'content']],
+        ];
+    }
 }
 ```
 
-### 整合測試
+### 整合測試 (最新 PHPUnit 語法)
 
 ```php
 <?php
 namespace Tests\Integration\Controller;
 
 use Tests\TestCase;
-use AlleyNote\Service\PostService;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\Group;
 
+#[Group('integration')]
 class PostControllerTest extends TestCase
 {
-    public function testCreatePostEndpoint(): void
+    #[Test]
+    public function createPostEndpointReturnsCorrectResponse(): void
     {
         // 使用真實的服務但模擬的資料庫
         $response = $this->post('/api/posts', [
@@ -897,7 +962,7 @@ class PostControllerTest extends TestCase
         ], [
             'Authorization' => 'Bearer ' . $this->getTestToken()
         ]);
-        
+
         $response->assertStatus(201);
         $response->assertJsonStructure([
             'success',
@@ -909,6 +974,17 @@ class PostControllerTest extends TestCase
             ]
         ]);
     }
+
+    #[Test]
+    public function unauthorizedRequestReturns401(): void
+    {
+        $response = $this->post('/api/posts', [
+            'title' => '測試文章',
+            'content' => '測試內容'
+        ]);
+
+        $response->assertStatus(401);
+    }
 }
 ```
 
@@ -919,14 +995,18 @@ class PostControllerTest extends TestCase
 namespace Tests\Performance;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\Group;
 use AlleyNote\Repository\PostRepository;
 
+#[Group('performance')]
 class PostRepositoryPerformanceTest extends TestCase
 {
-    public function testBulkInsertPerformance(): void
+    #[Test]
+    public function bulkInsertPerformanceIsWithinAcceptableRange(): void
     {
         $start = microtime(true);
-        
+
         // 插入 1000 筆資料
         for ($i = 0; $i < 1000; $i++) {
             $this->repository->create([
@@ -934,11 +1014,25 @@ class PostRepositoryPerformanceTest extends TestCase
                 'content' => "測試內容 {$i}"
             ]);
         }
-        
+
         $duration = microtime(true) - $start;
-        
+
         // 應該在 5 秒內完成
-        $this->assertLessThan(5.0, $duration);
+        $this->assertLessThan(5.0, $duration, '批量插入應在 5 秒內完成');
+    }
+
+    #[Test]
+    public function queryPerformanceWithLargeDataset(): void
+    {
+        // 建立測試資料
+        $this->createTestPosts(10000);
+
+        $start = microtime(true);
+        $results = $this->repository->findByPage(1, 50);
+        $duration = microtime(true) - $start;
+
+        $this->assertLessThan(0.1, $duration, '分頁查詢應在 100ms 內完成');
+        $this->assertCount(50, $results);
     }
 }
 ```
@@ -962,7 +1056,7 @@ class PostFactory
             'created_at' => date('Y-m-d H:i:s')
         ], $attributes);
     }
-    
+
     public static function makeMany(int $count, array $attributes = []): array
     {
         $posts = [];
@@ -977,49 +1071,121 @@ class PostFactory
 }
 ```
 
+### 測試執行
+
+```bash
+# 執行所有測試 (1,372 個通過測試)
+docker-compose exec -T web ./vendor/bin/phpunit
+
+# 按群組執行測試
+docker-compose exec -T web ./vendor/bin/phpunit --group unit
+docker-compose exec -T web ./vendor/bin/phpunit --group integration
+docker-compose exec -T web ./vendor/bin/phpunit --group performance
+
+# 執行單一測試檔案
+docker-compose exec -T web ./vendor/bin/phpunit tests/Unit/Service/PostServiceTest.php
+
+# 執行特定測試方法
+docker-compose exec -T web ./vendor/bin/phpunit --filter testCreatePost
+
+# 產生程式碼覆蓋率報告
+docker-compose exec -T web ./vendor/bin/phpunit --coverage-html coverage-reports
+
+# 平行執行測試 (提升速度)
+docker-compose exec -T web ./vendor/bin/paratest
+
+# 詳細輸出
+docker-compose exec -T web ./vendor/bin/phpunit --testdox --verbose
+```
+
+### 測試設定檔
+
+```xml
+<!-- phpunit.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         executionOrder="random"
+         resolveDependencies="true"
+         stopOnFailure="false"
+         cacheDirectory=".phpunit.cache"
+         testdox="true">
+
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+        <exclude>
+            <directory>app/storage</directory>
+        </exclude>
+    </source>
+
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
+    </php>
+</phpunit>
+```
+
 ---
 
 ## 除錯與故障排除
 
-### 🛠️ 統一腳本除錯工具
+### 🛠️ 基本除錯工具
 
 ```bash
-# 專案整體狀態檢查
-docker compose exec web php scripts/unified-scripts.php project:status
+# 檢查容器狀態
+docker-compose ps
 
-# 系統健康檢查
-docker compose exec web php scripts/unified-scripts.php system:health
+# 查看容器日誌
+docker-compose logs web
+docker-compose logs -f web  # 即時追蹤
 
-# 快取狀態診斷
-docker compose exec web php scripts/unified-scripts.php cache:status
+# 進入容器
+docker-compose exec web bash
 
-# 資料庫連線檢查
-docker compose exec web php scripts/unified-scripts.php db:test-connection
+# 檢查 PHP 設定
+docker-compose exec web php --ini
+docker-compose exec web php -m  # 查看已載入模組
 
-# 權限問題診斷
-docker compose exec web php scripts/unified-scripts.php system:permissions
-
-# 效能分析
-docker compose exec web php scripts/unified-scripts.php performance:analyze
+# 檢查 Xdebug 狀態
+docker-compose exec web php -v  # 應顯示 Xdebug 3.4.5
 ```
 
 ### 常見問題快速修復
 
 ```bash
-# 快取問題
-docker compose exec web php scripts/unified-scripts.php cache:clear
-docker compose exec web php scripts/unified-scripts.php cache:warm
+# 清除所有快取
+docker-compose exec web php -r "opcache_reset();"
 
-# 權限問題  
-docker compose exec web php scripts/unified-scripts.php fix:permissions
+# 重新產生 Composer autoload
+docker-compose exec web composer dump-autoload
 
-# 測試失敗清理
-docker compose exec web php scripts/unified-scripts.php test:cleanup
-docker compose exec web php scripts/unified-scripts.php test:reset
+# 修正檔案權限
+sudo chown -R $USER:$USER storage/
+sudo chown -R $USER:$USER database/
 
-# 資料庫問題
-docker compose exec web php scripts/unified-scripts.php db:repair
-docker compose exec web php scripts/unified-scripts.php db:optimize
+# 重新建立資料庫
+docker-compose exec web ./vendor/bin/phinx rollback -t 0
+docker-compose exec web ./vendor/bin/phinx migrate
+
+# 清除失敗的測試
+rm -rf storage/framework/testing/
 ```
 
 ### 日誌系統
@@ -1031,12 +1197,12 @@ use Psr\Log\LoggerInterface;
 
 class SomeService
 {
-    public function __construct(private LoggerInterface $logger) {}
-    
-    public function someMethod($data): void
+    public function __construct(private readonly LoggerInterface $logger) {}
+
+    public function someMethod(array $data): void
     {
         $this->logger->debug('開始處理資料', ['data' => $data]);
-        
+
         try {
             // 處理邏輯
             $result = $this->processData($data);
@@ -1056,57 +1222,79 @@ class SomeService
 ### 除錯工具
 
 ```bash
+# 查看容器日誌
+docker-compose logs -f web
+
 # 查看應用程式日誌
-docker compose logs -f php
+tail -f backend/storage/logs/app.log
 
-# 查看資料庫查詢日誌
-tail -f logs/database.log
-
-# 使用 Xdebug（開發環境）
+# 使用 Xdebug 3.4.5（開發環境）
 export XDEBUG_MODE=debug
-docker compose -f docker-compose.dev.yml up -d
+docker-compose -f docker-compose.dev.yml up -d
 
 # 執行單一測試進行除錯
-vendor/bin/phpunit --filter testSpecificMethod tests/Unit/SomeTest.php
+docker-compose exec web ./vendor/bin/phpunit --filter testSpecificMethod tests/Unit/SomeTest.php
+
+# 監控 PHP 記憶體使用
+docker-compose exec web php -d memory_limit=256M your-script.php
+
+# 檢查 OPcache 狀態
+docker-compose exec web php -r "var_dump(opcache_get_status());"
 ```
 
 ### 常見問題排除
 
+#### 容器化環境問題
+
+```bash
+# 重建容器（清除快取）
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+
+# 檢查容器資源使用
+docker stats
+
+# 清理 Docker 系統
+docker system prune -f
+```
+
 #### 依賴注入問題
 
 ```bash
-# 檢查服務是否正確註冊
-php scripts/container-debug.php list-services
+# 檢查 Composer 依賴
+docker-compose exec web composer validate
+docker-compose exec web composer install --optimize-autoloader
 
-# 清理 DI 快取
-rm -rf storage/di-cache/*
-php scripts/warm-cache.php
+# 清理 autoload 快取
+docker-compose exec web composer dump-autoload
 ```
 
 #### 資料庫問題
 
 ```bash
 # 檢查資料庫連接
-php scripts/db-health-check.php
+docker-compose exec web php -r "new PDO('sqlite:database/alleynote.sqlite3');"
 
-# 重新初始化資料庫
-php scripts/init-sqlite.sh
+# 重新建立資料庫
+docker-compose exec web ./vendor/bin/phinx rollback -t 0
+docker-compose exec web ./vendor/bin/phinx migrate
 
-# 檢查資料庫效能
-php scripts/db-performance.php
+# 檢查資料庫檔案權限
+docker-compose exec web ls -la database/
 ```
 
-#### 快取問題
+#### 前後端通訊問題
 
 ```bash
-# 清理所有快取
-php scripts/cache-monitor.php clear all
+# 檢查 API 端點
+curl -i http://localhost:8080/api/health
 
-# 檢查快取狀態
-php scripts/cache-monitor.php stats
+# 檢查 CORS 設定
+curl -i -H "Origin: http://localhost:3000" http://localhost:8080/api/posts
 
-# 監控快取效能
-php scripts/cache-monitor.php monitor
+# 檢查前端建構
+cd frontend && npm run build
 ```
 
 ---
@@ -1130,6 +1318,33 @@ export LOG_LEVEL=info
 export APP_ENV=production
 export APP_DEBUG=false
 export LOG_LEVEL=error
+```
+
+### Docker Compose 生產設定
+
+```yaml
+# docker-compose.production.yml
+version: '3.8'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile.prod
+    environment:
+      - APP_ENV=production
+      - PHP_OPCACHE_ENABLE=1
+      - PHP_OPCACHE_MEMORY_CONSUMPTION=256
+    volumes:
+      - ./backend:/var/www/html:ro
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ssl-data:/etc/nginx/ssl:ro
 ```
 
 ### 部署腳本
@@ -1190,24 +1405,24 @@ class OptimizedPostRepository extends PostRepository
     public function findRecentPosts(int $limit = 10): array
     {
         // 使用索引
-        $sql = "SELECT * FROM posts 
-                WHERE deleted_at IS NULL 
-                ORDER BY created_at DESC 
+        $sql = "SELECT * FROM posts
+                WHERE deleted_at IS NULL
+                ORDER BY created_at DESC
                 LIMIT :limit";
-        
+
         return $this->query($sql, ['limit' => $limit]);
     }
-    
+
     public function findPostsWithCategories(int $limit = 10): array
     {
         // 一次查詢避免 N+1 問題
-        $sql = "SELECT p.*, c.name as category_name 
-                FROM posts p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE p.deleted_at IS NULL 
-                ORDER BY p.created_at DESC 
+        $sql = "SELECT p.*, c.name as category_name
+                FROM posts p
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE p.deleted_at IS NULL
+                ORDER BY p.created_at DESC
                 LIMIT :limit";
-        
+
         return $this->query($sql, ['limit' => $limit]);
     }
 }
@@ -1219,11 +1434,11 @@ class CachedPostService
         private PostService $postService,
         private CacheInterface $cache
     ) {}
-    
+
     public function getPopularPosts(): array
     {
         $cacheKey = 'popular_posts';
-        
+
         return $this->cache->remember($cacheKey, 3600, function () {
             return $this->postService->getPopularPosts();
         });
@@ -1247,7 +1462,7 @@ class SecurityHelper
             return $value;
         }, $input);
     }
-    
+
     public static function validateCSRFToken(string $token): bool
     {
         return hash_equals($_SESSION['csrf_token'] ?? '', $token);
@@ -1260,12 +1475,12 @@ class SecureRepository
     protected function query(string $sql, array $params = []): array
     {
         $stmt = $this->db->prepare($sql);
-        
+
         foreach ($params as $key => $value) {
             $type = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
             $stmt->bindValue($key, $value, $type);
         }
-        
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -1287,16 +1502,16 @@ interface EventInterface
 class PostCreatedEvent implements EventInterface
 {
     public function __construct(
-        private int $postId,
-        private int $authorId,
-        private DateTimeInterface $timestamp
+        private readonly int $postId,
+        private readonly int $authorId,
+        private readonly DateTimeInterface $timestamp
     ) {}
-    
+
     public function getName(): string
     {
         return 'post.created';
     }
-    
+
     public function getPayload(): array
     {
         return [
@@ -1304,7 +1519,7 @@ class PostCreatedEvent implements EventInterface
             'author_id' => $this->authorId
         ];
     }
-    
+
     public function getTimestamp(): DateTimeInterface
     {
         return $this->timestamp;
@@ -1330,81 +1545,132 @@ class EventPublisher
 
 **Q: Docker 容器啟動失敗？**
 ```bash
-# 檢查 Docker 服務
-sudo systemctl status docker
+# 檢查 Docker 版本 (需要 Docker 28.3.3+)
+docker --version
+docker-compose --version  # 需要 v2.39.2+
 
 # 檢查端口占用
-sudo netstat -tulpn | grep :80
+sudo netstat -tulpn | grep :8080
 
 # 重新建立容器
-docker compose down
-docker compose up -d --build
+docker-compose down
+docker-compose up -d --build
 ```
 
 **Q: Composer 安裝依賴失敗？**
 ```bash
+# 檢查 PHP 版本 (需要 PHP 8.4.12+)
+docker-compose exec web php --version
+
 # 清理 Composer 快取
-composer clear-cache
+docker-compose exec web composer clear-cache
 
 # 增加記憶體限制
-php -d memory_limit=2G composer install
-
-# 使用國內鏡像
-composer config repo.packagist composer https://packagist.org
+docker-compose exec web php -d memory_limit=2G composer install
 ```
 
 ### 程式碼問題
 
+**Q: PHPStan 靜態分析錯誤？**
+```bash
+# 執行 PHPStan Level 10 分析
+docker-compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G
+
+# 生成基準線文件
+docker-compose exec -T web ./vendor/bin/phpstan analyse --generate-baseline
+
+# 檢查特定檔案
+docker-compose exec web ./vendor/bin/phpstan analyse app/Services/PostService.php
+```
+
 **Q: 自動載入找不到類別？**
 ```bash
 # 重新生成自動載入檔案
-composer dump-autoload
+docker-compose exec web composer dump-autoload
 
 # 檢查命名空間是否正確
-grep -r "namespace" src/
-```
-
-**Q: 依賴注入失敗？**
-```bash
-# 檢查服務是否註冊
-php scripts/container-debug.php
-
-# 清理 DI 快取
-rm -rf storage/di-cache/*
+grep -r "namespace" backend/app/
 ```
 
 ### 測試問題
 
-**Q: 測試資料庫衝突？**
+**Q: 測試失敗或超時？**
 ```bash
-# 使用獨立的測試資料庫
-export TEST_DB_PATH="database/test.sqlite"
+# 檢查測試環境
+docker-compose exec web ./vendor/bin/phpunit --version  # 需要 PHPUnit 11.5.34
 
-# 每次測試前清理資料庫
-php scripts/reset-test-db.php
+# 執行特定測試群組
+docker-compose exec web ./vendor/bin/phpunit --group unit
+
+# 增加測試記憶體限制
+docker-compose exec web php -d memory_limit=512M ./vendor/bin/phpunit
+
+# 查看失敗測試詳情
+docker-compose exec web ./vendor/bin/phpunit --stop-on-failure --verbose
 ```
 
-**Q: 測試覆蓋率不夠？**
+**Q: 測試覆蓋率問題？**
 ```bash
-# 產生詳細覆蓋率報告
-vendor/bin/phpunit --coverage-html coverage-reports/
+# 確保 Xdebug 已啟用 (需要 Xdebug 3.4.5)
+docker-compose exec web php -m | grep xdebug
 
-# 檢查未覆蓋的程式碼
+# 產生覆蓋率報告
+docker-compose exec web ./vendor/bin/phpunit --coverage-html coverage-reports/
+
+# 檢查覆蓋率數據
 open coverage-reports/index.html
+```
+
+### 前後端整合問題
+
+**Q: 前端無法連接後端 API？**
+```bash
+# 檢查後端 API 狀態
+curl -i http://localhost:8080/api/health
+
+# 檢查前端服務
+cd frontend && npm run dev
+
+# 檢查 CORS 設定
+curl -i -H "Origin: http://localhost:3000" http://localhost:8080/api/posts
+```
+
+**Q: Vue.js 3 Composition API 問題？**
+```bash
+# 檢查 Vue.js 版本
+cd frontend && npm list vue
+
+# 更新到最新版本
+cd frontend && npm update vue
+
+# 檢查 Composition API 語法
+npm run lint
 ```
 
 ### 部署問題
 
 **Q: 生產環境部署失敗？**
 ```bash
-# 檢查部署日誌
-tail -f logs/deploy.log
+# 使用生產配置
+docker-compose -f docker-compose.production.yml up -d
 
-# 檢查服務狀態
-systemctl status alleynote
+# 檢查容器狀態
+docker-compose ps
 
-# 手動回滾
-./scripts/rollback.sh
+# 查看部署日誌
+docker-compose logs web
+```
+
+**Q: 效能問題？**
+```bash
+# 啟用 OPcache (PHP 8.4.12 內建 Zend OPcache v8.4.12)
+docker-compose exec web php -d opcache.enable=1 -v
+
+# 檢查快取狀態
+docker-compose exec web php -r "var_dump(opcache_get_status());"
+
+# 優化 Composer autoloader
+docker-compose exec web composer install --optimize-autoloader --no-dev
 ```
 
 ---
@@ -1412,24 +1678,26 @@ systemctl status alleynote
 ## 參考資源
 
 ### 官方文件
-- [PSR 標準](https://www.php-fig.org/psr/)
-- [PHPUnit 文件](https://phpunit.de/documentation.html)
-- [Docker 文件](https://docs.docker.com/)
+- [PHP 8.4 新特性](https://www.php.net/releases/8.4/en.php)
+- [PHPUnit 11.5 文件](https://phpunit.de/documentation.html)
+- [Docker Compose v2.39 文件](https://docs.docker.com/compose/)
+- [Vue.js 3 Composition API](https://vuejs.org/guide/composition-api-introduction.html)
 
 ### 專案文件
-- [ARCHITECTURE_IMPROVEMENT_COMPLETION.md](ARCHITECTURE_IMPROVEMENT_COMPLETION.md) - 架構改進報告
+- [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - 架構審查報告
 - [DI_CONTAINER_GUIDE.md](DI_CONTAINER_GUIDE.md) - DI 容器使用指南
 - [VALIDATOR_GUIDE.md](VALIDATOR_GUIDE.md) - 驗證器使用指南
-- [README.md](README.md) - 專案說明
+- [README.md](../README.md) - 專案說明
 
-### 工具與腳本
-- `scripts/warm-cache.php` - 快取預熱
-- `scripts/cache-monitor.php` - 快取監控
-- `scripts/db-performance.php` - 資料庫效能分析
-- `scripts/deploy.sh` - 自動部署腳本
+### 開發工具
+- **後端測試**: `./vendor/bin/phpunit` (1,372 個通過測試)
+- **程式碼風格**: `./vendor/bin/php-cs-fixer` (PSR-12 標準)
+- **靜態分析**: `./vendor/bin/phpstan` (Level 10)
+- **前端開發**: `npm run dev` (Vite + Vue.js 3)
 
 ### 社群資源
 - [PHP 官方網站](https://www.php.net/)
+- [Vue.js 官方文件](https://vuejs.org/)
 - [Composer 套件庫](https://packagist.org/)
 - [GitHub Issues](https://github.com/your-org/alleynote/issues)
 
@@ -1446,7 +1714,15 @@ systemctl status alleynote
 
 讓我們一起打造更好的 AlleyNote！
 
+### 當前專案狀態
+- **PHP**: 8.4.12 (Xdebug 3.4.5, Zend OPcache v8.4.12)
+- **測試**: 138 檔案, 1,372 個通過測試
+- **Docker**: 28.3.3 & Docker Compose v2.39.2
+- **前端**: Vue.js 3 Composition API
+- **架構**: 前後端分離 + DDD 設計模式
+
 ---
 
-*文件版本: v2.0*  
+*文件版本: v4.0*
+*最後更新: 2025-01-20*
 *維護者: AlleyNote 開發團隊*
