@@ -1,15 +1,15 @@
 services:
     php-test:
         build:
-            context: .
-            dockerfile: docker/php/Dockerfile
+            context: ./backend
+            dockerfile: ../docker/php/Dockerfile
             target: test
         volumes:
-            - .:/var/www/html
+            - ./backend:/var/www/html
             - ./docker/php/php.ini:/usr/local/etc/php/php.ini
-            - ./storage/logs:/var/www/html/storage/logs
-            - ./storage/cache:/var/www/html/storage/cache
-            - ./storage/coverage:/var/www/html/storage/coverage
+            - ./backend/storage/logs:/var/www/html/storage/logs
+            - ./backend/storage/cache:/var/www/html/storage/cache
+            - ./backend/storage/coverage:/var/www/html/storage/coverage
         environment:
             APP_ENV: testing
             DB_CONNECTION: sqlite

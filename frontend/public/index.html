@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlleyNote - 巷弄筆記</title>
+    <meta name="description" content="AlleyNote 巷弄筆記 - 分享您的生活點滴">
+    
+    <!-- 安全標頭 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+</head>
+<body>
+    <div id="app">
+        <header class="container mt-3">
+            <h1 class="text-center">AlleyNote 巷弄筆記</h1>
+            <p class="text-center">分享您的生活點滴</p>
+        </header>
+        
+        <main class="container mt-3">
+            <div class="card">
+                <div class="card-header">
+                    <h2>歡迎使用 AlleyNote</h2>
+                </div>
+                <div class="card-body">
+                    <p>這是一個基於 DDD 架構的現代化 Web 應用程式。</p>
+                    <p>前端使用 Vite 建構，後端採用 PHP DDD 架構。</p>
+                    
+                    <div class="mt-3">
+                        <h3>功能特色：</h3>
+                        <ul>
+                            <li>✅ DDD 領域驅動設計</li>
+                            <li>✅ JWT 身份驗證</li>
+                            <li>✅ RESTful API</li>
+                            <li>✅ 現代化前端架構</li>
+                            <li>✅ Docker 容器化部署</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <button class="btn btn-primary" onclick="testApi()">測試 API 連線</button>
+                    </div>
+                    
+                    <div id="api-result" class="mt-3"></div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="container mt-3 text-center">
+            <p>&copy; 2025 AlleyNote. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+    <script>
+        async function testApi() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = '<div class="alert alert-info">正在測試 API 連線...</div>';
+            
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = '<div class="alert alert-success">API 連線成功！<br>回應：' + JSON.stringify(data, null, 2) + '</div>';
+                } else {
+                    throw new Error('API 回應錯誤: ' + response.status);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="alert alert-danger">API 連線失敗：' + error.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>

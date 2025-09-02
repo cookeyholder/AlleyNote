@@ -1,0 +1,50 @@
+{
+  "name": "alleynote-monorepo",
+  "version": "1.0.0",
+  "description": "AlleyNote 完整應用程式 - 前後端分離架構",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm run frontend:dev",
+    "build": "npm run frontend:build",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:preview": "cd frontend && npm run preview",
+    "backend:test": "cd backend && composer test",
+    "backend:cs-fix": "cd backend && composer cs-fix",
+    "backend:analyse": "cd backend && composer analyse",
+    "backend:ci": "cd backend && composer ci",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build",
+    "docker:logs": "docker-compose logs -f",
+    "migrate": "cd backend && php vendor/bin/phinx migrate",
+    "migrate:rollback": "cd backend && php vendor/bin/phinx rollback",
+    "seed": "cd backend && php vendor/bin/phinx seed:run"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "keywords": [
+    "alleynote",
+    "monorepo",
+    "frontend",
+    "backend",
+    "ddd",
+    "php",
+    "vite"
+  ],
+  "author": "AlleyNote Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cookeyholder/AlleyNote.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

@@ -1,14 +1,14 @@
 services:
     web:
         build:
-            context: .
-            dockerfile: docker/php/Dockerfile.production
+            context: ./backend
+            dockerfile: ../docker/php/Dockerfile.production
             target: base # 生產環境使用 base stage
         container_name: alleynote_web_prod
         volumes:
             # 僅掛載必要的資料目錄
-            - ./storage:/var/www/html/storage
-            - ./database:/var/www/html/database
+            - ./backend/storage:/var/www/html/storage
+            - ./backend/database:/var/www/html/database
             - ./logs:/var/www/html/logs
         environment:
             APP_ENV: ${APP_ENV:-production}
