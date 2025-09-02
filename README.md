@@ -45,6 +45,116 @@ AlleyNote 是一個現代化的公布欄網站系統，專為學校、社區、�
 ## 🔥 前後端分離架構
 
 ### 架構概覽
+
+#### 🏗️ 系統架構圖
+
+```mermaid
+graph TB
+    subgraph "🌐 客戶端層"
+        Browser[瀏覽器]
+    end
+    
+    subgraph "🐳 Docker 容器化環境"
+        subgraph "🎨 前端服務 (Vite)"
+            Frontend[前端應用程式<br/>Vite + JavaScript + CSS3]
+            FrontendStatic[靜態資源<br/>public/]
+            FrontendBuild[建構輸出<br/>dist/]
+        end
+        
+        subgraph "🌐 Nginx 反向代理"
+            Nginx[Nginx<br/>負載均衡 & SSL]
+        end
+        
+        subgraph "⚡ 後端服務 (PHP-FPM)"
+            subgraph "🎯 DDD 架構層"
+                subgraph "🌟 領域層 (Domain)"
+                    PostDomain[文章領域<br/>Post Domain]
+                    AuthDomain[認證領域<br/>Auth Domain]
+                    AttachmentDomain[附件領域<br/>Attachment Domain]
+                    SecurityDomain[安全領域<br/>Security Domain]
+                end
+                
+                subgraph "🚀 應用層 (Application)"
+                    Controllers[控制器<br/>Controllers]
+                    DTOs[資料傳輸物件<br/>DTOs]
+                    Middleware[中介軟體<br/>Middleware]
+                    Services[應用服務<br/>Services]
+                end
+                
+                subgraph "🔧 基礎設施層 (Infrastructure)"
+                    Database[資料庫存取<br/>Repositories]
+                    Cache[快取系統<br/>Cache Manager]
+                    FileSystem[檔案系統<br/>File Storage]
+                end
+                
+                subgraph "🛠️ 共用層 (Shared)"
+                    Validators[驗證器<br/>29種驗證規則]
+                    Exceptions[例外處理<br/>Exception Handlers]
+                    Helpers[輔助工具<br/>Helper Functions]
+                end
+            end
+        end
+        
+        subgraph "💾 資料儲存層"
+            SQLite[(SQLite 資料庫<br/>alleynote.sqlite3)]
+            Storage[檔案儲存<br/>storage/]
+        end
+    end
+    
+    subgraph "🔄 開發工具"
+        Scripts[統一腳本系統<br/>87個維運腳本]
+        Tests[測試套件<br/>1,393個測試]
+        CI[CI/CD Pipeline<br/>自動化部署]
+    end
+    
+    %% 連接關係
+    Browser --> Nginx
+    Nginx --> Frontend
+    Nginx --> Controllers
+    
+    Frontend --> FrontendStatic
+    Frontend --> FrontendBuild
+    
+    Controllers --> DTOs
+    Controllers --> Services
+    DTOs --> Validators
+    
+    Services --> PostDomain
+    Services --> AuthDomain
+    Services --> AttachmentDomain
+    Services --> SecurityDomain
+    
+    PostDomain --> Database
+    AuthDomain --> Database
+    AttachmentDomain --> Database
+    SecurityDomain --> Database
+    
+    Database --> SQLite
+    FileSystem --> Storage
+    
+    Controllers --> Cache
+    Middleware --> SecurityDomain
+    
+    Scripts --> Tests
+    Tests --> CI
+    
+    %% 樣式定義
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef backend fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef domain fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef infra fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef data fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef tools fill:#f1f8e9,stroke:#558b2f,stroke-width:2px
+    
+    class Frontend,FrontendStatic,FrontendBuild frontend
+    class Controllers,DTOs,Middleware,Services backend
+    class PostDomain,AuthDomain,AttachmentDomain,SecurityDomain domain
+    class Database,Cache,FileSystem,Validators,Exceptions,Helpers infra
+    class SQLite,Storage data
+    class Scripts,Tests,CI tools
+```
+
+#### 📁 目錄結構
 ```
 AlleyNote/
 ├── 🎨 frontend/          # 前端應用程式
@@ -114,6 +224,169 @@ AlleyNote/
 - **快取系統**: File Cache + APCu（支援分散式快取）
 
 ### 🏗️ DDD 架構組件
+
+#### 🎯 DDD 分層架構圖
+
+```mermaid
+graph TD
+    subgraph "🌐 外部介面層"
+        HTTP[HTTP 請求]
+        CLI[命令列介面]
+    end
+    
+    subgraph "🚀 應用層 (Application Layer)"
+        subgraph "🎮 控制器"
+            WebCtrl[Web 控制器]
+            ApiCtrl[API 控制器]
+            SecurityCtrl[安全控制器]
+        end
+        
+        subgraph "📦 應用服務"
+            AppServices[應用服務]
+            DTOs[資料傳輸物件]
+            Middleware[中介軟體]
+        end
+    end
+    
+    subgraph "🌟 領域層 (Domain Layer)"
+        subgraph "📝 文章領域"
+            PostEntity[文章實體]
+            PostVO[文章值物件]
+            PostService[文章服務]
+            PostRepository[文章倉庫介面]
+        end
+        
+        subgraph "🔐 認證領域"
+            AuthEntity[使用者實體]
+            AuthVO[認證值物件]
+            AuthService[認證服務]
+            AuthRepository[認證倉庫介面]
+        end
+        
+        subgraph "📎 附件領域"
+            AttachmentEntity[附件實體]
+            AttachmentVO[附件值物件]
+            AttachmentService[附件服務]
+            AttachmentRepository[附件倉庫介面]
+        end
+        
+        subgraph "🛡️ 安全領域"
+            SecurityEntity[安全實體]
+            SecurityVO[安全值物件]
+            SecurityService[安全服務]
+            SecurityRepository[安全倉庫介面]
+        end
+    end
+    
+    subgraph "🔧 基礎設施層 (Infrastructure Layer)"
+        subgraph "💾 資料持久化"
+            PostRepoImpl[文章倉庫實作]
+            AuthRepoImpl[認證倉庫實作]
+            AttachmentRepoImpl[附件倉庫實作]
+            SecurityRepoImpl[安全倉庫實作]
+        end
+        
+        subgraph "⚡ 快取系統"
+            CacheManager[快取管理器]
+            CacheKeys[快取金鑰]
+            TagSystem[標籤系統]
+        end
+        
+        subgraph "📁 檔案系統"
+            FileStorage[檔案儲存]
+            UploadHandler[上傳處理器]
+        end
+    end
+    
+    subgraph "🛠️ 共用層 (Shared Layer)"
+        subgraph "✅ 驗證系統"
+            Validators[29種驗證規則]
+            ValidationResult[驗證結果]
+        end
+        
+        subgraph "⚠️ 例外處理"
+            DomainExceptions[領域例外]
+            AppExceptions[應用例外]
+            InfraExceptions[基礎設施例外]
+        end
+        
+        subgraph "🔧 工具類別"
+            Helpers[輔助函式]
+            Constants[常數定義]
+            Enums[列舉型別]
+        end
+    end
+    
+    subgraph "💾 資料儲存層"
+        SQLite[(SQLite 資料庫)]
+        FileSystem[(檔案系統)]
+    end
+    
+    %% 連接關係
+    HTTP --> WebCtrl
+    HTTP --> ApiCtrl
+    CLI --> SecurityCtrl
+    
+    WebCtrl --> AppServices
+    ApiCtrl --> AppServices
+    SecurityCtrl --> AppServices
+    
+    AppServices --> DTOs
+    DTOs --> Validators
+    
+    AppServices --> PostService
+    AppServices --> AuthService
+    AppServices --> AttachmentService
+    AppServices --> SecurityService
+    
+    PostService --> PostRepository
+    AuthService --> AuthRepository
+    AttachmentService --> AttachmentRepository
+    SecurityService --> SecurityRepository
+    
+    PostRepository --> PostRepoImpl
+    AuthRepository --> AuthRepoImpl
+    AttachmentRepository --> AttachmentRepoImpl
+    SecurityRepository --> SecurityRepoImpl
+    
+    PostRepoImpl --> SQLite
+    AuthRepoImpl --> SQLite
+    AttachmentRepoImpl --> SQLite
+    SecurityRepoImpl --> SQLite
+    
+    AttachmentService --> FileStorage
+    FileStorage --> FileSystem
+    
+    AppServices --> CacheManager
+    CacheManager --> TagSystem
+    
+    PostService --> PostEntity
+    PostService --> PostVO
+    AuthService --> AuthEntity
+    AuthService --> AuthVO
+    AttachmentService --> AttachmentEntity
+    AttachmentService --> AttachmentVO
+    SecurityService --> SecurityEntity
+    SecurityService --> SecurityVO
+    
+    Validators --> ValidationResult
+    AppServices --> Helpers
+    
+    %% 樣式定義
+    classDef application fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef domain fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef infrastructure fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef shared fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef data fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+    
+    class WebCtrl,ApiCtrl,SecurityCtrl,AppServices,DTOs,Middleware application
+    class PostEntity,PostVO,PostService,PostRepository,AuthEntity,AuthVO,AuthService,AuthRepository,AttachmentEntity,AttachmentVO,AttachmentService,AttachmentRepository,SecurityEntity,SecurityVO,SecurityService,SecurityRepository domain
+    class PostRepoImpl,AuthRepoImpl,AttachmentRepoImpl,SecurityRepoImpl,CacheManager,CacheKeys,TagSystem,FileStorage,UploadHandler infrastructure
+    class Validators,ValidationResult,DomainExceptions,AppExceptions,InfraExceptions,Helpers,Constants,Enums shared
+    class SQLite,FileSystem data
+```
+
+#### 🔍 架構說明
 - **Domain 層**: 業務實體、值物件、領域服務 (161 類別)
 - **Application 層**: 應用服務、控制器、DTO (15 檔案)
 - **Infrastructure 層**: 資料庫、外部服務、技術實作 (46 檔案)
@@ -230,7 +503,7 @@ AlleyNote/
 │   │   │   └── Services/   # 應用服務
 │   │   ├── Domains/        # 領域層
 │   │   │   ├── Auth/       # 認證領域
-│   │   │   ├── Post/       # 文章領域  
+│   │   │   ├── Post/       # 文章領域
 │   │   │   ├── Attachment/ # 附件領域
 │   │   │   └── Security/   # 安全領域
 │   │   ├── Infrastructure/ # 基礎設施層
@@ -523,6 +796,117 @@ npm run help
 - **執行時間**: 優化後效能提升
 
 ### 🧪 測試分類
+
+#### 🎯 測試架構圖
+
+```mermaid
+graph TB
+    subgraph "🧪 測試套件總覽"
+        TestSuite[測試套件<br/>1,393 個測試<br/>6,396 個斷言]
+    end
+    
+    subgraph "📊 測試分類"
+        subgraph "🔬 單元測試 (Unit Tests)"
+            DomainTests[領域邏輯測試<br/>實體、值物件、服務]
+            ServiceTests[服務層測試<br/>業務邏輯驗證]
+            ValidatorTests[驗證器測試<br/>29種驗證規則]
+        end
+        
+        subgraph "🔗 整合測試 (Integration Tests)"
+            ApiTests[API 端點測試<br/>HTTP 請求/回應]
+            DatabaseTests[資料庫整合測試<br/>CRUD 操作]
+            CacheTests[快取系統測試<br/>快取標籤機制]
+        end
+        
+        subgraph "🛡️ 安全測試 (Security Tests)"
+            XssTests[XSS 防護測試<br/>跨站腳本攻擊]
+            CsrfTests[CSRF 防護測試<br/>跨站請求偽造]
+            SqlTests[SQL 注入測試<br/>資料庫安全]
+            AuthTests[認證測試<br/>權限控制]
+        end
+        
+        subgraph "⚡ 效能測試 (Performance Tests)"
+            QueryTests[查詢效能測試<br/>資料庫最佳化]
+            CachePerf[快取效能測試<br/>命中率分析]
+            MemoryTests[記憶體使用測試<br/>資源管理]
+        end
+    end
+    
+    subgraph "🏭 測試工廠 (Test Factories)"
+        PostFactory[文章工廠<br/>測試資料生成]
+        UserFactory[使用者工廠<br/>認證資料生成]
+        AttachmentFactory[附件工廠<br/>檔案測試資料]
+        SecurityFactory[安全工廠<br/>安全測試資料]
+    end
+    
+    subgraph "🛠️ 測試工具"
+        PHPUnit[PHPUnit 11.5<br/>測試框架]
+        Coverage[程式碼覆蓋率<br/>詳細報告]
+        MockFramework[Mock 框架<br/>依賴模擬]
+        Assertions[自訂斷言<br/>業務邏輯驗證]
+    end
+    
+    subgraph "📊 測試報告"
+        CoverageReport[覆蓋率報告<br/>HTML 格式]
+        TestResults[測試結果<br/>詳細統計]
+        PerformanceReport[效能報告<br/>執行時間分析]
+    end
+    
+    %% 連接關係
+    TestSuite --> DomainTests
+    TestSuite --> ServiceTests
+    TestSuite --> ValidatorTests
+    TestSuite --> ApiTests
+    TestSuite --> DatabaseTests
+    TestSuite --> CacheTests
+    TestSuite --> XssTests
+    TestSuite --> CsrfTests
+    TestSuite --> SqlTests
+    TestSuite --> AuthTests
+    TestSuite --> QueryTests
+    TestSuite --> CachePerf
+    TestSuite --> MemoryTests
+    
+    DomainTests --> PostFactory
+    ServiceTests --> UserFactory
+    ApiTests --> AttachmentFactory
+    SecurityTests --> SecurityFactory
+    
+    XssTests --> SecurityFactory
+    CsrfTests --> SecurityFactory
+    SqlTests --> SecurityFactory
+    AuthTests --> SecurityFactory
+    
+    TestSuite --> PHPUnit
+    PHPUnit --> Coverage
+    PHPUnit --> MockFramework
+    PHPUnit --> Assertions
+    
+    Coverage --> CoverageReport
+    PHPUnit --> TestResults
+    QueryTests --> PerformanceReport
+    CachePerf --> PerformanceReport
+    MemoryTests --> PerformanceReport
+    
+    %% 樣式定義
+    classDef unit fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef integration fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef security fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef performance fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef factory fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef tools fill:#f1f8e9,stroke:#558b2f,stroke-width:2px
+    classDef reports fill:#fce4ec,stroke:#ad1457,stroke-width:2px
+    
+    class DomainTests,ServiceTests,ValidatorTests unit
+    class ApiTests,DatabaseTests,CacheTests integration
+    class XssTests,CsrfTests,SqlTests,AuthTests security
+    class QueryTests,CachePerf,MemoryTests performance
+    class PostFactory,UserFactory,AttachmentFactory,SecurityFactory factory
+    class PHPUnit,Coverage,MockFramework,Assertions tools
+    class CoverageReport,TestResults,PerformanceReport reports
+```
+
+#### 📋 測試類型說明
 - **單元測試** (`tests/Unit/`): 領域邏輯、服務層、驗證器
 - **整合測試** (`tests/Integration/`): API 端點、資料庫整合
 - **安全測試** (`tests/Security/`): XSS、CSRF、SQL 注入防護
