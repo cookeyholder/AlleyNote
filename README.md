@@ -1019,6 +1019,9 @@ A: 詳見 [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)。
 - **[SSL_DEPLOYMENT_GUIDE.md](docs/SSL_DEPLOYMENT_GUIDE.md)**: SSL 設定指南
 - **[CHANGELOG.md](CHANGELOG.md)**: 版本更新日誌
 
+### 🏗️ 遷移文件
+- **[前後端分離完成報告](docs/migration/FRONTEND_BACKEND_SEPARATION_COMPLETION_REPORT.md)**: 詳細的架構遷移記錄與最佳實踐 🆕
+
 ### 📊 規劃文件
 - **[AlleyNote公布欄網站規格書.md](docs/architecture/AlleyNote公布欄網站規格書.md)**: 系統規格
 - **[USER_ACTIVITY_LOGGING_SPEC.md](docs/USER_ACTIVITY_LOGGING_SPEC.md)**: 使用者活動記錄規格 ⭐

@@ -12,7 +12,7 @@
 ```
 docs/
 ├── migration/          # 遷移相關文件
-├── development/        # 開發相關文件  
+├── development/        # 開發相關文件
 └── architecture/       # 架構規格文件
 ```
 
