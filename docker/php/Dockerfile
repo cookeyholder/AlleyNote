@@ -22,7 +22,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # 複製 backend 目錄內容到容器
-COPY . .
+COPY backend/ .
 
 # 設定 git 安全目錄
 RUN git config --global --add safe.directory /var/www/html

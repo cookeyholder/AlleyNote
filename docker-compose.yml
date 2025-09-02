@@ -1,8 +1,8 @@
 services:
     web:
         build:
-            context: ./backend
-            dockerfile: ../docker/php/Dockerfile
+            context: .
+            dockerfile: docker/php/Dockerfile
         container_name: alleynote_web
         restart: unless-stopped
         working_dir: /var/www/html

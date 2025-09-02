@@ -86,7 +86,7 @@ services:
             sh -c "
                 # 等待 Nginx 啟動
                 sleep 30;
-                
+
                 # 檢查是否已有憑證
                 if [ ! -f /etc/letsencrypt/live/${SSL_DOMAIN}/fullchain.pem ]; then
                     echo '正在申請正式 SSL 憑證...';
@@ -99,7 +99,7 @@ services:
                 else
                     echo 'SSL 憑證已存在';
                 fi;
-                
+
                 # 設定自動續簽
                 trap exit TERM;
                 while :; do

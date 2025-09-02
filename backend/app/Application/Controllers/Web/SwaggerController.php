@@ -17,13 +17,19 @@ class SwaggerController
     public function docs(Request $request, Response $response): Response
     {
         try {
+            // 暫時捕獲所有輸出，避免警告訊息影響 JSON 格式
+            ob_start();
+
             // 掃描專案中的註解以產生 OpenAPI 規格
-            $basePath = dirname(__DIR__, 2);
+            $basePath = dirname(__DIR__, 3); // 調整到正確的 app 目錄
             $openapi = Generator::scan([
-                $basePath . '/src/Controllers',
-                $basePath . '/src/Schemas',
-                $basePath . '/src/OpenApi',
+                $basePath . '/Application/Controllers',
+                $basePath . '/Domain',
+                $basePath . '/Infrastructure',
             ]);
+
+            // 清除任何輸出的警告訊息
+            ob_end_clean();
 
             $json = $openapi->toJson();
 
@@ -36,6 +42,11 @@ class SwaggerController
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
                 ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         } catch (Exception $e) {
+            // 確保清除任何緩衝的輸出
+            if (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+
             $error = [
                 'error' => 'OpenAPI 掃描失敗',
                 'message' => $e->getMessage(),
@@ -57,6 +68,9 @@ class SwaggerController
      */
     public function ui(Request $request, Response $response): Response
     {
+        // 添加除錯資訊
+        error_log('SwaggerController::ui method called');
+
         $html = $this->generateSwaggerUiHtml();
 
         $response->getBody()->write(($html ?: ''));
@@ -77,6 +91,10 @@ class SwaggerController
             <head>
                 <title>AlleyNote API Documentation</title>
                 <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
+                <style>
+                    .swagger-ui .topbar { display: none; }
+                    .swagger-ui .info { margin: 30px 0; }
+                </style>
             </head>
             <body>
                 <div id="swagger-ui"></div>
@@ -88,10 +106,15 @@ class SwaggerController
                     SwaggerUIBundle({
                         url: '/api/docs',
                         dom_id: '#swagger-ui',
+                        deepLinking: true,
                         presets: [
                             SwaggerUIBundle.presets.apis,
                             SwaggerUIStandalonePreset
-                        ]
+                        ],
+                        plugins: [
+                            SwaggerUIBundle.plugins.DownloadUrl
+                        ],
+                        layout: "StandaloneLayout"
                     });
                 };
                 </script>

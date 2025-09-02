@@ -3,29 +3,31 @@
 [![測試](https://github.com/your-org/alleynote/workflows/測試/badge.svg)](https://github.com/your-org/alleynote/actions)
 [![程式碼品質](https://github.com/your-org/alleynote/workflows/程式碼品質/badge.svg)](https://github.com/your-org/alleynote/actions)
 [![部署](https://github.com/your-org/alleynote/workflows/部署/badge.svg)](https://github.com/your-org/alleynote/actions)
-[![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.### 🛠️ 維運工具文件
-- **[統一腳本系統使用指南](docs/DEVELOPER_GUIDE.md#統一腳本管理系統)**: 現代化腳本管理 ⭐
-- **[DEPLOYMENT.md](docs/DEPLOYMENT.md)**: 詳細部署說明
-- **[SSL_DEPLOYMENT_GUIDE.md](docs/SSL_DEPLOYMENT_GUIDE.md)**: SSL 設定指南(https://www.php.net)
+[![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.svg)](https://www.php.net)
+[![Node Version](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![測試覆蓋率](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)](docs/USER_ACTIVITY_LOGGING_TODO.md)
-[![架構版本](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/ARCHITECTURE_AUDIT.md)
+[![架構版本](https://img.shields.io/badge/Architecture-DDD+Frontend-green.svg)](docs/ARCHITECTURE_AUDIT.md)
 [![統一腳本](https://img.shields.io/badge/Scripts-Unified-blue.svg)](docs/UNIFIED_SCRIPTS_DOCUMENTATION.md)
+
+> **🔥 新版本特色：前後端分離架構！**
+> 採用 **PHP DDD 後端** + **Vite 前端** 的現代化架構，提供更好的開發體驗和使用者體驗。
 
 ---
 
 ## 目錄
 
 - [專案簡介](#專案簡介)
+- [🔥 前後端分離架構](#前後端分離架構)
 - [功能特色](#功能特色)
 - [技術架構](#技術架構)
-- [統一腳本管理系統](#統一腳本管理系統)
 - [專案結構說明](#專案結構說明)
 - [系統需求](#系統需求)
-- [安裝與快速開始](#安裝與快速開始)
-- [開發流程](#開發流程)
+- [快速開始](#快速開始)
+- [開發指南](#開發指南)
 - [測試流程](#測試流程)
 - [部署說明](#部署說明)
+- [🛠️ 維運工具](#維運工具)
 - [常見問題 FAQ](#常見問題-faq)
 - [文件資源](#文件資源)
 - [授權](#授權)
@@ -36,7 +38,33 @@
 
 AlleyNote 是一個現代化的公布欄網站系統，專為學校、社區、企業等單位設計，支援多用戶、權限控管、IP 黑白名單、附件上傳、資料自動備份等功能。
 
-本專案以 PHP 8.4.11 開發，採用 SQLite 資料庫，並以 Docker 容器化部署，具備完善的自動化測試與 CI/CD 流程。專案已成功從 MVC 架構遷移到 DDD（領域驅動設計）架構，並建立了統一腳本管理系統，大幅提升了程式碼品質和維護效率。
+本專案以 **前後端分離架構** 重新設計，後端採用 PHP 8.4.11 + DDD（領域驅動設計），前端使用現代化的 Vite + JavaScript，並以 Docker 容器化部署，具備完善的自動化測試與 CI/CD 流程。
+
+---
+
+## 🔥 前後端分離架構
+
+### 架構概覽
+```
+AlleyNote/
+├── 🎨 frontend/          # 前端應用程式
+│   ├── src/              # 源碼
+│   ├── public/           # 靜態檔案
+│   └── dist/             # 建構輸出
+├── ⚡ backend/           # 後端 API
+│   ├── app/              # DDD 架構程式碼
+│   ├── config/           # 配置檔案
+│   ├── database/         # 資料庫相關
+│   └── tests/            # 測試檔案
+└── 🐳 docker/            # 容器配置
+```
+
+### 技術堆疊
+- **前端**: Vite + JavaScript + CSS3
+- **後端**: PHP 8.4 + DDD Architecture
+- **資料庫**: SQLite3
+- **容器**: Docker + Nginx + PHP-FPM
+- **建構工具**: Vite (前端) + Composer (後端)
 
 ---
 
@@ -222,9 +250,42 @@ AlleyNote/
 
 ---
 
+## 快速開始
+
+### 🚀 3 分鐘啟動
+
+```bash
+# 1. 複製專案
+git clone https://github.com/your-org/alleynote.git
+cd alleynote
+
+# 2. 設定環境變數
+cp .env.example .env
+
+# 3. 啟動所有服務
+npm run docker:up
+
+# 4. 等待服務啟動後，開啟瀏覽器
+open http://localhost
+```
+
+### 📱 訪問應用程式
+- **前端應用**: http://localhost (透過 Nginx)
+- **開發模式**: http://localhost:3000 (Vite 開發伺服器)
+- **API 文件**: http://localhost/api-docs.html
+- **後端健康檢查**: http://localhost/health
+
+---
+
 ## 系統需求
 
-### 硬體需求
+### 💻 開發環境
+- **Node.js**: 18.0+ (前端開發)
+- **PHP**: 8.4+ (後端開發)
+- **Docker**: 24.0+ (容器化部署)
+- **Docker Compose**: 2.20+
+
+### 🖥️ 生產環境
 - CPU: 2 核心以上
 - 記憶體: 4GB 以上
 - 硬碟空間: 20GB 以上
@@ -239,55 +300,157 @@ AlleyNote/
 
 ---
 
-## 安裝與快速開始
+## 安裝與開發指南
 
-### 1. 取得專案原始碼
+### 🚀 快速開始 (推薦)
 
 ```bash
+# 1. 複製專案
 git clone https://github.com/your-org/alleynote.git
 cd alleynote
+
+# 2. 一鍵啟動開發環境
+npm run dev
+
+# 3. 等待啟動完成，開啟瀏覽器
+open http://localhost:3000  # 前端開發伺服器
+open http://localhost       # 完整服務 (透過 Nginx)
 ```
 
-### 2. 設定環境變數
+### 📋 完整安裝步驟
 
+#### 1️⃣ 環境準備
 ```bash
+# 檢查環境需求
+node --version   # 需要 18.0+
+docker --version # 需要 24.0+
+
+# 如果缺少 Node.js，安裝 Node.js
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+nvm install 18 && nvm use 18
+```
+
+#### 2️⃣ 專案初始化
+```bash
+# 複製專案
+git clone https://github.com/your-org/alleynote.git
+cd alleynote
+
+# 安裝開發工具依賴
+npm install
+
+# 設定環境變數
 cp .env.example .env
-# 編輯 .env 檔案，設定管理員帳號、資料庫、檔案上傳等
+# 編輯 .env 檔案調整設定 (可選)
 ```
 
-### 3. 啟動服務
-
+#### 3️⃣ 前端設定
 ```bash
-# 開發環境
-docker compose up -d
-
-# 生產環境
-docker compose -f docker-compose.production.yml up -d
+# 安裝前端依賴
+npm run frontend:install
+# 相當於: cd frontend && npm install && cd ..
 ```
 
-### 4. 安裝相依套件
-
+#### 4️⃣ 後端設定
 ```bash
-docker compose exec web composer install
+# 啟動後端容器並安裝 PHP 依賴
+npm run backend:install
+# 相當於: docker compose up -d && docker compose exec web composer install
 ```
 
-### 5. 初始化系統
+#### 5️⃣ 資料庫初始化
+```bash
+# 初始化 SQLite 資料庫
+npm run db:init
+
+# 載入範例資料 (可選)
+npm run db:seed
+```
+
+#### 6️⃣ 啟動開發服務
+```bash
+# 方式 1: 同時啟動前後端開發伺服器
+npm run dev
+
+# 方式 2: 分別啟動
+npm run backend:up     # 啟動後端 + 資料庫
+npm run frontend:dev   # 啟動前端開發伺服器
+```
+
+### 🔧 開發工作流程
+
+#### 📝 前端開發
+```bash
+cd frontend
+
+# 啟動開發伺服器 (熱重載)
+npm run dev
+
+# 建構生產版本
+npm run build
+
+# 本地預覽生產版本
+npm run preview
+```
+
+#### ⚙️ 後端開發
+```bash
+# 進入後端容器
+docker compose exec web bash
+
+# 執行測試
+composer test
+
+# 程式碼品質檢查
+composer ci
+
+# 查看後端日誌
+docker compose logs -f web
+```
+
+### 🧪 測試與品質檢查
 
 ```bash
-# 初始化資料庫
-./scripts/init-sqlite.sh
-
-# 使用統一腳本系統檢查專案狀態
-docker compose exec web php scripts/unified-scripts.php status
-
 # 執行完整測試套件
-docker compose exec web php scripts/unified-scripts.php test --action=run
+npm run test
+
+# 分別執行前後端測試
+npm run frontend:test  # 前端測試
+npm run backend:test   # 後端測試
+
+# 程式碼品質檢查
+npm run lint          # 前後端 lint
+npm run backend:cs    # PHP 程式碼風格檢查
 ```
 
-### 6. 訪問系統
+### 📱 服務網址
 
-- 網站首頁: http://localhost:8080
-- 管理後台: http://localhost:8080/admin
+| 服務 | 開發環境 | 生產環境 |
+|------|---------|----------|
+| 🌐 前端應用 | http://localhost:3000 | http://localhost |
+| 🔌 API 服務 | http://localhost/api | http://localhost/api |
+| 📚 API 文件 | http://localhost/api-docs.html | http://localhost/api-docs.html |
+| ❤️ 健康檢查 | http://localhost/health | http://localhost/health |
+| 📊 監控儀表板 | http://localhost:8081 | - |
+
+### 🛠️ 常用指令
+
+```bash
+# 🔄 重新啟動服務
+npm run restart
+
+# 🧹 清理快取和建構檔案
+npm run clean
+
+# 📦 建構生產版本
+npm run build
+
+# 🚀 部署到生產環境
+npm run deploy
+
+# 🔍 查看所有可用指令
+npm run help
+```
 
 ---
 

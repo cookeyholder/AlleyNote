@@ -46,17 +46,9 @@ return function (RouterInterface $router): void {
             ->withHeader('Location', '/api/docs/ui');
     })->setName('docs.redirect');
 
-    $router->get('/api/docs', function ($request, $response) {
-        // TODO: 實作 Swagger 文檔生成
-        $response->getBody()->write((json_encode(['message' => 'API Documentation']) ?: '{"error": "JSON encoding failed"}'));
-        return $response->withHeader('Content-Type', 'application/json');
-    })->setName('api.docs');
+    $router->get('/api/docs', [\App\Application\Controllers\Web\SwaggerController::class, 'docs'])->setName('api.docs');
 
-    $router->get('/api/docs/ui', function ($request, $response) {
-        // TODO: 實作 Swagger UI
-        $response->getBody()->write('<h1>Swagger UI');
-        return $response->withHeader('Content-Type', 'text/html');
-    })->setName('api.docs.ui');
+    $router->get('/api/docs/ui', [\App\Application\Controllers\Web\SwaggerController::class, 'ui'])->setName('api.docs.ui');
 
     // =========================================
     // JWT 認證相關路由 (公開)

@@ -219,7 +219,7 @@ class MonitoringServiceProvider
         // 檢查系統健康狀態
         $healthStatus = $systemMonitor->getHealthCheck();
 
-        if ($healthStatus['status'] !== 'healthy') {
+        if (($healthStatus['overall_status'] ?? 'unhealthy') !== 'healthy') {
             /** @var ErrorTrackerInterface $errorTracker */
             $errorTracker = $container->get(ErrorTrackerInterface::class);
 

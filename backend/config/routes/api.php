@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * API 路由配置
- * 
+ *
  * 這個檔案包含所有 API 相關的路由定義
  */
 
@@ -65,32 +65,23 @@ return [
     'api.info' => [
         'methods' => ['GET'],
         'path' => '/api',
-        'handler' => function () {
-            return [
-                'name' => 'AlleyNote API',
-                'version' => '1.0.0',
-                'description' => '公布欄系統 API',
-                'endpoints' => [
-                    'health' => '/api/health',
-                    'posts' => '/api/posts',
-                    'docs' => '/api/docs'
-                ]
-            ];
-        },
+        'handler' => [\App\Application\Controllers\Web\SwaggerController::class, 'info'],
         'name' => 'api.info'
     ],
 
+    // Swagger UI 介面
+    'api.docs.ui' => [
+        'methods' => ['GET'],
+        'path' => '/api/docs/ui',
+        'handler' => [\App\Application\Controllers\Web\SwaggerController::class, 'ui'],
+        'name' => 'api.docs.ui'
+    ],
+
+    // OpenAPI JSON 規格
     'api.docs' => [
         'methods' => ['GET'],
         'path' => '/api/docs',
-        'handler' => function () {
-            // 重定向到 Swagger 文件
-            return [
-                'message' => 'API 文件',
-                'swagger_ui' => '/swagger-ui',
-                'openapi_spec' => '/api-docs.json'
-            ];
-        },
+        'handler' => [\App\Application\Controllers\Web\SwaggerController::class, 'docs'],
         'name' => 'api.docs'
     ]
 ];

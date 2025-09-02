@@ -6,12 +6,12 @@ export class ApiClient {
     /**
      * @param {string} baseURL - API 基礎 URL
      */
-    constructor(baseURL = '/api') {
-        this.baseURL = baseURL
+    constructor(baseURL = "/api") {
+        this.baseURL = baseURL;
         this.defaultHeaders = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
+            "Content-Type": "application/json",
+            Accept: "application/json",
+        };
     }
 
     /**
@@ -21,27 +21,29 @@ export class ApiClient {
      * @returns {Promise<Object>} API 回應
      */
     async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`
-        
+        const url = `${this.baseURL}${endpoint}`;
+
         const config = {
             headers: {
                 ...this.defaultHeaders,
-                ...options.headers
+                ...options.headers,
             },
-            ...options
-        }
+            ...options,
+        };
 
         try {
-            const response = await fetch(url, config)
-            
+            const response = await fetch(url, config);
+
             if (!response.ok) {
-                throw new Error(`API 錯誤: ${response.status} ${response.statusText}`)
+                throw new Error(
+                    `API 錯誤: ${response.status} ${response.statusText}`
+                );
             }
-            
-            return await response.json()
+
+            return await response.json();
         } catch (error) {
-            console.error('API 請求失敗:', error)
-            throw error
+            console.error("API 請求失敗:", error);
+            throw error;
         }
     }
 
@@ -49,14 +51,14 @@ export class ApiClient {
      * GET 請求
      */
     async get(endpoint, params = {}) {
-        const url = new URL(endpoint, this.baseURL)
-        Object.keys(params).forEach(key => 
+        const url = new URL(endpoint, this.baseURL);
+        Object.keys(params).forEach((key) =>
             url.searchParams.append(key, params[key])
-        )
-        
+        );
+
         return this.request(url.pathname + url.search, {
-            method: 'GET'
-        })
+            method: "GET",
+        });
     }
 
     /**
@@ -64,9 +66,9 @@ export class ApiClient {
      */
     async post(endpoint, data = {}) {
         return this.request(endpoint, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        })
+            method: "POST",
+            body: JSON.stringify(data),
+        });
     }
 
     /**
@@ -74,9 +76,9 @@ export class ApiClient {
      */
     async put(endpoint, data = {}) {
         return this.request(endpoint, {
-            method: 'PUT',
-            body: JSON.stringify(data)
-        })
+            method: "PUT",
+            body: JSON.stringify(data),
+        });
     }
 
     /**
@@ -84,21 +86,21 @@ export class ApiClient {
      */
     async delete(endpoint) {
         return this.request(endpoint, {
-            method: 'DELETE'
-        })
+            method: "DELETE",
+        });
     }
 
     /**
      * 設定認證 Token
      */
     setAuthToken(token) {
-        this.defaultHeaders['Authorization'] = `Bearer ${token}`
+        this.defaultHeaders["Authorization"] = `Bearer ${token}`;
     }
 
     /**
      * 移除認證 Token
      */
     removeAuthToken() {
-        delete this.defaultHeaders['Authorization']
+        delete this.defaultHeaders["Authorization"];
     }
 }

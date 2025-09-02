@@ -16,5 +16,6 @@ parameters:
         - vendor
         - tests/Factory
         - tests/manual
-        - coverage-reports
+        - coverage-reports (?)
+        - ../coverage-reports (?)
     tmpDir: storage/phpstan
