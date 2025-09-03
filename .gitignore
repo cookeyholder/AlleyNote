@@ -48,6 +48,9 @@ coverage/
 /backend/storage/coverage/
 /backend/coverage-reports/
 
+# Playwright MCP
+.playwright-mcp/
+
 # IDE 設定
 .idea/
 .vscode/settings.json.user

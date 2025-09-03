@@ -1,16 +1,18 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-    // 根目錄設定
-    root: "./public",
-
     // 建構配置
     build: {
-        outDir: "../dist",
+        outDir: "./dist",
         emptyOutDir: true,
         rollupOptions: {
             input: {
                 main: "./public/index.html",
+            },
+            output: {
+                entryFileNames: "assets/[name]-[hash].js",
+                chunkFileNames: "assets/[name]-[hash].js",
+                assetFileNames: "assets/[name]-[hash].[ext]",
             },
         },
     },
