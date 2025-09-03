@@ -558,7 +558,7 @@ open http://localhost
 ### 📱 訪問應用程式
 - **前端應用**: http://localhost (透過 Nginx)
 - **開發模式**: http://localhost:3000 (Vite 開發伺服器)
-- **API 文件**: http://localhost/api-docs.html
+- **API 文件**: http://localhost/api/docs/ui
 - **後端健康檢查**: http://localhost/health
 
 ---
@@ -715,7 +715,7 @@ npm run backend:cs    # PHP 程式碼風格檢查
 |------|---------|----------|
 | 🌐 前端應用 | http://localhost:3000 | http://localhost |
 | 🔌 API 服務 | http://localhost/api | http://localhost/api |
-| 📚 API 文件 | http://localhost/api-docs.html | http://localhost/api-docs.html |
+| 📚 API 文件 | http://localhost/api/docs/ui | http://localhost/api/docs/ui |
 | ❤️ 健康檢查 | http://localhost/health | http://localhost/health |
 | 📊 監控儀表板 | http://localhost:8081 | - |
 

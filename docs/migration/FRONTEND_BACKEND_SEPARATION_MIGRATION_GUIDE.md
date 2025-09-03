@@ -70,7 +70,7 @@ open http://localhost       # 完整服務
 |------|-----|------|
 | 🌐 前端應用 | http://localhost:3000 | Vite 開發伺服器 |
 | 🔌 API 服務 | http://localhost/api | RESTful API |
-| 📚 API 文件 | http://localhost/api-docs.html | Swagger 文件 |
+| 📚 API 文件 | http://localhost/api/docs/ui| Swagger 文件 |
 | ❤️ 健康檢查 | http://localhost/health | 系統狀態 |
 
 ## 🔧 開發工作流程

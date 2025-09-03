@@ -239,14 +239,14 @@
 - ✅ 前端開發: http://localhost:3000 (Vite 開發伺服器)
 - ✅ API 服務: http://localhost/api (RESTful API)
 - ✅ 健康檢查: http://localhost/health (系統狀態)
-- ✅ API 文件: http://localhost/api-docs.html (Swagger UI)
+- ✅ API 文件: http://localhost/api/docs/ui (Swagger UI)
 
 ---
 
 > 🎊 **恭喜！AlleyNote 前後端分離遷移已成功完成！** 🎊
 >
 > 新架構具備更好的可維護性、開發體驗和部署靈活性。
-4. **逐步提交**：建議將大的變更分成多個 commit
+1. **逐步提交**：建議將大的變更分成多個 commit
 5. **Docker 快取**：搬移檔案後可能需要重新建構 Docker 映像
 
 ---
