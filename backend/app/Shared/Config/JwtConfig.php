@@ -16,9 +16,11 @@ final class JwtConfig
 {
     private string $algorithm;
 
-    private string $privateKey;
+    private ?string $privateKey = null;
 
-    private string $publicKey;
+    private ?string $publicKey = null;
+
+    private ?string $secret = null;
 
     private string $issuer;
 
@@ -40,12 +42,50 @@ final class JwtConfig
     private function loadFromEnvironment(): void
     {
         $this->algorithm = $_ENV['JWT_ALGORITHM'] ?? 'RS256';
-        $this->privateKey = $this->loadPrivateKey();
-        $this->publicKey = $this->loadPublicKey();
+        
+        // 先驗證算法是否支援
+        if (!in_array($this->algorithm, ['RS256', 'RS384', 'RS512'])) {
+            throw new InvalidArgumentException("不支援的演算法: {$this->algorithm}");
+        }
+        
+        // 根據算法載入不同的金鑰
+        if ($this->isSymmetricAlgorithm($this->algorithm)) {
+            $this->secret = $this->loadSecret();
+        } else {
+            $this->privateKey = $this->loadPrivateKey();
+            $this->publicKey = $this->loadPublicKey();
+        }
+        
         $this->issuer = $_ENV['JWT_ISSUER'] ?? 'alleynote-api';
         $this->audience = $_ENV['JWT_AUDIENCE'] ?? 'alleynote-client';
         $this->accessTokenTtl = (int) ($_ENV['JWT_ACCESS_TOKEN_TTL'] ?? 3600);
         $this->refreshTokenTtl = (int) ($_ENV['JWT_REFRESH_TOKEN_TTL'] ?? 2592000);
+    }
+
+    /**
+     * 檢查是否為對稱算法.
+     */
+    private function isSymmetricAlgorithm(string $algorithm): bool
+    {
+        return in_array($algorithm, ['HS256', 'HS384', 'HS512'], true);
+    }
+
+    /**
+     * 載入對稱金鑰（用於 HS256 等算法）.
+     */
+    private function loadSecret(): string
+    {
+        $secret = $_ENV['JWT_SECRET'] ?? '';
+
+        if (empty($secret)) {
+            throw new InvalidArgumentException('JWT_SECRET 環境變數未設定');
+        }
+
+        if (strlen($secret) < 32) {
+            throw new InvalidArgumentException('JWT_SECRET 長度至少需要 32 個字元');
+        }
+
+        return $secret;
     }
 
     /**
@@ -97,10 +137,6 @@ final class JwtConfig
      */
     private function validateConfiguration(): void
     {
-        if (!in_array($this->algorithm, ['RS256', 'RS384', 'RS512'])) {
-            throw new InvalidArgumentException("不支援的演算法: {$this->algorithm}");
-        }
-
         if (empty($this->issuer)) {
             throw new InvalidArgumentException('JWT_ISSUER 不能為空');
         }
@@ -121,8 +157,10 @@ final class JwtConfig
             throw new InvalidArgumentException('Refresh token 有效期必須大於 access token 有效期');
         }
 
-        // 驗證金鑰對是否匹配（簡單測試）
-        $this->validateKeyPair();
+        // 驗證金鑰對是否匹配（僅非對稱算法需要）
+        if (!$this->isSymmetricAlgorithm($this->algorithm)) {
+            $this->validateKeyPair();
+        }
     }
 
     /**

@@ -6,10 +6,17 @@ namespace App\Domains\Auth\Providers;
 
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Application\Middleware\JwtAuthorizationMiddleware;
+use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\Contracts\UserRepositoryInterface;
+use App\Domains\Auth\Repositories\UserRepository;
+use App\Domains\Auth\Repositories\UserRepositoryAdapter;
+use App\Domains\Auth\Services\AuthenticationService;
 use App\Domains\Auth\Services\JwtTokenService;
+use App\Domains\Auth\Services\PasswordSecurityService;
 use App\Domains\Auth\Services\TokenBlacklistService;
 use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use App\Infrastructure\Auth\Repositories\RefreshTokenRepository;
@@ -38,6 +45,13 @@ class SimpleAuthServiceProvider
             // Repository (明確建立並注入依賴)
             RefreshTokenRepositoryInterface::class => \DI\factory([self::class, 'createRefreshTokenRepository']),
             TokenBlacklistRepositoryInterface::class => \DI\factory([self::class, 'createTokenBlacklistRepository']),
+            UserRepositoryInterface::class => \DI\factory([self::class, 'createUserRepository']),
+
+            // Password Security Service
+            PasswordSecurityServiceInterface::class => \DI\autowire(PasswordSecurityService::class),
+
+            // Authentication Service
+            AuthenticationServiceInterface::class => \DI\factory([self::class, 'createAuthenticationService']),
 
             // Token Service (簡化版本)
             JwtTokenServiceInterface::class => \DI\factory([self::class, 'createJwtTokenService']),
@@ -114,6 +128,30 @@ class SimpleAuthServiceProvider
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
 
         return new TokenBlacklistService($blacklistRepository);
+    }
+
+    /**
+     * 建立 User Repository 實例.
+     */
+    public static function createUserRepository(ContainerInterface $container): UserRepositoryAdapter
+    {
+        $pdo = $container->get(PDO::class);
+        $passwordService = $container->get(PasswordSecurityServiceInterface::class);
+
+        $userRepository = new UserRepository($pdo, $passwordService);
+        return new UserRepositoryAdapter($userRepository);
+    }
+
+    /**
+     * 建立 Authentication Service 實例.
+     */
+    public static function createAuthenticationService(ContainerInterface $container): AuthenticationService
+    {
+        $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
+        $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        $userRepository = $container->get(UserRepositoryInterface::class);
+
+        return new AuthenticationService($jwtTokenService, $refreshTokenRepository, $userRepository);
     }
 
     /**
