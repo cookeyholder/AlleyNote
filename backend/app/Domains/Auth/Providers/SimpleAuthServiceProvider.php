@@ -135,10 +135,13 @@ class SimpleAuthServiceProvider
      */
     public static function createUserRepository(ContainerInterface $container): UserRepositoryAdapter
     {
+        /** @var PDO $pdo */
         $pdo = $container->get(PDO::class);
+        /** @var PasswordSecurityServiceInterface $passwordService */
         $passwordService = $container->get(PasswordSecurityServiceInterface::class);
 
         $userRepository = new UserRepository($pdo, $passwordService);
+
         return new UserRepositoryAdapter($userRepository);
     }
 
@@ -147,8 +150,11 @@ class SimpleAuthServiceProvider
      */
     public static function createAuthenticationService(ContainerInterface $container): AuthenticationService
     {
+        /** @var JwtTokenServiceInterface $jwtTokenService */
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
+        /** @var RefreshTokenRepositoryInterface $refreshTokenRepository */
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $container->get(UserRepositoryInterface::class);
 
         return new AuthenticationService($jwtTokenService, $refreshTokenRepository, $userRepository);

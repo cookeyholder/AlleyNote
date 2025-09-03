@@ -42,12 +42,12 @@ final class JwtConfig
     private function loadFromEnvironment(): void
     {
         $this->algorithm = $_ENV['JWT_ALGORITHM'] ?? 'RS256';
-        
+
         // 先驗證算法是否支援
         if (!in_array($this->algorithm, ['RS256', 'RS384', 'RS512'])) {
             throw new InvalidArgumentException("不支援的演算法: {$this->algorithm}");
         }
-        
+
         // 根據算法載入不同的金鑰
         if ($this->isSymmetricAlgorithm($this->algorithm)) {
             $this->secret = $this->loadSecret();
@@ -55,7 +55,7 @@ final class JwtConfig
             $this->privateKey = $this->loadPrivateKey();
             $this->publicKey = $this->loadPublicKey();
         }
-        
+
         $this->issuer = $_ENV['JWT_ISSUER'] ?? 'alleynote-api';
         $this->audience = $_ENV['JWT_AUDIENCE'] ?? 'alleynote-client';
         $this->accessTokenTtl = (int) ($_ENV['JWT_ACCESS_TOKEN_TTL'] ?? 3600);
@@ -79,6 +79,10 @@ final class JwtConfig
 
         if (empty($secret)) {
             throw new InvalidArgumentException('JWT_SECRET 環境變數未設定');
+        }
+
+        if (!is_string($secret)) {
+            throw new InvalidArgumentException('JWT_SECRET 必須是字串');
         }
 
         if (strlen($secret) < 32) {
@@ -170,8 +174,8 @@ final class JwtConfig
     {
         try {
             // 使用 openssl 函數驗證金鑰對
-            $privateKeyResource = openssl_pkey_get_private($this->privateKey);
-            $publicKeyResource = openssl_pkey_get_public($this->publicKey);
+            $privateKeyResource = openssl_pkey_get_private($this->privateKey ?? '');
+            $publicKeyResource = openssl_pkey_get_public($this->publicKey ?? '');
 
             if (!$privateKeyResource) {
                 throw new InvalidArgumentException('私鑰無效或格式錯誤');
@@ -206,12 +210,17 @@ final class JwtConfig
 
     public function getPrivateKey(): string
     {
-        return $this->privateKey;
+        return $this->privateKey ?? '';
     }
 
     public function getPublicKey(): string
     {
-        return $this->publicKey;
+        return $this->publicKey ?? '';
+    }
+
+    public function getSecret(): ?string
+    {
+        return $this->secret;
     }
 
     public function getIssuer(): string

@@ -7,7 +7,7 @@ namespace App\Domains\Auth\Repositories;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 
 /**
- * UserRepository 適配器
+ * UserRepository 適配器.
  *
  * 將現有的 UserRepository 適配到 UserRepositoryInterface
  * 這是一個暫時的解決方案，直到 UserRepository 完全實作介面
@@ -49,7 +49,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
                 'updated_at' => '2024-01-01 00:00:00',
             ];
         }
-        
+
         return null;
     }
 
@@ -64,9 +64,16 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return $this->userRepository->findById($id);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
     public function create(array $data): array
     {
-        return $this->userRepository->create($data);
+        /** @var array<string, mixed> $result */
+        $result = $this->userRepository->create($data);
+
+        return $result;
     }
 
     public function update(int $id, array $data): bool
@@ -111,7 +118,11 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return [];
     }
 
-    public function search(string $keyword, array $fields = ['username', 'email'], int $limit = 10): array
+    /**
+     * @param array<string, mixed> $fields
+     * @return array<string, mixed>
+     */
+    public function search(string $keyword, array $fields = [], int $limit = 10): array
     {
         return [];
     }
