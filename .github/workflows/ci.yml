@@ -33,15 +33,17 @@ jobs:
             - name: Cache Composer packages
               uses: actions/cache@v4
               with:
-                  path: vendor
-                  key: ${{ runner.os }}-php-${{ matrix.php-versions }}-${{ hashFiles('**/composer.lock') }}
+                  path: backend/vendor
+                  key: ${{ runner.os }}-php-${{ matrix.php-versions }}-${{ hashFiles('backend/composer.lock') }}
                   restore-keys: |
                       ${{ runner.os }}-php-${{ matrix.php-versions }}-
 
             - name: Install dependencies
+              working-directory: backend
               run: composer install --prefer-dist --no-progress --no-interaction
 
             - name: Run Composer Security Audit
+              working-directory: backend
               run: |
                   echo "🔍 執行相依套件安全掃描..."
                   composer audit --format=json > security-audit.json || {
@@ -56,6 +58,7 @@ jobs:
                   echo "✅ 相依套件安全掃描通過"
 
             - name: Run code style check
+              working-directory: backend
               run: |
                   if [ -f "vendor/bin/php-cs-fixer" ]; then
                     echo "🎨 執行程式碼風格檢查..."
@@ -65,6 +68,7 @@ jobs:
                   fi
 
             - name: Run static analysis
+              working-directory: backend
               run: |
                   if [ -f "vendor/bin/phpstan" ]; then
                     echo "🔬 執行靜態分析..."
@@ -74,6 +78,7 @@ jobs:
                   fi
 
             - name: Run tests
+              working-directory: backend
               run: |
                   if [ -f "vendor/bin/phpunit" ]; then
                     echo "🧪 執行單元測試..."
