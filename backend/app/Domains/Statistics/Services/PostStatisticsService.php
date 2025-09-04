@@ -12,17 +12,17 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 
 /**
  * 文章統計核心領域服務
- * 
+ *
  * 專門處理文章相關統計的業務邏輯，包含文章觀看、互動、
  * 內容分析等複雜統計計算。封裝文章統計的領域知識。
- * 
+ *
  * 主要功能：
  * - 文章觀看統計計算
  * - 內容互動分析
  * - 熱門文章排行
  * - 文章效能指標
  * - 讀者行為分析
- * 
+ *
  * 設計原則：
  * - 純領域邏輯，不依賴外部資源
  * - 業務規則集中管理
@@ -52,7 +52,7 @@ class PostStatisticsService
         $totalPosts = $this->postStatisticsRepository->countPostsByPeriod($period);
         $totalViews = $this->postStatisticsRepository->countViewsByPeriod($period);
         $uniqueViewers = $this->postStatisticsRepository->countUniqueViewersByPeriod($period);
-        
+
         $averageViewsPerPost = $totalPosts > 0 ? $totalViews / $totalPosts : 0.0;
         $engagementRate = $this->calculateEngagementRate($period);
 
@@ -129,7 +129,7 @@ class PostStatisticsService
     public function getPopularPostsRanking(StatisticsPeriod $period, int $limit = 10): array
     {
         $popularPosts = $this->postStatisticsRepository->getPopularPosts($period, $limit);
-        
+
         if (empty($popularPosts)) {
             return [];
         }
@@ -313,7 +313,7 @@ class PostStatisticsService
     {
         $viewCount = $post['view_count'];
         $uniqueViewers = $post['unique_viewers'];
-        
+
         return $viewCount > 0 ? round(($uniqueViewers / $viewCount) * 100, 2) : 0.0;
     }
 
@@ -343,7 +343,7 @@ class PostStatisticsService
     private function analyzeContentLength(StatisticsPeriod $period): array
     {
         $lengthStats = $this->postStatisticsRepository->getContentLengthStats($period);
-        
+
         return array_map(function ($stat) {
             return [
                 'length_range' => $stat['length_range'],
@@ -361,7 +361,7 @@ class PostStatisticsService
     private function analyzeReadCompletion(StatisticsPeriod $period): array
     {
         $completionStats = $this->postStatisticsRepository->getReadCompletionStats($period, 20);
-        
+
         return array_map(function ($stat) {
             return [
                 'post_id' => $stat['post_id'],
@@ -380,7 +380,7 @@ class PostStatisticsService
     {
         $timeTrends = $this->postStatisticsRepository->getViewingTimeTrends($period);
         $socialSharing = $this->postStatisticsRepository->getSocialSharingStats($period, 10);
-        
+
         return [
             'peak_hours' => $this->identifyPeakEngagementHours($timeTrends),
             'social_sharing_leaders' => $socialSharing,
@@ -394,13 +394,13 @@ class PostStatisticsService
     private function analyzePublishingTrend(StatisticsPeriod $period): array
     {
         $publishingStats = $this->postStatisticsRepository->getPostPublishingStats($period);
-        
+
         return array_map(function ($stat) {
             return [
                 'date' => $stat['date'],
                 'post_count' => $stat['post_count'],
                 'total_views' => $stat['total_views'],
-                'average_views_per_post' => $stat['post_count'] > 0 ? 
+                'average_views_per_post' => $stat['post_count'] > 0 ?
                     round($stat['total_views'] / $stat['post_count'], 2) : 0,
             ];
         }, $publishingStats);
@@ -421,7 +421,7 @@ class PostStatisticsService
     {
         $engagementStats = $this->postStatisticsRepository->getEngagementStats($period);
         $returningReaderStats = $this->postStatisticsRepository->getReturningReaderStats($period);
-        
+
         return [
             'overall_engagement_rate' => $engagementStats['engagement_rate'],
             'return_rate' => $returningReaderStats['return_rate'],
@@ -440,7 +440,7 @@ class PostStatisticsService
     {
         $bounceRate = $this->postStatisticsRepository->getBounceRateStats($period);
         $loadPerformance = $this->postStatisticsRepository->getLoadPerformanceStats($period);
-        
+
         return [
             'bounce_rate' => $bounceRate['bounce_rate'],
             'average_load_time' => $loadPerformance['avg_load_time'],
@@ -471,7 +471,7 @@ class PostStatisticsService
     {
         $readCompletionStats = $this->postStatisticsRepository->getReadCompletionStats($period, 50);
         $bounceRateStats = $this->postStatisticsRepository->getBounceRateStats($period);
-        
+
         return [
             'completion_patterns' => $readCompletionStats,
             'session_behavior' => $bounceRateStats,
@@ -500,7 +500,7 @@ class PostStatisticsService
     private function analyzeKeywordEffectiveness(StatisticsPeriod $period): array
     {
         $keywordStats = $this->postStatisticsRepository->getSearchKeywordStats($period, 50);
-        
+
         return array_map(function ($stat) {
             return [
                 'keyword' => $stat['keyword'],
@@ -518,10 +518,10 @@ class PostStatisticsService
     private function analyzeClickThroughRates(StatisticsPeriod $period): array
     {
         $keywordStats = $this->postStatisticsRepository->getSearchKeywordStats($period, 100);
-        
+
         $totalSearches = array_sum(array_column($keywordStats, 'search_count'));
         $totalClicks = array_sum(array_column($keywordStats, 'result_clicks'));
-        
+
         return [
             'overall_ctr' => $totalSearches > 0 ? round(($totalClicks / $totalSearches) * 100, 2) : 0,
             'keyword_performance' => $keywordStats,
@@ -534,7 +534,7 @@ class PostStatisticsService
     private function analyzeOrganicTraffic(StatisticsPeriod $period): array
     {
         $sourceStats = $this->postStatisticsRepository->getViewStatisticsBySource($period, SourceType::SEARCH_ENGINE);
-        
+
         return [
             'organic_views' => $sourceStats[0]['view_count'] ?? 0,
             'organic_percentage' => $sourceStats[0]['percentage'] ?? 0,
@@ -543,22 +543,22 @@ class PostStatisticsService
     }
 
     // 私有輔助方法用於評分和評級...
-    
+
     private function calculateContentQualityScore(array $engagementStats, array $readCompletionStats): float
     {
         $engagementScore = min($engagementStats['engagement_rate'] * 10, 50);
-        $completionScore = !empty($readCompletionStats) ? 
+        $completionScore = !empty($readCompletionStats) ?
             array_sum(array_column($readCompletionStats, 'completion_rate')) / count($readCompletionStats) : 0;
-        
+
         return ($engagementScore + $completionScore) / 2;
     }
 
     private function calculateUserSatisfactionScore(array $bounceRateStats, array $readCompletionStats): float
     {
         $bounceScore = (100 - $bounceRateStats['bounce_rate']) * 0.6;
-        $completionScore = !empty($readCompletionStats) ? 
+        $completionScore = !empty($readCompletionStats) ?
             array_sum(array_column($readCompletionStats, 'avg_read_percentage')) / count($readCompletionStats) * 0.4 : 0;
-        
+
         return $bounceScore + $completionScore;
     }
 
@@ -582,15 +582,15 @@ class PostStatisticsService
     private function generateQualityRecommendations(float $score, array $engagementStats): array
     {
         $recommendations = [];
-        
+
         if ($score < 60) {
             $recommendations[] = '建議改善內容品質以提高讀者參與度';
         }
-        
+
         if ($engagementStats['engagement_rate'] < 0.3) {
             $recommendations[] = '考慮優化文章標題和摘要以提高點擊率';
         }
-        
+
         return $recommendations;
     }
 
@@ -610,7 +610,7 @@ class PostStatisticsService
         $bounceScore = 100 - $bounceRate['bounce_rate'];
         $loadScore = max(0, 100 - ($loadPerformance['avg_load_time'] * 10));
         $overallScore = ($bounceScore + $loadScore) / 2;
-        
+
         return $overallScore > 70 ? 'good' : ($overallScore > 50 ? 'average' : 'needs_improvement');
     }
 
@@ -624,16 +624,16 @@ class PostStatisticsService
         if (empty($timeTrends)) {
             return [];
         }
-        
+
         usort($timeTrends, fn ($a, $b) => $b['view_count'] <=> $a['view_count']);
-        
+
         return array_slice($timeTrends, 0, 3);
     }
 
     private function analyzeEngagementDistribution(array $timeTrends): array
     {
         $totalViews = array_sum(array_column($timeTrends, 'view_count'));
-        
+
         return array_map(function ($trend) use ($totalViews) {
             return [
                 'hour' => $trend['hour'],

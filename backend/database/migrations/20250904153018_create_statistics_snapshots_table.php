@@ -6,10 +6,10 @@ use Phinx\Migration\AbstractMigration;
 
 /**
  * 建立統計快照表
- * 
+ *
  * 這個 migration 建立 statistics_snapshots 表來儲存統計資料快照，
  * 支援統計功能的核心資料結構。
- * 
+ *
  * 表結構設計：
  * - id: 主鍵
  * - uuid: 唯一識別符
@@ -22,7 +22,7 @@ use Phinx\Migration\AbstractMigration;
  * - total_unique_viewers: 總不重複觀看者數 (冗餘欄位)
  * - created_at: 建立時間
  * - updated_at: 更新時間
- * 
+ *
  * @author GitHub Copilot
  * @version 1.0.0
  * @since 2025-09-04
@@ -39,7 +39,7 @@ final class CreateStatisticsSnapshotsTable extends AbstractMigration
             'id' => false,
             'primary_key' => 'id'
         ]);
-        
+
         $table->addColumn('id', 'integer', [
                 'identity' => true,
                 'comment' => '主鍵 ID'
@@ -90,7 +90,7 @@ final class CreateStatisticsSnapshotsTable extends AbstractMigration
                 'comment' => '快照更新時間'
             ])
             ->create();
-            
+
         // 新增唯一索引
         $table->addIndex(['uuid'], [
                 'unique' => true,
@@ -128,7 +128,7 @@ final class CreateStatisticsSnapshotsTable extends AbstractMigration
                 'name' => 'idx_statistics_snapshots_total_views'
             ])
             ->save();
-            
+
         $this->output->writeln('<info>Successfully created statistics_snapshots table with indexes.</info>');
     }
 

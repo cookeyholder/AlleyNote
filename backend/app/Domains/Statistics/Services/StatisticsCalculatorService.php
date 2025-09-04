@@ -22,17 +22,17 @@ use DateTimeInterface;
 
 /**
  * 統計計算核心領域服務
- * 
+ *
  * 負責統計資料的計算、聚合與快照生成的核心業務邏輯。
  * 封裝複雜的統計計算演算法，確保統計資料的一致性與準確性。
- * 
+ *
  * 主要功能：
  * - 統計快照的計算與產生
  * - 多週期統計資料聚合
  * - 成長率與趨勢分析
  * - 來源分布統計計算
  * - 快照比較與差異分析
- * 
+ *
  * 設計原則：
  * - 純領域邏輯，不依賴基礎設施層
  * - 高內聚、低耦合的設計
@@ -138,7 +138,7 @@ class StatisticsCalculatorService
 
             $count = 0;
             $uniqueViewers = 0;
-            
+
             if (!empty($sourceViewStats)) {
                 $stats = $sourceViewStats[0];
                 $count = $stats['view_count'];
@@ -292,7 +292,7 @@ class StatisticsCalculatorService
         }
 
         // 按時間排序
-        usort($snapshots, fn ($a, $b) => 
+        usort($snapshots, fn ($a, $b) =>
             $a->getPeriod()->startDate <=> $b->getPeriod()->startDate
         );
 
@@ -337,13 +337,13 @@ class StatisticsCalculatorService
 
         while ($currentDate <= $endDateTime) {
             $periodEnd = $this->calculatePeriodEnd($currentDate, $periodType);
-            
+
             if ($periodEnd > $endDateTime) {
                 break;
             }
 
             $period = StatisticsPeriod::create($currentDate, $periodEnd, $periodType);
-            
+
             // 如果該週期已有快照則跳過
             if (!$this->statisticsRepository->existsForPeriod($period)) {
                 $snapshot = $this->generateSnapshot($period);
@@ -374,7 +374,7 @@ class StatisticsCalculatorService
 
             foreach ($snapshot->getSourceStats() as $sourceStat) {
                 $sourceType = $sourceStat->sourceType->value;
-                
+
                 if (!isset($sourceAggregates[$sourceType])) {
                     $sourceAggregates[$sourceType] = [
                         'count' => 0,
@@ -383,9 +383,9 @@ class StatisticsCalculatorService
                 }
 
                 $sourceAggregates[$sourceType]['count'] += $sourceStat->getCountValue();
-                
+
                 if ($sourceStat->hasAdditionalMetric('unique_viewers')) {
-                    $sourceAggregates[$sourceType]['unique_viewers'] += 
+                    $sourceAggregates[$sourceType]['unique_viewers'] +=
                         (int) $sourceStat->getAdditionalMetric('unique_viewers')->value;
                 }
             }
@@ -397,7 +397,7 @@ class StatisticsCalculatorService
             $sourceType = SourceType::fromValue($sourceTypeValue);
             if ($sourceType) {
                 $percentage = $totalCount > 0 ? ($data['count'] / $totalCount) * 100 : 0.0;
-                
+
                 $additionalMetrics = [
                     'unique_viewers' => StatisticsMetric::count(
                         $data['unique_viewers'],
@@ -508,7 +508,7 @@ class StatisticsCalculatorService
         } elseif ($negativeCount > $positiveCount) {
             return 'declining';
         }
-        
+
         return 'stable';
     }
 
