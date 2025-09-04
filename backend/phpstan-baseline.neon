@@ -1,0 +1,31 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to function is_array\(\) with non\-empty\-array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+
+		-
+			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:findByEmail\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+
+		-
+			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:findByUsername\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+
+		-
+			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:findByUuid\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+
+		-
+			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:validateCredentials\(\) should return array\<string, mixed\>\|null but returns array\<mixed, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php

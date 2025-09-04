@@ -103,10 +103,10 @@ class JwtConfigTest extends TestCase
     public function testUnsupportedAlgorithm(): void
     {
         $this->setValidEnvironmentVariables();
-        $_ENV['JWT_ALGORITHM'] = 'HS256';
+        $_ENV['JWT_ALGORITHM'] = 'INVALID_ALGO';
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('不支援的演算法: HS256');
+        $this->expectExceptionMessage('不支援的演算法: INVALID_ALGO');
 
         new JwtConfig();
     }

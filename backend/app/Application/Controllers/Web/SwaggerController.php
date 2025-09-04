@@ -68,9 +68,6 @@ class SwaggerController
      */
     public function ui(Request $request, Response $response): Response
     {
-        // 添加除錯資訊
-        error_log('SwaggerController::ui method called');
-
         $html = $this->generateSwaggerUiHtml();
 
         $response->getBody()->write(($html ?: ''));
