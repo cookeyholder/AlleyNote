@@ -1,5 +1,10 @@
 # AlleyNote 故障排除和維護指南
 
+**版本**: v4.0
+**更新日期**: 2025-09-03
+**適用環境**: 前後端分離架構 (Vue.js 3 + PHP 8.4.12 DDD)
+**系統版本**: Docker 28.3.3, Docker Compose v2.39.2
+
 > 🔧 **目標**：為管理員提供系統故障排除的完整解決方案和維護最佳實踐
 
 ---
@@ -8,6 +13,7 @@
 
 - [緊急故障處理](#緊急故障處理)
 - [常見問題診斷](#常見問題診斷)
+- [前後端分離問題](#前後端分離問題)
 - [系統監控告警](#系統監控告警)
 - [日常維護任務](#日常維護任務)
 - [效能問題處理](#效能問題處理)
@@ -29,52 +35,89 @@ ping your-server-ip
 # 2. 檢查 SSH 連線
 ssh user@your-server-ip
 
-# 3. 檢查容器狀態
+# 3. 檢查前後端容器狀態
 docker-compose ps
 
 # 4. 檢查系統資源
 top
 df -h
 free -h
+
+# 5. 檢查前端服務 (Vue.js 3)
+curl -I http://localhost:3000
+
+# 6. 檢查後端 API (PHP 8.4.12)
+curl -I http://localhost:8080/api/health
 ```
 
 #### 緊急恢復程序
 ```bash
-# 1. 強制重啟所有容器
-docker-compose down --remove-orphans
-docker-compose up -d
+# 1. 強制重啟所有容器 (前後端分離)
+docker-compose -f docker-compose.production.yml down --remove-orphans
+docker-compose -f docker-compose.production.yml up -d
 
 # 2. 如果容器無法啟動，檢查日誌
-docker-compose logs --tail=100
+docker-compose logs --tail=100 web          # 後端日誌
+docker-compose logs --tail=100 frontend     # 前端日誌
+docker-compose logs --tail=100 db           # 資料庫日誌
 
 # 3. 檢查系統日誌
 sudo journalctl -u docker.service --since "1 hour ago"
 
-# 4. 緊急模式啟動（僅 Web 服務）
+# 4. 緊急模式啟動（僅後端服務）
 docker-compose up -d web
 
-# 5. 最後手段：重啟整個系統
+# 5. 檢查前端建構狀態
+cd frontend && npm run build
+
+# 6. 最後手段：重啟整個系統
 sudo reboot
 ```
 
-### 資料庫損壞
+### 資料庫連線問題
 
-#### 立即處理
+#### SQLite3 故障排除 (預設推薦)
+```bash
+# 1. 檢查 SQLite3 檔案權限
+ls -la /var/www/html/database/alleynote.sqlite3
+
+# 2. 檢查檔案是否存在且可寫入
+test -w /var/www/html/database/alleynote.sqlite3 && echo "可寫入" || echo "權限問題"
+
+# 3. 備份資料庫
+cp /var/www/html/database/alleynote.sqlite3 \
+   /var/www/html/storage/backups/alleynote_$(date +%Y%m%d_%H%M%S).sqlite3
+
+# 4. 檢查資料庫完整性
+sqlite3 /var/www/html/database/alleynote.sqlite3 "PRAGMA integrity_check;"
+```
+
+#### PostgreSQL 故障排除 (大型部署)
 ```bash
 # 1. 停止所有服務
-docker-compose down
+docker-compose -f docker-compose.production.yml down
 
-# 2. 備份當前資料庫（即使損壞）
-cp database/alleynote.db database/alleynote_corrupted_$(date +%Y%m%d_%H%M%S).db
+# 2. 檢查資料庫容器狀態
+docker-compose ps db
 
-# 3. 檢查資料庫完整性
-docker run --rm -v $(pwd)/database:/data sqlite:latest sqlite3 /data/alleynote.db "PRAGMA integrity_check;"
+# 3. 備份當前資料庫
+docker-compose exec db pg_dump -U ${DB_USERNAME} -d ${DB_DATABASE} \
+  --clean --if-exists > backup_$(date +%Y%m%d_%H%M%S).sql
 
-# 4. 嘗試修復
-docker run --rm -v $(pwd)/database:/data sqlite:latest sqlite3 /data/alleynote.db ".recover" > database/recovered.sql
+# 4. 檢查資料庫日誌
+docker-compose logs db
 
-# 5. 如果無法修復，恢復最新備份
-./scripts/restore_sqlite.sh database/backups/latest_backup.db
+# 5. 重新啟動資料庫服務
+docker-compose up -d db
+
+# 6. 等待資料庫啟動完成
+sleep 30
+
+# 7. 測試連線
+docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT 1;"
+
+# 8. 如果仍有問題，檢查資料庫完整性
+docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT version();"
 ```
 
 ### SSL 憑證過期
@@ -92,6 +135,9 @@ docker-compose exec nginx nginx -s reload
 
 # 4. 如果更新失敗，重新申請憑證
 ./scripts/ssl-setup.sh yourdomain.com admin@yourdomain.com
+
+# 5. 驗證憑證更新
+curl -I https://yourdomain.com
 ```
 
 ---
@@ -104,9 +150,9 @@ docker-compose exec nginx nginx -s reload
 ```bash
 # 1. 檢查系統負載
 uptime
-top
+top -bn1 | head -20
 
-# 2. 檢查記憶體使用
+# 2. 檢查記憶體使用 (前後端分離需更多記憶體)
 free -h
 ps aux --sort=-%mem | head -10
 
@@ -119,6 +165,20 @@ ss -tuln
 
 # 5. 檢查 Docker 容器資源
 docker stats --no-stream
+
+# 6. 檢查前端效能
+curl -w "@/dev/stdin" -o /dev/null -s http://localhost:3000 <<< "
+time_namelookup:  %{time_namelookup}\n
+time_connect:     %{time_connect}\n
+time_appconnect:  %{time_appconnect}\n
+time_pretransfer: %{time_pretransfer}\n
+time_redirect:    %{time_redirect}\n
+time_starttransfer: %{time_starttransfer}\n
+time_total:       %{time_total}\n"
+
+# 7. 檢查後端 API 效能
+curl -w "@/dev/stdin" -o /dev/null -s http://localhost:8080/api/health <<< "
+time_total: %{time_total}\n"
 ```
 
 #### 解決方案
@@ -127,15 +187,22 @@ docker stats --no-stream
 sudo sync && sudo sysctl vm.drop_caches=3
 
 # 重啟緩慢的容器
-docker-compose restart web
+docker-compose restart web frontend
 
-# 清理應用程式快取
-docker-compose exec web rm -rf storage/cache/*
-docker-compose exec redis redis-cli FLUSHALL
+# 清理 PHP OPcache (PHP 8.4.12)
+docker-compose exec web php -r "opcache_reset();"
+
+# 重建前端資產
+cd frontend
+npm run build
 
 # 優化資料庫
-docker-compose exec web sqlite3 database/alleynote.db "VACUUM;"
-docker-compose exec web sqlite3 database/alleynote.db "REINDEX;"
+# SQLite3 (預設)
+sqlite3 /var/www/html/database/alleynote.sqlite3 "VACUUM; ANALYZE;"
+
+# PostgreSQL (大型部署時)
+docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "VACUUM ANALYZE;"
+docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "REINDEX DATABASE ${DB_DATABASE};"
 ```
 
 ### 404 錯誤頻發
@@ -319,15 +386,15 @@ check_database() {
 # 執行所有檢查
 main() {
     log_message "開始健康檢查"
-    
+
     local errors=0
-    
+
     check_website || ((errors++))
     check_containers || ((errors++))
     check_disk_space || ((errors++))
     check_memory || ((errors++))
     check_database || ((errors++))
-    
+
     if [ $errors -eq 0 ]; then
         log_message "所有檢查通過"
     else
@@ -602,7 +669,7 @@ gc_collect_cycles();
 # 1. 檢查失敗登入
 docker-compose exec web sqlite3 database/alleynote.db "
 SELECT ip_address, COUNT(*) as attempts, MAX(created_at) as last_attempt
-FROM failed_login_attempts 
+FROM failed_login_attempts
 WHERE created_at > datetime('now', '-24 hours')
 GROUP BY ip_address
 HAVING attempts > 10
@@ -615,7 +682,7 @@ tail -1000 logs/access.log | awk '{print $1}' | sort | uniq -c | sort -nr | head
 # 3. 檢查大量檔案上傳
 docker-compose exec web sqlite3 database/alleynote.db "
 SELECT user_id, COUNT(*) as uploads, SUM(file_size) as total_size
-FROM attachments 
+FROM attachments
 WHERE created_at > datetime('now', '-24 hours')
 GROUP BY user_id
 HAVING uploads > 50 OR total_size > 104857600
@@ -639,10 +706,10 @@ awk '{print $1}' logs/access.log | sort | uniq -c | sort -nr | while read count 
             # 加入防火牆規則
             iptables -A INPUT -s $ip -j DROP
             echo "$(date): 封鎖 IP $ip (請求數: $count)" >> $LOG_FILE
-            
+
             # 記錄到資料庫
             docker-compose exec web sqlite3 database/alleynote.db "
-            INSERT INTO ip_lists (ip_address, type, description, created_by, created_at) 
+            INSERT INTO ip_lists (ip_address, type, description, created_by, created_at)
             VALUES ('$ip', 'blacklist', '自動封鎖 - 請求數過多 ($count)', 0, datetime('now'));
             "
         fi
@@ -900,9 +967,9 @@ sudo systemctl start alleynote-monitor.service
 - AlleyNote 版本：
 
 ### 重現步驟
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ### 錯誤訊息
 ```

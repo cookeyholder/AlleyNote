@@ -3,29 +3,31 @@
 [![測試](https://github.com/your-org/alleynote/workflows/測試/badge.svg)](https://github.com/your-org/alleynote/actions)
 [![程式碼品質](https://github.com/your-org/alleynote/workflows/程式碼品質/badge.svg)](https://github.com/your-org/alleynote/actions)
 [![部署](https://github.com/your-org/alleynote/workflows/部署/badge.svg)](https://github.com/your-org/alleynote/actions)
-[![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.### 🛠️ 維運工具文件
-- **[統一腳本系統使用指南](docs/DEVELOPER_GUIDE.md#統一腳本管理系統)**: 現代化腳本管理 ⭐
-- **[DEPLOYMENT.md](docs/DEPLOYMENT.md)**: 詳細部署說明
-- **[SSL_DEPLOYMENT_GUIDE.md](docs/SSL_DEPLOYMENT_GUIDE.md)**: SSL 設定指南(https://www.php.net)
+[![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.svg)](https://www.php.net)
+[![Node Version](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![測試覆蓋率](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)](docs/USER_ACTIVITY_LOGGING_TODO.md)
-[![架構版本](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/ARCHITECTURE_AUDIT.md)
+[![架構版本](https://img.shields.io/badge/Architecture-DDD+Frontend-green.svg)](docs/ARCHITECTURE_AUDIT.md)
 [![統一腳本](https://img.shields.io/badge/Scripts-Unified-blue.svg)](docs/UNIFIED_SCRIPTS_DOCUMENTATION.md)
+
+> **🔥 新版本特色：前後端分離架構！**
+> 採用 **PHP DDD 後端** + **Vite 前端** 的現代化架構，提供更好的開發體驗和使用者體驗。
 
 ---
 
 ## 目錄
 
 - [專案簡介](#專案簡介)
+- [🔥 前後端分離架構](#前後端分離架構)
 - [功能特色](#功能特色)
 - [技術架構](#技術架構)
-- [統一腳本管理系統](#統一腳本管理系統)
 - [專案結構說明](#專案結構說明)
 - [系統需求](#系統需求)
-- [安裝與快速開始](#安裝與快速開始)
-- [開發流程](#開發流程)
+- [快速開始](#快速開始)
+- [開發指南](#開發指南)
 - [測試流程](#測試流程)
 - [部署說明](#部署說明)
+- [🛠️ 維運工具](#維運工具)
 - [常見問題 FAQ](#常見問題-faq)
 - [文件資源](#文件資源)
 - [授權](#授權)
@@ -36,7 +38,143 @@
 
 AlleyNote 是一個現代化的公布欄網站系統，專為學校、社區、企業等單位設計，支援多用戶、權限控管、IP 黑白名單、附件上傳、資料自動備份等功能。
 
-本專案以 PHP 8.4.11 開發，採用 SQLite 資料庫，並以 Docker 容器化部署，具備完善的自動化測試與 CI/CD 流程。專案已成功從 MVC 架構遷移到 DDD（領域驅動設計）架構，並建立了統一腳本管理系統，大幅提升了程式碼品質和維護效率。
+本專案以 **前後端分離架構** 重新設計，後端採用 PHP 8.4.11 + DDD（領域驅動設計），前端使用現代化的 Vite + JavaScript，並以 Docker 容器化部署，具備完善的自動化測試與 CI/CD 流程。
+
+---
+
+## 🔥 前後端分離架構
+
+### 架構概覽
+
+#### 🏗️ 系統架構圖
+
+```mermaid
+graph TB
+    subgraph "🌐 客戶端層"
+        Browser[瀏覽器]
+    end
+
+    subgraph "🐳 Docker 容器化環境"
+        subgraph "🎨 前端服務 (Vite)"
+            Frontend[前端應用程式<br/>Vite + JavaScript + CSS3]
+            FrontendStatic[靜態資源<br/>public/]
+            FrontendBuild[建構輸出<br/>dist/]
+        end
+
+        subgraph "🌐 Nginx 反向代理"
+            Nginx[Nginx<br/>負載均衡 & SSL]
+        end
+
+        subgraph "⚡ 後端服務 (PHP-FPM)"
+            subgraph "🎯 DDD 架構層"
+                subgraph "🌟 領域層 (Domain)"
+                    PostDomain[文章領域<br/>Post Domain]
+                    AuthDomain[認證領域<br/>Auth Domain]
+                    AttachmentDomain[附件領域<br/>Attachment Domain]
+                    SecurityDomain[安全領域<br/>Security Domain]
+                end
+
+                subgraph "🚀 應用層 (Application)"
+                    Controllers[控制器<br/>Controllers]
+                    DTOs[資料傳輸物件<br/>DTOs]
+                    Middleware[中介軟體<br/>Middleware]
+                    Services[應用服務<br/>Services]
+                end
+
+                subgraph "🔧 基礎設施層 (Infrastructure)"
+                    Database[資料庫存取<br/>Repositories]
+                    Cache[快取系統<br/>Cache Manager]
+                    FileSystem[檔案系統<br/>File Storage]
+                end
+
+                subgraph "🛠️ 共用層 (Shared)"
+                    Validators[驗證器<br/>29種驗證規則]
+                    Exceptions[例外處理<br/>Exception Handlers]
+                    Helpers[輔助工具<br/>Helper Functions]
+                end
+            end
+        end
+
+        subgraph "💾 資料儲存層"
+            SQLite[(SQLite 資料庫<br/>alleynote.sqlite3)]
+            Storage[檔案儲存<br/>storage/]
+        end
+    end
+
+    subgraph "🔄 開發工具"
+        Scripts[統一腳本系統<br/>87個維運腳本]
+        Tests[測試套件<br/>1,393個測試]
+        CI[CI/CD Pipeline<br/>自動化部署]
+    end
+
+    %% 連接關係
+    Browser --> Nginx
+    Nginx --> Frontend
+    Nginx --> Controllers
+
+    Frontend --> FrontendStatic
+    Frontend --> FrontendBuild
+
+    Controllers --> DTOs
+    Controllers --> Services
+    DTOs --> Validators
+
+    Services --> PostDomain
+    Services --> AuthDomain
+    Services --> AttachmentDomain
+    Services --> SecurityDomain
+
+    PostDomain --> Database
+    AuthDomain --> Database
+    AttachmentDomain --> Database
+    SecurityDomain --> Database
+
+    Database --> SQLite
+    FileSystem --> Storage
+
+    Controllers --> Cache
+    Middleware --> SecurityDomain
+
+    Scripts --> Tests
+    Tests --> CI
+
+    %% 樣式定義
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef backend fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef domain fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef infra fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef data fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef tools fill:#f1f8e9,stroke:#558b2f,stroke-width:2px
+
+    class Frontend,FrontendStatic,FrontendBuild frontend
+    class Controllers,DTOs,Middleware,Services backend
+    class PostDomain,AuthDomain,AttachmentDomain,SecurityDomain domain
+    class Database,Cache,FileSystem,Validators,Exceptions,Helpers infra
+    class SQLite,Storage data
+    class Scripts,Tests,CI tools
+```
+
+#### 📁 目錄結構
+```
+AlleyNote/
+├── 🎨 frontend/          # 前端應用程式
+│   ├── src/              # 源碼
+│   ├── public/           # 靜態檔案
+│   └── dist/             # 建構輸出
+├── ⚡ backend/           # 後端 API
+│   ├── app/              # DDD 架構程式碼
+│   ├── config/           # 配置檔案
+│   ├── database/         # 資料庫相關
+│   └── tests/            # 測試檔案
+└── 🐳 docker/            # 容器配置
+```
+
+### 技術堆疊
+- **前端**: Vite + JavaScript + CSS3
+- **後端**: PHP 8.4 + DDD Architecture
+- **資料庫**: SQLite3
+- **容器**: Docker + Nginx + PHP-FPM
+- **建構工具**: Vite (前端) + Composer (後端)
 
 ---
 
@@ -86,6 +224,169 @@ AlleyNote 是一個現代化的公布欄網站系統，專為學校、社區、�
 - **快取系統**: File Cache + APCu（支援分散式快取）
 
 ### 🏗️ DDD 架構組件
+
+#### 🎯 DDD 分層架構圖
+
+```mermaid
+graph TD
+    subgraph "🌐 外部介面層"
+        HTTP[HTTP 請求]
+        CLI[命令列介面]
+    end
+
+    subgraph "🚀 應用層 (Application Layer)"
+        subgraph "🎮 控制器"
+            WebCtrl[Web 控制器]
+            ApiCtrl[API 控制器]
+            SecurityCtrl[安全控制器]
+        end
+
+        subgraph "📦 應用服務"
+            AppServices[應用服務]
+            DTOs[資料傳輸物件]
+            Middleware[中介軟體]
+        end
+    end
+
+    subgraph "🌟 領域層 (Domain Layer)"
+        subgraph "📝 文章領域"
+            PostEntity[文章實體]
+            PostVO[文章值物件]
+            PostService[文章服務]
+            PostRepository[文章倉庫介面]
+        end
+
+        subgraph "🔐 認證領域"
+            AuthEntity[使用者實體]
+            AuthVO[認證值物件]
+            AuthService[認證服務]
+            AuthRepository[認證倉庫介面]
+        end
+
+        subgraph "📎 附件領域"
+            AttachmentEntity[附件實體]
+            AttachmentVO[附件值物件]
+            AttachmentService[附件服務]
+            AttachmentRepository[附件倉庫介面]
+        end
+
+        subgraph "🛡️ 安全領域"
+            SecurityEntity[安全實體]
+            SecurityVO[安全值物件]
+            SecurityService[安全服務]
+            SecurityRepository[安全倉庫介面]
+        end
+    end
+
+    subgraph "🔧 基礎設施層 (Infrastructure Layer)"
+        subgraph "💾 資料持久化"
+            PostRepoImpl[文章倉庫實作]
+            AuthRepoImpl[認證倉庫實作]
+            AttachmentRepoImpl[附件倉庫實作]
+            SecurityRepoImpl[安全倉庫實作]
+        end
+
+        subgraph "⚡ 快取系統"
+            CacheManager[快取管理器]
+            CacheKeys[快取金鑰]
+            TagSystem[標籤系統]
+        end
+
+        subgraph "📁 檔案系統"
+            FileStorage[檔案儲存]
+            UploadHandler[上傳處理器]
+        end
+    end
+
+    subgraph "🛠️ 共用層 (Shared Layer)"
+        subgraph "✅ 驗證系統"
+            Validators[29種驗證規則]
+            ValidationResult[驗證結果]
+        end
+
+        subgraph "⚠️ 例外處理"
+            DomainExceptions[領域例外]
+            AppExceptions[應用例外]
+            InfraExceptions[基礎設施例外]
+        end
+
+        subgraph "🔧 工具類別"
+            Helpers[輔助函式]
+            Constants[常數定義]
+            Enums[列舉型別]
+        end
+    end
+
+    subgraph "💾 資料儲存層"
+        SQLite[(SQLite 資料庫)]
+        FileSystem[(檔案系統)]
+    end
+
+    %% 連接關係
+    HTTP --> WebCtrl
+    HTTP --> ApiCtrl
+    CLI --> SecurityCtrl
+
+    WebCtrl --> AppServices
+    ApiCtrl --> AppServices
+    SecurityCtrl --> AppServices
+
+    AppServices --> DTOs
+    DTOs --> Validators
+
+    AppServices --> PostService
+    AppServices --> AuthService
+    AppServices --> AttachmentService
+    AppServices --> SecurityService
+
+    PostService --> PostRepository
+    AuthService --> AuthRepository
+    AttachmentService --> AttachmentRepository
+    SecurityService --> SecurityRepository
+
+    PostRepository --> PostRepoImpl
+    AuthRepository --> AuthRepoImpl
+    AttachmentRepository --> AttachmentRepoImpl
+    SecurityRepository --> SecurityRepoImpl
+
+    PostRepoImpl --> SQLite
+    AuthRepoImpl --> SQLite
+    AttachmentRepoImpl --> SQLite
+    SecurityRepoImpl --> SQLite
+
+    AttachmentService --> FileStorage
+    FileStorage --> FileSystem
+
+    AppServices --> CacheManager
+    CacheManager --> TagSystem
+
+    PostService --> PostEntity
+    PostService --> PostVO
+    AuthService --> AuthEntity
+    AuthService --> AuthVO
+    AttachmentService --> AttachmentEntity
+    AttachmentService --> AttachmentVO
+    SecurityService --> SecurityEntity
+    SecurityService --> SecurityVO
+
+    Validators --> ValidationResult
+    AppServices --> Helpers
+
+    %% 樣式定義
+    classDef application fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef domain fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef infrastructure fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef shared fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef data fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+
+    class WebCtrl,ApiCtrl,SecurityCtrl,AppServices,DTOs,Middleware application
+    class PostEntity,PostVO,PostService,PostRepository,AuthEntity,AuthVO,AuthService,AuthRepository,AttachmentEntity,AttachmentVO,AttachmentService,AttachmentRepository,SecurityEntity,SecurityVO,SecurityService,SecurityRepository domain
+    class PostRepoImpl,AuthRepoImpl,AttachmentRepoImpl,SecurityRepoImpl,CacheManager,CacheKeys,TagSystem,FileStorage,UploadHandler infrastructure
+    class Validators,ValidationResult,DomainExceptions,AppExceptions,InfraExceptions,Helpers,Constants,Enums shared
+    class SQLite,FileSystem data
+```
+
+#### 🔍 架構說明
 - **Domain 層**: 業務實體、值物件、領域服務 (161 類別)
 - **Application 層**: 應用服務、控制器、DTO (15 檔案)
 - **Infrastructure 層**: 資料庫、外部服務、技術實作 (46 檔案)
@@ -189,42 +490,88 @@ php scripts/demo-unified-scripts.php demo
 
 ---
 
-## 專案結構說明
+## 📁 專案架構
 
 ```
 AlleyNote/
-├── app/                        # 應用程式核心
-│   ├── Application/           # 應用層（控制器、API）
-│   ├── Domains/              # 領域層（業務邏輯）
-│   │   ├── Post/             # 文章領域
-│   │   ├── Attachment/       # 附件領域
-│   │   ├── Auth/             # 認證領域
-│   │   └── Security/         # 安全領域
-│   ├── Infrastructure/       # 基礎設施層
-│   └── Shared/              # 共用元件
-├── tests/                   # 測試套件（1,213 個測試，87.5% 覆蓋率）
-│   ├── Unit/               # 單元測試
-│   ├── Integration/        # 整合測試
-│   ├── Security/           # 安全測試
-│   └── Factory/            # 測試工廠
-├── docs/                   # 技術文件（37 個文件）
-├── scripts/                # 統一腳本管理系統
-│   ├── consolidated/       # 9 個核心類別
-│   ├── unified-scripts.php # 統一入口點
-│   ├── demo-*.php/sh      # 展示版本
-│   └── [基礎設施腳本]      # 21 個保留腳本
-├── public/                 # 公開檔案
-├── database/               # SQLite 資料庫
-├── docker/                 # Docker 設定
-├── storage/                # 檔案儲存
-└── .github/workflows/      # CI/CD 流程
+├── backend/                 # 後端 PHP 應用程式
+│   ├── app/                # 應用程式原始碼（DDD 架構）
+│   │   ├── Application/    # 應用服務層
+│   │   │   ├── Controllers/ # HTTP 控制器
+│   │   │   ├── DTOs/       # 資料傳輸物件
+│   │   │   ├── Middleware/ # 中介軟體
+│   │   │   └── Services/   # 應用服務
+│   │   ├── Domains/        # 領域層
+│   │   │   ├── Auth/       # 認證領域
+│   │   │   ├── Post/       # 文章領域
+│   │   │   ├── Attachment/ # 附件領域
+│   │   │   └── Security/   # 安全領域
+│   │   ├── Infrastructure/ # 基礎設施層
+│   │   └── Shared/         # 共用元件
+│   ├── tests/              # 測試套件（1,393 個測試）
+│   │   ├── Unit/          # 單元測試
+│   │   ├── Integration/   # 整合測試
+│   │   ├── Security/      # 安全測試
+│   │   └── Factory/       # 測試工廠
+│   ├── scripts/           # 後端腳本管理系統
+│   │   ├── consolidated/  # 9 個核心類別
+│   │   ├── unified-scripts.php # 統一入口點
+│   │   ├── demo-*.php/sh # 展示版本
+│   │   └── [基礎設施腳本] # 87 個保留腳本
+│   ├── public/            # 後端公開檔案
+│   ├── database/          # SQLite 資料庫
+│   ├── storage/           # 檔案儲存
+│   ├── examples/          # 程式碼範例
+│   └── coverage-reports/  # 測試覆蓋率報告
+├── frontend/              # 前端 Vue.js 應用程式
+│   ├── src/              # 前端原始碼
+│   ├── public/           # 前端公開檔案
+│   └── dist/             # 建構輸出（生產環境）
+├── docs/                 # 技術文件（36 個文件）
+├── docker/               # Docker 設定
+├── .github/workflows/    # CI/CD 流程
+├── certbot-data/         # SSL 憑證資料
+└── ssl-data/             # SSL 設定資料
 ```
+
+---
+
+## 快速開始
+
+### 🚀 3 分鐘啟動
+
+```bash
+# 1. 複製專案
+git clone https://github.com/your-org/alleynote.git
+cd alleynote
+
+# 2. 設定環境變數
+cp .env.example .env
+
+# 3. 啟動所有服務
+npm run docker:up
+
+# 4. 等待服務啟動後，開啟瀏覽器
+open http://localhost
+```
+
+### 📱 訪問應用程式
+- **前端應用**: http://localhost (透過 Nginx)
+- **開發模式**: http://localhost:3000 (Vite 開發伺服器)
+- **API 文件**: http://localhost/api/docs/ui
+- **後端健康檢查**: http://localhost/health
 
 ---
 
 ## 系統需求
 
-### 硬體需求
+### 💻 開發環境
+- **Node.js**: 18.0+ (前端開發)
+- **PHP**: 8.4+ (後端開發)
+- **Docker**: 24.0+ (容器化部署)
+- **Docker Compose**: 2.20+
+
+### 🖥️ 生產環境
 - CPU: 2 核心以上
 - 記憶體: 4GB 以上
 - 硬碟空間: 20GB 以上
@@ -239,55 +586,157 @@ AlleyNote/
 
 ---
 
-## 安裝與快速開始
+## 安裝與開發指南
 
-### 1. 取得專案原始碼
+### 🚀 快速開始 (推薦)
 
 ```bash
+# 1. 複製專案
 git clone https://github.com/your-org/alleynote.git
 cd alleynote
+
+# 2. 一鍵啟動開發環境
+npm run dev
+
+# 3. 等待啟動完成，開啟瀏覽器
+open http://localhost:3000  # 前端開發伺服器
+open http://localhost       # 完整服務 (透過 Nginx)
 ```
 
-### 2. 設定環境變數
+### 📋 完整安裝步驟
 
+#### 1️⃣ 環境準備
 ```bash
+# 檢查環境需求
+node --version   # 需要 18.0+
+docker --version # 需要 24.0+
+
+# 如果缺少 Node.js，安裝 Node.js
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+nvm install 18 && nvm use 18
+```
+
+#### 2️⃣ 專案初始化
+```bash
+# 複製專案
+git clone https://github.com/your-org/alleynote.git
+cd alleynote
+
+# 安裝開發工具依賴
+npm install
+
+# 設定環境變數
 cp .env.example .env
-# 編輯 .env 檔案，設定管理員帳號、資料庫、檔案上傳等
+# 編輯 .env 檔案調整設定 (可選)
 ```
 
-### 3. 啟動服務
-
+#### 3️⃣ 前端設定
 ```bash
-# 開發環境
-docker compose up -d
-
-# 生產環境
-docker compose -f docker-compose.production.yml up -d
+# 安裝前端依賴
+npm run frontend:install
+# 相當於: cd frontend && npm install && cd ..
 ```
 
-### 4. 安裝相依套件
-
+#### 4️⃣ 後端設定
 ```bash
-docker compose exec web composer install
+# 啟動後端容器並安裝 PHP 依賴
+npm run backend:install
+# 相當於: docker compose up -d && docker compose exec web composer install
 ```
 
-### 5. 初始化系統
+#### 5️⃣ 資料庫初始化
+```bash
+# 初始化 SQLite 資料庫
+npm run db:init
+
+# 載入範例資料 (可選)
+npm run db:seed
+```
+
+#### 6️⃣ 啟動開發服務
+```bash
+# 方式 1: 同時啟動前後端開發伺服器
+npm run dev
+
+# 方式 2: 分別啟動
+npm run backend:up     # 啟動後端 + 資料庫
+npm run frontend:dev   # 啟動前端開發伺服器
+```
+
+### 🔧 開發工作流程
+
+#### 📝 前端開發
+```bash
+cd frontend
+
+# 啟動開發伺服器 (熱重載)
+npm run dev
+
+# 建構生產版本
+npm run build
+
+# 本地預覽生產版本
+npm run preview
+```
+
+#### ⚙️ 後端開發
+```bash
+# 進入後端容器
+docker compose exec web bash
+
+# 執行測試
+composer test
+
+# 程式碼品質檢查
+composer ci
+
+# 查看後端日誌
+docker compose logs -f web
+```
+
+### 🧪 測試與品質檢查
 
 ```bash
-# 初始化資料庫
-./scripts/init-sqlite.sh
-
-# 使用統一腳本系統檢查專案狀態
-docker compose exec web php scripts/unified-scripts.php status
-
 # 執行完整測試套件
-docker compose exec web php scripts/unified-scripts.php test --action=run
+npm run test
+
+# 分別執行前後端測試
+npm run frontend:test  # 前端測試
+npm run backend:test   # 後端測試
+
+# 程式碼品質檢查
+npm run lint          # 前後端 lint
+npm run backend:cs    # PHP 程式碼風格檢查
 ```
 
-### 6. 訪問系統
+### 📱 服務網址
 
-- 網站首頁: http://localhost:8080
-- 管理後台: http://localhost:8080/admin
+| 服務 | 開發環境 | 生產環境 |
+|------|---------|----------|
+| 🌐 前端應用 | http://localhost:3000 | http://localhost |
+| 🔌 API 服務 | http://localhost/api | http://localhost/api |
+| 📚 API 文件 | http://localhost/api/docs/ui | http://localhost/api/docs/ui |
+| ❤️ 健康檢查 | http://localhost/health | http://localhost/health |
+| 📊 監控儀表板 | http://localhost:8081 | - |
+
+### 🛠️ 常用指令
+
+```bash
+# 🔄 重新啟動服務
+npm run restart
+
+# 🧹 清理快取和建構檔案
+npm run clean
+
+# 📦 建構生產版本
+npm run build
+
+# 🚀 部署到生產環境
+npm run deploy
+
+# 🔍 查看所有可用指令
+npm run help
+```
 
 ---
 
@@ -347,6 +796,117 @@ docker compose exec web php scripts/unified-scripts.php test --action=run
 - **執行時間**: 優化後效能提升
 
 ### 🧪 測試分類
+
+#### 🎯 測試架構圖
+
+```mermaid
+graph TB
+    subgraph "🧪 測試套件總覽"
+        TestSuite[測試套件<br/>1,393 個測試<br/>6,396 個斷言]
+    end
+
+    subgraph "📊 測試分類"
+        subgraph "🔬 單元測試 (Unit Tests)"
+            DomainTests[領域邏輯測試<br/>實體、值物件、服務]
+            ServiceTests[服務層測試<br/>業務邏輯驗證]
+            ValidatorTests[驗證器測試<br/>29種驗證規則]
+        end
+
+        subgraph "🔗 整合測試 (Integration Tests)"
+            ApiTests[API 端點測試<br/>HTTP 請求/回應]
+            DatabaseTests[資料庫整合測試<br/>CRUD 操作]
+            CacheTests[快取系統測試<br/>快取標籤機制]
+        end
+
+        subgraph "🛡️ 安全測試 (Security Tests)"
+            XssTests[XSS 防護測試<br/>跨站腳本攻擊]
+            CsrfTests[CSRF 防護測試<br/>跨站請求偽造]
+            SqlTests[SQL 注入測試<br/>資料庫安全]
+            AuthTests[認證測試<br/>權限控制]
+        end
+
+        subgraph "⚡ 效能測試 (Performance Tests)"
+            QueryTests[查詢效能測試<br/>資料庫最佳化]
+            CachePerf[快取效能測試<br/>命中率分析]
+            MemoryTests[記憶體使用測試<br/>資源管理]
+        end
+    end
+
+    subgraph "🏭 測試工廠 (Test Factories)"
+        PostFactory[文章工廠<br/>測試資料生成]
+        UserFactory[使用者工廠<br/>認證資料生成]
+        AttachmentFactory[附件工廠<br/>檔案測試資料]
+        SecurityFactory[安全工廠<br/>安全測試資料]
+    end
+
+    subgraph "🛠️ 測試工具"
+        PHPUnit[PHPUnit 11.5<br/>測試框架]
+        Coverage[程式碼覆蓋率<br/>詳細報告]
+        MockFramework[Mock 框架<br/>依賴模擬]
+        Assertions[自訂斷言<br/>業務邏輯驗證]
+    end
+
+    subgraph "📊 測試報告"
+        CoverageReport[覆蓋率報告<br/>HTML 格式]
+        TestResults[測試結果<br/>詳細統計]
+        PerformanceReport[效能報告<br/>執行時間分析]
+    end
+
+    %% 連接關係
+    TestSuite --> DomainTests
+    TestSuite --> ServiceTests
+    TestSuite --> ValidatorTests
+    TestSuite --> ApiTests
+    TestSuite --> DatabaseTests
+    TestSuite --> CacheTests
+    TestSuite --> XssTests
+    TestSuite --> CsrfTests
+    TestSuite --> SqlTests
+    TestSuite --> AuthTests
+    TestSuite --> QueryTests
+    TestSuite --> CachePerf
+    TestSuite --> MemoryTests
+
+    DomainTests --> PostFactory
+    ServiceTests --> UserFactory
+    ApiTests --> AttachmentFactory
+    SecurityTests --> SecurityFactory
+
+    XssTests --> SecurityFactory
+    CsrfTests --> SecurityFactory
+    SqlTests --> SecurityFactory
+    AuthTests --> SecurityFactory
+
+    TestSuite --> PHPUnit
+    PHPUnit --> Coverage
+    PHPUnit --> MockFramework
+    PHPUnit --> Assertions
+
+    Coverage --> CoverageReport
+    PHPUnit --> TestResults
+    QueryTests --> PerformanceReport
+    CachePerf --> PerformanceReport
+    MemoryTests --> PerformanceReport
+
+    %% 樣式定義
+    classDef unit fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef integration fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef security fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef performance fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef factory fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef tools fill:#f1f8e9,stroke:#558b2f,stroke-width:2px
+    classDef reports fill:#fce4ec,stroke:#ad1457,stroke-width:2px
+
+    class DomainTests,ServiceTests,ValidatorTests unit
+    class ApiTests,DatabaseTests,CacheTests integration
+    class XssTests,CsrfTests,SqlTests,AuthTests security
+    class QueryTests,CachePerf,MemoryTests performance
+    class PostFactory,UserFactory,AttachmentFactory,SecurityFactory factory
+    class PHPUnit,Coverage,MockFramework,Assertions tools
+    class CoverageReport,TestResults,PerformanceReport reports
+```
+
+#### 📋 測試類型說明
 - **單元測試** (`tests/Unit/`): 領域邏輯、服務層、驗證器
 - **整合測試** (`tests/Integration/`): API 端點、資料庫整合
 - **安全測試** (`tests/Security/`): XSS、CSRF、SQL 注入防護
@@ -459,8 +1019,11 @@ A: 詳見 [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)。
 - **[SSL_DEPLOYMENT_GUIDE.md](docs/SSL_DEPLOYMENT_GUIDE.md)**: SSL 設定指南
 - **[CHANGELOG.md](CHANGELOG.md)**: 版本更新日誌
 
+### 🏗️ 遷移文件
+- **[前後端分離完成報告](docs/migration/FRONTEND_BACKEND_SEPARATION_COMPLETION_REPORT.md)**: 詳細的架構遷移記錄與最佳實踐 🆕
+
 ### 📊 規劃文件
-- **[AlleyNote公布欄網站規格書.md](AlleyNote公布欄網站規格書.md)**: 系統規格
+- **[AlleyNote公布欄網站規格書.md](docs/architecture/AlleyNote公布欄網站規格書.md)**: 系統規格
 - **[USER_ACTIVITY_LOGGING_SPEC.md](docs/USER_ACTIVITY_LOGGING_SPEC.md)**: 使用者活動記錄規格 ⭐
 - **[CACHE_TAGGING_SYSTEM_API_REFERENCE.md](docs/CACHE_TAGGING_SYSTEM_API_REFERENCE.md)**: 快取系統 API 參考 ⭐
 

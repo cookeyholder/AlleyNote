@@ -7,7 +7,7 @@
 ## 📋 前置需求檢查
 
 ### 系統需求
-- **作業系統**：Linux (推薦 Ubuntu 20.04+ 或 CentOS 8+)
+- **作業系統**：Linux (推薦 Debian 12+ 或 Ubuntu 20.04+)
 - **硬體需求**：
   - CPU: 2 核心以上
   - RAM: 4GB 以上
@@ -131,7 +131,7 @@ docker-compose exec web sqlite3 database/alleynote.db
 .schema users
 
 # 插入管理員帳號（密碼需先雜湊）
-INSERT INTO users (email, password, role, created_at) 
+INSERT INTO users (email, password, role, created_at)
 VALUES ('admin@yourdomain.com', '$2y$10$hashed_password', 'admin', datetime('now'));
 
 # 退出 SQLite

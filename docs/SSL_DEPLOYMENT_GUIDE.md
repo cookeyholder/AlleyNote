@@ -1,53 +1,114 @@
 # SSL 部署指南
 
-本文件說明如何為 AlleyNote 專案部署 Let's Encrypt SSL 憑證。
+**版本**: v4.0
+**更新日期**: 2025-09-03
+**架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD)
+**系統版本**: Docker 28.3.3, Docker Compose v2.39.2
+
+本文件說明如何為 AlleyNote 前後端分離專案部署 Let's Encrypt SSL 憑證。
 
 ## 快速開始
 
-### 1. 設定環境變數
+### 1. 設定環境變數 (前後端分離)
 
-複製環境變數範例檔案：
+#### 後端環境變數 (backend/.env)
 ```bash
-cp .env.example .env
+cp backend/.env.example backend/.env
 ```
 
-編輯 `.env` 檔案，設定以下重要參數：
+編輯 `backend/.env` 檔案：
 ```env
 # SSL 設定
 SSL_DOMAIN=your-domain.com
 SSL_EMAIL=admin@your-domain.com
-CERTBOT_STAGING=true  # 測試環境，正式環境改為 false
+CERTBOT_STAGING=false  # 生產環境設為 false
 
-# 應用程式 URL
-APP_URL=https://your-domain.com
+# 後端 API URL
+APP_URL=https://api.your-domain.com
+API_PREFIX=/api
 
-# 資料庫設定 (SQLite)
+# 資料庫設定 (SQLite3 預設推薦)
 DB_CONNECTION=sqlite
-DB_DATABASE=/var/www/html/database/alleynote.db
+DB_DATABASE=/var/www/html/database/alleynote.sqlite3
+
+# 如需使用 PostgreSQL (大型部署)
+# DB_CONNECTION=pgsql
+# DB_HOST=postgres
+# DB_PORT=5432
+# DB_DATABASE=alleynote
+# DB_USERNAME=alleynote_user
+# DB_PASSWORD=secure_password
+# POSTGRES_PASSWORD=postgres_password
+
+# CORS 設定 (前後端分離)
+CORS_ALLOWED_ORIGINS=https://your-domain.com
+CORS_ALLOWED_METHODS=GET,POST,PUT,DELETE,OPTIONS
+CORS_ALLOWED_HEADERS=Content-Type,Authorization,X-Requested-With
 
 # 強制 HTTPS
 FORCE_HTTPS=true
 ```
 
-### 2. 執行 SSL 設定
+#### 前端環境變數 (frontend/.env)
+```bash
+cp frontend/.env.example frontend/.env
+```
+
+編輯 `frontend/.env` 檔案：
+```env
+# 前端應用程式設定
+VITE_APP_NAME=AlleyNote
+VITE_APP_ENV=production
+
+# API 連線設定
+VITE_API_BASE_URL=https://api.your-domain.com/api
+VITE_APP_URL=https://your-domain.com
+
+# SSL 設定
+VITE_FORCE_HTTPS=true
+```
+
+### 2. 執行 SSL 設定 (前後端分離)
 
 使用自動化腳本設定 SSL：
 ```bash
 # 給予執行權限
-chmod +x scripts/ssl-setup.sh
+chmod +x scripts/ssl-setup-separated.sh
 
-# 執行設定（測試環境）
-./scripts/ssl-setup.sh your-domain.com admin@your-domain.com
+# 執行前後端分離 SSL 設定
+./scripts/ssl-setup-separated.sh your-domain.com api.your-domain.com admin@your-domain.com
 
 # 或使用環境變數
-SSL_DOMAIN=your-domain.com SSL_EMAIL=admin@your-domain.com ./scripts/ssl-setup.sh
+SSL_FRONTEND_DOMAIN=your-domain.com \
+SSL_BACKEND_DOMAIN=api.your-domain.com \
+SSL_EMAIL=admin@your-domain.com \
+./scripts/ssl-setup-separated.sh
 ```
 
-### 3. 初始化 SQLite 資料庫
+### 3. 初始化資料庫
 
+#### SQLite3 (預設推薦)
 ```bash
-# 建立並初始化 SQLite 資料庫
-docker-compose exec web ./scripts/init-sqlite.sh
+# 建立資料庫目錄
+mkdir -p /var/www/html/database
+
+# 設定權限
+chmod 755 /var/www/html/database
+
+# 執行資料庫遷移
+docker-compose exec web ./vendor/bin/phinx migrate
+```
+
+#### PostgreSQL (大型部署時使用)
+```bash
+# 啟動資料庫服務
+docker-compose -f docker-compose.production.yml up -d postgres
+
+# 等待資料庫啟動
+sleep 30
+
+# 執行資料庫遷移
+docker-compose exec web ./vendor/bin/phinx migrate
 ```
 
 ### 4. 切換到正式環境
@@ -222,7 +283,7 @@ docker-compose exec nginx nginx -s reload
 
 確保防火牆正確設定：
 ```bash
-# Ubuntu/Debian
+# Debian/Ubuntu
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 

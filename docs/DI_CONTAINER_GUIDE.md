@@ -1,7 +1,10 @@
 # AlleyNote DI 容器使用指南
 
-**版本**: v2.0  
+**版本**: v4.0
+**更新日期**: 2025-09-03
 **適用範圍**: AlleyNote 專案開發者
+**架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD)
+**系統版本**: Docker 28.3.3, Docker Compose v2.39.2
 
 ---
 
@@ -13,38 +16,42 @@
 4. [服務註冊](#服務註冊)
 5. [服務解析](#服務解析)
 6. [快取機制](#快取機制)
-7. [最佳實踐](#最佳實踐)
-8. [故障排除](#故障排除)
-9. [進階用法](#進階用法)
+7. [PHP 8.4.12 新特性](#php-8412-新特性)
+8. [最佳實踐](#最佳實踐)
+9. [故障排除](#故障排除)
+10. [進階用法](#進階用法)
 
 ---
 
 ## 概述
 
-AlleyNote 使用 PHP-DI 容器來管理依賴注入，提供了自動化的服務管理、生命週期控制和效能優化。本指南將幫助開發者正確使用 DI 容器。
+AlleyNote 使用 PHP-DI 容器來管理依賴注入，在前後端分離架構中提供了自動化的服務管理、生命週期控制和效能優化。本指南將幫助開發者正確使用 DI 容器。
 
 ### 主要特色
 
 - ✅ **自動依賴解析**: 自動解析建構函式依賴
 - ✅ **編譯快取**: 生產環境編譯快取提升效能
 - ✅ **代理快取**: 延遲載入代理類別
-- ✅ **註解支援**: 支援 PHP 8+ 屬性註解
+- ✅ **PHP 8.4.12 屬性支援**: 支援最新 PHP 屬性註解
 - ✅ **單例管理**: 自動管理服務生命週期
 - ✅ **介面綁定**: 介面與實作類別綁定
+- ✅ **API 優先設計**: 專為 API 服務優化
+- ✅ **非同步屬性**: 支援 PHP 8.4 非同步屬性
 
 ---
 
 ## DI 容器架構
 
-### 核心組件
+### 核心組件 (前後端分離)
 
 ```
 ContainerFactory
-├── Container Builder
+├── API Container Builder    (後端 API 服務)
 ├── Definition Source
 ├── Cache Configuration
 ├── Proxy Configuration
-└── Service Definitions
+├── JWT Service Definitions  (API 認證)
+└── CORS Service Definitions (前後端通訊)
 ```
 
 ### 檔案結構
@@ -88,7 +95,7 @@ $postService = $container->get(PostService::class);
 $validator = $container->get(ValidatorInterface::class);
 
 // 方式三：透過類型提示自動注入
-class PostController 
+class PostController
 {
     public function __construct(
         private PostService $postService,
@@ -107,20 +114,20 @@ use AlleyNote\Service\PostService;
 use AlleyNote\Validation\ValidatorInterface;
 use Psr\Container\ContainerInterface;
 
-class PostController 
+class PostController
 {
     public function __construct(
         private PostService $postService,
         private ValidatorInterface $validator,
         private ContainerInterface $container
     ) {}
-    
-    public function create(): void 
+
+    public function create(): void
     {
         // 服務已自動注入，直接使用
         $dto = new CreatePostDTO($_POST, $this->validator);
         $result = $this->postService->createPost($dto);
-        
+
         // 或動態獲取其他服務
         $cacheService = $this->container->get(CacheService::class);
     }
@@ -138,7 +145,7 @@ DI 容器會自動註冊所有具有類型提示的服務：
 ```php
 <?php
 // 自動註冊 - 無需手動設定
-class PostService 
+class PostService
 {
     public function __construct(
         private PostRepository $repository,
@@ -157,15 +164,15 @@ return [
     // 介面綁定到實作類別
     ValidatorInterface::class => DI\autowire(Validator::class),
     CacheInterface::class => DI\autowire(FileCache::class),
-    
+
     // 單例服務
     PostService::class => DI\autowire()->scope(Scope::SINGLETON),
-    
+
     // 工廠模式
     'logger' => DI\factory(function (ContainerInterface $c) {
         return new Logger('alleynote');
     }),
-    
+
     // 參數注入
     DatabaseConfig::class => DI\create()->constructor(
         DI\env('DB_HOST', 'localhost'),
@@ -186,17 +193,17 @@ return [
         }
         return new FileCache();
     }),
-    
+
     ValidatorInterface::class => DI\factory(function () {
         $validator = new Validator();
-        
+
         // 設定繁體中文錯誤訊息
         $validator->setErrorMessages([
             'required' => '此欄位為必填',
             'email' => '請輸入有效的電子郵件地址',
             'min_length' => '最少需要 {min} 個字元',
         ]);
-        
+
         return $validator;
     }),
 ];
@@ -210,7 +217,7 @@ return [
 
 ```php
 <?php
-class PostController 
+class PostController
 {
     public function __construct(
         private PostService $postService,        // 自動注入
@@ -224,13 +231,13 @@ class PostController
 
 ```php
 <?php
-class PostController 
+class PostController
 {
     #[Inject]
     private LoggerInterface $logger;
-    
+
     #[Inject]
-    public function setValidator(ValidatorInterface $validator): void 
+    public function setValidator(ValidatorInterface $validator): void
     {
         $this->validator = $validator;
     }
@@ -241,11 +248,11 @@ class PostController
 
 ```php
 <?php
-class PostController 
+class PostController
 {
     #[Inject]
     private PostService $postService;
-    
+
     #[Inject('app.debug')]
     private bool $debug;
 }
@@ -298,7 +305,7 @@ php scripts/cache-monitor.php clear all
 ```php
 <?php
 // ✅ 好的設計 - 依賴介面
-class PostService 
+class PostService
 {
     public function __construct(
         private PostRepositoryInterface $repository,
@@ -308,7 +315,7 @@ class PostService
 }
 
 // ❌ 不好的設計 - 依賴具體類別
-class PostService 
+class PostService
 {
     public function __construct(
         private PostRepository $repository,    // 具體類別
@@ -325,10 +332,10 @@ return [
     // 單例服務 - 整個請求週期共享
     PostService::class => DI\autowire()->scope(Scope::SINGLETON),
     CacheService::class => DI\autowire()->scope(Scope::SINGLETON),
-    
+
     // 原型服務 - 每次獲取都建立新實例
     CreatePostDTO::class => DI\autowire()->scope(Scope::PROTOTYPE),
-    
+
     // 請求範圍 - 每個 HTTP 請求共享
     DatabaseConnection::class => DI\autowire()->scope('request'),
 ];
@@ -353,11 +360,11 @@ return [
 return [
     LoggerInterface::class => DI\factory(function () {
         $level = getenv('LOG_LEVEL') ?: 'info';
-        
+
         if (getenv('APP_ENV') === 'testing') {
             return new NullLogger();
         }
-        
+
         return new FileLogger($level);
     }),
 ];
@@ -374,12 +381,12 @@ return [
 ```php
 <?php
 // ❌ 問題：A 依賴 B，B 依賴 A
-class ServiceA 
+class ServiceA
 {
     public function __construct(ServiceB $b) {}
 }
 
-class ServiceB 
+class ServiceB
 {
     public function __construct(ServiceA $a) {}
 }
@@ -387,12 +394,12 @@ class ServiceB
 // ✅ 解決：引入介面打破循環
 interface ServiceAInterface {}
 
-class ServiceA implements ServiceAInterface 
+class ServiceA implements ServiceAInterface
 {
     public function __construct(ServiceB $b) {}
 }
 
-class ServiceB 
+class ServiceB
 {
     public function __construct(ServiceAInterface $a) {}
 }
@@ -443,9 +450,9 @@ var_dump($definition);
 
 ```php
 <?php
-class CustomDefinitionLoader 
+class CustomDefinitionLoader
 {
-    public function load(): array 
+    public function load(): array
     {
         return [
             'custom.service' => DI\factory(function () {
@@ -463,13 +470,13 @@ $builder->addDefinitions(new CustomDefinitionLoader());
 
 ```php
 <?php
-class DIMiddleware 
+class DIMiddleware
 {
-    public function process(Request $request, RequestHandler $handler): Response 
+    public function process(Request $request, RequestHandler $handler): Response
     {
         // 將容器加入請求屬性
         $request = $request->withAttribute('container', $this->container);
-        
+
         return $handler->handle($request);
     }
 }
@@ -482,13 +489,13 @@ class DIMiddleware
 return [
     LoggerInterface::class => DI\factory(function (ContainerInterface $c) {
         $logger = new FileLogger();
-        
+
         // 在生產環境加入裝飾器
         if (getenv('APP_ENV') === 'production') {
             $logger = new CachedLogger($logger);
             $logger = new AsyncLogger($logger);
         }
-        
+
         return $logger;
     }),
 ];
@@ -498,17 +505,17 @@ return [
 
 ```php
 <?php
-class ServiceRegistrar 
+class ServiceRegistrar
 {
-    public static function register(ContainerBuilder $builder): void 
+    public static function register(ContainerBuilder $builder): void
     {
         // 掃描特定目錄自動註冊服務
         $services = glob(__DIR__ . '/Services/*.php');
-        
+
         foreach ($services as $service) {
             $className = basename($service, '.php');
             $fullClassName = "AlleyNote\\Service\\{$className}";
-            
+
             if (class_exists($fullClassName)) {
                 $builder->addDefinitions([
                     $fullClassName => DI\autowire(),
@@ -533,7 +540,7 @@ if (getenv('APP_ENV') === 'production') {
         '/app/storage/di-cache',
         'CompiledContainer'
     );
-    
+
     // 啟用定義快取
     $builder->enableDefinitionCache();
 }
@@ -573,19 +580,19 @@ if ($time > 50) {  // 超過 50ms 警告
 
 ```php
 <?php
-class TestContainerFactory 
+class TestContainerFactory
 {
-    public static function create(): ContainerInterface 
+    public static function create(): ContainerInterface
     {
         $builder = new ContainerBuilder();
-        
+
         // 測試專用服務定義
         $builder->addDefinitions([
             DatabaseInterface::class => DI\create(InMemoryDatabase::class),
             CacheInterface::class => DI\create(NullCache::class),
             LoggerInterface::class => DI\create(NullLogger::class),
         ]);
-        
+
         return $builder->build();
     }
 }
@@ -595,14 +602,14 @@ class TestContainerFactory
 
 ```php
 <?php
-class PostServiceTest extends TestCase 
+class PostServiceTest extends TestCase
 {
-    public function testCreatePost(): void 
+    public function testCreatePost(): void
     {
         $container = $this->createMockContainer([
             PostRepositoryInterface::class => $this->createMock(PostRepositoryInterface::class),
         ]);
-        
+
         $service = $container->get(PostService::class);
         // 測試邏輯...
     }
@@ -650,5 +657,5 @@ A: 使用測試專用容器工廠，註冊 Mock 物件。
 
 ---
 
-*文件版本: v2.0*  
+*文件版本: v2.0*
 *維護者: AlleyNote 開發團隊*

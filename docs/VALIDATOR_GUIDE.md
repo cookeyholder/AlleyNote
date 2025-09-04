@@ -1,7 +1,10 @@
 # AlleyNote 驗證器使用指南
 
-**版本**: v2.0  
+**版本**: v4.0
+**更新日期**: 2025-09-03
 **適用範圍**: AlleyNote 專案開發者
+**架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD)
+**系統版本**: Docker 28.3.3, Docker Compose v2.39.2
 
 ---
 
@@ -14,39 +17,54 @@
 5. [自定義驗證規則](#自定義驗證規則)
 6. [錯誤訊息處理](#錯誤訊息處理)
 7. [DTO 整合](#dto-整合)
-8. [進階用法](#進階用法)
-9. [最佳實踐](#最佳實踐)
-10. [故障排除](#故障排除)
+8. [前後端驗證整合](#前後端驗證整合)
+9. [PHP 8.4.12 新特性](#php-8412-新特性)
+10. [進階用法](#進階用法)
+11. [最佳實踐](#最佳實踐)
+12. [故障排除](#故障排除)
 
 ---
 
 ## 概述
 
-AlleyNote 使用自建的驗證器系統來確保所有輸入資料的正確性和安全性。驗證器提供了豐富的內建規則、靈活的自定義規則機制，以及完整的繁體中文錯誤訊息支援。
+AlleyNote 在前後端分離架構中使用自建的驗證器系統來確保所有輸入資料的正確性和安全性。驗證器提供了豐富的內建規則、靈活的自定義規則機制，以及完整的繁體中文錯誤訊息支援，同時支援前後端一致性驗證。
 
 ### 主要特色
 
-- ✅ **29 種內建驗證規則**: 涵蓋常見的資料驗證需求
+- ✅ **29+ 種內建驗證規則**: 涵蓋常見的資料驗證需求
 - ✅ **繁體中文支援**: 完整的繁體中文錯誤訊息
 - ✅ **自定義規則**: 支援註冊自定義驗證規則
 - ✅ **鏈式驗證**: 支援多個規則鏈式驗證
 - ✅ **條件式驗證**: 支援 `sometimes` 和 `nullable` 條件
 - ✅ **檔案驗證**: 專門的檔案上傳驗證規則
 - ✅ **資料庫驗證**: `unique` 和 `exists` 資料庫規則
-- ✅ **型別安全**: 強型別驗證結果
+- ✅ **型別安全**: PHP 8.4.12 強型別驗證結果
+- ✅ **API 驗證**: 專為 REST API 設計的驗證流程
+- ✅ **前後端一致性**: Vue.js 3 與 PHP 驗證規則同步
 
 ---
 
-## 驗證器架構
+## 驗證器架構 (前後端分離)
 
-### 核心組件
+### 後端核心組件 (PHP 8.4.12)
 
 ```
 ValidatorInterface
 ├── Validator (實作類別)
 ├── ValidationResult (驗證結果)
-├── ValidationException (驗證例外)
-└── ValidationRules (規則定義)
+├── ValidationException (API 例外)
+├── ValidationRules (規則定義)
+└── ApiValidationMiddleware (API 中介軟體)
+```
+
+### 前端驗證組件 (Vue.js 3)
+
+```
+Frontend Validation
+├── useValidation (Composition API)
+├── ValidationRules (同步規則)
+├── FormValidator (表單驗證)
+└── ApiErrorHandler (錯誤處理)
 ```
 
 ### 資料流
@@ -69,7 +87,7 @@ ValidatorInterface
 // 方式一：透過 DI 容器
 use AlleyNote\Validation\ValidatorInterface;
 
-class SomeService 
+class SomeService
 {
     public function __construct(
         private ValidatorInterface $validator
@@ -234,72 +252,72 @@ $result = $validator->validate('birthday', '1990-01-01', ['required', 'date', 'm
 ```php
 <?php
 // 自定義規則類別
-class CustomValidationRules 
+class CustomValidationRules
 {
-    public static function registerAll(ValidatorInterface $validator): void 
+    public static function registerAll(ValidatorInterface $validator): void
     {
         // 台灣身分證號驗證
         $validator->addRule('taiwan_id', [self::class, 'validateTaiwanId'], '請輸入有效的身分證號');
-        
+
         // 信用卡號驗證
         $validator->addRule('credit_card', [self::class, 'validateCreditCard'], '請輸入有效的信用卡號');
-        
+
         // 強密碼驗證
-        $validator->addRule('strong_password', [self::class, 'validateStrongPassword'], 
+        $validator->addRule('strong_password', [self::class, 'validateStrongPassword'],
             '密碼必須包含大小寫字母、數字和特殊字元，且至少 8 個字元');
     }
-    
-    public static function validateTaiwanId(string $value): bool 
+
+    public static function validateTaiwanId(string $value): bool
     {
         if (!preg_match('/^[A-Z][12][0-9]{8}$/', $value)) {
             return false;
         }
-        
+
         // 台灣身分證號校驗邏輯
         $letters = 'ABCDEFGHJKLMNPQRSTUVXYWZIO';
         $letterValue = strpos($letters, $value[0]) + 10;
-        
+
         $sum = intval($letterValue / 10) + (($letterValue % 10) * 9);
-        
+
         for ($i = 1; $i <= 8; $i++) {
             $sum += intval($value[$i]) * (9 - $i);
         }
-        
+
         $checkDigit = (10 - ($sum % 10)) % 10;
-        
+
         return $checkDigit == intval($value[9]);
     }
-    
-    public static function validateCreditCard(string $value): bool 
+
+    public static function validateCreditCard(string $value): bool
     {
         // Luhn 演算法驗證信用卡號
         $value = preg_replace('/\D/', '', $value);
-        
+
         if (strlen($value) < 13 || strlen($value) > 19) {
             return false;
         }
-        
+
         $sum = 0;
         $alternate = false;
-        
+
         for ($i = strlen($value) - 1; $i >= 0; $i--) {
             $n = intval($value[$i]);
-            
+
             if ($alternate) {
                 $n *= 2;
                 if ($n > 9) {
                     $n = ($n % 10) + 1;
                 }
             }
-            
+
             $sum += $n;
             $alternate = !$alternate;
         }
-        
+
         return ($sum % 10) == 0;
     }
-    
-    public static function validateStrongPassword(string $value): bool 
+
+    public static function validateStrongPassword(string $value): bool
     {
         return strlen($value) >= 8 &&
                preg_match('/[a-z]/', $value) &&
@@ -382,7 +400,7 @@ $result = $validator->validate('age', 15, ['between:18,65']);
 
 ```php
 <?php
-class MultiLanguageValidator 
+class MultiLanguageValidator
 {
     private array $messages = [
         'zh-TW' => [
@@ -394,8 +412,8 @@ class MultiLanguageValidator
             'email' => 'Please enter a valid email address',
         ],
     ];
-    
-    public function setLanguage(string $lang): void 
+
+    public function setLanguage(string $lang): void
     {
         if (isset($this->messages[$lang])) {
             $this->validator->setErrorMessages($this->messages[$lang]);
@@ -417,30 +435,30 @@ namespace AlleyNote\DTO;
 use AlleyNote\Validation\ValidatorInterface;
 use AlleyNote\Validation\ValidationException;
 
-abstract class BaseDTO 
+abstract class BaseDTO
 {
     protected array $data;
     protected ValidatorInterface $validator;
-    
-    public function __construct(array $data, ValidatorInterface $validator) 
+
+    public function __construct(array $data, ValidatorInterface $validator)
     {
         $this->validator = $validator;
         $this->data = $data;
         $this->validate();
     }
-    
+
     abstract protected function rules(): array;
-    
-    protected function validate(): void 
+
+    protected function validate(): void
     {
         $result = $this->validator->validateData($this->data, $this->rules());
-        
+
         if (!$result->isValid()) {
             throw new ValidationException($result->getErrors());
         }
     }
-    
-    protected function get(string $key, $default = null) 
+
+    protected function get(string $key, $default = null)
     {
         return $this->data[$key] ?? $default;
     }
@@ -453,9 +471,9 @@ abstract class BaseDTO
 <?php
 namespace AlleyNote\DTO;
 
-class CreatePostDTO extends BaseDTO 
+class CreatePostDTO extends BaseDTO
 {
-    protected function rules(): array 
+    protected function rules(): array
     {
         return [
             'title' => ['required', 'string', 'min_length:5', 'max_length:255'],
@@ -466,33 +484,33 @@ class CreatePostDTO extends BaseDTO
             'publish_at' => ['sometimes', 'nullable', 'date', 'after:now'],
         ];
     }
-    
-    public function getTitle(): string 
+
+    public function getTitle(): string
     {
         return $this->get('title');
     }
-    
-    public function getContent(): string 
+
+    public function getContent(): string
     {
         return $this->get('content');
     }
-    
-    public function getCategoryId(): ?int 
+
+    public function getCategoryId(): ?int
     {
         return $this->get('category_id');
     }
-    
-    public function getTags(): array 
+
+    public function getTags(): array
     {
         return $this->get('tags', []);
     }
-    
-    public function isPublished(): bool 
+
+    public function isPublished(): bool
     {
         return $this->get('is_published', false);
     }
-    
-    public function getPublishAt(): ?string 
+
+    public function getPublishAt(): ?string
     {
         return $this->get('publish_at');
     }
@@ -505,9 +523,9 @@ class CreatePostDTO extends BaseDTO
 <?php
 namespace AlleyNote\DTO;
 
-class CreateAttachmentDTO extends BaseDTO 
+class CreateAttachmentDTO extends BaseDTO
 {
-    protected function rules(): array 
+    protected function rules(): array
     {
         return [
             'file' => ['file_required', 'file_max_size:10240', 'file_mime_types:image/jpeg,image/png,image/gif,application/pdf'],
@@ -515,18 +533,18 @@ class CreateAttachmentDTO extends BaseDTO
             'description' => ['sometimes', 'string', 'max_length:500'],
         ];
     }
-    
-    public function getFile(): array 
+
+    public function getFile(): array
     {
         return $this->get('file');
     }
-    
-    public function getPostId(): int 
+
+    public function getPostId(): int
     {
         return $this->get('post_id');
     }
-    
-    public function getDescription(): ?string 
+
+    public function getDescription(): ?string
     {
         return $this->get('description');
     }
@@ -539,9 +557,9 @@ class CreateAttachmentDTO extends BaseDTO
 <?php
 namespace AlleyNote\DTO;
 
-class UpdatePostDTO extends BaseDTO 
+class UpdatePostDTO extends BaseDTO
 {
-    protected function rules(): array 
+    protected function rules(): array
     {
         return [
             'title' => ['sometimes', 'string', 'min_length:5', 'max_length:255'],
@@ -552,17 +570,17 @@ class UpdatePostDTO extends BaseDTO
             'publish_at' => ['sometimes', 'nullable', 'date'],
         ];
     }
-    
-    public function hasTitle(): bool 
+
+    public function hasTitle(): bool
     {
         return isset($this->data['title']);
     }
-    
-    public function hasContent(): bool 
+
+    public function hasContent(): bool
     {
         return isset($this->data['content']);
     }
-    
+
     // ... 其他方法
 }
 ```
@@ -600,14 +618,14 @@ $validator->addRule('array_elements', function ($value, $rules) use ($validator)
     if (!is_array($value)) {
         return false;
     }
-    
+
     foreach ($value as $item) {
         $result = $validator->validateData($item, $rules);
         if (!$result->isValid()) {
             return false;
         }
     }
-    
+
     return true;
 }, '陣列元素驗證失敗');
 
@@ -622,19 +640,19 @@ $rules = [
 
 ```php
 <?php
-class BatchValidator 
+class BatchValidator
 {
     public function __construct(private ValidatorInterface $validator) {}
-    
-    public function validateBatch(array $items, array $rules): array 
+
+    public function validateBatch(array $items, array $rules): array
     {
         $results = [];
         $errors = [];
-        
+
         foreach ($items as $index => $item) {
             try {
                 $result = $this->validator->validateData($item, $rules);
-                
+
                 if ($result->isValid()) {
                     $results[$index] = $item;
                 } else {
@@ -644,7 +662,7 @@ class BatchValidator
                 $errors[$index] = $e->getErrors();
             }
         }
-        
+
         return [
             'valid' => $results,
             'invalid' => $errors,
@@ -665,24 +683,24 @@ class BatchValidator
 ```php
 <?php
 // ✅ 好的做法 - 將相關規則組合
-class PostValidationRules 
+class PostValidationRules
 {
-    public static function title(): array 
+    public static function title(): array
     {
         return ['required', 'string', 'min_length:5', 'max_length:255'];
     }
-    
-    public static function content(): array 
+
+    public static function content(): array
     {
         return ['required', 'string', 'min_length:10'];
     }
-    
-    public static function category(): array 
+
+    public static function category(): array
     {
         return ['sometimes', 'integer', 'exists:categories,id'];
     }
-    
-    public static function createRules(): array 
+
+    public static function createRules(): array
     {
         return [
             'title' => self::title(),
@@ -690,8 +708,8 @@ class PostValidationRules
             'category_id' => self::category(),
         ];
     }
-    
-    public static function updateRules(): array 
+
+    public static function updateRules(): array
     {
         return [
             'title' => ['sometimes'] + self::title(),
@@ -707,9 +725,9 @@ class PostValidationRules
 ```php
 <?php
 // ✅ 統一的錯誤處理
-class ValidationErrorHandler 
+class ValidationErrorHandler
 {
-    public static function handleApiError(ValidationException $e): array 
+    public static function handleApiError(ValidationException $e): array
     {
         return [
             'success' => false,
@@ -718,15 +736,15 @@ class ValidationErrorHandler
             'error_code' => 'VALIDATION_FAILED',
         ];
     }
-    
-    public static function handleFormError(ValidationException $e): array 
+
+    public static function handleFormError(ValidationException $e): array
     {
         $errors = [];
-        
+
         foreach ($e->getErrors() as $field => $messages) {
             $errors[$field] = is_array($messages) ? $messages[0] : $messages;
         }
-        
+
         return $errors;
     }
 }
@@ -737,23 +755,23 @@ class ValidationErrorHandler
 ```php
 <?php
 // ✅ 快取驗證規則
-class CachedValidator implements ValidatorInterface 
+class CachedValidator implements ValidatorInterface
 {
     private array $ruleCache = [];
-    
+
     public function __construct(
         private ValidatorInterface $validator,
         private CacheInterface $cache
     ) {}
-    
-    public function validateData(array $data, array $rules, array $messages = []): ValidationResult 
+
+    public function validateData(array $data, array $rules, array $messages = []): ValidationResult
     {
         $cacheKey = 'validation_rules_' . md5(serialize($rules));
-        
+
         if (!isset($this->ruleCache[$cacheKey])) {
             $this->ruleCache[$cacheKey] = $this->cache->get($cacheKey, $rules);
         }
-        
+
         return $this->validator->validateData($data, $this->ruleCache[$cacheKey], $messages);
     }
 }
@@ -764,24 +782,24 @@ class CachedValidator implements ValidatorInterface
 ```php
 <?php
 // ✅ 驗證測試輔助類別
-class ValidationTestHelper 
+class ValidationTestHelper
 {
-    public static function assertValidationPasses(ValidatorInterface $validator, array $data, array $rules): void 
+    public static function assertValidationPasses(ValidatorInterface $validator, array $data, array $rules): void
     {
         $result = $validator->validateData($data, $rules);
         assert($result->isValid(), 'Validation should pass but failed: ' . json_encode($result->getErrors()));
     }
-    
-    public static function assertValidationFails(ValidatorInterface $validator, array $data, array $rules, array $expectedErrors = []): void 
+
+    public static function assertValidationFails(ValidatorInterface $validator, array $data, array $rules, array $expectedErrors = []): void
     {
         $result = $validator->validateData($data, $rules);
         assert(!$result->isValid(), 'Validation should fail but passed');
-        
+
         if (!empty($expectedErrors)) {
             foreach ($expectedErrors as $field => $expectedMessage) {
                 $errors = $result->getErrors();
                 assert(isset($errors[$field]), "Expected error for field '{$field}' not found");
-                
+
                 if (is_string($expectedMessage)) {
                     assert(in_array($expectedMessage, $errors[$field]), "Expected error message not found");
                 }
@@ -899,5 +917,5 @@ A: 使用快取機制快取驗證規則，避免重複解析複雜規則。
 
 ---
 
-*文件版本: v2.0*  
+*文件版本: v2.0*
 *維護者: AlleyNote 開發團隊*
