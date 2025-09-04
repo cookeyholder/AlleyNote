@@ -1,16 +1,16 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-03 01:00:16
+**生成時間**: 2025-09-04 22:34:09
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 222 | - |
-| 介面與類別比例 | 22.97% | ✅ 良好 |
+| 總類別數 | 223 | - |
+| 介面與類別比例 | 22.87% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 59.91% | ✅ 良好 |
-| PSR-4 合規率 | 73.46% | ❌ 需修正 |
+| 現代 PHP 採用率 | 60.09% | ✅ 良好 |
+| PSR-4 合規率 | 73.55% | ❌ 需修正 |
 | DDD 結構完整性 | 0.00% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
@@ -18,7 +18,7 @@
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
 | Match 表達式 (PHP 8.0+) | 234 | ✅ 更安全的條件分支 |
-| 唯讀屬性 (PHP 8.1+) | 103 | ✅ 提升資料不變性 |
+| 唯讀屬性 (PHP 8.1+) | 104 | ✅ 提升資料不變性 |
 | 空安全運算子 (PHP 8.0+) | 70 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
@@ -460,6 +460,7 @@
 - app/Domains/Auth/Providers/SimpleAuthServiceProvider.php
 
 ### `App\Domains\Auth\Repositories`
+- app/Domains/Auth/Repositories/UserRepositoryAdapter.php
 - app/Domains/Auth/Repositories/UserRepository.php
 
 ### `App\Domains\Auth\Models`
@@ -765,7 +766,7 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 222
+- **類別總數**: 223
 - **介面總數**: 51
 - **Trait 總數**: 0
 
@@ -813,6 +814,8 @@
   - 實作: 
 - **SimpleAuthServiceProvider**: `app/Domains/Auth/Providers/SimpleAuthServiceProvider.php`
   - 實作: 
+- **UserRepositoryAdapter**: `app/Domains/Auth/Repositories/UserRepositoryAdapter.php`
+  - 實作: UserRepositoryInterface
 - **UserRepository**: `app/Domains/Auth/Repositories/UserRepository.php`
   - 實作: 
 - **PwnedPasswordService**: `app/Domains/Auth/Services/Advanced/PwnedPasswordService.php`
@@ -1118,6 +1121,9 @@
 ### `LoggingSecurityServiceInterface`
 - LoggingSecurityService (`app/Domains/Security/Services/Logging/LoggingSecurityService.php`)
 
+### `UserRepositoryInterface`
+- UserRepositoryAdapter (`app/Domains/Auth/Repositories/UserRepositoryAdapter.php`)
+
 ### `SessionSecurityServiceInterface`
 - SessionSecurityService (`app/Domains/Auth/Services/SessionSecurityService.php`)
 
@@ -1244,7 +1250,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 222 個
+- **缺少測試的類別**: 223 個
 
 ### 缺少測試的重要類別
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
