@@ -121,37 +121,37 @@
 **預估時間**：5 小時
 **依賴**：T1.5, T2.2
 **驗收標準**：
-- [ ] `StatisticsApplicationService` 類別
-- [ ] 協調多個領域服務
-- [ ] 處理應用層的事務邏輯
-- [ ] 包含完整的錯誤處理
-- [ ] 實作快取策略
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsApplicationService` 類別
+- [x] 協調多個領域服務
+- [x] 處理應用層的事務邏輯
+- [x] 包含完整的錯誤處理
+- [x] 實作快取策略
+- [x] 通過 PHPStan Level 10 檢查
 
 #### ✅ T3.2 - 建立統計查詢服務
 **描述**：專門處理統計查詢的應用服務
 **預估時間**：4 小時
 **依賴**：T3.1
 **驗收標準**：
-- [ ] `StatisticsQueryService` 類別
-- [ ] 支援複雜的統計查詢
-- [ ] 實作查詢最佳化
-- [ ] 包含分頁支援
-- [ ] 查詢參數驗證
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsQueryService` 類別
+- [x] 支援複雜的統計查詢
+- [x] 實作查詢最佳化
+- [x] 包含分頁支援
+- [x] 查詢參數驗證
+- [x] 通過 PHPStan Level 10 檢查
 
 #### ✅ T3.3 - 建立統計 DTO 類別
 **描述**：建立統計資料傳輸物件
 **預估時間**：3 小時
 **依賴**：T3.2
 **驗收標準**：
-- [ ] `StatisticsOverviewDTO` 類別
-- [ ] `PostStatisticsDTO` 類別
-- [ ] `SourceDistributionDTO` 類別
-- [ ] `UserActivityDTO` 類別
-- [ ] 所有 DTO 包含驗證邏輯
-- [ ] 支援 JSON 序列化
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsOverviewDTO` 類別
+- [x] `PostStatisticsDTO` 類別
+- [x] `SourceDistributionDTO` 類別
+- [x] `UserActivityDTO` 類別
+- [x] 所有 DTO 包含驗證邏輯
+- [x] 支援 JSON 序列化
+- [x] 通過 PHPStan Level 10 檢查
 
 ---
 

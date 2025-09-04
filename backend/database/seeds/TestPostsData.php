@@ -6,10 +6,10 @@ use Phinx\Seed\AbstractSeed;
 
 /**
  * 測試文章資料 Seed
- * 
+ *
  * 建立一些測試用的文章資料，包含不同來源類型的文章，
  * 用於測試統計功能和來源追蹤功能。
- * 
+ *
  * @author GitHub Copilot
  * @version 1.0.0
  * @since 2025-09-04
@@ -28,7 +28,7 @@ class TestPostsData extends AbstractSeed
     {
         // 清除現有測試資料
         $this->execute('DELETE FROM posts WHERE title LIKE "Test Post%"');
-        
+
         // 建立測試文章資料
         $posts = [
             // 有完整來源資訊的文章
@@ -133,10 +133,10 @@ class TestPostsData extends AbstractSeed
                 'deleted_at' => null
             ]
         ];
-        
+
         // 插入測試資料
         $this->table('posts')->insert($posts)->save();
-        
+
         $this->output->writeln('<info>Test posts data created successfully!</info>');
         $this->output->writeln('<info>Created 5 test posts:</info>');
         $this->output->writeln('  - 3 posts with proper source information');
