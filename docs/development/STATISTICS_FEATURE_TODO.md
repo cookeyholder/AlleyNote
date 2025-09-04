@@ -63,12 +63,12 @@
 **預估時間**：6 小時
 **依賴**：T1.4
 **驗收標準**：
-- [ ] `StatisticsCalculatorService` 領域服務
-- [ ] `PostStatisticsService` 領域服務
-- [ ] 所有業務邏輯封裝在領域層
-- [ ] 不依賴基礎設施層
+- [x] `StatisticsCalculatorService` 領域服務
+- [x] `PostStatisticsService` 領域服務
+- [x] 所有業務邏輯封裝在領域層
+- [x] 不依賴基礎設施層
 - [ ] 包含完整的領域邏輯測試
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] 通過 PHPStan Level 10 檢查
 
 ---
 
