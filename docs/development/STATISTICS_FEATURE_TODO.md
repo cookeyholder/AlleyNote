@@ -91,13 +91,13 @@
 **預估時間**：3 小時
 **依賴**：T2.1
 **驗收標準**：
-- [ ] `statistics_snapshots` 表正確建立
-- [ ] 包含必要欄位（id, uuid, type, period, data, created_at）
-- [ ] JSON 欄位支援複雜統計資料
-- [ ] 建立複合索引提升查詢效能
-- [ ] 外鍵約束正確設定
-- [ ] Migration 可正確回滾
-- [ ] 通過本地測試環境驗證
+- [x] `statistics_snapshots` 表正確建立
+- [x] 包含必要欄位（id, uuid, snapshot_type, period_type, period_start, period_end, statistics_data, created_at, updated_at）
+- [x] JSON 欄位支援複雜統計資料
+- [x] 建立複合索引提升查詢效能（9個索引）
+- [x] 唯一約束防止重複快照
+- [x] Migration 可正確執行和回滾
+- [x] 通過本地測試環境驗證
 
 #### ✅ T2.3 - 更新現有資料的來源資訊
 **描述**：為現有文章資料設定預設來源
