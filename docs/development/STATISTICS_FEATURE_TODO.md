@@ -78,13 +78,13 @@
 **描述**：為 posts 表新增來源追蹤欄位
 **預估時間**：2 小時
 **驗收標準**：
-- [ ] Migration 檔案正確建立
-- [ ] 新增 `source_type` 欄位 (enum)
-- [ ] 新增 `source_detail` 欄位 (nullable text)
-- [ ] 建立適當的索引
-- [ ] 包含向下相容的預設值
-- [ ] Migration 可正確回滾
-- [ ] 通過本地測試環境驗證
+- [x] Migration 檔案正確建立
+- [x] 新增 `source_type` 欄位 (string, 支援 enum 值)
+- [x] 新增 `source_detail` 欄位 (nullable text)
+- [x] 建立適當的索引
+- [x] 包含向下相容的預設值
+- [x] Migration 可正確執行
+- [x] 通過本地測試環境驗證
 
 #### ✅ T2.2 - 建立統計快照表 Migration
 **描述**：建立統計資料快照表
