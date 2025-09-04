@@ -1,33 +1,37 @@
 # JWT 認證系統規格書
 
-**專案**: AlleyNote 公布欄系統  
-**版本**: 1.0.0  
-**建立日期**: 2025-08-26  
-**作者**: GitHub Copilot  
+**專案**: AlleyNote 公布欄系統
+**版本**: v4.0
+**建立日期**: 2025-08-26
+**更新日期**: 2025-09-03
+**架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD)
+**作者**: GitHub Copilot
 
 ## 1. 概述
 
 ### 1.1 目標
-將 AlleyNote 現有的會話式認證系統改進為 JWT (JSON Web Token) 認證系統，提供更安全、可擴展且無狀態的使用者認證機制。
+將 AlleyNote 前後端分離架構的認證系統實作為現代 JWT (JSON Web Token) 認證機制，為 Vue.js 3 前端和 PHP 8.4.12 DDD 後端提供安全、可擴展且無狀態的使用者認證。
 
 ### 1.2 範圍
-- 替換現有 AuthService 中的認證邏輯
-- 實作 JWT token 產生、驗證和管理
+- 實作前後端分離的 JWT token 產生、驗證和管理
+- Vue.js 3 Composition API 認證狀態管理
+- PHP 8.4.12 後端 API 認證系統
 - 加入 refresh token 機制
-- 實作認證 middleware
+- 實作 CORS 安全認證 middleware
 - 提供 token 黑名單功能
-- 完整的單元測試覆蓋
+- 前後端完整的測試覆蓋 (1,372 後端測試)
 
 ### 1.3 架構原則
-遵循 DDD (Domain-Driven Design) 原則：
+遵循 DDD (Domain-Driven Design) 原則和前後端分離最佳實踐：
 - **Domain Layer**: JWT 相關的業務邏輯和規則
-- **Application Layer**: 控制器和應用服務
+- **Application Layer**: API 控制器和應用服務
 - **Infrastructure Layer**: JWT 函式庫整合和持久化
+- **Frontend Layer**: Vue.js 3 認證狀態管理和 API 整合
 - **Shared Layer**: 通用介面和例外處理
 
 ## 2. 技術規格
 
-### 2.1 JWT 結構設計
+### 2.1 JWT 結構設計 (API 優先)
 
 #### 2.1.1 Header
 ```json
@@ -37,11 +41,11 @@
 }
 ```
 
-#### 2.1.2 Payload (Access Token)
+#### 2.1.2 Payload (Access Token) - API 優化
 ```json
 {
   "iss": "alleynote-api",
-  "aud": "alleynote-client", 
+  "aud": "alleynote-spa",
   "sub": "user-{userId}",
   "iat": 1640995200,
   "exp": 1640998800,

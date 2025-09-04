@@ -1,29 +1,29 @@
 # AlleyNote 系統需求和環境說明
 
-> 📋 **用途**：為系統管理員提供完整的硬體、軟體需求和環境準備指南  
-> **版本**: v3.0 (支援統一腳本管理系統)  
-> **更新日期**: 2025-08-28
+> 📋 **用途**：為系統管理員提供完整的硬體、軟體需求和環境準備指南
+> **版本**: v4.0 (前後端分離架構)
+> **更新日期**: 2025-01-20
 
 ---
 
 ## 🖥️ 硬體需求
 
 ### 最低需求 (開發環境)
-- **CPU**：2 核心 (2.0 GHz)
+- **CPU**：2 核心 (2.5 GHz)
 - **記憶體**：4 GB RAM
 - **硬碟空間**：20 GB 可用空間
 - **網路**：100 Mbps 網路連線
 
-### 建議需求 (預備環境)
-- **CPU**：4 核心 (2.5 GHz)
+### 建議需求 (測試環境)
+- **CPU**：4 核心 (3.0 GHz)
 - **記憶體**：8 GB RAM
 - **硬碟空間**：50 GB 可用空間（SSD 建議）
 - **網路**：1 Gbps 網路連線
 
 ### 生產環境需求
-- **CPU**：8 核心 (3.0 GHz)
+- **CPU**：8 核心 (3.5 GHz)
 - **記憶體**：16 GB RAM
-- **硬碟空間**：100 GB 可用空間（SSD 必須）
+- **硬碟空間**：100 GB 可用空間（NVMe SSD 必須）
 - **網路**：1 Gbps 網路連線
 - **備援**：RAID 1 或以上等級
 - **負載平衡**：支援多節點部署
@@ -33,42 +33,59 @@
 ## 💻 軟體需求
 
 ### 🐳 容器化環境 (推薦)
-- **Docker**: 24.0.0+
-- **Docker Compose**: 2.20.0+
-- **統一腳本系統**: 內建支援 (9 core classes)
+- **Docker**: 28.3.3 或更新版本
+- **Docker Compose**: v2.39.2 或更新版本
+- **前後端分離**: Vue.js 3 + PHP 8.4.12 DDD 後端
+
+### 🗄️ 資料庫系統
+#### 支援的資料庫（優先順序）
+1. **SQLite3** （強烈推薦，預設選項）
+   - 輕量級、無需額外配置
+   - 適合小到中型應用
+   - 內建於 PHP，零維護成本
+
+2. **PostgreSQL 16+** （大型部署推薦）
+   - 高效能、高可靠性
+   - 支援複雜查詢和進階功能
+   - 適合大型應用和高併發環境
 
 ### 作業系統
 #### 支援的 Linux 發行版
-- **Ubuntu 22.04 LTS** （強烈推薦）
-- **Ubuntu 20.04 LTS** 
-- **Debian 12** （推薦）
-- **Debian 11**
-- **CentOS Stream 9**
+- **Debian 12** （強烈推薦）
+- **Debian 11** （推薦）
+- **Ubuntu 24.04 LTS**
+- **Ubuntu 22.04 LTS**
 - **Rocky Linux 9**
 - **AlmaLinux 9**
+- **RHEL 9**
 
 #### Windows 支援
-- **Windows Server 2019**
 - **Windows Server 2022**
+- **Windows Server 2019**
+- **Windows 11 Pro**（開發環境）
 - **Windows 10 Pro**（開發環境）
 
-### 必要軟體
+### 必要軟體版本
 ```bash
 # Docker
-Docker Engine 20.10.0 或更新版本
-Docker Compose 2.0.0 或更新版本
+Docker Engine 28.3.3 或更新版本
+Docker Compose v2.39.2 或更新版本
 
 # Git
-Git 2.0 或更新版本
+Git 2.40.0 或更新版本
+
+# Node.js (前端開發)
+Node.js 20.x LTS 或更新版本
+npm 10.x 或更新版本
 
 # 系統工具
-curl, wget, unzip, tar
+curl, wget, unzip, tar, jq
 ```
 
 ### 檢查系統需求腳本
 ```bash
 #!/bin/bash
-echo "=== AlleyNote 系統需求檢查 ==="
+echo "=== AlleyNote v4.0 系統需求檢查 ==="
 
 # 檢查作業系統
 echo "1. 作業系統："
@@ -88,15 +105,23 @@ df -h /
 
 # 檢查 Docker
 echo "5. Docker 版本："
-docker --version 2>/dev/null || echo "Docker 未安裝"
+docker --version 2>/dev/null || echo "❌ Docker 未安裝"
 
 # 檢查 Docker Compose
 echo "6. Docker Compose 版本："
-docker-compose --version 2>/dev/null || echo "Docker Compose 未安裝"
+docker-compose --version 2>/dev/null || echo "❌ Docker Compose 未安裝"
 
 # 檢查 Git
 echo "7. Git 版本："
-git --version 2>/dev/null || echo "Git 未安裝"
+git --version 2>/dev/null || echo "❌ Git 未安裝"
+
+# 檢查 Node.js (前端開發需要)
+echo "8. Node.js 版本："
+node --version 2>/dev/null || echo "⚠️ Node.js 未安裝 (前端開發需要)"
+
+# 檢查 npm
+echo "9. npm 版本："
+npm --version 2>/dev/null || echo "⚠️ npm 未安裝 (前端開發需要)"
 
 echo "=== 檢查完成 ==="
 ```

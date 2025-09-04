@@ -16,7 +16,7 @@
 
 ### SQLite 最佳實踐 (基於 /websites/www_sqlite_org-docs.html)
 
-1. **PRAGMA 最佳化**: 
+1. **PRAGMA 最佳化**:
    - `PRAGMA optimize` 自動最佳化查詢計劃器
    - `PRAGMA foreign_keys = ON` 啟用外鍵約束
    - `PRAGMA journal_mode = WAL` 提升併發效能
@@ -115,7 +115,7 @@ verify_database_integrity() {
         \$stmt = \$pdo->query('PRAGMA integrity_check');
         echo \$stmt->fetchColumn();
     ")
-    
+
     if [[ "$integrity_result" == "ok" ]]; then
         log "INFO" "資料庫完整性驗證通過"
     else
@@ -337,7 +337,7 @@ DB_DIR="/var/www/html/database"
 
 1. **監控整合**: 可加入資料庫效能監控
 2. **通知機制**: 可加入失敗通知
-3. **多資料庫支援**: 可擴展到支援 PostgreSQL、MySQL 等
+3. **多資料庫支援**: 可擴展到支援 PostgreSQL、SQLite 等
 4. **Web 介面**: 可開發 Web 管理介面
 
 這次現代化不僅解決了原有腳本的問題，更為專案的資料庫管理奠定了堅實的基礎。

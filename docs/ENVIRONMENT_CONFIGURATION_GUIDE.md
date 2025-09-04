@@ -1,8 +1,13 @@
 # AlleyNote 環境變數配置指南
 
+**版本**: v4.0
+**更新日期**: 2025-09-03
+**架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD)
+**系統版本**: Docker 28.3.3, Docker Compose v2.39.2
+
 ## 📋 概述
 
-AlleyNote 使用環境變數來管理不同環境下的配置參數。本文件詳細說明了所有可用的環境變數及其用途。
+AlleyNote 在前後端分離架構中使用環境變數來管理不同環境下的配置參數。本文件詳細說明了前端 (Vue.js 3) 和後端 (PHP 8.4.12) 的所有可用環境變數及其用途。
 
 ## 🌍 環境類型
 
@@ -11,43 +16,89 @@ AlleyNote 使用環境變數來管理不同環境下的配置參數。本文件�
 - **testing** - 測試環境
 - **production** - 生產環境
 
-### 環境配置檔案
-- `.env.development` - 開發環境配置
-- `.env.testing` - 測試環境配置
-- `.env.production` - 生產環境配置
-- `.env.example` - 配置範本檔案
+### 環境配置檔案 (前後端分離)
 
-## ⚙️ 配置項目說明
+#### 後端配置 (PHP 8.4.12)
+- `backend/.env.development` - 開發環境配置
+- `backend/.env.testing` - 測試環境配置
+- `backend/.env.production` - 生產環境配置
+- `backend/.env.example` - 後端配置範本檔案
+
+#### 前端配置 (Vue.js 3)
+- `frontend/.env.development` - 開發環境配置
+- `frontend/.env.testing` - 測試環境配置
+- `frontend/.env.production` - 生產環境配置
+- `frontend/.env.example` - 前端配置範本檔案
+
+## ⚙️ 後端配置項目說明 (PHP 8.4.12)
 
 ### 應用程式基本設定
 
 | 變數名稱 | 說明 | 預設值 | 範例 |
 |---------|------|-------|------|
-| `APP_NAME` | 應用程式名稱 | `AlleyNote` | `AlleyNote` |
+| `APP_NAME` | 應用程式名稱 | `AlleyNote API` | `AlleyNote API` |
 | `APP_ENV` | 執行環境 | `development` | `production` |
 | `APP_DEBUG` | 偵錯模式 | `true` | `false` |
-| `APP_URL` | 應用程式網址 | `http://localhost` | `https://your-domain.com` |
+| `APP_URL` | 後端 API 網址 | `http://localhost:8080` | `https://api.your-domain.com` |
 | `APP_KEY` | 應用程式金鑰 | - | `base64:your-key-here` |
 | `APP_TIMEZONE` | 時區設定 | `Asia/Taipei` | `UTC` |
+| `PHP_VERSION` | PHP 版本 | `8.4.12` | `8.4.12` |
 
-### 資料庫設定
+### 資料庫設定 (SQLite3 優先推薦)
+
+#### SQLite3 設定 (預設推薦)
+| 變數名稱 | 說明 | 預設值 | 範例 |
+|---------|------|-------|------|
+| `DB_CONNECTION` | 資料庫類型 | `sqlite` | `sqlite` |
+| `DB_DATABASE` | 資料庫檔案路徑 | `/var/www/html/database/alleynote.sqlite3` | `/app/data/alleynote.sqlite3` |
+
+#### PostgreSQL 設定 (大型部署時使用)
+| 變數名稱 | 說明 | 預設值 | 範例 |
+|---------|------|-------|------|
+| `DB_CONNECTION` | 資料庫類型 | `pgsql` | `pgsql` |
+| `DB_DATABASE` | 資料庫名稱 | `alleynote` | `alleynote_prod` |
+| `DB_HOST` | 資料庫主機 | `postgres` | `localhost` |
+| `DB_PORT` | 資料庫連接埠 | `5432` | `5432` |
+| `DB_USERNAME` | 資料庫使用者 | `alleynote` | `alleynote_user` |
+| `DB_PASSWORD` | 資料庫密碼 | - | `secure_password` |
+| `POSTGRES_PASSWORD` | PostgreSQL 密碼 | - | `postgres_password` |
+| `DB_SCHEMA` | 資料庫結構描述 | `public` | `alleynote_schema` |
+
+### API 與 CORS 設定
 
 | 變數名稱 | 說明 | 預設值 | 範例 |
 |---------|------|-------|------|
-| `DB_CONNECTION` | 資料庫類型 | `sqlite` | `mysql` |
-| `DB_DATABASE` | 資料庫檔案/名稱 | `/var/www/html/database/alleynote.sqlite3` | `alleynote` |
-| `DB_HOST` | 資料庫主機 | - | `localhost` |
-| `DB_PORT` | 資料庫連接埠 | - | `3306` |
-| `DB_USERNAME` | 資料庫使用者 | - | `alleynote` |
-| `DB_PASSWORD` | 資料庫密碼 | - | `password` |
+| `API_PREFIX` | API 路由前綴 | `/api` | `/api/v1` |
+| `CORS_ALLOWED_ORIGINS` | 允許的來源 | `http://localhost:3000` | `https://your-domain.com` |
+| `CORS_ALLOWED_METHODS` | 允許的 HTTP 方法 | `GET,POST,PUT,DELETE,OPTIONS` | `GET,POST,PUT,DELETE` |
+| `CORS_ALLOWED_HEADERS` | 允許的標頭 | `Content-Type,Authorization,X-Requested-With` | - |
 
 ### 檔案上傳設定
 
 | 變數名稱 | 說明 | 預設值 | 範例 |
 |---------|------|-------|------|
-| `UPLOAD_MAX_SIZE` | 檔案大小限制 | `10M` | `50M` |
+| `UPLOAD_MAX_SIZE` | 檔案大小限制 | `50M` | `100M` |
 | `UPLOAD_MAX_FILES` | 同時上傳檔案數 | `10` | `20` |
 | `ALLOWED_FILE_TYPES` | 允許的檔案類型 | `jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx` | `jpg,png,pdf` |
+
+## 🎯 前端配置項目說明 (Vue.js 3)
+
+### 應用程式基本設定
+
+| 變數名稱 | 說明 | 預設值 | 範例 |
+|---------|------|-------|------|
+| `VITE_APP_NAME` | 前端應用程式名稱 | `AlleyNote` | `AlleyNote` |
+| `VITE_APP_ENV` | 前端執行環境 | `development` | `production` |
+| `VITE_APP_VERSION` | 應用程式版本 | `4.0.0` | `4.0.0` |
+| `VITE_BASE_URL` | 前端根路徑 | `/` | `/alleynote/` |
+
+### API 連線設定
+
+| 變數名稱 | 說明 | 預設值 | 範例 |
+|---------|------|-------|------|
+| `VITE_API_BASE_URL` | 後端 API 網址 | `http://localhost:8080/api` | `https://api.your-domain.com/api` |
+| `VITE_API_TIMEOUT` | API 請求逾時 | `30000` | `60000` |
+| `VITE_API_RETRY_ATTEMPTS` | 重試次數 | `3` | `5` |
 | `STORAGE_PATH` | 檔案儲存路徑 | `/var/www/alleynote/storage/files` | `/custom/path` |
 
 ### 快取設定

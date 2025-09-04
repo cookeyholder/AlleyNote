@@ -17,7 +17,7 @@ scripts/
 logs/
 ├── nginx/                # Nginx 日誌
 ├── certbot/              # Certbot 日誌
-├── mysql/                # MySQL 日誌
+├── database/             # 資料庫日誌
 └── ssl-renewal.log       # SSL 續簽日誌
 ```
 
@@ -87,10 +87,10 @@ curl -I https://your-domain.com
    ```bash
    # 檢查 DNS 解析
    nslookup your-domain.com
-   
+
    # 檢查服務狀態
    docker-compose ps
-   
+
    # 查看 Certbot 日誌
    docker-compose logs certbot
    ```
@@ -99,10 +99,10 @@ curl -I https://your-domain.com
    ```bash
    # 檢查 Nginx 設定
    docker-compose exec nginx nginx -t
-   
+
    # 查看 Nginx 日誌
    docker-compose logs nginx
-   
+
    # 檢查憑證檔案
    ls -la ssl-data/live/your-domain.com/
    ```
@@ -111,7 +111,7 @@ curl -I https://your-domain.com
    ```bash
    # 手動測試續簽
    docker-compose run --rm certbot renew --dry-run
-   
+
    # 檢查續簽日誌
    cat logs/ssl-renewal.log
    ```
