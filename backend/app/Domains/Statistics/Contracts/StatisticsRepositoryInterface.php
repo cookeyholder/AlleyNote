@@ -63,7 +63,7 @@ interface StatisticsRepositoryInterface extends RepositoryInterface
 
     /**
      * 刪除過期的統計快照.
-     * 
+     *
      * @param int $daysToKeep 保留天數
      */
     public function deleteExpiredSnapshots(int $daysToKeep = 90): int;
