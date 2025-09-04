@@ -1,49 +1,72 @@
 # Swagger UI 整合說明
 
-AlleyNote 專案已整合 Swagger UI 來提供 API 文件。
+**版本**: v4.0
+**更新日期**: 2025-09-03
+**架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD)
+**系統版本**: Docker 28.3.3, Docker Compose v2.39.2
+
+AlleyNote 專案已整合 Swagger UI 來提供完整的 API 文件，專為前後端分離架構設計。
 
 ## 功能概述
 
-- ✅ OpenAPI 3.0 規格
-- ✅ 互動式 API 文件
-- ✅ 自動程式碼產生支援
-- ✅ 多語言 Schema 註解（繁體中文）
-- ✅ JWT 和 Session 授權支援
-- ✅ CSRF Token 驗證
+- ✅ **OpenAPI 3.1 規格** (最新版本)
+- ✅ **互動式 API 文件** (支援前後端分離測試)
+- ✅ **自動程式碼產生支援** (Vue.js 3 + PHP 8.4.12)
+- ✅ **多語言 Schema 註解** (繁體中文)
+- ✅ **JWT Bearer 授權支援** (API 認證)
+- ✅ **CORS 預檢請求支援** (前後端通訊)
+- ✅ **Vue.js 3 整合範例** (Composition API)
+- ✅ **PHP 8.4.12 屬性註解** (現代化 PHP 語法)
 
-## 檔案結構
+## 檔案結構 (前後端分離)
 
 ```
+backend/                         # PHP 8.4.12 後端
 ├── config/
 │   ├── swagger.php              # Swagger 設定檔
-│   └── swagger-routes.php       # 路由設定
-├── src/
+│   └── swagger-routes.php       # API 路由設定
+├── app/
 │   ├── Controllers/
-│   │   ├── PostController.php   # 加入 Swagger 註解的控制器
-│   │   └── SwaggerController.php # Swagger UI 控制器
+│   │   ├── Api/                 # API 控制器目錄
+│   │   │   ├── AnnouncementController.php  # 公告 API
+│   │   │   └── AuthController.php          # 認證 API
+│   │   └── SwaggerController.php           # Swagger UI 控制器
 │   └── Schemas/                 # OpenAPI Schema 定義
-│       ├── PostSchema.php
-│       ├── PostRequestSchema.php
-│       └── AuthSchema.php
+│       ├── AnnouncementSchema.php
+│       ├── AuthRequestSchema.php
+│       └── ErrorResponseSchema.php
 ├── scripts/
 │   └── generate-swagger-docs.php # API 文件產生腳本
 └── public/
     ├── api-docs.json           # 產生的 JSON 文件
     └── api-docs.yaml           # 產生的 YAML 文件
+
+frontend/                        # Vue.js 3 前端
+├── src/
+│   ├── api/
+│   │   ├── swagger-client.js   # 自動產生的 API 客戶端
+│   │   └── types.d.ts          # TypeScript 型別定義
+│   └── composables/
+│       └── useApi.js           # Vue 3 Composition API 整合
 ```
 
 ## 使用說明
 
 ### 1. 安裝相依套件
 
-已在 `composer.json` 中加入 `zircote/swagger-php`：
+後端已在 `composer.json` 中加入 `zircote/swagger-php`：
 
 ```bash
-# 在 Docker 容器內執行
-composer install
+# 後端依賴安裝
+cd backend
+docker-compose exec web composer install
+
+# 前端依賴安裝
+cd ../frontend
+npm install @openapitools/openapi-generator-cli
 ```
 
-### 2. 設定路由
+### 2. 設定 API 路由 (後端)
 
 將 Swagger 路由加入你的主要路由檔案中：
 

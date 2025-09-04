@@ -1,52 +1,69 @@
 # 快取標籤系統使用指南
 
+**版本**: v4.0
+**更新日期**: 2025-09-03
+**架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD)
+**系統版本**: Docker 28.3.3, Docker Compose v2.39.2
+
 ## 概述
 
-AlleyNote 快取標籤系統提供了強大且靈活的快取管理功能，支援按標籤組織快取項目、批次操作、分組管理，以及智能失效策略。
+AlleyNote 在前後端分離架構中的快取標籤系統提供了強大且靈活的快取管理功能，專為 API 優化設計，支援按標籤組織快取項目、批次操作、分組管理，以及智能失效策略。
 
-## 核心概念
+## 核心概念 (API 優化)
 
-### 1. 標籤化快取 (Tagged Cache)
+### 1. 標籤化快取 (Tagged Cache) - API 回應優化
 
-標籤化快取允許您為每個快取項目分配一個或多個標籤，以便後續按標籤進行批次操作：
+標籤化快取允許您為每個 API 回應快取項目分配一個或多個標籤，以便後續按標籤進行批次操作：
 
 ```php
-// 獲取標籤化快取實例
+// 獲取標籤化快取實例 (PHP 8.4.12)
 $cache = app(TaggedCacheInterface::class);
 
-// 為快取項目設定標籤
-$taggedCache = $cache->tags(['user:123', 'posts']);
-$taggedCache->put('user_posts_123', $posts, 3600);
+// 為 API 回應設定標籤
+$taggedCache = $cache->tags(['api:user:123', 'api:announcements', 'v4.0']);
+$taggedCache->put('api_announcements_user_123', $apiResponse, 3600);
 
-// 按標籤清空快取
-$cache->flushByTags(['user:123']); // 清空所有用戶相關快取
-$cache->flushByTags(['posts']); // 清空所有文章相關快取
+// API 版本化快取
+$apiCache = $cache->tags(['api:v4.0', 'announcements']);
+$apiCache->put('api_announcements_list', $announcements, 1800);
+
+// 按標籤清空快取 (API 更新時)
+$cache->flushByTags(['api:user:123']); // 清空使用者相關 API 快取
+$cache->flushByTags(['api:announcements']); // 清空所有公告相關 API 快取
+$cache->flushByTags(['api:v4.0']); // 清空特定 API 版本快取
 ```
 
-### 2. 快取分組 (Cache Groups)
+### 2. 前端快取分組 (Cache Groups) - SPA 優化
 
-快取分組提供更高層次的快取組織和管理功能，支援依賴關係和失效規則：
+快取分組提供更高層次的快取組織和管理功能，專為 Vue.js 3 SPA 設計：
 
 ```php
 use App\Shared\Cache\Services\CacheGroupManager;
 
 $groupManager = app(CacheGroupManager::class);
 
-// 建立快取分組
-$userGroup = $groupManager->group('user_123', ['user:123', 'profile']);
-$userGroup->put('user_info', $userInfo, 3600);
-$userGroup->put('user_preferences', $preferences, 7200);
+// 建立 API 快取分組
+$userApiGroup = $groupManager->group('api_user_123', [
+    'api:user:123',
+    'api:profile',
+    'frontend:vue3'
+]);
+$userApiGroup->put('api_user_info', $userApiData, 3600);
+$userApiGroup->put('api_user_preferences', $preferences, 7200);
+$userApiGroup->put('api_user_announcements', $announcements, 1800);
 
-// 清空整個分組
-$groupManager->flushGroup('user_123');
+// 清空整個 API 分組 (當用戶登出時)
+$groupManager->flushGroup('api_user_123');
 ```
 
-### 3. 標籤值物件 (CacheTag)
+### 3. 標籤值物件 (CacheTag) - PHP 8.4.12 優化
 
-標籤值物件提供標籤的正規化和驗證功能：
+標籤值物件提供標籤的正規化和驗證功能，使用 PHP 8.4.12 新特性：
 
 ```php
 use App\Shared\Cache\ValueObjects\CacheTag;
+
+// PHP 8.4.12 Property Hooks 範例
 
 // 建立不同類型的標籤
 $userTag = CacheTag::user(123);        // "user:123"

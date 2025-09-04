@@ -1,0 +1,21 @@
+
+includes:
+	- vendor/phpstan/phpstan-mockery/extension.neon
+	- phpstan-mockery-ignore.neon
+	- phpstan-test-exclusions.neon
+	- phpstan-level-10-baseline.neon
+
+parameters:
+    treatPhpDocTypesAsCertain: false
+    level: 10
+    paths:
+        - app
+        - tests
+    excludePaths:
+        - app/Infrastructure/OpenApi
+        - vendor
+        - tests/Factory
+        - tests/manual
+        - coverage-reports (?)
+        - ../coverage-reports (?)
+    tmpDir: storage/phpstan

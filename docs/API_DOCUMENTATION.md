@@ -1,9 +1,10 @@
 # AlleyNote API 文件
 
-**版本**: v3.0
+**版本**: v4.0
 **基礎 URL**: `https://your-domain.com/api`
-**API 版本**: RESTful API v3.0
-**更新日期**: 2025-08-28
+**API 版本**: RESTful API v4.0
+**更新日期**: 2025-01-20
+**前後端分離**: Vue.js 3 + PHP 8.4.12 DDD 後端
 
 ---
 
@@ -26,19 +27,27 @@
 
 ## 概述
 
-AlleyNote API v3.0 提供完整的公布欄網站功能，基於 DDD 架構設計，包含文章管理、使用者認證、附件上傳、IP 控制等功能。
+AlleyNote API v4.0 提供完整的前後端分離公布欄網站功能，基於 PHP 8.4.12 DDD 架構設計，包含文章管理、使用者認證、附件上傳、IP 控制等功能。
 
-### 新版本特色（v3.0）
+### 版本 4.0 特色
 
-- ✅ **DDD 架構**: 領域驅動設計，161 classes, 37 interfaces
-- ✅ **統一腳本系統**: 9 core classes，85% 程式碼精簡
-- ✅ **完整測試覆蓋**: 1,213 tests, 87.5% coverage
-- ✅ **強型別驗證**: 29 種內建驗證規則，繁體中文錯誤訊息
+- ✅ **前後端分離**: Vue.js 3 Composition API + PHP 8.4.12 DDD 後端
+- ✅ **DDD 架構**: 領域驅動設計，採用最新 PHP 8.4 語法特性
+- ✅ **完整測試覆蓋**: 138 個測試檔案，1,372 個通過測試
+- ✅ **現代化容器**: Docker 28.3.3 & Docker Compose v2.39.2
+- ✅ **強型別驗證**: PHP 8.4 型別系統，繁體中文錯誤訊息
 - ✅ **統一錯誤格式**: 標準化的 API 錯誤回應
 - ✅ **自動 API 文件**: Swagger 整合，自動產生 OpenAPI 規格
-- ✅ **DTO 驗證**: 所有輸入透過 DTO 進行驗證
 - ✅ **增強安全性**: CSRF 防護、XSS 過濾、SQL 注入防護
-- ✅ **效能優化**: 快取機制、查詢優化
+- ✅ **效能優化**: OPcache v8.4.12、快取機制、查詢優化
+
+### 技術堆疊
+
+- **後端**: PHP 8.4.12 (Xdebug 3.4.5, Zend OPcache v8.4.12)
+- **前端**: Vue.js 3 Composition API
+- **測試**: PHPUnit 11.5.34
+- **容器**: Docker 28.3.3 & Docker Compose v2.39.2
+- **資料庫**: SQLite3 (預設推薦) / PostgreSQL 16 (大型部署)
 
 ### 支援的格式
 
@@ -53,20 +62,42 @@ AlleyNote API v3.0 提供完整的公布欄網站功能，基於 DDD 架構設�
 
 ### 支援的認證方式
 
-1. **Session 認證**: 基於 PHP Session
-2. **CSRF Token**: 表單提交需要 CSRF Token
-3. **API Key**: 可選支援
+1. **JWT 認證**: JSON Web Token (建議用於前後端分離)
+2. **Session 認證**: 基於 PHP Session (向後相容)
+3. **CSRF Token**: 表單提交需要 CSRF Token
 
-### Session 認證
+### JWT 認證 (推薦)
 
 ```http
 POST /api/auth/login
 Content-Type: application/json
 
 {
-    "username": "admin",
-    "password": "password123"
+    "email": "admin@example.com",
+    "password": "secure_password"
 }
+```
+
+回應：
+```json
+{
+    "success": true,
+    "data": {
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+        "expires_in": 3600,
+        "user": {
+            "id": 1,
+            "email": "admin@example.com",
+            "role": "admin"
+        }
+    }
+}
+```
+
+使用 JWT Token：
+```http
+GET /api/posts
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
 ```
 
 ### CSRF Token
@@ -77,6 +108,7 @@ Content-Type: application/json
 POST /api/posts
 Content-Type: application/json
 X-CSRF-TOKEN: abc123def456
+Authorization: Bearer your-jwt-token
 
 {
     "title": "文章標題",

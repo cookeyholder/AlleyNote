@@ -23,7 +23,7 @@
 php -m | grep -E "(redis|igbinary|msgpack)"
 
 # 如果缺少擴展，安裝方法：
-# Ubuntu/Debian
+# Debian/Ubuntu
 sudo apt-get install php8.4-redis php8.4-igbinary php8.4-msgpack
 
 # CentOS/RHEL

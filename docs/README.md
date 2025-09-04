@@ -290,7 +290,7 @@
 
 ### 文件品質標準- **專案首頁**: [../README.md](../README.md)
 
-- ✅ **內容準確性**: 所有步驟均已驗證- **系統規格**: [../AlleyNote公布欄網站規格書.md](../AlleyNote公布欄網站規格書.md)
+- ✅ **內容準確性**: 所有步驟均已驗證- **系統規格**: [architecture/AlleyNote公布欄網站規格書.md](architecture/AlleyNote公布欄網站規格書.md)
 
 - ✅ **完整性**: 包含必要的背景資訊和範例- **版本更新**: [../CHANGELOG.md](../CHANGELOG.md)
 
@@ -319,7 +319,7 @@
 ## 🔗 相關連結
 
 - **專案首頁**: [../README.md](../README.md)
-- **系統規格**: [../AlleyNote公布欄網站規格書.md](../AlleyNote公布欄網站規格書.md)
+- **系統規格**: [architecture/AlleyNote公布欄網站規格書.md](architecture/AlleyNote公布欄網站規格書.md)
 - **版本更新**: [../CHANGELOG.md](../CHANGELOG.md)
 
 ---

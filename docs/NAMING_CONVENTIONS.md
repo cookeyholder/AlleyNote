@@ -1,27 +1,40 @@
 # AlleyNote 專案命名規範
 
-> 本文件定義了 AlleyNote 專案的程式碼命名規範，遵循 PSR 標準和現代 PHP 開發最佳實踐。
+**版本**: v4.0
+**更新日期**: 2025-09-03
+**架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD)
+**系統版本**: Docker 28.3.3, Docker Compose v2.39.2
 
-## 📋 基本命名規則
+> 本文件定義了 AlleyNote 前後端分離專案的程式碼命名規範，遵循 PSR 標準、現代 PHP 8.4.12 開發最佳實踐，以及 Vue.js 3 Composition API 規範。
+
+## 📋 後端基本命名規則 (PHP 8.4.12)
 
 ### 1. 類別、介面、Trait 和抽象類別
 - **規則**：使用 `UpperCamelCase`（PascalCase）
 - **範例**：
   ```php
-  class PostService
-  interface PostRepositoryInterface
-  abstract class BaseController
+  class AnnouncementService
+  interface UserRepositoryInterface
+  abstract class BaseApiController
   abstract class AbstractMiddleware
+  enum PostStatus: string
   ```
 
-### 2. 變數、屬性、方法和函式
+### 2. 變數、屬性、方法和函式 (PHP 8.4.12 特性)
 - **規則**：使用 `lowerCamelCase`
 - **範例**：
   ```php
   private $userName;
-  protected $createdAt;
+  protected readonly string $createdAt;  // PHP 8.4.12 readonly
+
   public function getUserData(): array
-  private function processRequest(): void
+  private function processApiRequest(): void
+
+  // PHP 8.4.12 Property Hooks
+  public string $name {
+      get => strtoupper($this->name);
+      set => $this->name = trim($value);
+  }
   ```
 
 ### 3. 常數
@@ -29,19 +42,21 @@
 - **範例**：
   ```php
   private const CACHE_TTL = 3600;
-  private const POST_SELECT_FIELDS = 'id, title, content';
+  private const API_SELECT_FIELDS = 'id, title, content';
   public const MAX_FILE_SIZE = 1024 * 1024;
+  public const API_VERSION = '4.0';
   ```
 
-## 🎯 特殊命名規範
+## 🎯 後端特殊命名規範
 
 ### 介面命名
 - **規則**：以 `Interface` 結尾
 - **範例**：
   ```php
-  interface PostRepositoryInterface
-  interface UserServiceInterface
-  interface SecurityTestInterface
+  interface AnnouncementRepositoryInterface
+  interface AuthServiceInterface
+  interface ApiValidatorInterface
+  interface JwtTokenServiceInterface
   ```
 
 ### 抽象類別命名
