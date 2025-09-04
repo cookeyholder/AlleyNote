@@ -348,7 +348,7 @@ class StatisticsSnapshot extends AggregateRoot
     public function removeSourceStatistics(SourceType $sourceType): void
     {
         $originalCount = count($this->sourceStats);
-        
+
         $this->sourceStats = array_filter(
             $this->sourceStats,
             fn (SourceStatistics $stats) => $stats->sourceType !== $sourceType
@@ -456,8 +456,8 @@ class StatisticsSnapshot extends AggregateRoot
     public function getSortedSourceStats(): array
     {
         $sortedStats = $this->sourceStats;
-        
-        usort($sortedStats, fn (SourceStatistics $a, SourceStatistics $b) => 
+
+        usort($sortedStats, fn (SourceStatistics $a, SourceStatistics $b) =>
             $a->compareTo($b)
         );
 

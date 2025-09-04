@@ -222,10 +222,10 @@ readonly class SourceStatistics
         }
 
         $newCount = $this->getCountValue() + $other->getCountValue();
-        
+
         // 百分比需要重新計算，這裡暫時相加（調用方應該重新計算）
         $newPercentage = $this->getPercentageValue() + $other->getPercentageValue();
-        
+
         // 合併額外指標
         $mergedMetrics = $this->additionalMetrics;
         foreach ($other->additionalMetrics as $key => $metric) {
