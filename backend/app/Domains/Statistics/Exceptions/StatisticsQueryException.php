@@ -7,7 +7,7 @@ namespace App\Domains\Statistics\Exceptions;
 use RuntimeException;
 
 /**
- * 統計查詢異常
+ * 統計查詢異常.
  *
  * 當統計查詢操作失敗時拋出的異常
  */

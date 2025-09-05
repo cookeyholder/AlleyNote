@@ -1,28 +1,47 @@
 <?php
-
-declare(strict_types=1);
-
-namespace Tests\Unit\Application\Services\Statistics;
-
 use App\Application\Services\Statistics\StatisticsApplicationService;
-use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
-use App\Domains\Statistics\Services\StatisticsCalculationService;
-use App\Domains\Statistics\Services\StatisticsValidationService;
-use App\Domains\Statistics\Services\SourceAnalysisService;
-use App\Domains\Statistics\Services\StatisticsCacheService;
+use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
+use App\Domains\Statistics\Contracts\SystemStatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\ValueObjects\StatisticsMetric;
-use App\Domains\Statistics\ValueObjects\SourceStatistics;
 use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\Exceptions\StatisticsCalculationException;
-use App\Domains\Statistics\Exceptions\InvalidStatisticsPeriodException;
+use App\Domains\Statistics\Services\SourceAnalysisService;
+use App\Domains\Statistics\Services\StatisticsCalculationService;
+use App\Domains\Statistics\Services\StatisticsCacheService;
+use App\Domains\Statistics\Services\StatisticsValidationService;
+use App\Domains\Statistics\ValueObjects\SourceStatistics;
+use App\Domains\Statistics\ValueObjects\StatisticsMetric;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Domain\ValueObjects\Uuid;
 use DateTimeImmutable;
 use Mockery;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+
+namespace Tests\Unit\Application\Services\Statistics;
+
+use App\Application\Services\Statistics\StatisticsApplicationService;
+use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
+use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\Entities\StatisticsSnapshot;
+use App\Domains\Statistics\Enums\PeriodType;
+use App\Domains\Statistics\Enums\SourceType;
+use App\Domains\Statistics\Exceptions\StatisticsCalculationException;
+use App\Domains\Statistics\Services\SourceAnalysisService;
+use App\Domains\Statistics\Services\StatisticsCacheService;
+use App\Domains\Statistics\Services\StatisticsCalculationService;
+use App\Domains\Statistics\Services\StatisticsValidationService;
+use App\Domains\Statistics\ValueObjects\SourceStatistics;
+use App\Domains\Statistics\ValueObjects\StatisticsMetric;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use App\Shared\Domain\ValueObjects\Uuid;
+use DateTimeImmutable;
+use Mockery;
+use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 /**
  * @covers \App\Application\Services\Statistics\StatisticsApplicationService
@@ -30,11 +49,17 @@ use PHPUnit\Framework\TestCase;
 final class StatisticsApplicationServiceTest extends TestCase
 {
     private StatisticsRepositoryInterface $statisticsRepository;
+
     private PostStatisticsRepositoryInterface $postStatisticsRepository;
+
     private StatisticsCalculationService $calculationService;
+
     private StatisticsValidationService $validationService;
+
     private SourceAnalysisService $sourceAnalysisService;
+
     private StatisticsCacheService $cacheService;
+
     private StatisticsApplicationService $service;
 
     protected function setUp(): void
@@ -43,6 +68,8 @@ final class StatisticsApplicationServiceTest extends TestCase
 
         $this->statisticsRepository = Mockery::mock(StatisticsRepositoryInterface::class);
         $this->postStatisticsRepository = Mockery::mock(PostStatisticsRepositoryInterface::class);
+        $this->userStatisticsRepository = Mockery::mock(UserStatisticsRepositoryInterface::class);
+        $this->systemStatisticsRepository = Mockery::mock(SystemStatisticsRepositoryInterface::class);
         $this->calculationService = Mockery::mock(StatisticsCalculationService::class);
         $this->validationService = Mockery::mock(StatisticsValidationService::class);
         $this->sourceAnalysisService = Mockery::mock(SourceAnalysisService::class);
@@ -51,10 +78,12 @@ final class StatisticsApplicationServiceTest extends TestCase
         $this->service = new StatisticsApplicationService(
             $this->statisticsRepository,
             $this->postStatisticsRepository,
+            $this->userStatisticsRepository,
+            $this->systemStatisticsRepository,
             $this->calculationService,
             $this->validationService,
             $this->sourceAnalysisService,
-            $this->cacheService
+            $this->cacheService,
         );
     }
 
@@ -74,7 +103,7 @@ final class StatisticsApplicationServiceTest extends TestCase
         $period = StatisticsPeriod::create(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-01'),
-            new DateTimeImmutable('2024-01-07')
+            new DateTimeImmutable('2024-01-07'),
         );
 
         $totalPosts = StatisticsMetric::create(100);
@@ -147,7 +176,7 @@ final class StatisticsApplicationServiceTest extends TestCase
         $period = StatisticsPeriod::create(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-01'),
-            new DateTimeImmutable('2024-01-07')
+            new DateTimeImmutable('2024-01-07'),
         );
 
         $existingSnapshot = Mockery::mock(StatisticsSnapshot::class);
@@ -181,7 +210,7 @@ final class StatisticsApplicationServiceTest extends TestCase
         $period = StatisticsPeriod::create(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-01'),
-            new DateTimeImmutable('2024-01-07')
+            new DateTimeImmutable('2024-01-07'),
         );
 
         $cachedSnapshot = Mockery::mock(StatisticsSnapshot::class);
@@ -214,7 +243,7 @@ final class StatisticsApplicationServiceTest extends TestCase
         $period = StatisticsPeriod::create(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-01'),
-            new DateTimeImmutable('2024-01-07')
+            new DateTimeImmutable('2024-01-07'),
         );
 
         $dbSnapshot = Mockery::mock(StatisticsSnapshot::class);
@@ -259,7 +288,7 @@ final class StatisticsApplicationServiceTest extends TestCase
         $period = StatisticsPeriod::create(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-01'),
-            new DateTimeImmutable('2024-01-07')
+            new DateTimeImmutable('2024-01-07'),
         );
 
         $snapshot = Mockery::mock(StatisticsSnapshot::class);
@@ -336,13 +365,13 @@ final class StatisticsApplicationServiceTest extends TestCase
         $period1 = StatisticsPeriod::create(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-01'),
-            new DateTimeImmutable('2024-01-07')
+            new DateTimeImmutable('2024-01-07'),
         );
 
         $period2 = StatisticsPeriod::create(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-08'),
-            new DateTimeImmutable('2024-01-14')
+            new DateTimeImmutable('2024-01-14'),
         );
 
         $periods = [$period1, $period2];
@@ -434,7 +463,7 @@ final class StatisticsApplicationServiceTest extends TestCase
         $validPeriod = StatisticsPeriod::create(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-01'),
-            new DateTimeImmutable('2024-01-07')
+            new DateTimeImmutable('2024-01-07'),
         );
 
         $invalidPeriod = 'invalid_period';
@@ -621,7 +650,7 @@ final class StatisticsApplicationServiceTest extends TestCase
         $period = StatisticsPeriod::create(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-01'),
-            new DateTimeImmutable('2024-01-07')
+            new DateTimeImmutable('2024-01-07'),
         );
 
         $existingSnapshot = Mockery::mock(StatisticsSnapshot::class);
@@ -695,14 +724,14 @@ final class StatisticsApplicationServiceTest extends TestCase
         $period = StatisticsPeriod::create(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-01'),
-            new DateTimeImmutable('2024-01-07')
+            new DateTimeImmutable('2024-01-07'),
         );
 
         $this->validationService
             ->shouldReceive('validatePeriod')
             ->once()
             ->with($period)
-            ->andThrow(new \RuntimeException('驗證失敗'));
+            ->andThrow(new RuntimeException('驗證失敗'));
 
         // Act & Assert
         $this->expectException(StatisticsCalculationException::class);

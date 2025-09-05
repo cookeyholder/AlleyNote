@@ -9,8 +9,6 @@ use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Enums\SourceType;
-use App\Domains\Statistics\Events\StatisticsSnapshotCreated;
-use App\Domains\Statistics\Events\StatisticsSnapshotUpdated;
 use App\Domains\Statistics\Exceptions\InvalidStatisticsPeriodException;
 use App\Domains\Statistics\Exceptions\StatisticsCalculationException;
 use App\Domains\Statistics\ValueObjects\SourceStatistics;
@@ -21,7 +19,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 
 /**
- * 統計計算核心領域服務
+ * 統計計算核心領域服務.
  *
  * 負責統計資料的計算、聚合與快照生成的核心業務邏輯。
  * 封裝複雜的統計計算演算法，確保統計資料的一致性與準確性。
@@ -43,9 +41,8 @@ class StatisticsCalculatorService
 {
     public function __construct(
         private readonly StatisticsRepositoryInterface $statisticsRepository,
-        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository
-    ) {
-    }
+        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
+    ) {}
 
     /**
      * 產生指定週期的統計快照.
@@ -55,7 +52,7 @@ class StatisticsCalculatorService
         // 檢查是否已存在該週期的快照
         if ($this->statisticsRepository->existsForPeriod($period)) {
             throw new StatisticsCalculationException(
-                sprintf('統計快照已存在於週期 %s', $period)
+                sprintf('統計快照已存在於週期 %s', $period),
             );
         }
 
@@ -72,7 +69,7 @@ class StatisticsCalculatorService
             $period,
             0, // 總文章數，暫時設為0，後續可擴展
             $totalCount, // 總觀看次數
-            $sourceStats
+            $sourceStats,
         );
 
         // 儲存快照
@@ -89,7 +86,7 @@ class StatisticsCalculatorService
         $snapshot = $this->statisticsRepository->findByUuid($snapshotId);
         if (!$snapshot) {
             throw new StatisticsCalculationException(
-                "找不到 ID 為 {$snapshotId} 的統計快照"
+                "找不到 ID 為 {$snapshotId} 的統計快照",
             );
         }
 
@@ -126,6 +123,7 @@ class StatisticsCalculatorService
             foreach (SourceType::cases() as $sourceType) {
                 $sourceStats[] = SourceStatistics::empty($sourceType);
             }
+
             return $sourceStats;
         }
 
@@ -133,7 +131,7 @@ class StatisticsCalculatorService
         foreach (SourceType::cases() as $sourceType) {
             $sourceViewStats = $this->postStatisticsRepository->getViewStatisticsBySource(
                 $period,
-                $sourceType
+                $sourceType,
             );
 
             $count = 0;
@@ -155,7 +153,7 @@ class StatisticsCalculatorService
                 $sourceType,
                 $count,
                 $percentage,
-                $additionalMetrics
+                $additionalMetrics,
             );
         }
 
@@ -169,7 +167,7 @@ class StatisticsCalculatorService
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
         PeriodType $sourcePeriodType,
-        PeriodType $targetPeriodType
+        PeriodType $targetPeriodType,
     ): StatisticsSnapshot {
         // 驗證週期類型的合理性
         $this->validatePeriodAggregation($sourcePeriodType, $targetPeriodType);
@@ -181,12 +179,12 @@ class StatisticsCalculatorService
         $subSnapshots = $this->statisticsRepository->findByDateRange(
             $startDate,
             $endDate,
-            $sourcePeriodType
+            $sourcePeriodType,
         );
 
         if (empty($subSnapshots)) {
             throw new StatisticsCalculationException(
-                '找不到可聚合的子週期統計快照'
+                '找不到可聚合的子週期統計快照',
             );
         }
 
@@ -198,8 +196,8 @@ class StatisticsCalculatorService
             Uuid::generate(),
             $targetPeriod,
             0, // 總文章數，暫時設為0
-            $aggregatedData['total_count'], // 總觀看次數
-            $aggregatedData['source_stats']
+            (int) $aggregatedData['total_count'], // 總觀看次數，確保為整數
+            $aggregatedData['source_stats'],
         );
 
         return $snapshot;
@@ -218,14 +216,14 @@ class StatisticsCalculatorService
      */
     public function calculateGrowthRate(
         StatisticsPeriod $currentPeriod,
-        StatisticsPeriod $previousPeriod
+        StatisticsPeriod $previousPeriod,
     ): array {
         $currentSnapshot = $this->statisticsRepository->findByPeriod($currentPeriod);
         $previousSnapshot = $this->statisticsRepository->findByPeriod($previousPeriod);
 
         if (!$currentSnapshot) {
             throw new StatisticsCalculationException(
-                '找不到當前週期的統計快照'
+                '找不到當前週期的統計快照',
             );
         }
 
@@ -239,7 +237,7 @@ class StatisticsCalculatorService
         return [
             'current_total' => (int) $currentTotal,
             'previous_total' => (int) $previousTotal,
-            'growth_count' => $growthCount,
+            'growth_count' => (int) $growthCount,
             'growth_rate' => $growthRate,
             'growth_percentage' => $growthPercentage,
         ];
@@ -250,7 +248,7 @@ class StatisticsCalculatorService
      */
     public function compareSnapshots(
         StatisticsSnapshot $snapshot1,
-        StatisticsSnapshot $snapshot2
+        StatisticsSnapshot $snapshot2,
     ): array {
         $comparison = [
             'period_1' => $snapshot1->getPeriod()->toArray(),
@@ -287,13 +285,14 @@ class StatisticsCalculatorService
     {
         if (count($snapshots) < 2) {
             throw new StatisticsCalculationException(
-                '至少需要兩個統計快照才能計算趨勢'
+                '至少需要兩個統計快照才能計算趨勢',
             );
         }
 
         // 按時間排序
-        usort($snapshots, fn ($a, $b) =>
-            $a->getPeriod()->startDate <=> $b->getPeriod()->startDate
+        usort(
+            $snapshots,
+            fn($a, $b) => $a->getPeriod()->startDate <=> $b->getPeriod()->startDate,
         );
 
         $trendData = [];
@@ -303,7 +302,7 @@ class StatisticsCalculatorService
 
             $growthData = $this->calculateGrowthRate(
                 $current->getPeriod(),
-                $previous->getPeriod()
+                $previous->getPeriod(),
             );
 
             $trendData[] = [
@@ -329,7 +328,7 @@ class StatisticsCalculatorService
     public function generatePeriodicSnapshots(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
-        PeriodType $periodType
+        PeriodType $periodType,
     ): array {
         $snapshots = [];
         $currentDate = DateTimeImmutable::createFromInterface($startDate);
@@ -385,8 +384,8 @@ class StatisticsCalculatorService
                 $sourceAggregates[$sourceType]['count'] += $sourceStat->getCountValue();
 
                 if ($sourceStat->hasAdditionalMetric('unique_viewers')) {
-                    $sourceAggregates[$sourceType]['unique_viewers'] +=
-                        (int) $sourceStat->getAdditionalMetric('unique_viewers')->value;
+                    $sourceAggregates[$sourceType]['unique_viewers']
+                        += (int) $sourceStat->getAdditionalMetric('unique_viewers')->value;
                 }
             }
         }
@@ -401,7 +400,7 @@ class StatisticsCalculatorService
                 $additionalMetrics = [
                     'unique_viewers' => StatisticsMetric::count(
                         $data['unique_viewers'],
-                        '不重複觀看者'
+                        '不重複觀看者',
                     ),
                 ];
 
@@ -409,7 +408,7 @@ class StatisticsCalculatorService
                     $sourceType,
                     $data['count'],
                     $percentage,
-                    $additionalMetrics
+                    $additionalMetrics,
                 );
             }
         }
@@ -426,7 +425,7 @@ class StatisticsCalculatorService
      */
     private function validatePeriodAggregation(
         PeriodType $sourcePeriodType,
-        PeriodType $targetPeriodType
+        PeriodType $targetPeriodType,
     ): void {
         $validAggregations = [
             PeriodType::DAILY->value => [PeriodType::WEEKLY, PeriodType::MONTHLY, PeriodType::YEARLY],
@@ -434,14 +433,14 @@ class StatisticsCalculatorService
             PeriodType::MONTHLY->value => [PeriodType::YEARLY],
         ];
 
-        if (!isset($validAggregations[$sourcePeriodType->value]) ||
-            !in_array($targetPeriodType, $validAggregations[$sourcePeriodType->value], true)) {
+        if (!isset($validAggregations[$sourcePeriodType->value])
+            || !in_array($targetPeriodType, $validAggregations[$sourcePeriodType->value], true)) {
             throw new InvalidStatisticsPeriodException(
                 sprintf(
                     '無法將 %s 聚合為 %s',
                     $sourcePeriodType->getDisplayName(),
-                    $targetPeriodType->getDisplayName()
-                )
+                    $targetPeriodType->getDisplayName(),
+                ),
             );
         }
     }
@@ -484,6 +483,7 @@ class StatisticsCalculatorService
                 return $sourceStat;
             }
         }
+
         return null;
     }
 

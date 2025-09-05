@@ -6,12 +6,11 @@ namespace App\Domains\Statistics\Services;
 
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Enums\SourceType;
-use App\Domains\Statistics\Exceptions\StatisticsCalculationException;
 use App\Domains\Statistics\ValueObjects\StatisticsMetric;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 
 /**
- * 文章統計核心領域服務
+ * 文章統計核心領域服務.
  *
  * 專門處理文章相關統計的業務邏輯，包含文章觀看、互動、
  * 內容分析等複雜統計計算。封裝文章統計的領域知識。
@@ -32,9 +31,8 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 class PostStatisticsService
 {
     public function __construct(
-        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository
-    ) {
-    }
+        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
+    ) {}
 
     /**
      * 計算文章基本統計指標.
@@ -66,7 +64,7 @@ class PostStatisticsService
     }
 
     /**
-     * 分析文章來源分布.
+     * 分析來源分佈.
      *
      * @return array<array{
      *     source_type: string,
@@ -88,32 +86,25 @@ class PostStatisticsService
         foreach (SourceType::cases() as $sourceType) {
             $sourceStats = $this->postStatisticsRepository->getViewStatisticsBySource(
                 $period,
-                $sourceType
+                $sourceType,
             );
 
-            $viewCount = $sourceStats[0]['view_count'] ?? 0;
-            $uniqueViewers = $sourceStats[0]['unique_viewers'] ?? 0;
+            $viewCount = (int) ($sourceStats[0]['view_count'] ?? 0);
+            $uniqueViewers = (int) ($sourceStats[0]['unique_viewers'] ?? 0);
             $percentage = ($viewCount / $totalViews) * 100;
             $performanceScore = $this->calculateSourcePerformanceScore($sourceType, $viewCount, $uniqueViewers);
 
             $distribution[] = [
                 'source_type' => $sourceType->value,
-                'source_name' => $sourceType->getDisplayName(),
                 'view_count' => $viewCount,
                 'unique_viewers' => $uniqueViewers,
-                'percentage' => round($percentage, 2),
+                'percentage' => $percentage,
                 'performance_score' => $performanceScore,
-                'is_primary_source' => $sourceType->isPrimarySource(),
             ];
         }
 
-        // 按效能分數排序
-        usort($distribution, fn ($a, $b) => $b['performance_score'] <=> $a['performance_score']);
-
         return $distribution;
-    }
-
-    /**
+    }    /**
      * 取得熱門文章排行榜.
      *
      * @return array<array{
@@ -274,6 +265,7 @@ class PostStatisticsService
     private function calculateEngagementRate(StatisticsPeriod $period): float
     {
         $engagementStats = $this->postStatisticsRepository->getEngagementStats($period);
+
         return $engagementStats['engagement_rate'] ?? 0.0;
     }
 
@@ -283,7 +275,7 @@ class PostStatisticsService
     private function calculateSourcePerformanceScore(
         SourceType $sourceType,
         int $viewCount,
-        int $uniqueViewers
+        int $uniqueViewers,
     ): float {
         $baseScore = $sourceType->getPriority() * 10; // 基礎分數
         $volumeScore = min($viewCount / 100, 50); // 量級分數，最高50分
@@ -334,6 +326,7 @@ class PostStatisticsService
                 'is_primary_source' => $sourceType->isPrimarySource(),
             ];
         }
+
         return $distribution;
     }
 
@@ -400,8 +393,8 @@ class PostStatisticsService
                 'date' => $stat['date'],
                 'post_count' => $stat['post_count'],
                 'total_views' => $stat['total_views'],
-                'average_views_per_post' => $stat['post_count'] > 0 ?
-                    round($stat['total_views'] / $stat['post_count'], 2) : 0,
+                'average_views_per_post' => $stat['post_count'] > 0
+                    ? round($stat['total_views'] / $stat['post_count'], 2) : 0,
             ];
         }, $publishingStats);
     }
@@ -547,8 +540,8 @@ class PostStatisticsService
     private function calculateContentQualityScore(array $engagementStats, array $readCompletionStats): float
     {
         $engagementScore = min($engagementStats['engagement_rate'] * 10, 50);
-        $completionScore = !empty($readCompletionStats) ?
-            array_sum(array_column($readCompletionStats, 'completion_rate')) / count($readCompletionStats) : 0;
+        $completionScore = !empty($readCompletionStats)
+            ? array_sum(array_column($readCompletionStats, 'completion_rate')) / count($readCompletionStats) : 0;
 
         return ($engagementScore + $completionScore) / 2;
     }
@@ -556,8 +549,8 @@ class PostStatisticsService
     private function calculateUserSatisfactionScore(array $bounceRateStats, array $readCompletionStats): float
     {
         $bounceScore = (100 - $bounceRateStats['bounce_rate']) * 0.6;
-        $completionScore = !empty($readCompletionStats) ?
-            array_sum(array_column($readCompletionStats, 'avg_read_percentage')) / count($readCompletionStats) * 0.4 : 0;
+        $completionScore = !empty($readCompletionStats)
+            ? array_sum(array_column($readCompletionStats, 'avg_read_percentage')) / count($readCompletionStats) * 0.4 : 0;
 
         return $bounceScore + $completionScore;
     }
@@ -625,7 +618,7 @@ class PostStatisticsService
             return [];
         }
 
-        usort($timeTrends, fn ($a, $b) => $b['view_count'] <=> $a['view_count']);
+        usort($timeTrends, fn($a, $b) => $b['view_count'] <=> $a['view_count']);
 
         return array_slice($timeTrends, 0, 3);
     }

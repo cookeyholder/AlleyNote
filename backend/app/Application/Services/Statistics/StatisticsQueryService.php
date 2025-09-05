@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace App\Application\Services\Statistics;
 
-use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
+use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Enums\SourceType;
-use App\Domains\Statistics\Exceptions\StatisticsQueryException;
 use App\Domains\Statistics\Exceptions\InvalidStatisticsPeriodException;
-use App\Shared\Domain\ValueObjects\Uuid;
+use App\Domains\Statistics\Exceptions\StatisticsQueryException;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Throwable;
 
 /**
- * 統計查詢服務
+ * 統計查詢服務.
  *
  * 專門處理複雜的統計查詢和資料檢索，
  * 負責查詢最佳化、分頁和參數驗證。
@@ -35,19 +34,18 @@ final readonly class StatisticsQueryService
 {
     public function __construct(
         private StatisticsRepositoryInterface $statisticsRepository,
-        private PostStatisticsRepositoryInterface $postStatisticsRepository
-    ) {
-    }
+        private PostStatisticsRepositoryInterface $postStatisticsRepository,
+    ) {}
 
     /**
-     * 查詢統計概覽
+     * 查詢統計概覽.
      *
      * 提供系統統計的整體概覽資訊
      */
     public function getStatisticsOverview(
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
-        array $sourceTypes = []
+        array $sourceTypes = [],
     ): array {
         try {
             // 參數驗證
@@ -62,7 +60,7 @@ final readonly class StatisticsQueryService
             $period = StatisticsPeriod::create(
                 $startDate,
                 $endDate,
-                PeriodType::DAILY  // 使用日統計作為預設類型
+                PeriodType::DAILY,  // 使用日統計作為預設類型
             );
 
             // 查詢基本統計
@@ -80,40 +78,39 @@ final readonly class StatisticsQueryService
                 'period' => [
                     'start_date' => $startDate,
                     'end_date' => $endDate,
-                    'duration_days' => $startDate->diff($endDate)->days
+                    'duration_days' => $startDate->diff($endDate)->days,
                 ],
                 'totals' => [
                     'posts' => $totalPosts,
                     'views' => $totalViews,
                     'unique_viewers' => $uniqueViewers,
                     'avg_views_per_post' => $totalPosts > 0 ? round($totalViews / $totalPosts, 2) : 0,
-                    'avg_views_per_viewer' => $uniqueViewers > 0 ? round($totalViews / $uniqueViewers, 2) : 0
+                    'avg_views_per_viewer' => $uniqueViewers > 0 ? round($totalViews / $uniqueViewers, 2) : 0,
                 ],
                 'source_distribution' => $sourceDistribution,
                 'popular_posts' => $popularPosts,
                 'query_metadata' => [
                     'generated_at' => new DateTimeImmutable(),
-                    'source_filters' => $sourceTypes
-                ]
+                    'source_filters' => $sourceTypes,
+                ],
             ];
-
         } catch (Throwable $e) {
             throw new StatisticsQueryException(
                 "統計概覽查詢失敗: {$e->getMessage()}",
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
-     * 取得分頁的統計快照列表
+     * 取得分頁的統計快照列表.
      *
      * 支援基本的分頁功能
      */
     public function getStatisticsSnapshots(
         int $page = 1,
         int $perPage = 20,
-        ?PeriodType $periodType = null
+        ?PeriodType $periodType = null,
     ): array {
         try {
             // 參數驗證
@@ -125,7 +122,7 @@ final readonly class StatisticsQueryService
             // 查詢所有快照
             $allSnapshots = $this->statisticsRepository->findByDateRange(
                 new DateTimeImmutable('-1 year'),
-                new DateTimeImmutable()
+                new DateTimeImmutable(),
             );
 
             // 按期間類型過濾
@@ -157,26 +154,25 @@ final readonly class StatisticsQueryService
                     'has_next_page' => $hasNextPage,
                     'has_previous_page' => $hasPreviousPage,
                     'next_page' => $hasNextPage ? $page + 1 : null,
-                    'previous_page' => $hasPreviousPage ? $page - 1 : null
+                    'previous_page' => $hasPreviousPage ? $page - 1 : null,
                 ],
                 'filters' => [
-                    'period_type' => $periodType
+                    'period_type' => $periodType,
                 ],
                 'query_metadata' => [
-                    'generated_at' => new DateTimeImmutable()
-                ]
+                    'generated_at' => new DateTimeImmutable(),
+                ],
             ];
-
         } catch (Throwable $e) {
             throw new StatisticsQueryException(
                 "統計快照查詢失敗: {$e->getMessage()}",
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
-     * 取得特定週期的統計資料
+     * 取得特定週期的統計資料.
      *
      * 提供單一週期的詳細統計資訊
      */
@@ -184,29 +180,28 @@ final readonly class StatisticsQueryService
     {
         try {
             return $this->statisticsRepository->findByPeriod($period);
-
         } catch (Throwable $e) {
             throw new StatisticsQueryException(
                 "週期統計查詢失敗: {$e->getMessage()}",
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
-     * 取得來源統計分析
+     * 取得來源統計分析.
      *
      * 分析特定週期內各來源的統計資料
      */
     public function getSourceAnalysis(
         StatisticsPeriod $period,
-        ?SourceType $sourceType = null
+        ?SourceType $sourceType = null,
     ): array {
         try {
             // 查詢來源統計
             $sourceStats = $this->postStatisticsRepository->getViewStatisticsBySource(
                 $period,
-                $sourceType
+                $sourceType,
             );
 
             // 計算總數
@@ -221,7 +216,7 @@ final readonly class StatisticsQueryService
                     'unique_viewers' => $stat['unique_viewers'],
                     'view_percentage' => $totalViews > 0 ? round(($stat['view_count'] / $totalViews) * 100, 2) : 0,
                     'viewer_percentage' => $totalUniqueViewers > 0 ? round(($stat['unique_viewers'] / $totalUniqueViewers) * 100, 2) : 0,
-                    'avg_views_per_viewer' => $stat['unique_viewers'] > 0 ? round($stat['view_count'] / $stat['unique_viewers'], 2) : 0
+                    'avg_views_per_viewer' => $stat['unique_viewers'] > 0 ? round($stat['view_count'] / $stat['unique_viewers'], 2) : 0,
                 ];
             }, $sourceStats);
 
@@ -232,29 +227,28 @@ final readonly class StatisticsQueryService
                 'totals' => [
                     'total_views' => $totalViews,
                     'total_unique_viewers' => $totalUniqueViewers,
-                    'source_count' => count($sourceStats)
+                    'source_count' => count($sourceStats),
                 ],
                 'query_metadata' => [
-                    'generated_at' => new DateTimeImmutable()
-                ]
+                    'generated_at' => new DateTimeImmutable(),
+                ],
             ];
-
         } catch (Throwable $e) {
             throw new StatisticsQueryException(
                 "來源分析查詢失敗: {$e->getMessage()}",
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
-     * 取得熱門內容排行
+     * 取得熱門內容排行.
      *
      * 提供特定週期內最受歡迎的內容
      */
     public function getPopularContentRanking(
         StatisticsPeriod $period,
-        int $limit = 20
+        int $limit = 20,
     ): array {
         try {
             // 參數驗證
@@ -278,20 +272,19 @@ final readonly class StatisticsQueryService
                     'total_views' => $totalViews,
                     'average_views' => $averageViews,
                     'median_views' => $medianViews,
-                    'top_views' => $topViews
+                    'top_views' => $topViews,
                 ],
                 'parameters' => [
-                    'limit' => $limit
+                    'limit' => $limit,
                 ],
                 'query_metadata' => [
-                    'generated_at' => new DateTimeImmutable()
-                ]
+                    'generated_at' => new DateTimeImmutable(),
+                ],
             ];
-
         } catch (Throwable $e) {
             throw new StatisticsQueryException(
                 "熱門內容排行查詢失敗: {$e->getMessage()}",
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -311,7 +304,7 @@ final readonly class StatisticsQueryService
             $oldestSnapshot = null;
             $allSnapshots = $this->statisticsRepository->findByDateRange(
                 new DateTimeImmutable('-10 years'),
-                new DateTimeImmutable()
+                new DateTimeImmutable(),
             );
             if (!empty($allSnapshots)) {
                 // 找最舊的
@@ -334,7 +327,7 @@ final readonly class StatisticsQueryService
             return [
                 'totals' => [
                     'total_snapshots' => $totalSnapshots,
-                    'period_types' => count($snapshotsByType)
+                    'period_types' => count($snapshotsByType),
                 ],
                 'snapshots_by_type' => $snapshotsByType,
                 'date_range' => [
@@ -342,36 +335,35 @@ final readonly class StatisticsQueryService
                     'latest_snapshot' => $latestSnapshot?->getCreatedAt(),
                     'data_span_days' => $oldestSnapshot && $latestSnapshot
                         ? $oldestSnapshot->getCreatedAt()->diff($latestSnapshot->getCreatedAt())->days
-                        : 0
+                        : 0,
                 ],
                 'latest_statistics' => $latestSnapshot ? [
                     'period' => $latestSnapshot->getPeriod(),
                     'total_posts' => $latestSnapshot->getTotalPosts()->value,
                     'total_views' => $latestSnapshot->getTotalViews()->value,
-                    'source_count' => count($latestSnapshot->getSourceStats())
+                    'source_count' => count($latestSnapshot->getSourceStats()),
                 ] : null,
                 'query_metadata' => [
-                    'generated_at' => new DateTimeImmutable()
-                ]
+                    'generated_at' => new DateTimeImmutable(),
+                ],
             ];
-
         } catch (Throwable $e) {
             throw new StatisticsQueryException(
                 "統計摘要查詢失敗: {$e->getMessage()}",
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
-     * 搜尋統計快照
+     * 搜尋統計快照.
      *
      * 簡單的搜尋功能
      */
     public function searchSnapshots(
         string $query,
         int $page = 1,
-        int $perPage = 20
+        int $perPage = 20,
     ): array {
         try {
             // 參數驗證
@@ -381,13 +373,14 @@ final readonly class StatisticsQueryService
             // 查詢所有快照進行搜尋
             $allSnapshots = $this->statisticsRepository->findByDateRange(
                 new DateTimeImmutable('-1 year'),
-                new DateTimeImmutable()
+                new DateTimeImmutable(),
             );
 
             // 簡單搜尋邏輯（根據週期類型過濾）
             $query = strtolower(trim($query));
             $filteredSnapshots = array_filter($allSnapshots, function (StatisticsSnapshot $snapshot) use ($query) {
                 $periodType = strtolower($snapshot->getPeriod()->type->value);
+
                 return str_contains($periodType, $query);
             });
 
@@ -409,23 +402,22 @@ final readonly class StatisticsQueryService
                     'current_page' => $page,
                     'per_page' => $perPage,
                     'total_items' => $totalCount,
-                    'total_pages' => $totalPages
+                    'total_pages' => $totalPages,
                 ],
                 'query_metadata' => [
-                    'generated_at' => new DateTimeImmutable()
-                ]
+                    'generated_at' => new DateTimeImmutable(),
+                ],
             ];
-
         } catch (Throwable $e) {
             throw new StatisticsQueryException(
                 "統計搜尋失敗: {$e->getMessage()}",
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
-     * 計算中位數
+     * 計算中位數.
      *
      * 私有輔助方法
      */
@@ -448,7 +440,7 @@ final readonly class StatisticsQueryService
     }
 
     /**
-     * 統計指定週期類型的快照數量
+     * 統計指定週期類型的快照數量.
      *
      * 私有輔助方法
      */
@@ -456,7 +448,7 @@ final readonly class StatisticsQueryService
     {
         $allSnapshots = $this->statisticsRepository->findByDateRange(
             new DateTimeImmutable('-1 year'),
-            new DateTimeImmutable()
+            new DateTimeImmutable(),
         );
 
         return count(array_filter($allSnapshots, function (StatisticsSnapshot $snapshot) use ($periodType) {

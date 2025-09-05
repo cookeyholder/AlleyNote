@@ -6,7 +6,6 @@ namespace App\Domains\Statistics\Contracts;
 
 use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use DateTimeInterface;
 
 /**
  * 文章統計資料存取介面
@@ -41,7 +40,7 @@ interface PostStatisticsRepositoryInterface
      */
     public function getViewStatisticsBySource(
         StatisticsPeriod $period,
-        ?SourceType $sourceType = null
+        ?SourceType $sourceType = null,
     ): array;
 
     /**
@@ -58,7 +57,7 @@ interface PostStatisticsRepositoryInterface
      */
     public function getPopularPosts(
         StatisticsPeriod $period,
-        int $limit = 10
+        int $limit = 10,
     ): array;
 
     /**
@@ -114,7 +113,7 @@ interface PostStatisticsRepositoryInterface
      */
     public function getTagUsageStats(
         StatisticsPeriod $period,
-        int $limit = 20
+        int $limit = 20,
     ): array;
 
     /**
@@ -142,7 +141,7 @@ interface PostStatisticsRepositoryInterface
      */
     public function getNewVsOldPostsRatio(
         StatisticsPeriod $period,
-        int $newPostDays = 30
+        int $newPostDays = 30,
     ): array;
 
     /**
@@ -169,7 +168,7 @@ interface PostStatisticsRepositoryInterface
      */
     public function getSearchKeywordStats(
         StatisticsPeriod $period,
-        int $limit = 50
+        int $limit = 50,
     ): array;
 
     /**
@@ -185,7 +184,7 @@ interface PostStatisticsRepositoryInterface
      * }>
      */
     public function getCategoryViewStats(
-        StatisticsPeriod $period
+        StatisticsPeriod $period,
     ): array;
 
     /**
@@ -214,7 +213,7 @@ interface PostStatisticsRepositoryInterface
      */
     public function getSocialSharingStats(
         StatisticsPeriod $period,
-        int $limit = 10
+        int $limit = 10,
     ): array;
 
     /**
@@ -255,7 +254,7 @@ interface PostStatisticsRepositoryInterface
      */
     public function getReadCompletionStats(
         StatisticsPeriod $period,
-        int $limit = 20
+        int $limit = 20,
     ): array;
 
     /**

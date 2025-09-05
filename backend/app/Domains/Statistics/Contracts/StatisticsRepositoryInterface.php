@@ -35,7 +35,7 @@ interface StatisticsRepositoryInterface extends RepositoryInterface
     public function findByDateRange(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
-        ?PeriodType $periodType = null
+        ?PeriodType $periodType = null,
     ): array;
 
     /**
@@ -58,7 +58,7 @@ interface StatisticsRepositoryInterface extends RepositoryInterface
     public function findBySourceType(
         SourceType $sourceType,
         ?StatisticsPeriod $period = null,
-        int $limit = 100
+        int $limit = 100,
     ): array;
 
     /**
@@ -91,7 +91,7 @@ interface StatisticsRepositoryInterface extends RepositoryInterface
     public function getTimeSeriesData(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
-        PeriodType $periodType
+        PeriodType $periodType,
     ): array;
 
     /**
@@ -106,7 +106,7 @@ interface StatisticsRepositoryInterface extends RepositoryInterface
      * }>
      */
     public function getSourceDistribution(
-        StatisticsPeriod $period
+        StatisticsPeriod $period,
     ): array;
 
     /**
@@ -132,7 +132,7 @@ interface StatisticsRepositoryInterface extends RepositoryInterface
      */
     public function findLastBeforeDate(
         DateTimeInterface $date,
-        ?PeriodType $periodType = null
+        ?PeriodType $periodType = null,
     ): ?StatisticsSnapshot;
 
     /**
@@ -140,7 +140,7 @@ interface StatisticsRepositoryInterface extends RepositoryInterface
      */
     public function findFirstAfterDate(
         DateTimeInterface $date,
-        ?PeriodType $periodType = null
+        ?PeriodType $periodType = null,
     ): ?StatisticsSnapshot;
 
     /**
@@ -158,7 +158,7 @@ interface StatisticsRepositoryInterface extends RepositoryInterface
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
         PeriodType $sourcePeriodType,
-        PeriodType $targetPeriodType
+        PeriodType $targetPeriodType,
     ): array;
 
     /**
@@ -173,7 +173,7 @@ interface StatisticsRepositoryInterface extends RepositoryInterface
      */
     public function calculateGrowthRate(
         StatisticsPeriod $currentPeriod,
-        StatisticsPeriod $previousPeriod
+        StatisticsPeriod $previousPeriod,
     ): array;
 
     /**
@@ -186,7 +186,7 @@ interface StatisticsRepositoryInterface extends RepositoryInterface
      * }>
      */
     public function getPopularTimeSlots(
-        StatisticsPeriod $period
+        StatisticsPeriod $period,
     ): array;
 
     /**

@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Entities;
 
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\ValueObjects\StatisticsMetric;
-use App\Domains\Statistics\ValueObjects\SourceStatistics;
-use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\Events\StatisticsSnapshotCreated;
 use App\Domains\Statistics\Events\StatisticsSnapshotUpdated;
 use App\Domains\Statistics\Exceptions\InvalidStatisticsSnapshotException;
+use App\Domains\Statistics\ValueObjects\SourceStatistics;
+use App\Domains\Statistics\ValueObjects\StatisticsMetric;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Domain\Entity\AggregateRoot;
 use App\Shared\Domain\ValueObjects\Uuid;
 use DateTimeImmutable;
@@ -23,14 +22,14 @@ use DateTimeImmutable;
 class StatisticsSnapshot extends AggregateRoot
 {
     /**
-     * @param Uuid                           $id            識別碼
-     * @param StatisticsPeriod              $period        統計週期
-     * @param StatisticsMetric              $totalPosts    總文章數
-     * @param StatisticsMetric              $totalViews    總瀏覽數
-     * @param array<SourceStatistics>       $sourceStats   來源統計
+     * @param Uuid $id 識別碼
+     * @param StatisticsPeriod $period 統計週期
+     * @param StatisticsMetric $totalPosts 總文章數
+     * @param StatisticsMetric $totalViews 總瀏覽數
+     * @param array<SourceStatistics> $sourceStats 來源統計
      * @param array<string, StatisticsMetric> $additionalMetrics 額外指標
-     * @param DateTimeImmutable             $createdAt     建立時間
-     * @param DateTimeImmutable|null        $updatedAt     更新時間
+     * @param DateTimeImmutable $createdAt 建立時間
+     * @param DateTimeImmutable|null $updatedAt 更新時間
      */
     private function __construct(
         private Uuid $id,
@@ -40,13 +39,16 @@ class StatisticsSnapshot extends AggregateRoot
         private array $sourceStats,
         private array $additionalMetrics,
         private DateTimeImmutable $createdAt,
-        private ?DateTimeImmutable $updatedAt = null
+        private ?DateTimeImmutable $updatedAt = null,
     ) {
-        parent::__construct();
+        // 父類別 AggregateRoot 沒有建構式
     }
 
     /**
      * 建立新的統計快照.
+     *
+     * @param array<SourceStatistics> $sourceStats
+     * @param array<string, StatisticsMetric> $additionalMetrics
      */
     public static function create(
         Uuid $id,
@@ -54,13 +56,13 @@ class StatisticsSnapshot extends AggregateRoot
         int $totalPosts = 0,
         int $totalViews = 0,
         array $sourceStats = [],
-        array $additionalMetrics = []
+        array $additionalMetrics = [],
     ): self {
         // 驗證來源統計
         foreach ($sourceStats as $sourceStatistics) {
             if (!$sourceStatistics instanceof SourceStatistics) {
                 throw new InvalidStatisticsSnapshotException(
-                    '來源統計必須是 SourceStatistics 實例'
+                    '來源統計必須是 SourceStatistics 實例',
                 );
             }
         }
@@ -69,7 +71,7 @@ class StatisticsSnapshot extends AggregateRoot
         foreach ($additionalMetrics as $key => $metric) {
             if (!$metric instanceof StatisticsMetric) {
                 throw new InvalidStatisticsSnapshotException(
-                    "額外指標 '{$key}' 必須是 StatisticsMetric 實例"
+                    "額外指標 '{$key}' 必須是 StatisticsMetric 實例",
                 );
             }
         }
@@ -85,7 +87,7 @@ class StatisticsSnapshot extends AggregateRoot
             $totalViewsMetric,
             $sourceStats,
             $additionalMetrics,
-            $now
+            $now,
         );
 
         // 記錄領域事件
@@ -94,7 +96,7 @@ class StatisticsSnapshot extends AggregateRoot
             $period,
             $totalPostsMetric,
             $totalViewsMetric,
-            $now
+            $now,
         ));
 
         return $snapshot;
@@ -102,6 +104,9 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 從資料重建統計快照.
+     *
+     * @param array<SourceStatistics> $sourceStats
+     * @param array<string, StatisticsMetric> $additionalMetrics
      */
     public static function fromData(
         Uuid $id,
@@ -111,7 +116,7 @@ class StatisticsSnapshot extends AggregateRoot
         array $sourceStats,
         array $additionalMetrics,
         DateTimeImmutable $createdAt,
-        ?DateTimeImmutable $updatedAt = null
+        ?DateTimeImmutable $updatedAt = null,
     ): self {
         return new self(
             $id,
@@ -121,7 +126,7 @@ class StatisticsSnapshot extends AggregateRoot
             $sourceStats,
             $additionalMetrics,
             $createdAt,
-            $updatedAt
+            $updatedAt,
         );
     }
 
@@ -268,7 +273,7 @@ class StatisticsSnapshot extends AggregateRoot
      */
     public function isStale(int $maxAgeInSeconds = 3600): bool
     {
-        $ageInSeconds = (new DateTimeImmutable())->getTimestamp() - $this->createdAt->getTimestamp();
+        $ageInSeconds = new DateTimeImmutable()->getTimestamp() - $this->createdAt->getTimestamp();
 
         return $ageInSeconds > $maxAgeInSeconds;
     }
@@ -280,7 +285,7 @@ class StatisticsSnapshot extends AggregateRoot
     {
         if ($newCount < 0) {
             throw new InvalidStatisticsSnapshotException(
-                '文章數量不能為負數'
+                '文章數量不能為負數',
             );
         }
 
@@ -295,7 +300,7 @@ class StatisticsSnapshot extends AggregateRoot
     {
         if ($newCount < 0) {
             throw new InvalidStatisticsSnapshotException(
-                '瀏覽數量不能為負數'
+                '瀏覽數量不能為負數',
             );
         }
 
@@ -314,7 +319,7 @@ class StatisticsSnapshot extends AggregateRoot
         foreach ($sourceStats as $sourceStatistics) {
             if (!$sourceStatistics instanceof SourceStatistics) {
                 throw new InvalidStatisticsSnapshotException(
-                    '來源統計必須是 SourceStatistics 實例'
+                    '來源統計必須是 SourceStatistics 實例',
                 );
             }
         }
@@ -333,6 +338,7 @@ class StatisticsSnapshot extends AggregateRoot
             if ($existingStats->sourceType === $sourceStatistics->sourceType) {
                 $this->sourceStats[$index] = $sourceStatistics;
                 $this->markAsUpdated();
+
                 return;
             }
         }
@@ -351,7 +357,7 @@ class StatisticsSnapshot extends AggregateRoot
 
         $this->sourceStats = array_filter(
             $this->sourceStats,
-            fn (SourceStatistics $stats) => $stats->sourceType !== $sourceType
+            fn(SourceStatistics $stats) => $stats->sourceType !== $sourceType,
         );
 
         // 重新索引陣列
@@ -457,8 +463,9 @@ class StatisticsSnapshot extends AggregateRoot
     {
         $sortedStats = $this->sourceStats;
 
-        usort($sortedStats, fn (SourceStatistics $a, SourceStatistics $b) =>
-            $a->compareTo($b)
+        usort(
+            $sortedStats,
+            fn(SourceStatistics $a, SourceStatistics $b) => $a->compareTo($b),
         );
 
         return $sortedStats;
@@ -526,7 +533,7 @@ class StatisticsSnapshot extends AggregateRoot
                 $this->period,
                 $this->totalPosts,
                 $this->totalViews,
-                $this->updatedAt
+                $this->updatedAt,
             ));
         }
     }
