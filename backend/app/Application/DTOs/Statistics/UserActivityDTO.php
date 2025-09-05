@@ -12,10 +12,10 @@ use JsonSerializable;
 
 /**
  * 使用者活動統計資料傳輸物件
- * 
+ *
  * 用於傳輸使用者活動統計資料的 DTO 類別。
  * 包含活躍使用者資訊、活動模式分析、參與度統計等。
- * 
+ *
  * 設計原則：
  * - 不可變物件 (Immutable)
  * - 支援 JSON 序列化
@@ -247,7 +247,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
         // 排序並取前3個時段
         uasort($timeAnalysis, fn($a, $b) => ($b['activity_count'] ?? 0) <=> ($a['activity_count'] ?? 0));
-        
+
         return array_slice($timeAnalysis, 0, 3, true);
     }
 
@@ -331,14 +331,14 @@ final readonly class UserActivityDTO implements JsonSerializable
                     'current' => $this->totalActiveUsers->value,
                     'previous' => $other->totalActiveUsers->value,
                     'change' => $this->totalActiveUsers->value - $other->totalActiveUsers->value,
-                    'change_percentage' => $other->totalActiveUsers->value > 0 ? 
+                    'change_percentage' => $other->totalActiveUsers->value > 0 ?
                         round((($this->totalActiveUsers->value - $other->totalActiveUsers->value) / $other->totalActiveUsers->value) * 100, 2) : 0
                 ],
                 'new_users' => [
                     'current' => $this->newUsers->value,
                     'previous' => $other->newUsers->value,
                     'change' => $this->newUsers->value - $other->newUsers->value,
-                    'change_percentage' => $other->newUsers->value > 0 ? 
+                    'change_percentage' => $other->newUsers->value > 0 ?
                         round((($this->newUsers->value - $other->newUsers->value) / $other->newUsers->value) * 100, 2) : 0
                 ]
             ],

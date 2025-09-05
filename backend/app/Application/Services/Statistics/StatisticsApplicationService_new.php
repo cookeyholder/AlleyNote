@@ -12,10 +12,8 @@ use App\Domains\Statistics\Services\StatisticsCalculationService;
 use App\Domains\Statistics\Services\PostStatisticsService;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\ValueObjects\StatisticsMetric;
 use App\Domains\Statistics\ValueObjects\SourceStatistics;
 use App\Domains\Statistics\Enums\SourceType;
-use App\Domains\Statistics\Enums\PeriodType;
 use App\Shared\Domain\ValueObjects\Uuid;
 use Psr\Log\LoggerInterface;
 use DateTimeImmutable;
@@ -25,19 +23,15 @@ use Throwable;
  * 統計應用服務
  *
  * 協調多個領域服務，處理統計相關的應用層業務邏輯。
- * 負責事務管理、快取策略、錯誤處理等應用層關注點。
+ * 負責事務管理、錯誤處理等應用層關注點。
  *
  * 設計原則：
  * - 協調領域服務完成複雜業務流程
  * - 處理應用層的事務邏輯
- * - 實作快取策略提升效能
  * - 統一錯誤處理和日誌記錄
  */
 final class StatisticsApplicationService
 {
-    private const CACHE_TTL = 3600; // 1 小時
-    private const CACHE_PREFIX = 'statistics';
-
     public function __construct(
         private readonly StatisticsRepositoryInterface $statisticsRepository,
         private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
@@ -53,19 +47,17 @@ final class StatisticsApplicationService
      * 建立統計快照
      *
      * 協調多個領域服務來生成特定週期的統計快照。
-     * 包含事務處理、快取管理和錯誤處理。
+     * 包含事務處理、錯誤處理。
      */
     public function createStatisticsSnapshot(StatisticsPeriod $period, bool $forceRecalculate = false): StatisticsSnapshot
     {
-        $cacheKey = self::CACHE_PREFIX . ':snapshot:' . $this->getPeriodCacheKey($period);
-
         try {
             // 檢查是否已存在且不強制重算
             if (!$forceRecalculate) {
                 $existingSnapshot = $this->statisticsRepository->findByPeriod($period);
                 if ($existingSnapshot !== null) {
                     $this->logger->info('統計快照已存在', [
-                        'period' => $period->getDisplayString(),
+                        'period' => $period->__toString(),
                         'snapshot_id' => $existingSnapshot->getId()->toString()
                     ]);
                     return $existingSnapshot;
@@ -73,7 +65,7 @@ final class StatisticsApplicationService
             }
 
             $this->logger->info('開始建立統計快照', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->__toString(),
                 'force_recalculate' => $forceRecalculate
             ]);
 
@@ -96,9 +88,6 @@ final class StatisticsApplicationService
             // 儲存快照
             $this->statisticsRepository->saveSnapshot($snapshot);
 
-            // 清除相關快取
-            $this->clearRelatedCache($period);
-
             $this->logger->info('統計快照建立完成', [
                 'snapshot_id' => $snapshot->getId()->toString(),
                 'total_posts' => $totalPostsCount,
@@ -109,7 +98,7 @@ final class StatisticsApplicationService
 
         } catch (Throwable $e) {
             $this->logger->error('建立統計快照失敗', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->__toString(),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -120,21 +109,12 @@ final class StatisticsApplicationService
     /**
      * 取得統計概覽
      *
-     * 提供統計資料的概覽資訊，包含快取機制。
+     * 提供統計資料的概覽資訊。
      */
     public function getStatisticsOverview(StatisticsPeriod $period): array
     {
-        $cacheKey = self::CACHE_PREFIX . ':overview:' . $this->getPeriodCacheKey($period);
-
-        // 嘗試從快取取得
-        $cached = $this->cacheManager->get($cacheKey);
-        if ($cached !== null) {
-            $this->logger->debug('從快取取得統計概覽', ['period' => $period->getDisplayString()]);
-            return $cached;
-        }
-
         try {
-            $this->logger->info('計算統計概覽', ['period' => $period->getDisplayString()]);
+            $this->logger->info('計算統計概覽', ['period' => $period->__toString()]);
 
             // 取得統計快照
             $snapshot = $this->statisticsRepository->findByPeriod($period);
@@ -144,10 +124,6 @@ final class StatisticsApplicationService
                 $snapshot = $this->createStatisticsSnapshot($period);
             }
 
-            // 計算額外指標
-            $popularPosts = $this->postStatisticsService->getPopularPostsByPeriod($period, 10);
-            $activeUsers = $this->userStatisticsRepository->getActiveUsersByPeriod($period, 10);
-
             $overview = [
                 'period' => [
                     'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H:i:s'),
@@ -156,40 +132,35 @@ final class StatisticsApplicationService
                 ],
                 'metrics' => [
                     'total_posts' => [
-                        'value' => $snapshot->getTotalPosts()->getValue(),
-                        'unit' => $snapshot->getTotalPosts()->getUnit(),
-                        'description' => $snapshot->getTotalPosts()->getDescription()
+                        'value' => $snapshot->getTotalPosts()->value,
+                        'unit' => $snapshot->getTotalPosts()->unit,
+                        'description' => $snapshot->getTotalPosts()->description
                     ],
                     'total_views' => [
-                        'value' => $snapshot->getTotalViews()->getValue(),
-                        'unit' => $snapshot->getTotalViews()->getUnit(),
-                        'description' => $snapshot->getTotalViews()->getDescription()
+                        'value' => $snapshot->getTotalViews()->value,
+                        'unit' => $snapshot->getTotalViews()->unit,
+                        'description' => $snapshot->getTotalViews()->description
                     ]
                 ],
                 'source_statistics' => array_map(
                     fn(SourceStatistics $stats) => [
                         'source_type' => $stats->sourceType->value,
                         'count' => [
-                            'value' => $stats->count->getValue(),
-                            'unit' => $stats->count->getUnit()
+                            'value' => $stats->count->value,
+                            'unit' => $stats->count->unit
                         ],
                         'percentage' => [
-                            'value' => $stats->percentage->getValue(),
-                            'unit' => $stats->percentage->getUnit()
+                            'value' => $stats->percentage->value,
+                            'unit' => $stats->percentage->unit
                         ]
                     ],
                     $snapshot->getSourceStats()
                 ),
-                'popular_posts' => $popularPosts,
-                'active_users' => $activeUsers,
                 'generated_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s')
             ];
 
-            // 儲存到快取
-            $this->cacheManager->set($cacheKey, $overview, self::CACHE_TTL);
-
             $this->logger->info('統計概覽計算完成', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->__toString(),
                 'metrics_count' => count($overview['metrics'])
             ]);
 
@@ -197,7 +168,7 @@ final class StatisticsApplicationService
 
         } catch (Throwable $e) {
             $this->logger->error('取得統計概覽失敗', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->__toString(),
                 'error' => $e->getMessage()
             ]);
             throw $e;
@@ -211,31 +182,20 @@ final class StatisticsApplicationService
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 20): array
     {
-        $cacheKey = self::CACHE_PREFIX . ':popular:' . $this->getPeriodCacheKey($period) . ':' . $limit;
-
-        // 嘗試從快取取得
-        $cached = $this->cacheManager->get($cacheKey);
-        if ($cached !== null) {
-            return $cached;
-        }
-
         try {
             $this->logger->info('分析熱門內容', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->__toString(),
                 'limit' => $limit
             ]);
 
             // 使用領域服務分析熱門內容
             $analysis = $this->postStatisticsService->analyzePopularContent($period, $limit);
 
-            // 儲存到快取
-            $this->cacheManager->set($cacheKey, $analysis, self::CACHE_TTL);
-
             return $analysis;
 
         } catch (Throwable $e) {
             $this->logger->error('分析熱門內容失敗', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->__toString(),
                 'error' => $e->getMessage()
             ]);
             throw $e;
@@ -249,11 +209,9 @@ final class StatisticsApplicationService
      */
     public function generateStatisticsReport(StatisticsPeriod $period, array $options = []): array
     {
-        $cacheKey = self::CACHE_PREFIX . ':report:' . $this->getPeriodCacheKey($period) . ':' . md5(serialize($options));
-
         try {
             $this->logger->info('產生統計報告', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->__toString(),
                 'options' => $options
             ]);
 
@@ -279,16 +237,13 @@ final class StatisticsApplicationService
                 ],
                 'generated_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
                 'period_info' => [
-                    'display' => $period->getDisplayString(),
-                    'duration_days' => $period->getDurationInDays()
+                    'display' => $period->__toString(),
+                    'duration_days' => $period->getDaysCount()
                 ]
             ];
 
-            // 儲存到快取
-            $this->cacheManager->set($cacheKey, $report, self::CACHE_TTL);
-
             $this->logger->info('統計報告產生完成', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->__toString(),
                 'sections' => array_keys($report)
             ]);
 
@@ -296,39 +251,7 @@ final class StatisticsApplicationService
 
         } catch (Throwable $e) {
             $this->logger->error('產生統計報告失敗', [
-                'period' => $period->getDisplayString(),
-                'error' => $e->getMessage()
-            ]);
-            throw $e;
-        }
-    }
-
-    /**
-     * 清除統計快取
-     *
-     * 清除指定週期或所有統計相關的快取。
-     */
-    public function clearStatisticsCache(?StatisticsPeriod $period = null): void
-    {
-        try {
-            if ($period !== null) {
-                // 清除特定週期的快取
-                $pattern = self::CACHE_PREFIX . ':*:' . $this->getPeriodCacheKey($period) . '*';
-                $this->clearCacheByPattern($pattern);
-
-                $this->logger->info('清除特定週期統計快取', [
-                    'period' => $period->getDisplayString()
-                ]);
-            } else {
-                // 清除所有統計快取
-                $this->clearCacheByPattern(self::CACHE_PREFIX . ':*');
-
-                $this->logger->info('清除所有統計快取');
-            }
-
-        } catch (Throwable $e) {
-            $this->logger->error('清除統計快取失敗', [
-                'period' => $period?->getDisplayString(),
+                'period' => $period->__toString(),
                 'error' => $e->getMessage()
             ]);
             throw $e;
@@ -347,9 +270,6 @@ final class StatisticsApplicationService
                 'checks' => [],
                 'timestamp' => (new DateTimeImmutable())->format('Y-m-d H:i:s')
             ];
-
-            // 檢查快取連線
-            $status['checks']['cache'] = $this->checkCacheHealth();
 
             // 檢查資料庫連線
             $status['checks']['database'] = $this->checkDatabaseHealth();
@@ -404,73 +324,6 @@ final class StatisticsApplicationService
         }
 
         return $sourceStats;
-    }
-
-    /**
-     * 取得週期快取鍵
-     */
-    private function getPeriodCacheKey(StatisticsPeriod $period): string
-    {
-        return sprintf(
-            '%s_%s_%s',
-            $period->type->value,
-            $period->startDate->format('Ymd'),
-            $period->endDate->format('Ymd')
-        );
-    }
-
-    /**
-     * 清除相關快取
-     */
-    private function clearRelatedCache(StatisticsPeriod $period): void
-    {
-        $periodKey = $this->getPeriodCacheKey($period);
-        $patterns = [
-            self::CACHE_PREFIX . ':snapshot:' . $periodKey,
-            self::CACHE_PREFIX . ':overview:' . $periodKey,
-            self::CACHE_PREFIX . ':popular:' . $periodKey . ':*',
-            self::CACHE_PREFIX . ':report:' . $periodKey . ':*'
-        ];
-
-        foreach ($patterns as $pattern) {
-            $this->clearCacheByPattern($pattern);
-        }
-    }
-
-    /**
-     * 按模式清除快取
-     */
-    private function clearCacheByPattern(string $pattern): void
-    {
-        // 這裡需要實作按模式清除快取的邏輯
-        // 由於 CacheManagerInterface 可能沒有 deleteByPattern 方法
-        // 我們使用基本的 delete 方法來清除特定的鍵
-        $this->cacheManager->delete($pattern);
-    }
-
-    /**
-     * 檢查快取健康狀態
-     */
-    private function checkCacheHealth(): array
-    {
-        try {
-            // 測試快取讀寫
-            $testKey = self::CACHE_PREFIX . ':health_check';
-            $testValue = ['test' => true, 'timestamp' => time()];
-
-            $this->cacheManager->set($testKey, $testValue, 60);
-            $retrieved = $this->cacheManager->get($testKey);
-
-            if ($retrieved === $testValue) {
-                $this->cacheManager->delete($testKey);
-                return ['status' => 'ok', 'message' => 'Cache is working'];
-            }
-
-            return ['status' => 'error', 'message' => 'Cache read/write test failed'];
-
-        } catch (Throwable $e) {
-            return ['status' => 'error', 'message' => 'Cache error: ' . $e->getMessage()];
-        }
     }
 
     /**

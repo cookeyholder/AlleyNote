@@ -12,10 +12,10 @@ use JsonSerializable;
 
 /**
  * 統計概覽資料傳輸物件
- * 
+ *
  * 用於傳輸統計概覽資料的 DTO 類別。
  * 包含統計週期、基本指標、來源統計等資訊。
- * 
+ *
  * 設計原則：
  * - 不可變物件 (Immutable)
  * - 支援 JSON 序列化
@@ -174,7 +174,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
         $topSource = array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source) => 
+            fn(?SourceStatistics $carry, SourceStatistics $source) =>
                 $carry === null || $source->count->value > $carry->count->value ? $source : $carry
         );
 

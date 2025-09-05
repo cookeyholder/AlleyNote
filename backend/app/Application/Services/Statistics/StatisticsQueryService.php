@@ -20,10 +20,10 @@ use Throwable;
 
 /**
  * 統計查詢服務
- * 
+ *
  * 專門處理統計查詢的應用服務，提供複雜的統計查詢功能。
  * 負責查詢最佳化、分頁支援、參數驗證等查詢相關的應用層關注點。
- * 
+ *
  * 設計原則：
  * - 專注於查詢操作，不處理命令操作
  * - 實作查詢最佳化策略
@@ -43,7 +43,7 @@ final class StatisticsQueryService
 
     /**
      * 查詢統計快照清單
-     * 
+     *
      * 支援分頁和篩選條件的統計快照查詢。
      */
     public function getStatisticsSnapshots(
@@ -155,7 +155,7 @@ final class StatisticsQueryService
 
     /**
      * 查詢文章統計趨勢
-     * 
+     *
      * 分析指定週期內的文章統計趨勢資料。
      */
     public function getPostStatisticsTrends(
@@ -222,7 +222,7 @@ final class StatisticsQueryService
 
     /**
      * 查詢使用者活動統計
-     * 
+     *
      * 取得指定週期內的使用者活動統計資訊。
      */
     public function getUserActivityStatistics(
@@ -257,7 +257,7 @@ final class StatisticsQueryService
                 'overview' => [
                     'total_active_users' => $totalActiveUsers,
                     'new_users' => $newUsers,
-                    'retention_rate' => $totalActiveUsers > 0 ? 
+                    'retention_rate' => $totalActiveUsers > 0 ?
                         round((($totalActiveUsers - $newUsers) / $totalActiveUsers) * 100, 2) : 0
                 ],
                 'top_active_users' => $topActiveUsers,
@@ -284,7 +284,7 @@ final class StatisticsQueryService
 
     /**
      * 查詢系統效能統計
-     * 
+     *
      * 取得系統效能相關的統計資訊。
      */
     public function getSystemPerformanceStatistics(
@@ -334,7 +334,7 @@ final class StatisticsQueryService
 
     /**
      * 自訂統計查詢
-     * 
+     *
      * 提供彈性的自訂統計查詢功能。
      */
     public function customStatisticsQuery(array $queryParams): array

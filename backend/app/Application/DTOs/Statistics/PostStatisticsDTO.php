@@ -13,10 +13,10 @@ use JsonSerializable;
 
 /**
  * 文章統計資料傳輸物件
- * 
+ *
  * 用於傳輸文章統計資料的 DTO 類別。
  * 包含文章基本資訊、統計指標、效能分析等資訊。
- * 
+ *
  * 設計原則：
  * - 不可變物件 (Immutable)
  * - 支援 JSON 序列化
@@ -141,7 +141,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     public function getPerformanceScore(): float
     {
-        return $this->additionalMetrics['performance_score'] ?? 
+        return $this->additionalMetrics['performance_score'] ??
                $this->calculateDefaultPerformanceScore();
     }
 
@@ -150,7 +150,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     public function isPopular(float $viewThreshold = 100, float $engagementThreshold = 5.0): bool
     {
-        return $this->viewCount->value >= $viewThreshold 
+        return $this->viewCount->value >= $viewThreshold
                && $this->getEngagementRate() >= $engagementThreshold;
     }
 
@@ -236,7 +236,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     public function compareWith(PostStatisticsDTO $other): array
     {
         return [
-            'views_ratio' => $other->viewCount->value > 0 ? 
+            'views_ratio' => $other->viewCount->value > 0 ?
                 round($this->viewCount->value / $other->viewCount->value, 2) : 0,
             'engagement_rate_diff' => round($this->getEngagementRate() - $other->getEngagementRate(), 2),
             'performance_score_diff' => round($this->getPerformanceScore() - $other->getPerformanceScore(), 2),
@@ -317,8 +317,8 @@ final readonly class PostStatisticsDTO implements JsonSerializable
             return 0.0;
         }
 
-        $engagements = ($metrics['likes'] ?? 0) + 
-                      ($metrics['comments'] ?? 0) + 
+        $engagements = ($metrics['likes'] ?? 0) +
+                      ($metrics['comments'] ?? 0) +
                       ($metrics['shares'] ?? 0);
 
         return round(($engagements / $views) * 100, 2);
@@ -331,7 +331,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     {
         $views = $metrics['views'] ?? 0;
         $engagementRate = self::calculateEngagementRate($metrics);
-        
+
         // 基本評分公式：瀏覽數權重 70%，互動率權重 30%
         $viewScore = min($views / 1000, 1) * 70; // 1000 瀏覽為滿分
         $engagementScore = min($engagementRate / 10, 1) * 30; // 10% 互動率為滿分

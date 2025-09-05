@@ -12,10 +12,10 @@ use JsonSerializable;
 
 /**
  * 來源分佈統計資料傳輸物件
- * 
+ *
  * 用於傳輸來源分佈統計資料的 DTO 類別。
  * 包含各種來源的統計資訊、分佈分析、趨勢資訊等。
- * 
+ *
  * 設計原則：
  * - 不可變物件 (Immutable)
  * - 支援 JSON 序列化
@@ -101,7 +101,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
         return array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source) => 
+            fn(?SourceStatistics $carry, SourceStatistics $source) =>
                 $carry === null || $source->count->value > $carry->count->value ? $source : $carry
         );
     }
@@ -117,7 +117,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
         return array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source) => 
+            fn(?SourceStatistics $carry, SourceStatistics $source) =>
                 $carry === null || $source->count->value < $carry->count->value ? $source : $carry
         );
     }
@@ -185,7 +185,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     public function getTopSources(int $limit = 3): array
     {
         $sorted = $this->sourceStatistics;
-        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b) => 
+        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b) =>
             $b->count->value <=> $a->count->value);
 
         return array_slice($sorted, 0, $limit);
@@ -197,7 +197,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     public function getSourceRanking(): array
     {
         $sorted = $this->sourceStatistics;
-        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b) => 
+        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b) =>
             $b->count->value <=> $a->count->value);
 
         return array_map(
@@ -285,7 +285,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     public function compareWith(SourceDistributionDTO $other): array
     {
         $changes = [];
-        
+
         // 建立來源類型對應表
         $thisSourceMap = [];
         foreach ($this->sourceStatistics as $source) {
@@ -306,13 +306,13 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         foreach ($allSourceTypes as $sourceType) {
             $thisCount = $thisSourceMap[$sourceType]->count->value ?? 0;
             $otherCount = $otherSourceMap[$sourceType]->count->value ?? 0;
-            
+
             $changes[$sourceType] = [
                 'current_count' => $thisCount,
                 'previous_count' => $otherCount,
                 'absolute_change' => $thisCount - $otherCount,
-                'percentage_change' => $otherCount > 0 ? 
-                    round((($thisCount - $otherCount) / $otherCount) * 100, 2) : 
+                'percentage_change' => $otherCount > 0 ?
+                    round((($thisCount - $otherCount) / $otherCount) * 100, 2) :
                     ($thisCount > 0 ? 100 : 0)
             ];
         }
@@ -326,8 +326,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 'current' => $this->totalCount,
                 'previous' => $other->totalCount,
                 'absolute_change' => $this->totalCount - $other->totalCount,
-                'percentage_change' => $other->totalCount > 0 ? 
-                    round((($this->totalCount - $other->totalCount) / $other->totalCount) * 100, 2) : 
+                'percentage_change' => $other->totalCount > 0 ?
+                    round((($this->totalCount - $other->totalCount) / $other->totalCount) * 100, 2) :
                     ($this->totalCount > 0 ? 100 : 0)
             ],
             'diversity_change' => round($this->getDiversityIndex() - $other->getDiversityIndex(), 4),
@@ -401,7 +401,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         // 計算多樣性指數
         $shannon = 0.0;
         $hhi = 0.0;
-        
+
         foreach ($sourceStatistics as $source) {
             if ($source->count->value > 0) {
                 $proportion = $source->count->value / $totalCount;
