@@ -26,7 +26,16 @@
 - [x] StatisticsCalculationException - 統計計算例外
 - [x] DomainException - 領域例外基礎類別
 
-**進度：5/27 (18.5%)**ice
+**描述**：建立統計計算的核心領域服務
+**預估時間**：6 小時
+**依賴**：T1.4
+**驗收標準**：
+* [x] `StatisticsCalculatorService` 領域服務
+* [x] `PostStatisticsService` 領域服務
+* [x] 所有業務邏輯封裝在領域層
+* [x] 不依賴基礎設施層
+* [x] 包含完整的領域邏輯測試
+* [x] 通過 PHPStan Level 10 檢查ice
 * **預計完成**：2025-09-18
 * **開發人員**：開發團隊
 
@@ -58,9 +67,9 @@
 * [x] StatisticsMetric（統計指標值物件）
 * [x] SourceStatistics（來源統計值物件）
 * [x] 相關例外類別
-* [ ] 所有值物件都是 immutable
-* [ ] 包含完整的驗證邏輯
-* [ ] 通過 PHPStan Level 10 檢查
+* [x] 所有值物件都是 immutable
+* [x] 包含完整的驗證邏輯
+* [x] 通過 PHPStan Level 10 檢查
 
 #### T1.3 建立統計實體 (Entity) ✅
 
@@ -106,12 +115,12 @@
 
 ### 階段 2：資料庫結構調整 (Infrastructure - Database)
 
-#### ✅ T2.1 - 建立文章來源追蹤 Migration
+#### ✅ T2.1 - 建立文章來源追蹤 Migration 🔄
 
 **描述**：為 posts 表新增來源追蹤欄位
 **預估時間**：2 小時
 **驗收標準**：
-* [ ] Migration 檔案正確建立
+* [x] Migration 檔案正確建立
 * [ ] 新增 `source_type` 欄位 (enum)
 * [ ] 新增 `source_detail` 欄位 (nullable text)
 * [ ] 建立適當的索引
@@ -119,13 +128,13 @@
 * [ ] Migration 可正確回滾
 * [ ] 通過本地測試環境驗證
 
-#### ✅ T2.2 - 建立統計快照表 Migration
+#### ✅ T2.2 - 建立統計快照表 Migration 🔄
 
 **描述**：建立統計資料快照表
 **預估時間**：3 小時
 **依賴**：T2.1
 **驗收標準**：
-* [ ] `statistics_snapshots` 表正確建立
+* [x] `statistics_snapshots` 表正確建立
 * [ ] 包含必要欄位（id, uuid, type, period, data, created_at）
 * [ ] JSON 欄位支援複雜統計資料
 * [ ] 建立複合索引提升查詢效能
@@ -133,12 +142,13 @@
 * [ ] Migration 可正確回滾
 * [ ] 通過本地測試環境驗證
 
-#### ✅ T2.3 - 更新現有資料的來源資訊
+#### ✅ T2.3 - 更新現有資料的來源資訊 🔄
 
 **描述**：為現有文章資料設定預設來源
 **預估時間**：1 小時
 **依賴**：T2.1
 **驗收標準**：
+* [x] Migration 檔案正確建立
 * [ ] 所有現有文章設定預設來源為 'web'
 * [ ] 資料更新腳本可重複執行
 * [ ] 包含資料驗證邏輯
@@ -149,40 +159,40 @@
 
 ### 階段 3：應用層服務 (Application Layer)
 
-#### ✅ T3.1 - 建立統計應用服務
+#### ✅ T3.1 - 建立統計應用服務 🔄
 
 **描述**：建立統計功能的應用層服務
 **預估時間**：5 小時
 **依賴**：T1.5, T2.2
 **驗收標準**：
-* [ ] `StatisticsApplicationService` 類別
+* [x] `StatisticsApplicationService` 類別
 * [ ] 協調多個領域服務
 * [ ] 處理應用層的事務邏輯
 * [ ] 包含完整的錯誤處理
 * [ ] 實作快取策略
 * [ ] 通過 PHPStan Level 10 檢查
 
-#### ✅ T3.2 - 建立統計查詢服務
+#### ✅ T3.2 - 建立統計查詢服務 🔄
 
 **描述**：專門處理統計查詢的應用服務
 **預估時間**：4 小時
 **依賴**：T3.1
 **驗收標準**：
-* [ ] `StatisticsQueryService` 類別
+* [x] `StatisticsQueryService` 類別
 * [ ] 支援複雜的統計查詢
 * [ ] 實作查詢最佳化
 * [ ] 包含分頁支援
 * [ ] 查詢參數驗證
 * [ ] 通過 PHPStan Level 10 檢查
 
-#### ✅ T3.3 - 建立統計 DTO 類別
+#### ✅ T3.3 - 建立統計 DTO 類別 🔄
 
 **描述**：建立統計資料傳輸物件
 **預估時間**：3 小時
 **依賴**：T3.2
 **驗收標準**：
-* [ ] `StatisticsOverviewDTO` 類別
-* [ ] `PostStatisticsDTO` 類別
+* [x] `StatisticsOverviewDTO` 類別
+* [x] `PostStatisticsDTO` 類別
 * [ ] `SourceDistributionDTO` 類別
 * [ ] `UserActivityDTO` 類別
 * [ ] 所有 DTO 包含驗證邏輯
@@ -193,14 +203,14 @@
 
 ### 階段 4：基礎設施層實作 (Infrastructure Layer)
 
-#### ✅ T4.1 - 實作統計 Repository
+#### ✅ T4.1 - 實作統計 Repository 🔄
 
 **描述**：實作統計資料存取的具體類別
 **預估時間**：6 小時
 **依賴**：T1.4, T2.2
 **驗收標準**：
-* [ ] `StatisticsRepository` 類別實作
-* [ ] `PostStatisticsRepository` 類別實作
+* [x] `StatisticsRepository` 類別實作
+* [x] `PostStatisticsRepository` 類別實作
 * [ ] 使用原生 SQL 最佳化效能
 * [ ] 包含完整的錯誤處理
 * [ ] 支援複雜的統計查詢
@@ -430,10 +440,10 @@
 
 ### 完成狀態
 
-* [x] 階段 1：統計領域建立 (4/5) 🔄
-* [ ] 階段 2：資料庫結構調整 (0/3)
-* [ ] 階段 3：應用層服務 (0/3)
-* [ ] 階段 4：基礎設施層實作 (0/3)
+* [x] 階段 1：統計領域建立 (5/5) ✅
+* [🔄] 階段 2：資料庫結構調整 (0/3) - 已建立但未完整實作
+* [🔄] 階段 3：應用層服務 (0/3) - 已建立但未完整實作
+* [🔄] 階段 4：基礎設施層實作 (0/3) - 已建立但未完整實作
 * [ ] 階段 5：介面層實作 (0/3)
 * [ ] 階段 6：測試實作 (0/4)
 * [ ] 階段 7：文件與部署 (0/3)
@@ -441,7 +451,7 @@
 
 ### 總體進度
 
-**4/27 項任務完成 (14.8%)**
+**5/27 項任務完成，7項部分完成 (18.5%)**
 
 ### 預估工作量
 
