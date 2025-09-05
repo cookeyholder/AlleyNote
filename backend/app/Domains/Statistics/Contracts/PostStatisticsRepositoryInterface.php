@@ -206,4 +206,13 @@ interface PostStatisticsRepositoryInterface
      * @return array<array{date: string, daily_views: int}> 歷史表現資料
      */
     public function getPostHistoricalPerformance(int $postId, StatisticsPeriod $period): array;
+
+    /**
+     * 取得文章統計趨勢資料.
+     *
+     * @param StatisticsPeriod $period 統計週期
+     * @param int $dataPoints 資料點數量，預設為 30
+     * @return array<array{date: string, post_count: int, view_count: int, unique_views: int}> 趨勢資料
+     */
+    public function getStatisticsTrends(StatisticsPeriod $period, int $dataPoints = 30): array;
 }

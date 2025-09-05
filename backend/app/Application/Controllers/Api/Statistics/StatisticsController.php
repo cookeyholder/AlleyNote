@@ -58,19 +58,15 @@ class StatisticsController extends BaseController
 
     private StatisticsQueryService $queryService;
 
-    private StatisticsCacheServiceInterface $cacheService;
-
     private LoggerInterface $logger;
 
     public function __construct(
         StatisticsApplicationService $applicationService,
         StatisticsQueryService $queryService,
-        StatisticsCacheServiceInterface $cacheService,
         LoggerInterface $logger,
     ) {
         $this->applicationService = $applicationService;
         $this->queryService = $queryService;
-        $this->cacheService = $cacheService;
         $this->logger = $logger;
     }
 
@@ -224,7 +220,7 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validateOverviewParams($request->getQueryParams());
+            $params = $this->validateOverviewParams((array) $request->getQueryParams());
             $period = $this->createPeriodFromParams($params);
 
             $overview = $this->applicationService->getStatisticsOverview($period);
@@ -387,16 +383,16 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validatePostsParams($request->getQueryParams());
+            $params = $this->validatePostsParams((array) $request->getQueryParams());
             $period = $this->createPeriodFromParams($params);
 
             $sourceType = isset($params['source'])
-                ? SourceType::from($params['source']) : null;
+                ? SourceType::from((string) $params['source']) : null;
 
             $statistics = $this->queryService->getPostStatisticsTrends(
                 $period,
                 $sourceType,
-                $params['data_points'] ?? 30,
+                (int) ($params['data_points'] ?? 30),
             );
 
             $this->logger->info('文章統計 API 成功回應', [
@@ -442,7 +438,7 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validateSourcesParams($request->getQueryParams());
+            $params = $this->validateSourcesParams((array) $request->getQueryParams());
             $period = $this->createPeriodFromParams($params);
 
             // 使用統計快照來取得來源分佈
@@ -505,7 +501,7 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validateUsersParams($request->getQueryParams());
+            $params = $this->validateUsersParams((array) $request->getQueryParams());
             $period = $this->createPeriodFromParams($params);
 
             $statistics = $this->queryService->getUserActivityStatistics($period, $params['page'] ?? 1, $params['per_page'] ?? 20);
@@ -600,7 +596,7 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validatePopularParams($request->getQueryParams());
+            $params = $this->validatePopularParams((array) $request->getQueryParams());
             $period = $this->createPeriodFromParams($params);
 
             $popularContent = $this->applicationService->analyzePopularContent(
@@ -652,7 +648,7 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validateTrendsParams($request->getQueryParams());
+            $params = $this->validateTrendsParams((array) $request->getQueryParams());
             $period = $this->createPeriodFromParams($params);
 
             $trends = $this->queryService->getPostStatisticsTrends($period, null, 30);

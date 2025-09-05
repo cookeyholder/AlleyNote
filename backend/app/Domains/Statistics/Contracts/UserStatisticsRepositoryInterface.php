@@ -178,4 +178,21 @@ interface UserStatisticsRepositoryInterface
      * @return int 總使用者數
      */
     public function getTotalUsersAsOfDate(DateTimeInterface $date): int;
+
+    /**
+     * 取得最活躍的使用者清單.
+     *
+     * @param StatisticsPeriod $period 統計週期
+     * @param int $limit 限制回傳數量，預設為 10
+     * @return array<array{user_id: int, username: string, activity_count: int, posts_count: int, last_activity: string}> 最活躍使用者清單
+     */
+    public function getTopActiveUsers(StatisticsPeriod $period, int $limit = 10): array;
+
+    /**
+     * 取得使用者行為分析資料.
+     *
+     * @param StatisticsPeriod $period 統計週期
+     * @return array{average_session_duration: float, bounce_rate: float, page_views_per_session: float, conversion_rate: float} 使用者行為分析
+     */
+    public function getUserBehaviorAnalysis(StatisticsPeriod $period): array;
 }

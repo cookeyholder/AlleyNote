@@ -159,4 +159,28 @@ interface SystemStatisticsRepositoryInterface
      * @return array{uptime_percentage: float, error_rate: float, avg_response_time: float, peak_memory_usage: float, total_events: int} 關鍵指標摘要
      */
     public function getSystemKeyMetricsSummary(StatisticsPeriod $period): array;
+
+    /**
+     * 取得系統效能指標.
+     *
+     * @param StatisticsPeriod $period 統計週期
+     * @return array{avg_response_time: float, peak_memory_usage: float, cpu_usage: float, throughput: float} 效能指標
+     */
+    public function getPerformanceMetrics(StatisticsPeriod $period): array;
+
+    /**
+     * 取得錯誤統計資料.
+     *
+     * @param StatisticsPeriod $period 統計週期
+     * @return array{total_errors: int, error_rate: float, critical_errors: int, error_trends: array} 錯誤統計
+     */
+    public function getErrorStatistics(StatisticsPeriod $period): array;
+
+    /**
+     * 取得資源使用統計.
+     *
+     * @param StatisticsPeriod $period 統計週期
+     * @return array{memory_usage: array, cpu_usage: array, disk_usage: array, network_usage: array} 資源使用統計
+     */
+    public function getResourceUsageStatistics(StatisticsPeriod $period): array;
 }

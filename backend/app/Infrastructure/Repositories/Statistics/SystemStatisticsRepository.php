@@ -119,6 +119,14 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
+     * StatisticsQueryService 需要的方法.
+     */
+    public function getResourceUsageStatistics(StatisticsPeriod $period): array
+    {
+        return $this->getSystemResourceUsageStats();
+    }
+
+    /**
      * 取得資料庫使用統計.
      */
     public function getDatabaseUsageStats(): array

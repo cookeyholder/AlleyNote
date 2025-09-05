@@ -226,13 +226,16 @@ final class StatisticsQueryService
     public function getUserActivityStatistics(
         StatisticsPeriod $period,
         int $topUsersLimit = 10,
+        int $perPage = 20,
     ): array {
         try {
             $this->validateLimit($topUsersLimit, 1, 100);
+            $this->validateLimit($perPage, 1, 100);
 
             $this->logger->info('查詢使用者活動統計', [
                 'period' => $period->__toString(),
                 'top_users_limit' => $topUsersLimit,
+                'per_page' => $perPage,
             ]);
 
             // 查詢基本統計
@@ -462,8 +465,9 @@ final class StatisticsQueryService
             return 'stable';
         }
 
-        $first = array_slice($values, 0, ceil(count($values) / 3));
-        $last = array_slice($values, -ceil(count($values) / 3));
+        $sliceSize = (int) ceil(count($values) / 3);
+        $first = array_slice($values, 0, $sliceSize);
+        $last = array_slice($values, -$sliceSize);
 
         $firstAvg = array_sum($first) / count($first);
         $lastAvg = array_sum($last) / count($last);

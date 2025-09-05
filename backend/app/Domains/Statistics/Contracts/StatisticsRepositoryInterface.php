@@ -57,6 +57,18 @@ interface StatisticsRepositoryInterface
     ): array;
 
     /**
+     * 計算指定時間範圍內的統計快照數量.
+     *
+     * @param DateTimeInterface $startDate 開始時間
+     * @param DateTimeInterface $endDate 結束時間
+     * @return int 統計快照數量
+     */
+    public function countByDateRange(
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+    ): int;
+
+    /**
      * 查找最新的統計快照.
      *
      * @param int $limit 限制回傳數量，預設為 10
