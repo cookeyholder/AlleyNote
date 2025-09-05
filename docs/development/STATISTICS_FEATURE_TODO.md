@@ -51,17 +51,20 @@
 * [x] 包含領域不變條件 (Invariants)
 * [x] 通過 PHPStan Level 10 檢查
 
-#### ✅ T1.4 - 定義統計 Repository 介面
+#### T1.4 定義統計 Repository 介面 ✅
 
 **描述**：定義統計資料存取的領域介面
 **預估時間**：2 小時
 **依賴**：T1.3
 **驗收標準**：
-* [ ] `StatisticsRepositoryInterface` 介面定義完整
-* [ ] `PostStatisticsRepositoryInterface` 介面定義完整
-* [ ] 方法簽名遵循領域語言
-* [ ] 包含完整的 DocBlock 註解
-* [ ] 介面設計符合 ISP 原則
+* [x] `StatisticsRepositoryInterface` 介面定義完整
+* [x] `PostStatisticsRepositoryInterface` 介面定義完整
+* [x] `UserStatisticsRepositoryInterface` 介面定義完整
+* [x] `SystemStatisticsRepositoryInterface` 介面定義完整
+* [x] 方法簽名遵循領域語言
+* [x] 包含完整的 DocBlock 註解
+* [x] 介面設計符合 ISP 原則
+* [x] 通過 PHPStan Level 10 檢查
 
 #### ✅ T1.5 - 建立統計領域服務
 
@@ -404,7 +407,7 @@
 
 ### 完成狀態
 
-* [x] 階段 1：統計領域建立 (3/5) 🔄
+* [x] 階段 1：統計領域建立 (4/5) 🔄
 * [ ] 階段 2：資料庫結構調整 (0/3)
 * [ ] 階段 3：應用層服務 (0/3)
 * [ ] 階段 4：基礎設施層實作 (0/3)
@@ -415,7 +418,7 @@
 
 ### 總體進度
 
-**3/27 項任務完成 (11.1%)**
+**4/27 項任務完成 (14.8%)**
 
 ### 預估工作量
 
