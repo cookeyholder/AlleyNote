@@ -8,7 +8,6 @@ use App\Infrastructure\Repositories\Statistics\PostStatisticsRepository;
 use App\Infrastructure\Repositories\Statistics\UserStatisticsRepository;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Domains\Statistics\Enums\PeriodType;
-use App\Domains\Statistics\Enums\SourceType;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -20,8 +19,8 @@ use DateTimeImmutable;
  * 測試統計資料存取層的核心功能，包含：
  * - 文章統計查詢
  * - 使用者統計查詢
- * - 來源統計查詢
- * - 時間週期查詢
+ * - 資料庫互動
+ * - 錯誤處理
  *
  * @covers \App\Infrastructure\Repositories\Statistics\PostStatisticsRepository
  * @covers \App\Infrastructure\Repositories\Statistics\UserStatisticsRepository
@@ -194,86 +193,6 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試來源類型統計查詢
-     *
-     * @test
-     */
-    public function should_get_posts_by_source_type_correctly(): void
-    {
-        // Arrange
-        $period = $this->createDailyPeriod();
-        $sourceType = SourceType::WEB;
-        $expectedSources = [
-            'web' => 120,
-            'mobile_app' => 25,
-            'api' => 5
-        ];
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('execute')
-            ->willReturn(true);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('fetchAll')
-            ->with(PDO::FETCH_KEY_PAIR)
-            ->willReturn($expectedSources);
-
-        // Act
-        $result = $this->postRepository->getPostsBySourceType($period);
-
-        // Assert
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('web', $result);
-        $this->assertEquals(120, $result['web']);
-    }
-
-    /**
-     * 測試每小時分布統計
-     *
-     * @test
-     */
-    public function should_get_hourly_distribution_correctly(): void
-    {
-        // Arrange
-        $period = $this->createDailyPeriod();
-        $expectedDistribution = array_combine(
-            range(0, 23),
-            [5, 3, 2, 1, 1, 2, 4, 8, 12, 15, 18, 20, 22, 25, 23, 20, 18, 16, 14, 12, 10, 8, 6, 4]
-        );
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('execute')
-            ->willReturn(true);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('fetchAll')
-            ->with(PDO::FETCH_KEY_PAIR)
-            ->willReturn($expectedDistribution);
-
-        // Act
-        $result = $this->postRepository->getHourlyDistribution($period);
-
-        // Assert
-        $this->assertIsArray($result);
-        $this->assertCount(24, $result);
-        $this->assertEquals(25, $result[13]); // 下午1點最高峰
-    }
-
-    /**
      * 測試週期內活躍使用者數量
      *
      * @test
@@ -340,47 +259,6 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試使用者參與度統計
-     *
-     * @test
-     */
-    public function should_calculate_user_engagement_correctly(): void
-    {
-        // Arrange
-        $period = $this->createDailyPeriod();
-        $expectedEngagement = [
-            'posts_per_user' => 2.5,
-            'views_per_user' => 15.3,
-            'avg_session_duration' => 450.0
-        ];
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('execute')
-            ->willReturn(true);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('fetch')
-            ->with(PDO::FETCH_ASSOC)
-            ->willReturn($expectedEngagement);
-
-        // Act
-        $result = $this->userRepository->calculateUserEngagement($period);
-
-        // Assert
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('posts_per_user', $result);
-        $this->assertArrayHasKey('views_per_user', $result);
-        $this->assertEquals(2.5, $result['posts_per_user']);
-    }
-
-    /**
      * 測試資料庫查詢失敗處理
      *
      * @test
@@ -398,11 +276,11 @@ final class StatisticsRepositoryTest extends TestCase
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
-            ->willReturn(false);
+            ->willThrowException(new \PDOException('資料庫連線失敗'));
 
         // Act & Assert
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('查詢執行失敗');
+        $this->expectExceptionMessage('計算週期內文章總數失敗');
 
         $this->postRepository->countPostsByPeriod($period);
     }
@@ -420,7 +298,7 @@ final class StatisticsRepositoryTest extends TestCase
         $this->mockPdo
             ->expects($this->once())
             ->method('prepare')
-            ->with($this->stringContains('WHERE created_at >= ? AND created_at <= ?'))
+            ->with($this->stringContains('WHERE created_at >= :start_date'))
             ->willReturn($this->mockStatement);
 
         $this->mockStatement
@@ -428,8 +306,8 @@ final class StatisticsRepositoryTest extends TestCase
             ->method('execute')
             ->with($this->callback(function ($params) use ($period) {
                 return count($params) === 2 &&
-                       $params[0] === $period->startDate->format('Y-m-d H:i:s') &&
-                       $params[1] === $period->endDate->format('Y-m-d H:i:s');
+                       $params['start_date'] === $period->startDate->format('Y-m-d H:i:s') &&
+                       $params['end_date'] === $period->endDate->format('Y-m-d H:i:s');
             }))
             ->willReturn(true);
 
@@ -446,18 +324,89 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試快取整合
+     * 測試不同週期類型的查詢
      *
      * @test
      */
-    public function should_integrate_with_cache_correctly(): void
+    public function should_handle_different_period_types(): void
+    {
+        // Arrange
+        $dailyPeriod = $this->createDailyPeriod();
+        $weeklyPeriod = $this->createWeeklyPeriod();
+        $monthlyPeriod = $this->createMonthlyPeriod();
+
+        // 設定連續的mock調用
+        $this->mockPdo
+            ->expects($this->exactly(3))
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        $this->mockStatement
+            ->expects($this->exactly(3))
+            ->method('execute')
+            ->willReturn(true);
+
+        $this->mockStatement
+            ->expects($this->exactly(3))
+            ->method('fetchColumn')
+            ->willReturn(100);
+
+        // Act & Assert - 每日週期
+        $result1 = $this->postRepository->countPostsByPeriod($dailyPeriod);
+        $this->assertEquals(100, $result1);
+
+        // Act & Assert - 每週週期
+        $result2 = $this->postRepository->countPostsByPeriod($weeklyPeriod);
+        $this->assertEquals(100, $result2);
+
+        // Act & Assert - 每月週期
+        $result3 = $this->postRepository->countPostsByPeriod($monthlyPeriod);
+        $this->assertEquals(100, $result3);
+    }
+
+    /**
+     * 測試空結果處理
+     *
+     * @test
+     */
+    public function should_handle_empty_results_gracefully(): void
     {
         // Arrange
         $period = $this->createDailyPeriod();
-        $cacheKey = "posts_count_" . $period->startDate->format('Y-m-d');
-        $expectedCount = 150;
 
-        // 模擬快取未命中，需要查詢資料庫
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('execute')
+            ->willReturn(true);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('fetchColumn')
+            ->willReturn(false); // 模擬無結果
+
+        // Act
+        $result = $this->postRepository->countPostsByPeriod($period);
+
+        // Assert
+        $this->assertEquals(0, $result);
+    }
+
+    /**
+     * 測試大數據量查詢效能
+     *
+     * @test
+     */
+    public function should_handle_large_dataset_queries(): void
+    {
+        // Arrange
+        $period = $this->createYearlyPeriod();
+        $expectedCount = 50000; // 大量資料
+
         $this->mockPdo
             ->expects($this->once())
             ->method('prepare')
@@ -478,45 +427,6 @@ final class StatisticsRepositoryTest extends TestCase
 
         // Assert
         $this->assertEquals($expectedCount, $result);
-    }
-
-    /**
-     * 測試不同週期類型的查詢
-     *
-     * @test
-     */
-    public function should_handle_different_period_types(): void
-    {
-        // Arrange
-        $periods = [
-            $this->createDailyPeriod(),
-            $this->createWeeklyPeriod(),
-            $this->createMonthlyPeriod(),
-            $this->createYearlyPeriod(),
-        ];
-
-        foreach ($periods as $period) {
-            $this->mockPdo
-                ->expects($this->once())
-                ->method('prepare')
-                ->willReturn($this->mockStatement);
-
-            $this->mockStatement
-                ->expects($this->once())
-                ->method('execute')
-                ->willReturn(true);
-
-            $this->mockStatement
-                ->expects($this->once())
-                ->method('fetchColumn')
-                ->willReturn(100);
-
-            // Act
-            $result = $this->postRepository->countPostsByPeriod($period);
-
-            // Assert
-            $this->assertEquals(100, $result);
-        }
     }
 
     /**

@@ -634,14 +634,14 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
         if (!empty($sourceStats)) {
             $maxPercentage = 0;
             $primarySourceType = null;
-            
+
             foreach ($sourceStats as $sourceStat) {
                 if ($sourceStat->percentage->value > $maxPercentage) {
                     $maxPercentage = $sourceStat->percentage->value;
                     $primarySourceType = $sourceStat->sourceType->value;
                 }
             }
-            
+
             return $primarySourceType;
         }
 

@@ -12,7 +12,7 @@ use RuntimeException;
 
 /**
  * 使用者統計資料存取實作類別
- * 
+ *
  * 實作使用者相關統計資料的查詢功能，提供高效能的原生 SQL 查詢。
  * 支援使用者註冊、活躍度、行為模式等複雜統計分析。
  */
@@ -29,9 +29,9 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT COUNT(*) 
-                FROM users 
-                WHERE created_at >= :start_date 
+                SELECT COUNT(*)
+                FROM users
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
             ';
@@ -60,9 +60,9 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT COUNT(DISTINCT user_id) 
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                SELECT COUNT(DISTINCT user_id)
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND user_id IS NOT NULL
             ';
@@ -91,8 +91,8 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT COUNT(*) 
-                FROM users 
+                SELECT COUNT(*)
+                FROM users
                 WHERE created_at <= :end_date
                     AND deleted_at IS NULL
             ';
@@ -118,11 +118,11 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     DATE(created_at) as date,
                     COUNT(*) as new_users
-                FROM users 
-                WHERE created_at >= :start_date 
+                FROM users
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                 GROUP BY DATE(created_at)
@@ -153,7 +153,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     u.id as user_id,
                     u.email,
                     u.name,
@@ -161,12 +161,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                     COUNT(DISTINCT ual.id) as activities_count,
                     MAX(ual.created_at) as last_activity
                 FROM users u
-                LEFT JOIN posts p ON u.id = p.user_id 
-                    AND p.created_at >= :start_date 
+                LEFT JOIN posts p ON u.id = p.user_id
+                    AND p.created_at >= :start_date
                     AND p.created_at <= :end_date
                     AND p.deleted_at IS NULL
-                LEFT JOIN user_activity_logs ual ON u.id = ual.user_id 
-                    AND ual.created_at >= :start_date 
+                LEFT JOIN user_activity_logs ual ON u.id = ual.user_id
+                    AND ual.created_at >= :start_date
                     AND ual.created_at <= :end_date
                 WHERE u.created_at <= :end_date
                     AND u.deleted_at IS NULL
@@ -207,7 +207,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     u.id as user_id,
                     u.email,
                     u.name,
@@ -216,12 +216,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                     COALESCE(SUM(p.views), 0) as total_views,
                     MAX(ual.created_at) as last_activity
                 FROM users u
-                LEFT JOIN posts p ON u.id = p.user_id 
-                    AND p.created_at >= :start_date 
+                LEFT JOIN posts p ON u.id = p.user_id
+                    AND p.created_at >= :start_date
                     AND p.created_at <= :end_date
                     AND p.deleted_at IS NULL
-                LEFT JOIN user_activity_logs ual ON u.id = ual.user_id 
-                    AND ual.created_at >= :start_date 
+                LEFT JOIN user_activity_logs ual ON u.id = ual.user_id
+                    AND ual.created_at >= :start_date
                     AND ual.created_at <= :end_date
                 WHERE u.created_at <= :end_date
                     AND u.deleted_at IS NULL
@@ -272,12 +272,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
         try {
             // 小時活動分析
             $hourlySql = '
-                SELECT 
+                SELECT
                     HOUR(created_at) as hour,
                     COUNT(*) as activity_count,
                     COUNT(DISTINCT user_id) as unique_users
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND user_id IS NOT NULL
                 GROUP BY HOUR(created_at)
@@ -293,13 +293,13 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             // 星期活動分析
             $weeklySql = '
-                SELECT 
+                SELECT
                     DAYOFWEEK(created_at) as day_of_week,
                     DAYNAME(created_at) as day_name,
                     COUNT(*) as activity_count,
                     COUNT(DISTINCT user_id) as unique_users
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND user_id IS NOT NULL
                 GROUP BY DAYOFWEEK(created_at), DAYNAME(created_at)
@@ -336,8 +336,8 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             // 計算在期間內註冊的使用者
             $newUsersSql = '
                 SELECT COUNT(*) as total_new_users
-                FROM users 
-                WHERE created_at >= :start_date 
+                FROM users
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
             ';
@@ -360,12 +360,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             // 計算在留存期間內有活動的使用者
             $retentionEndDate = $period->endDate->modify("+{$retentionDays} days");
-            
+
             $retainedUsersSql = '
                 SELECT COUNT(DISTINCT u.id) as retained_users
                 FROM users u
                 JOIN user_activity_logs ual ON u.id = ual.user_id
-                WHERE u.created_at >= :start_date 
+                WHERE u.created_at >= :start_date
                     AND u.created_at <= :end_date
                     AND u.deleted_at IS NULL
                     AND ual.created_at > :end_date
@@ -405,8 +405,8 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
-                    CASE 
+                SELECT
+                    CASE
                         WHEN post_count = 0 THEN "訪客"
                         WHEN post_count <= 5 THEN "新手"
                         WHEN post_count <= 20 THEN "活躍"
@@ -418,13 +418,13 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                     SUM(total_views) as segment_total_views,
                     ROUND((COUNT(*) * 100.0 / total_users.total), 2) as percentage
                 FROM (
-                    SELECT 
+                    SELECT
                         u.id,
                         COUNT(p.id) as post_count,
                         COALESCE(SUM(p.views), 0) as total_views
                     FROM users u
-                    LEFT JOIN posts p ON u.id = p.user_id 
-                        AND p.created_at >= :start_date 
+                    LEFT JOIN posts p ON u.id = p.user_id
+                        AND p.created_at >= :start_date
                         AND p.created_at <= :end_date
                         AND p.deleted_at IS NULL
                     WHERE u.created_at <= :end_date
@@ -432,13 +432,13 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                     GROUP BY u.id
                 ) user_stats
                 CROSS JOIN (
-                    SELECT COUNT(*) as total 
-                    FROM users 
+                    SELECT COUNT(*) as total
+                    FROM users
                     WHERE created_at <= :end_date
                         AND deleted_at IS NULL
                 ) total_users
                 GROUP BY user_segment
-                ORDER BY 
+                ORDER BY
                     CASE user_segment
                         WHEN "專家" THEN 1
                         WHEN "資深" THEN 2
@@ -473,8 +473,8 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
         try {
             // 計算期間結束前已存在的使用者總數
             $totalUsersSql = '
-                SELECT COUNT(*) 
-                FROM users 
+                SELECT COUNT(*)
+                FROM users
                 WHERE created_at < :start_date
                     AND deleted_at IS NULL
             ';
@@ -496,15 +496,15 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             // 計算在期間內無活動的使用者（流失使用者）
             $inactivityStartDate = $period->startDate->modify("-{$inactivityDays} days");
-            
+
             $churnedUsersSql = '
                 SELECT COUNT(DISTINCT u.id) as churned_users
                 FROM users u
                 WHERE u.created_at < :start_date
                     AND u.deleted_at IS NULL
                     AND u.id NOT IN (
-                        SELECT DISTINCT user_id 
-                        FROM user_activity_logs 
+                        SELECT DISTINCT user_id
+                        FROM user_activity_logs
                         WHERE created_at >= :inactivity_start_date
                             AND user_id IS NOT NULL
                     )
@@ -548,19 +548,19 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(DISTINCT u.id) as total_new_users_with_activity,
                     AVG(DATEDIFF(first_activity.first_activity_date, u.created_at)) as avg_days_to_first_activity
                 FROM users u
                 JOIN (
-                    SELECT 
+                    SELECT
                         user_id,
                         MIN(created_at) as first_activity_date
-                    FROM user_activity_logs 
+                    FROM user_activity_logs
                     WHERE user_id IS NOT NULL
                     GROUP BY user_id
                 ) first_activity ON u.id = first_activity.user_id
-                WHERE u.created_at >= :start_date 
+                WHERE u.created_at >= :start_date
                     AND u.created_at <= :end_date
                     AND u.deleted_at IS NULL
             ';
@@ -631,7 +631,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     u.id as user_id,
                     u.email,
                     u.name,
@@ -640,18 +640,18 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                     COUNT(DISTINCT ual.id) as activities_count,
                     COUNT(DISTINCT DATE(ual.created_at)) as active_days,
                     ROUND(
-                        (COUNT(DISTINCT p.id) * 10 + 
-                         COALESCE(SUM(p.views), 0) * 0.1 + 
+                        (COUNT(DISTINCT p.id) * 10 +
+                         COALESCE(SUM(p.views), 0) * 0.1 +
                          COUNT(DISTINCT ual.id) * 2 +
                          COUNT(DISTINCT DATE(ual.created_at)) * 5) / 4, 2
                     ) as engagement_score
                 FROM users u
-                LEFT JOIN posts p ON u.id = p.user_id 
-                    AND p.created_at >= :start_date 
+                LEFT JOIN posts p ON u.id = p.user_id
+                    AND p.created_at >= :start_date
                     AND p.created_at <= :end_date
                     AND p.deleted_at IS NULL
-                LEFT JOIN user_activity_logs ual ON u.id = ual.user_id 
-                    AND ual.created_at >= :start_date 
+                LEFT JOIN user_activity_logs ual ON u.id = ual.user_id
+                    AND ual.created_at >= :start_date
                     AND ual.created_at <= :end_date
                 WHERE u.created_at <= :end_date
                     AND u.deleted_at IS NULL
@@ -685,12 +685,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     HOUR(created_at) as hour,
                     COUNT(*) as activity_count,
                     COUNT(DISTINCT user_id) as user_count
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND user_id IS NOT NULL
                 GROUP BY HOUR(created_at)
@@ -721,14 +721,14 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     DATE(ual.created_at) as date,
                     COUNT(DISTINCT ual.user_id) as active_users,
                     COUNT(DISTINCT CASE WHEN u.created_at = DATE(ual.created_at) THEN u.id END) as new_users,
                     COUNT(DISTINCT CASE WHEN u.created_at < DATE(ual.created_at) THEN u.id END) as returning_users
                 FROM user_activity_logs ual
                 JOIN users u ON ual.user_id = u.id
-                WHERE ual.created_at >= :start_date 
+                WHERE ual.created_at >= :start_date
                     AND ual.created_at <= :end_date
                     AND ual.user_id IS NOT NULL
                     AND u.deleted_at IS NULL
@@ -769,9 +769,9 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 1 
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                SELECT 1
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND user_id IS NOT NULL
                 LIMIT 1
@@ -801,8 +801,8 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT COUNT(*) 
-                FROM users 
+                SELECT COUNT(*)
+                FROM users
                 WHERE created_at <= :date
                     AND deleted_at IS NULL
             ';

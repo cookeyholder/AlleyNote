@@ -11,7 +11,7 @@ use RuntimeException;
 
 /**
  * 系統統計資料存取實作類別
- * 
+ *
  * 實作系統層級統計資料的查詢功能，提供系統效能、資源使用、安全性等統計分析。
  * 針對系統監控和管理需求，提供全面的系統狀態資訊。
  */
@@ -29,7 +29,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
         try {
             // 取得基本統計資料
             $totalSql = '
-                SELECT 
+                SELECT
                     COUNT(DISTINCT p.id) as total_posts,
                     COUNT(DISTINCT u.id) as total_users,
                     COUNT(DISTINCT pv.id) as total_views,
@@ -48,7 +48,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
             // 取得週期內統計資料
             $periodSql = '
-                SELECT 
+                SELECT
                     COUNT(DISTINCT p.id) as period_posts,
                     COUNT(DISTINCT CASE WHEN u.created_at >= :start_date AND u.created_at <= :end_date THEN u.id END) as period_users,
                     COUNT(DISTINCT CASE WHEN pv.view_date >= :start_date AND pv.view_date <= :end_date THEN pv.id END) as period_views,
@@ -125,11 +125,11 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     {
         try {
             $tableStatsSql = '
-                SELECT 
+                SELECT
                     table_name,
                     table_rows,
                     ROUND(((data_length + index_length) / 1024 / 1024), 2) AS size_mb
-                FROM information_schema.tables 
+                FROM information_schema.tables
                 WHERE table_schema = DATABASE()
                 ORDER BY (data_length + index_length) DESC
             ';
@@ -166,12 +166,12 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     DATE(created_at) as date,
                     HOUR(created_at) as hour,
                     COUNT(*) as activity_count
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                 GROUP BY DATE(created_at), HOUR(created_at)
                 ORDER BY date, hour
@@ -231,12 +231,12 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     endpoint,
                     COUNT(*) as request_count,
                     COUNT(DISTINCT user_ip) as unique_users
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND endpoint IS NOT NULL
                 GROUP BY endpoint
@@ -283,11 +283,11 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     DATE(created_at) as date,
                     COUNT(*) as error_count
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND (action LIKE "%error%" OR action LIKE "%exception%" OR action LIKE "%fail%")
                 GROUP BY DATE(created_at)
@@ -349,19 +349,19 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as security_events,
                     COUNT(DISTINCT user_id) as unique_users_involved,
                     COUNT(DISTINCT user_ip) as unique_ips,
                     COUNT(CASE WHEN action LIKE "%login_failed%" THEN 1 END) as failed_login_attempts,
                     COUNT(CASE WHEN action LIKE "%suspicious%" THEN 1 END) as suspicious_activities,
                     0 as blocked_ips
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND (
-                        action LIKE "%security%" OR 
-                        action LIKE "%auth%" OR 
+                        action LIKE "%security%" OR
+                        action LIKE "%auth%" OR
                         action LIKE "%login%" OR
                         action LIKE "%suspicious%"
                     )
@@ -459,11 +459,11 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total_requests,
                     COUNT(DISTINCT user_ip) as peak_concurrent_users
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
             ';
 
@@ -517,10 +517,10 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(DISTINCT user_ip) as unique_ip_addresses
-                FROM user_activity_logs 
-                WHERE created_at >= :start_date 
+                FROM user_activity_logs
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND user_ip IS NOT NULL
             ';
@@ -600,7 +600,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     {
         $errors = $this->getErrorAndExceptionStats($period);
         $errorCount = $errors['summary']['total_errors'];
-        
+
         return $errorCount < 100; // 簡化的健康檢查
     }
 

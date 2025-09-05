@@ -13,7 +13,7 @@ use RuntimeException;
 
 /**
  * 文章統計資料存取實作類別
- * 
+ *
  * 實作文章相關統計資料的查詢功能，提供高效能的原生 SQL 查詢。
  * 支援文章數量、觀看次數、來源分布等複雜統計查詢。
  */
@@ -30,9 +30,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT COUNT(*) 
-                FROM posts 
-                WHERE created_at >= :start_date 
+                SELECT COUNT(*)
+                FROM posts
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -64,7 +64,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $sql = '
                 SELECT COALESCE(SUM(p.views), 0)
                 FROM posts p
-                WHERE p.created_at >= :start_date 
+                WHERE p.created_at >= :start_date
                     AND p.created_at <= :end_date
                     AND p.deleted_at IS NULL
                     AND p.status = "published"
@@ -97,7 +97,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 SELECT COUNT(DISTINCT pv.user_ip)
                 FROM post_views pv
                 JOIN posts p ON pv.post_id = p.id
-                WHERE pv.view_date >= :start_date 
+                WHERE pv.view_date >= :start_date
                     AND pv.view_date <= :end_date
                     AND p.deleted_at IS NULL
                     AND p.status = "published"
@@ -127,13 +127,13 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     p.id,
                     p.title,
                     p.views,
                     p.created_at
                 FROM posts p
-                WHERE p.created_at >= :start_date 
+                WHERE p.created_at >= :start_date
                     AND p.created_at <= :end_date
                     AND p.deleted_at IS NULL
                     AND p.status = "published"
@@ -165,21 +165,21 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     p.source_type,
                     COUNT(*) as post_count,
                     COALESCE(SUM(p.views), 0) as view_count,
                     ROUND((COUNT(*) * 100.0 / total_posts.total), 2) as percentage
                 FROM posts p
                 CROSS JOIN (
-                    SELECT COUNT(*) as total 
-                    FROM posts 
-                    WHERE created_at >= :start_date 
+                    SELECT COUNT(*) as total
+                    FROM posts
+                    WHERE created_at >= :start_date
                         AND created_at <= :end_date
                         AND deleted_at IS NULL
                         AND status = "published"
                 ) total_posts
-                WHERE p.created_at >= :start_date 
+                WHERE p.created_at >= :start_date
                     AND p.created_at <= :end_date
                     AND p.deleted_at IS NULL
                     AND p.status = "published"
@@ -211,10 +211,10 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT COUNT(*) 
-                FROM posts 
+                SELECT COUNT(*)
+                FROM posts
                 WHERE source_type = :source_type
-                    AND created_at >= :start_date 
+                    AND created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -246,9 +246,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         try {
             $sql = '
                 SELECT COALESCE(SUM(views), 0)
-                FROM posts 
+                FROM posts
                 WHERE source_type = :source_type
-                    AND created_at >= :start_date 
+                    AND created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -279,12 +279,12 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     DATE(created_at) as date,
                     COUNT(*) as post_count,
                     COALESCE(SUM(views), 0) as view_count
-                FROM posts 
-                WHERE created_at >= :start_date 
+                FROM posts
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -316,13 +316,13 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     DATE(pv.view_date) as date,
                     COUNT(*) as view_count,
                     COUNT(DISTINCT pv.user_ip) as unique_views
                 FROM post_views pv
                 JOIN posts p ON pv.post_id = p.id
-                WHERE pv.view_date >= :start_date 
+                WHERE pv.view_date >= :start_date
                     AND pv.view_date <= :end_date
                     AND p.deleted_at IS NULL
                     AND p.status = "published"
@@ -354,13 +354,13 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
-                    CASE 
-                        WHEN COUNT(*) = 0 THEN 0 
+                SELECT
+                    CASE
+                        WHEN COUNT(*) = 0 THEN 0
                         ELSE ROUND(COALESCE(SUM(views), 0) / COUNT(*), 2)
                     END as avg_views
-                FROM posts 
-                WHERE created_at >= :start_date 
+                FROM posts
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -390,13 +390,13 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     id,
                     title,
                     views,
                     created_at
-                FROM posts 
-                WHERE created_at >= :start_date 
+                FROM posts
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -429,15 +429,15 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total_new_posts,
                     COALESCE(SUM(views), 0) as total_views,
-                    CASE 
-                        WHEN COUNT(*) = 0 THEN 0 
+                    CASE
+                        WHEN COUNT(*) = 0 THEN 0
                         ELSE ROUND(COALESCE(SUM(views), 0) / COUNT(*), 2)
                     END as avg_views_per_post
-                FROM posts 
-                WHERE created_at >= :start_date 
+                FROM posts
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -471,8 +471,8 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
-                    CASE 
+                SELECT
+                    CASE
                         WHEN views = 0 THEN "0"
                         WHEN views <= 10 THEN "1-10"
                         WHEN views <= 50 THEN "11-50"
@@ -485,19 +485,19 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                     ROUND((COUNT(*) * 100.0 / total_posts.total), 2) as percentage
                 FROM posts
                 CROSS JOIN (
-                    SELECT COUNT(*) as total 
-                    FROM posts 
-                    WHERE created_at >= :start_date 
+                    SELECT COUNT(*) as total
+                    FROM posts
+                    WHERE created_at >= :start_date
                         AND created_at <= :end_date
                         AND deleted_at IS NULL
                         AND status = "published"
                 ) total_posts
-                WHERE created_at >= :start_date 
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
                 GROUP BY range
-                ORDER BY 
+                ORDER BY
                     CASE range
                         WHEN "0" THEN 1
                         WHEN "1-10" THEN 2
@@ -533,8 +533,8 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT COUNT(*) 
-                FROM posts 
+                SELECT COUNT(*)
+                FROM posts
                 WHERE created_at <= :date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -562,7 +562,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         try {
             $sql = '
                 SELECT COALESCE(SUM(views), 0)
-                FROM posts 
+                FROM posts
                 WHERE created_at <= :date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -591,13 +591,13 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     ): array {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     DATE(created_at) as date,
                     COUNT(*) as post_count,
                     COALESCE(SUM(views), 0) as view_count,
                     COALESCE(AVG(views), 0) as avg_views
-                FROM posts 
-                WHERE created_at >= :start_date 
+                FROM posts
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -632,12 +632,12 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     DATE(created_at) as date,
                     HOUR(created_at) as hour,
                     COUNT(*) as activity_count
-                FROM posts 
-                WHERE created_at >= :start_date 
+                FROM posts
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -669,14 +669,14 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     p.user_id,
                     u.username,
                     COUNT(*) as post_count,
                     COALESCE(SUM(p.views), 0) as total_views
                 FROM posts p
                 LEFT JOIN users u ON p.user_id = u.id
-                WHERE p.created_at >= :start_date 
+                WHERE p.created_at >= :start_date
                     AND p.created_at <= :end_date
                     AND p.deleted_at IS NULL
                     AND p.status = "published"
@@ -710,13 +710,13 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         try {
             // 簡化的互動率計算：基於觀看次數與文章數的比率
             $sql = '
-                SELECT 
-                    CASE 
-                        WHEN COUNT(*) = 0 THEN 0 
+                SELECT
+                    CASE
+                        WHEN COUNT(*) = 0 THEN 0
                         ELSE ROUND((COALESCE(SUM(views), 0) / COUNT(*)) / 10, 2)
                     END as engagement_rate
-                FROM posts 
-                WHERE created_at >= :start_date 
+                FROM posts
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -746,14 +746,14 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     t.name as tag,
                     COUNT(pt.post_id) as usage_count,
                     COUNT(DISTINCT pt.post_id) as post_count
                 FROM tags t
                 JOIN post_tags pt ON t.id = pt.tag_id
                 JOIN posts p ON pt.post_id = p.id
-                WHERE p.created_at >= :start_date 
+                WHERE p.created_at >= :start_date
                     AND p.created_at <= :end_date
                     AND p.deleted_at IS NULL
                     AND p.status = "published"
@@ -786,9 +786,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 1 
-                FROM posts 
-                WHERE created_at >= :start_date 
+                SELECT 1
+                FROM posts
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -819,7 +819,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     p.views,
                     0 as comments, -- 需要評論系統時再實作
                     0 as likes,    -- 需要按讚系統時再實作
@@ -827,7 +827,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                     p.source_type as source
                 FROM posts p
                 WHERE p.id = :post_id
-                    AND p.created_at >= :start_date 
+                    AND p.created_at >= :start_date
                     AND p.created_at <= :end_date
                     AND p.deleted_at IS NULL
                 LIMIT 1
@@ -864,12 +864,12 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     HOUR(created_at) as publish_hour,
                     DAYNAME(created_at) as publish_day,
                     COALESCE(AVG(views), 0) as avg_views
-                FROM posts 
-                WHERE created_at >= :start_date 
+                FROM posts
+                WHERE created_at >= :start_date
                     AND created_at <= :end_date
                     AND deleted_at IS NULL
                     AND status = "published"
@@ -901,12 +901,12 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     DATE(pv.view_date) as date,
                     COUNT(*) as daily_views
                 FROM post_views pv
                 WHERE pv.post_id = :post_id
-                    AND pv.view_date >= :start_date 
+                    AND pv.view_date >= :start_date
                     AND pv.view_date <= :end_date
                 GROUP BY DATE(pv.view_date)
                 ORDER BY date ASC

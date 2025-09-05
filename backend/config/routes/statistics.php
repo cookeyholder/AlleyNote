@@ -13,7 +13,7 @@ use App\Application\Controllers\Api\Statistics\StatisticsAdminController;
 
 return [
     // === 統計查詢 API (公開或需要基本認證) ===
-    
+
     // 統計概覽
     'statistics.overview' => [
         'methods' => ['GET'],

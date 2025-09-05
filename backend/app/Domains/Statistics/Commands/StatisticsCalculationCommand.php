@@ -23,13 +23,13 @@ readonly class StatisticsCalculationCommand
 {
     /** 最大重試次數 */
     private const MAX_RETRIES = 3;
-    
+
     /** 重試間隔（秒） */
     private const RETRY_DELAY = 30;
-    
+
     /** 鎖定檔案路徑前綴 */
     private const LOCK_PREFIX = '/tmp/statistics_calculation_';
-    
+
     /** 鎖定時間 (秒) */
     private const LOCK_TIMEOUT = 3600; // 1 小時
 
@@ -50,7 +50,7 @@ readonly class StatisticsCalculationCommand
     {
         $startTime = microtime(true);
         $results = [];
-        
+
         $this->logger->info('開始統計計算任務', [
             'periods' => $periods,
             'force' => $force,
@@ -62,13 +62,13 @@ readonly class StatisticsCalculationCommand
             try {
                 $periodType = $this->validateAndGetPeriodType($periodName);
                 $lockFile = $this->getLockFilePath($periodName);
-                
+
                 if (!$force && $this->isLocked($lockFile)) {
                     $this->logger->warning('統計計算任務已被鎖定，跳過執行', [
                         'period' => $periodName,
                         'lock_file' => $lockFile,
                     ]);
-                    
+
                     $results[$periodName] = [
                         'success' => false,
                         'error' => '任務已被鎖定',
@@ -76,21 +76,21 @@ readonly class StatisticsCalculationCommand
                     ];
                     continue;
                 }
-                
+
                 $results[$periodName] = $this->calculatePeriodStatistics(
                     $periodType,
                     $periodName,
                     $lockFile,
                     $skipCache
                 );
-                
+
             } catch (Exception $e) {
                 $this->logger->error('統計計算任務失敗', [
                     'period' => $periodName,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
                 ]);
-                
+
                 $results[$periodName] = [
                     'success' => false,
                     'error' => $e->getMessage(),
@@ -99,10 +99,10 @@ readonly class StatisticsCalculationCommand
                 ];
             }
         }
-        
+
         $totalDuration = microtime(true) - $startTime;
         $successCount = count(array_filter($results, fn($r) => $r['success'] === true));
-        
+
         $this->logger->info('統計計算任務完成', [
             'total_duration' => $totalDuration,
             'total_periods' => count($periods),
@@ -110,7 +110,7 @@ readonly class StatisticsCalculationCommand
             'failure_count' => count($periods) - $successCount,
             'results' => $results,
         ]);
-        
+
         return [
             'total_duration' => $totalDuration,
             'total_periods' => count($periods),
@@ -127,20 +127,20 @@ readonly class StatisticsCalculationCommand
     {
         $startTime = microtime(true);
         $retryCount = 0;
-        
+
         while ($retryCount <= self::MAX_RETRIES) {
             try {
                 $this->createLock($lockFile);
-                
+
                 $period = $this->createPeriodForType($periodType);
-                
+
                 $this->logger->info('開始計算統計週期', [
                     'period_type' => $periodName,
                     'period_start' => $period->startDate->format('Y-m-d H:i:s'),
                     'period_end' => $period->endDate->format('Y-m-d H:i:s'),
                     'retry_count' => $retryCount,
                 ]);
-                
+
                 // 檢查是否已有快取的快照
                 if (!$skipCache) {
                     $cacheKey = $this->cacheService->getSnapshotCacheKey($period, $period->startDate);
@@ -149,9 +149,9 @@ readonly class StatisticsCalculationCommand
                             'period_type' => $periodName,
                             'cache_key' => $cacheKey,
                         ]);
-                        
+
                         $this->releaseLock($lockFile);
-                        
+
                         return [
                             'success' => true,
                             'duration' => microtime(true) - $startTime,
@@ -165,24 +165,24 @@ readonly class StatisticsCalculationCommand
                         ];
                     }
                 }
-                
+
                 // 建立統計快照
                 $snapshot = $this->statisticsService->createStatisticsSnapshot($period);
-                
+
                 // 預熱相關的快取
                 $this->warmupCacheForPeriod($period);
-                
+
                 $duration = microtime(true) - $startTime;
-                
+
                 $this->logger->info('統計週期計算完成', [
                     'period_type' => $periodName,
                     'duration' => $duration,
                     'retry_count' => $retryCount,
                     'snapshot_id' => $snapshot->getId()->toString(),
                 ]);
-                
+
                 $this->releaseLock($lockFile);
-                
+
                 return [
                     'success' => true,
                     'duration' => $duration,
@@ -195,12 +195,12 @@ readonly class StatisticsCalculationCommand
                         'end' => $period->endDate->format('Y-m-d H:i:s'),
                     ],
                 ];
-                
+
             } catch (Exception $e) {
                 $this->releaseLock($lockFile);
-                
+
                 $retryCount++;
-                
+
                 if ($retryCount > self::MAX_RETRIES) {
                     throw new RuntimeException(
                         "統計計算失敗，已達最大重試次數 ({$retryCount}): " . $e->getMessage(),
@@ -208,19 +208,19 @@ readonly class StatisticsCalculationCommand
                         $e
                     );
                 }
-                
+
                 $this->logger->warning('統計計算失敗，準備重試', [
                     'period_type' => $periodName,
                     'retry_count' => $retryCount,
                     'max_retries' => self::MAX_RETRIES,
                     'error' => $e->getMessage(),
                 ]);
-                
+
                 // 等待後重試
                 sleep(self::RETRY_DELAY);
             }
         }
-        
+
         throw new RuntimeException('統計計算意外終止');
     }
 
@@ -238,14 +238,14 @@ readonly class StatisticsCalculationCommand
                     return $this->statisticsService->analyzePopularContent($period, 10);
                 },
             ];
-            
+
             $results = $this->cacheService->warmup($warmupCallbacks);
-            
+
             $this->logger->debug('快取預熱完成', [
                 'period_type' => $period->type->value,
                 'results' => $results,
             ]);
-            
+
         } catch (Exception $e) {
             $this->logger->warning('快取預熱失敗', [
                 'period_type' => $period->type->value,
@@ -260,7 +260,7 @@ readonly class StatisticsCalculationCommand
     private function createPeriodForType(PeriodType $periodType): StatisticsPeriod
     {
         $now = new DateTimeImmutable();
-        
+
         return match ($periodType) {
             PeriodType::DAILY => $this->createDailyPeriod($now),
             PeriodType::WEEKLY => $this->createWeeklyPeriod($now),
@@ -277,7 +277,7 @@ readonly class StatisticsCalculationCommand
     {
         $startDate = $date->modify('yesterday midnight');
         $endDate = $startDate->modify('+1 day -1 second');
-        
+
         return StatisticsPeriod::create($startDate, $endDate, PeriodType::DAILY);
     }
 
@@ -288,7 +288,7 @@ readonly class StatisticsCalculationCommand
     {
         $startDate = $date->modify('last monday midnight');
         $endDate = $startDate->modify('+1 week -1 second');
-        
+
         return StatisticsPeriod::create($startDate, $endDate, PeriodType::WEEKLY);
     }
 
@@ -299,7 +299,7 @@ readonly class StatisticsCalculationCommand
     {
         $startDate = $date->modify('first day of last month midnight');
         $endDate = $startDate->modify('last day of this month 23:59:59');
-        
+
         return StatisticsPeriod::create($startDate, $endDate, PeriodType::MONTHLY);
     }
 
@@ -310,7 +310,7 @@ readonly class StatisticsCalculationCommand
     {
         $startDate = $date->modify('first day of january last year midnight');
         $endDate = $startDate->modify('last day of december 23:59:59');
-        
+
         return StatisticsPeriod::create($startDate, $endDate, PeriodType::YEARLY);
     }
 
@@ -344,16 +344,16 @@ readonly class StatisticsCalculationCommand
         if (!file_exists($lockFile)) {
             return false;
         }
-        
+
         $lockTime = (int) file_get_contents($lockFile);
         $currentTime = time();
-        
+
         // 如果鎖定時間超過超時時間，視為過期
         if ($currentTime - $lockTime > self::LOCK_TIMEOUT) {
             $this->releaseLock($lockFile);
             return false;
         }
-        
+
         return true;
     }
 
@@ -365,7 +365,7 @@ readonly class StatisticsCalculationCommand
         if ($this->isLocked($lockFile)) {
             throw new RuntimeException("任務已被鎖定: {$lockFile}");
         }
-        
+
         file_put_contents($lockFile, time());
     }
 
@@ -387,19 +387,19 @@ readonly class StatisticsCalculationCommand
         $lockPattern = self::LOCK_PREFIX . '*.lock';
         $lockFiles = glob($lockPattern);
         $cleanedCount = 0;
-        
+
         foreach ($lockFiles as $lockFile) {
             if (!$this->isLocked($lockFile)) {
                 $this->releaseLock($lockFile);
                 $cleanedCount++;
             }
         }
-        
+
         $this->logger->info('清理過期鎖定檔案', [
             'cleaned_count' => $cleanedCount,
             'total_found' => count($lockFiles),
         ]);
-        
+
         return $cleanedCount;
     }
 
@@ -410,16 +410,16 @@ readonly class StatisticsCalculationCommand
     {
         $periods = ['daily', 'weekly', 'monthly', 'yearly'];
         $status = [];
-        
+
         foreach ($periods as $period) {
             $lockFile = $this->getLockFilePath($period);
             $isLocked = $this->isLocked($lockFile);
             $lockTime = null;
-            
+
             if ($isLocked && file_exists($lockFile)) {
                 $lockTime = (int) file_get_contents($lockFile);
             }
-            
+
             $status[$period] = [
                 'locked' => $isLocked,
                 'lock_file' => $lockFile,
@@ -427,7 +427,7 @@ readonly class StatisticsCalculationCommand
                 'lock_age_seconds' => $lockTime ? time() - $lockTime : null,
             ];
         }
-        
+
         return [
             'periods' => $status,
             'lock_timeout' => self::LOCK_TIMEOUT,

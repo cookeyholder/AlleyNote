@@ -43,7 +43,7 @@ class StatisticsAdminController extends BaseController
 
     /**
      * 重新整理統計資料。
-     * 
+     *
      * POST /api/admin/statistics/refresh
      */
     public function refresh(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -96,7 +96,7 @@ class StatisticsAdminController extends BaseController
 
     /**
      * 清除統計快取。
-     * 
+     *
      * DELETE /api/admin/statistics/cache
      */
     public function clearCache(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -151,7 +151,7 @@ class StatisticsAdminController extends BaseController
 
     /**
      * 取得統計系統健康狀態。
-     * 
+     *
      * GET /api/admin/statistics/health
      */
     public function health(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -185,7 +185,7 @@ class StatisticsAdminController extends BaseController
 
     /**
      * 取得統計任務狀態。
-     * 
+     *
      * GET /api/admin/statistics/status
      */
     public function status(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -218,7 +218,7 @@ class StatisticsAdminController extends BaseController
 
     /**
      * 清理過期鎖定檔案。
-     * 
+     *
      * POST /api/admin/statistics/cleanup
      */
     public function cleanup(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -392,7 +392,7 @@ class StatisticsAdminController extends BaseController
                 new DateTimeImmutable('tomorrow -1 second'),
                 PeriodType::DAILY
             );
-            
+
             $this->applicationService->getStatisticsOverview($testPeriod);
             $serviceHealth = true;
 

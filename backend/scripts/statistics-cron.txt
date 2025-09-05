@@ -1,5 +1,5 @@
 # 統計計算定時任務設定
-# 
+#
 # 此檔案包含統計功能的 Cron 任務設定
 # 請根據實際需求調整執行時間和頻率
 
@@ -33,7 +33,7 @@
 #
 # 日誌檔案說明:
 # - statistics-daily.log: 每日統計計算日誌
-# - statistics-weekly.log: 每週統計計算日誌  
+# - statistics-weekly.log: 每週統計計算日誌
 # - statistics-monthly.log: 每月統計計算日誌
 # - statistics-cleanup.log: 清理任務日誌
 # - statistics-status.log: 狀態檢查日誌

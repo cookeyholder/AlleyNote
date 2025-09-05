@@ -44,7 +44,7 @@ class StatisticsController extends BaseController
 
     /**
      * 取得統計概覽。
-     * 
+     *
      * GET /api/statistics/overview
      */
     public function overview(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -91,7 +91,7 @@ class StatisticsController extends BaseController
 
     /**
      * 取得文章統計。
-     * 
+     *
      * GET /api/statistics/posts
      */
     public function posts(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -106,11 +106,11 @@ class StatisticsController extends BaseController
             $params = $this->validatePostsParams($request->getQueryParams());
             $period = $this->createPeriodFromParams($params);
 
-            $sourceType = isset($params['source']) ? 
+            $sourceType = isset($params['source']) ?
                 SourceType::from($params['source']) : null;
-            
+
             $statistics = $this->queryService->getPostStatisticsTrends(
-                $period, 
+                $period,
                 $sourceType,
                 $params['data_points'] ?? 30
             );
@@ -145,7 +145,7 @@ class StatisticsController extends BaseController
 
     /**
      * 取得來源分佈統計。
-     * 
+     *
      * GET /api/statistics/sources
      */
     public function sources(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -168,7 +168,7 @@ class StatisticsController extends BaseController
                 1,
                 100
             );
-            
+
             // 從快照中提取來源分佈資料
             $distribution = [];
             foreach ($snapshots['data'] as $snapshot) {
@@ -207,7 +207,7 @@ class StatisticsController extends BaseController
 
     /**
      * 取得使用者統計。
-     * 
+     *
      * GET /api/statistics/users
      */
     public function users(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -254,7 +254,7 @@ class StatisticsController extends BaseController
 
     /**
      * 取得熱門內容。
-     * 
+     *
      * GET /api/statistics/popular
      */
     public function popular(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -305,7 +305,7 @@ class StatisticsController extends BaseController
 
     /**
      * 取得統計趨勢。
-     * 
+     *
      * GET /api/statistics/trends
      */
     public function trends(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -502,7 +502,7 @@ class StatisticsController extends BaseController
     private function validatePeriodType(string $periodType): string
     {
         $validPeriods = ['daily', 'weekly', 'monthly', 'yearly'];
-        
+
         if (!in_array($periodType, $validPeriods)) {
             throw new InvalidArgumentException("無效的週期類型: {$periodType}。支援的類型: " . implode(', ', $validPeriods));
         }
@@ -552,7 +552,7 @@ class StatisticsController extends BaseController
     private function validateSource(string $source): string
     {
         $validSources = ['web', 'mobile', 'api', 'import'];
-        
+
         if (!in_array($source, $validSources)) {
             throw new InvalidArgumentException("無效的來源類型: {$source}。支援的類型: " . implode(', ', $validSources));
         }
