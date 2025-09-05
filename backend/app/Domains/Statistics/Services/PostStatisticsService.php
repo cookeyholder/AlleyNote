@@ -13,13 +13,13 @@ use Throwable;
 
 /**
  * 文章統計服務
- * 
+ *
  * 負責文章相關的統計分析業務邏輯，包含：
  * - 文章熱門度分析
  * - 來源分析
  * - 文章表現評估
  * - 內容品質評分
- * 
+ *
  * 設計原則：
  * - 專注於文章統計的業務邏輯
  * - 不依賴基礎設施層
@@ -36,7 +36,7 @@ final class PostStatisticsService
 
     /**
      * 分析熱門文章
-     * 
+     *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 回傳數量限制
      * @return array{posts: array, summary: array} 熱門文章分析結果
@@ -89,7 +89,7 @@ final class PostStatisticsService
 
     /**
      * 分析文章來源分佈
-     * 
+     *
      * @param StatisticsPeriod $period 統計週期
      * @return array{distribution: array, insights: array} 來源分析結果
      */
@@ -117,15 +117,15 @@ final class PostStatisticsService
 
         $total = array_sum($distribution);
         $sourceCount = count($distribution);
-        
+
         // 計算多樣性評分（香農熵）
         $diversityScore = $this->calculateShannonEntropy($distribution);
-        
+
         // 找出主導來源
         arsort($distribution);
         $dominantSource = array_key_first($distribution);
         $dominantPercentage = $total > 0 ? ($distribution[$dominantSource] / $total) * 100 : 0;
-        
+
         // 判斷是否平衡（沒有任何來源超過50%）
         $isBalanced = $dominantPercentage <= 50;
 
@@ -143,7 +143,7 @@ final class PostStatisticsService
 
     /**
      * 計算文章品質評分
-     * 
+     *
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
      * @return array{score: float, factors: array, grade: string} 品質評分結果
@@ -171,7 +171,7 @@ final class PostStatisticsService
         $totalScore += $viewsScore;
 
         // 互動率評分 (25%)
-        $engagementRate = $postStats['views'] > 0 
+        $engagementRate = $postStats['views'] > 0
             ? ($postStats['comments'] + $postStats['likes']) / $postStats['views']
             : 0;
         $engagementScore = min(25, $engagementRate * 2500);
@@ -205,7 +205,7 @@ final class PostStatisticsService
 
     /**
      * 分析文章趨勢
-     * 
+     *
      * @param StatisticsPeriod $period 統計週期
      * @return array{trending_up: array, trending_down: array, stable: array} 趨勢分析結果
      */
@@ -220,7 +220,7 @@ final class PostStatisticsService
 
         foreach ($trendData as $post) {
             $growthRate = $post['growth_rate'];
-            
+
             if ($growthRate > 10) {
                 $trendingUp[] = $post;
             } elseif ($growthRate < -10) {
@@ -243,7 +243,7 @@ final class PostStatisticsService
 
     /**
      * 計算文章投資報酬率 (ROI)
-     * 
+     *
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
      * @param float $contentCost 內容製作成本
@@ -266,7 +266,7 @@ final class PostStatisticsService
         // 假設每次觀看產生的收益（可配置）
         $revenuePerView = 0.01; // $0.01 per view
         $estimatedRevenue = $postStats['views'] * $revenuePerView;
-        
+
         $profit = $estimatedRevenue - $contentCost;
         $roi = $contentCost > 0 ? ($profit / $contentCost) * 100 : 0.0;
 
@@ -280,7 +280,7 @@ final class PostStatisticsService
 
     /**
      * 取得最佳發布時間建議
-     * 
+     *
      * @param StatisticsPeriod $period 分析週期
      * @return array{best_hours: array, best_days: array, insights: array} 發布時間建議
      */
@@ -355,20 +355,20 @@ final class PostStatisticsService
 
     /**
      * 計算香農熵（多樣性指標）
-     * 
+     *
      * @param array<string, int> $distribution 分佈資料
      * @return float 香農熵值
      */
     private function calculateShannonEntropy(array $distribution): float
     {
         $total = array_sum($distribution);
-        
+
         if ($total === 0) {
             return 0.0;
         }
 
         $entropy = 0.0;
-        
+
         foreach ($distribution as $count) {
             if ($count > 0) {
                 $probability = $count / $total;
@@ -381,7 +381,7 @@ final class PostStatisticsService
 
     /**
      * 計算來源品質評分
-     * 
+     *
      * @param string $source 來源類型
      * @return float 品質評分 (0-15)
      */
@@ -404,7 +404,7 @@ final class PostStatisticsService
 
     /**
      * 計算一致性評分
-     * 
+     *
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
      * @return float 一致性評分 (0-10)
@@ -421,7 +421,7 @@ final class PostStatisticsService
 
         $performances = array_column($historicalData, 'daily_views');
         $mean = array_sum($performances) / count($performances);
-        
+
         if ($mean === 0) {
             return 0.0;
         }
@@ -431,16 +431,16 @@ final class PostStatisticsService
         ) / count($performances);
 
         $coefficientOfVariation = sqrt($variance) / $mean;
-        
+
         // 變異係數越小，一致性越高
         $consistencyScore = max(0, 10 - ($coefficientOfVariation * 10));
-        
+
         return round($consistencyScore, 1);
     }
 
     /**
      * 取得品質等級
-     * 
+     *
      * @param float $score 評分
      * @return string 品質等級
      */

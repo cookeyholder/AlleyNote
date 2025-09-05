@@ -8,7 +8,7 @@ use App\Domains\Statistics\Exceptions\StatisticsException;
 
 /**
  * 統計計算例外
- * 
+ *
  * 當統計計算過程中發生錯誤時拋出的例外，
  * 例如：資料不足、計算溢位、無效參數等。
  */
@@ -24,7 +24,7 @@ final class StatisticsCalculationException extends StatisticsException
     public static function invalidParameter(string $parameter, mixed $value): self
     {
         $valueStr = is_scalar($value) ? (string) $value : gettype($value);
-        
+
         return new self("參數 '{$parameter}' 的值無效: {$valueStr}");
     }
 
