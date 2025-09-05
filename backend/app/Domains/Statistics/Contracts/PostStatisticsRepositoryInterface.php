@@ -180,4 +180,30 @@ interface PostStatisticsRepositoryInterface
      * @return bool 有資料時回傳 true，否則回傳 false
      */
     public function hasPostDataInPeriod(StatisticsPeriod $period): bool;
+
+    /**
+     * 取得指定文章在特定週期的統計資料
+     * 
+     * @param int $postId 文章ID
+     * @param StatisticsPeriod $period 統計週期
+     * @return array{views: int, comments: int, likes: int, shares: int, source: string} 文章統計資料
+     */
+    public function getPostStatsByPeriod(int $postId, StatisticsPeriod $period): array;
+
+    /**
+     * 取得按發布時間分組的文章統計
+     * 
+     * @param StatisticsPeriod $period 統計週期
+     * @return array<array{publish_hour: string, publish_day: string, avg_views: float}> 發布時間統計
+     */
+    public function getPostsByPublishTime(StatisticsPeriod $period): array;
+
+    /**
+     * 取得文章歷史表現資料
+     * 
+     * @param int $postId 文章ID
+     * @param StatisticsPeriod $period 統計週期
+     * @return array<array{date: string, daily_views: int}> 歷史表現資料
+     */
+    public function getPostHistoricalPerformance(int $postId, StatisticsPeriod $period): array;
 }

@@ -3,7 +3,30 @@
 ## 📅 專案資訊
 
 * **功能名稱**：文章統計功能
-* **開發分支**：feature/statistics-service
+* **開發分支**：feature/sta### T1.5 - 建立統計領域服務 ✅
+
+建立統計計算的核心領域服務：
+- [x] StatisticsCalculationService - 統計計算服務
+  - [x] 計算平均每篇文章的觀看次數
+  - [x] 計算成長率
+  - [x] 計算趨勢方向
+  - [x] 計算波動性
+  - [x] 計算週期性能評分
+  - [x] 計算預測值
+  - [x] 計算相關性係數
+  - [x] 計算季節性指數
+- [x] PostStatisticsService - 文章統計服務
+  - [x] 分析熱門文章
+  - [x] 分析來源分佈
+  - [x] 計算文章品質評分
+  - [x] 分析文章趨勢
+  - [x] 計算文章投資報酬率 (ROI)
+  - [x] 取得最佳發布時間建議
+- [x] StatisticsException - 統計例外基礎類別
+- [x] StatisticsCalculationException - 統計計算例外
+- [x] DomainException - 領域例外基礎類別
+
+**進度：5/27 (18.5%)**ice
 * **預計完成**：2025-09-18
 * **開發人員**：開發團隊
 
