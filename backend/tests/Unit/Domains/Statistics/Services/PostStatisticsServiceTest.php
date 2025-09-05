@@ -129,7 +129,7 @@ final class PostStatisticsServiceTest extends TestCase
             new DateTimeImmutable('2024-01-31'),
             PeriodType::MONTHLY
         );
-        
+
         $mockStats = [
             'views' => 1000,
             'comments' => 50,
@@ -207,7 +207,7 @@ final class PostStatisticsServiceTest extends TestCase
             PeriodType::MONTHLY
         );
         $contentCost = 100.0;
-        
+
         $mockPerformance = [
             'views' => 1000,
             'comments' => 50,
@@ -247,7 +247,7 @@ final class PostStatisticsServiceTest extends TestCase
             new DateTimeImmutable('2024-01-31'),
             PeriodType::MONTHLY
         );
-        
+
         $mockTimeData = [
             ['publish_hour' => '09', 'publish_day' => 'Monday', 'avg_views' => 150.5],
             ['publish_hour' => '14', 'publish_day' => 'Tuesday', 'avg_views' => 120.3],

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * 統計功能效能測試腳本
- * 
+ *
  * 測試項目：
  * - 記憶體使用量
  * - 資料庫查詢效能
@@ -70,7 +70,7 @@ $cacheData = [];
 // 模擬快取存取
 for ($i = 0; $i < 1000; $i++) {
     $key = 'stats_' . ($i % 100); // 重複請求相同的 100 個鍵
-    
+
     if (isset($cacheData[$key])) {
         $cacheHits++;
     } else {
@@ -126,7 +126,7 @@ foreach ($apiTests as $apiName => $testFunc) {
     $avgTime = array_sum($times) / count($times);
     $maxTime = max($times);
     $minTime = min($times);
-    
+
     echo "   $apiName API:\n";
     echo "     平均回應時間: " . round($avgTime, 2) . " ms\n";
     echo "     最大回應時間: " . round($maxTime, 2) . " ms\n";

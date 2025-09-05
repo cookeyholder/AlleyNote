@@ -406,7 +406,7 @@ final class StatisticsCalculationService
         // 簡單趨勢計算
         $values = array_values($data);
         $count = count($values);
-        
+
         if ($count < 2) {
             return [
                 'trend_direction' => 'stable',
@@ -417,9 +417,9 @@ final class StatisticsCalculationService
 
         $first = $values[0];
         $last = $values[$count - 1];
-        
+
         $growthRate = $first != 0 ? (($last - $first) / $first) * 100 : 0;
-        
+
         $direction = match (true) {
             $growthRate > 5 => 'increasing',
             $growthRate < -5 => 'decreasing',

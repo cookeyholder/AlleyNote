@@ -20,18 +20,18 @@
   # 基本設定
   APP_ENV=production
   APP_DEBUG=false
-  
+
   # 資料庫設定
   DB_HOST=<production_host>
   DB_DATABASE=<production_database>
   DB_USERNAME=<production_user>
   DB_PASSWORD=<secure_password>
-  
+
   # 快取設定
   CACHE_DRIVER=redis
   REDIS_HOST=<redis_host>
   REDIS_PORT=6379
-  
+
   # JWT 設定
   JWT_PRIVATE_KEY=<base64_encoded_private_key>
   JWT_PUBLIC_KEY=<base64_encoded_public_key>
@@ -44,7 +44,7 @@
   - [ ] 備份檔案已驗證完整性
   - [ ] 回滾腳本已準備
 - [ ] **Migration 執行**:
-  - [ ] 執行 `php bin/console migrate` 
+  - [ ] 執行 `php bin/console migrate`
   - [ ] 確認 `statistics_snapshots` 表已建立
   - [ ] 確認 `posts` 表已新增來源欄位
   - [ ] 驗證索引已正確建立
@@ -56,7 +56,7 @@
   chmod -R 755 backend/storage/
   chmod -R 755 backend/storage/logs/
   chmod -R 755 backend/storage/cache/
-  
+
   # 設定擁有者
   chown -R www-data:www-data backend/storage/
   ```
@@ -136,11 +136,11 @@ curl -I http://localhost/api/health
   # 測試統計概覽
   curl -X GET "http://localhost/api/statistics/overview?period=monthly" \
     -H "Authorization: Bearer <token>"
-  
+
   # 測試文章統計
   curl -X GET "http://localhost/api/statistics/posts?period=daily" \
     -H "Authorization: Bearer <token>"
-  
+
   # 測試熱門內容
   curl -X GET "http://localhost/api/statistics/popular?limit=10" \
     -H "Authorization: Bearer <token>"
@@ -190,7 +190,7 @@ sudo crontab -e
   ```bash
   # 測試統計計算
   php scripts/statistics-console.php daily --force
-  
+
   # 檢查執行結果
   tail -f backend/storage/logs/statistics.log
   ```
@@ -275,6 +275,6 @@ sudo systemctl start php-fpm nginx
 
 ---
 
-**完成日期**: 2024-12-19  
-**版本**: 1.0  
+**完成日期**: 2024-12-19
+**版本**: 1.0
 **負責人**: 開發團隊

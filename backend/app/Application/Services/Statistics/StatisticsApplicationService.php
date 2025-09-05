@@ -267,7 +267,7 @@ final class StatisticsApplicationService
 
             // 計算趨勢資料
             $historicalData = $this->statisticsRepository->findByDateRange(
-                $period->startDate, 
+                $period->startDate,
                 $period->endDate
             );
             $trendValues = array_map(fn($snapshot) => $snapshot->getTotalViews()->value, $historicalData);
