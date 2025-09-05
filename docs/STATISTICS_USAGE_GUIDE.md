@@ -173,13 +173,13 @@ async function getStatistics() {
         'Content-Type': 'application/json'
       }
     });
-    
+
     const data = await response.json();
-    
+
     if (!data.success) {
       throw new Error(data.error.message);
     }
-    
+
     return data.data;
   } catch (error) {
     console.error('統計資料取得失敗:', error.message);
@@ -231,7 +231,7 @@ class StatisticsCache {
     this.cache = new Map();
     this.ttl = ttl;
   }
-  
+
   get(key) {
     const item = this.cache.get(key);
     if (item && Date.now() - item.timestamp < this.ttl) {
@@ -239,7 +239,7 @@ class StatisticsCache {
     }
     return null;
   }
-  
+
   set(key, data) {
     this.cache.set(key, { data, timestamp: Date.now() });
   }
@@ -304,10 +304,10 @@ docker-compose exec web tail -f storage/logs/cache.log
 
 **日誌示例**：
 ```
-[2024-01-01 12:00:00] statistics.INFO: 統計概覽 API 請求 
+[2024-01-01 12:00:00] statistics.INFO: 統計概覽 API 請求
   {"method":"GET","uri":"/api/statistics/overview","query_params":{"period_type":"daily"}}
 
-[2024-01-01 12:00:01] cache.INFO: 快取命中 
+[2024-01-01 12:00:01] cache.INFO: 快取命中
   {"key":"statistics_overview_daily_2024-01-01","hit":true}
 ```
 
@@ -381,7 +381,7 @@ const getCustomPeriodStats = async (startDate, endDate) => {
     end_date: endDate,
     period_type: 'custom'
   });
-  
+
   return fetch(`/api/statistics/overview?${params}`);
 };
 ```
@@ -392,11 +392,11 @@ const getCustomPeriodStats = async (startDate, endDate) => {
 // 匯出統計報告
 const exportStatistics = async (format = 'json') => {
   const stats = await getStatistics();
-  
+
   if (format === 'csv') {
     return convertToCSV(stats);
   }
-  
+
   return stats;
 };
 ```
@@ -423,5 +423,5 @@ ws.onmessage = (event) => {
 
 ---
 
-*最後更新：2024-12-19*  
+*最後更新：2024-12-19*
 *版本：1.0.0*

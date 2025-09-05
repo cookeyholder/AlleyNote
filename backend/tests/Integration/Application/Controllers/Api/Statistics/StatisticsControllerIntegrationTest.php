@@ -9,21 +9,21 @@ use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 統計 API 控制器整合測試
- * 
+ *
  * 測試統計 API 端點的完整功能，包含：
  * - HTTP 請求/回應處理
  * - 參數驗證
  * - 錯誤處理
  * - JSON 格式驗證
  * - 狀態碼驗證
- * 
+ *
  * 這個測試使用功能性測試方法，測試實際的 HTTP API 端點
  */
 final class StatisticsControllerIntegrationTest extends TestCase
 {
     /**
      * 測試統計概覽 API 回應格式
-     * 
+     *
      * @test
      */
     public function should_return_correct_json_structure_for_overview(): void
@@ -35,7 +35,7 @@ final class StatisticsControllerIntegrationTest extends TestCase
             'start_date' => '2024-01-01',
             'end_date' => '2024-01-31'
         ];
-        
+
         // 預期的 JSON 結構
         $expectedStructure = [
             'success' => 'boolean',
@@ -43,14 +43,14 @@ final class StatisticsControllerIntegrationTest extends TestCase
             'timestamp' => 'string',
             'version' => 'string'
         ];
-        
+
         // 驗證 API 回應結構符合預期
         $this->assertApiResponseStructure($url, $params, $expectedStructure);
     }
 
     /**
      * 測試文章統計 API 回應格式
-     * 
+     *
      * @test
      */
     public function should_return_correct_json_structure_for_posts(): void
@@ -62,7 +62,7 @@ final class StatisticsControllerIntegrationTest extends TestCase
             'start_date' => '2024-01-01',
             'end_date' => '2024-01-07'
         ];
-        
+
         // 預期的 JSON 結構
         $expectedStructure = [
             'success' => 'boolean',
@@ -70,14 +70,14 @@ final class StatisticsControllerIntegrationTest extends TestCase
             'timestamp' => 'string',
             'version' => 'string'
         ];
-        
+
         // 驗證 API 回應結構符合預期
         $this->assertApiResponseStructure($url, $params, $expectedStructure);
     }
 
     /**
      * 測試無效參數的錯誤處理
-     * 
+     *
      * @test
      */
     public function should_return_400_for_invalid_period_type(): void
@@ -89,7 +89,7 @@ final class StatisticsControllerIntegrationTest extends TestCase
             'start_date' => '2024-01-01',
             'end_date' => '2024-01-31'
         ];
-        
+
         // 預期的錯誤回應結構
         $expectedErrorStructure = [
             'success' => false,
@@ -98,14 +98,14 @@ final class StatisticsControllerIntegrationTest extends TestCase
                 'message' => 'string'
             ]
         ];
-        
+
         // 驗證錯誤回應結構符合預期
         $this->assertApiErrorResponse($url, $params, 400, $expectedErrorStructure);
     }
 
     /**
      * 測試無效日期格式的錯誤處理
-     * 
+     *
      * @test
      */
     public function should_return_400_for_invalid_date_format(): void
@@ -117,7 +117,7 @@ final class StatisticsControllerIntegrationTest extends TestCase
             'start_date' => 'invalid-date',
             'end_date' => '2024-01-31'
         ];
-        
+
         // 預期的錯誤回應結構
         $expectedErrorStructure = [
             'success' => false,
@@ -126,14 +126,14 @@ final class StatisticsControllerIntegrationTest extends TestCase
                 'message' => 'string'
             ]
         ];
-        
+
         // 驗證錯誤回應結構符合預期
         $this->assertApiErrorResponse($url, $params, 400, $expectedErrorStructure);
     }
 
     /**
      * 測試缺少必要參數的錯誤處理
-     * 
+     *
      * @test
      */
     public function should_return_400_for_missing_required_parameters(): void
@@ -141,7 +141,7 @@ final class StatisticsControllerIntegrationTest extends TestCase
         // 建構測試 URL 與缺少參數
         $url = '/api/statistics/overview';
         $params = []; // 缺少所有必要參數
-        
+
         // 預期的錯誤回應結構
         $expectedErrorStructure = [
             'success' => false,
@@ -150,14 +150,14 @@ final class StatisticsControllerIntegrationTest extends TestCase
                 'message' => 'string'
             ]
         ];
-        
+
         // 驗證錯誤回應結構符合預期
         $this->assertApiErrorResponse($url, $params, 400, $expectedErrorStructure);
     }
 
     /**
      * 測試日期範圍驗證
-     * 
+     *
      * @test
      */
     public function should_return_400_for_invalid_date_range(): void
@@ -169,7 +169,7 @@ final class StatisticsControllerIntegrationTest extends TestCase
             'start_date' => '2024-01-31',
             'end_date' => '2024-01-01'
         ];
-        
+
         // 預期的錯誤回應結構
         $expectedErrorStructure = [
             'success' => false,
@@ -178,14 +178,14 @@ final class StatisticsControllerIntegrationTest extends TestCase
                 'message' => 'string'
             ]
         ];
-        
+
         // 驗證錯誤回應結構符合預期
         $this->assertApiErrorResponse($url, $params, 400, $expectedErrorStructure);
     }
 
     /**
      * 測試 HTTP 方法驗證
-     * 
+     *
      * @test
      */
     public function should_return_405_for_invalid_http_method(): void
@@ -196,7 +196,7 @@ final class StatisticsControllerIntegrationTest extends TestCase
 
     /**
      * 測試回應標頭設定
-     * 
+     *
      * @test
      */
     public function should_set_correct_response_headers(): void
@@ -217,11 +217,11 @@ final class StatisticsControllerIntegrationTest extends TestCase
             'timestamp' => '2024-01-01T00:00:00Z',
             'version' => 'v1.0.0'
         ];
-        
+
         // 驗證結構符合預期
         foreach ($expectedStructure as $key => $expectedType) {
             $this->assertArrayHasKey($key, $mockResponse);
-            
+
             if ($expectedType === 'boolean') {
                 $this->assertIsBool($mockResponse[$key]);
             } elseif ($expectedType === 'array') {
@@ -230,12 +230,12 @@ final class StatisticsControllerIntegrationTest extends TestCase
                 $this->assertIsString($mockResponse[$key]);
             }
         }
-        
+
         // 驗證時間戳格式
         if (isset($mockResponse['timestamp'])) {
             $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/', $mockResponse['timestamp']);
         }
-        
+
         // 驗證版本格式
         if (isset($mockResponse['version'])) {
             $this->assertMatchesRegularExpression('/^v\d+\.\d+\.\d+$/', $mockResponse['version']);
@@ -255,7 +255,7 @@ final class StatisticsControllerIntegrationTest extends TestCase
                 'message' => '參數驗證失敗'
             ]
         ];
-        
+
         // 驗證錯誤結構符合預期
         $this->assertArrayHasKey('success', $mockErrorResponse);
         $this->assertFalse($mockErrorResponse['success']);
@@ -268,7 +268,7 @@ final class StatisticsControllerIntegrationTest extends TestCase
 
     /**
      * 測試快取功能驗證
-     * 
+     *
      * @test
      */
     public function should_cache_statistics_responses(): void
@@ -279,27 +279,27 @@ final class StatisticsControllerIntegrationTest extends TestCase
 
     /**
      * 測試效能要求驗證
-     * 
+     *
      * @test
      */
     public function should_respond_within_performance_limits(): void
     {
         // 驗證 API 回應時間在可接受範圍內
         $startTime = microtime(true);
-        
+
         // 模擬 API 呼叫
         usleep(100); // 模擬 0.1ms 延遲
-        
+
         $endTime = microtime(true);
         $responseTime = ($endTime - $startTime) * 1000; // 轉換為毫秒
-        
+
         // 驗證回應時間小於 100 毫秒
         $this->assertLessThan(100, $responseTime);
     }
 
     /**
      * 測試資料完整性驗證
-     * 
+     *
      * @test
      */
     public function should_return_complete_statistics_data(): void
@@ -322,12 +322,12 @@ final class StatisticsControllerIntegrationTest extends TestCase
                 'new_users' => 25
             ]
         ];
-        
+
         // 驗證必要欄位存在
         $this->assertArrayHasKey('period', $mockStatisticsData);
         $this->assertArrayHasKey('posts', $mockStatisticsData);
         $this->assertArrayHasKey('users', $mockStatisticsData);
-        
+
         // 驗證數值類型正確
         $this->assertIsInt($mockStatisticsData['posts']['total_count']);
         $this->assertIsInt($mockStatisticsData['posts']['total_views']);

@@ -9,7 +9,7 @@
 ### 新增資料表
 
 1. **statistics_snapshots** - 統計快照資料表
-2. **statistics_cache** - 統計快取資料表  
+2. **statistics_cache** - 統計快取資料表
 3. **user_activity_logs** - 使用者活動記錄表
 
 ### 現有資料表修改
@@ -41,11 +41,11 @@ mysql -u root -p alleynote -e "SHOW TABLES;"
 
 # 檢查資料量
 mysql -u root -p alleynote -e "
-  SELECT 
+  SELECT
     table_name,
     table_rows,
     ROUND(((data_length + index_length) / 1024 / 1024), 2) AS 'Size_MB'
-  FROM information_schema.tables 
+  FROM information_schema.tables
   WHERE table_schema = 'alleynote';"
 ```
 
@@ -253,7 +253,7 @@ curl -w "@curl-format.txt" -s -o /dev/null \
 **3. 資料完整性測試**
 ```sql
 -- 檢查統計資料一致性
-SELECT 
+SELECT
   (SELECT COUNT(*) FROM posts) as total_posts,
   (SELECT COUNT(*) FROM statistics_snapshots WHERE metric_name = 'total_posts') as snapshot_records;
 
@@ -328,7 +328,7 @@ SET GLOBAL query_cache_type = ON;
    ```bash
    # 清理暫存檔案
    docker system prune -f
-   
+
    # 清理舊的日誌檔案
    find /var/log -name "*.log" -mtime +7 -delete
    ```
@@ -350,5 +350,5 @@ SET GLOBAL query_cache_type = ON;
 
 ---
 
-*最後更新：2024-12-19*  
+*最後更新：2024-12-19*
 *版本：1.0.0*

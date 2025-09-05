@@ -16,13 +16,13 @@ use Psr\Log\LoggerInterface;
 
 /**
  * 統計快取服務單元測試
- * 
+ *
  * 測試統計快取服務的核心功能，包含：
  * - 快取寫入與讀取
  * - 快取失效機制
  * - 快取鍵管理
  * - 錯誤處理
- * 
+ *
  * @covers \App\Domains\Statistics\Services\StatisticsCacheService
  */
 final class StatisticsCacheServiceTest extends TestCase
@@ -35,11 +35,11 @@ final class StatisticsCacheServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->mockCacheManager = $this->createMock(CacheManagerInterface::class);
         $this->mockTaggedCache = $this->createMock(TaggedCacheInterface::class);
         $this->mockLogger = $this->createMock(LoggerInterface::class);
-        
+
         $this->cacheService = new StatisticsCacheService(
             $this->mockCacheManager,
             $this->mockLogger
@@ -48,7 +48,7 @@ final class StatisticsCacheServiceTest extends TestCase
 
     /**
      * 測試快取資料寫入
-     * 
+     *
      * @test
      */
     public function should_store_cache_data_correctly(): void
@@ -77,7 +77,7 @@ final class StatisticsCacheServiceTest extends TestCase
 
     /**
      * 測試快取資料讀取
-     * 
+     *
      * @test
      */
     public function should_retrieve_cache_data_correctly(): void
@@ -105,7 +105,7 @@ final class StatisticsCacheServiceTest extends TestCase
 
     /**
      * 測試快取未命中情況
-     * 
+     *
      * @test
      */
     public function should_return_default_when_cache_miss(): void
@@ -130,7 +130,7 @@ final class StatisticsCacheServiceTest extends TestCase
 
     /**
      * 測試概覽快取鍵生成
-     * 
+     *
      * @test
      */
     public function should_generate_overview_cache_key_correctly(): void
@@ -152,7 +152,7 @@ final class StatisticsCacheServiceTest extends TestCase
     {
         $startDate = new DateTimeImmutable('2024-01-01 00:00:00');
         $endDate = new DateTimeImmutable('2024-01-01 23:59:59');
-        
+
         return StatisticsPeriod::create($startDate, $endDate, PeriodType::DAILY);
     }
 }
