@@ -388,6 +388,52 @@ final class StatisticsCalculationService
     }
 
     /**
+     * 計算趨勢分析
+     *
+     * @param array $data 資料陣列
+     * @return array 趨勢分析結果
+     */
+    public function calculateTrends(array $data): array
+    {
+        if (empty($data)) {
+            return [
+                'trend_direction' => 'stable',
+                'growth_rate' => 0.0,
+                'confidence' => 0.0,
+            ];
+        }
+
+        // 簡單趨勢計算
+        $values = array_values($data);
+        $count = count($values);
+        
+        if ($count < 2) {
+            return [
+                'trend_direction' => 'stable',
+                'growth_rate' => 0.0,
+                'confidence' => 0.5,
+            ];
+        }
+
+        $first = $values[0];
+        $last = $values[$count - 1];
+        
+        $growthRate = $first != 0 ? (($last - $first) / $first) * 100 : 0;
+        
+        $direction = match (true) {
+            $growthRate > 5 => 'increasing',
+            $growthRate < -5 => 'decreasing',
+            default => 'stable',
+        };
+
+        return [
+            'trend_direction' => $direction,
+            'growth_rate' => round($growthRate, 2),
+            'confidence' => min(1.0, $count / 10),
+        ];
+    }
+
+    /**
      * 計算預測信心度
      *
      * @param array<StatisticsSnapshot> $snapshots 歷史快照

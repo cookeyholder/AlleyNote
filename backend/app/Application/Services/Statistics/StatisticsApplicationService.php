@@ -17,6 +17,7 @@ use App\Domains\Statistics\ValueObjects\SourceStatistics;
 use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\Enums\PeriodType;
 use App\Shared\Domain\ValueObjects\Uuid;
+use App\Shared\Cache\Contracts\CacheManagerInterface;
 use Psr\Log\LoggerInterface;
 use DateTimeImmutable;
 use Throwable;
@@ -45,6 +46,7 @@ final class StatisticsApplicationService
         private readonly SystemStatisticsRepositoryInterface $systemStatisticsRepository,
         private readonly StatisticsCalculationService $calculationService,
         private readonly PostStatisticsService $postStatisticsService,
+        private readonly CacheManagerInterface $cacheManager,
         private readonly LoggerInterface $logger
     ) {
     }
@@ -146,7 +148,7 @@ final class StatisticsApplicationService
 
             // 計算額外指標
             $popularPosts = $this->postStatisticsService->getPopularPostsByPeriod($period, 10);
-            $activeUsers = $this->userStatisticsRepository->getActiveUsersByPeriod($period, 10);
+            $activeUsers = $this->userStatisticsRepository->getMostActiveUsers($period, 10);
 
             $overview = [
                 'period' => [
@@ -264,7 +266,12 @@ final class StatisticsApplicationService
             $popularContent = $this->analyzePopularContent($period, $options['popular_limit'] ?? 10);
 
             // 計算趨勢資料
-            $trends = $this->calculationService->calculateTrends($period);
+            $historicalData = $this->statisticsRepository->findByDateRange(
+                $period->startDate, 
+                $period->endDate
+            );
+            $trendValues = array_map(fn($snapshot) => $snapshot->getTotalViews()->value, $historicalData);
+            $trends = $this->calculationService->calculateTrends($trendValues);
 
             // 組合報告
             $report = [
@@ -497,8 +504,8 @@ final class StatisticsApplicationService
     {
         try {
             // 測試計算服務
-            $testPeriod = StatisticsPeriod::today();
-            $this->calculationService->calculateTrends($testPeriod);
+            $testData = [1, 2, 3, 4, 5]; // 測試資料
+            $this->calculationService->calculateTrends($testData);
 
             return ['status' => 'ok', 'message' => 'Calculation service is working'];
 

@@ -439,6 +439,32 @@ final class PostStatisticsService
     }
 
     /**
+     * 分析熱門內容
+     *
+     * @param StatisticsPeriod $period 統計週期
+     * @param int $limit 回傳數量限制
+     * @return array 熱門內容分析結果
+     * @throws StatisticsCalculationException 當分析失敗時
+     */
+    public function analyzePopularContent(StatisticsPeriod $period, int $limit = 10): array
+    {
+        return $this->analyzePopularPosts($period, $limit);
+    }
+
+    /**
+     * 取得週期內的熱門文章
+     *
+     * @param StatisticsPeriod $period 統計週期
+     * @param int $limit 回傳數量限制
+     * @return array 熱門文章列表
+     * @throws StatisticsCalculationException 當分析失敗時
+     */
+    public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array
+    {
+        return $this->analyzePopularPosts($period, $limit);
+    }
+
+    /**
      * 取得品質等級
      *
      * @param float $score 評分

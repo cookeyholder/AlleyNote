@@ -385,6 +385,30 @@ readonly class StatisticsMetric
     }
 
     /**
+     * 取得數值.
+     */
+    public function getValue(): int|float
+    {
+        return $this->value;
+    }
+
+    /**
+     * 取得單位.
+     */
+    public function getUnit(): string
+    {
+        return $this->unit;
+    }
+
+    /**
+     * 取得描述.
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
      * 驗證兩個指標是否具有相同單位.
      */
     private function validateSameUnit(StatisticsMetric $other): void

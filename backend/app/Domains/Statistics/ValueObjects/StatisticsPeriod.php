@@ -342,6 +342,27 @@ readonly class StatisticsPeriod
     }
 
     /**
+     * 取得週期的顯示字串.
+     */
+    public function getDisplayString(): string
+    {
+        return sprintf(
+            '%s (%s 至 %s)',
+            $this->type->getDisplayName(),
+            $this->startDate->format('Y-m-d'),
+            $this->endDate->format('Y-m-d')
+        );
+    }
+
+    /**
+     * 取得週期持續天數.
+     */
+    public function getDurationInDays(): int
+    {
+        return $this->getDaysCount();
+    }
+
+    /**
      * 驗證週期長度是否合理.
      */
     private function validatePeriodLength(): void
