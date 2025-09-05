@@ -41,9 +41,7 @@ class StatisticsSnapshot extends AggregateRoot
         private array $additionalMetrics,
         private DateTimeImmutable $createdAt,
         private ?DateTimeImmutable $updatedAt = null
-    ) {
-        parent::__construct();
-    }
+    ) {}
 
     /**
      * 建立新的統計快照.

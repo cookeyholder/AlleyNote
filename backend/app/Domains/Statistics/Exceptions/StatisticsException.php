@@ -19,7 +19,7 @@ abstract class StatisticsException extends DomainException
      *
      * @param string $message 例外訊息
      * @param int $code 例外代碼
-     * @param Throwable|null $previous 前一個例外
+     * @param \Throwable|null $previous 前一個例外
      */
     public function __construct(
         string $message = '',

@@ -240,7 +240,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                 ]);
 
             } catch (\Exception $e) {
-                $itemDuration = microtime(true) - $itemStartTime;
+                $itemDuration = isset($itemStartTime) ? microtime(true) - $itemStartTime : 0.0;
 
                 $results[$key] = [
                     'success' => false,
