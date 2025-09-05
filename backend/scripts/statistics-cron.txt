@@ -1,0 +1,47 @@
+# 統計計算定時任務設定
+# 
+# 此檔案包含統計功能的 Cron 任務設定
+# 請根據實際需求調整執行時間和頻率
+
+# 每日統計計算 - 每天凌晨 1:00 執行
+0 1 * * * /usr/bin/php /path/to/alley-note/backend/scripts/statistics-console.php calculate --periods daily >> /var/log/statistics-daily.log 2>&1
+
+# 每週統計計算 - 每週一凌晨 2:00 執行
+0 2 * * 1 /usr/bin/php /path/to/alley-note/backend/scripts/statistics-console.php calculate --periods weekly >> /var/log/statistics-weekly.log 2>&1
+
+# 每月統計計算 - 每月 1 日凌晨 3:00 執行
+0 3 1 * * /usr/bin/php /path/to/alley-note/backend/scripts/statistics-console.php calculate --periods monthly >> /var/log/statistics-monthly.log 2>&1
+
+# 清理過期鎖定檔案 - 每 6 小時執行一次
+0 */6 * * * /usr/bin/php /path/to/alley-note/backend/scripts/statistics-console.php cleanup >> /var/log/statistics-cleanup.log 2>&1
+
+# 狀態檢查 - 每小時執行一次（可選）
+# 0 * * * * /usr/bin/php /path/to/alley-note/backend/scripts/statistics-console.php status >> /var/log/statistics-status.log 2>&1
+
+# 快速統計更新 - 每 15 分鐘執行即時統計（可選）
+# */15 * * * * /usr/bin/php /path/to/alley-note/backend/scripts/statistics-console.php calculate --periods daily --skip-cache >> /var/log/statistics-realtime.log 2>&1
+
+# 完整統計重建 - 每週日凌晨 4:00 執行（強制重新計算）
+0 4 * * 0 /usr/bin/php /path/to/alley-note/backend/scripts/statistics-console.php calculate --force --skip-cache >> /var/log/statistics-rebuild.log 2>&1
+
+# 安裝說明:
+# 1. 修改路徑 /path/to/alley-note 為實際的專案路徑
+# 2. 確保 PHP 執行檔路徑正確（通常是 /usr/bin/php 或 /usr/local/bin/php）
+# 3. 確保日誌目錄存在且有寫入權限
+# 4. 使用 crontab -e 編輯使用者的 cron 設定
+# 5. 或者將此檔案複製到 /etc/cron.d/ 目錄（需要 root 權限）
+#
+# 日誌檔案說明:
+# - statistics-daily.log: 每日統計計算日誌
+# - statistics-weekly.log: 每週統計計算日誌  
+# - statistics-monthly.log: 每月統計計算日誌
+# - statistics-cleanup.log: 清理任務日誌
+# - statistics-status.log: 狀態檢查日誌
+# - statistics-realtime.log: 即時統計日誌
+# - statistics-rebuild.log: 完整重建日誌
+#
+# 監控建議:
+# 1. 定期檢查日誌檔案大小，避免佔用過多磁碟空間
+# 2. 設定日誌輪轉（logrotate）來管理日誌檔案
+# 3. 監控任務執行時間，避免重疊執行
+# 4. 設定警報機制，當任務失敗時及時通知

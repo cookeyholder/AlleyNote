@@ -234,7 +234,7 @@
 
 ### 階段 4：基礎設施層實作 (Infrastructure Layer)
 
-#### ✅ T4.1 - 實作統計 Repository 🔄
+#### ✅ T4.1 - 實作統計 Repository ✅
 
 **描述**：實作統計資料存取的具體類別
 **預估時間**：6 小時
@@ -242,37 +242,69 @@
 **驗收標準**：
 * [x] `StatisticsRepository` 類別實作
 * [x] `PostStatisticsRepository` 類別實作
-* [ ] 使用原生 SQL 最佳化效能
-* [ ] 包含完整的錯誤處理
-* [ ] 支援複雜的統計查詢
-* [ ] 通過 PHPStan Level 10 檢查
+* [x] `UserStatisticsRepository` 類別實作
+* [x] `SystemStatisticsRepository` 類別實作
+* [x] 使用原生 SQL 最佳化效能
+* [x] 包含完整的錯誤處理
+* [x] 支援複雜的統計查詢
+* [x] 通過 PHPStan Level 10 檢查
 
-#### ✅ T4.2 - 實作統計快取服務
+**完成日期**：2024-12-19
+**實作說明**：
+- StatisticsRepository：核心統計快照的 CRUD 操作，支援週期查詢、分頁、序列化
+- PostStatisticsRepository：文章統計查詢，包含數量、觀看、來源分布、趨勢分析
+- UserStatisticsRepository：使用者統計分析，涵蓋註冊、活躍度、留存率、分群統計
+- SystemStatisticsRepository：系統層級監控，效能指標、錯誤統計、資源使用分析
+- 所有 Repository 使用原生 SQL 進行效能最佳化
+- 完整的錯誤處理機制和例外管理
+- 支援複雜的統計查詢和資料分析功能
+
+#### ✅ T4.2 - 實作統計快取服務 ✅
 
 **描述**：實作統計資料的快取機制
 **預估時間**：4 小時
 **依賴**：T4.1
 **驗收標準**：
-* [ ] `StatisticsCacheService` 類別
-* [ ] 支援多層次快取策略
-* [ ] 快取鍵命名規範統一
-* [ ] 支援快取標籤管理
-* [ ] 實作快取預熱機制
-* [ ] 包含快取失效邏輯
-* [ ] 通過 PHPStan Level 10 檢查
+* [x] `StatisticsCacheService` 類別
+* [x] 支援多層次快取策略
+* [x] 快取鍵命名規範統一
+* [x] 支援快取標籤管理
+* [x] 實作快取預熱機制
+* [x] 包含快取失效邏輯
+* [x] 通過 PHPStan Level 10 檢查
 
-#### ✅ T4.3 - 建立統計計算定時任務
+**完成日期**：2024-12-19
+**實作說明**：
+- StatisticsCacheService：完整的統計快取服務實作
+- 統一的快取鍵命名規範（statistics:v1:type:params）
+- 支援標籤化快取管理和批量失效
+- 實作快取預熱機制和自動失效邏輯
+- 包含快取健康檢查和統計資訊功能
+- 完整的錯誤處理和日誌記錄
+- 支援多種 TTL 設定和快取策略
+
+#### ✅ T4.3 - 建立統計計算定時任務 ✅
 
 **描述**：建立定期計算統計快照的背景任務
 **預估時間**：3 小時
 **依賴**：T4.2
 **驗收標準**：
-* [ ] `StatisticsCalculationCommand` 類別
-* [ ] 支援不同統計週期（daily, weekly, monthly）
-* [ ] 包含錯誤重試機制
-* [ ] 記錄執行日誌
-* [ ] 可手動觸發執行
-* [ ] 支援並行安全執行
+* [x] `StatisticsCalculationCommand` 類別
+* [x] 支援不同統計週期（daily, weekly, monthly）
+* [x] 包含錯誤重試機制
+* [x] 記錄執行日誌
+* [x] 可手動觸發執行
+* [x] 支援並行安全執行
+
+**完成日期**：2024-12-19
+**實作說明**：
+- StatisticsCalculationCommand：核心計算指令，支援多週期統計計算
+- StatisticsCalculationConsole：命令行介面，支援各種執行選項
+- 實作檔案鎖定機制確保並行安全執行
+- 包含重試機制（最多 3 次，間隔 30 秒）
+- 支援強制執行和跳過快取選項
+- 完整的執行狀態追蹤和錯誤處理
+- 提供 Cron 任務設定檔案和執行腳本
 
 ---
 
