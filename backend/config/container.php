@@ -210,6 +210,13 @@ return array_merge(
         PostStatisticsRepositoryInterface::class => \DI\autowire(PostStatisticsRepository::class),
         UserStatisticsRepositoryInterface::class => \DI\autowire(UserStatisticsRepository::class),
         SystemStatisticsRepositoryInterface::class => \DI\autowire(SystemStatisticsRepository::class),
+        
+        // 統計快取服務
+        \App\Domains\Statistics\Services\StatisticsCacheService::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
+            return new \App\Domains\Statistics\Services\StatisticsCacheService(
+                $container->get(\App\Shared\Contracts\CacheServiceInterface::class)
+            );
+        }),
     ],
 
     // 快取服務

@@ -169,18 +169,21 @@
 - [ ] 支援複雜的統計查詢
 - [ ] 通過 PHPStan Level 10 檢查
 
-#### ✅ T4.2 - 實作統計快取服務
-**描述**：實作統計資料的快取機制
-**預估時間**：4 小時
-**依賴**：T4.1
+#### ✅ T4.2 - 實作統計快取服務 ✅ **已完成**
+**描述**：實作統計資料的快取機制  
+**預估時間**：4 小時  
+**依賴**：T4.1  
+**完成時間**：2025-01-21
 **驗收標準**：
-- [ ] `StatisticsCacheService` 類別
-- [ ] 支援多層次快取策略
-- [ ] 快取鍵命名規範統一
-- [ ] 支援快取標籤管理
-- [ ] 實作快取預熱機制
-- [ ] 包含快取失效邏輯
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsCacheService` 類別 ✅
+- [x] 支援多層次快取策略 ✅ (L1記憶體 + L2持久快取)
+- [x] 快取鍵命名規範統一 ✅ (stats:period_type:start_date:end_date)
+- [x] 支援快取標籤管理 ✅ (statistics, daily/weekly/monthly/yearly, user_stats, post_stats, system_stats)
+- [x] 實作快取預熱機制 ✅ (intelligentWarmup, warmupCache)
+- [x] 包含快取失效邏輯 ✅ (按期間、按標籤失效)
+- [x] 通過 PHPStan Level 10 檢查 ✅
+
+**完成備註**：實作完整的多層次快取系統，包含記憶體快取和持久快取，支援標籤管理和智能預熱機制。所有功能通過測試驗證，符合 PHPStan Level 10 規範。
 
 #### ✅ T4.3 - 建立統計計算定時任務
 **描述**：建立定期計算統計快照的背景任務
