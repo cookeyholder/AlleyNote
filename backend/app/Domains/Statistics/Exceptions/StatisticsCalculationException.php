@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Exceptions;
 
-use App\Domains\Statistics\Exceptions\StatisticsException;
-
 /**
- * 統計計算例外
+ * 統計計算例外.
  *
  * 當統計計算過程中發生錯誤時拋出的例外，
  * 例如：資料不足、計算溢位、無效參數等。
@@ -17,7 +15,7 @@ final class StatisticsCalculationException extends StatisticsException
     public static function insufficientData(string $operation, int $required, int $actual): self
     {
         return new self(
-            "執行 '{$operation}' 需要至少 {$required} 筆資料，但只有 {$actual} 筆"
+            "執行 '{$operation}' 需要至少 {$required} 筆資料，但只有 {$actual} 筆",
         );
     }
 

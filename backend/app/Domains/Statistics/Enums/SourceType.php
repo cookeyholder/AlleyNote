@@ -134,7 +134,7 @@ enum SourceType: string
     {
         return array_filter(
             self::cases(),
-            fn (self $source) => $source->isPrimarySource()
+            fn(self $source) => $source->isPrimarySource(),
         );
     }
 

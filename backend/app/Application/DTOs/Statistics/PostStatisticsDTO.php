@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs\Statistics;
 
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\ValueObjects\StatisticsMetric;
 use App\Domains\Statistics\Enums\SourceType;
+use App\Domains\Statistics\ValueObjects\StatisticsMetric;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Domain\ValueObjects\Uuid;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use JsonSerializable;
 
 /**
- * 文章統計資料傳輸物件
+ * 文章統計資料傳輸物件.
  *
  * 用於傳輸文章統計資料的 DTO 類別。
  * 包含文章基本資訊、統計指標、效能分析等資訊。
@@ -49,14 +50,14 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         public StatisticsPeriod $period,
         public array $additionalMetrics,
         public DateTimeImmutable $publishedAt,
-        public DateTimeImmutable $updatedAt
+        public DateTimeImmutable $updatedAt,
     ) {
         $this->validateTitle($title);
         $this->validateAdditionalMetrics($additionalMetrics);
     }
 
     /**
-     * 從文章資料建立 DTO
+     * 從文章資料建立 DTO.
      */
     public static function fromPostData(array $postData, StatisticsPeriod $period): self
     {
@@ -71,12 +72,12 @@ final readonly class PostStatisticsDTO implements JsonSerializable
             $period,
             $postData['additional_metrics'] ?? [],
             new DateTimeImmutable($postData['published_at']),
-            new DateTimeImmutable($postData['updated_at'] ?? $postData['published_at'])
+            new DateTimeImmutable($postData['updated_at'] ?? $postData['published_at']),
         );
     }
 
     /**
-     * 建立帶有統計分析的 DTO
+     * 建立帶有統計分析的 DTO.
      */
     public static function withAnalysis(
         Uuid $postId,
@@ -84,7 +85,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         SourceType $sourceType,
         array $rawMetrics,
         StatisticsPeriod $period,
-        DateTimeImmutable $publishedAt
+        DateTimeImmutable $publishedAt,
     ): self {
         // 建立統計指標
         $viewCount = StatisticsMetric::count($rawMetrics['views'] ?? 0, '瀏覽次數');
@@ -97,7 +98,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
             'engagement_rate' => self::calculateEngagementRate($rawMetrics),
             'performance_score' => self::calculatePerformanceScore($rawMetrics),
             'trend_direction' => $rawMetrics['trend_direction'] ?? 'stable',
-            'peak_time' => $rawMetrics['peak_time'] ?? null
+            'peak_time' => $rawMetrics['peak_time'] ?? null,
         ];
 
         return new self(
@@ -111,12 +112,12 @@ final readonly class PostStatisticsDTO implements JsonSerializable
             $period,
             $additionalMetrics,
             $publishedAt,
-            new DateTimeImmutable()
+            new DateTimeImmutable(),
         );
     }
 
     /**
-     * 取得互動率
+     * 取得互動率.
      */
     public function getEngagementRate(): float
     {
@@ -125,11 +126,12 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         }
 
         $totalEngagements = $this->likeCount->value + $this->commentCount->value + $this->shareCount->value;
+
         return round(($totalEngagements / $this->viewCount->value) * 100, 2);
     }
 
     /**
-     * 取得總互動數
+     * 取得總互動數.
      */
     public function getTotalEngagements(): int
     {
@@ -137,16 +139,16 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     }
 
     /**
-     * 取得效能評分
+     * 取得效能評分.
      */
     public function getPerformanceScore(): float
     {
-        return $this->additionalMetrics['performance_score'] ??
-               $this->calculateDefaultPerformanceScore();
+        return $this->additionalMetrics['performance_score']
+               ?? $this->calculateDefaultPerformanceScore();
     }
 
     /**
-     * 檢查是否為熱門文章
+     * 檢查是否為熱門文章.
      */
     public function isPopular(float $viewThreshold = 100, float $engagementThreshold = 5.0): bool
     {
@@ -155,7 +157,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     }
 
     /**
-     * 檢查是否為病毒式傳播
+     * 檢查是否為病毒式傳播.
      */
     public function isViral(float $shareRatio = 0.1): bool
     {
@@ -167,7 +169,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     }
 
     /**
-     * 取得趨勢方向
+     * 取得趨勢方向.
      */
     public function getTrendDirection(): string
     {
@@ -175,16 +177,17 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     }
 
     /**
-     * 取得文章年齡（天數）
+     * 取得文章年齡（天數）.
      */
     public function getAgeInDays(): int
     {
         $now = new DateTimeImmutable();
+
         return $now->diff($this->publishedAt)->days;
     }
 
     /**
-     * 取得格式化的統計資訊
+     * 取得格式化的統計資訊.
      */
     public function getFormattedStatistics(): array
     {
@@ -194,25 +197,25 @@ final readonly class PostStatisticsDTO implements JsonSerializable
                 'title' => $this->title,
                 'source_type' => $this->sourceType->value,
                 'published_at' => $this->publishedAt->format('Y-m-d H:i:s'),
-                'age_days' => $this->getAgeInDays()
+                'age_days' => $this->getAgeInDays(),
             ],
             'metrics' => [
                 'views' => [
                     'value' => $this->viewCount->value,
-                    'formatted' => $this->viewCount->getFormattedValueWithUnit()
+                    'formatted' => $this->viewCount->getFormattedValueWithUnit(),
                 ],
                 'likes' => [
                     'value' => $this->likeCount->value,
-                    'formatted' => $this->likeCount->getFormattedValueWithUnit()
+                    'formatted' => $this->likeCount->getFormattedValueWithUnit(),
                 ],
                 'comments' => [
                     'value' => $this->commentCount->value,
-                    'formatted' => $this->commentCount->getFormattedValueWithUnit()
+                    'formatted' => $this->commentCount->getFormattedValueWithUnit(),
                 ],
                 'shares' => [
                     'value' => $this->shareCount->value,
-                    'formatted' => $this->shareCount->getFormattedValueWithUnit()
-                ]
+                    'formatted' => $this->shareCount->getFormattedValueWithUnit(),
+                ],
             ],
             'calculated_metrics' => [
                 'total_engagements' => $this->getTotalEngagements(),
@@ -220,36 +223,36 @@ final readonly class PostStatisticsDTO implements JsonSerializable
                 'performance_score' => $this->getPerformanceScore(),
                 'is_popular' => $this->isPopular(),
                 'is_viral' => $this->isViral(),
-                'trend_direction' => $this->getTrendDirection()
+                'trend_direction' => $this->getTrendDirection(),
             ],
             'period' => [
                 'start_date' => $this->period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
-                'type' => $this->period->type->value
-            ]
+                'type' => $this->period->type->value,
+            ],
         ];
     }
 
     /**
-     * 比較與另一篇文章的效能
+     * 比較與另一篇文章的效能.
      */
     public function compareWith(PostStatisticsDTO $other): array
     {
         return [
-            'views_ratio' => $other->viewCount->value > 0 ?
-                round($this->viewCount->value / $other->viewCount->value, 2) : 0,
+            'views_ratio' => $other->viewCount->value > 0
+                ? round($this->viewCount->value / $other->viewCount->value, 2) : 0,
             'engagement_rate_diff' => round($this->getEngagementRate() - $other->getEngagementRate(), 2),
             'performance_score_diff' => round($this->getPerformanceScore() - $other->getPerformanceScore(), 2),
             'better_metrics' => [
                 'views' => $this->viewCount->value > $other->viewCount->value,
                 'engagement_rate' => $this->getEngagementRate() > $other->getEngagementRate(),
-                'performance_score' => $this->getPerformanceScore() > $other->getPerformanceScore()
-            ]
+                'performance_score' => $this->getPerformanceScore() > $other->getPerformanceScore(),
+            ],
         ];
     }
 
     /**
-     * 轉換為陣列
+     * 轉換為陣列.
      */
     public function toArray(): array
     {
@@ -261,33 +264,33 @@ final readonly class PostStatisticsDTO implements JsonSerializable
                 'view_count' => $this->viewCount->value,
                 'like_count' => $this->likeCount->value,
                 'comment_count' => $this->commentCount->value,
-                'share_count' => $this->shareCount->value
+                'share_count' => $this->shareCount->value,
             ],
             'calculated_metrics' => [
                 'total_engagements' => $this->getTotalEngagements(),
                 'engagement_rate' => $this->getEngagementRate(),
-                'performance_score' => $this->getPerformanceScore()
+                'performance_score' => $this->getPerformanceScore(),
             ],
             'flags' => [
                 'is_popular' => $this->isPopular(),
-                'is_viral' => $this->isViral()
+                'is_viral' => $this->isViral(),
             ],
             'period' => [
                 'start_date' => $this->period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
-                'type' => $this->period->type->value
+                'type' => $this->period->type->value,
             ],
             'timestamps' => [
                 'published_at' => $this->publishedAt->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updatedAt->format('Y-m-d H:i:s'),
-                'age_days' => $this->getAgeInDays()
+                'age_days' => $this->getAgeInDays(),
             ],
-            'additional_metrics' => $this->additionalMetrics
+            'additional_metrics' => $this->additionalMetrics,
         ];
     }
 
     /**
-     * JSON 序列化
+     * JSON 序列化.
      */
     public function jsonSerialize(): array
     {
@@ -295,7 +298,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     }
 
     /**
-     * 轉換為字串
+     * 轉換為字串.
      */
     public function __toString(): string
     {
@@ -303,12 +306,12 @@ final readonly class PostStatisticsDTO implements JsonSerializable
             'PostStatistics[%s: %d views, %.2f%% engagement]',
             substr($this->title, 0, 30) . (strlen($this->title) > 30 ? '...' : ''),
             $this->viewCount->value,
-            $this->getEngagementRate()
+            $this->getEngagementRate(),
         );
     }
 
     /**
-     * 計算互動率
+     * 計算互動率.
      */
     private static function calculateEngagementRate(array $metrics): float
     {
@@ -317,15 +320,15 @@ final readonly class PostStatisticsDTO implements JsonSerializable
             return 0.0;
         }
 
-        $engagements = ($metrics['likes'] ?? 0) +
-                      ($metrics['comments'] ?? 0) +
-                      ($metrics['shares'] ?? 0);
+        $engagements = ($metrics['likes'] ?? 0)
+                      + ($metrics['comments'] ?? 0)
+                      + ($metrics['shares'] ?? 0);
 
         return round(($engagements / $views) * 100, 2);
     }
 
     /**
-     * 計算效能評分
+     * 計算效能評分.
      */
     private static function calculatePerformanceScore(array $metrics): float
     {
@@ -340,7 +343,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     }
 
     /**
-     * 計算預設效能評分
+     * 計算預設效能評分.
      */
     private function calculateDefaultPerformanceScore(): float
     {
@@ -348,33 +351,33 @@ final readonly class PostStatisticsDTO implements JsonSerializable
             'views' => $this->viewCount->value,
             'likes' => $this->likeCount->value,
             'comments' => $this->commentCount->value,
-            'shares' => $this->shareCount->value
+            'shares' => $this->shareCount->value,
         ]);
     }
 
     /**
-     * 驗證標題
+     * 驗證標題.
      */
     private function validateTitle(string $title): void
     {
         if (empty(trim($title))) {
-            throw new \InvalidArgumentException('文章標題不能為空');
+            throw new InvalidArgumentException('文章標題不能為空');
         }
 
         if (strlen($title) > 255) {
-            throw new \InvalidArgumentException('文章標題長度不能超過 255 個字元');
+            throw new InvalidArgumentException('文章標題長度不能超過 255 個字元');
         }
     }
 
     /**
-     * 驗證額外指標
+     * 驗證額外指標.
      */
     private function validateAdditionalMetrics(array $metrics): void
     {
         // 檢查是否有無效的數值類型
         foreach ($metrics as $key => $value) {
             if (is_numeric($value) && $value < 0) {
-                throw new \InvalidArgumentException("額外指標 '{$key}' 不能為負數");
+                throw new InvalidArgumentException("額外指標 '{$key}' 不能為負數");
             }
         }
     }

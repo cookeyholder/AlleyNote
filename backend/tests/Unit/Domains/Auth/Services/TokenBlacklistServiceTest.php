@@ -978,10 +978,10 @@ final class TokenBlacklistServiceTest extends TestCase
         $this->assertTrue($result['size_exceeded']);
         $this->assertTrue($result['too_large']);
         $this->assertSame(100000, $result['max_recommended_size']);
-        $this->assertContains('Run cleanup to reduce blacklist size', $result['recommendations']);
-        $this->assertContains('Blacklist size exceeds recommended limit, consider cleanup', $result['recommendations']);
-        $this->assertContains('High number of expired entries, consider cleanup', $result['recommendations']);
-        $this->assertContains('High security-related blacklist entries detected', $result['recommendations']);
+        $this->assertStringContainsString('Run cleanup to reduce blacklist size', implode(' ', $result['recommendations']));
+        $this->assertStringContainsString('Blacklist size exceeds recommended limit, consider cleanup', implode(' ', $result['recommendations']));
+        $this->assertStringContainsString('High number of expired entries, consider cleanup', implode(' ', $result['recommendations']));
+        $this->assertStringContainsString('High security-related blacklist entries detected', implode(' ', $result['recommendations']));
     }
 
     public function testGetHealthStatusWithRepositoryException(): void

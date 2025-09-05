@@ -12,7 +12,7 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use Throwable;
 
 /**
- * 文章統計服務
+ * 文章統計服務.
  *
  * 負責文章相關的統計分析業務邏輯，包含：
  * - 文章熱門度分析
@@ -30,12 +30,11 @@ final class PostStatisticsService
 {
     public function __construct(
         private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
-        private readonly SystemStatisticsRepositoryInterface $systemStatisticsRepository
-    ) {
-    }
+        private readonly SystemStatisticsRepositoryInterface $systemStatisticsRepository,
+    ) {}
 
     /**
-     * 分析熱門文章
+     * 分析熱門文章.
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 回傳數量限制
@@ -82,13 +81,13 @@ final class PostStatisticsService
             throw new StatisticsCalculationException(
                 "分析熱門文章失敗: {$e->getMessage()}",
                 0,
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 分析文章來源分佈
+     * 分析文章來源分佈.
      *
      * @param StatisticsPeriod $period 統計週期
      * @return array{distribution: array, insights: array} 來源分析結果
@@ -142,7 +141,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 計算文章品質評分
+     * 計算文章品質評分.
      *
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
@@ -204,7 +203,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 分析文章趨勢
+     * 分析文章趨勢.
      *
      * @param StatisticsPeriod $period 統計週期
      * @return array{trending_up: array, trending_down: array, stable: array} 趨勢分析結果
@@ -231,8 +230,8 @@ final class PostStatisticsService
         }
 
         // 按成長率排序
-        usort($trendingUp, fn ($a, $b) => $b['growth_rate'] <=> $a['growth_rate']);
-        usort($trendingDown, fn ($a, $b) => $a['growth_rate'] <=> $b['growth_rate']);
+        usort($trendingUp, fn($a, $b) => $b['growth_rate'] <=> $a['growth_rate']);
+        usort($trendingDown, fn($a, $b) => $a['growth_rate'] <=> $b['growth_rate']);
 
         return [
             'trending_up' => array_slice($trendingUp, 0, 10),
@@ -242,7 +241,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 計算文章投資報酬率 (ROI)
+     * 計算文章投資報酬率 (ROI).
      *
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
@@ -279,7 +278,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 取得最佳發布時間建議
+     * 取得最佳發布時間建議.
      *
      * @param StatisticsPeriod $period 分析週期
      * @return array{best_hours: array, best_days: array, insights: array} 發布時間建議
@@ -354,7 +353,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 計算香農熵（多樣性指標）
+     * 計算香農熵（多樣性指標）.
      *
      * @param array<string, int> $distribution 分佈資料
      * @return float 香農熵值
@@ -380,7 +379,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 計算來源品質評分
+     * 計算來源品質評分.
      *
      * @param string $source 來源類型
      * @return float 品質評分 (0-15)
@@ -403,7 +402,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 計算一致性評分
+     * 計算一致性評分.
      *
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
@@ -427,7 +426,7 @@ final class PostStatisticsService
         }
 
         $variance = array_sum(
-            array_map(fn ($value) => ($value - $mean) ** 2, $performances)
+            array_map(fn($value) => ($value - $mean) ** 2, $performances),
         ) / count($performances);
 
         $coefficientOfVariation = sqrt($variance) / $mean;
@@ -439,7 +438,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 分析熱門內容
+     * 分析熱門內容.
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 回傳數量限制
@@ -452,7 +451,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 取得週期內的熱門文章
+     * 取得週期內的熱門文章.
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 回傳數量限制
@@ -465,7 +464,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 取得品質等級
+     * 取得品質等級.
      *
      * @param float $score 評分
      * @return string 品質等級

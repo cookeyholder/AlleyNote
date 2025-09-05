@@ -8,7 +8,7 @@ use Exception;
 use Throwable;
 
 /**
- * 領域例外基礎類別
+ * 領域例外基礎類別.
  *
  * 所有領域層的例外都應該繼承此類別，
  * 提供領域層統一的例外處理機制。
@@ -16,7 +16,7 @@ use Throwable;
 abstract class DomainException extends Exception
 {
     /**
-     * 建立領域例外
+     * 建立領域例外.
      *
      * @param string $message 例外訊息
      * @param int $code 例外代碼
@@ -25,13 +25,13 @@ abstract class DomainException extends Exception
     public function __construct(
         string $message = '',
         int $code = 0,
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         parent::__construct($message, $code, $previous);
     }
 
     /**
-     * 取得領域名稱
+     * 取得領域名稱.
      *
      * 由子類別實作，回傳該例外所屬的領域名稱
      *
@@ -40,7 +40,7 @@ abstract class DomainException extends Exception
     abstract public function getDomainName(): string;
 
     /**
-     * 取得格式化的例外訊息
+     * 取得格式化的例外訊息.
      *
      * @return string 格式化後的例外訊息
      */
@@ -49,12 +49,12 @@ abstract class DomainException extends Exception
         return sprintf(
             '[%s Domain] %s',
             $this->getDomainName(),
-            $this->getMessage()
+            $this->getMessage(),
         );
     }
 
     /**
-     * 轉換為陣列格式
+     * 轉換為陣列格式.
      *
      * @return array{domain: string, message: string, code: int, file: string, line: int}
      */

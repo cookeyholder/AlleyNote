@@ -14,18 +14,17 @@ use App\Domains\Statistics\Exceptions\InvalidSourceStatisticsException;
 readonly class SourceStatistics
 {
     /**
-     * @param SourceType        $sourceType 來源類型
-     * @param StatisticsMetric  $count      計數
-     * @param StatisticsMetric  $percentage 百分比
+     * @param SourceType $sourceType 來源類型
+     * @param StatisticsMetric $count 計數
+     * @param StatisticsMetric $percentage 百分比
      * @param array<string, StatisticsMetric> $additionalMetrics 額外指標
      */
     private function __construct(
         public SourceType $sourceType,
         public StatisticsMetric $count,
         public StatisticsMetric $percentage,
-        public array $additionalMetrics = []
-    ) {
-    }
+        public array $additionalMetrics = [],
+    ) {}
 
     /**
      * 建立來源統計.
@@ -34,17 +33,17 @@ readonly class SourceStatistics
         SourceType $sourceType,
         int $count,
         float $percentage,
-        array $additionalMetrics = []
+        array $additionalMetrics = [],
     ): self {
         if ($count < 0) {
             throw new InvalidSourceStatisticsException(
-                '計數不能為負數'
+                '計數不能為負數',
             );
         }
 
         if ($percentage < 0 || $percentage > 100) {
             throw new InvalidSourceStatisticsException(
-                '百分比必須在 0-100 之間'
+                '百分比必須在 0-100 之間',
             );
         }
 
@@ -55,7 +54,7 @@ readonly class SourceStatistics
         foreach ($additionalMetrics as $key => $metric) {
             if (!$metric instanceof StatisticsMetric) {
                 throw new InvalidSourceStatisticsException(
-                    "額外指標 '{$key}' 必須是 StatisticsMetric 實例"
+                    "額外指標 '{$key}' 必須是 StatisticsMetric 實例",
                 );
             }
         }
@@ -71,7 +70,7 @@ readonly class SourceStatistics
         return new self(
             $sourceType,
             StatisticsMetric::count(0),
-            StatisticsMetric::percentage(0.0)
+            StatisticsMetric::percentage(0.0),
         );
     }
 
@@ -177,7 +176,7 @@ readonly class SourceStatistics
             $this->sourceType,
             $this->count,
             $this->percentage,
-            $newMetrics
+            $newMetrics,
         );
     }
 
@@ -193,7 +192,7 @@ readonly class SourceStatistics
             $this->sourceType,
             $this->count,
             $this->percentage,
-            $newMetrics
+            $newMetrics,
         );
     }
 
@@ -206,7 +205,7 @@ readonly class SourceStatistics
             $this->sourceType,
             $newCount,
             $newPercentage,
-            $this->additionalMetrics
+            $this->additionalMetrics,
         );
     }
 
@@ -217,7 +216,7 @@ readonly class SourceStatistics
     {
         if ($this->sourceType !== $other->sourceType) {
             throw new InvalidSourceStatisticsException(
-                '只能合併相同來源類型的統計資料'
+                '只能合併相同來源類型的統計資料',
             );
         }
 
@@ -240,7 +239,7 @@ readonly class SourceStatistics
             $this->sourceType,
             $newCount,
             min($newPercentage, 100.0), // 確保不超過100%
-            $mergedMetrics
+            $mergedMetrics,
         );
     }
 
@@ -336,7 +335,7 @@ readonly class SourceStatistics
             '%s: %s (%s)',
             $this->getSourceName(),
             $this->count->getFormattedValueWithUnit(),
-            $this->percentage->getFormattedValueWithUnit()
+            $this->percentage->getFormattedValueWithUnit(),
         );
     }
 }

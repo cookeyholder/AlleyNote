@@ -4,32 +4,36 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Services\Statistics;
 
+use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Services\StatisticsCacheService;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\Enums\PeriodType;
 use DateTimeImmutable;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
- * 統計快取服務單元測試
+ * 統計快取服務單元測試.
  *
  * 測試統計快取服務的核心功能，包含：
  * - 快取寫入與讀取
  * - 快取失效機制
  * - 快取鍵管理
  * - 錯誤處理
- *
- * @covers \App\Domains\Statistics\Services\StatisticsCacheService
  */
+#[CoversClass(StatisticsCacheService::class)]
 final class StatisticsCacheServiceTest extends TestCase
 {
     private StatisticsCacheService $cacheService;
+
     private MockObject|CacheManagerInterface $mockCacheManager;
+
     private MockObject|TaggedCacheInterface $mockTaggedCache;
+
     private MockObject|LoggerInterface $mockLogger;
 
     protected function setUp(): void
@@ -42,15 +46,14 @@ final class StatisticsCacheServiceTest extends TestCase
 
         $this->cacheService = new StatisticsCacheService(
             $this->mockCacheManager,
-            $this->mockLogger
+            $this->mockLogger,
         );
     }
 
     /**
-     * 測試快取資料寫入
-     *
-     * @test
+     * 測試快取資料寫入.
      */
+    #[Test]
     public function should_store_cache_data_correctly(): void
     {
         // Arrange
@@ -58,7 +61,7 @@ final class StatisticsCacheServiceTest extends TestCase
         $normalizedKey = 'statistics:v1:test_statistics_key';
         $statisticsData = [
             'posts' => ['total_count' => 100],
-            'users' => ['active_users' => 50]
+            'users' => ['active_users' => 50],
         ];
         $ttl = 300; // 5 分鐘
 
@@ -76,10 +79,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試快取資料讀取
-     *
-     * @test
+     * 測試快取資料讀取.
      */
+    #[Test]
     public function should_retrieve_cache_data_correctly(): void
     {
         // Arrange
@@ -87,7 +89,7 @@ final class StatisticsCacheServiceTest extends TestCase
         $normalizedKey = 'statistics:v1:test_statistics_key';
         $expectedData = [
             'posts' => ['total_count' => 100],
-            'users' => ['active_users' => 50]
+            'users' => ['active_users' => 50],
         ];
 
         $this->mockCacheManager
@@ -105,9 +107,8 @@ final class StatisticsCacheServiceTest extends TestCase
 
     /**
      * 測試快取未命中情況
-     *
-     * @test
      */
+    #[Test]
     public function should_return_default_when_cache_miss(): void
     {
         // Arrange
@@ -129,10 +130,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試概覽快取鍵生成
-     *
-     * @test
+     * 測試概覽快取鍵生成.
      */
+    #[Test]
     public function should_generate_overview_cache_key_correctly(): void
     {
         // Arrange
@@ -146,7 +146,7 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 建立每日週期測試資料
+     * 建立每日週期測試資料.
      */
     private function createDailyPeriod(): StatisticsPeriod
     {

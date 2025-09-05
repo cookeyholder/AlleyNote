@@ -17,15 +17,14 @@ readonly class StatisticsPeriod
 {
     /**
      * @param DateTimeImmutable $startDate 開始日期
-     * @param DateTimeImmutable $endDate   結束日期
-     * @param PeriodType        $type      週期類型
+     * @param DateTimeImmutable $endDate 結束日期
+     * @param PeriodType $type 週期類型
      */
     private function __construct(
         public DateTimeImmutable $startDate,
         public DateTimeImmutable $endDate,
-        public PeriodType $type
-    ) {
-    }
+        public PeriodType $type,
+    ) {}
 
     /**
      * 建立統計週期.
@@ -33,14 +32,14 @@ readonly class StatisticsPeriod
     public static function create(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
-        PeriodType $type
+        PeriodType $type,
     ): self {
         $start = DateTimeImmutable::createFromInterface($startDate);
         $end = DateTimeImmutable::createFromInterface($endDate);
 
         if ($start > $end) {
             throw new InvalidStatisticsPeriodException(
-                '開始日期不能晚於結束日期'
+                '開始日期不能晚於結束日期',
             );
         }
 
@@ -152,7 +151,7 @@ readonly class StatisticsPeriod
      */
     public static function customRange(
         DateTimeInterface $startDate,
-        DateTimeInterface $endDate
+        DateTimeInterface $endDate,
     ): self {
         $start = DateTimeImmutable::createFromInterface($startDate);
         $end = DateTimeImmutable::createFromInterface($endDate);
@@ -276,7 +275,7 @@ readonly class StatisticsPeriod
         return sprintf(
             '%s to %s',
             $this->startDate->format($format),
-            $this->endDate->format($format)
+            $this->endDate->format($format),
         );
     }
 
@@ -289,7 +288,7 @@ readonly class StatisticsPeriod
             PeriodType::DAILY => $this->startDate->format('Y-m-d'),
             PeriodType::WEEKLY => sprintf(
                 '%s 週',
-                $this->startDate->format('Y-m-d')
+                $this->startDate->format('Y-m-d'),
             ),
             PeriodType::MONTHLY => $this->startDate->format('Y 年 m 月'),
             PeriodType::YEARLY => $this->startDate->format('Y 年'),
@@ -337,7 +336,7 @@ readonly class StatisticsPeriod
             '[%s] %s (%s)',
             $this->type->getDisplayName(),
             $this->format(),
-            $this->getDaysCount() . ' 天'
+            $this->getDaysCount() . ' 天',
         );
     }
 
@@ -350,7 +349,7 @@ readonly class StatisticsPeriod
             '%s (%s 至 %s)',
             $this->type->getDisplayName(),
             $this->startDate->format('Y-m-d'),
-            $this->endDate->format('Y-m-d')
+            $this->endDate->format('Y-m-d'),
         );
     }
 
@@ -380,8 +379,8 @@ readonly class StatisticsPeriod
                     '週期長度 %d 天超過 %s 類型的最大允許值 %d 天',
                     $this->getDaysCount(),
                     $this->type->getDisplayName(),
-                    $maxDays
-                )
+                    $maxDays,
+                ),
             );
         }
     }

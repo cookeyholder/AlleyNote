@@ -212,7 +212,10 @@ class ValidationExceptionTest extends TestCase
         // Act & Assert
         $firstError = $exception->getFirstError();
         $this->assertNotNull($firstError);
-        $this->assertContains($firstError, ['第一個錯誤', '第三個錯誤']);
+        $this->assertThat($firstError, $this->logicalOr(
+            $this->equalTo('第一個錯誤'),
+            $this->equalTo('第三個錯誤'),
+        ));
     }
 
     /**
@@ -262,7 +265,7 @@ class ValidationExceptionTest extends TestCase
         ];
         $this->assertCount(6, $allErrors);
         foreach ($expectedErrors as $expectedError) {
-            $this->assertContains($expectedError, $allErrors);
+            $this->assertArrayHasKey($expectedError, array_flip($allErrors));
         }
     }
 

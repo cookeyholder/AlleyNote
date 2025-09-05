@@ -72,10 +72,10 @@ class UserActivityLogsSeederTest extends TestCase
 
         $actionTypes = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        $this->assertContains('auth.login.success', $actionTypes, '應包含成功登入記錄');
-        $this->assertContains('auth.login.failed', $actionTypes, '應包含失敗登入記錄');
-        $this->assertContains('post.created', $actionTypes, '應包含文章建立記錄');
-        $this->assertContains('attachment.uploaded', $actionTypes, '應包含附件上傳記錄');
+        $this->assertArrayHasKey('auth.login.success', array_flip($actionTypes), '應包含成功登入記錄');
+        $this->assertArrayHasKey('auth.login.failed', array_flip($actionTypes), '應包含失敗登入記錄');
+        $this->assertArrayHasKey('post.created', array_flip($actionTypes), '應包含文章建立記錄');
+        $this->assertArrayHasKey('attachment.uploaded', array_flip($actionTypes), '應包含附件上傳記錄');
         $this->assertGreaterThanOrEqual(5, count($actionTypes), '應包含多種不同的行為類型');
     }
 
@@ -95,10 +95,10 @@ class UserActivityLogsSeederTest extends TestCase
 
         $statuses = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        $this->assertContains('success', $statuses, '應包含成功狀態的記錄');
-        $this->assertContains('failed', $statuses, '應包含失敗狀態的記錄');
-        $this->assertContains('error', $statuses, '應包含錯誤狀態的記錄');
-        $this->assertContains('blocked', $statuses, '應包含被阻擋狀態的記錄');
+        $this->assertArrayHasKey('success', array_flip($statuses), '應包含成功狀態的記錄');
+        $this->assertArrayHasKey('failed', array_flip($statuses), '應包含失敗狀態的記錄');
+        $this->assertArrayHasKey('error', array_flip($statuses), '應包含錯誤狀態的記錄');
+        $this->assertArrayHasKey('blocked', array_flip($statuses), '應包含被阻擋狀態的記錄');
         $this->assertGreaterThanOrEqual(3, count($statuses), '應包含多種不同的狀態');
     }
 

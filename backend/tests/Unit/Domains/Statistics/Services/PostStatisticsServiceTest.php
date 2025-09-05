@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Statistics\Services;
 
-use App\Domains\Statistics\Services\PostStatisticsService;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\SystemStatisticsRepositoryInterface;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Domains\Statistics\Enums\PeriodType;
-use App\Domains\Statistics\Enums\SourceType;
+use App\Domains\Statistics\Exceptions\StatisticsCalculationException;
+use App\Domains\Statistics\Services\PostStatisticsService;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
-use PHPUnit\Framework\TestCase;
+use Exception;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 /**
- * 文章統計服務單元測試
+ * 文章統計服務單元測試.
  *
  * 測試文章統計服務的核心業務邏輯，包含：
  * - 熱門文章分析
@@ -23,13 +26,14 @@ use PHPUnit\Framework\MockObject\MockObject;
  * - 文章品質評分
  * - 投資報酬率計算
  * - 最佳發布時間建議
- *
- * @covers \App\Domains\Statistics\Services\PostStatisticsService
  */
+#[CoversClass(PostStatisticsService::class)]
 final class PostStatisticsServiceTest extends TestCase
 {
     private PostStatisticsService $service;
+
     private MockObject|PostStatisticsRepositoryInterface $mockPostRepository;
+
     private MockObject|SystemStatisticsRepositoryInterface $mockSystemRepository;
 
     protected function setUp(): void
@@ -41,22 +45,21 @@ final class PostStatisticsServiceTest extends TestCase
 
         $this->service = new PostStatisticsService(
             $this->mockPostRepository,
-            $this->mockSystemRepository
+            $this->mockSystemRepository,
         );
     }
 
     /**
-     * 測試分析熱門文章
-     *
-     * @test
+     * 測試分析熱門文章.
      */
+    #[Test]
     public function shouldAnalyzePopularPosts(): void
     {
         // Arrange
         $period = StatisticsPeriod::create(
             new DateTimeImmutable('2024-01-01'),
             new DateTimeImmutable('2024-01-31'),
-            PeriodType::MONTHLY
+            PeriodType::MONTHLY,
         );
 
         $mockData = [
@@ -81,17 +84,16 @@ final class PostStatisticsServiceTest extends TestCase
     }
 
     /**
-     * 測試分析來源分佈
-     *
-     * @test
+     * 測試分析來源分佈.
      */
+    #[Test]
     public function shouldAnalyzeSourceDistribution(): void
     {
         // Arrange
         $period = StatisticsPeriod::create(
             new DateTimeImmutable('2024-01-01'),
             new DateTimeImmutable('2024-01-31'),
-            PeriodType::MONTHLY
+            PeriodType::MONTHLY,
         );
 
         $mockData = [
@@ -116,10 +118,9 @@ final class PostStatisticsServiceTest extends TestCase
     }
 
     /**
-     * 測試計算文章品質評分
-     *
-     * @test
+     * 測試計算文章品質評分.
      */
+    #[Test]
     public function shouldCalculatePostQualityScore(): void
     {
         // Arrange
@@ -127,7 +128,7 @@ final class PostStatisticsServiceTest extends TestCase
         $period = StatisticsPeriod::create(
             new DateTimeImmutable('2024-01-01'),
             new DateTimeImmutable('2024-01-31'),
-            PeriodType::MONTHLY
+            PeriodType::MONTHLY,
         );
 
         $mockStats = [
@@ -135,7 +136,7 @@ final class PostStatisticsServiceTest extends TestCase
             'comments' => 50,
             'likes' => 100,
             'shares' => 25,
-            'source' => 'web'
+            'source' => 'web',
         ];
 
         $this->mockPostRepository
@@ -158,17 +159,16 @@ final class PostStatisticsServiceTest extends TestCase
     }
 
     /**
-     * 測試分析文章趨勢
-     *
-     * @test
+     * 測試分析文章趨勢.
      */
+    #[Test]
     public function shouldAnalyzeTrends(): void
     {
         // Arrange
         $period = StatisticsPeriod::create(
             new DateTimeImmutable('2024-01-01'),
             new DateTimeImmutable('2024-01-31'),
-            PeriodType::MONTHLY
+            PeriodType::MONTHLY,
         );
 
         $mockTrends = [
@@ -193,10 +193,9 @@ final class PostStatisticsServiceTest extends TestCase
     }
 
     /**
-     * 測試計算文章投資報酬率 (ROI)
-     *
-     * @test
+     * 測試計算文章投資報酬率 (ROI).
      */
+    #[Test]
     public function shouldCalculatePostROI(): void
     {
         // Arrange
@@ -204,7 +203,7 @@ final class PostStatisticsServiceTest extends TestCase
         $period = StatisticsPeriod::create(
             new DateTimeImmutable('2024-01-01'),
             new DateTimeImmutable('2024-01-31'),
-            PeriodType::MONTHLY
+            PeriodType::MONTHLY,
         );
         $contentCost = 100.0;
 
@@ -213,7 +212,7 @@ final class PostStatisticsServiceTest extends TestCase
             'comments' => 50,
             'likes' => 100,
             'shares' => 25,
-            'source' => 'web'
+            'source' => 'web',
         ];
 
         $this->mockPostRepository
@@ -235,17 +234,16 @@ final class PostStatisticsServiceTest extends TestCase
     }
 
     /**
-     * 測試取得最佳發布時間建議
-     *
-     * @test
+     * 測試取得最佳發布時間建議.
      */
+    #[Test]
     public function shouldGetBestPublishingTimes(): void
     {
         // Arrange
         $period = StatisticsPeriod::create(
             new DateTimeImmutable('2024-01-01'),
             new DateTimeImmutable('2024-01-31'),
-            PeriodType::MONTHLY
+            PeriodType::MONTHLY,
         );
 
         $mockTimeData = [
@@ -271,40 +269,38 @@ final class PostStatisticsServiceTest extends TestCase
 
     /**
      * 測試處理例外狀況
-     *
-     * @test
      */
+    #[Test]
     public function shouldHandleRepositoryException(): void
     {
         // Arrange
         $period = StatisticsPeriod::create(
             new DateTimeImmutable('2024-01-01'),
             new DateTimeImmutable('2024-01-31'),
-            PeriodType::MONTHLY
+            PeriodType::MONTHLY,
         );
 
         $this->mockPostRepository
             ->expects($this->once())
             ->method('getPopularPostsByPeriod')
-            ->willThrowException(new \Exception('Database error'));
+            ->willThrowException(new Exception('Database error'));
 
         // Act & Assert
-        $this->expectException(\App\Domains\Statistics\Exceptions\StatisticsCalculationException::class);
+        $this->expectException(StatisticsCalculationException::class);
         $this->service->analyzePopularPosts($period);
     }
 
     /**
-     * 測試空資料處理
-     *
-     * @test
+     * 測試空資料處理.
      */
+    #[Test]
     public function shouldHandleEmptyData(): void
     {
         // Arrange
         $period = StatisticsPeriod::create(
             new DateTimeImmutable('2024-01-01'),
             new DateTimeImmutable('2024-01-31'),
-            PeriodType::MONTHLY
+            PeriodType::MONTHLY,
         );
 
         $this->mockPostRepository

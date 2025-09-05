@@ -78,11 +78,11 @@ class ActivitySeverityTest extends TestCase
 
         $this->assertIsArray($levels);
         $this->assertCount(5, $levels);
-        $this->assertContains(ActivitySeverity::LOW, $levels);
-        $this->assertContains(ActivitySeverity::NORMAL, $levels);
-        $this->assertContains(ActivitySeverity::MEDIUM, $levels);
-        $this->assertContains(ActivitySeverity::HIGH, $levels);
-        $this->assertContains(ActivitySeverity::CRITICAL, $levels);
+        $this->assertContainsEquals(ActivitySeverity::LOW, $levels);
+        $this->assertContainsEquals(ActivitySeverity::NORMAL, $levels);
+        $this->assertContainsEquals(ActivitySeverity::MEDIUM, $levels);
+        $this->assertContainsEquals(ActivitySeverity::HIGH, $levels);
+        $this->assertContainsEquals(ActivitySeverity::CRITICAL, $levels);
     }
 
     public function testFromValue(): void

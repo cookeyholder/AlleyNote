@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs\Statistics;
 
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\ValueObjects\StatisticsMetric;
+use App\Domains\Statistics\Enums\PeriodType;
+use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\ValueObjects\SourceStatistics;
+use App\Domains\Statistics\ValueObjects\StatisticsMetric;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use JsonSerializable;
 
 /**
- * 統計概覽資料傳輸物件
+ * 統計概覽資料傳輸物件.
  *
  * 用於傳輸統計概覽資料的 DTO 類別。
  * 包含統計週期、基本指標、來源統計等資訊。
@@ -38,20 +41,20 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         public StatisticsMetric $totalViews,
         public array $sourceStatistics,
         public array $additionalMetrics,
-        public DateTimeImmutable $generatedAt
+        public DateTimeImmutable $generatedAt,
     ) {
         $this->validateSourceStatistics($sourceStatistics);
     }
 
     /**
-     * 從統計快照建立 DTO
+     * 從統計快照建立 DTO.
      */
     public static function fromSnapshot(
         StatisticsPeriod $period,
         StatisticsMetric $totalPosts,
         StatisticsMetric $totalViews,
         array $sourceStatistics,
-        array $additionalMetrics = []
+        array $additionalMetrics = [],
     ): self {
         return new self(
             $period,
@@ -59,38 +62,38 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
             $totalViews,
             $sourceStatistics,
             $additionalMetrics,
-            new DateTimeImmutable()
+            new DateTimeImmutable(),
         );
     }
 
     /**
-     * 從陣列資料建立 DTO
+     * 從陣列資料建立 DTO.
      */
     public static function fromArray(array $data): self
     {
         $period = StatisticsPeriod::create(
             new DateTimeImmutable($data['period']['start_date']),
             new DateTimeImmutable($data['period']['end_date']),
-            \App\Domains\Statistics\Enums\PeriodType::from($data['period']['type'])
+            PeriodType::from($data['period']['type']),
         );
 
         $totalPosts = StatisticsMetric::count(
             $data['total_posts']['value'],
-            $data['total_posts']['description'] ?? '總文章數'
+            $data['total_posts']['description'] ?? '總文章數',
         );
 
         $totalViews = StatisticsMetric::count(
             $data['total_views']['value'],
-            $data['total_views']['description'] ?? '總瀏覽數'
+            $data['total_views']['description'] ?? '總瀏覽數',
         );
 
         $sourceStatistics = array_map(
             fn(array $sourceData) => SourceStatistics::create(
-                \App\Domains\Statistics\Enums\SourceType::from($sourceData['source_type']),
+                SourceType::from($sourceData['source_type']),
                 $sourceData['count'],
-                $sourceData['percentage']
+                $sourceData['percentage'],
             ),
-            $data['source_statistics'] ?? []
+            $data['source_statistics'] ?? [],
         );
 
         return new self(
@@ -99,12 +102,12 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
             $totalViews,
             $sourceStatistics,
             $data['additional_metrics'] ?? [],
-            new DateTimeImmutable($data['generated_at'] ?? 'now')
+            new DateTimeImmutable($data['generated_at'] ?? 'now'),
         );
     }
 
     /**
-     * 取得格式化的統計概覽
+     * 取得格式化的統計概覽.
      */
     public function getFormattedOverview(): array
     {
@@ -114,42 +117,42 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
                 'start_date' => $this->period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
                 'duration_days' => $this->period->getDaysCount(),
-                'type' => $this->period->type->value
+                'type' => $this->period->type->value,
             ],
             'key_metrics' => [
                 'total_posts' => [
                     'value' => $this->totalPosts->value,
                     'formatted' => $this->totalPosts->getFormattedValueWithUnit(),
-                    'description' => $this->totalPosts->description
+                    'description' => $this->totalPosts->description,
                 ],
                 'total_views' => [
                     'value' => $this->totalViews->value,
                     'formatted' => $this->totalViews->getFormattedValueWithUnit(),
-                    'description' => $this->totalViews->description
+                    'description' => $this->totalViews->description,
                 ],
-                'avg_views_per_post' => $this->calculateAverageViewsPerPost()
+                'avg_views_per_post' => $this->calculateAverageViewsPerPost(),
             ],
             'source_distribution' => array_map(
                 fn(SourceStatistics $source) => [
                     'source_type' => $source->sourceType->value,
                     'count' => [
                         'value' => $source->count->value,
-                        'formatted' => $source->count->getFormattedValueWithUnit()
+                        'formatted' => $source->count->getFormattedValueWithUnit(),
                     ],
                     'percentage' => [
                         'value' => $source->percentage->value,
-                        'formatted' => $source->percentage->getFormattedValueWithUnit()
-                    ]
+                        'formatted' => $source->percentage->getFormattedValueWithUnit(),
+                    ],
                 ],
-                $this->sourceStatistics
+                $this->sourceStatistics,
             ),
             'additional_metrics' => $this->additionalMetrics,
-            'generated_at' => $this->generatedAt->format('Y-m-d H:i:s')
+            'generated_at' => $this->generatedAt->format('Y-m-d H:i:s'),
         ];
     }
 
     /**
-     * 取得摘要資訊
+     * 取得摘要資訊.
      */
     public function getSummary(): array
     {
@@ -159,12 +162,12 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
             'total_views' => $this->totalViews->value,
             'avg_views_per_post' => $this->calculateAverageViewsPerPost(),
             'source_types_count' => count($this->sourceStatistics),
-            'top_source' => $this->getTopSource()
+            'top_source' => $this->getTopSource(),
         ];
     }
 
     /**
-     * 取得主要來源
+     * 取得主要來源.
      */
     public function getTopSource(): ?array
     {
@@ -174,19 +177,18 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
         $topSource = array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source) =>
-                $carry === null || $source->count->value > $carry->count->value ? $source : $carry
+            fn(?SourceStatistics $carry, SourceStatistics $source) => $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
         );
 
         return $topSource ? [
             'source_type' => $topSource->sourceType->value,
             'count' => $topSource->count->value,
-            'percentage' => $topSource->percentage->value
+            'percentage' => $topSource->percentage->value,
         ] : null;
     }
 
     /**
-     * 計算平均每篇文章瀏覽數
+     * 計算平均每篇文章瀏覽數.
      */
     public function calculateAverageViewsPerPost(): float
     {
@@ -198,7 +200,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
     }
 
     /**
-     * 檢查是否有成長
+     * 檢查是否有成長.
      */
     public function hasGrowth(): bool
     {
@@ -212,7 +214,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
     }
 
     /**
-     * 轉換為陣列
+     * 轉換為陣列.
      */
     public function toArray(): array
     {
@@ -222,19 +224,19 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
                 'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
                 'type' => $this->period->type->value,
                 'display_name' => $this->period->getDisplayName(),
-                'duration_days' => $this->period->getDaysCount()
+                'duration_days' => $this->period->getDaysCount(),
             ],
             'total_posts' => [
                 'value' => $this->totalPosts->value,
                 'unit' => $this->totalPosts->unit,
                 'description' => $this->totalPosts->description,
-                'formatted' => $this->totalPosts->getFormattedValueWithUnit()
+                'formatted' => $this->totalPosts->getFormattedValueWithUnit(),
             ],
             'total_views' => [
                 'value' => $this->totalViews->value,
                 'unit' => $this->totalViews->unit,
                 'description' => $this->totalViews->description,
-                'formatted' => $this->totalViews->getFormattedValueWithUnit()
+                'formatted' => $this->totalViews->getFormattedValueWithUnit(),
             ],
             'source_statistics' => array_map(
                 fn(SourceStatistics $source) => [
@@ -242,28 +244,28 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
                     'count' => [
                         'value' => $source->count->value,
                         'unit' => $source->count->unit,
-                        'formatted' => $source->count->getFormattedValueWithUnit()
+                        'formatted' => $source->count->getFormattedValueWithUnit(),
                     ],
                     'percentage' => [
                         'value' => $source->percentage->value,
                         'unit' => $source->percentage->unit,
-                        'formatted' => $source->percentage->getFormattedValueWithUnit()
-                    ]
+                        'formatted' => $source->percentage->getFormattedValueWithUnit(),
+                    ],
                 ],
-                $this->sourceStatistics
+                $this->sourceStatistics,
             ),
             'additional_metrics' => $this->additionalMetrics,
             'calculated_metrics' => [
                 'avg_views_per_post' => $this->calculateAverageViewsPerPost(),
                 'has_growth' => $this->hasGrowth(),
-                'top_source' => $this->getTopSource()
+                'top_source' => $this->getTopSource(),
             ],
-            'generated_at' => $this->generatedAt->format('Y-m-d H:i:s')
+            'generated_at' => $this->generatedAt->format('Y-m-d H:i:s'),
         ];
     }
 
     /**
-     * JSON 序列化
+     * JSON 序列化.
      */
     public function jsonSerialize(): array
     {
@@ -271,7 +273,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
     }
 
     /**
-     * 轉換為字串
+     * 轉換為字串.
      */
     public function __toString(): string
     {
@@ -279,19 +281,19 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
             'StatisticsOverview[%s: %d posts, %d views]',
             $this->period->getDisplayName(),
             $this->totalPosts->value,
-            $this->totalViews->value
+            $this->totalViews->value,
         );
     }
 
     /**
-     * 驗證來源統計資料
+     * 驗證來源統計資料.
      */
     private function validateSourceStatistics(array $sourceStatistics): void
     {
         foreach ($sourceStatistics as $index => $source) {
             if (!$source instanceof SourceStatistics) {
-                throw new \InvalidArgumentException(
-                    "來源統計索引 {$index} 必須是 SourceStatistics 實例"
+                throw new InvalidArgumentException(
+                    "來源統計索引 {$index} 必須是 SourceStatistics 實例",
                 );
             }
         }

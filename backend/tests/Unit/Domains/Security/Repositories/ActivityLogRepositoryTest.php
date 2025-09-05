@@ -265,7 +265,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(3))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
-                $this->assertContains($param, [':user_id', ':limit', ':offset']);
+                $this->assertArrayHasKey($param, array_flip([':user_id', ':limit', ':offset']));
 
                 return true;
             });
@@ -390,7 +390,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(4))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
-                $this->assertContains($param, [':start_time', ':end_time', ':limit', ':offset']);
+                $this->assertArrayHasKey($param, array_flip([':start_time', ':end_time', ':limit', ':offset']));
 
                 return true;
             });
@@ -441,7 +441,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(2))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
-                $this->assertContains($param, [':limit', ':offset']);
+                $this->assertTrue(in_array($param, [':limit', ':offset'], true));
 
                 return true;
             });
@@ -492,7 +492,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(2))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
-                $this->assertContains($param, [':limit', ':offset']);
+                $this->assertTrue(in_array($param, [':limit', ':offset'], true));
 
                 return true;
             });
@@ -684,7 +684,7 @@ class ActivityLogRepositoryTest extends TestCase
                 if ($param === ':search_term') {
                     $this->assertEquals('%' . $searchTerm . '%', $value);
                 } else {
-                    $this->assertContains($param, [':limit', ':offset']);
+                    $this->assertTrue(in_array($param, [':limit', ':offset'], true));
                 }
 
                 return true;

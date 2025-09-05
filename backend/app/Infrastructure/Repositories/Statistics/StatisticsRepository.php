@@ -6,17 +6,18 @@ namespace App\Infrastructure\Repositories\Statistics;
 
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\ValueObjects\StatisticsMetric;
 use App\Domains\Statistics\Enums\PeriodType;
+use App\Domains\Statistics\ValueObjects\StatisticsMetric;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Domain\ValueObjects\Uuid;
-use DateTimeInterface;
 use DateTimeImmutable;
+use DateTimeInterface;
 use PDO;
+use PDOException;
 use RuntimeException;
 
 /**
- * 統計快照資料存取實作類別
+ * 統計快照資料存取實作類別.
  *
  * 實作統計快照的資料存取操作，提供高效能的查詢和儲存功能。
  * 使用原生 SQL 進行最佳化查詢，確保統計功能的效能表現。
@@ -24,11 +25,11 @@ use RuntimeException;
 final readonly class StatisticsRepository implements StatisticsRepositoryInterface
 {
     public function __construct(
-        private PDO $pdo
+        private PDO $pdo,
     ) {}
 
     /**
-     * 儲存統計快照
+     * 儲存統計快照.
      */
     public function saveSnapshot(StatisticsSnapshot $snapshot): void
     {
@@ -74,20 +75,19 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
                 'calculation_duration' => null, // 可在應用層設定
                 'data_accuracy' => 100.0, // 預設完整準確度
                 'created_at' => $snapshot->getCreatedAt()->format('Y-m-d H:i:s'),
-                'updated_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s')
+                'updated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ]);
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "儲存統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 根據唯一識別符查找統計快照
+     * 根據唯一識別符查找統計快照.
      */
     public function findById(Uuid $id): ?StatisticsSnapshot
     {
@@ -104,18 +104,17 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $row ? $this->buildSnapshotFromRow($row) : null;
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "查詢統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 根據統計週期查找統計快照
+     * 根據統計週期查找統計快照.
      */
     public function findByPeriod(StatisticsPeriod $period): ?StatisticsSnapshot
     {
@@ -132,29 +131,28 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt->execute([
                 'period_type' => $period->type->value,
                 'start_date' => $period->startDate->format('Y-m-d H:i:s'),
-                'end_date' => $period->endDate->format('Y-m-d H:i:s')
+                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $row ? $this->buildSnapshotFromRow($row) : null;
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "根據週期查詢統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 查找指定時間範圍內的所有統計快照
+     * 查找指定時間範圍內的所有統計快照.
      */
     public function findByDateRange(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
-        int $limit = 100
+        int $limit = 100,
     ): array {
         try {
             $sql = '
@@ -174,18 +172,17 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return array_map([$this, 'buildSnapshotFromRow'], $rows);
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "根據日期範圍查詢統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 查找最新的統計快照
+     * 查找最新的統計快照.
      */
     public function findLatest(int $limit = 10): array
     {
@@ -203,18 +200,17 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return array_map([$this, 'buildSnapshotFromRow'], $rows);
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "查詢最新統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 查找過期的統計快照
+     * 查找過期的統計快照.
      */
     public function findExpiredSnapshots(DateTimeInterface $cutoffDate): array
     {
@@ -231,18 +227,17 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return array_map([$this, 'buildSnapshotFromRow'], $rows);
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "查詢過期統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 取得最舊的統計快照
+     * 取得最舊的統計快照.
      */
     public function getOldestSnapshot(): ?StatisticsSnapshot
     {
@@ -259,18 +254,17 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $row ? $this->buildSnapshotFromRow($row) : null;
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得最舊統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 取得最新的統計快照
+     * 取得最新的統計快照.
      */
     public function getLatestSnapshot(): ?StatisticsSnapshot
     {
@@ -287,18 +281,17 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $row ? $this->buildSnapshotFromRow($row) : null;
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得最新統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 計算統計快照總數
+     * 計算統計快照總數.
      */
     public function getTotalSnapshotCount(): int
     {
@@ -308,18 +301,17 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt->execute();
 
             return (int) $stmt->fetchColumn();
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "計算統計快照總數失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 刪除統計快照
+     * 刪除統計快照.
      */
     public function deleteSnapshot(Uuid $id): void
     {
@@ -331,18 +323,17 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             if ($stmt->rowCount() === 0) {
                 throw new RuntimeException("統計快照不存在或已被刪除: {$id->toString()}");
             }
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "刪除統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 批量刪除過期的統計快照
+     * 批量刪除過期的統計快照.
      */
     public function deleteExpiredSnapshots(DateTimeInterface $cutoffDate): int
     {
@@ -352,18 +343,17 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt->execute(['cutoff_date' => $cutoffDate->format('Y-m-d H:i:s')]);
 
             return $stmt->rowCount();
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "批量刪除過期統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 檢查指定週期的統計快照是否存在
+     * 檢查指定週期的統計快照是否存在.
      */
     public function existsByPeriod(StatisticsPeriod $period): bool
     {
@@ -380,22 +370,21 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt->execute([
                 'period_type' => $period->type->value,
                 'start_date' => $period->startDate->format('Y-m-d H:i:s'),
-                'end_date' => $period->endDate->format('Y-m-d H:i:s')
+                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return $stmt->fetchColumn() !== false;
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "檢查統計快照是否存在失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 更新統計快照
+     * 更新統計快照.
      */
     public function updateSnapshot(StatisticsSnapshot $snapshot): void
     {
@@ -426,24 +415,23 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
                 'total_users' => $totalUsers,
                 'primary_source' => $this->extractPrimarySource($snapshot),
                 'data_accuracy' => 100.0,
-                'updated_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s')
+                'updated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ]);
 
             if ($stmt->rowCount() === 0) {
                 throw new RuntimeException("統計快照不存在或更新失敗: {$snapshot->getId()->toString()}");
             }
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "更新統計快照失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 取得統計快照的建立時間範圍
+     * 取得統計快照的建立時間範圍.
      */
     public function getSnapshotDateRange(): array
     {
@@ -462,24 +450,23 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
 
             return [
                 'min' => $row['min_date'] ? new DateTimeImmutable($row['min_date']) : null,
-                'max' => $row['max_date'] ? new DateTimeImmutable($row['max_date']) : null
+                'max' => $row['max_date'] ? new DateTimeImmutable($row['max_date']) : null,
             ];
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得統計快照時間範圍失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 計算指定日期範圍內的統計快照總數 (StatisticsQueryService 需要)
+     * 計算指定日期範圍內的統計快照總數 (StatisticsQueryService 需要).
      */
     public function countByDateRange(
         DateTimeInterface $startDate,
-        DateTimeInterface $endDate
+        DateTimeInterface $endDate,
     ): int {
         try {
             $sql = '
@@ -491,29 +478,28 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 'start_date' => $startDate->format('Y-m-d H:i:s'),
-                'end_date' => $endDate->format('Y-m-d H:i:s')
+                'end_date' => $endDate->format('Y-m-d H:i:s'),
             ]);
 
             return (int) $stmt->fetchColumn();
-
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new RuntimeException(
                 "計算日期範圍內統計快照總數失敗: {$e->getMessage()}",
                 (int) $e->getCode(),
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 從資料庫結果建立統計快照實體
+     * 從資料庫結果建立統計快照實體.
      */
     private function buildSnapshotFromRow(array $row): StatisticsSnapshot
     {
         $period = StatisticsPeriod::create(
             new DateTimeImmutable($row['start_date']),
             new DateTimeImmutable($row['end_date']),
-            PeriodType::from($row['period_type'])
+            PeriodType::from($row['period_type']),
         );
 
         $snapshotData = json_decode($row['snapshot_data'], true) ?? [];
@@ -533,12 +519,12 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             [], // 來源統計，暫時為空陣列
             $additionalMetrics,
             new DateTimeImmutable($row['created_at']),
-            $row['updated_at'] ? new DateTimeImmutable($row['updated_at']) : null
+            $row['updated_at'] ? new DateTimeImmutable($row['updated_at']) : null,
         );
     }
 
     /**
-     * 序列化快照資料
+     * 序列化快照資料.
      */
     private function serializeSnapshotData(StatisticsSnapshot $snapshot): array
     {
@@ -548,13 +534,13 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
         $data['total_posts'] = [
             'value' => $snapshot->getTotalPosts()->value,
             'unit' => $snapshot->getTotalPosts()->unit,
-            'description' => $snapshot->getTotalPosts()->description
+            'description' => $snapshot->getTotalPosts()->description,
         ];
 
         $data['total_views'] = [
             'value' => $snapshot->getTotalViews()->value,
             'unit' => $snapshot->getTotalViews()->unit,
-            'description' => $snapshot->getTotalViews()->description
+            'description' => $snapshot->getTotalViews()->description,
         ];
 
         // 儲存額外指標
@@ -562,7 +548,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $data[$key] = [
                 'value' => $metric->value,
                 'unit' => $metric->unit,
-                'description' => $metric->description
+                'description' => $metric->description,
             ];
         }
 
@@ -573,7 +559,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
                 'source_type' => $sourceStat->sourceType->value,
                 'post_count' => $sourceStat->count->value,
                 'view_count' => $sourceStat->getAdditionalMetric('views')?->value ?? 0,
-                'percentage' => $sourceStat->percentage->value
+                'percentage' => $sourceStat->percentage->value,
             ];
         }
         $data['source_stats'] = $sourceStats;
@@ -582,7 +568,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
     }
 
     /**
-     * 反序列化指標資料
+     * 反序列化指標資料.
      */
     private function deserializeMetrics(array $data): array
     {
@@ -593,7 +579,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
                 $metrics[$key] = StatisticsMetric::create(
                     $metricData['value'],
                     $metricData['unit'] ?? '',
-                    $metricData['description'] ?? $key
+                    $metricData['description'] ?? $key,
                 );
             }
         }
@@ -613,13 +599,17 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
                 return (int) $snapshot->getTotalViews()->value;
             case 'total_users':
                 $metric = $snapshot->getAdditionalMetric('total_users');
+
                 return $metric ? (int) $metric->value : 0;
             default:
                 $metric = $snapshot->getAdditionalMetric($key);
+
                 return $metric ? (int) $metric->value : 0;
         }
-    }    /**
-     * 從快照中提取主要來源
+    }
+
+    /**
+     * 從快照中提取主要來源.
      */
     private function extractPrimarySource(StatisticsSnapshot $snapshot): ?string
     {

@@ -4,50 +4,56 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Repositories\Statistics;
 
-use App\Infrastructure\Repositories\Statistics\PostStatisticsRepository;
-use App\Infrastructure\Repositories\Statistics\UserStatisticsRepository;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Enums\SourceType;
-use PDO;
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\MockObject\MockObject;
+use App\Domains\Statistics\Services\StatisticsCacheService;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use App\Infrastructure\Repositories\Statistics\PostStatisticsRepository;
+use App\Infrastructure\Repositories\Statistics\UserStatisticsRepository;
 use DateTimeImmutable;
+use PDO;
+use PDOStatement;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 /**
- * 統計 Repository 單元測試
+ * 統計 Repository 單元測試.
  *
  * 測試統計資料存取層的核心功能，包含：
  * - 文章統計查詢
  * - 使用者統計查詢
  * - 來源統計查詢
  * - 時間週期查詢
- *
- * @covers \App\Domains\Statistics\Services\StatisticsCacheService
  */
+#[CoversClass(StatisticsCacheService::class)]
 final class StatisticsCacheServiceTest extends TestCase
 {
     private PostStatisticsRepository $postRepository;
+
     private UserStatisticsRepository $userRepository;
+
     private MockObject|PDO $mockPdo;
-    private MockObject|\PDOStatement $mockStatement;
+
+    private MockObject|PDOStatement $mockStatement;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->mockPdo = $this->createMock(PDO::class);
-        $this->mockStatement = $this->createMock(\PDOStatement::class);
+        $this->mockStatement = $this->createMock(PDOStatement::class);
 
         $this->postRepository = new PostStatisticsRepository($this->mockPdo);
         $this->userRepository = new UserStatisticsRepository($this->mockPdo);
     }
 
     /**
-     * 測試計算週期內文章總數
-     *
-     * @test
+     * 測試計算週期內文章總數.
      */
+    #[Test]
     public function should_count_posts_by_period_correctly(): void
     {
         // Arrange
@@ -77,10 +83,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試計算週期內總觀看次數
-     *
-     * @test
+     * 測試計算週期內總觀看次數.
      */
+    #[Test]
     public function should_count_views_by_period_correctly(): void
     {
         // Arrange
@@ -110,10 +115,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試計算週期內不重複觀看者數量
-     *
-     * @test
+     * 測試計算週期內不重複觀看者數量.
      */
+    #[Test]
     public function should_count_unique_viewers_by_period_correctly(): void
     {
         // Arrange
@@ -143,10 +147,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試取得週期內熱門文章
-     *
-     * @test
+     * 測試取得週期內熱門文章.
      */
+    #[Test]
     public function should_get_popular_posts_by_period_correctly(): void
     {
         // Arrange
@@ -193,10 +196,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試來源類型統計查詢
-     *
-     * @test
+     * 測試來源類型統計查詢.
      */
+    #[Test]
     public function should_get_posts_by_source_type_correctly(): void
     {
         // Arrange
@@ -205,7 +207,7 @@ final class StatisticsCacheServiceTest extends TestCase
         $expectedSources = [
             'web' => 120,
             'mobile_app' => 25,
-            'api' => 5
+            'api' => 5,
         ];
 
         $this->mockPdo
@@ -234,17 +236,16 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試每小時分布統計
-     *
-     * @test
+     * 測試每小時分布統計.
      */
+    #[Test]
     public function should_get_hourly_distribution_correctly(): void
     {
         // Arrange
         $period = $this->createDailyPeriod();
         $expectedDistribution = array_combine(
             range(0, 23),
-            [5, 3, 2, 1, 1, 2, 4, 8, 12, 15, 18, 20, 22, 25, 23, 20, 18, 16, 14, 12, 10, 8, 6, 4]
+            [5, 3, 2, 1, 1, 2, 4, 8, 12, 15, 18, 20, 22, 25, 23, 20, 18, 16, 14, 12, 10, 8, 6, 4],
         );
 
         $this->mockPdo
@@ -273,10 +274,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試週期內活躍使用者數量
-     *
-     * @test
+     * 測試週期內活躍使用者數量.
      */
+    #[Test]
     public function should_count_active_users_by_period_correctly(): void
     {
         // Arrange
@@ -306,10 +306,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試週期內新註冊使用者數量
-     *
-     * @test
+     * 測試週期內新註冊使用者數量.
      */
+    #[Test]
     public function should_count_new_users_by_period_correctly(): void
     {
         // Arrange
@@ -339,10 +338,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試使用者參與度統計
-     *
-     * @test
+     * 測試使用者參與度統計.
      */
+    #[Test]
     public function should_calculate_user_engagement_correctly(): void
     {
         // Arrange
@@ -350,7 +348,7 @@ final class StatisticsCacheServiceTest extends TestCase
         $expectedEngagement = [
             'posts_per_user' => 2.5,
             'views_per_user' => 15.3,
-            'avg_session_duration' => 450.0
+            'avg_session_duration' => 450.0,
         ];
 
         $this->mockPdo
@@ -380,10 +378,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試資料庫查詢失敗處理
-     *
-     * @test
+     * 測試資料庫查詢失敗處理.
      */
+    #[Test]
     public function should_handle_database_query_failure(): void
     {
         // Arrange
@@ -400,17 +397,16 @@ final class StatisticsCacheServiceTest extends TestCase
             ->willReturn(false);
 
         // Act & Assert
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('查詢執行失敗');
 
         $this->postRepository->countPostsByPeriod($period);
     }
 
     /**
-     * 測試查詢參數綁定
-     *
-     * @test
+     * 測試查詢參數綁定.
      */
+    #[Test]
     public function should_bind_query_parameters_correctly(): void
     {
         // Arrange
@@ -419,16 +415,18 @@ final class StatisticsCacheServiceTest extends TestCase
         $this->mockPdo
             ->expects($this->once())
             ->method('prepare')
-            ->with($this->stringContains('WHERE created_at >= ? AND created_at <= ?'))
+            ->with($this->stringContains('WHERE created_at >= :start_date'))
             ->willReturn($this->mockStatement);
 
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) use ($period) {
-                return count($params) === 2 &&
-                       $params[0] === $period->startDate->format('Y-m-d H:i:s') &&
-                       $params[1] === $period->endDate->format('Y-m-d H:i:s');
+                return is_array($params)
+                       && isset($params['start_date'])
+                       && isset($params['end_date'])
+                       && $params['start_date'] === $period->startDate->format('Y-m-d H:i:s')
+                       && $params['end_date'] === $period->endDate->format('Y-m-d H:i:s');
             }))
             ->willReturn(true);
 
@@ -445,15 +443,14 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試快取整合
-     *
-     * @test
+     * 測試快取整合.
      */
+    #[Test]
     public function should_integrate_with_cache_correctly(): void
     {
         // Arrange
         $period = $this->createDailyPeriod();
-        $cacheKey = "posts_count_" . $period->startDate->format('Y-m-d');
+        $cacheKey = 'posts_count_' . $period->startDate->format('Y-m-d');
         $expectedCount = 150;
 
         // 模擬快取未命中，需要查詢資料庫
@@ -480,10 +477,9 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 測試不同週期類型的查詢
-     *
-     * @test
+     * 測試不同週期類型的查詢.
      */
+    #[Test]
     public function should_handle_different_period_types(): void
     {
         // Arrange
@@ -494,32 +490,31 @@ final class StatisticsCacheServiceTest extends TestCase
             $this->createYearlyPeriod(),
         ];
 
+        // 設定 Mock 期望所有週期的調用
+        $this->mockPdo
+            ->expects($this->exactly(4))
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        $this->mockStatement
+            ->expects($this->exactly(4))
+            ->method('execute')
+            ->willReturn(true);
+
+        $this->mockStatement
+            ->expects($this->exactly(4))
+            ->method('fetchColumn')
+            ->willReturn(100);
+
+        // Act & Assert
         foreach ($periods as $period) {
-            $this->mockPdo
-                ->expects($this->once())
-                ->method('prepare')
-                ->willReturn($this->mockStatement);
-
-            $this->mockStatement
-                ->expects($this->once())
-                ->method('execute')
-                ->willReturn(true);
-
-            $this->mockStatement
-                ->expects($this->once())
-                ->method('fetchColumn')
-                ->willReturn(100);
-
-            // Act
             $result = $this->postRepository->countPostsByPeriod($period);
-
-            // Assert
             $this->assertEquals(100, $result);
         }
     }
 
     /**
-     * 建立每日週期測試資料
+     * 建立每日週期測試資料.
      */
     private function createDailyPeriod(): StatisticsPeriod
     {
@@ -530,7 +525,7 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 建立每週週期測試資料
+     * 建立每週週期測試資料.
      */
     private function createWeeklyPeriod(): StatisticsPeriod
     {
@@ -541,7 +536,7 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 建立每月週期測試資料
+     * 建立每月週期測試資料.
      */
     private function createMonthlyPeriod(): StatisticsPeriod
     {
@@ -552,7 +547,7 @@ final class StatisticsCacheServiceTest extends TestCase
     }
 
     /**
-     * 建立每年週期測試資料
+     * 建立每年週期測試資料.
      */
     private function createYearlyPeriod(): StatisticsPeriod
     {

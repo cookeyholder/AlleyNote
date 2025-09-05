@@ -141,7 +141,10 @@ class ValidationResultTest extends TestCase
         // Act & Assert
         $firstError = $result->getFirstError();
         $this->assertNotNull($firstError);
-        $this->assertContains($firstError, ['名稱為必填項目', '電子郵件格式不正確']);
+        $this->assertThat($firstError, $this->logicalOr(
+            $this->equalTo('名稱為必填項目'),
+            $this->equalTo('電子郵件格式不正確'),
+        ));
 
         // Arrange - 測試沒有錯誤的情況
         $successResult = ValidationResult::success(['name' => 'John']);
@@ -195,7 +198,7 @@ class ValidationResultTest extends TestCase
         ];
         $this->assertCount(4, $allErrors);
         foreach ($expectedErrors as $expectedError) {
-            $this->assertContains($expectedError, $allErrors);
+            $this->assertArrayHasKey($expectedError, array_flip($allErrors));
         }
     }
 

@@ -536,17 +536,17 @@ final class TokenBlacklistEntryTest extends TestCase
     public function testGetValidTokenTypes(): void
     {
         $types = TokenBlacklistEntry::getValidTokenTypes();
-        $this->assertContains(TokenBlacklistEntry::TOKEN_TYPE_ACCESS, $types);
-        $this->assertContains(TokenBlacklistEntry::TOKEN_TYPE_REFRESH, $types);
+        $this->assertArrayHasKey(TokenBlacklistEntry::TOKEN_TYPE_ACCESS, array_flip($types));
+        $this->assertArrayHasKey(TokenBlacklistEntry::TOKEN_TYPE_REFRESH, array_flip($types));
         $this->assertCount(2, $types);
     }
 
     public function testGetValidReasons(): void
     {
         $reasons = TokenBlacklistEntry::getValidReasons();
-        $this->assertContains(TokenBlacklistEntry::REASON_LOGOUT, $reasons);
-        $this->assertContains(TokenBlacklistEntry::REASON_SECURITY_BREACH, $reasons);
-        $this->assertContains(TokenBlacklistEntry::REASON_PASSWORD_CHANGED, $reasons);
+        $this->assertArrayHasKey(TokenBlacklistEntry::REASON_LOGOUT, array_flip($reasons));
+        $this->assertArrayHasKey(TokenBlacklistEntry::REASON_SECURITY_BREACH, array_flip($reasons));
+        $this->assertArrayHasKey(TokenBlacklistEntry::REASON_PASSWORD_CHANGED, array_flip($reasons));
         $this->assertGreaterThanOrEqual(10, count($reasons));
     }
 

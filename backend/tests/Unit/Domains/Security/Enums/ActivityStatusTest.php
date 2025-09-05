@@ -71,10 +71,10 @@ class ActivityStatusTest extends TestCase
 
         $this->assertIsArray($statuses);
         $this->assertCount(5, $statuses);
-        $this->assertContains('success', $statuses);
-        $this->assertContains('failed', $statuses);
-        $this->assertContains('error', $statuses);
-        $this->assertContains('blocked', $statuses);
-        $this->assertContains('pending', $statuses);
+        $this->assertArrayHasKey('success', array_flip($statuses));
+        $this->assertArrayHasKey('failed', array_flip($statuses));
+        $this->assertArrayHasKey('error', array_flip($statuses));
+        $this->assertArrayHasKey('blocked', array_flip($statuses));
+        $this->assertArrayHasKey('pending', array_flip($statuses));
     }
 }

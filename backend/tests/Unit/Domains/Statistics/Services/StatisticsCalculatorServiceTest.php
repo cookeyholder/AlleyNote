@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Statistics\Services;
 
-use App\Domains\Statistics\Entities\StatisticsSnapshot;
-use App\Domains\Statistics\Services\StatisticsCalculationService;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\ValueObjects\StatisticsMetric;
-use App\Domains\Statistics\ValueObjects\SourceStatistics;
-use App\Domains\Statistics\Enums\PeriodType;
-use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
+use App\Domains\Statistics\Entities\StatisticsSnapshot;
+use App\Domains\Statistics\Enums\PeriodType;
+use App\Domains\Statistics\Enums\SourceType;
+use App\Domains\Statistics\Services\StatisticsCalculationService;
+use App\Domains\Statistics\ValueObjects\SourceStatistics;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Domain\ValueObjects\Uuid;
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 /**
- * 統計計算服務單元測試
+ * 統計計算服務單元測試.
  *
  * 測試統計計算服務的核心業務邏輯，包含：
  * - 平均值計算
@@ -27,13 +28,14 @@ use DateTimeImmutable;
  * - 趨勢分析
  * - 波動性計算
  * - 效能評分
- *
- * @covers \App\Domains\Statistics\Services\StatisticsCalculationService
  */
+#[CoversClass(StatisticsCalculationService::class)]
 final class StatisticsCalculatorServiceTest extends TestCase
 {
     private StatisticsCalculationService $service;
+
     private MockObject|PostStatisticsRepositoryInterface $mockPostRepository;
+
     private MockObject|UserStatisticsRepositoryInterface $mockUserRepository;
 
     protected function setUp(): void
@@ -44,21 +46,20 @@ final class StatisticsCalculatorServiceTest extends TestCase
         $this->mockUserRepository = $this->createMock(UserStatisticsRepositoryInterface::class);
         $this->service = new StatisticsCalculationService(
             $this->mockPostRepository,
-            $this->mockUserRepository
+            $this->mockUserRepository,
         );
     }
 
     /**
-     * 測試平均每篇文章觀看次數計算
-     *
-     * @test
+     * 測試平均每篇文章觀看次數計算.
      */
+    #[Test]
     public function should_calculate_average_views_per_post_correctly(): void
     {
         // Arrange
         $snapshot = $this->createStatisticsSnapshot(
             totalPosts: 100,
-            totalViews: 2500
+            totalViews: 2500,
         );
 
         // Act
@@ -69,16 +70,15 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試零文章數的平均值計算
-     *
-     * @test
+     * 測試零文章數的平均值計算.
      */
+    #[Test]
     public function should_return_zero_when_no_posts_exist(): void
     {
         // Arrange
         $snapshot = $this->createStatisticsSnapshot(
             totalPosts: 0,
-            totalViews: 0
+            totalViews: 0,
         );
 
         // Act
@@ -89,21 +89,20 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試成長率計算（正成長）
-     *
-     * @test
+     * 測試成長率計算（正成長）.
      */
+    #[Test]
     public function should_calculate_positive_growth_rate(): void
     {
         // Arrange
         $currentSnapshot = $this->createStatisticsSnapshot(
             totalPosts: 120,
-            totalViews: 3000
+            totalViews: 3000,
         );
 
         $previousSnapshot = $this->createStatisticsSnapshot(
             totalPosts: 100,
-            totalViews: 2500
+            totalViews: 2500,
         );
 
         // Act
@@ -119,21 +118,20 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試成長率計算（負成長）
-     *
-     * @test
+     * 測試成長率計算（負成長）.
      */
+    #[Test]
     public function should_calculate_negative_growth_rate(): void
     {
         // Arrange
         $currentSnapshot = $this->createStatisticsSnapshot(
             totalPosts: 80,
-            totalViews: 2000
+            totalViews: 2000,
         );
 
         $previousSnapshot = $this->createStatisticsSnapshot(
             totalPosts: 100,
-            totalViews: 2500
+            totalViews: 2500,
         );
 
         // Act
@@ -146,21 +144,20 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試零基準值的成長率計算
-     *
-     * @test
+     * 測試零基準值的成長率計算.
      */
+    #[Test]
     public function should_handle_zero_baseline_in_growth_rate(): void
     {
         // Arrange
         $currentSnapshot = $this->createStatisticsSnapshot(
             totalPosts: 100,
-            totalViews: 2500
+            totalViews: 2500,
         );
 
         $previousSnapshot = $this->createStatisticsSnapshot(
             totalPosts: 0,
-            totalViews: 0
+            totalViews: 0,
         );
 
         // Act
@@ -173,9 +170,8 @@ final class StatisticsCalculatorServiceTest extends TestCase
 
     /**
      * 測試取得前一週期
-     *
-     * @test
      */
+    #[Test]
     public function should_get_previous_period_correctly(): void
     {
         // Arrange
@@ -193,10 +189,9 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試趨勢方向計算（上升趨勢）
-     *
-     * @test
+     * 測試趨勢方向計算（上升趨勢）.
      */
+    #[Test]
     public function should_calculate_upward_trend_direction(): void
     {
         // Arrange
@@ -211,10 +206,9 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試趨勢方向計算（下降趨勢）
-     *
-     * @test
+     * 測試趨勢方向計算（下降趨勢）.
      */
+    #[Test]
     public function should_calculate_downward_trend_direction(): void
     {
         // Arrange
@@ -229,10 +223,9 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試趨勢方向計算（穩定趨勢）
-     *
-     * @test
+     * 測試趨勢方向計算（穩定趨勢）.
      */
+    #[Test]
     public function should_calculate_stable_trend_direction(): void
     {
         // Arrange
@@ -247,10 +240,9 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試波動性計算（低波動）
-     *
-     * @test
+     * 測試波動性計算（低波動）.
      */
+    #[Test]
     public function should_calculate_low_volatility(): void
     {
         // Arrange
@@ -269,10 +261,9 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試波動性計算（高波動）
-     *
-     * @test
+     * 測試波動性計算（高波動）.
      */
+    #[Test]
     public function should_calculate_high_volatility(): void
     {
         // Arrange
@@ -291,16 +282,15 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試效能評分計算（高分）
-     *
-     * @test
+     * 測試效能評分計算（高分）.
      */
+    #[Test]
     public function should_calculate_high_performance_score(): void
     {
         // Arrange
         $snapshot = $this->createStatisticsSnapshot(
             totalPosts: 200,
-            totalViews: 10000 // 高觀看率 50 views per post
+            totalViews: 10000, // 高觀看率 50 views per post
         );
 
         // Act
@@ -312,16 +302,15 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試效能評分計算（低分）
-     *
-     * @test
+     * 測試效能評分計算（低分）.
      */
+    #[Test]
     public function should_calculate_low_performance_score(): void
     {
         // Arrange
         $snapshot = $this->createStatisticsSnapshot(
             totalPosts: 100,
-            totalViews: 500 // 低觀看率 5 views per post
+            totalViews: 500, // 低觀看率 5 views per post
         );
 
         // Act
@@ -333,10 +322,9 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試預測計算
-     *
-     * @test
+     * 測試預測計算.
      */
+    #[Test]
     public function should_calculate_forecast(): void
     {
         // Arrange
@@ -363,10 +351,9 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試相關性計算（強正相關）
-     *
-     * @test
+     * 測試相關性計算（強正相關）.
      */
+    #[Test]
     public function should_calculate_strong_positive_correlation(): void
     {
         // Arrange
@@ -382,10 +369,9 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試相關性計算（無相關）
-     *
-     * @test
+     * 測試相關性計算（無相關）.
      */
+    #[Test]
     public function should_calculate_no_correlation(): void
     {
         // Arrange
@@ -400,10 +386,9 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 測試季節性指數計算
-     *
-     * @test
+     * 測試季節性指數計算.
      */
+    #[Test]
     public function should_calculate_seasonality_index(): void
     {
         // Arrange
@@ -432,7 +417,7 @@ final class StatisticsCalculatorServiceTest extends TestCase
     }
 
     /**
-     * 建立測試用的統計快照
+     * 建立測試用的統計快照.
      */
     private function createStatisticsSnapshot(int $totalPosts, int $totalViews): StatisticsSnapshot
     {
@@ -445,7 +430,7 @@ final class StatisticsCalculatorServiceTest extends TestCase
             SourceType::WEB,
             $totalPosts,      // count: int
             80.0,             // percentage: float
-            []                // additionalMetrics: array
+            [],                // additionalMetrics: array
         );
 
         return StatisticsSnapshot::create(
@@ -454,7 +439,7 @@ final class StatisticsCalculatorServiceTest extends TestCase
             totalPosts: $totalPosts,
             totalViews: $totalViews,
             sourceStats: [$webSource],
-            additionalMetrics: []
+            additionalMetrics: [],
         );
     }
 }

@@ -36,7 +36,7 @@ readonly class StatisticsCalculationCommand
     public function __construct(
         private StatisticsApplicationService $statisticsService,
         private StatisticsCacheServiceInterface $cacheService,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {}
 
     /**
@@ -81,9 +81,8 @@ readonly class StatisticsCalculationCommand
                     $periodType,
                     $periodName,
                     $lockFile,
-                    $skipCache
+                    $skipCache,
                 );
-
             } catch (Exception $e) {
                 $this->logger->error('統計計算任務失敗', [
                     'period' => $periodName,
@@ -195,7 +194,6 @@ readonly class StatisticsCalculationCommand
                         'end' => $period->endDate->format('Y-m-d H:i:s'),
                     ],
                 ];
-
             } catch (Exception $e) {
                 $this->releaseLock($lockFile);
 
@@ -205,7 +203,7 @@ readonly class StatisticsCalculationCommand
                     throw new RuntimeException(
                         "統計計算失敗，已達最大重試次數 ({$retryCount}): " . $e->getMessage(),
                         0,
-                        $e
+                        $e,
                     );
                 }
 
@@ -245,7 +243,6 @@ readonly class StatisticsCalculationCommand
                 'period_type' => $period->type->value,
                 'results' => $results,
             ]);
-
         } catch (Exception $e) {
             $this->logger->warning('快取預熱失敗', [
                 'period_type' => $period->type->value,
@@ -351,6 +348,7 @@ readonly class StatisticsCalculationCommand
         // 如果鎖定時間超過超時時間，視為過期
         if ($currentTime - $lockTime > self::LOCK_TIMEOUT) {
             $this->releaseLock($lockFile);
+
             return false;
         }
 

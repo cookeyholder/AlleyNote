@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs\Statistics;
 
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\ValueObjects\SourceStatistics;
+use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Enums\SourceType;
+use App\Domains\Statistics\ValueObjects\SourceStatistics;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use JsonSerializable;
 
 /**
- * 來源分佈統計資料傳輸物件
+ * 來源分佈統計資料傳輸物件.
  *
  * 用於傳輸來源分佈統計資料的 DTO 類別。
  * 包含各種來源的統計資訊、分佈分析、趨勢資訊等。
@@ -36,19 +38,19 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         public array $sourceStatistics,
         public int $totalCount,
         public array $distributionAnalysis,
-        public DateTimeImmutable $generatedAt
+        public DateTimeImmutable $generatedAt,
     ) {
         $this->validateSourceStatistics($sourceStatistics);
         $this->validateTotalCount($totalCount);
     }
 
     /**
-     * 從來源統計資料建立 DTO
+     * 從來源統計資料建立 DTO.
      */
     public static function fromSourceStatistics(
         StatisticsPeriod $period,
         array $sourceStatistics,
-        int $totalCount
+        int $totalCount,
     ): self {
         $analysis = self::calculateDistributionAnalysis($sourceStatistics, $totalCount);
 
@@ -57,28 +59,28 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             $sourceStatistics,
             $totalCount,
             $analysis,
-            new DateTimeImmutable()
+            new DateTimeImmutable(),
         );
     }
 
     /**
-     * 從陣列資料建立 DTO
+     * 從陣列資料建立 DTO.
      */
     public static function fromArray(array $data): self
     {
         $period = StatisticsPeriod::create(
             new DateTimeImmutable($data['period']['start_date']),
             new DateTimeImmutable($data['period']['end_date']),
-            \App\Domains\Statistics\Enums\PeriodType::from($data['period']['type'])
+            PeriodType::from($data['period']['type']),
         );
 
         $sourceStatistics = array_map(
             fn(array $sourceData) => SourceStatistics::create(
                 SourceType::from($sourceData['source_type']),
                 $sourceData['count'],
-                $sourceData['percentage']
+                $sourceData['percentage'],
             ),
-            $data['source_statistics'] ?? []
+            $data['source_statistics'] ?? [],
         );
 
         return new self(
@@ -86,12 +88,12 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             $sourceStatistics,
             $data['total_count'],
             $data['distribution_analysis'] ?? [],
-            new DateTimeImmutable($data['generated_at'] ?? 'now')
+            new DateTimeImmutable($data['generated_at'] ?? 'now'),
         );
     }
 
     /**
-     * 取得主要來源
+     * 取得主要來源.
      */
     public function getDominantSource(): ?SourceStatistics
     {
@@ -101,13 +103,12 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
         return array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source) =>
-                $carry === null || $source->count->value > $carry->count->value ? $source : $carry
+            fn(?SourceStatistics $carry, SourceStatistics $source) => $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
         );
     }
 
     /**
-     * 取得最少來源
+     * 取得最少來源.
      */
     public function getMinorSource(): ?SourceStatistics
     {
@@ -117,13 +118,12 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
         return array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source) =>
-                $carry === null || $source->count->value < $carry->count->value ? $source : $carry
+            fn(?SourceStatistics $carry, SourceStatistics $source) => $carry === null || $source->count->value < $carry->count->value ? $source : $carry,
         );
     }
 
     /**
-     * 取得多樣性指數 (Diversity Index)
+     * 取得多樣性指數 (Diversity Index).
      */
     public function getDiversityIndex(): float
     {
@@ -144,7 +144,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     }
 
     /**
-     * 取得集中度指數 (Concentration Index)
+     * 取得集中度指數 (Concentration Index).
      */
     public function getConcentrationIndex(): float
     {
@@ -163,7 +163,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     }
 
     /**
-     * 檢查分佈是否平均
+     * 檢查分佈是否平均.
      */
     public function isBalancedDistribution(float $threshold = 0.5): bool
     {
@@ -171,34 +171,33 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     }
 
     /**
-     * 檢查是否有主導來源
+     * 檢查是否有主導來源.
      */
     public function hasDominantSource(float $threshold = 0.5): bool
     {
         $dominant = $this->getDominantSource();
+
         return $dominant !== null && ($dominant->count->value / $this->totalCount) > $threshold;
     }
 
     /**
-     * 取得前 N 個來源
+     * 取得前 N 個來源.
      */
     public function getTopSources(int $limit = 3): array
     {
         $sorted = $this->sourceStatistics;
-        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b) =>
-            $b->count->value <=> $a->count->value);
+        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b) => $b->count->value <=> $a->count->value);
 
         return array_slice($sorted, 0, $limit);
     }
 
     /**
-     * 取得來源排名
+     * 取得來源排名.
      */
     public function getSourceRanking(): array
     {
         $sorted = $this->sourceStatistics;
-        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b) =>
-            $b->count->value <=> $a->count->value);
+        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b) => $b->count->value <=> $a->count->value);
 
         return array_map(
             fn(SourceStatistics $source, int $index) => [
@@ -206,10 +205,10 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 'source_type' => $source->sourceType->value,
                 'count' => $source->count->value,
                 'percentage' => $source->percentage->value,
-                'is_top_3' => $index < 3
+                'is_top_3' => $index < 3,
             ],
             $sorted,
-            array_keys($sorted)
+            array_keys($sorted),
         );
     }
 
@@ -227,22 +226,22 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             'dominant_source' => $dominant ? [
                 'type' => $dominant->sourceType->value,
                 'count' => $dominant->count->value,
-                'percentage' => $dominant->percentage->value
+                'percentage' => $dominant->percentage->value,
             ] : null,
             'minor_source' => $minor ? [
                 'type' => $minor->sourceType->value,
                 'count' => $minor->count->value,
-                'percentage' => $minor->percentage->value
+                'percentage' => $minor->percentage->value,
             ] : null,
             'diversity_index' => $this->getDiversityIndex(),
             'concentration_index' => $this->getConcentrationIndex(),
             'is_balanced' => $this->isBalancedDistribution(),
-            'has_dominant' => $this->hasDominantSource()
+            'has_dominant' => $this->hasDominantSource(),
         ];
     }
 
     /**
-     * 取得格式化的分佈資訊
+     * 取得格式化的分佈資訊.
      */
     public function getFormattedDistribution(): array
     {
@@ -251,36 +250,36 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 'display_name' => $this->period->getDisplayName(),
                 'start_date' => $this->period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
-                'type' => $this->period->type->value
+                'type' => $this->period->type->value,
             ],
             'overview' => [
                 'total_count' => $this->totalCount,
                 'source_types_count' => count($this->sourceStatistics),
                 'diversity_index' => $this->getDiversityIndex(),
-                'concentration_index' => $this->getConcentrationIndex()
+                'concentration_index' => $this->getConcentrationIndex(),
             ],
             'sources' => array_map(
                 fn(SourceStatistics $source) => [
                     'source_type' => $source->sourceType->value,
                     'count' => [
                         'value' => $source->count->value,
-                        'formatted' => $source->count->getFormattedValueWithUnit()
+                        'formatted' => $source->count->getFormattedValueWithUnit(),
                     ],
                     'percentage' => [
                         'value' => $source->percentage->value,
-                        'formatted' => $source->percentage->getFormattedValueWithUnit()
-                    ]
+                        'formatted' => $source->percentage->getFormattedValueWithUnit(),
+                    ],
                 ],
-                $this->sourceStatistics
+                $this->sourceStatistics,
             ),
             'ranking' => $this->getSourceRanking(),
             'analysis' => $this->distributionAnalysis,
-            'generated_at' => $this->generatedAt->format('Y-m-d H:i:s')
+            'generated_at' => $this->generatedAt->format('Y-m-d H:i:s'),
         ];
     }
 
     /**
-     * 比較與另一個分佈的差異
+     * 比較與另一個分佈的差異.
      */
     public function compareWith(SourceDistributionDTO $other): array
     {
@@ -300,7 +299,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         // 比較各來源的變化
         $allSourceTypes = array_unique(array_merge(
             array_keys($thisSourceMap),
-            array_keys($otherSourceMap)
+            array_keys($otherSourceMap),
         ));
 
         foreach ($allSourceTypes as $sourceType) {
@@ -311,36 +310,36 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 'current_count' => $thisCount,
                 'previous_count' => $otherCount,
                 'absolute_change' => $thisCount - $otherCount,
-                'percentage_change' => $otherCount > 0 ?
-                    round((($thisCount - $otherCount) / $otherCount) * 100, 2) :
-                    ($thisCount > 0 ? 100 : 0)
+                'percentage_change' => $otherCount > 0
+                    ? round((($thisCount - $otherCount) / $otherCount) * 100, 2)
+                    : ($thisCount > 0 ? 100 : 0),
             ];
         }
 
         return [
             'period_comparison' => [
                 'current' => $this->period->__toString(),
-                'previous' => $other->period->__toString()
+                'previous' => $other->period->__toString(),
             ],
             'total_change' => [
                 'current' => $this->totalCount,
                 'previous' => $other->totalCount,
                 'absolute_change' => $this->totalCount - $other->totalCount,
-                'percentage_change' => $other->totalCount > 0 ?
-                    round((($this->totalCount - $other->totalCount) / $other->totalCount) * 100, 2) :
-                    ($this->totalCount > 0 ? 100 : 0)
+                'percentage_change' => $other->totalCount > 0
+                    ? round((($this->totalCount - $other->totalCount) / $other->totalCount) * 100, 2)
+                    : ($this->totalCount > 0 ? 100 : 0),
             ],
             'diversity_change' => round($this->getDiversityIndex() - $other->getDiversityIndex(), 4),
             'source_changes' => $changes,
             'significant_changes' => array_filter(
                 $changes,
-                fn(array $change) => abs($change['percentage_change']) >= 10
-            )
+                fn(array $change) => abs($change['percentage_change']) >= 10,
+            ),
         ];
     }
 
     /**
-     * 轉換為陣列
+     * 轉換為陣列.
      */
     public function toArray(): array
     {
@@ -349,26 +348,26 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 'start_date' => $this->period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
                 'type' => $this->period->type->value,
-                'display_name' => $this->period->getDisplayName()
+                'display_name' => $this->period->getDisplayName(),
             ],
             'total_count' => $this->totalCount,
             'source_statistics' => array_map(
                 fn(SourceStatistics $source) => [
                     'source_type' => $source->sourceType->value,
                     'count' => $source->count->value,
-                    'percentage' => $source->percentage->value
+                    'percentage' => $source->percentage->value,
                 ],
-                $this->sourceStatistics
+                $this->sourceStatistics,
             ),
             'analysis' => $this->getDistributionSummary(),
             'ranking' => $this->getSourceRanking(),
             'distribution_analysis' => $this->distributionAnalysis,
-            'generated_at' => $this->generatedAt->format('Y-m-d H:i:s')
+            'generated_at' => $this->generatedAt->format('Y-m-d H:i:s'),
         ];
     }
 
     /**
-     * JSON 序列化
+     * JSON 序列化.
      */
     public function jsonSerialize(): array
     {
@@ -376,21 +375,22 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     }
 
     /**
-     * 轉換為字串
+     * 轉換為字串.
      */
     public function __toString(): string
     {
         $dominant = $this->getDominantSource();
+
         return sprintf(
             'SourceDistribution[%s: %d total, dominant: %s]',
             $this->period->getDisplayName(),
             $this->totalCount,
-            $dominant ? $dominant->sourceType->value : 'none'
+            $dominant ? $dominant->sourceType->value : 'none',
         );
     }
 
     /**
-     * 計算分佈分析
+     * 計算分佈分析.
      */
     private static function calculateDistributionAnalysis(array $sourceStatistics, int $totalCount): array
     {
@@ -415,31 +415,31 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             'concentration_index' => round($hhi, 4),
             'source_count' => count($sourceStatistics),
             'analysis_type' => 'basic_distribution',
-            'calculated_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s')
+            'calculated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
         ];
     }
 
     /**
-     * 驗證來源統計資料
+     * 驗證來源統計資料.
      */
     private function validateSourceStatistics(array $sourceStatistics): void
     {
         foreach ($sourceStatistics as $index => $source) {
             if (!$source instanceof SourceStatistics) {
-                throw new \InvalidArgumentException(
-                    "來源統計索引 {$index} 必須是 SourceStatistics 實例"
+                throw new InvalidArgumentException(
+                    "來源統計索引 {$index} 必須是 SourceStatistics 實例",
                 );
             }
         }
     }
 
     /**
-     * 驗證總數量
+     * 驗證總數量.
      */
     private function validateTotalCount(int $totalCount): void
     {
         if ($totalCount < 0) {
-            throw new \InvalidArgumentException('總數量不能為負數');
+            throw new InvalidArgumentException('總數量不能為負數');
         }
     }
 }

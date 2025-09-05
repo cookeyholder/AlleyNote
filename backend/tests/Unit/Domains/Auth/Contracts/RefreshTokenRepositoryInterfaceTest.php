@@ -406,7 +406,7 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         );
 
         foreach ($expectedMethods as $expectedMethod) {
-            $this->assertContains($expectedMethod, $actualMethods, "Method {$expectedMethod} is missing from interface");
+            $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
         }
     }
 

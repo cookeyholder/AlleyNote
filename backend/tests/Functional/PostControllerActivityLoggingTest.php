@@ -50,8 +50,8 @@ class PostControllerActivityLoggingTest extends TestCase
 
         // 模擬文章建立成功的記錄
         $this->pdo->prepare('
-            INSERT INTO user_activity_logs 
-            (uuid, user_id, action_type, action_category, status, target_id, target_type, ip_address, user_agent, metadata, occurred_at, created_at) 
+            INSERT INTO user_activity_logs
+            (uuid, user_id, action_type, action_category, status, target_id, target_type, ip_address, user_agent, metadata, occurred_at, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ')->execute([
             uniqid('test_', true),
@@ -97,8 +97,8 @@ class PostControllerActivityLoggingTest extends TestCase
 
         // 模擬文章查看的記錄
         $this->pdo->prepare('
-            INSERT INTO user_activity_logs 
-            (uuid, user_id, action_type, action_category, status, target_id, target_type, ip_address, user_agent, metadata, occurred_at, created_at) 
+            INSERT INTO user_activity_logs
+            (uuid, user_id, action_type, action_category, status, target_id, target_type, ip_address, user_agent, metadata, occurred_at, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ')->execute([
             uniqid('test_', true),
@@ -142,8 +142,8 @@ class PostControllerActivityLoggingTest extends TestCase
 
         // 模擬文章更新的記錄
         $this->pdo->prepare('
-            INSERT INTO user_activity_logs 
-            (uuid, user_id, action_type, action_category, status, target_id, target_type, ip_address, metadata, occurred_at, created_at) 
+            INSERT INTO user_activity_logs
+            (uuid, user_id, action_type, action_category, status, target_id, target_type, ip_address, metadata, occurred_at, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ')->execute([
             uniqid('test_', true),
@@ -174,8 +174,8 @@ class PostControllerActivityLoggingTest extends TestCase
 
         $metadata = json_decode($logs[0]['metadata'], true);
         $this->assertSame('update', $metadata['operation']);
-        $this->assertContains('title', $metadata['changes']);
-        $this->assertContains('content', $metadata['changes']);
+        $this->assertArrayHasKey('title', array_flip($metadata['changes']));
+        $this->assertArrayHasKey('content', array_flip($metadata['changes']));
     }
 
     #[Test]
@@ -198,8 +198,8 @@ class PostControllerActivityLoggingTest extends TestCase
 
         foreach ($activities as $i => $activity) {
             $this->pdo->prepare('
-                INSERT INTO user_activity_logs 
-                (uuid, user_id, action_type, action_category, status, target_id, target_type, ip_address, occurred_at, created_at) 
+                INSERT INTO user_activity_logs
+                (uuid, user_id, action_type, action_category, status, target_id, target_type, ip_address, occurred_at, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ')->execute([
                 uniqid('test_' . $i . '_', true),
@@ -227,8 +227,8 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->assertCount(2, $recentLogs);
 
         $activityTypes = array_column($recentLogs, 'action_type');
-        $this->assertContains(ActivityType::POST_UPDATED->value, $activityTypes);
-        $this->assertContains(ActivityType::POST_VIEWED->value, $activityTypes);
+        $this->assertArrayHasKey(ActivityType::POST_UPDATED->value, array_flip($activityTypes));
+        $this->assertArrayHasKey(ActivityType::POST_VIEWED->value, array_flip($activityTypes));
         $this->assertNotContains(ActivityType::POST_CREATED->value, $activityTypes);
     }
 }

@@ -42,9 +42,9 @@ class MemoryTagRepositoryTest extends TestCase
 
         $allTags = $this->repository->getTags($key);
         $this->assertCount(3, $allTags);
-        $this->assertContains('user:123', $allTags);
-        $this->assertContains('module:posts', $allTags);
-        $this->assertContains('temporal:daily', $allTags);
+        $this->assertArrayHasKey('user:123', array_flip($allTags));
+        $this->assertArrayHasKey('module:posts', array_flip($allTags));
+        $this->assertArrayHasKey('temporal:daily', array_flip($allTags));
     }
 
     public function testRemoveTags(): void
@@ -57,8 +57,8 @@ class MemoryTagRepositoryTest extends TestCase
 
         $remainingTags = $this->repository->getTags($key);
         $this->assertCount(2, $remainingTags);
-        $this->assertContains('user:123', $remainingTags);
-        $this->assertContains('temporal:daily', $remainingTags);
+        $this->assertArrayHasKey('user:123', array_flip($remainingTags));
+        $this->assertArrayHasKey('temporal:daily', array_flip($remainingTags));
         $this->assertNotContains('module:posts', $remainingTags);
     }
 
@@ -139,7 +139,7 @@ class MemoryTagRepositoryTest extends TestCase
 
         $this->assertCount(5, $allTags);
         foreach ($expectedTags as $expectedTag) {
-            $this->assertContains($expectedTag, $allTags);
+            $this->assertArrayHasKey($expectedTag, array_flip($allTags));
         }
     }
 
@@ -268,8 +268,8 @@ class MemoryTagRepositoryTest extends TestCase
 
         $remainingKeys = $this->repository->getKeysByTag($tag);
         $this->assertCount(2, $remainingKeys);
-        $this->assertContains('key1', $remainingKeys);
-        $this->assertContains('key3', $remainingKeys);
+        $this->assertArrayHasKey('key1', array_flip($remainingKeys));
+        $this->assertArrayHasKey('key3', array_flip($remainingKeys));
         $this->assertNotContains('key2', $remainingKeys);
     }
 
@@ -293,7 +293,7 @@ class MemoryTagRepositoryTest extends TestCase
 
         $retrievedTags = $this->repository->getTags($key);
         $this->assertCount(2, $retrievedTags);
-        $this->assertContains('user:123', $retrievedTags);
-        $this->assertContains('module:posts', $retrievedTags);
+        $this->assertArrayHasKey('user:123', array_flip($retrievedTags));
+        $this->assertArrayHasKey('module:posts', array_flip($retrievedTags));
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Statistics\Console;
 
 use App\Domains\Statistics\Commands\StatisticsCalculationCommand;
+use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
@@ -17,7 +18,7 @@ readonly class StatisticsCalculationConsole
 {
     public function __construct(
         private StatisticsCalculationCommand $calculationCommand,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {}
 
     /**
@@ -42,14 +43,14 @@ readonly class StatisticsCalculationConsole
                 'help' => $this->handleHelpCommand(),
                 default => $this->handleInvalidCommand($options['command']),
             };
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('統計計算控制台執行失敗', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
             $this->printError("執行失敗: {$e->getMessage()}");
+
             return 1;
         }
     }
@@ -63,15 +64,15 @@ readonly class StatisticsCalculationConsole
         $force = $options['force'] ?? false;
         $skipCache = $options['skip-cache'] ?? false;
 
-        $this->printInfo("開始統計計算任務...");
-        $this->printInfo("週期: " . implode(', ', $periods));
+        $this->printInfo('開始統計計算任務...');
+        $this->printInfo('週期: ' . implode(', ', $periods));
 
         if ($force) {
-            $this->printWarning("強制模式：將忽略現有鎖定");
+            $this->printWarning('強制模式：將忽略現有鎖定');
         }
 
         if ($skipCache) {
-            $this->printWarning("跳過快取：將重新計算所有統計");
+            $this->printWarning('跳過快取：將重新計算所有統計');
         }
 
         $result = $this->calculationCommand->execute($periods, $force, $skipCache);
@@ -86,7 +87,7 @@ readonly class StatisticsCalculationConsole
      */
     private function handleStatusCommand(): int
     {
-        $this->printInfo("查詢統計計算任務狀態...");
+        $this->printInfo('查詢統計計算任務狀態...');
 
         $status = $this->calculationCommand->getStatus();
 
@@ -100,14 +101,14 @@ readonly class StatisticsCalculationConsole
      */
     private function handleCleanupCommand(): int
     {
-        $this->printInfo("清理過期的鎖定檔案...");
+        $this->printInfo('清理過期的鎖定檔案...');
 
         $cleanedCount = $this->calculationCommand->cleanupExpiredLocks();
 
         if ($cleanedCount > 0) {
             $this->printSuccess("已清理 {$cleanedCount} 個過期鎖定檔案");
         } else {
-            $this->printInfo("沒有發現過期的鎖定檔案");
+            $this->printInfo('沒有發現過期的鎖定檔案');
         }
 
         return 0;
@@ -119,6 +120,7 @@ readonly class StatisticsCalculationConsole
     private function handleHelpCommand(): int
     {
         $this->printHelp();
+
         return 0;
     }
 
@@ -129,6 +131,7 @@ readonly class StatisticsCalculationConsole
     {
         $this->printError("無效的指令: {$command}");
         $this->printHelp();
+
         return 1;
     }
 
@@ -155,7 +158,6 @@ readonly class StatisticsCalculationConsole
                 case 'help':
                     $options['command'] = $arg;
                     break;
-
                 case '--periods':
                     if (!isset($arguments[$i + 1])) {
                         throw new InvalidArgumentException('--periods 需要參數值');
@@ -163,15 +165,12 @@ readonly class StatisticsCalculationConsole
                     $options['periods'] = explode(',', $arguments[$i + 1]);
                     $i++; // 跳過下一個參數
                     break;
-
                 case '--force':
                     $options['force'] = true;
                     break;
-
                 case '--skip-cache':
                     $options['skip-cache'] = true;
                     break;
-
                 default:
                     // 如果不是已知選項，且不是以 -- 開頭，可能是週期類型的簡寫
                     if (!str_starts_with($arg, '--')) {
@@ -199,7 +198,7 @@ readonly class StatisticsCalculationConsole
     private function printCalculationResults(array $result): void
     {
         $this->printInfo("\n=== 統計計算結果 ===");
-        $this->printInfo("總執行時間: " . number_format($result['total_duration'], 2) . " 秒");
+        $this->printInfo('總執行時間: ' . number_format($result['total_duration'], 2) . ' 秒');
         $this->printInfo("總週期數: {$result['total_periods']}");
         $this->printSuccess("成功: {$result['success_count']}");
 
@@ -213,9 +212,9 @@ readonly class StatisticsCalculationConsole
             $duration = number_format($periodResult['duration'] ?? 0, 2);
 
             if ($periodResult['success']) {
-                $extra = "";
+                $extra = '';
                 if (isset($periodResult['cached']) && $periodResult['cached']) {
-                    $extra = " (快取)";
+                    $extra = ' (快取)';
                 } elseif (isset($periodResult['snapshot_id'])) {
                     $extra = " (快照: {$periodResult['snapshot_id']})";
                 }
@@ -248,11 +247,11 @@ readonly class StatisticsCalculationConsole
 
             if ($periodStatus['locked'] && $periodStatus['lock_time']) {
                 $lockAge = $periodStatus['lock_age_seconds'];
-                $this->printInfo("  鎖定時間: " . date('Y-m-d H:i:s', $periodStatus['lock_time']));
+                $this->printInfo('  鎖定時間: ' . date('Y-m-d H:i:s', $periodStatus['lock_time']));
                 $this->printInfo("  鎖定時長: {$lockAge} 秒");
 
                 if ($lockAge > $status['lock_timeout']) {
-                    $this->printWarning("  ⚠️ 鎖定時間過長，可能需要清理");
+                    $this->printWarning('  ⚠️ 鎖定時間過長，可能需要清理');
                 }
             }
         }
@@ -263,29 +262,29 @@ readonly class StatisticsCalculationConsole
      */
     private function printHelp(): void
     {
-        $this->printInfo("統計計算控制台");
-        $this->printInfo("================");
-        $this->printInfo("");
-        $this->printInfo("使用方式:");
-        $this->printInfo("  php statistics-console.php <command> [options]");
-        $this->printInfo("");
-        $this->printInfo("指令:");
-        $this->printInfo("  calculate    執行統計計算任務");
-        $this->printInfo("  status       查詢任務狀態");
-        $this->printInfo("  cleanup      清理過期鎖定檔案");
-        $this->printInfo("  help         顯示此說明");
-        $this->printInfo("");
-        $this->printInfo("選項:");
-        $this->printInfo("  --periods <list>   指定要計算的週期 (daily,weekly,monthly,yearly)");
-        $this->printInfo("  --force            強制執行，忽略現有鎖定");
-        $this->printInfo("  --skip-cache       跳過快取檢查，重新計算");
-        $this->printInfo("");
-        $this->printInfo("範例:");
-        $this->printInfo("  php statistics-console.php calculate");
-        $this->printInfo("  php statistics-console.php calculate --periods daily,weekly");
-        $this->printInfo("  php statistics-console.php calculate --force --skip-cache");
-        $this->printInfo("  php statistics-console.php status");
-        $this->printInfo("  php statistics-console.php cleanup");
+        $this->printInfo('統計計算控制台');
+        $this->printInfo('================');
+        $this->printInfo('');
+        $this->printInfo('使用方式:');
+        $this->printInfo('  php statistics-console.php <command> [options]');
+        $this->printInfo('');
+        $this->printInfo('指令:');
+        $this->printInfo('  calculate    執行統計計算任務');
+        $this->printInfo('  status       查詢任務狀態');
+        $this->printInfo('  cleanup      清理過期鎖定檔案');
+        $this->printInfo('  help         顯示此說明');
+        $this->printInfo('');
+        $this->printInfo('選項:');
+        $this->printInfo('  --periods <list>   指定要計算的週期 (daily,weekly,monthly,yearly)');
+        $this->printInfo('  --force            強制執行，忽略現有鎖定');
+        $this->printInfo('  --skip-cache       跳過快取檢查，重新計算');
+        $this->printInfo('');
+        $this->printInfo('範例:');
+        $this->printInfo('  php statistics-console.php calculate');
+        $this->printInfo('  php statistics-console.php calculate --periods daily,weekly');
+        $this->printInfo('  php statistics-console.php calculate --force --skip-cache');
+        $this->printInfo('  php statistics-console.php status');
+        $this->printInfo('  php statistics-console.php cleanup');
     }
 
     /**

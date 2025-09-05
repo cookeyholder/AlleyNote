@@ -25,15 +25,18 @@ use Psr\Log\LoggerInterface;
 class StatisticsAdminController extends BaseController
 {
     private StatisticsApplicationService $applicationService;
+
     private StatisticsCalculationCommand $calculationCommand;
+
     private StatisticsCacheServiceInterface $cacheService;
+
     private LoggerInterface $logger;
 
     public function __construct(
         StatisticsApplicationService $applicationService,
         StatisticsCalculationCommand $calculationCommand,
         StatisticsCacheServiceInterface $cacheService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->applicationService = $applicationService;
         $this->calculationCommand = $calculationCommand;
@@ -62,7 +65,7 @@ class StatisticsAdminController extends BaseController
             $result = $this->calculationCommand->execute(
                 $params['periods'] ?? ['daily', 'weekly', 'monthly'],
                 $params['force'] ?? false,
-                $params['skip_cache'] ?? false
+                $params['skip_cache'] ?? false,
             );
 
             $this->logger->info('統計重新整理 API 成功回應', [
@@ -72,8 +75,8 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->successResponse($result, '統計資料重新整理完成'));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             $this->logger->warning('統計重新整理 API 參數錯誤', [
                 'error' => $e->getMessage(),
@@ -81,8 +84,8 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse($e->getMessage(), 400));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
 
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $this->logger->error('統計重新整理 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -90,6 +93,7 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('統計資料重新整理失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -127,8 +131,8 @@ class StatisticsAdminController extends BaseController
 
             $message = $result ? '快取清除成功' : '快取清除部分失敗';
             $response->getBody()->write($this->successResponse(['success' => $result], $message));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             $this->logger->warning('統計快取清除 API 參數錯誤', [
                 'error' => $e->getMessage(),
@@ -136,8 +140,8 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse($e->getMessage(), 400));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
 
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $this->logger->error('統計快取清除 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -145,6 +149,7 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('快取清除失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -170,8 +175,8 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->successResponse($healthData, '健康檢查完成'));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             $this->logger->error('統計健康檢查 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -179,6 +184,7 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('健康檢查失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -203,8 +209,8 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->successResponse($status, '任務狀態取得成功'));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             $this->logger->error('統計任務狀態 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -212,6 +218,7 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('任務狀態取得失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -243,8 +250,8 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->successResponse($result, '清理作業完成'));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             $this->logger->error('統計清理 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -252,6 +259,7 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('清理作業失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -390,7 +398,7 @@ class StatisticsAdminController extends BaseController
             $testPeriod = StatisticsPeriod::create(
                 new DateTimeImmutable('today'),
                 new DateTimeImmutable('tomorrow -1 second'),
-                PeriodType::DAILY
+                PeriodType::DAILY,
             );
 
             $this->applicationService->getStatisticsOverview($testPeriod);
@@ -398,9 +406,8 @@ class StatisticsAdminController extends BaseController
 
             $components['application'] = [
                 'status' => 'healthy',
-                'timestamp' => (new DateTimeImmutable())->format('c'),
+                'timestamp' => new DateTimeImmutable()->format('c'),
             ];
-
         } catch (Exception $e) {
             $components['application'] = [
                 'status' => 'error',
@@ -411,7 +418,7 @@ class StatisticsAdminController extends BaseController
 
         return [
             'overall_status' => $overallStatus,
-            'timestamp' => (new DateTimeImmutable())->format('c'),
+            'timestamp' => new DateTimeImmutable()->format('c'),
             'components' => $components,
             'summary' => [
                 'total_components' => count($components),

@@ -9,9 +9,9 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use DateTimeInterface;
+use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 
 /**
  * 統計快取服務實作。
@@ -54,7 +54,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function __construct(
         private CacheManagerInterface $cacheManager,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {}
 
     public function get(string $key, mixed $default = null): mixed
@@ -78,7 +78,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return $cached;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取取得失敗', [
                 'key' => $key,
                 'error' => $e->getMessage(),
@@ -114,7 +114,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取設定例外', [
                 'key' => $key,
                 'error' => $e->getMessage(),
@@ -138,7 +138,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取刪除失敗', [
                 'key' => $key,
                 'error' => $e->getMessage(),
@@ -152,8 +152,9 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
     {
         try {
             $normalizedKey = $this->normalizeKey($key);
+
             return $this->cacheManager->has($normalizedKey);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取檢查失敗', [
                 'key' => $key,
                 'error' => $e->getMessage(),
@@ -170,7 +171,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             $finalTtl = $ttl ?? $this->getTtlForKey($key);
 
             return $this->cacheManager->remember($normalizedKey, $callback, $finalTtl);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取記憶化失敗', [
                 'key' => $key,
                 'error' => $e->getMessage(),
@@ -198,7 +199,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('按標籤清除快取失敗', [
                 'tags' => $tags,
                 'error' => $e->getMessage(),
@@ -238,8 +239,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                     'key' => $key,
                     'duration' => $itemDuration,
                 ]);
-
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $itemDuration = isset($itemStartTime) ? microtime(true) - $itemStartTime : 0.0;
 
                 $results[$key] = [
@@ -362,7 +362,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('清除所有統計快取失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -383,7 +383,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                 'tag_config' => self::CACHE_TAGS,
                 'health_status' => $this->cacheManager->getHealthStatus(),
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('取得快取統計失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -408,7 +408,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取健康檢查失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -427,7 +427,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $results;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取清理失敗', [
                 'error' => $e->getMessage(),
             ]);

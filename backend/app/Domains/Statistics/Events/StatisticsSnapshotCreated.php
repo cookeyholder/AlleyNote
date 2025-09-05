@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Events;
 
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Domains\Statistics\ValueObjects\StatisticsMetric;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Domain\ValueObjects\Uuid;
 use DateTimeImmutable;
 
@@ -20,9 +20,8 @@ readonly class StatisticsSnapshotCreated
         public StatisticsPeriod $period,
         public StatisticsMetric $totalPosts,
         public StatisticsMetric $totalViews,
-        public DateTimeImmutable $createdAt
-    ) {
-    }
+        public DateTimeImmutable $createdAt,
+    ) {}
 
     /**
      * 取得事件名稱.

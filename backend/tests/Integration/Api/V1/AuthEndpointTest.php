@@ -41,6 +41,25 @@ class AuthEndpointTest extends TestCase
         $_ENV['DB_CONNECTION'] = 'sqlite';
         $_ENV['DB_DATABASE'] = ':memory:';
 
+        // 設定 JWT 測試環境變數
+        $_ENV['JWT_PRIVATE_KEY'] = '-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDGtJKKZEZagjhB
+xWiKbECh8RSEyM3BhDqkLn7LYQYqWNrHY4Ghe1q5LiMXl5CQ9EpG5jhVq4hE6LMa
+test_key_content_for_jwt_testing_purposes_only_not_for_production_use_case
+-----END PRIVATE KEY-----';
+
+        $_ENV['JWT_PUBLIC_KEY'] = '-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxrSSimRGWoI4QcVoimxA
+ofEUhMjNwYQ6pC5+y2EGKljax2OBoXtauS4jF5eQkPRKRuY4VauIROizGmfNlVGZ
+test_public_key_content_for_jwt_testing_purposes_only_not_for_production
+-----END PUBLIC KEY-----';
+
+        $_ENV['JWT_ALGORITHM'] = 'RS256';
+        $_ENV['JWT_ISSUER'] = 'alleynote-test';
+        $_ENV['JWT_AUDIENCE'] = 'alleynote-test-audience';
+        $_ENV['JWT_ACCESS_TOKEN_EXPIRE'] = '3600';
+        $_ENV['JWT_REFRESH_TOKEN_EXPIRE'] = '86400';
+
         // 保存原始的錯誤處理器和異常處理器
         $this->originalErrorHandler = set_error_handler(null);
         $this->originalExceptionHandler = set_exception_handler(null);
@@ -165,7 +184,11 @@ class AuthEndpointTest extends TestCase
             $data = json_decode($responseBody, true);
 
             // 應該是 400 或 401（因為使用假的 token）
-            $this->assertContains($response->getStatusCode(), [400, 401, 500]);
+            $this->assertThat($response->getStatusCode(), $this->logicalOr(
+                $this->equalTo(400),
+                $this->equalTo(401),
+                $this->equalTo(500),
+            ));
             $this->assertIsArray($data);
             $this->assertArrayHasKey('success', $data);
             $this->assertFalse($data['success']);
@@ -198,7 +221,12 @@ class AuthEndpointTest extends TestCase
             $data = json_decode($responseBody, true);
 
             // 應該是 400 或 401（因為使用假的 token）
-            $this->assertContains($response->getStatusCode(), [200, 400, 401, 500]);
+            $this->assertThat($response->getStatusCode(), $this->logicalOr(
+                $this->equalTo(200),
+                $this->equalTo(400),
+                $this->equalTo(401),
+                $this->equalTo(500),
+            ));
             $this->assertIsArray($data);
         } catch (Exception $e) {
             $this->markTestSkipped('Logout endpoint test failed: ' . $e->getMessage());

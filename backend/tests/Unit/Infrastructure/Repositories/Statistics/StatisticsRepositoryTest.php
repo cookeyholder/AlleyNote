@@ -4,50 +4,56 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Repositories\Statistics;
 
+use App\Domains\Statistics\Enums\PeriodType;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Infrastructure\Repositories\Statistics\PostStatisticsRepository;
 use App\Infrastructure\Repositories\Statistics\UserStatisticsRepository;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\Enums\PeriodType;
-use PDO;
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 use DateTimeImmutable;
+use PDO;
+use PDOException;
+use PDOStatement;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 /**
- * 統計 Repository 單元測試
+ * 統計 Repository 單元測試.
  *
  * 測試統計資料存取層的核心功能，包含：
  * - 文章統計查詢
  * - 使用者統計查詢
  * - 資料庫互動
  * - 錯誤處理
- *
- * @covers \App\Infrastructure\Repositories\Statistics\PostStatisticsRepository
- * @covers \App\Infrastructure\Repositories\Statistics\UserStatisticsRepository
  */
+#[CoversClass(PostStatisticsRepository::class)]
+#[CoversClass(UserStatisticsRepository::class)]
 final class StatisticsRepositoryTest extends TestCase
 {
     private PostStatisticsRepository $postRepository;
+
     private UserStatisticsRepository $userRepository;
+
     private MockObject|PDO $mockPdo;
-    private MockObject|\PDOStatement $mockStatement;
+
+    private MockObject|PDOStatement $mockStatement;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->mockPdo = $this->createMock(PDO::class);
-        $this->mockStatement = $this->createMock(\PDOStatement::class);
+        $this->mockStatement = $this->createMock(PDOStatement::class);
 
         $this->postRepository = new PostStatisticsRepository($this->mockPdo);
         $this->userRepository = new UserStatisticsRepository($this->mockPdo);
     }
 
     /**
-     * 測試計算週期內文章總數
-     *
-     * @test
+     * 測試計算週期內文章總數.
      */
+    #[Test]
     public function should_count_posts_by_period_correctly(): void
     {
         // Arrange
@@ -77,10 +83,9 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試計算週期內總觀看次數
-     *
-     * @test
+     * 測試計算週期內總觀看次數.
      */
+    #[Test]
     public function should_count_views_by_period_correctly(): void
     {
         // Arrange
@@ -110,10 +115,9 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試計算週期內不重複觀看者數量
-     *
-     * @test
+     * 測試計算週期內不重複觀看者數量.
      */
+    #[Test]
     public function should_count_unique_viewers_by_period_correctly(): void
     {
         // Arrange
@@ -143,10 +147,9 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試取得週期內熱門文章
-     *
-     * @test
+     * 測試取得週期內熱門文章.
      */
+    #[Test]
     public function should_get_popular_posts_by_period_correctly(): void
     {
         // Arrange
@@ -193,10 +196,9 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試週期內活躍使用者數量
-     *
-     * @test
+     * 測試週期內活躍使用者數量.
      */
+    #[Test]
     public function should_count_active_users_by_period_correctly(): void
     {
         // Arrange
@@ -226,10 +228,9 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試週期內新註冊使用者數量
-     *
-     * @test
+     * 測試週期內新註冊使用者數量.
      */
+    #[Test]
     public function should_count_new_users_by_period_correctly(): void
     {
         // Arrange
@@ -259,10 +260,9 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試資料庫查詢失敗處理
-     *
-     * @test
+     * 測試資料庫查詢失敗處理.
      */
+    #[Test]
     public function should_handle_database_query_failure(): void
     {
         // Arrange
@@ -276,20 +276,19 @@ final class StatisticsRepositoryTest extends TestCase
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
-            ->willThrowException(new \PDOException('資料庫連線失敗'));
+            ->willThrowException(new PDOException('資料庫連線失敗'));
 
         // Act & Assert
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('計算週期內文章總數失敗');
 
         $this->postRepository->countPostsByPeriod($period);
     }
 
     /**
-     * 測試查詢參數綁定
-     *
-     * @test
+     * 測試查詢參數綁定.
      */
+    #[Test]
     public function should_bind_query_parameters_correctly(): void
     {
         // Arrange
@@ -305,9 +304,9 @@ final class StatisticsRepositoryTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) use ($period) {
-                return count($params) === 2 &&
-                       $params['start_date'] === $period->startDate->format('Y-m-d H:i:s') &&
-                       $params['end_date'] === $period->endDate->format('Y-m-d H:i:s');
+                return count($params) === 2
+                       && $params['start_date'] === $period->startDate->format('Y-m-d H:i:s')
+                       && $params['end_date'] === $period->endDate->format('Y-m-d H:i:s');
             }))
             ->willReturn(true);
 
@@ -324,10 +323,9 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試不同週期類型的查詢
-     *
-     * @test
+     * 測試不同週期類型的查詢.
      */
+    #[Test]
     public function should_handle_different_period_types(): void
     {
         // Arrange
@@ -365,10 +363,9 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試空結果處理
-     *
-     * @test
+     * 測試空結果處理.
      */
+    #[Test]
     public function should_handle_empty_results_gracefully(): void
     {
         // Arrange
@@ -397,10 +394,9 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 測試大數據量查詢效能
-     *
-     * @test
+     * 測試大數據量查詢效能.
      */
+    #[Test]
     public function should_handle_large_dataset_queries(): void
     {
         // Arrange
@@ -430,7 +426,7 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 建立每日週期測試資料
+     * 建立每日週期測試資料.
      */
     private function createDailyPeriod(): StatisticsPeriod
     {
@@ -441,7 +437,7 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 建立每週週期測試資料
+     * 建立每週週期測試資料.
      */
     private function createWeeklyPeriod(): StatisticsPeriod
     {
@@ -452,7 +448,7 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 建立每月週期測試資料
+     * 建立每月週期測試資料.
      */
     private function createMonthlyPeriod(): StatisticsPeriod
     {
@@ -463,7 +459,7 @@ final class StatisticsRepositoryTest extends TestCase
     }
 
     /**
-     * 建立每年週期測試資料
+     * 建立每年週期測試資料.
      */
     private function createYearlyPeriod(): StatisticsPeriod
     {

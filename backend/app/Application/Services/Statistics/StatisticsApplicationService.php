@@ -4,26 +4,24 @@ declare(strict_types=1);
 
 namespace App\Application\Services\Statistics;
 
-use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
-use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
+use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\SystemStatisticsRepositoryInterface;
-use App\Domains\Statistics\Services\StatisticsCalculationService;
-use App\Domains\Statistics\Services\PostStatisticsService;
+use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use App\Domains\Statistics\ValueObjects\StatisticsMetric;
-use App\Domains\Statistics\ValueObjects\SourceStatistics;
 use App\Domains\Statistics\Enums\SourceType;
-use App\Domains\Statistics\Enums\PeriodType;
-use App\Shared\Domain\ValueObjects\Uuid;
+use App\Domains\Statistics\Services\PostStatisticsService;
+use App\Domains\Statistics\Services\StatisticsCalculationService;
+use App\Domains\Statistics\ValueObjects\SourceStatistics;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
-use Psr\Log\LoggerInterface;
+use App\Shared\Domain\ValueObjects\Uuid;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
- * 統計應用服務
+ * 統計應用服務.
  *
  * 協調多個領域服務，處理統計相關的應用層業務邏輯。
  * 負責事務管理、快取策略、錯誤處理等應用層關注點。
@@ -37,6 +35,7 @@ use Throwable;
 final class StatisticsApplicationService
 {
     private const CACHE_TTL = 3600; // 1 小時
+
     private const CACHE_PREFIX = 'statistics';
 
     public function __construct(
@@ -47,12 +46,11 @@ final class StatisticsApplicationService
         private readonly StatisticsCalculationService $calculationService,
         private readonly PostStatisticsService $postStatisticsService,
         private readonly CacheManagerInterface $cacheManager,
-        private readonly LoggerInterface $logger
-    ) {
-    }
+        private readonly LoggerInterface $logger,
+    ) {}
 
     /**
-     * 建立統計快照
+     * 建立統計快照.
      *
      * 協調多個領域服務來生成特定週期的統計快照。
      * 包含事務處理、快取管理和錯誤處理。
@@ -68,15 +66,16 @@ final class StatisticsApplicationService
                 if ($existingSnapshot !== null) {
                     $this->logger->info('統計快照已存在', [
                         'period' => $period->getDisplayString(),
-                        'snapshot_id' => $existingSnapshot->getId()->toString()
+                        'snapshot_id' => $existingSnapshot->getId()->toString(),
                     ]);
+
                     return $existingSnapshot;
                 }
             }
 
             $this->logger->info('開始建立統計快照', [
                 'period' => $period->getDisplayString(),
-                'force_recalculate' => $forceRecalculate
+                'force_recalculate' => $forceRecalculate,
             ]);
 
             // 計算基礎統計指標
@@ -92,7 +91,7 @@ final class StatisticsApplicationService
                 $period,
                 $totalPostsCount,
                 $totalViewsCount,
-                $sourceStats
+                $sourceStats,
             );
 
             // 儲存快照
@@ -104,23 +103,23 @@ final class StatisticsApplicationService
             $this->logger->info('統計快照建立完成', [
                 'snapshot_id' => $snapshot->getId()->toString(),
                 'total_posts' => $totalPostsCount,
-                'total_views' => $totalViewsCount
+                'total_views' => $totalViewsCount,
             ]);
 
             return $snapshot;
-
         } catch (Throwable $e) {
             $this->logger->error('建立統計快照失敗', [
                 'period' => $period->getDisplayString(),
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             throw $e;
         }
     }
 
     /**
-     * 取得統計概覽
+     * 取得統計概覽.
      *
      * 提供統計資料的概覽資訊，包含快取機制。
      */
@@ -132,6 +131,7 @@ final class StatisticsApplicationService
         $cached = $this->cacheManager->get($cacheKey);
         if ($cached !== null) {
             $this->logger->debug('從快取取得統計概覽', ['period' => $period->getDisplayString()]);
+
             return $cached;
         }
 
@@ -154,37 +154,37 @@ final class StatisticsApplicationService
                 'period' => [
                     'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H:i:s'),
                     'end_date' => $snapshot->getPeriod()->endDate->format('Y-m-d H:i:s'),
-                    'type' => $snapshot->getPeriod()->type->value
+                    'type' => $snapshot->getPeriod()->type->value,
                 ],
                 'metrics' => [
                     'total_posts' => [
                         'value' => $snapshot->getTotalPosts()->getValue(),
                         'unit' => $snapshot->getTotalPosts()->getUnit(),
-                        'description' => $snapshot->getTotalPosts()->getDescription()
+                        'description' => $snapshot->getTotalPosts()->getDescription(),
                     ],
                     'total_views' => [
                         'value' => $snapshot->getTotalViews()->getValue(),
                         'unit' => $snapshot->getTotalViews()->getUnit(),
-                        'description' => $snapshot->getTotalViews()->getDescription()
-                    ]
+                        'description' => $snapshot->getTotalViews()->getDescription(),
+                    ],
                 ],
                 'source_statistics' => array_map(
                     fn(SourceStatistics $stats) => [
                         'source_type' => $stats->sourceType->value,
                         'count' => [
                             'value' => $stats->count->getValue(),
-                            'unit' => $stats->count->getUnit()
+                            'unit' => $stats->count->getUnit(),
                         ],
                         'percentage' => [
                             'value' => $stats->percentage->getValue(),
-                            'unit' => $stats->percentage->getUnit()
-                        ]
+                            'unit' => $stats->percentage->getUnit(),
+                        ],
                     ],
-                    $snapshot->getSourceStats()
+                    $snapshot->getSourceStats(),
                 ),
                 'popular_posts' => $popularPosts,
                 'active_users' => $activeUsers,
-                'generated_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s')
+                'generated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ];
 
             // 儲存到快取
@@ -192,22 +192,22 @@ final class StatisticsApplicationService
 
             $this->logger->info('統計概覽計算完成', [
                 'period' => $period->getDisplayString(),
-                'metrics_count' => count($overview['metrics'])
+                'metrics_count' => count($overview['metrics']),
             ]);
 
             return $overview;
-
         } catch (Throwable $e) {
             $this->logger->error('取得統計概覽失敗', [
                 'period' => $period->getDisplayString(),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
 
     /**
-     * 分析熱門內容
+     * 分析熱門內容.
      *
      * 分析指定週期內的熱門內容，提供詳細的分析資料。
      */
@@ -224,7 +224,7 @@ final class StatisticsApplicationService
         try {
             $this->logger->info('分析熱門內容', [
                 'period' => $period->getDisplayString(),
-                'limit' => $limit
+                'limit' => $limit,
             ]);
 
             // 使用領域服務分析熱門內容
@@ -234,18 +234,18 @@ final class StatisticsApplicationService
             $this->cacheManager->set($cacheKey, $analysis, self::CACHE_TTL);
 
             return $analysis;
-
         } catch (Throwable $e) {
             $this->logger->error('分析熱門內容失敗', [
                 'period' => $period->getDisplayString(),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
 
     /**
-     * 產生統計報告
+     * 產生統計報告.
      *
      * 產生指定週期的完整統計報告。
      */
@@ -256,7 +256,7 @@ final class StatisticsApplicationService
         try {
             $this->logger->info('產生統計報告', [
                 'period' => $period->getDisplayString(),
-                'options' => $options
+                'options' => $options,
             ]);
 
             // 取得基本概覽
@@ -268,7 +268,7 @@ final class StatisticsApplicationService
             // 計算趨勢資料
             $historicalData = $this->statisticsRepository->findByDateRange(
                 $period->startDate,
-                $period->endDate
+                $period->endDate,
             );
             $trendValues = array_map(fn($snapshot) => $snapshot->getTotalViews()->value, $historicalData);
             $trends = $this->calculationService->calculateTrends($trendValues);
@@ -282,13 +282,13 @@ final class StatisticsApplicationService
                     'total_metrics' => count($overview['metrics']),
                     'source_types' => count($overview['source_statistics']),
                     'popular_items' => count($popularContent),
-                    'trend_points' => count($trends)
+                    'trend_points' => count($trends),
                 ],
-                'generated_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
+                'generated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
                 'period_info' => [
                     'display' => $period->getDisplayString(),
-                    'duration_days' => $period->getDurationInDays()
-                ]
+                    'duration_days' => $period->getDurationInDays(),
+                ],
             ];
 
             // 儲存到快取
@@ -296,22 +296,22 @@ final class StatisticsApplicationService
 
             $this->logger->info('統計報告產生完成', [
                 'period' => $period->getDisplayString(),
-                'sections' => array_keys($report)
+                'sections' => array_keys($report),
             ]);
 
             return $report;
-
         } catch (Throwable $e) {
             $this->logger->error('產生統計報告失敗', [
                 'period' => $period->getDisplayString(),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
 
     /**
-     * 清除統計快取
+     * 清除統計快取.
      *
      * 清除指定週期或所有統計相關的快取。
      */
@@ -324,7 +324,7 @@ final class StatisticsApplicationService
                 $this->clearCacheByPattern($pattern);
 
                 $this->logger->info('清除特定週期統計快取', [
-                    'period' => $period->getDisplayString()
+                    'period' => $period->getDisplayString(),
                 ]);
             } else {
                 // 清除所有統計快取
@@ -332,18 +332,18 @@ final class StatisticsApplicationService
 
                 $this->logger->info('清除所有統計快取');
             }
-
         } catch (Throwable $e) {
             $this->logger->error('清除統計快取失敗', [
                 'period' => $period?->getDisplayString(),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
 
     /**
-     * 檢查統計服務健康狀態
+     * 檢查統計服務健康狀態.
      */
     public function checkHealthStatus(): array
     {
@@ -352,7 +352,7 @@ final class StatisticsApplicationService
                 'service' => 'StatisticsApplicationService',
                 'status' => 'healthy',
                 'checks' => [],
-                'timestamp' => (new DateTimeImmutable())->format('Y-m-d H:i:s')
+                'timestamp' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ];
 
             // 檢查快取連線
@@ -368,7 +368,7 @@ final class StatisticsApplicationService
             $allHealthy = array_reduce(
                 $status['checks'],
                 fn(bool $carry, array $check) => $carry && $check['status'] === 'ok',
-                true
+                true,
             );
 
             if (!$allHealthy) {
@@ -376,23 +376,22 @@ final class StatisticsApplicationService
             }
 
             return $status;
-
         } catch (Throwable $e) {
             $this->logger->error('統計服務健康檢查失敗', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return [
                 'service' => 'StatisticsApplicationService',
                 'status' => 'unhealthy',
                 'error' => $e->getMessage(),
-                'timestamp' => (new DateTimeImmutable())->format('Y-m-d H:i:s')
+                'timestamp' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ];
         }
     }
 
     /**
-     * 計算來源統計
+     * 計算來源統計.
      */
     private function calculateSourceStatistics(StatisticsPeriod $period): array
     {
@@ -406,7 +405,7 @@ final class StatisticsApplicationService
             $sourceStats[] = SourceStatistics::create(
                 $sourceType,
                 $count,
-                $percentage
+                $percentage,
             );
         }
 
@@ -414,7 +413,7 @@ final class StatisticsApplicationService
     }
 
     /**
-     * 取得週期快取鍵
+     * 取得週期快取鍵.
      */
     private function getPeriodCacheKey(StatisticsPeriod $period): string
     {
@@ -422,12 +421,12 @@ final class StatisticsApplicationService
             '%s_%s_%s',
             $period->type->value,
             $period->startDate->format('Ymd'),
-            $period->endDate->format('Ymd')
+            $period->endDate->format('Ymd'),
         );
     }
 
     /**
-     * 清除相關快取
+     * 清除相關快取.
      */
     private function clearRelatedCache(StatisticsPeriod $period): void
     {
@@ -436,7 +435,7 @@ final class StatisticsApplicationService
             self::CACHE_PREFIX . ':snapshot:' . $periodKey,
             self::CACHE_PREFIX . ':overview:' . $periodKey,
             self::CACHE_PREFIX . ':popular:' . $periodKey . ':*',
-            self::CACHE_PREFIX . ':report:' . $periodKey . ':*'
+            self::CACHE_PREFIX . ':report:' . $periodKey . ':*',
         ];
 
         foreach ($patterns as $pattern) {
@@ -445,7 +444,7 @@ final class StatisticsApplicationService
     }
 
     /**
-     * 按模式清除快取
+     * 按模式清除快取.
      */
     private function clearCacheByPattern(string $pattern): void
     {
@@ -456,7 +455,7 @@ final class StatisticsApplicationService
     }
 
     /**
-     * 檢查快取健康狀態
+     * 檢查快取健康狀態.
      */
     private function checkCacheHealth(): array
     {
@@ -470,18 +469,18 @@ final class StatisticsApplicationService
 
             if ($retrieved === $testValue) {
                 $this->cacheManager->delete($testKey);
+
                 return ['status' => 'ok', 'message' => 'Cache is working'];
             }
 
             return ['status' => 'error', 'message' => 'Cache read/write test failed'];
-
         } catch (Throwable $e) {
             return ['status' => 'error', 'message' => 'Cache error: ' . $e->getMessage()];
         }
     }
 
     /**
-     * 檢查資料庫健康狀態
+     * 檢查資料庫健康狀態.
      */
     private function checkDatabaseHealth(): array
     {
@@ -491,14 +490,13 @@ final class StatisticsApplicationService
             $this->statisticsRepository->findByPeriod($testPeriod);
 
             return ['status' => 'ok', 'message' => 'Database is accessible'];
-
         } catch (Throwable $e) {
             return ['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()];
         }
     }
 
     /**
-     * 檢查計算服務健康狀態
+     * 檢查計算服務健康狀態.
      */
     private function checkCalculationHealth(): array
     {
@@ -508,7 +506,6 @@ final class StatisticsApplicationService
             $this->calculationService->calculateTrends($testData);
 
             return ['status' => 'ok', 'message' => 'Calculation service is working'];
-
         } catch (Throwable $e) {
             return ['status' => 'error', 'message' => 'Calculation error: ' . $e->getMessage()];
         }

@@ -14,19 +14,19 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use OpenApi\Attributes as OA;
 
 #[OA\Info(
     version: '1.0.0',
     title: 'AlleyNote Statistics API',
-    description: 'AlleyNote 統計系統 API 文件'
+    description: 'AlleyNote 統計系統 API 文件',
 )]
 #[OA\Server(
     url: '/api',
-    description: 'API 基礎路徑'
+    description: 'API 基礎路徑',
 )]
 #[OA\Schema(
     schema: 'ErrorResponse',
@@ -38,12 +38,11 @@ use OpenApi\Attributes as OA;
             type: 'object',
             properties: [
                 new OA\Property(property: 'code', type: 'string', example: 'INVALID_PARAMETER'),
-                new OA\Property(property: 'message', type: 'string', example: '錯誤訊息')
-            ]
-        )
-    ]
+                new OA\Property(property: 'message', type: 'string', example: '錯誤訊息'),
+            ],
+        ),
+    ],
 )]
-
 /**
  * 統計資料查詢 API 控制器。
  *
@@ -51,20 +50,23 @@ use OpenApi\Attributes as OA;
  */
 #[OA\Tag(
     name: 'Statistics',
-    description: '統計資料相關 API'
+    description: '統計資料相關 API',
 )]
 class StatisticsController extends BaseController
 {
     private StatisticsApplicationService $applicationService;
+
     private StatisticsQueryService $queryService;
+
     private StatisticsCacheServiceInterface $cacheService;
+
     private LoggerInterface $logger;
 
     public function __construct(
         StatisticsApplicationService $applicationService,
         StatisticsQueryService $queryService,
         StatisticsCacheServiceInterface $cacheService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->applicationService = $applicationService;
         $this->queryService = $queryService;
@@ -91,8 +93,8 @@ class StatisticsController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     enum: ['daily', 'weekly', 'monthly'],
-                    default: 'daily'
-                )
+                    default: 'daily',
+                ),
             ),
             new OA\Parameter(
                 name: 'start_date',
@@ -102,8 +104,8 @@ class StatisticsController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     format: 'date',
-                    example: '2024-01-01'
-                )
+                    example: '2024-01-01',
+                ),
             ),
             new OA\Parameter(
                 name: 'end_date',
@@ -113,9 +115,9 @@ class StatisticsController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     format: 'date',
-                    example: '2024-01-31'
-                )
-            )
+                    example: '2024-01-31',
+                ),
+            ),
         ],
         responses: [
             new OA\Response(
@@ -134,8 +136,8 @@ class StatisticsController extends BaseController
                                     properties: [
                                         'type' => new OA\Property(property: 'type', type: 'string', example: 'daily'),
                                         'start_date' => new OA\Property(property: 'start_date', type: 'string', example: '2024-01-01'),
-                                        'end_date' => new OA\Property(property: 'end_date', type: 'string', example: '2024-01-01')
-                                    ]
+                                        'end_date' => new OA\Property(property: 'end_date', type: 'string', example: '2024-01-01'),
+                                    ],
                                 ),
                                 'posts' => new OA\Property(
                                     property: 'posts',
@@ -143,8 +145,8 @@ class StatisticsController extends BaseController
                                     properties: [
                                         'total_count' => new OA\Property(property: 'total_count', type: 'integer', example: 150),
                                         'published_count' => new OA\Property(property: 'published_count', type: 'integer', example: 120),
-                                        'draft_count' => new OA\Property(property: 'draft_count', type: 'integer', example: 30)
-                                    ]
+                                        'draft_count' => new OA\Property(property: 'draft_count', type: 'integer', example: 30),
+                                    ],
                                 ),
                                 'users' => new OA\Property(
                                     property: 'users',
@@ -152,8 +154,8 @@ class StatisticsController extends BaseController
                                     properties: [
                                         'total_count' => new OA\Property(property: 'total_count', type: 'integer', example: 500),
                                         'active_users' => new OA\Property(property: 'active_users', type: 'integer', example: 80),
-                                        'new_registrations' => new OA\Property(property: 'new_registrations', type: 'integer', example: 15)
-                                    ]
+                                        'new_registrations' => new OA\Property(property: 'new_registrations', type: 'integer', example: 15),
+                                    ],
                                 ),
                                 'views' => new OA\Property(
                                     property: 'views',
@@ -161,21 +163,21 @@ class StatisticsController extends BaseController
                                     properties: [
                                         'total_views' => new OA\Property(property: 'total_views', type: 'integer', example: 12500),
                                         'unique_visitors' => new OA\Property(property: 'unique_visitors', type: 'integer', example: 3200),
-                                        'average_views_per_post' => new OA\Property(property: 'average_views_per_post', type: 'number', format: 'float', example: 83.33)
-                                    ]
-                                )
-                            ]
+                                        'average_views_per_post' => new OA\Property(property: 'average_views_per_post', type: 'number', format: 'float', example: 83.33),
+                                    ],
+                                ),
+                            ],
                         ),
                         'meta' => new OA\Property(
                             property: 'meta',
                             type: 'object',
                             properties: [
                                 'generated_at' => new OA\Property(property: 'generated_at', type: 'string', format: 'datetime'),
-                                'cached' => new OA\Property(property: 'cached', type: 'boolean', example: true)
-                            ]
-                        )
-                    ]
-                )
+                                'cached' => new OA\Property(property: 'cached', type: 'boolean', example: true),
+                            ],
+                        ),
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 400,
@@ -188,11 +190,11 @@ class StatisticsController extends BaseController
                             type: 'object',
                             properties: [
                                 'code' => new OA\Property(property: 'code', type: 'string', example: 'INVALID_PARAMETER'),
-                                'message' => new OA\Property(property: 'message', type: 'string', example: '無效的期間類型')
-                            ]
-                        )
-                    ]
-                )
+                                'message' => new OA\Property(property: 'message', type: 'string', example: '無效的期間類型'),
+                            ],
+                        ),
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 500,
@@ -205,13 +207,13 @@ class StatisticsController extends BaseController
                             type: 'object',
                             properties: [
                                 'code' => new OA\Property(property: 'code', type: 'string', example: 'INTERNAL_ERROR'),
-                                'message' => new OA\Property(property: 'message', type: 'string', example: '統計資料處理發生錯誤')
-                            ]
-                        )
-                    ]
-                )
-            )
-        ]
+                                'message' => new OA\Property(property: 'message', type: 'string', example: '統計資料處理發生錯誤'),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        ],
     )]
     public function overview(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -233,8 +235,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->successResponse($overview, '統計概覽取得成功'));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             $this->logger->warning('統計概覽 API 參數錯誤', [
                 'error' => $e->getMessage(),
@@ -242,8 +244,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse($e->getMessage(), 400));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
 
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $this->logger->error('統計概覽 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -251,6 +253,7 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('統計概覽取得失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -274,8 +277,8 @@ class StatisticsController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     enum: ['daily', 'weekly', 'monthly'],
-                    default: 'daily'
-                )
+                    default: 'daily',
+                ),
             ),
             new OA\Parameter(
                 name: 'start_date',
@@ -285,8 +288,8 @@ class StatisticsController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     format: 'date',
-                    example: '2024-01-01'
-                )
+                    example: '2024-01-01',
+                ),
             ),
             new OA\Parameter(
                 name: 'end_date',
@@ -296,8 +299,8 @@ class StatisticsController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     format: 'date',
-                    example: '2024-01-31'
-                )
+                    example: '2024-01-31',
+                ),
             ),
             new OA\Parameter(
                 name: 'source',
@@ -307,9 +310,9 @@ class StatisticsController extends BaseController
                 schema: new OA\Schema(
                     type: 'string',
                     enum: ['web', 'mobile', 'api'],
-                    example: 'web'
-                )
-            )
+                    example: 'web',
+                ),
+            ),
         ],
         responses: [
             new OA\Response(
@@ -328,8 +331,8 @@ class StatisticsController extends BaseController
                                     properties: [
                                         'type' => new OA\Property(property: 'type', type: 'string', example: 'daily'),
                                         'start_date' => new OA\Property(property: 'start_date', type: 'string', example: '2024-01-01'),
-                                        'end_date' => new OA\Property(property: 'end_date', type: 'string', example: '2024-01-01')
-                                    ]
+                                        'end_date' => new OA\Property(property: 'end_date', type: 'string', example: '2024-01-01'),
+                                    ],
                                 ),
                                 'total_count' => new OA\Property(property: 'total_count', type: 'integer', example: 150),
                                 'status_distribution' => new OA\Property(
@@ -338,8 +341,8 @@ class StatisticsController extends BaseController
                                     properties: [
                                         'published' => new OA\Property(property: 'published', type: 'integer', example: 120),
                                         'draft' => new OA\Property(property: 'draft', type: 'integer', example: 25),
-                                        'archived' => new OA\Property(property: 'archived', type: 'integer', example: 5)
-                                    ]
+                                        'archived' => new OA\Property(property: 'archived', type: 'integer', example: 5),
+                                    ],
                                 ),
                                 'source_analysis' => new OA\Property(
                                     property: 'source_analysis',
@@ -347,33 +350,33 @@ class StatisticsController extends BaseController
                                     properties: [
                                         'web' => new OA\Property(property: 'web', type: 'integer', example: 100),
                                         'mobile' => new OA\Property(property: 'mobile', type: 'integer', example: 40),
-                                        'api' => new OA\Property(property: 'api', type: 'integer', example: 10)
-                                    ]
+                                        'api' => new OA\Property(property: 'api', type: 'integer', example: 10),
+                                    ],
                                 ),
                                 'trends' => new OA\Property(
                                     property: 'trends',
                                     type: 'object',
                                     properties: [
                                         'growth_rate' => new OA\Property(property: 'growth_rate', type: 'number', format: 'float', example: 15.5),
-                                        'average_daily' => new OA\Property(property: 'average_daily', type: 'number', format: 'float', example: 4.8)
-                                    ]
-                                )
-                            ]
-                        )
-                    ]
-                )
+                                        'average_daily' => new OA\Property(property: 'average_daily', type: 'number', format: 'float', example: 4.8),
+                                    ],
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
             ),
             new OA\Response(
                 response: 400,
                 description: '請求參數錯誤',
-                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
             ),
             new OA\Response(
                 response: 500,
                 description: '伺服器內部錯誤',
-                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
-            )
-        ]
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+        ],
     )]
     public function posts(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -387,13 +390,13 @@ class StatisticsController extends BaseController
             $params = $this->validatePostsParams($request->getQueryParams());
             $period = $this->createPeriodFromParams($params);
 
-            $sourceType = isset($params['source']) ?
-                SourceType::from($params['source']) : null;
+            $sourceType = isset($params['source'])
+                ? SourceType::from($params['source']) : null;
 
             $statistics = $this->queryService->getPostStatisticsTrends(
                 $period,
                 $sourceType,
-                $params['data_points'] ?? 30
+                $params['data_points'] ?? 30,
             );
 
             $this->logger->info('文章統計 API 成功回應', [
@@ -402,8 +405,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->successResponse($statistics, '文章統計取得成功'));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             $this->logger->warning('文章統計 API 參數錯誤', [
                 'error' => $e->getMessage(),
@@ -411,8 +414,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse($e->getMessage(), 400));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
 
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $this->logger->error('文章統計 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -420,6 +423,7 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('文章統計取得失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -447,7 +451,7 @@ class StatisticsController extends BaseController
                 $period->endDate,
                 $period->type,
                 1,
-                100
+                100,
             );
 
             // 從快照中提取來源分佈資料
@@ -464,8 +468,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->successResponse($distribution, '來源分佈統計取得成功'));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             $this->logger->warning('來源分佈統計 API 參數錯誤', [
                 'error' => $e->getMessage(),
@@ -473,8 +477,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse($e->getMessage(), 400));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
 
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $this->logger->error('來源分佈統計 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -482,6 +486,7 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('來源分佈統計取得失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -511,8 +516,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->successResponse($statistics, '使用者統計取得成功'));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             $this->logger->warning('使用者統計 API 參數錯誤', [
                 'error' => $e->getMessage(),
@@ -520,8 +525,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse($e->getMessage(), 400));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
 
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $this->logger->error('使用者統計 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -529,6 +534,7 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('使用者統計取得失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -549,15 +555,15 @@ class StatisticsController extends BaseController
                 description: '統計期間類型',
                 in: 'query',
                 required: false,
-                schema: new OA\Schema(type: 'string', enum: ['daily', 'weekly', 'monthly'], default: 'daily')
+                schema: new OA\Schema(type: 'string', enum: ['daily', 'weekly', 'monthly'], default: 'daily'),
             ),
             new OA\Parameter(
                 name: 'limit',
                 description: '回傳項目數量限制',
                 in: 'query',
                 required: false,
-                schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100, default: 10)
-            )
+                schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100, default: 10),
+            ),
         ],
         responses: [
             new OA\Response(
@@ -574,16 +580,16 @@ class StatisticsController extends BaseController
                                     'id' => new OA\Property(property: 'id', type: 'integer', example: 123),
                                     'title' => new OA\Property(property: 'title', type: 'string', example: '熱門文章標題'),
                                     'views' => new OA\Property(property: 'views', type: 'integer', example: 1250),
-                                    'rank' => new OA\Property(property: 'rank', type: 'integer', example: 1)
-                                ]
-                            )
-                        )
-                    ]
-                )
+                                    'rank' => new OA\Property(property: 'rank', type: 'integer', example: 1),
+                                ],
+                            ),
+                        ),
+                    ],
+                ),
             ),
             new OA\Response(response: 400, description: '請求參數錯誤', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 500, description: '伺服器內部錯誤', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'))
-        ]
+            new OA\Response(response: 500, description: '伺服器內部錯誤', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        ],
     )]
     public function popular(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -599,7 +605,7 @@ class StatisticsController extends BaseController
 
             $popularContent = $this->applicationService->analyzePopularContent(
                 $period,
-                $params['limit'] ?? 20
+                $params['limit'] ?? 20,
             );
 
             $this->logger->info('熱門內容 API 成功回應', [
@@ -609,8 +615,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->successResponse($popularContent, '熱門內容取得成功'));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             $this->logger->warning('熱門內容 API 參數錯誤', [
                 'error' => $e->getMessage(),
@@ -618,8 +624,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse($e->getMessage(), 400));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
 
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $this->logger->error('熱門內容 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -627,6 +633,7 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('熱門內容取得失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -656,8 +663,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->successResponse($trends, '統計趨勢取得成功'));
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             $this->logger->warning('統計趨勢 API 參數錯誤', [
                 'error' => $e->getMessage(),
@@ -665,8 +672,8 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse($e->getMessage(), 400));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
 
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             $this->logger->error('統計趨勢 API 執行失敗', [
                 'error' => $e->getMessage(),
@@ -674,6 +681,7 @@ class StatisticsController extends BaseController
             ]);
 
             $response->getBody()->write($this->errorResponse('統計趨勢取得失敗', 500));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -908,7 +916,7 @@ class StatisticsController extends BaseController
             return StatisticsPeriod::create(
                 $params['start_date'],
                 $params['end_date'],
-                $periodType
+                $periodType,
             );
         }
 
@@ -919,22 +927,22 @@ class StatisticsController extends BaseController
             PeriodType::DAILY => StatisticsPeriod::create(
                 $now->modify('today midnight'),
                 $now->modify('tomorrow midnight -1 second'),
-                PeriodType::DAILY
+                PeriodType::DAILY,
             ),
             PeriodType::WEEKLY => StatisticsPeriod::create(
                 $now->modify('monday this week midnight'),
                 $now->modify('sunday this week 23:59:59'),
-                PeriodType::WEEKLY
+                PeriodType::WEEKLY,
             ),
             PeriodType::MONTHLY => StatisticsPeriod::create(
                 $now->modify('first day of this month midnight'),
                 $now->modify('last day of this month 23:59:59'),
-                PeriodType::MONTHLY
+                PeriodType::MONTHLY,
             ),
             PeriodType::YEARLY => StatisticsPeriod::create(
                 $now->modify('first day of january this year midnight'),
                 $now->modify('last day of december this year 23:59:59'),
-                PeriodType::YEARLY
+                PeriodType::YEARLY,
             ),
         };
     }
