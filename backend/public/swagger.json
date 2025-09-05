@@ -1,0 +1,2108 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "AlleyNote Statistics API",
+        "description": "AlleyNote 統計系統 API 文件",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API 基礎路徑"
+        }
+    ],
+    "paths": {
+        "/api/statistics/overview": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "取得統計概覽",
+                "description": "取得指定期間的統計概覽資料，包含文章、使用者、瀏覽量等基本統計",
+                "operationId": "c8690155ddc1d702f8d26e1e28899db7",
+                "parameters": [
+                    {
+                        "name": "period_type",
+                        "in": "query",
+                        "description": "統計期間類型",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "daily",
+                            "enum": [
+                                "daily",
+                                "weekly",
+                                "monthly"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "開始日期 (格式: Y-m-d)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-01-01"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "結束日期 (格式: Y-m-d)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-01-31"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功取得統計概覽",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "period": {
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string",
+                                                            "example": "daily"
+                                                        },
+                                                        "start_date": {
+                                                            "type": "string",
+                                                            "example": "2024-01-01"
+                                                        },
+                                                        "end_date": {
+                                                            "type": "string",
+                                                            "example": "2024-01-01"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "posts": {
+                                                    "properties": {
+                                                        "total_count": {
+                                                            "type": "integer",
+                                                            "example": 150
+                                                        },
+                                                        "published_count": {
+                                                            "type": "integer",
+                                                            "example": 120
+                                                        },
+                                                        "draft_count": {
+                                                            "type": "integer",
+                                                            "example": 30
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "users": {
+                                                    "properties": {
+                                                        "total_count": {
+                                                            "type": "integer",
+                                                            "example": 500
+                                                        },
+                                                        "active_users": {
+                                                            "type": "integer",
+                                                            "example": 80
+                                                        },
+                                                        "new_registrations": {
+                                                            "type": "integer",
+                                                            "example": 15
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "views": {
+                                                    "properties": {
+                                                        "total_views": {
+                                                            "type": "integer",
+                                                            "example": 12500
+                                                        },
+                                                        "unique_visitors": {
+                                                            "type": "integer",
+                                                            "example": 3200
+                                                        },
+                                                        "average_views_per_post": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 83.33
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "generated_at": {
+                                                    "type": "string",
+                                                    "format": "datetime"
+                                                },
+                                                "cached": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "請求參數錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "INVALID_PARAMETER"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "無效的期間類型"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "伺服器內部錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "INTERNAL_ERROR"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "統計資料處理發生錯誤"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/statistics/posts": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "取得文章統計",
+                "description": "取得指定期間的文章統計資料，包含文章數量、狀態分布、來源分析等",
+                "operationId": "4258e51821313ecad9c682212320db09",
+                "parameters": [
+                    {
+                        "name": "period_type",
+                        "in": "query",
+                        "description": "統計期間類型",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "daily",
+                            "enum": [
+                                "daily",
+                                "weekly",
+                                "monthly"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "開始日期 (格式: Y-m-d)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-01-01"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "結束日期 (格式: Y-m-d)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-01-31"
+                        }
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "description": "來源類型篩選",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "web",
+                                "mobile",
+                                "api"
+                            ],
+                            "example": "web"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功取得文章統計",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "period": {
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string",
+                                                            "example": "daily"
+                                                        },
+                                                        "start_date": {
+                                                            "type": "string",
+                                                            "example": "2024-01-01"
+                                                        },
+                                                        "end_date": {
+                                                            "type": "string",
+                                                            "example": "2024-01-01"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "total_count": {
+                                                    "type": "integer",
+                                                    "example": 150
+                                                },
+                                                "status_distribution": {
+                                                    "properties": {
+                                                        "published": {
+                                                            "type": "integer",
+                                                            "example": 120
+                                                        },
+                                                        "draft": {
+                                                            "type": "integer",
+                                                            "example": 25
+                                                        },
+                                                        "archived": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "source_analysis": {
+                                                    "properties": {
+                                                        "web": {
+                                                            "type": "integer",
+                                                            "example": 100
+                                                        },
+                                                        "mobile": {
+                                                            "type": "integer",
+                                                            "example": 40
+                                                        },
+                                                        "api": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "trends": {
+                                                    "properties": {
+                                                        "growth_rate": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 15.5
+                                                        },
+                                                        "average_daily": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 4.8
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "請求參數錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "伺服器內部錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/statistics/popular": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "取得熱門內容",
+                "description": "取得指定期間內最受歡迎的內容清單",
+                "operationId": "27fd3d76ba637f31d97ab1e15acbd22a",
+                "parameters": [
+                    {
+                        "name": "period_type",
+                        "in": "query",
+                        "description": "統計期間類型",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "daily",
+                            "enum": [
+                                "daily",
+                                "weekly",
+                                "monthly"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "回傳項目數量限制",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功取得熱門內容",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 123
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "熱門文章標題"
+                                                    },
+                                                    "views": {
+                                                        "type": "integer",
+                                                        "example": 1250
+                                                    },
+                                                    "rank": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "請求參數錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "伺服器內部錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/activity-logs": {
+            "get": {
+                "tags": [
+                    "Activity Log"
+                ],
+                "summary": "Get activity logs",
+                "operationId": "getActivityLogs",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Activity logs retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Activity Log"
+                ],
+                "summary": "Log a new activity",
+                "operationId": "storeActivityLog",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "action_type": {
+                                        "type": "string"
+                                    },
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "metadata": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "example": {
+                                "action_type": "USER_LOGIN",
+                                "user_id": 1,
+                                "metadata": {
+                                    "ip": "127.0.0.1"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Activity logged successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    },
+                    "422": {
+                        "description": "Validation failed"
+                    }
+                }
+            }
+        },
+        "/posts/{post_id}/attachments": {
+            "get": {
+                "tags": [
+                    "attachments"
+                ],
+                "summary": "取得貼文附件列表",
+                "description": "取得指定貼文的所有附件檔案清單",
+                "operationId": "listAttachments",
+                "parameters": [
+                    {
+                        "name": "post_id",
+                        "in": "path",
+                        "description": "貼文 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功取得附件列表",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                                    },
+                                                    "post_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "filename": {
+                                                        "type": "string",
+                                                        "example": "document.pdf"
+                                                    },
+                                                    "original_name": {
+                                                        "type": "string",
+                                                        "example": "重要文件.pdf"
+                                                    },
+                                                    "file_size": {
+                                                        "description": "檔案大小（位元組）",
+                                                        "type": "integer",
+                                                        "example": 1024000
+                                                    },
+                                                    "mime_type": {
+                                                        "type": "string",
+                                                        "example": "application/pdf"
+                                                    },
+                                                    "download_url": {
+                                                        "type": "string",
+                                                        "example": "/api/attachments/550e8400-e29b-41d4-a716-446655440000/download"
+                                                    },
+                                                    "uploaded_by": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-01-15T10:30:00Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "貼文不存在",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/NotFound"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "attachments"
+                ],
+                "summary": "上傳文件附件",
+                "description": "為指定貼文上傳附件檔案，支援多種檔案格式",
+                "operationId": "uploadAttachment",
+                "parameters": [
+                    {
+                        "name": "post_id",
+                        "in": "path",
+                        "description": "貼文 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "上傳的檔案",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "description": "要上傳的檔案",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "檔案上傳成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "檔案上傳成功"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                                                },
+                                                "post_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "filename": {
+                                                    "type": "string",
+                                                    "example": "document.pdf"
+                                                },
+                                                "original_name": {
+                                                    "type": "string",
+                                                    "example": "重要文件.pdf"
+                                                },
+                                                "file_size": {
+                                                    "description": "檔案大小（位元組）",
+                                                    "type": "integer",
+                                                    "example": 1024000
+                                                },
+                                                "mime_type": {
+                                                    "type": "string",
+                                                    "example": "application/pdf"
+                                                },
+                                                "download_url": {
+                                                    "type": "string",
+                                                    "example": "/api/attachments/550e8400-e29b-41d4-a716-446655440000/download"
+                                                },
+                                                "uploaded_by": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-01-15T10:30:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "檔案上傳失敗或格式不支援",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "不支援的檔案格式"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授權存取",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "貼文不存在",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/NotFound"
+                                }
+                            }
+                        }
+                    },
+                    "413": {
+                        "description": "檔案大小超過限制",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "檔案大小超過 10MB 限制"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "sessionAuth": []
+                    }
+                ]
+            }
+        },
+        "/attachments/{id}/download": {
+            "get": {
+                "tags": [
+                    "attachments"
+                ],
+                "summary": "下載附件",
+                "description": "下載指定的附件檔案",
+                "operationId": "downloadAttachment",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "附件 UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "檔案下載成功",
+                        "headers": {
+                            "Content-Disposition": {
+                                "description": "檔案下載標頭",
+                                "schema": {
+                                    "type": "string",
+                                    "example": "attachment; filename=\"document.pdf\""
+                                }
+                            },
+                            "Content-Type": {
+                                "description": "檔案 MIME 類型",
+                                "schema": {
+                                    "type": "string",
+                                    "example": "application/pdf"
+                                }
+                            },
+                            "Content-Length": {
+                                "description": "檔案大小",
+                                "schema": {
+                                    "type": "integer",
+                                    "example": 1024000
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            },
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "無效的附件識別碼",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "無效的附件識別碼"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "附件不存在",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/NotFound"
+                                }
+                            }
+                        }
+                    },
+                    "410": {
+                        "description": "檔案已不存在",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "檔案已被刪除或移動"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/attachments/{id}": {
+            "delete": {
+                "tags": [
+                    "attachments"
+                ],
+                "summary": "刪除附件",
+                "description": "刪除指定的附件檔案，只有上傳者或管理員可以刪除",
+                "operationId": "deleteAttachment",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "附件 UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "附件刪除成功"
+                    },
+                    "400": {
+                        "description": "無效的附件識別碼",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "無效的附件識別碼"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授權存取",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "無權限刪除此附件",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "您沒有權限刪除此附件"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "附件不存在",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/NotFound"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "sessionAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "使用者註冊",
+                "description": "建立新的使用者帳號，需要提供使用者名稱、電子郵件和密碼",
+                "operationId": "registerUser",
+                "requestBody": {
+                    "description": "註冊資料",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "使用者名稱",
+                                        "type": "string",
+                                        "maxLength": 50,
+                                        "minLength": 3,
+                                        "example": "johndoe"
+                                    },
+                                    "email": {
+                                        "description": "電子郵件地址",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "description": "密碼，至少8個字元",
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8,
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "確認密碼，必須與密碼相同",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "註冊成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "註冊成功"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "johndoe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-01-15T10:30:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "註冊資料驗證失敗",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "資料驗證失敗"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "username": [
+                                                    "使用者名稱已存在"
+                                                ],
+                                                "email": [
+                                                    "電子郵件格式不正確"
+                                                ],
+                                                "password": [
+                                                    "密碼長度不足8個字元"
+                                                ]
+                                            },
+                                            "additionalProperties": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "使用者名稱或電子郵件已存在",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "使用者名稱或電子郵件已存在"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "伺服器內部錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "系統發生錯誤"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "使用者登入",
+                "description": "使用帳號密碼或電子郵件密碼進行登入驗證",
+                "operationId": "loginUser",
+                "requestBody": {
+                    "description": "登入憑證",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "登入成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "登入資料格式錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "缺少必要的登入資料"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "登入失敗",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "使用者名稱或密碼錯誤"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "423": {
+                        "description": "帳號被鎖定",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "帳號暫時被鎖定，請稍後再試"
+                                        },
+                                        "retry_after": {
+                                            "description": "解鎖剩餘秒數",
+                                            "type": "integer",
+                                            "example": 300
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "伺服器內部錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "系統發生錯誤"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "使用者登出",
+                "description": "登出當前使用者，清除認證狀態和會話",
+                "operationId": "logoutUser",
+                "responses": {
+                    "200": {
+                        "description": "登出成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "登出成功"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授權存取或 Token 無效",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/Unauthorized"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "sessionAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "取得當前使用者資訊",
+                "description": "取得目前登入使用者的詳細資訊",
+                "operationId": "getCurrentUser",
+                "responses": {
+                    "200": {
+                        "description": "成功取得使用者資訊",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授權存取或 Token 無效",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/Unauthorized"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "sessionAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "刷新認證 Token",
+                "description": "使用 Refresh Token 取得新的 Access Token",
+                "operationId": "refreshToken",
+                "requestBody": {
+                    "description": "Refresh Token",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "refresh_token"
+                                ],
+                                "properties": {
+                                    "refresh_token": {
+                                        "description": "有效的 Refresh Token",
+                                        "type": "string",
+                                        "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token 刷新成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Token 刷新成功"
+                                        },
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        },
+                                        "expires_in": {
+                                            "description": "Token 有效期（秒）",
+                                            "type": "integer",
+                                            "example": 3600
+                                        },
+                                        "expires_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-01-15T11:30:00Z"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "缺少或格式錯誤的 Refresh Token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "無效的 refresh_token 格式"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Refresh Token 無效或已過期",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Refresh token 無效或已過期"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/posts": {
+            "get": {
+                "tags": [
+                    "posts"
+                ],
+                "summary": "取得所有貼文",
+                "description": "取得分頁的貼文列表，支援搜尋和篩選",
+                "operationId": "getPosts",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "頁碼",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "每頁筆數",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "搜尋關鍵字",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "貼文分類篩選",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "general",
+                                "announcement",
+                                "urgent",
+                                "notice"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "貼文狀態篩選",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "draft",
+                                "published",
+                                "archived"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功取得貼文列表",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "請求參數錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "posts"
+                ],
+                "summary": "建立新貼文",
+                "description": "建立一篇新的貼文，需要 CSRF Token 驗證",
+                "operationId": "createPost",
+                "requestBody": {
+                    "description": "貼文資料",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreatePostRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "貼文建立成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "輸入資料驗證失敗",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授權存取",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "CSRF Token 驗證失敗",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "CSRF token verification failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "csrfToken": []
+                    }
+                ]
+            }
+        },
+        "/posts/{id}": {
+            "get": {
+                "tags": [
+                    "posts"
+                ],
+                "summary": "取得單一貼文",
+                "description": "根據 ID 取得貼文詳細資訊，並記錄瀏覽次數",
+                "operationId": "getPostById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "貼文 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功取得貼文詳細資訊",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Post"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "貼文不存在",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/NotFound"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "posts"
+                ],
+                "summary": "更新貼文",
+                "description": "更新指定 ID 的貼文，需要 CSRF Token 驗證",
+                "operationId": "updatePost",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "貼文 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "更新的貼文資料",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdatePostRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "貼文更新成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "輸入資料驗證失敗",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授權存取",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "CSRF Token 驗證失敗",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "CSRF token verification failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "貼文不存在",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/NotFound"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "csrfToken": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "posts"
+                ],
+                "summary": "刪除貼文",
+                "description": "刪除指定 ID 的貼文，需要 CSRF Token 驗證",
+                "operationId": "deletePost",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "貼文 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "貼文刪除成功"
+                    },
+                    "401": {
+                        "description": "未授權存取",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "CSRF Token 驗證失敗",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "CSRF token verification failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "貼文不存在",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/NotFound"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "csrfToken": []
+                    }
+                ]
+            }
+        },
+        "/posts/{id}/pin": {
+            "patch": {
+                "tags": [
+                    "posts"
+                ],
+                "summary": "更新貼文置頂狀態",
+                "description": "設定或取消貼文的置頂狀態，需要 CSRF Token 驗證",
+                "operationId": "togglePostPin",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "貼文 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "置頂狀態",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "pinned": {
+                                        "description": "是否置頂",
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "置頂狀態更新成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "置頂狀態已更新"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Post"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "請求資料格式錯誤",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未授權存取",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "CSRF Token 驗證失敗",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "CSRF token verification failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "貼文不存在",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/responses/NotFound"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "csrfToken": []
+                    }
+                ]
+            }
+        },
+        "/health": {
+            "get": {
+                "tags": [
+                    "health"
+                ],
+                "summary": "健康檢查端點",
+                "operationId": "158a1389adf0d693d528c07a8f30136f",
+                "responses": {
+                    "200": {
+                        "description": "系統正常運行"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ErrorResponse": {
+                "properties": {
+                    "success": {
+                        "description": "統計資料查詢 API 控制器。\n\n提供統計資料的 REST API 端點，包含概覽、文章、來源、使用者和熱門內容統計",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "error": {
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "example": "INVALID_PARAMETER"
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "錯誤訊息"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Statistics",
+            "description": "統計資料相關 API"
+        },
+        {
+            "name": "Activity Log",
+            "description": "Activity logging and retrieval endpoints"
+        },
+        {
+            "name": "attachments",
+            "description": "attachments"
+        },
+        {
+            "name": "auth",
+            "description": "auth"
+        },
+        {
+            "name": "posts",
+            "description": "posts"
+        },
+        {
+            "name": "health",
+            "description": "health"
+        }
+    ]
+}

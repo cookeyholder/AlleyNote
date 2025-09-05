@@ -17,12 +17,42 @@ use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use OpenApi\Attributes as OA;
+
+#[OA\Info(
+    version: '1.0.0',
+    title: 'AlleyNote Statistics API',
+    description: 'AlleyNote 統計系統 API 文件'
+)]
+#[OA\Server(
+    url: '/api',
+    description: 'API 基礎路徑'
+)]
+#[OA\Schema(
+    schema: 'ErrorResponse',
+    type: 'object',
+    properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(
+            property: 'error',
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'code', type: 'string', example: 'INVALID_PARAMETER'),
+                new OA\Property(property: 'message', type: 'string', example: '錯誤訊息')
+            ]
+        )
+    ]
+)]
 
 /**
  * 統計資料查詢 API 控制器。
  *
  * 提供統計資料的 REST API 端點，包含概覽、文章、來源、使用者和熱門內容統計
  */
+#[OA\Tag(
+    name: 'Statistics',
+    description: '統計資料相關 API'
+)]
 class StatisticsController extends BaseController
 {
     private StatisticsApplicationService $applicationService;
@@ -47,6 +77,142 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/overview
      */
+    #[OA\Get(
+        path: '/api/statistics/overview',
+        summary: '取得統計概覽',
+        description: '取得指定期間的統計概覽資料，包含文章、使用者、瀏覽量等基本統計',
+        tags: ['Statistics'],
+        parameters: [
+            new OA\Parameter(
+                name: 'period_type',
+                description: '統計期間類型',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['daily', 'weekly', 'monthly'],
+                    default: 'daily'
+                )
+            ),
+            new OA\Parameter(
+                name: 'start_date',
+                description: '開始日期 (格式: Y-m-d)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    format: 'date',
+                    example: '2024-01-01'
+                )
+            ),
+            new OA\Parameter(
+                name: 'end_date',
+                description: '結束日期 (格式: Y-m-d)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    format: 'date',
+                    example: '2024-01-31'
+                )
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '成功取得統計概覽',
+                content: new OA\JsonContent(
+                    properties: [
+                        'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
+                        'data' => new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                'period' => new OA\Property(
+                                    property: 'period',
+                                    type: 'object',
+                                    properties: [
+                                        'type' => new OA\Property(property: 'type', type: 'string', example: 'daily'),
+                                        'start_date' => new OA\Property(property: 'start_date', type: 'string', example: '2024-01-01'),
+                                        'end_date' => new OA\Property(property: 'end_date', type: 'string', example: '2024-01-01')
+                                    ]
+                                ),
+                                'posts' => new OA\Property(
+                                    property: 'posts',
+                                    type: 'object',
+                                    properties: [
+                                        'total_count' => new OA\Property(property: 'total_count', type: 'integer', example: 150),
+                                        'published_count' => new OA\Property(property: 'published_count', type: 'integer', example: 120),
+                                        'draft_count' => new OA\Property(property: 'draft_count', type: 'integer', example: 30)
+                                    ]
+                                ),
+                                'users' => new OA\Property(
+                                    property: 'users',
+                                    type: 'object',
+                                    properties: [
+                                        'total_count' => new OA\Property(property: 'total_count', type: 'integer', example: 500),
+                                        'active_users' => new OA\Property(property: 'active_users', type: 'integer', example: 80),
+                                        'new_registrations' => new OA\Property(property: 'new_registrations', type: 'integer', example: 15)
+                                    ]
+                                ),
+                                'views' => new OA\Property(
+                                    property: 'views',
+                                    type: 'object',
+                                    properties: [
+                                        'total_views' => new OA\Property(property: 'total_views', type: 'integer', example: 12500),
+                                        'unique_visitors' => new OA\Property(property: 'unique_visitors', type: 'integer', example: 3200),
+                                        'average_views_per_post' => new OA\Property(property: 'average_views_per_post', type: 'number', format: 'float', example: 83.33)
+                                    ]
+                                )
+                            ]
+                        ),
+                        'meta' => new OA\Property(
+                            property: 'meta',
+                            type: 'object',
+                            properties: [
+                                'generated_at' => new OA\Property(property: 'generated_at', type: 'string', format: 'datetime'),
+                                'cached' => new OA\Property(property: 'cached', type: 'boolean', example: true)
+                            ]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: '請求參數錯誤',
+                content: new OA\JsonContent(
+                    properties: [
+                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
+                        'error' => new OA\Property(
+                            property: 'error',
+                            type: 'object',
+                            properties: [
+                                'code' => new OA\Property(property: 'code', type: 'string', example: 'INVALID_PARAMETER'),
+                                'message' => new OA\Property(property: 'message', type: 'string', example: '無效的期間類型')
+                            ]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: '伺服器內部錯誤',
+                content: new OA\JsonContent(
+                    properties: [
+                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
+                        'error' => new OA\Property(
+                            property: 'error',
+                            type: 'object',
+                            properties: [
+                                'code' => new OA\Property(property: 'code', type: 'string', example: 'INTERNAL_ERROR'),
+                                'message' => new OA\Property(property: 'message', type: 'string', example: '統計資料處理發生錯誤')
+                            ]
+                        )
+                    ]
+                )
+            )
+        ]
+    )]
     public function overview(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
@@ -94,6 +260,121 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/posts
      */
+    #[OA\Get(
+        path: '/api/statistics/posts',
+        summary: '取得文章統計',
+        description: '取得指定期間的文章統計資料，包含文章數量、狀態分布、來源分析等',
+        tags: ['Statistics'],
+        parameters: [
+            new OA\Parameter(
+                name: 'period_type',
+                description: '統計期間類型',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['daily', 'weekly', 'monthly'],
+                    default: 'daily'
+                )
+            ),
+            new OA\Parameter(
+                name: 'start_date',
+                description: '開始日期 (格式: Y-m-d)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    format: 'date',
+                    example: '2024-01-01'
+                )
+            ),
+            new OA\Parameter(
+                name: 'end_date',
+                description: '結束日期 (格式: Y-m-d)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    format: 'date',
+                    example: '2024-01-31'
+                )
+            ),
+            new OA\Parameter(
+                name: 'source',
+                description: '來源類型篩選',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['web', 'mobile', 'api'],
+                    example: 'web'
+                )
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '成功取得文章統計',
+                content: new OA\JsonContent(
+                    properties: [
+                        'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
+                        'data' => new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                'period' => new OA\Property(
+                                    property: 'period',
+                                    type: 'object',
+                                    properties: [
+                                        'type' => new OA\Property(property: 'type', type: 'string', example: 'daily'),
+                                        'start_date' => new OA\Property(property: 'start_date', type: 'string', example: '2024-01-01'),
+                                        'end_date' => new OA\Property(property: 'end_date', type: 'string', example: '2024-01-01')
+                                    ]
+                                ),
+                                'total_count' => new OA\Property(property: 'total_count', type: 'integer', example: 150),
+                                'status_distribution' => new OA\Property(
+                                    property: 'status_distribution',
+                                    type: 'object',
+                                    properties: [
+                                        'published' => new OA\Property(property: 'published', type: 'integer', example: 120),
+                                        'draft' => new OA\Property(property: 'draft', type: 'integer', example: 25),
+                                        'archived' => new OA\Property(property: 'archived', type: 'integer', example: 5)
+                                    ]
+                                ),
+                                'source_analysis' => new OA\Property(
+                                    property: 'source_analysis',
+                                    type: 'object',
+                                    properties: [
+                                        'web' => new OA\Property(property: 'web', type: 'integer', example: 100),
+                                        'mobile' => new OA\Property(property: 'mobile', type: 'integer', example: 40),
+                                        'api' => new OA\Property(property: 'api', type: 'integer', example: 10)
+                                    ]
+                                ),
+                                'trends' => new OA\Property(
+                                    property: 'trends',
+                                    type: 'object',
+                                    properties: [
+                                        'growth_rate' => new OA\Property(property: 'growth_rate', type: 'number', format: 'float', example: 15.5),
+                                        'average_daily' => new OA\Property(property: 'average_daily', type: 'number', format: 'float', example: 4.8)
+                                    ]
+                                )
+                            ]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: '請求參數錯誤',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            ),
+            new OA\Response(
+                response: 500,
+                description: '伺服器內部錯誤',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            )
+        ]
+    )]
     public function posts(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
@@ -257,6 +538,53 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/popular
      */
+    #[OA\Get(
+        path: '/api/statistics/popular',
+        summary: '取得熱門內容',
+        description: '取得指定期間內最受歡迎的內容清單',
+        tags: ['Statistics'],
+        parameters: [
+            new OA\Parameter(
+                name: 'period_type',
+                description: '統計期間類型',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', enum: ['daily', 'weekly', 'monthly'], default: 'daily')
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: '回傳項目數量限制',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100, default: 10)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '成功取得熱門內容',
+                content: new OA\JsonContent(
+                    properties: [
+                        'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
+                        'data' => new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    'id' => new OA\Property(property: 'id', type: 'integer', example: 123),
+                                    'title' => new OA\Property(property: 'title', type: 'string', example: '熱門文章標題'),
+                                    'views' => new OA\Property(property: 'views', type: 'integer', example: 1250),
+                                    'rank' => new OA\Property(property: 'rank', type: 'integer', example: 1)
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(response: 400, description: '請求參數錯誤', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 500, description: '伺服器內部錯誤', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'))
+        ]
+    )]
     public function popular(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
