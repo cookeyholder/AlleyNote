@@ -310,49 +310,77 @@
 
 ### 階段 5：介面層實作 (Interface Layer)
 
-#### ✅ T5.1 - 建立統計查詢 API 控制器
+#### ✅ T5.1 - 建立統計查詢 API 控制器 ✅
 
 **描述**：建立統計資料查詢的 REST API
 **預估時間**：5 小時
 **依賴**：T3.3, T4.2
 **驗收標準**：
-* [ ] `StatisticsController` 類別
-* [ ] GET `/api/statistics/overview` 端點
-* [ ] GET `/api/statistics/posts` 端點
-* [ ] GET `/api/statistics/sources` 端點
-* [ ] GET `/api/statistics/users` 端點
-* [ ] GET `/api/statistics/popular` 端點
-* [ ] 完整的參數驗證
-* [ ] 標準化的回應格式
-* [ ] 完整的錯誤處理
-* [ ] JWT 認證整合
-* [ ] 通過 PHPStan Level 10 檢查
+* [x] `StatisticsController` 類別
+* [x] GET `/api/statistics/overview` 端點
+* [x] GET `/api/statistics/posts` 端點
+* [x] GET `/api/statistics/sources` 端點
+* [x] GET `/api/statistics/users` 端點
+* [x] GET `/api/statistics/popular` 端點
+* [x] 完整的參數驗證
+* [x] 標準化的回應格式
+* [x] 完整的錯誤處理
+* [x] JWT 認證整合
+* [x] 通過 PHPStan Level 10 檢查
 
-#### ✅ T5.2 - 建立統計管理 API 控制器
+**完成日期**：2024-12-19
+**實作說明**：
+- StatisticsController：完整的統計查詢 API 控制器
+- 實作 6 個主要 API 端點：overview, posts, sources, users, popular, trends
+- 完整的參數驗證和錯誤處理機制
+- 支援多種查詢參數：週期類型、日期範圍、分頁、排序等
+- 標準化的 JSON 回應格式和 HTTP 狀態碼
+- 詳細的日誌記錄和監控功能
+- 整合 JWT 認證和權限控制
+
+#### ✅ T5.2 - 建立統計管理 API 控制器 ✅
 
 **描述**：建立管理員專用的統計管理功能
 **預估時間**：3 小時
 **依賴**：T5.1
 **驗收標準**：
-* [ ] `StatisticsAdminController` 類別
-* [ ] POST `/api/admin/statistics/refresh` 端點
-* [ ] DELETE `/api/admin/statistics/cache` 端點
-* [ ] GET `/api/admin/statistics/health` 端點
-* [ ] 管理員權限驗證
-* [ ] 操作活動日誌記錄
-* [ ] 通過 PHPStan Level 10 檢查
+* [x] `StatisticsAdminController` 類別
+* [x] POST `/api/admin/statistics/refresh` 端點
+* [x] DELETE `/api/admin/statistics/cache` 端點
+* [x] GET `/api/admin/statistics/health` 端點
+* [x] 管理員權限驗證
+* [x] 操作活動日誌記錄
+* [x] 通過 PHPStan Level 10 檢查
 
-#### ✅ T5.3 - 更新 API 路由配置
+**完成日期**：2024-12-19
+**實作說明**：
+- StatisticsAdminController：管理員專用統計管理控制器
+- 實作 5 個管理 API 端點：refresh, clearCache, health, status, cleanup
+- 整合統計計算指令和快取服務管理
+- 完整的健康檢查和系統狀態監控
+- 支援多種快取清除策略和強制重新整理選項
+- 詳細的操作日誌和錯誤追蹤機制
+
+#### ✅ T5.3 - 更新 API 路由配置 ✅
 
 **描述**：在路由配置中註冊統計相關端點
 **預估時間**：1 小時
 **依賴**：T5.2
 **驗收標準**：
-* [ ] 統計查詢路由正確註冊
-* [ ] 統計管理路由正確註冊
-* [ ] 路由群組和中介軟體正確設定
-* [ ] API 版本控制正確實作
-* [ ] 路由測試通過
+* [x] 統計查詢路由正確註冊
+* [x] 統計管理路由正確註冊
+* [x] 路由群組和中介軟體正確設定
+* [x] API 版本控制正確實作
+* [x] 路由測試通過
+
+**完成日期**：2024-12-19
+**實作說明**：
+- 建立 statistics.php 路由配置檔案
+- 註冊 11 個統計 API 端點和 1 個文件端點
+- 設定正確的 HTTP 方法和路徑映射
+- 配置 JWT 認證和管理員權限中介軟體
+- 包含完整的 API 說明和參數文件
+- 整合到主要 API 路由配置中
 
 ---
 

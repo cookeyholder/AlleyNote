@@ -83,5 +83,9 @@ return [
         'path' => '/api/docs',
         'handler' => [\App\Application\Controllers\Web\SwaggerController::class, 'docs'],
         'name' => 'api.docs'
-    ]
+    ],
+
+    // === 統計功能路由 ===
+    // 包含統計相關的所有 API 端點
+    ...(require __DIR__ . '/statistics.php'),
 ];
