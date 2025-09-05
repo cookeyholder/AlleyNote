@@ -21,14 +21,6 @@ use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
 use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
 use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
-use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
-use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
-use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
-use App\Domains\Statistics\Contracts\SystemStatisticsRepositoryInterface;
-use App\Infrastructure\Repositories\Statistics\StatisticsRepository;
-use App\Infrastructure\Repositories\Statistics\PostStatisticsRepository;
-use App\Infrastructure\Repositories\Statistics\UserStatisticsRepository;
-use App\Infrastructure\Repositories\Statistics\SystemStatisticsRepository;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
@@ -199,22 +191,6 @@ return array_merge(
                 $tagRepository,
                 $groupManager,
                 $logger
-            );
-        }),
-    ],
-
-    // 統計服務
-    [
-        // 統計 Repository 介面
-        StatisticsRepositoryInterface::class => \DI\autowire(StatisticsRepository::class),
-        PostStatisticsRepositoryInterface::class => \DI\autowire(PostStatisticsRepository::class),
-        UserStatisticsRepositoryInterface::class => \DI\autowire(UserStatisticsRepository::class),
-        SystemStatisticsRepositoryInterface::class => \DI\autowire(SystemStatisticsRepository::class),
-        
-        // 統計快取服務
-        \App\Domains\Statistics\Services\StatisticsCacheService::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
-            return new \App\Domains\Statistics\Services\StatisticsCacheService(
-                $container->get(\App\Shared\Contracts\CacheServiceInterface::class)
             );
         }),
     ],

@@ -13,17 +13,18 @@ use App\Domains\Statistics\Exceptions\InvalidStatisticsMetricException;
 readonly class StatisticsMetric
 {
     /**
-     * @param int|float $value 數值
-     * @param string $unit 單位
-     * @param string $description 描述
-     * @param int $precision 精確度（小數位數）
+     * @param int|float $value       數值
+     * @param string    $unit        單位
+     * @param string    $description 描述
+     * @param int       $precision   精確度（小數位數）
      */
     private function __construct(
         public int|float $value,
         public string $unit,
         public string $description,
-        public int $precision,
-    ) {}
+        public int $precision
+    ) {
+    }
 
     /**
      * 建立統計指標.
@@ -32,17 +33,17 @@ readonly class StatisticsMetric
         int|float $value,
         string $unit = '',
         string $description = '',
-        int $precision = 0,
+        int $precision = 0
     ): self {
         if ($value < 0) {
             throw new InvalidStatisticsMetricException(
-                '統計指標數值不能為負數',
+                '統計指標數值不能為負數'
             );
         }
 
         if ($precision < 0 || $precision > 10) {
             throw new InvalidStatisticsMetricException(
-                '精確度必須在 0-10 之間',
+                '精確度必須在 0-10 之間'
             );
         }
 
@@ -59,7 +60,7 @@ readonly class StatisticsMetric
     {
         if ($value < 0) {
             throw new InvalidStatisticsMetricException(
-                '計數值不能為負數',
+                '計數值不能為負數'
             );
         }
 
@@ -73,7 +74,7 @@ readonly class StatisticsMetric
     {
         if ($value < 0 || $value > 100) {
             throw new InvalidStatisticsMetricException(
-                '百分比必須在 0-100 之間',
+                '百分比必須在 0-100 之間'
             );
         }
 
@@ -87,7 +88,7 @@ readonly class StatisticsMetric
     {
         if ($value < 0) {
             throw new InvalidStatisticsMetricException(
-                '比率不能為負數',
+                '比率不能為負數'
             );
         }
 
@@ -101,7 +102,7 @@ readonly class StatisticsMetric
     {
         if ($value < 0) {
             throw new InvalidStatisticsMetricException(
-                '時間不能為負數',
+                '時間不能為負數'
             );
         }
 
@@ -115,7 +116,7 @@ readonly class StatisticsMetric
     {
         if ($value < 0) {
             throw new InvalidStatisticsMetricException(
-                '大小不能為負數',
+                '大小不能為負數'
             );
         }
 
@@ -253,7 +254,7 @@ readonly class StatisticsMetric
         $newValue = $this->value - $other->value;
         if ($newValue < 0) {
             throw new InvalidStatisticsMetricException(
-                '減法結果不能為負數',
+                '減法結果不能為負數'
             );
         }
 
@@ -269,7 +270,7 @@ readonly class StatisticsMetric
     {
         if ($multiplier < 0) {
             throw new InvalidStatisticsMetricException(
-                '乘數不能為負數',
+                '乘數不能為負數'
             );
         }
 
@@ -285,7 +286,7 @@ readonly class StatisticsMetric
     {
         if ($divisor <= 0) {
             throw new InvalidStatisticsMetricException(
-                '除數必須大於零',
+                '除數必須大於零'
             );
         }
 
@@ -304,7 +305,7 @@ readonly class StatisticsMetric
 
         if ($this->value == 0) {
             throw new InvalidStatisticsMetricException(
-                '基數為零時無法計算百分比變化',
+                '基數為零時無法計算百分比變化'
             );
         }
 
@@ -393,8 +394,8 @@ readonly class StatisticsMetric
                 sprintf(
                     '指標單位不匹配：%s vs %s',
                     $this->unit,
-                    $other->unit,
-                ),
+                    $other->unit
+                )
             );
         }
     }
