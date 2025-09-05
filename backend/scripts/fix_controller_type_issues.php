@@ -19,13 +19,13 @@ $content = file_get_contents($controllerFile);
 $patterns = [
     // 修正 getQueryParams() 呼叫
     '/\$this->validate(\w+)Params\(\$request->getQueryParams\(\)\)/' => '$this->validate$1Params((array) $request->getQueryParams())',
-    
+
     // 修正 mixed 型別轉換
     '/\(\$params\[\'(\w+)\'\]\)/' => '((int) $params[\'$1\'])',
-    
+
     // 修正字串型別轉換
     '/explode\(\'([^\']+)\', \$(\w+)\[\'(\w+)\'\]\)/' => 'explode(\'$1\', (string) $$2[\'$3\'])',
-    
+
     // 修正 DateTimeImmutable 建構子
     '/new DateTimeImmutable\(\$(\w+)\[\'(\w+)\'\]\)/' => 'new DateTimeImmutable((string) $$1[\'$2\'])',
 ];
@@ -38,11 +38,11 @@ foreach ($patterns as $pattern => $replacement) {
 $specificFixes = [
     // SourceType::from() 參數
     'SourceType::from($params[\'source\'])' => 'SourceType::from((string) $params[\'source\'])',
-    
+
     // count() 函式參數
     'count($sources)' => 'count((array) $sources)',
     'count($data)' => 'count((array) $data)',
-    
+
     // 字串轉換
     '$period (mixed)' => '(string) $period',
     '$type (mixed)' => '(string) $type',

@@ -58,14 +58,34 @@ class StatisticsAdminController extends BaseController
                 'body' => (string) $request->getBody(),
             ]);
 
-            $body = json_decode((string) $request->getBody(), true) ?? [];
-            $params = $this->validateRefreshParams($body);
+            $body = json_decode((string) $request->getBody(), true);
+            if (!is_array($body)) {
+                $body = [];
+            }
+            // 確保所有鍵都是字串
+            $stringKeyBody = [];
+            foreach ($body as $key => $value) {
+                if (is_string($key)) {
+                    $stringKeyBody[$key] = $value;
+                }
+            }
+            $params = $this->validateRefreshParams($stringKeyBody);
 
             // 執行統計計算
+            $periods = $params['periods'] ?? ['daily', 'weekly', 'monthly'];
+            if (!is_array($periods)) {
+                $periods = ['daily', 'weekly', 'monthly'];
+            }
+            $validatedPeriods = [];
+            foreach ($periods as $period) {
+                if (is_string($period)) {
+                    $validatedPeriods[] = $period;
+                }
+            }
             $result = $this->calculationCommand->execute(
-                $params['periods'] ?? ['daily', 'weekly', 'monthly'],
-                $params['force'] ?? false,
-                $params['skip_cache'] ?? false,
+                $validatedPeriods,
+                (bool) ($params['force'] ?? false),
+                (bool) ($params['skip_cache'] ?? false),
             );
 
             $this->logger->info('統計重新整理 API 成功回應', [
@@ -113,15 +133,26 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $queryParams = $request->getQueryParams();
-            $params = $this->validateClearCacheParams($queryParams);
+            if (!is_array($queryParams)) {
+                $queryParams = [];
+            }
+            // 確保所有查詢參數都是字串型態
+            $stringParams = [];
+            foreach ($queryParams as $key => $value) {
+                if (is_string($key)) {
+                    $stringParams[$key] = $value;
+                }
+            }
+            $params = $this->validateClearCacheParams($stringParams);
 
-            $result = match ($params['type']) {
+            $cacheType = is_string($params['type']) ? $params['type'] : 'all';
+            $result = match ($cacheType) {
                 'all' => $this->cacheService->invalidateAllCache(),
                 'overview' => $this->cacheService->invalidateOverviewCache(),
                 'snapshot' => $this->cacheService->invalidateSnapshotCache(),
                 'popular' => $this->cacheService->invalidatePopularContentCache(),
-                'report' => $this->cacheService->invalidateReportCache($params['report_type'] ?? 'general'),
-                default => throw new InvalidArgumentException("不支援的快取類型: {$params['type']}"),
+                'report' => $this->cacheService->invalidateReportCache(is_string($params['report_type'] ?? null) ? $params['report_type'] : 'general'),
+                default => throw new InvalidArgumentException("不支援的快取類型: {$cacheType}"),
             };
 
             $this->logger->info('統計快取清除 API 成功回應', [
@@ -171,7 +202,7 @@ class StatisticsAdminController extends BaseController
 
             $this->logger->info('統計健康檢查 API 成功回應', [
                 'overall_status' => $healthData['overall_status'],
-                'components_count' => count($healthData['components']),
+                'components_count' => count((array) $healthData['components']),
             ]);
 
             $response->getBody()->write($this->successResponse($healthData, '健康檢查完成'));
@@ -205,7 +236,7 @@ class StatisticsAdminController extends BaseController
             $status = $this->calculationCommand->getStatus();
 
             $this->logger->info('統計任務狀態 API 成功回應', [
-                'periods_count' => count($status['periods']),
+                'periods_count' => count((array) $status['periods']),
             ]);
 
             $response->getBody()->write($this->successResponse($status, '任務狀態取得成功'));
@@ -270,6 +301,10 @@ class StatisticsAdminController extends BaseController
      * @param array<string, mixed> $body
      * @return array<string, mixed>
      */
+    /**
+     * @param array<string, mixed> $body
+     * @return array<string, mixed>
+     */
     private function validateRefreshParams(array $body): array
     {
         $params = [];
@@ -282,8 +317,12 @@ class StatisticsAdminController extends BaseController
 
             $validPeriods = ['daily', 'weekly', 'monthly', 'yearly'];
             foreach ($body['periods'] as $period) {
-                if (!in_array($period, $validPeriods)) {
-                    throw new InvalidArgumentException("無效的週期類型: {$period}");
+                $periodStr = is_string($period) ? $period : '';
+                if ($periodStr === '') {
+                    throw new InvalidArgumentException('週期類型不能為空');
+                }
+                if (!in_array($periodStr, $validPeriods)) {
+                    throw new InvalidArgumentException("無效的週期類型: {$periodStr}");
                 }
             }
 
@@ -314,13 +353,17 @@ class StatisticsAdminController extends BaseController
      * @param array<string, mixed> $queryParams
      * @return array<string, mixed>
      */
+    /**
+     * @param array<string, mixed> $queryParams
+     * @return array<string, mixed>
+     */
     private function validateClearCacheParams(array $queryParams): array
     {
         $params = [];
 
         // 驗證快取類型
         $validTypes = ['all', 'overview', 'snapshot', 'popular', 'report'];
-        $type = $queryParams['type'] ?? 'all';
+        $type = is_string($queryParams['type'] ?? null) ? $queryParams['type'] : 'all';
 
         if (!in_array($type, $validTypes)) {
             throw new InvalidArgumentException("無效的快取類型: {$type}。支援的類型: " . implode(', ', $validTypes));
@@ -331,8 +374,9 @@ class StatisticsAdminController extends BaseController
         // 如果是報告快取，驗證報告類型
         if ($type === 'report' && isset($queryParams['report_type'])) {
             $validReportTypes = ['general', 'detailed', 'summary'];
-            if (!in_array($queryParams['report_type'], $validReportTypes)) {
-                throw new InvalidArgumentException("無效的報告類型: {$queryParams['report_type']}");
+            $reportType = is_string($queryParams['report_type']) ? $queryParams['report_type'] : '';
+            if (!in_array($reportType, $validReportTypes)) {
+                throw new InvalidArgumentException("無效的報告類型: {$reportType}");
             }
             $params['report_type'] = $queryParams['report_type'];
         }
@@ -374,7 +418,10 @@ class StatisticsAdminController extends BaseController
         // 檢查統計任務狀態
         try {
             $taskStatus = $this->calculationCommand->getStatus();
-            $lockedTasks = array_filter($taskStatus['periods'], fn($p) => $p['locked']);
+            $periods = is_array($taskStatus['periods'] ?? null) ? $taskStatus['periods'] : [];
+            $lockedTasks = array_filter($periods, function($p): bool {
+                return is_array($p) && ($p['locked'] ?? false) === true;
+            });
 
             $components['tasks'] = [
                 'status' => count($lockedTasks) === 0 ? 'healthy' : 'busy',

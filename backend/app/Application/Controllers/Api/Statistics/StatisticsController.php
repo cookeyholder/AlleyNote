@@ -12,6 +12,7 @@ use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Exception;
 use InvalidArgumentException;
 use OpenApi\Attributes as OA;
@@ -220,7 +221,9 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validateOverviewParams((array) $request->getQueryParams());
+            $queryParams = $request->getQueryParams();
+            $stringKeyParams = $this->ensureStringKeys($queryParams);
+            $params = $this->validateOverviewParams($stringKeyParams);
             $period = $this->createPeriodFromParams($params);
 
             $overview = $this->applicationService->getStatisticsOverview($period);
@@ -383,16 +386,18 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validatePostsParams((array) $request->getQueryParams());
+            $queryParams = $request->getQueryParams();
+            $stringKeyParams = $this->ensureStringKeys($queryParams);
+            $params = $this->validatePostsParams($stringKeyParams);
             $period = $this->createPeriodFromParams($params);
 
-            $sourceType = isset($params['source'])
-                ? SourceType::from((string) $params['source']) : null;
+            $sourceType = isset($params['source']) && is_string($params['source'])
+                ? SourceType::from($params['source']) : null;
 
             $statistics = $this->queryService->getPostStatisticsTrends(
                 $period,
                 $sourceType,
-                (int) ($params['data_points'] ?? 30),
+                is_numeric($params['limit'] ?? null) ? (int) $params['limit'] : 50,
             );
 
             $this->logger->info('文章統計 API 成功回應', [
@@ -438,7 +443,9 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validateSourcesParams((array) $request->getQueryParams());
+            $queryParams = $request->getQueryParams();
+            $stringKeyParams = $this->ensureStringKeys($queryParams);
+            $params = $this->validateSourcesParams($stringKeyParams);
             $period = $this->createPeriodFromParams($params);
 
             // 使用統計快照來取得來源分佈
@@ -452,8 +459,9 @@ class StatisticsController extends BaseController
 
             // 從快照中提取來源分佈資料
             $distribution = [];
-            foreach ($snapshots['data'] as $snapshot) {
-                if (isset($snapshot['source_distribution'])) {
+            $snapshotsData = is_array($snapshots['data'] ?? null) ? $snapshots['data'] : [];
+            foreach ($snapshotsData as $snapshot) {
+                if (is_array($snapshot) && isset($snapshot['source_distribution']) && is_array($snapshot['source_distribution'])) {
                     $distribution = array_merge($distribution, $snapshot['source_distribution']);
                 }
             }
@@ -501,10 +509,16 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validateUsersParams((array) $request->getQueryParams());
+            $queryParams = $request->getQueryParams();
+            $stringKeyParams = $this->ensureStringKeys($queryParams);
+            $params = $this->validateUsersParams($stringKeyParams);
             $period = $this->createPeriodFromParams($params);
 
-            $statistics = $this->queryService->getUserActivityStatistics($period, $params['page'] ?? 1, $params['per_page'] ?? 20);
+            $statistics = $this->queryService->getUserActivityStatistics(
+                $period, 
+                is_numeric($params['page'] ?? null) ? (int) $params['page'] : 1, 
+                is_numeric($params['per_page'] ?? null) ? (int) $params['per_page'] : 20
+            );
 
             $this->logger->info('使用者統計 API 成功回應', [
                 'period_type' => $period->type->value,
@@ -596,12 +610,14 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validatePopularParams((array) $request->getQueryParams());
+            $queryParams = $request->getQueryParams();
+            $stringKeyParams = $this->ensureStringKeys($queryParams);
+            $params = $this->validatePopularParams($stringKeyParams);
             $period = $this->createPeriodFromParams($params);
 
             $popularContent = $this->applicationService->analyzePopularContent(
                 $period,
-                $params['limit'] ?? 20,
+                is_numeric($params['limit'] ?? null) ? (int) $params['limit'] : 10,
             );
 
             $this->logger->info('熱門內容 API 成功回應', [
@@ -648,7 +664,9 @@ class StatisticsController extends BaseController
                 'query_params' => $request->getQueryParams(),
             ]);
 
-            $params = $this->validateTrendsParams((array) $request->getQueryParams());
+            $queryParams = $request->getQueryParams();
+            $stringKeyParams = $this->ensureStringKeys($queryParams);
+            $params = $this->validateTrendsParams($stringKeyParams);
             $period = $this->createPeriodFromParams($params);
 
             $trends = $this->queryService->getPostStatisticsTrends($period, null, 30);
@@ -693,7 +711,8 @@ class StatisticsController extends BaseController
         $params = [];
 
         // 驗證週期類型
-        $params['period_type'] = $this->validatePeriodType($queryParams['period_type'] ?? 'daily');
+        $periodType = is_string($queryParams['period_type'] ?? null) ? $queryParams['period_type'] : 'daily';
+        $params['period_type'] = $this->validatePeriodType($periodType);
 
         // 驗證日期範圍
         if (isset($queryParams['start_date']) || isset($queryParams['end_date'])) {
@@ -714,22 +733,25 @@ class StatisticsController extends BaseController
         $params = $this->validateOverviewParams($queryParams);
 
         // 驗證分頁參數
-        $params['page'] = max(1, (int) ($queryParams['page'] ?? 1));
-        $params['per_page'] = min(100, max(1, (int) ($queryParams['per_page'] ?? 20)));
+        $pageValue = is_numeric($queryParams['page'] ?? null) ? (int) $queryParams['page'] : 1;
+        $perPageValue = is_numeric($queryParams['per_page'] ?? null) ? (int) $queryParams['per_page'] : 20;
+        $params['page'] = max(1, $pageValue);
+        $params['per_page'] = min(100, max(1, $perPageValue));
 
         // 驗證排序參數
         $allowedSortFields = ['created_at', 'views', 'title', 'author'];
-        $params['sort_by'] = in_array($queryParams['sort_by'] ?? 'created_at', $allowedSortFields)
-            ? $queryParams['sort_by']
-            : 'created_at';
+        $sortBy = is_string($queryParams['sort_by'] ?? null) ? $queryParams['sort_by'] : 'created_at';
+        $params['sort_by'] = in_array($sortBy, $allowedSortFields) ? $sortBy : 'created_at';
 
-        $params['sort_order'] = in_array($queryParams['sort_order'] ?? 'desc', ['asc', 'desc'])
-            ? $queryParams['sort_order']
-            : 'desc';
+        $sortOrder = is_string($queryParams['sort_order'] ?? null) ? $queryParams['sort_order'] : 'desc';
+        $params['sort_order'] = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
 
         // 驗證來源篩選
         if (isset($queryParams['source'])) {
-            $params['source'] = $this->validateSource($queryParams['source']);
+            $source = is_string($queryParams['source']) ? $queryParams['source'] : '';
+            if ($source !== '') {
+                $params['source'] = $this->validateSource($source);
+            }
         }
 
         return $params;
@@ -771,8 +793,10 @@ class StatisticsController extends BaseController
             : 'activity';
 
         // 驗證分頁參數
-        $params['page'] = max(1, (int) ($queryParams['page'] ?? 1));
-        $params['per_page'] = min(100, max(1, (int) ($queryParams['per_page'] ?? 20)));
+        $pageValue = is_numeric($queryParams['page'] ?? null) ? (int) $queryParams['page'] : 1;
+        $perPageValue = is_numeric($queryParams['per_page'] ?? null) ? (int) $queryParams['per_page'] : 20;
+        $params['page'] = max(1, $pageValue);
+        $params['per_page'] = min(100, max(1, $perPageValue));
 
         return $params;
     }
@@ -788,7 +812,8 @@ class StatisticsController extends BaseController
         $params = $this->validateOverviewParams($queryParams);
 
         // 驗證限制數量
-        $params['limit'] = min(100, max(1, (int) ($queryParams['limit'] ?? 20)));
+        $limitValue = is_numeric($queryParams['limit'] ?? null) ? (int) $queryParams['limit'] : 20;
+        $params['limit'] = min(100, max(1, $limitValue));
 
         // 驗證內容類型
         $allowedTypes = ['posts', 'authors', 'sources', 'tags'];
@@ -811,8 +836,9 @@ class StatisticsController extends BaseController
 
         // 驗證指標類型
         $allowedMetrics = ['posts', 'views', 'users', 'sources'];
-        $params['metrics'] = isset($queryParams['metrics'])
-            ? array_intersect(explode(',', $queryParams['metrics']), $allowedMetrics)
+        $metricsString = is_string($queryParams['metrics'] ?? null) ? $queryParams['metrics'] : '';
+        $params['metrics'] = $metricsString !== ''
+            ? array_intersect(explode(',', $metricsString), $allowedMetrics)
             : ['posts', 'views'];
 
         if (empty($params['metrics'])) {
@@ -854,17 +880,27 @@ class StatisticsController extends BaseController
 
         if (isset($queryParams['start_date'])) {
             try {
-                $params['start_date'] = new DateTimeImmutable($queryParams['start_date']);
+                $startDate = is_string($queryParams['start_date']) ? $queryParams['start_date'] : '';
+                if ($startDate === '') {
+                    throw new InvalidArgumentException('開始日期不能為空');
+                }
+                $params['start_date'] = new DateTimeImmutable($startDate);
             } catch (Exception $e) {
-                throw new InvalidArgumentException("無效的開始日期格式: {$queryParams['start_date']}");
+                $dateValue = is_string($queryParams['start_date'] ?? null) ? $queryParams['start_date'] : '(invalid)';
+                throw new InvalidArgumentException("無效的開始日期格式: {$dateValue}");
             }
         }
 
         if (isset($queryParams['end_date'])) {
             try {
-                $params['end_date'] = new DateTimeImmutable($queryParams['end_date']);
+                $endDate = is_string($queryParams['end_date']) ? $queryParams['end_date'] : '';
+                if ($endDate === '') {
+                    throw new InvalidArgumentException('結束日期不能為空');
+                }
+                $params['end_date'] = new DateTimeImmutable($endDate);
             } catch (Exception $e) {
-                throw new InvalidArgumentException("無效的結束日期格式: {$queryParams['end_date']}");
+                $dateValue = is_string($queryParams['end_date'] ?? null) ? $queryParams['end_date'] : '(invalid)';
+                throw new InvalidArgumentException("無效的結束日期格式: {$dateValue}");
             }
         }
 
@@ -909,11 +945,15 @@ class StatisticsController extends BaseController
 
         // 如果有指定日期範圍，使用自訂範圍
         if (isset($params['start_date']) && isset($params['end_date'])) {
-            return StatisticsPeriod::create(
-                $params['start_date'],
-                $params['end_date'],
-                $periodType,
-            );
+            $startDate = $params['start_date'];
+            $endDate = $params['end_date'];
+            if ($startDate instanceof DateTimeInterface && $endDate instanceof DateTimeInterface) {
+                return StatisticsPeriod::create(
+                    $startDate,
+                    $endDate,
+                    $periodType,
+                );
+            }
         }
 
         // 否則使用預設的週期範圍
@@ -941,5 +981,21 @@ class StatisticsController extends BaseController
                 PeriodType::YEARLY,
             ),
         };
+    }
+
+    /**
+     * 確保所有陣列鍵都是字串型態
+     * @param array<mixed, mixed> $params
+     * @return array<string, mixed>
+     */
+    private function ensureStringKeys(array $params): array
+    {
+        $stringKeyParams = [];
+        foreach ($params as $key => $value) {
+            if (is_string($key)) {
+                $stringKeyParams[$key] = $value;
+            }
+        }
+        return $stringKeyParams;
     }
 }
