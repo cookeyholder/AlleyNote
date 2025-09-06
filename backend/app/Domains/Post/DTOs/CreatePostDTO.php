@@ -33,8 +33,8 @@ class CreatePostDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array $data 輸入資料
-     *                    * @throws ValidationException 當驗證失敗時
+     * @param array<string, mixed> $data 輸入資料
+     * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
     {
@@ -62,7 +62,9 @@ class CreatePostDTO extends BaseDTO
         $this->userId = $this->getInt($validatedData, 'user_id') ?? 0;
         $this->userIp = $this->getString($validatedData, 'user_ip') ?? '';
         $this->isPinned = $this->getBool($validatedData, 'is_pinned') ?? false;
-        $this->status = PostStatus::from($validatedData['status']);
+
+        $statusValue = $validatedData['status'] ?? '';
+        $this->status = PostStatus::from(is_string($statusValue) || is_int($statusValue) ? $statusValue : '');
 
         // 處理發布日期，空字串轉為 null
         $publishDate = $this->getString($validatedData, 'publish_date');
@@ -81,8 +83,8 @@ class CreatePostDTO extends BaseDTO
             }
 
             $title = trim($value);
-            $minLength = (int) ($parameters[0] ?? 1);
-            $maxLength = (int) ($parameters[1] ?? 255);
+            $minLength = is_numeric($parameters[0] ?? 1) ? (int) ($parameters[0] ?? 1) : 1;
+            $maxLength = is_numeric($parameters[1] ?? 255) ? (int) ($parameters[1] ?? 255) : 255;
 
             // 檢查長度
             $length = mb_strlen($title, 'UTF-8');
@@ -181,6 +183,8 @@ class CreatePostDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
+     *
+     * @return array<string, string>
      */
     protected function getValidationRules(): array
     {
@@ -197,6 +201,8 @@ class CreatePostDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
