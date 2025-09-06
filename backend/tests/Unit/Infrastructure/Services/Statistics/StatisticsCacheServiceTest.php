@@ -30,18 +30,15 @@ final class StatisticsCacheServiceTest extends TestCase
 {
     private StatisticsCacheService $cacheService;
 
-    private MockObject|CacheManagerInterface $mockCacheManager;
+    private CacheManagerInterface&MockObject $mockCacheManager;
 
-    private MockObject|TaggedCacheInterface $mockTaggedCache;
-
-    private MockObject|LoggerInterface $mockLogger;
+    private LoggerInterface&MockObject $mockLogger;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->mockCacheManager = $this->createMock(CacheManagerInterface::class);
-        $this->mockTaggedCache = $this->createMock(TaggedCacheInterface::class);
         $this->mockLogger = $this->createMock(LoggerInterface::class);
 
         $this->cacheService = new StatisticsCacheService(

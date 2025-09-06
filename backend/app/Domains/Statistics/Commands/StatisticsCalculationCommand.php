@@ -263,7 +263,6 @@ readonly class StatisticsCalculationCommand
             PeriodType::WEEKLY => $this->createWeeklyPeriod($now),
             PeriodType::MONTHLY => $this->createMonthlyPeriod($now),
             PeriodType::YEARLY => $this->createYearlyPeriod($now),
-            default => throw new InvalidArgumentException("不支援的週期類型: {$periodType->name}"),
         };
     }
 

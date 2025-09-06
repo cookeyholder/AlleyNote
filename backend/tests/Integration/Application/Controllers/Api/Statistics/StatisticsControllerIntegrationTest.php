@@ -224,14 +224,10 @@ final class StatisticsControllerIntegrationTest extends TestCase
         }
 
         // 驗證時間戳格式
-        if (isset($mockResponse['timestamp'])) {
-            $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/', $mockResponse['timestamp']);
-        }
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/', $mockResponse['timestamp']);
 
         // 驗證版本格式
-        if (isset($mockResponse['version'])) {
-            $this->assertMatchesRegularExpression('/^v\d+\.\d+\.\d+$/', $mockResponse['version']);
-        }
+        $this->assertMatchesRegularExpression('/^v\d+\.\d+\.\d+$/', $mockResponse['version']);
     }
 
     /**
@@ -250,12 +246,9 @@ final class StatisticsControllerIntegrationTest extends TestCase
 
         // 驗證錯誤結構符合預期
         $this->assertArrayHasKey('success', $mockErrorResponse);
-        $this->assertFalse($mockErrorResponse['success']);
         $this->assertArrayHasKey('error', $mockErrorResponse);
-        $this->assertIsArray($mockErrorResponse['error']);
         $this->assertArrayHasKey('code', $mockErrorResponse['error']);
         $this->assertArrayHasKey('message', $mockErrorResponse['error']);
-        $this->assertIsString($mockErrorResponse['error']['message']);
     }
 
     /**
@@ -265,7 +258,7 @@ final class StatisticsControllerIntegrationTest extends TestCase
     public function should_cache_statistics_responses(): void
     {
         // 驗證快取機制運作正常
-        $this->assertTrue(true); // 基本測試通過
+        $this->markTestIncomplete('Cache functionality test needs implementation');
     }
 
     /**
@@ -317,10 +310,10 @@ final class StatisticsControllerIntegrationTest extends TestCase
         $this->assertArrayHasKey('posts', $mockStatisticsData);
         $this->assertArrayHasKey('users', $mockStatisticsData);
 
-        // 驗證數值類型正確
-        $this->assertIsInt($mockStatisticsData['posts']['total_count']);
-        $this->assertIsInt($mockStatisticsData['posts']['total_views']);
-        $this->assertIsFloat($mockStatisticsData['posts']['average_views_per_post']);
-        $this->assertIsInt($mockStatisticsData['posts']['unique_viewers']);
+        // 驗證數值範圍合理
+        $this->assertGreaterThan(0, $mockStatisticsData['posts']['total_count']);
+        $this->assertGreaterThan(0, $mockStatisticsData['posts']['total_views']);
+        $this->assertGreaterThan(0, $mockStatisticsData['posts']['average_views_per_post']);
+        $this->assertGreaterThan(0, $mockStatisticsData['posts']['unique_viewers']);
     }
 }

@@ -35,9 +35,9 @@ final class StatisticsCacheServiceTest extends TestCase
 
     private UserStatisticsRepository $userRepository;
 
-    private MockObject|PDO $mockPdo;
+    private PDO&MockObject $mockPdo;
 
-    private MockObject|PDOStatement $mockStatement;
+    private PDOStatement&MockObject $mockStatement;
 
     protected function setUp(): void
     {
@@ -230,7 +230,6 @@ final class StatisticsCacheServiceTest extends TestCase
         $result = $this->postRepository->getPostsBySourceType($period);
 
         // Assert
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('web', $result);
         $this->assertEquals(120, $result['web']);
     }
@@ -268,7 +267,6 @@ final class StatisticsCacheServiceTest extends TestCase
         $result = $this->postRepository->getHourlyDistribution($period);
 
         // Assert
-        $this->assertIsArray($result);
         $this->assertCount(24, $result);
         $this->assertEquals(25, $result[13]); // 下午1點最高峰
     }
@@ -371,7 +369,6 @@ final class StatisticsCacheServiceTest extends TestCase
         $result = $this->userRepository->calculateUserEngagement($period);
 
         // Assert
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('posts_per_user', $result);
         $this->assertArrayHasKey('views_per_user', $result);
         $this->assertEquals(2.5, $result['posts_per_user']);

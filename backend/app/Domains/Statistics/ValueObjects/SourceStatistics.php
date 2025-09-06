@@ -28,6 +28,8 @@ readonly class SourceStatistics
 
     /**
      * 建立來源統計.
+     *
+     * @param array<string, StatisticsMetric> $additionalMetrics
      */
     public static function create(
         SourceType $sourceType,

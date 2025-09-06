@@ -71,10 +71,10 @@ class ActivityStatusTest extends TestCase
 
         $this->assertIsArray($statuses);
         $this->assertCount(5, $statuses);
-        $this->assertArrayHasKey('success', array_flip(is_array($statuses) ? array_filter($statuses, fn($v) => is_string($v) || is_int($v)) : []));
-        $this->assertArrayHasKey('failed', array_flip(is_array($statuses) ? array_filter($statuses, fn($v) => is_string($v) || is_int($v)) : []));
-        $this->assertArrayHasKey('error', array_flip(is_array($statuses) ? array_filter($statuses, fn($v) => is_string($v) || is_int($v)) : []));
-        $this->assertArrayHasKey('blocked', array_flip(is_array($statuses) ? array_filter($statuses, fn($v) => is_string($v) || is_int($v)) : []));
-        $this->assertArrayHasKey('pending', array_flip(is_array($statuses) ? array_filter($statuses, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey('success', array_flip($statuses));
+        $this->assertArrayHasKey('failed', array_flip($statuses));
+        $this->assertArrayHasKey('error', array_flip($statuses));
+        $this->assertArrayHasKey('blocked', array_flip($statuses));
+        $this->assertArrayHasKey('pending', array_flip($statuses));
     }
 }

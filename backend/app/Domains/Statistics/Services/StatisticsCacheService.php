@@ -388,7 +388,14 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                 'error' => $e->getMessage(),
             ]);
 
-            return ['error' => $error, 'health_status' => 'unhealthy', 'manager_stats' => [], 'cache_keys' => [], 'ttl_config' => [], 'tag_config' => []];
+            return [
+                'error' => $e->getMessage(),
+                'health_status' => ['status' => 'unhealthy', 'error' => $e->getMessage()],
+                'manager_stats' => [],
+                'cache_keys' => [],
+                'ttl_config' => [],
+                'tag_config' => []
+            ];
         }
     }
 
@@ -399,7 +406,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
             // 檢查是否有任何驅動可用
             foreach ($healthStatus as $driverStatus) {
-                if ($driverStatus['available'] === true) {
+                if (is_array($driverStatus) && ($driverStatus['available'] ?? false) === true) {
                     return true;
                 }
             }
@@ -414,6 +421,9 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function cleanup(): array
     {
         try {
@@ -423,7 +433,13 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                 'results' => $results,
             ]);
 
-            return $results;
+            // 確保回傳格式為 array<string, mixed>
+            if (!empty($results)) {
+                /** @var array<string, mixed> */
+                return (array)$results;
+            }
+
+            return ['success' => true, 'message' => 'cleanup completed'];
         } catch (Exception $e) {
             $this->logger->error('快取清理失敗', [
                 'error' => $e->getMessage(),

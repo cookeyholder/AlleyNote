@@ -35,9 +35,9 @@ final class StatisticsRepositoryTest extends TestCase
 
     private UserStatisticsRepository $userRepository;
 
-    private MockObject|PDO $mockPdo;
+    private PDO&MockObject $mockPdo;
 
-    private MockObject|PDOStatement $mockStatement;
+    private PDOStatement&MockObject $mockStatement;
 
     protected function setUp(): void
     {
@@ -303,7 +303,7 @@ final class StatisticsRepositoryTest extends TestCase
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
-            ->with($this->callback(function ($params) use ($period) {
+            ->with($this->callback(function (array $params) use ($period) {
                 return count($params) === 2
                        && $params['start_date'] === $period->startDate->format('Y-m-d H:i:s')
                        && $params['end_date'] === $period->endDate->format('Y-m-d H:i:s');

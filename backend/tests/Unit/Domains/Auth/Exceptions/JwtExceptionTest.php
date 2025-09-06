@@ -24,18 +24,19 @@ class JwtExceptionTest extends TestCase
         int $code = 1000,
         ?Exception $previous = null,
         array $context = [],
-        string $errorType = 'test_jwt_error',
     ): JwtException {
-        return new class ($message, $code, $previous, $context, $errorType) extends JwtException {
+        /** @var array<string, mixed> $context */
+        return new class ($message, $code, $previous, $context) extends JwtException {
+            /**
+             * @param array<string, mixed> $context
+             */
             public function __construct(
                 string $message,
                 int $code,
                 ?Exception $previous,
                 array $context,
-                string $errorType,
             ) {
                 parent::__construct($message, $code, $previous, $context);
-                $this->errorType = $errorType;
             }
         };
     }
@@ -116,11 +117,10 @@ class JwtExceptionTest extends TestCase
      */
     public function testErrorType(): void
     {
-        $errorType = 'custom_jwt_error';
-        $exception = $this->createConcreteJwtException(errorType: $errorType);
+        $exception = $this->createConcreteJwtException();
 
-        $this->assertSame($errorType, $exception->getErrorType());
-        $this->assertTrue($exception->isType($errorType));
+        $this->assertSame('jwt_error', $exception->getErrorType());
+        $this->assertTrue($exception->isType('jwt_error'));
         $this->assertFalse($exception->isType('other_error'));
     }
 
@@ -132,14 +132,13 @@ class JwtExceptionTest extends TestCase
         $message = 'Test error';
         $code = 2000;
         $context = ['key' => 'value'];
-        $errorType = 'test_error';
 
-        $exception = $this->createConcreteJwtException($message, $code, null, $context, $errorType);
+        $exception = $this->createConcreteJwtException($message, $code, null, $context);
 
         $details = $exception->getErrorDetails();
 
         $this->assertIsArray($details);
-        $this->assertSame($errorType, $details['error_type']);
+        $this->assertSame('jwt_error', $details['error_type']);
         $this->assertSame($message, $details['message']);
         $this->assertSame($code, $details['code']);
         $this->assertSame($context, $details['context']);
@@ -167,9 +166,8 @@ class JwtExceptionTest extends TestCase
         $message = 'Test message';
         $code = 3000;
         $context = ['test' => 'data'];
-        $errorType = 'array_test_error';
 
-        $exception = $this->createConcreteJwtException($message, $code, null, $context, $errorType);
+        $exception = $this->createConcreteJwtException($message, $code, null, $context);
 
         $array = $exception->toArray();
 
@@ -178,12 +176,12 @@ class JwtExceptionTest extends TestCase
         $this->assertArrayHasKey('error_type', $array);
         $this->assertArrayHasKey('message', $array);
         $this->assertArrayHasKey('code', $array);
+        $this->assertSame('jwt_error', $array['error_type']);
         $this->assertArrayHasKey('context', $array);
         $this->assertArrayHasKey('file', $array);
         $this->assertArrayHasKey('line', $array);
         $this->assertArrayHasKey('trace', $array);
 
-        $this->assertSame($errorType, $array['error_type']);
         $this->assertSame($message, $array['message']);
         $this->assertSame($code, $array['code']);
         $this->assertSame($context, $array['context']);
@@ -196,13 +194,12 @@ class JwtExceptionTest extends TestCase
     {
         $message = 'Test error';
         $code = 4000;
-        $errorType = 'string_test_error';
 
-        $exception = $this->createConcreteJwtException($message, $code, null, [], $errorType);
+        $exception = $this->createConcreteJwtException($message, $code, null, []);
 
         $string = (string) $exception;
 
-        $this->assertStringContainsString($errorType, $string);
+        $this->assertStringContainsString('jwt_error', $string);
         $this->assertStringContainsString($message, $string);
         $this->assertStringContainsString((string) $code, $string);
         $this->assertStringNotContainsString('Context:', $string);
@@ -216,13 +213,12 @@ class JwtExceptionTest extends TestCase
         $message = 'Test error';
         $code = 4001;
         $context = ['user' => 'test', 'action' => 'login'];
-        $errorType = 'context_string_test_error';
 
-        $exception = $this->createConcreteJwtException($message, $code, null, $context, $errorType);
+        $exception = $this->createConcreteJwtException($message, $code, null, $context);
 
         $string = (string) $exception;
 
-        $this->assertStringContainsString($errorType, $string);
+        $this->assertStringContainsString('jwt_error', $string);
         $this->assertStringContainsString($message, $string);
         $this->assertStringContainsString((string) $code, $string);
         $this->assertStringContainsString('Context:', $string);

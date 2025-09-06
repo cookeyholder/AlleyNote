@@ -121,7 +121,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
         // 測試透過標籤取得相關鍵
         $keysByTag = $this->taggedCache->getKeysByTag('user_123');
-        $this->assertArrayHasKey($key, array_flip(is_array($keysByTag) ? array_filter($keysByTag, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey($key, array_flip($keysByTag));
     }
 
     public function testTagFlushing(): void
@@ -222,7 +222,7 @@ class TaggedCacheIntegrationTest extends TestCase
         foreach ($tags as $tag) {
             $this->assertTrue($this->tagRepository->tagExists($tag));
             $keys = $this->taggedCache->getKeysByTag($tag);
-            $this->assertArrayHasKey($key, array_flip(is_array($keys) ? array_filter($keys, fn($v) => is_string($v) || is_int($v)) : []));
+            $this->assertArrayHasKey($key, array_flip($keys));
         }
     }
 
@@ -272,7 +272,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
         for ($i = 0; $i < 10; $i++) {
             $expectedKey = $baseKey . $i;
-            $this->assertArrayHasKey($expectedKey, array_flip(is_array($keysWithSharedTag) ? array_filter($keysWithSharedTag, fn($v) => is_string($v) || is_int($v)) : []));
+            $this->assertArrayHasKey($expectedKey, array_flip($keysWithSharedTag));
         }
 
         // 清空共享標籤，應該清空所有相關的快取

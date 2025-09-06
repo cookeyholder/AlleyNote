@@ -473,7 +473,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         );
 
         foreach ($expectedMethods as $expectedMethod) {
-            $this->assertArrayHasKey($expectedMethod, array_flip(is_array($actualMethods) ? array_filter($actualMethods, fn($v) => is_string($v) || is_int($v)) : []), "Method {$expectedMethod} is missing from interface");
+            $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
         }
     }
 

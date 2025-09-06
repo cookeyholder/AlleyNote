@@ -905,7 +905,7 @@ class StatisticsController extends BaseController
         }
 
         // 驗證日期範圍邏輯
-        if (isset($params['end_date'])) {
+        if (isset($params['end_date']) && isset($params['start_date'])) {
             if ($params['start_date'] > $params['end_date']) {
                 throw new InvalidArgumentException('開始日期不能晚於結束日期');
             }

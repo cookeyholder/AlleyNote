@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-06 17:07:07",
+        "scan_time": "2025-09-06 19:28:58",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -156,6 +156,12 @@
             "extension": "xml",
             "size": 3951
         },
+        "test-error-analysis-snapshot.json": {
+            "type": "file",
+            "path": "test-error-analysis-snapshot.json",
+            "extension": "json",
+            "size": 675992
+        },
         "app": {
             "type": "directory",
             "path": "app",
@@ -284,7 +290,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Commands\/StatisticsCalculationCommand.php",
                                             "extension": "php",
-                                            "size": 14494
+                                            "size": 14386
                                         }
                                     }
                                 },
@@ -314,19 +320,19 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Services\/StatisticsCalculationService.php",
                                             "extension": "php",
-                                            "size": 14545
+                                            "size": 14694
                                         },
                                         "StatisticsCacheService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Services\/StatisticsCacheService.php",
                                             "extension": "php",
-                                            "size": 14793
+                                            "size": 15289
                                         },
                                         "PostStatisticsService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Services\/PostStatisticsService.php",
                                             "extension": "php",
-                                            "size": 15649
+                                            "size": 16027
                                         },
                                         "StatisticsCalculatorService.php": {
                                             "type": "file",
@@ -356,7 +362,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php",
                                             "extension": "php",
-                                            "size": 14919
+                                            "size": 15955
                                         }
                                     }
                                 },
@@ -368,7 +374,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php",
                                             "extension": "php",
-                                            "size": 8960
+                                            "size": 9032
                                         },
                                         "StatisticsMetric.php": {
                                             "type": "file",
@@ -392,7 +398,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php",
                                             "extension": "php",
-                                            "size": 10490
+                                            "size": 13166
                                         }
                                     }
                                 }
@@ -852,7 +858,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php",
                                                     "extension": "php",
-                                                    "size": 10638
+                                                    "size": 10636
                                                 }
                                             }
                                         }
@@ -2044,7 +2050,7 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/Statistics\/StatisticsController.php",
                                                     "extension": "php",
-                                                    "size": 41125
+                                                    "size": 41157
                                                 }
                                             }
                                         }
@@ -2076,7 +2082,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php",
                                             "extension": "php",
-                                            "size": 18593
+                                            "size": 18639
                                         }
                                     }
                                 }
@@ -2184,7 +2190,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php",
                                             "extension": "php",
-                                            "size": 24224
+                                            "size": 24235
                                         },
                                         "PostStatisticsRepository.php": {
                                             "type": "file",
@@ -2196,13 +2202,13 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php",
                                             "extension": "php",
-                                            "size": 30424
+                                            "size": 45263
                                         },
                                         "SystemStatisticsRepository.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Repositories\/Statistics\/SystemStatisticsRepository.php",
                                             "extension": "php",
-                                            "size": 22977
+                                            "size": 29468
                                         }
                                     }
                                 }
@@ -2506,6 +2512,12 @@
             "extension": "neon",
             "size": 1386
         },
+        "fix_redundant_checks.php": {
+            "type": "file",
+            "path": "fix_redundant_checks.php",
+            "extension": "php",
+            "size": 836
+        },
         "config": {
             "type": "directory",
             "path": "config",
@@ -2648,7 +2660,7 @@
                                     "type": "file",
                                     "path": "tests\/Database\/Seeds\/UserActivityLogsSeederTest.php",
                                     "extension": "php",
-                                    "size": 9088
+                                    "size": 8917
                                 }
                             }
                         }
@@ -2716,19 +2728,19 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Statistics\/Services\/PostStatisticsServiceTest.php",
                                                     "extension": "php",
-                                                    "size": 9685
+                                                    "size": 9192
                                                 },
                                                 "StatisticsCalculatorServiceTest.php": {
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Statistics\/Services\/StatisticsCalculatorServiceTest.php",
                                                     "extension": "php",
-                                                    "size": 13688
+                                                    "size": 13297
                                                 },
                                                 "StatisticsCacheServiceTest.php": {
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Statistics\/Services\/StatisticsCacheServiceTest.php",
                                                     "extension": "php",
-                                                    "size": 16046
+                                                    "size": 15929
                                                 }
                                             }
                                         }
@@ -2752,7 +2764,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Security\/Enums\/ActivityStatusTest.php",
                                                     "extension": "php",
-                                                    "size": 3625
+                                                    "size": 3225
                                                 }
                                             }
                                         },
@@ -2800,19 +2812,19 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Auth\/Contracts\/JwtTokenServiceInterfaceTest.php",
                                                     "extension": "php",
-                                                    "size": 13297
+                                                    "size": 13212
                                                 },
                                                 "RefreshTokenRepositoryInterfaceTest.php": {
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Auth\/Contracts\/RefreshTokenRepositoryInterfaceTest.php",
                                                     "extension": "php",
-                                                    "size": 16745
+                                                    "size": 16660
                                                 },
                                                 "TokenBlacklistRepositoryInterfaceTest.php": {
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Auth\/Contracts\/TokenBlacklistRepositoryInterfaceTest.php",
                                                     "extension": "php",
-                                                    "size": 21428
+                                                    "size": 21343
                                                 }
                                             }
                                         },
@@ -2848,7 +2860,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Auth\/Exceptions\/JwtExceptionTest.php",
                                                     "extension": "php",
-                                                    "size": 9359
+                                                    "size": 9081
                                                 },
                                                 "TokenGenerationExceptionTest.php": {
                                                     "type": "file",
@@ -2890,7 +2902,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Auth\/Services\/TokenBlacklistServiceTest.php",
                                                     "extension": "php",
-                                                    "size": 30221
+                                                    "size": 30253
                                                 },
                                                 "AuthenticationServiceTest.php": {
                                                     "type": "file",
@@ -2938,7 +2950,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntryTest.php",
                                                     "extension": "php",
-                                                    "size": 28667
+                                                    "size": 28276
                                                 }
                                             }
                                         }
@@ -2998,7 +3010,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Shared\/Cache\/Repositories\/MemoryTagRepositoryTest.php",
                                                     "extension": "php",
-                                                    "size": 9808
+                                                    "size": 8982
                                                 }
                                             }
                                         },
@@ -3010,7 +3022,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Shared\/Cache\/Services\/CacheGroupManagerTest.php",
                                                     "extension": "php",
-                                                    "size": 12208
+                                                    "size": 11965
                                                 }
                                             }
                                         },
@@ -3279,7 +3291,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Infrastructure\/Repositories\/Statistics\/StatisticsRepositoryTest.php",
                                                     "extension": "php",
-                                                    "size": 13616
+                                                    "size": 13622
                                                 }
                                             }
                                         }
@@ -3297,7 +3309,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Infrastructure\/Services\/Statistics\/StatisticsCacheServiceTest.php",
                                                     "extension": "php",
-                                                    "size": 4424
+                                                    "size": 4280
                                                 }
                                             }
                                         }
@@ -3433,7 +3445,7 @@
                                     "type": "file",
                                     "path": "tests\/Unit\/Validation\/ValidationExceptionTest.php",
                                     "extension": "php",
-                                    "size": 18788
+                                    "size": 18692
                                 },
                                 "ValidatorTest.php": {
                                     "type": "file",
@@ -3445,7 +3457,7 @@
                                     "type": "file",
                                     "path": "tests\/Unit\/Validation\/ValidationResultTest.php",
                                     "extension": "php",
-                                    "size": 17382
+                                    "size": 17286
                                 }
                             }
                         }
@@ -3519,7 +3531,7 @@
                             "type": "file",
                             "path": "tests\/Integration\/JwtAuthenticationIntegrationTest.php",
                             "extension": "php",
-                            "size": 20446
+                            "size": 20413
                         },
                         "JwtTokenBlacklistIntegrationTest.php.disabled": {
                             "type": "file",
@@ -3531,7 +3543,7 @@
                             "type": "file",
                             "path": "tests\/Integration\/PostActivityLoggingTest.php",
                             "extension": "php",
-                            "size": 10289
+                            "size": 10172
                         },
                         "Repositories": {
                             "type": "directory",
@@ -3561,7 +3573,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Integration\/Shared\/Cache\/Services\/TaggedCacheIntegrationTest.php",
                                                     "extension": "php",
-                                                    "size": 11730
+                                                    "size": 11484
                                                 }
                                             }
                                         }
@@ -3721,7 +3733,7 @@
                                                             "type": "file",
                                                             "path": "tests\/Integration\/Application\/Controllers\/Api\/Statistics\/StatisticsControllerIntegrationTest.php",
                                                             "extension": "php",
-                                                            "size": 9916
+                                                            "size": 9666
                                                         }
                                                     }
                                                 }
@@ -3853,7 +3865,7 @@
                                     "type": "file",
                                     "path": "tests\/Support\/Traits\/HttpResponseTestTrait.php",
                                     "extension": "php",
-                                    "size": 6104
+                                    "size": 6020
                                 },
                                 "DatabaseTestTrait.php": {
                                     "type": "file",
@@ -3963,7 +3975,7 @@
                             "type": "file",
                             "path": "tests\/Functional\/PostControllerActivityLoggingTest.php",
                             "extension": "php",
-                            "size": 9052
+                            "size": 8852
                         },
                         "AttachmentActivityLoggingTest.php": {
                             "type": "file",
@@ -4026,6 +4038,12 @@
         "storage": {
             "type": "directory",
             "ignored": true
+        },
+        "fix_boolean_redundancy.php": {
+            "type": "file",
+            "path": "fix_boolean_redundancy.php",
+            "extension": "php",
+            "size": 648
         },
         "coverage-reports": {
             "type": "directory",
@@ -4365,6 +4383,12 @@
                     "extension": "php",
                     "size": 10588
                 },
+                "scan-project-for-test-analysis.php": {
+                    "type": "file",
+                    "path": "scripts\/scan-project-for-test-analysis.php",
+                    "extension": "php",
+                    "size": 44186
+                },
                 "batch_fix_type_issues.php": {
                     "type": "file",
                     "path": "scripts\/batch_fix_type_issues.php",
@@ -4585,7 +4609,7 @@
                     "type": "file",
                     "path": "scripts\/scan-project-architecture.php",
                     "extension": "php",
-                    "size": 21563
+                    "size": 21445
                 },
                 "common-error-fixer.php": {
                     "type": "file",
@@ -4805,11 +4829,23 @@
             "extension": "php",
             "size": 4925
         },
+        "test-error-analysis-report.md": {
+            "type": "file",
+            "path": "test-error-analysis-report.md",
+            "extension": "md",
+            "size": 9752
+        },
         "phpunit_clean.xml": {
             "type": "file",
             "path": "phpunit_clean.xml",
             "extension": "xml",
             "size": 1670
+        },
+        "project-architecture-snapshot.json": {
+            "type": "file",
+            "path": "project-architecture-snapshot.json",
+            "extension": "json",
+            "size": 1572126
         },
         "phpstan-T4.1-baseline.neon": {
             "type": "file",
@@ -4841,6 +4877,12 @@
             "extension": "json",
             "size": 1686
         },
+        "project-architecture-summary.md": {
+            "type": "file",
+            "path": "project-architecture-summary.md",
+            "extension": "md",
+            "size": 825
+        },
         "vendor": {
             "type": "directory",
             "ignored": true
@@ -4849,28 +4891,28 @@
             "type": "file",
             "path": ".phpunit.result.cache",
             "extension": "cache",
-            "size": 150856
+            "size": 151330
         }
     },
     "file_statistics": {
-        "total_files": 589,
+        "total_files": 596,
         "by_extension": {
             "neon": 7,
-            "php": 532,
+            "php": 535,
             "bak": 3,
-            "md": 2,
+            "md": 4,
             "sqlite3": 1,
             "gitkeep": 1,
             "testing": 1,
             "lock": 1,
             "xml": 2,
+            "json": 5,
             "2025-08-30_13-17-14": 3,
             "2025-08-30_08-53-31": 2,
             "disabled": 1,
             "jpg": 1,
             "backup": 1,
             "cache": 2,
-            "json": 3,
             "html": 1,
             "yaml": 1,
             "simple": 1,
@@ -4880,7 +4922,7 @@
             "development": 1
         },
         "by_directory": {
-            "\/": 21,
+            "\/": 27,
             "\/database\/migrations": 10,
             "\/database": 2,
             "\/database\/seeds": 3,
@@ -5051,7 +5093,7 @@
             "\/tests\/Factory\/Abstracts": 2,
             "\/public": 5,
             "\/examples": 3,
-            "\/scripts": 104,
+            "\/scripts": 105,
             "\/scripts\/consolidated": 9,
             "\/scripts\/lib": 1
         }
@@ -5711,7 +5753,7 @@
                 "LOCK_PREFIX",
                 "LOCK_TIMEOUT"
             ],
-            "lines_of_code": 439
+            "lines_of_code": 438
         },
         "app\/Domains\/Statistics\/Events\/StatisticsSnapshotUpdated.php": {
             "path": "app\/Domains\/Statistics\/Events\/StatisticsSnapshotUpdated.php",
@@ -5768,7 +5810,6 @@
             "interfaces": [],
             "traits": [],
             "uses": [
-                "App\\Domains\\Statistics\\Contracts\\PostStatisticsRepositoryInterface",
                 "App\\Domains\\Statistics\\Contracts\\UserStatisticsRepositoryInterface",
                 "App\\Domains\\Statistics\\Entities\\StatisticsSnapshot",
                 "App\\Domains\\Statistics\\Exceptions\\StatisticsCalculationException",
@@ -5794,7 +5835,7 @@
                 "calculateForecastConfidence"
             ],
             "constants": [],
-            "lines_of_code": 458
+            "lines_of_code": 468
         },
         "app\/Domains\/Statistics\/Services\/StatisticsCacheService.php": {
             "path": "app\/Domains\/Statistics\/Services\/StatisticsCacheService.php",
@@ -5851,7 +5892,7 @@
                 "DEFAULT_TTL",
                 "CACHE_TAGS"
             ],
-            "lines_of_code": 474
+            "lines_of_code": 490
         },
         "app\/Domains\/Statistics\/Services\/PostStatisticsService.php": {
             "path": "app\/Domains\/Statistics\/Services\/PostStatisticsService.php",
@@ -5863,7 +5904,6 @@
             "traits": [],
             "uses": [
                 "App\\Domains\\Statistics\\Contracts\\PostStatisticsRepositoryInterface",
-                "App\\Domains\\Statistics\\Contracts\\SystemStatisticsRepositoryInterface",
                 "App\\Domains\\Statistics\\Enums\\SourceType",
                 "App\\Domains\\Statistics\\Exceptions\\StatisticsCalculationException",
                 "App\\Domains\\Statistics\\ValueObjects\\StatisticsPeriod",
@@ -5885,7 +5925,7 @@
                 "getQualityGrade"
             ],
             "constants": [],
-            "lines_of_code": 486
+            "lines_of_code": 501
         },
         "app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php": {
             "path": "app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php",
@@ -5945,7 +5985,7 @@
                 "markAsUpdated"
             ],
             "constants": [],
-            "lines_of_code": 533
+            "lines_of_code": 565
         },
         "app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php": {
             "path": "app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php",
@@ -5985,7 +6025,7 @@
                 "__toString"
             ],
             "constants": [],
-            "lines_of_code": 342
+            "lines_of_code": 344
         },
         "app\/Domains\/Statistics\/ValueObjects\/StatisticsMetric.php": {
             "path": "app\/Domains\/Statistics\/ValueObjects\/StatisticsMetric.php",
@@ -6115,7 +6155,7 @@
                 "printInfo"
             ],
             "constants": [],
-            "lines_of_code": 322
+            "lines_of_code": 379
         },
         "app\/Domains\/Post\/Contracts\/PostRepositoryInterface.php": {
             "path": "app\/Domains\/Post\/Contracts\/PostRepositoryInterface.php",
@@ -12267,7 +12307,7 @@
                 "CACHE_TTL",
                 "CACHE_PREFIX"
             ],
-            "lines_of_code": 521
+            "lines_of_code": 523
         },
         "app\/Infrastructure\/Database\/DatabaseConnection.php": {
             "path": "app\/Infrastructure\/Database\/DatabaseConnection.php",
@@ -12738,7 +12778,7 @@
                 "calculateUserEngagement"
             ],
             "constants": [],
-            "lines_of_code": 852
+            "lines_of_code": 1146
         },
         "app\/Infrastructure\/Repositories\/Statistics\/SystemStatisticsRepository.php": {
             "path": "app\/Infrastructure\/Repositories\/Statistics\/SystemStatisticsRepository.php",
@@ -12783,7 +12823,7 @@
                 "getDatabaseVersion"
             ],
             "constants": [],
-            "lines_of_code": 668
+            "lines_of_code": 813
         },
         "app\/Infrastructure\/OpenApi\/OpenApiSpec.php": {
             "path": "app\/Infrastructure\/OpenApi\/OpenApiSpec.php",
@@ -13907,6 +13947,17 @@
             "constants": [],
             "lines_of_code": 129
         },
+        "fix_redundant_checks.php": {
+            "path": "fix_redundant_checks.php",
+            "namespace": null,
+            "classes": [],
+            "interfaces": [],
+            "traits": [],
+            "uses": [],
+            "functions": [],
+            "constants": [],
+            "lines_of_code": 23
+        },
         "config\/container.php": {
             "path": "config\/container.php",
             "namespace": null,
@@ -14448,7 +14499,7 @@
                 "shouldHandleEmptyData"
             ],
             "constants": [],
-            "lines_of_code": 320
+            "lines_of_code": 315
         },
         "tests\/Unit\/Domains\/Statistics\/Services\/StatisticsCalculatorServiceTest.php": {
             "path": "tests\/Unit\/Domains\/Statistics\/Services\/StatisticsCalculatorServiceTest.php",
@@ -14496,7 +14547,7 @@
                 "createStatisticsSnapshot"
             ],
             "constants": [],
-            "lines_of_code": 446
+            "lines_of_code": 441
         },
         "tests\/Unit\/Domains\/Statistics\/Services\/StatisticsCacheServiceTest.php": {
             "path": "tests\/Unit\/Domains\/Statistics\/Services\/StatisticsCacheServiceTest.php",
@@ -14544,7 +14595,7 @@
                 "createYearlyPeriod"
             ],
             "constants": [],
-            "lines_of_code": 558
+            "lines_of_code": 555
         },
         "tests\/Unit\/Domains\/Security\/Enums\/ActivitySeverityTest.php": {
             "path": "tests\/Unit\/Domains\/Security\/Enums\/ActivitySeverityTest.php",
@@ -15073,7 +15124,7 @@
                 "testContextImmutability"
             ],
             "constants": [],
-            "lines_of_code": 292
+            "lines_of_code": 288
         },
         "tests\/Unit\/Domains\/Auth\/Exceptions\/TokenGenerationExceptionTest.php": {
             "path": "tests\/Unit\/Domains\/Auth\/Exceptions\/TokenGenerationExceptionTest.php",
@@ -16794,7 +16845,7 @@
                 "createDailyPeriod"
             ],
             "constants": [],
-            "lines_of_code": 159
+            "lines_of_code": 156
         },
         "tests\/Unit\/Controllers\/IpControllerTest.php": {
             "path": "tests\/Unit\/Controllers\/IpControllerTest.php",
@@ -17741,7 +17792,7 @@
                 "generateTestPublicKey"
             ],
             "constants": [],
-            "lines_of_code": 548
+            "lines_of_code": 547
         },
         "tests\/Integration\/PostActivityLoggingTest.php": {
             "path": "tests\/Integration\/PostActivityLoggingTest.php",
@@ -17775,7 +17826,7 @@
                 "it_logs_pin_toggle_activity"
             ],
             "constants": [],
-            "lines_of_code": 311
+            "lines_of_code": 308
         },
         "tests\/Integration\/Repositories\/PostRepositoryTest.php": {
             "path": "tests\/Integration\/Repositories\/PostRepositoryTest.php",
@@ -18390,7 +18441,7 @@
                 "should_return_complete_statistics_data"
             ],
             "constants": [],
-            "lines_of_code": 327
+            "lines_of_code": 320
         },
         "tests\/Integration\/FileSystemBackupTest.php": {
             "path": "tests\/Integration\/FileSystemBackupTest.php",
@@ -19486,6 +19537,17 @@
             "constants": [],
             "lines_of_code": 43
         },
+        "fix_boolean_redundancy.php": {
+            "path": "fix_boolean_redundancy.php",
+            "namespace": null,
+            "classes": [],
+            "interfaces": [],
+            "traits": [],
+            "uses": [],
+            "functions": [],
+            "constants": [],
+            "lines_of_code": 23
+        },
         "public\/index.php": {
             "path": "public\/index.php",
             "namespace": null,
@@ -20343,6 +20405,78 @@
             "constants": [],
             "lines_of_code": 275
         },
+        "scripts\/scan-project-for-test-analysis.php": {
+            "path": "scripts\/scan-project-for-test-analysis.php",
+            "namespace": null,
+            "classes": [
+                "TestErrorAnalysisScanner"
+            ],
+            "interfaces": [],
+            "traits": [],
+            "uses": [],
+            "functions": [
+                "__construct",
+                "generateTestAnalysis",
+                "scanTestStructure",
+                "scanTestDirectory",
+                "scanSourceDirectory",
+                "analyzeTestFile",
+                "analyzeSourceFile",
+                "extractTestClass",
+                "extractTestMethods",
+                "extractAssertions",
+                "extractMockUsage",
+                "extractDataProviders",
+                "extractPHPUnitAttributes",
+                "analyzeTestComplexity",
+                "identifyPotentialTestIssues",
+                "extractNamespace",
+                "extractClasses",
+                "extractInterfaces",
+                "extractPublicMethods",
+                "extractUseStatements",
+                "extractTypeHints",
+                "calculateTestabilityScore",
+                "estimateCyclomaticComplexity",
+                "calculateMaxNestingLevel",
+                "analyzeTestSourceMapping",
+                "findPotentialSourceFiles",
+                "collectPHPStanErrors",
+                "collectPHPStanErrorsText",
+                "parsePhpstanTextOutput",
+                "analyzeErrorPatterns",
+                "categorizeError",
+                "findMostCommonErrors",
+                "normalizeErrorMessage",
+                "identifyTestSpecificPatterns",
+                "findPhpunitAssertionIssues",
+                "findMockRelatedErrors",
+                "findDataProviderIssues",
+                "findTestDoubleProblems",
+                "detectTestAntiPatterns",
+                "checkAssertionAntiPatterns",
+                "checkTestStructureAntiPatterns",
+                "checkMockAntiPatterns",
+                "checkDataProviderAntiPatterns",
+                "analyzeTypeSafetyIssues",
+                "categorizeTypeSafetyIssue",
+                "generateFixSuggestion",
+                "generateRefactoringSuggestions",
+                "generateSuggestionForErrorType",
+                "calculatePriority",
+                "generateAntiPatternSuggestions",
+                "getAntiPatternAction",
+                "generateTestQualitySuggestions",
+                "generateTestReport",
+                "generateSummaryStatistics",
+                "findMostCommonErrorType",
+                "estimateFixTime",
+                "calculateTestQualityScore",
+                "generateHumanReadableTestReport"
+            ],
+            "constants": [],
+            "lines_of_code": 1254
+        },
         "scripts\/batch_fix_type_issues.php": {
             "path": "scripts\/batch_fix_type_issues.php",
             "namespace": null,
@@ -20964,7 +21098,7 @@
                 "generateHumanReadableSummary"
             ],
             "constants": [],
-            "lines_of_code": 649
+            "lines_of_code": 650
         },
         "scripts\/common-error-fixer.php": {
             "path": "scripts\/common-error-fixer.php",
@@ -24232,19 +24366,19 @@
     },
     "metrics": {
         "code_complexity": {
-            "total_files": 524,
-            "total_classes": 418,
+            "total_files": 527,
+            "total_classes": 419,
             "total_interfaces": 80,
             "avg_classes_per_file": 0.8
         },
         "dependency_metrics": {
-            "total_dependencies": 2309,
-            "avg_dependencies_per_file": 4.41
+            "total_dependencies": 2307,
+            "avg_dependencies_per_file": 4.38
         },
         "maintainability_score": 100,
         "test_coverage_estimate": {
             "test_files": 0,
-            "source_files": 524,
+            "source_files": 527,
             "estimated_coverage": 0
         }
     },
@@ -24636,6 +24770,7 @@
         "$content = str_replace(\n                'AlleyNote\\Domains\\Auth\\Contracts\\AuthenticationServiceInterface',\n                'App\\Domains\\Auth\\Contracts\\AuthenticationServiceInterface',\n                $content\n            )\\TestConstructorFixer": "scripts\/fix-test-constructor-errors.php",
         "FinalPhpStanComprehensiveFixer": "scripts\/final-phpstan-comprehensive-fixer.php",
         "does": "scripts\/final-phpstan-comprehensive-fixer.php",
+        "TestErrorAnalysisScanner": "scripts\/scan-project-for-test-analysis.php",
         "GenericsPhpstanFixer": "scripts\/generics-phpstan-fixer.php",
         "instantiation": "scripts\/generics-phpstan-fixer.php",
         "Context7GuidedPreciseFixer": "scripts\/context7-precise-fixer.php",
@@ -25137,11 +25272,6 @@
         "app\/Domains\/Statistics\/Services\/StatisticsCalculationService.php": [
             {
                 "type": "use",
-                "target": "App\\Domains\\Statistics\\Contracts\\PostStatisticsRepositoryInterface",
-                "file": "app\/Domains\/Statistics\/Contracts\/PostStatisticsRepositoryInterface.php"
-            },
-            {
-                "type": "use",
                 "target": "App\\Domains\\Statistics\\Contracts\\UserStatisticsRepositoryInterface",
                 "file": "app\/Domains\/Statistics\/Contracts\/UserStatisticsRepositoryInterface.php"
             },
@@ -25218,11 +25348,6 @@
                 "type": "use",
                 "target": "App\\Domains\\Statistics\\Contracts\\PostStatisticsRepositoryInterface",
                 "file": "app\/Domains\/Statistics\/Contracts\/PostStatisticsRepositoryInterface.php"
-            },
-            {
-                "type": "use",
-                "target": "App\\Domains\\Statistics\\Contracts\\SystemStatisticsRepositoryInterface",
-                "file": "app\/Domains\/Statistics\/Contracts\/SystemStatisticsRepositoryInterface.php"
             },
             {
                 "type": "use",
@@ -30638,6 +30763,7 @@
                 "file": "app\/Shared\/Contracts\/OutputSanitizerInterface.php"
             }
         ],
+        "fix_redundant_checks.php": [],
         "config\/container.php": [
             {
                 "type": "use",
@@ -36382,6 +36508,7 @@
         ],
         "tests\/Factory\/Abstracts\/Factory.php": [],
         "tests\/Factory\/Abstracts\/AbstractFactory.php": [],
+        "fix_boolean_redundancy.php": [],
         "public\/index.php": [
             {
                 "type": "use",
@@ -36724,6 +36851,7 @@
             }
         ],
         "scripts\/final-phpstan-comprehensive-fixer.php": [],
+        "scripts\/scan-project-for-test-analysis.php": [],
         "scripts\/batch_fix_type_issues.php": [],
         "scripts\/generics-phpstan-fixer.php": [],
         "scripts\/fix_test_annotations.php": [

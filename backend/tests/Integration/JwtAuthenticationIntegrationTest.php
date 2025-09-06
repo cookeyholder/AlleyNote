@@ -168,7 +168,6 @@ kwIDAQAB
         // 驗證 Access Token 可以被正確解析
         $accessToken = $loginResponse->tokens->getAccessToken();
         $this->assertNotEmpty($accessToken);
-        $this->assertTrue(true);
 
         // 驗證 Refresh Token 已存入資料庫
         $refreshTokens = $this->refreshTokenRepository->findByUserId(1);

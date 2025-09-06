@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domains\Statistics\Services;
 
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
-use App\Domains\Statistics\Contracts\SystemStatisticsRepositoryInterface;
 use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\Exceptions\StatisticsCalculationException;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
@@ -30,7 +29,6 @@ final class PostStatisticsService
 {
     public function __construct(
         private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
-        private readonly SystemStatisticsRepositoryInterface $systemStatisticsRepository,
     ) {}
 
     /**
@@ -218,20 +216,37 @@ final class PostStatisticsService
         $stable = [];
 
         foreach ($trendData as $post) {
-            $growthRate = ($post['growth_rate'] ?? 0.0);
+            // 確保 post 有必要的欄位
+            if (!is_array($post)) {
+                continue;
+            }
+
+            // 計算成長率（這裡簡化為基於 view_count 的成長）
+            $viewCount = $post['view_count'] ?? 0;
+            $postCount = $post['post_count'] ?? 0;
+
+            // 簡單的成長率計算：如果是新文章 (post_count 為 1) 且有瀏覽量，則視為上升趨勢
+            $growthRate = 0.0;
+            if ($postCount > 0) {
+                $growthRate = ($viewCount / $postCount) - 100; // 假設基準是每篇文章100瀏覽
+            }
+
+            // 將計算的成長率添加到陣列中
+            $postWithGrowth = $post;
+            $postWithGrowth['growth_rate'] = $growthRate;
 
             if ($growthRate > 10) {
-                $trendingUp[] = $post;
+                $trendingUp[] = $postWithGrowth;
             } elseif ($growthRate < -10) {
-                $trendingDown[] = $post;
+                $trendingDown[] = $postWithGrowth;
             } else {
-                $stable[] = $post;
+                $stable[] = $postWithGrowth;
             }
         }
 
         // 按成長率排序
-        usort($trendingUp, fn($a, $b) => ($b['growth_rate'] ?? 0.0) <=> ($a['growth_rate'] ?? 0.0));
-        usort($trendingDown, fn($a, $b) => ($a['growth_rate'] ?? 0.0) <=> ($b['growth_rate'] ?? 0.0));
+        usort($trendingUp, fn($a, $b) => $b['growth_rate'] <=> $a['growth_rate']);
+        usort($trendingDown, fn($a, $b) => $a['growth_rate'] <=> $b['growth_rate']);
 
         return [
             'trending_up' => array_slice($trendingUp, 0, 10),
@@ -266,7 +281,7 @@ final class PostStatisticsService
         $revenuePerView = 0.01; // $0.01 per view
         $estimatedRevenue = $postStats['views'] * $revenuePerView;
 
-        $profit = (is_numeric($estimatedRevenue) ? (float)$estimatedRevenue : 0.0) - (is_numeric($contentCost) ? (float)$contentCost : 0.0);
+        $profit = $estimatedRevenue - $contentCost;
         $roi = $contentCost > 0 ? ($profit / $contentCost) * 100 : 0.0;
 
         return [
@@ -426,7 +441,7 @@ final class PostStatisticsService
         }
 
         $variance = array_sum(
-            array_map(fn($value) => ((is_numeric($value) ? (float)$value : 0.0) - (is_numeric($mean) ? (float)$mean : 0.0)) ** 2, $performances),
+            array_map(fn($value) => ((float)$value - $mean) ** 2, $performances),
         ) / count($performances);
 
         $coefficientOfVariation = sqrt($variance) / $mean;

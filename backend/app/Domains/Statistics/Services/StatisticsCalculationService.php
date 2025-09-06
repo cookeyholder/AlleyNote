@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
 
-use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\Exceptions\StatisticsCalculationException;
@@ -27,7 +26,6 @@ use Throwable;
 final class StatisticsCalculationService
 {
     public function __construct(
-        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
         private readonly UserStatisticsRepositoryInterface $userStatisticsRepository,
     ) {}
 
@@ -143,7 +141,7 @@ final class StatisticsCalculationService
 
         $mean = array_sum($values) / count($values);
         $variance = array_sum(
-            array_map(fn($value) => ((is_numeric($value) ? (float)$value : 0.0) - (is_numeric($mean) ? (float)$mean : 0.0)) ** 2, $values),
+            array_map(fn($value) => ((float)$value - $mean) ** 2, $values),
         ) / count($values);
 
         $standardDeviation = sqrt($variance);
@@ -267,6 +265,7 @@ final class StatisticsCalculationService
     public function calculateSeasonalityIndex(array $snapshots): array
     {
         if (empty($snapshots)) {
+            /** @var array<string, float> */
             return [];
         }
 
@@ -283,14 +282,18 @@ final class StatisticsCalculationService
             $monthlyData[$month][] = $views;
         }
 
+        /** @var array<string, float> */
         $monthlyAverages = [];
         $overallAverage = 0;
         $totalMonths = 0;
 
         foreach ($monthlyData as $month => $values) {
-            $monthlyAverages[$month] = array_sum($values) / count($values);
-            $overallAverage += $monthlyAverages[$month];
-            $totalMonths++;
+            if (count($values) > 0) {
+                $monthKey = (string)$month;
+                $monthlyAverages[$monthKey] = array_sum($values) / count($values);
+                $overallAverage += $monthlyAverages[$monthKey];
+                $totalMonths++;
+            }
         }
 
         if ($totalMonths === 0) {
@@ -298,14 +301,17 @@ final class StatisticsCalculationService
         }
 
         $overallAverage /= $totalMonths;
+        /** @var array<string, float> */
         $seasonalityIndex = [];
 
-        foreach ($monthlyAverages as $month => $average) {
-            $seasonalityIndex[$month] = $overallAverage > 0
+        foreach ($monthlyAverages as $monthKey => $average) {
+            /** @var string $monthKey */
+            $seasonalityIndex[$monthKey] = $overallAverage > 0
                 ? round($average / $overallAverage, 3)
                 : 1.0;
         }
 
+        /** @var array<string, float> $seasonalityIndex */
         return $seasonalityIndex;
     }
 
@@ -350,7 +356,7 @@ final class StatisticsCalculationService
                 return $currentUsers > 0 ? 100.0 : 0.0;
             }
 
-            $growth = (((is_numeric($currentUsers) ? (float)$currentUsers : 0.0) - (is_numeric($previousUsers) ? (float)$previousUsers : 0.0)) / $previousUsers) * 100;
+            $growth = (($currentUsers - $previousUsers) / $previousUsers) * 100;
 
             return round($growth, 2);
         } catch (Throwable) {
@@ -415,7 +421,11 @@ final class StatisticsCalculationService
         $first = $values[0];
         $last = $values[$count - 1];
 
-        $growthRate = $first != 0 ? (((is_numeric($last) ? (float)$last : 0.0) - (is_numeric($first) ? (float)$first : 0.0)) / $first) * 100 : 0;
+        // 確保值是數值類型
+        $firstValue = is_numeric($first) ? (float)$first : 0.0;
+        $lastValue = is_numeric($last) ? (float)$last : 0.0;
+
+        $growthRate = $firstValue != 0 ? (($lastValue - $firstValue) / $firstValue) * 100 : 0;
 
         $direction = match (true) {
             $growthRate > 5 => 'increasing',

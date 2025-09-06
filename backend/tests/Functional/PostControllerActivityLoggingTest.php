@@ -227,8 +227,8 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->assertCount(2, $recentLogs);
 
         $activityTypes = array_column($recentLogs, 'action_type');
-        $this->assertArrayHasKey(ActivityType::POST_UPDATED->value, array_flip(is_array($activityTypes) ? array_filter($activityTypes, fn($v) => is_string($v) || is_int($v)) : []));
-        $this->assertArrayHasKey(ActivityType::POST_VIEWED->value, array_flip(is_array($activityTypes) ? array_filter($activityTypes, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertContains(ActivityType::POST_UPDATED->value, $activityTypes);
+        $this->assertContains(ActivityType::POST_VIEWED->value, $activityTypes);
         $this->assertNotContains(ActivityType::POST_CREATED->value, $activityTypes);
     }
 }

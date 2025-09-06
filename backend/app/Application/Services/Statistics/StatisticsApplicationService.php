@@ -399,6 +399,8 @@ final class StatisticsApplicationService
 
     /**
      * 計算來源統計.
+     *
+     * @return array<SourceStatistics>
      */
     private function calculateSourceStatistics(StatisticsPeriod $period): array
     {

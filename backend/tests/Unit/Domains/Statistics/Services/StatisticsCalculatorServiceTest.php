@@ -34,19 +34,15 @@ final class StatisticsCalculatorServiceTest extends TestCase
 {
     private StatisticsCalculationService $service;
 
-    private MockObject|PostStatisticsRepositoryInterface $mockPostRepository;
-
-    private MockObject|UserStatisticsRepositoryInterface $mockUserRepository;
+    private UserStatisticsRepositoryInterface&MockObject $mockUserRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->mockPostRepository = $this->createMock(PostStatisticsRepositoryInterface::class);
         $this->mockUserRepository = $this->createMock(UserStatisticsRepositoryInterface::class);
         $this->service = new StatisticsCalculationService(
-            $this->mockPostRepository,
-            $this->mockUserRepository,
+            $this->mockUserRepository
         );
     }
 
@@ -109,7 +105,6 @@ final class StatisticsCalculatorServiceTest extends TestCase
         $growthRates = $this->service->calculateGrowthRate($previousSnapshot, $currentSnapshot);
 
         // Assert
-        $this->assertIsArray($growthRates);
         $this->assertArrayHasKey('posts', $growthRates);
         $this->assertArrayHasKey('views', $growthRates);
         $this->assertArrayHasKey('users', $growthRates);
@@ -138,7 +133,7 @@ final class StatisticsCalculatorServiceTest extends TestCase
         $growthRates = $this->service->calculateGrowthRate($previousSnapshot, $currentSnapshot);
 
         // Assert
-        $this->assertIsArray($growthRates);
+
         $this->assertEquals(-20.0, $growthRates['posts']); // (80-100)/100 * 100 = -20%
         $this->assertEquals(-20.0, $growthRates['views']); // (2000-2500)/2500 * 100 = -20%
     }
@@ -339,7 +334,7 @@ final class StatisticsCalculatorServiceTest extends TestCase
         $forecast = $this->service->calculateForecast($historicalSnapshots, 3);
 
         // Assert
-        $this->assertIsArray($forecast);
+
         $this->assertArrayHasKey('posts', $forecast);
         $this->assertArrayHasKey('views', $forecast);
         $this->assertArrayHasKey('confidence', $forecast);
@@ -407,7 +402,7 @@ final class StatisticsCalculatorServiceTest extends TestCase
         $seasonalityIndex = $this->service->calculateSeasonalityIndex($snapshots);
 
         // Assert
-        $this->assertIsArray($seasonalityIndex);
+
         $this->assertNotEmpty($seasonalityIndex);
         // 檢查是否包含月份資料
         foreach ($seasonalityIndex as $month => $index) {

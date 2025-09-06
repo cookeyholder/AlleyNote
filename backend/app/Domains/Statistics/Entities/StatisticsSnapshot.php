@@ -44,6 +44,9 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 建立新的統計快照.
+     *
+     * @param array<SourceStatistics> $sourceStats
+     * @param array<string, StatisticsMetric> $additionalMetrics
      */
     public static function create(
         Uuid $id,
@@ -75,13 +78,26 @@ class StatisticsSnapshot extends AggregateRoot
         $totalViewsMetric = StatisticsMetric::count($totalViews, '總瀏覽數');
         $now = new DateTimeImmutable();
 
+        // 確保類型正確性
+        foreach ($sourceStats as $sourceStat) {
+            if (!$sourceStat instanceof SourceStatistics) {
+                throw new InvalidStatisticsSnapshotException('所有來源統計必須是 SourceStatistics 實例');
+            }
+        }
+
+        foreach ($additionalMetrics as $key => $metric) {
+            if (!is_string($key) || !$metric instanceof StatisticsMetric) {
+                throw new InvalidStatisticsSnapshotException('額外指標必須是 string => StatisticsMetric 格式');
+            }
+        }
+
         $snapshot = new self(
             $id,
             $period,
             $totalPostsMetric,
             $totalViewsMetric,
-            /** @var array<SourceStatistics> $sourceStats */ $sourceStats,
-            /** @var array<string, StatisticsMetric> $additionalMetrics */ $additionalMetrics,
+            $sourceStats,
+            $additionalMetrics,
             $now,
         );
 
@@ -99,24 +115,40 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 從資料重建統計快照.
+     *
+     * @param array<SourceStatistics> $sourceStats
+     * @param array<string, StatisticsMetric> $additionalMetrics
      */
     public static function fromData(
         Uuid $id,
         StatisticsPeriod $period,
         StatisticsMetric $totalPosts,
         StatisticsMetric $totalViews,
-        array /** @var array<SourceStatistics> $sourceStats */ $sourceStats,
-        array /** @var array<string, StatisticsMetric> $additionalMetrics */ $additionalMetrics,
+        array $sourceStats,
+        array $additionalMetrics,
         DateTimeImmutable $createdAt,
         ?DateTimeImmutable $updatedAt = null,
     ): self {
+        // 確保類型正確性
+        foreach ($sourceStats as $sourceStat) {
+            if (!$sourceStat instanceof SourceStatistics) {
+                throw new InvalidStatisticsSnapshotException('所有來源統計必須是 SourceStatistics 實例');
+            }
+        }
+
+        foreach ($additionalMetrics as $key => $metric) {
+            if (!is_string($key) || !$metric instanceof StatisticsMetric) {
+                throw new InvalidStatisticsSnapshotException('額外指標必須是 string => StatisticsMetric 格式');
+            }
+        }
+
         return new self(
             $id,
             $period,
             $totalPosts,
             $totalViews,
-            /** @var array<SourceStatistics> $sourceStats */ $sourceStats,
-            /** @var array<string, StatisticsMetric> $additionalMetrics */ $additionalMetrics,
+            $sourceStats,
+            $additionalMetrics,
             $createdAt,
             $updatedAt,
         );

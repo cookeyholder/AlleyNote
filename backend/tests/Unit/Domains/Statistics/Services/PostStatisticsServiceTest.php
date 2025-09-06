@@ -32,20 +32,16 @@ final class PostStatisticsServiceTest extends TestCase
 {
     private PostStatisticsService $service;
 
-    private MockObject|PostStatisticsRepositoryInterface $mockPostRepository;
-
-    private MockObject|SystemStatisticsRepositoryInterface $mockSystemRepository;
+    private PostStatisticsRepositoryInterface&MockObject $mockPostRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->mockPostRepository = $this->createMock(PostStatisticsRepositoryInterface::class);
-        $this->mockSystemRepository = $this->createMock(SystemStatisticsRepositoryInterface::class);
 
         $this->service = new PostStatisticsService(
-            $this->mockPostRepository,
-            $this->mockSystemRepository,
+            $this->mockPostRepository
         );
     }
 
@@ -77,7 +73,6 @@ final class PostStatisticsServiceTest extends TestCase
         $result = $this->service->analyzePopularPosts($period);
 
         // Assert
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('posts', $result);
         $this->assertArrayHasKey('summary', $result);
         $this->assertCount(2, $result['posts']);
@@ -111,7 +106,7 @@ final class PostStatisticsServiceTest extends TestCase
         $result = $this->service->analyzeSourceDistribution($period);
 
         // Assert
-        $this->assertIsArray($result);
+
         $this->assertArrayHasKey('distribution', $result);
         $this->assertArrayHasKey('insights', $result);
         $this->assertEquals('web', $result['insights']['dominant_source']);
@@ -149,7 +144,7 @@ final class PostStatisticsServiceTest extends TestCase
         $result = $this->service->calculatePostQualityScore($postId, $period);
 
         // Assert
-        $this->assertIsArray($result);
+
         $this->assertArrayHasKey('score', $result);
         $this->assertArrayHasKey('factors', $result);
         $this->assertArrayHasKey('grade', $result);
@@ -186,7 +181,7 @@ final class PostStatisticsServiceTest extends TestCase
         $result = $this->service->analyzeTrends($period);
 
         // Assert
-        $this->assertIsArray($result);
+
         $this->assertArrayHasKey('trending_up', $result);
         $this->assertArrayHasKey('trending_down', $result);
         $this->assertArrayHasKey('stable', $result);
@@ -225,7 +220,7 @@ final class PostStatisticsServiceTest extends TestCase
         $result = $this->service->calculatePostROI($postId, $period, $contentCost);
 
         // Assert
-        $this->assertIsArray($result);
+
         $this->assertArrayHasKey('roi', $result);
         $this->assertArrayHasKey('revenue', $result);
         $this->assertArrayHasKey('cost', $result);
@@ -261,7 +256,7 @@ final class PostStatisticsServiceTest extends TestCase
         $result = $this->service->getBestPublishingTimes($period);
 
         // Assert
-        $this->assertIsArray($result);
+
         $this->assertArrayHasKey('best_hours', $result);
         $this->assertArrayHasKey('best_days', $result);
         $this->assertArrayHasKey('insights', $result);
@@ -312,7 +307,7 @@ final class PostStatisticsServiceTest extends TestCase
         $result = $this->service->analyzePopularPosts($period);
 
         // Assert
-        $this->assertIsArray($result);
+
         $this->assertArrayHasKey('posts', $result);
         $this->assertEmpty($result['posts']);
     }
