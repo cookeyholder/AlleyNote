@@ -54,7 +54,7 @@ $testCases = [
 ];
 
 foreach ($testCases as $index => $testCase) {
-    echo '測試 ' . ($index + 1) . ": {$testCase['name']}\n";
+    echo '測試 ' . ($index + 1) . ": {(string)testCase['name']}\n";
 
     try {
         // 建立測試請求
@@ -385,7 +385,7 @@ foreach ($testCases as $index => $testCase) {
 
         $response = $app->run($request);
 
-        echo "   ✅ 狀態: {$response->getStatusCode()}\n";
+        echo "   ✅ 狀態: {(string)response->getStatusCode()}\n";
         $bodyContent = (string) $response->getBody();
         echo '   📄 內容: ' . substr(str_replace(["\n", '    '], [' ', ' '], $bodyContent), 0, 100);
         if (strlen($bodyContent) > 100) {

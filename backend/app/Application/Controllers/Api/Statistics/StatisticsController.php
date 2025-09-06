@@ -391,7 +391,7 @@ class StatisticsController extends BaseController
             $params = $this->validatePostsParams($stringKeyParams);
             $period = $this->createPeriodFromParams($params);
 
-            $sourceType = isset($params['source']) && is_string($params['source'])
+            $sourceType = is_string($params['source'])
                 ? SourceType::from($params['source']) : null;
 
             $statistics = $this->queryService->getPostStatisticsTrends(
@@ -461,7 +461,7 @@ class StatisticsController extends BaseController
             $distribution = [];
             $snapshotsData = is_array($snapshots['data'] ?? null) ? $snapshots['data'] : [];
             foreach ($snapshotsData as $snapshot) {
-                if (is_array($snapshot) && isset($snapshot['source_distribution']) && is_array($snapshot['source_distribution'])) {
+                if (is_array($snapshot) && is_array($snapshot['source_distribution'])) {
                     $distribution = array_merge($distribution, $snapshot['source_distribution']);
                 }
             }
@@ -905,7 +905,7 @@ class StatisticsController extends BaseController
         }
 
         // 驗證日期範圍邏輯
-        if (isset($params['start_date']) && isset($params['end_date'])) {
+        if (isset($params['end_date'])) {
             if ($params['start_date'] > $params['end_date']) {
                 throw new InvalidArgumentException('開始日期不能晚於結束日期');
             }
@@ -944,7 +944,7 @@ class StatisticsController extends BaseController
         };
 
         // 如果有指定日期範圍，使用自訂範圍
-        if (isset($params['start_date']) && isset($params['end_date'])) {
+        if (isset($params['end_date'])) {
             $startDate = $params['start_date'];
             $endDate = $params['end_date'];
             if ($startDate instanceof DateTimeInterface && $endDate instanceof DateTimeInterface) {

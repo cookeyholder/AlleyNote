@@ -253,8 +253,8 @@ class DIValidationIntegrationTest extends TestCase
         // Act - 進行多次驗證操作
         for ($i = 0; $i < 100; $i++) {
             $data = [
-                'name' => "測試用戶_{$i}",
-                'email' => "user{$i}@example.com",
+                'name' => "測試用戶_{(string)i}",
+                'email' => "user{(string)i}@example.com",
                 'age' => $i + 18,
             ];
 

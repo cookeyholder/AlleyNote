@@ -137,8 +137,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) use ($jti) {
-                return isset($params['jti']) && $params['jti'] === $jti
-                    && isset($params['current_time']) && is_string($params['current_time']);
+                return $params['jti'] === $jti
+                    && is_string($params['current_time']);
             }));
 
         $this->mockStatement
@@ -164,8 +164,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) use ($jti) {
-                return isset($params['jti']) && $params['jti'] === $jti
-                    && isset($params['current_time']) && is_string($params['current_time']);
+                return $params['jti'] === $jti
+                    && is_string($params['current_time']);
             }));
 
         $this->mockStatement
@@ -205,8 +205,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) use ($tokenHash) {
-                return isset($params['token_hash']) && $params['token_hash'] === $tokenHash
-                    && isset($params['current_time']) && is_string($params['current_time']);
+                return $params['token_hash'] === $tokenHash
+                    && is_string($params['current_time']);
             }));
 
         $this->mockStatement
@@ -648,9 +648,9 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) use ($userId, $excludeJti) {
-                return isset($params['user_id']) && $params['user_id'] === $userId
-                    && isset($params['exclude_jti']) && $params['exclude_jti'] === $excludeJti
-                    && isset($params['current_time']) && is_string($params['current_time']);
+                return $params['user_id'] === $userId
+                    && $params['exclude_jti'] === $excludeJti
+                    && is_string($params['current_time']);
             }));
 
         $selectStmt
@@ -723,8 +723,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) use ($deviceId) {
-                return isset($params['device_id']) && $params['device_id'] === $deviceId
-                    && isset($params['current_time']) && is_string($params['current_time']);
+                return $params['device_id'] === $deviceId
+                    && is_string($params['current_time']);
             }));
 
         $selectStmt
@@ -834,7 +834,7 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) {
-                return isset($params['cutoff_date']) && is_string($params['cutoff_date']);
+                return is_string($params['cutoff_date']);
             }));
 
         $this->mockStatement
@@ -1172,7 +1172,7 @@ class TokenBlacklistRepositoryTest extends TestCase
         // Cleanup old entries call (因為總數量 > 50000)
         $cleanupOldStmt->expects($this->once())->method('execute')
             ->with($this->callback(function ($params) {
-                return isset($params['cutoff_date']) && is_string($params['cutoff_date']);
+                return is_string($params['cutoff_date']);
             }));
         $cleanupOldStmt->expects($this->once())->method('rowCount')->willReturn(20);
 

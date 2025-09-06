@@ -27,7 +27,7 @@ $routeCount = 1000;
 $matchTests = 10000;
 
 // 1. 路由註冊效能測試
-echo "測試 1: 路由註冊效能 ({$routeCount} 條路由)\n";
+echo "測試 1: 路由註冊效能 ({(string)routeCount} 條路由)\n";
 $startTime = microtime(true);
 $startMemory = memory_get_usage(true);
 
@@ -35,10 +35,10 @@ $router = new Router();
 for ($i = 1; $i <= $routeCount; $i++) {
     $route = new Route(
         ['GET'],
-        "/test/route/{$i}",
+        "/test/route/{(string)i}",
         'TestController@index', // 使用字串格式避免序列化問題
     );
-    $route->setName("test_route_{$i}");
+    $route->setName("test_route_{(string)i}");
     $router->getRoutes()->add($route);
 }
 
@@ -59,7 +59,7 @@ echo sprintf(
 echo "\n";
 
 // 2. 路由匹配效能測試
-echo "測試 2: 路由匹配效能 ({$matchTests} 次匹配)\n";
+echo "測試 2: 路由匹配效能 ({(string)matchTests} 次匹配)\n";
 
 $testPaths = [];
 for ($i = 0; $i < 100; $i++) {
@@ -95,9 +95,9 @@ try {
     for ($i = 1; $i <= 100; $i++) {
         $route = new Route(
             ['GET'],
-            "/cache/test/{$i}",
+            "/cache/test/{(string)i}",
             'TestController@cacheTest', // 使用字串格式避免序列化問題
-            "cache_route_{$i}",
+            "cache_route_{(string)i}",
         );
         $cacheTestCollection->add($route);
     }

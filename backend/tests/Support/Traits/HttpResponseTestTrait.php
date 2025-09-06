@@ -142,7 +142,7 @@ trait HttpResponseTestTrait
     {
         $this->assertResponseHasHeader($response, $headerName);
         $headerValues = $response->getHeader($headerName);
-        $this->assertArrayHasKey($expectedValue, array_flip($headerValues), "標頭 {$headerName} 的值不符合預期");
+        $this->assertArrayHasKey($expectedValue, array_flip(is_array($headerValues) ? array_filter($headerValues, fn($v) => is_string($v) || is_int($v)) : []), "標頭 {$headerName} 的值不符合預期");
     }
 
     /**

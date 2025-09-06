@@ -557,14 +557,14 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
         // 從請求參數中提取
         $queryParams = $request->getQueryParams();
-        if (isset($queryParams['id']) && is_numeric($queryParams['id'])) {
+        if (is_numeric($queryParams['id'])) {
             return (int) $queryParams['id'];
         }
 
         // 從請求體中提取（用於 POST/PUT 請求）
         if (in_array($request->getMethod(), ['POST', 'PUT', 'PATCH'])) {
             $body = $request->getParsedBody();
-            if (is_array($body) && isset($body['id']) && is_numeric($body['id'])) {
+            if (is_array($body) && is_numeric($body['id'])) {
                 return (int) $body['id'];
             }
         }
@@ -722,12 +722,12 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function matchesTimeRestriction(array $restriction, ?string $userRole, string $action, int $currentHour, int $currentDay): bool
     {
         // 檢查角色匹配
-        if (isset($restriction['roles']) && !in_array($userRole, $restriction['roles'], true)) {
+        if (!in_array($userRole, $restriction['roles'], true)) {
             return false;
         }
 
         // 檢查操作匹配
-        if (isset($restriction['actions']) && !in_array($action, $restriction['actions'], true)) {
+        if (!in_array($action, $restriction['actions'], true)) {
             return false;
         }
 
@@ -756,17 +756,17 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function matchesIpRestriction(array $restriction, ?string $userRole, string $resource, string $action): bool
     {
         // 檢查角色匹配
-        if (isset($restriction['roles']) && !in_array($userRole, $restriction['roles'], true)) {
+        if (!in_array($userRole, $restriction['roles'], true)) {
             return false;
         }
 
         // 檢查資源匹配
-        if (isset($restriction['resources']) && !in_array($resource, $restriction['resources'], true)) {
+        if (!in_array($resource, $restriction['resources'], true)) {
             return false;
         }
 
         // 檢查操作匹配
-        if (isset($restriction['actions']) && !in_array($action, $restriction['actions'], true)) {
+        if (!in_array($action, $restriction['actions'], true)) {
             return false;
         }
 

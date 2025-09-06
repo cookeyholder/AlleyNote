@@ -218,7 +218,7 @@ final class PostStatisticsService
         $stable = [];
 
         foreach ($trendData as $post) {
-            $growthRate = $post['growth_rate'];
+            $growthRate = ($post['growth_rate'] ?? 0.0);
 
             if ($growthRate > 10) {
                 $trendingUp[] = $post;
@@ -230,8 +230,8 @@ final class PostStatisticsService
         }
 
         // 按成長率排序
-        usort($trendingUp, fn($a, $b) => $b['growth_rate'] <=> $a['growth_rate']);
-        usort($trendingDown, fn($a, $b) => $a['growth_rate'] <=> $b['growth_rate']);
+        usort($trendingUp, fn($a, $b) => ($b['growth_rate'] ?? 0.0) <=> ($a['growth_rate'] ?? 0.0));
+        usort($trendingDown, fn($a, $b) => ($a['growth_rate'] ?? 0.0) <=> ($b['growth_rate'] ?? 0.0));
 
         return [
             'trending_up' => array_slice($trendingUp, 0, 10),
@@ -266,7 +266,7 @@ final class PostStatisticsService
         $revenuePerView = 0.01; // $0.01 per view
         $estimatedRevenue = $postStats['views'] * $revenuePerView;
 
-        $profit = $estimatedRevenue - $contentCost;
+        $profit = (is_numeric($estimatedRevenue) ? (float)$estimatedRevenue : 0.0) - (is_numeric($contentCost) ? (float)$contentCost : 0.0);
         $roi = $contentCost > 0 ? ($profit / $contentCost) * 100 : 0.0;
 
         return [
@@ -426,7 +426,7 @@ final class PostStatisticsService
         }
 
         $variance = array_sum(
-            array_map(fn($value) => ($value - $mean) ** 2, $performances),
+            array_map(fn($value) => ((is_numeric($value) ? (float)$value : 0.0) - (is_numeric($mean) ? (float)$mean : 0.0)) ** 2, $performances),
         ) / count($performances);
 
         $coefficientOfVariation = sqrt($variance) / $mean;

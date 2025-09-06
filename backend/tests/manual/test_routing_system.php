@@ -133,13 +133,13 @@ try {
 
         if ($matched) {
             $routeName = $matchedRoute?->getName() ?? '無名稱';
-            echo "   ✓ {$method} {$path}: 匹配路由 '{$routeName}'";
+            echo "   ✓ {(string)method} {(string)path}: 匹配路由 '{(string)routeName}'";
             if (!empty($parameters)) {
                 echo ', 參數: ' . json_encode($parameters);
             }
             echo "\n";
         } else {
-            echo "   ✗ {$method} {$path}: 未找到匹配的路由\n";
+            echo "   ✗ {(string)method} {(string)path}: 未找到匹配的路由\n";
         }
     }
 
@@ -148,7 +148,7 @@ try {
 
     try {
         $url = $router->url('posts.show', ['id' => '456']);
-        echo "   ✓ 產生 URL: {$url}\n";
+        echo "   ✓ 產生 URL: {(string)url}\n";
     } catch (Exception $e) {
         echo '   ✗ URL 產生失敗: ' . $e->getMessage() . "\n";
     }

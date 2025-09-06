@@ -42,9 +42,9 @@ class MemoryTagRepositoryTest extends TestCase
 
         $allTags = $this->repository->getTags($key);
         $this->assertCount(3, $allTags);
-        $this->assertArrayHasKey('user:123', array_flip($allTags));
-        $this->assertArrayHasKey('module:posts', array_flip($allTags));
-        $this->assertArrayHasKey('temporal:daily', array_flip($allTags));
+        $this->assertArrayHasKey('user:123', array_flip(is_array($allTags) ? array_filter($allTags, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey('module:posts', array_flip(is_array($allTags) ? array_filter($allTags, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey('temporal:daily', array_flip(is_array($allTags) ? array_filter($allTags, fn($v) => is_string($v) || is_int($v)) : []));
     }
 
     public function testRemoveTags(): void
@@ -57,8 +57,8 @@ class MemoryTagRepositoryTest extends TestCase
 
         $remainingTags = $this->repository->getTags($key);
         $this->assertCount(2, $remainingTags);
-        $this->assertArrayHasKey('user:123', array_flip($remainingTags));
-        $this->assertArrayHasKey('temporal:daily', array_flip($remainingTags));
+        $this->assertArrayHasKey('user:123', array_flip(is_array($remainingTags) ? array_filter($remainingTags, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey('temporal:daily', array_flip(is_array($remainingTags) ? array_filter($remainingTags, fn($v) => is_string($v) || is_int($v)) : []));
         $this->assertNotContains('module:posts', $remainingTags);
     }
 
@@ -139,7 +139,7 @@ class MemoryTagRepositoryTest extends TestCase
 
         $this->assertCount(5, $allTags);
         foreach ($expectedTags as $expectedTag) {
-            $this->assertArrayHasKey($expectedTag, array_flip($allTags));
+            $this->assertArrayHasKey($expectedTag, array_flip(is_array($allTags) ? array_filter($allTags, fn($v) => is_string($v) || is_int($v)) : []));
         }
     }
 
@@ -268,8 +268,8 @@ class MemoryTagRepositoryTest extends TestCase
 
         $remainingKeys = $this->repository->getKeysByTag($tag);
         $this->assertCount(2, $remainingKeys);
-        $this->assertArrayHasKey('key1', array_flip($remainingKeys));
-        $this->assertArrayHasKey('key3', array_flip($remainingKeys));
+        $this->assertArrayHasKey('key1', array_flip(is_array($remainingKeys) ? array_filter($remainingKeys, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey('key3', array_flip(is_array($remainingKeys) ? array_filter($remainingKeys, fn($v) => is_string($v) || is_int($v)) : []));
         $this->assertNotContains('key2', $remainingKeys);
     }
 
@@ -293,7 +293,7 @@ class MemoryTagRepositoryTest extends TestCase
 
         $retrievedTags = $this->repository->getTags($key);
         $this->assertCount(2, $retrievedTags);
-        $this->assertArrayHasKey('user:123', array_flip($retrievedTags));
-        $this->assertArrayHasKey('module:posts', array_flip($retrievedTags));
+        $this->assertArrayHasKey('user:123', array_flip(is_array($retrievedTags) ? array_filter($retrievedTags, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey('module:posts', array_flip(is_array($retrievedTags) ? array_filter($retrievedTags, fn($v) => is_string($v) || is_int($v)) : []));
     }
 }

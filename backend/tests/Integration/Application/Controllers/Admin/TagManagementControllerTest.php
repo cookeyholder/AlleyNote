@@ -132,8 +132,8 @@ class TagManagementControllerTest extends TestCase
                 $data = $this->safeJsonDecode($content);
 
                 return $data !== null
-                       && isset($data['success']) && $data['success'] === true
-                       && isset($data['data']) && is_array($data['data'])
+                       && $data['success'] === true
+                       && is_array($data['data'])
                        && isset($data['data']['tags']) && is_array($data['data']['tags']) && count($data['data']['tags']) === 2 // 只有 user 相關標籤
                        && isset($data['data']['pagination']) && is_array($data['data']['pagination'])
                        && isset($data['data']['pagination']['total']) && $data['data']['pagination']['total'] === 2;
@@ -174,8 +174,8 @@ class TagManagementControllerTest extends TestCase
                 $data = $this->safeJsonDecode($content);
 
                 return $data !== null
-                       && isset($data['success']) && $data['success'] === true
-                       && isset($data['data']) && is_array($data['data'])
+                       && $data['success'] === true
+                       && is_array($data['data'])
                        && isset($data['data']['name']) && $data['data']['name'] === 'user_123'
                        && isset($data['data']['driver']) && $data['data']['driver'] === 'redis'
                        && isset($data['data']['statistics']) && is_array($data['data']['statistics'])
@@ -213,8 +213,8 @@ class TagManagementControllerTest extends TestCase
                 $data = $this->safeJsonDecode($content);
 
                 return $data !== null
-                       && isset($data['success']) && $data['success'] === true
-                       && isset($data['data']) && is_array($data['data'])
+                       && $data['success'] === true
+                       && is_array($data['data'])
                        && isset($data['data']['message']) && $data['data']['message'] === '標籤快取已成功清除'
                        && isset($data['data']['tag']) && $data['data']['tag'] === 'user_123'
                        && isset($data['data']['affected_drivers']) && is_array($data['data']['affected_drivers'])
@@ -256,7 +256,7 @@ class TagManagementControllerTest extends TestCase
                 $data = $this->safeJsonDecode($content);
 
                 return $data !== null
-                       && isset($data['success']) && $data['success'] === true
+                       && $data['success'] === true
                        && isset($data['data']['total_flushed']) && $data['data']['total_flushed'] === 2
                        && isset($data['data']['results']) && is_array($data['data']['results'])
                        && count($data['data']['results']) === 2
@@ -304,7 +304,7 @@ class TagManagementControllerTest extends TestCase
             ->with($this->callback(function ($content) {
                 $data = $this->safeJsonDecode($content);
 
-                return $data !== null && isset($data['success']) && $data['success'] === true
+                return $data !== null && $data['success'] === true
                        && isset($data['data']['drivers'])
                        && isset($data['data']['total_tags'])
                        && isset($data['data']['total_cache_entries'])
@@ -334,8 +334,8 @@ class TagManagementControllerTest extends TestCase
                 $data = $this->safeJsonDecode($content);
 
                 return $data !== null
-                       && isset($data['success']) && $data['success'] === true
-                       && isset($data['data']) && is_array($data['data'])
+                       && $data['success'] === true
+                       && is_array($data['data'])
                        && isset($data['data']['group']) && $data['data']['group'] === 'test_group'
                        && isset($data['timestamp']);
             }));
@@ -359,8 +359,8 @@ class TagManagementControllerTest extends TestCase
                 $data = $this->safeJsonDecode($content);
 
                 return $data !== null
-                       && isset($data['success']) && $data['success'] === true
-                       && isset($data['data']) && is_array($data['data'])
+                       && $data['success'] === true
+                       && is_array($data['data'])
                        && isset($data['data']['groups']) && is_array($data['data']['groups'])
                        && count($data['data']['groups']) === 2
                        && isset($data['data']['total']) && $data['data']['total'] === 2
@@ -389,7 +389,7 @@ class TagManagementControllerTest extends TestCase
             ->with($this->callback(function ($content) {
                 $data = $this->safeJsonDecode($content);
 
-                return $data !== null && isset($data['success']) && $data['success'] === true
+                return $data !== null && $data['success'] === true
                        && isset($data['data']['group']) && $data['data']['group'] === 'test_group'
                        && isset($data['data']['message'])
                        && isset($data['timestamp']);
@@ -417,7 +417,7 @@ class TagManagementControllerTest extends TestCase
             ->with($this->callback(function ($content) {
                 $data = $this->safeJsonDecode($content);
 
-                return $data !== null && isset($data['success']) && isset($data['success']) && $data['success'] === false
+                return $data !== null && $data['success'] === false
                        && isset($data['error']);
             }));
 
@@ -444,7 +444,7 @@ class TagManagementControllerTest extends TestCase
             ->with($this->callback(function ($content) {
                 $data = $this->safeJsonDecode($content);
 
-                return $data !== null && isset($data['success']) && isset($data['success']) && $data['success'] === false
+                return $data !== null && $data['success'] === false
                        && $data['error']['details'] === '標籤名稱不能為空';
             }));
 

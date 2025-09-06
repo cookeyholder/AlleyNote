@@ -376,7 +376,7 @@ try {
 
     $body = $result->getBody()->getContents();
     $data = json_decode($body, true);
-    if ($data && isset($data['success']) && $data['success'] === true) {
+    if ($data && $data['success'] === true) {
         echo "   ✓ 回應內容正確\n";
         echo '   ✓ 貼文 ID: ' . $data['data']['id'] . "\n";
     } else {
@@ -396,9 +396,9 @@ try {
 
         try {
             $result = $controllerResolver->resolve($route, $request, $params);
-            echo "   ✓ {$description}: " . $result->getStatusCode() . "\n";
+            echo "   ✓ {(string)description}: " . $result->getStatusCode() . "\n";
         } catch (Exception $e) {
-            echo "   ✗ {$description}: 錯誤 - " . $e->getMessage() . "\n";
+            echo "   ✗ {(string)description}: 錯誤 - " . $e->getMessage() . "\n";
         }
     }
 

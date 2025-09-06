@@ -60,7 +60,7 @@ if ($loadedRoutes) {
 }
 
 $stats = $memoryCache->getStats();
-echo "快取統計: hits={$stats['hits']}, misses={$stats['misses']}, size={$stats['size']}\n";
+echo "快取統計: hits={(string)stats['hits']}, misses={(string)stats['misses']}, size={(string)stats['size']}\n";
 
 echo "清除快取: " . ($memoryCache->clear() ? 'SUCCESS' : 'FAILED') . "\n";
 echo "清除後 - 是否有效: " . ($memoryCache->isValid() ? 'YES' : 'NO') . "\n\n";
@@ -87,7 +87,7 @@ if ($loadedRoutes) {
 }
 
 $stats = $fileCache->getStats();
-echo "快取統計: hits={$stats['hits']}, misses={$stats['misses']}, size={$stats['size']}\n";
+echo "快取統計: hits={(string)stats['hits']}, misses={(string)stats['misses']}, size={(string)stats['size']}\n";
 
 // 測試檔案存在性
 $cacheFile = $cacheDir . '/routes.cache';
@@ -158,7 +158,7 @@ $router->get('/api/users/{id}', 'UserController@show');
 echo "快取路由: " . ($router->cacheRoutes() ? 'SUCCESS' : 'FAILED') . "\n";
 
 $cacheStats = $router->getCache()->getStats();
-echo "快取統計: hits={$cacheStats['hits']}, misses={$cacheStats['misses']}, size={$cacheStats['size']}\n";
+echo "快取統計: hits={(string)cacheStats['hits']}, misses={(string)cacheStats['misses']}, size={(string)cacheStats['size']}\n";
 
 echo "快取有效性: " . ($router->getCache()->isValid() ? 'VALID' : 'INVALID') . "\n";
 

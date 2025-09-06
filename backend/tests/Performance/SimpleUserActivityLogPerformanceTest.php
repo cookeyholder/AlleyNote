@@ -74,7 +74,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
                     'user',
                     '1',
                     'success',
-                    "批次測試記錄 #{$i}",
+                    "批次測試記錄 #{(string)i}",
                     json_encode([
                         'batch_test' => true,
                         'sequence' => $i,
@@ -100,7 +100,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             ];
 
             // 效能斷言
-            $this->assertLessThan(30.0, $duration, "批次插入 {$batchSize} 筆記錄應在 30 秒內完成");
+            $this->assertLessThan(30.0, $duration, "批次插入 {(string)batchSize} 筆記錄應在 30 秒內完成");
             $this->assertGreaterThan(10.0, $throughput, '每秒應能處理至少 10 筆記錄');
 
             // 驗證資料是否正確插入
@@ -114,7 +114,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
                 $this->fail('無法取得計數結果');
             }
 
-            $this->assertEquals($batchSize, (int) $count, "應該插入 {$batchSize} 筆記錄");
+            $this->assertEquals($batchSize, (int) $count, "應該插入 {(string)batchSize} 筆記錄");
         }
 
         // 輸出效能報告
@@ -144,7 +144,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             for ($i = 0; $i < $iterations; $i++) {
                 $stmt = $this->pdo->query($query);
                 if ($stmt === false) {
-                    $this->fail("查詢執行失敗: {$scenario}");
+                    $this->fail("查詢執行失敗: {(string)scenario}");
                 }
 
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -156,9 +156,9 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             $avgQueryTime = $duration / $iterations;
 
             // 效能斷言
-            $this->assertLessThan(0.1, $avgQueryTime, "{$scenario} 平均查詢時間應小於 100ms");
+            $this->assertLessThan(0.1, $avgQueryTime, "{(string)scenario} 平均查詢時間應小於 100ms");
 
-            echo "\n{$scenario} 效能報告:\n";
+            echo "\n{(string)scenario} 效能報告:\n";
             echo '- 總執行時間: ' . number_format($duration, 4) . " 秒\n";
             echo '- 平均查詢時間: ' . number_format($avgQueryTime * 1000, 2) . " ms\n";
             echo '- 每秒查詢數: ' . number_format($iterations / $duration, 2) . " QPS\n";
@@ -198,7 +198,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             ];
 
             // 每頁查詢時間不應超過 200ms
-            $this->assertLessThan(0.2, $duration, "第 {$page} 頁查詢時間應小於 200ms");
+            $this->assertLessThan(0.2, $duration, "第 {(string)page} 頁查詢時間應小於 200ms");
         }
 
         // 計算統計資訊
@@ -241,7 +241,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
                 'performance_test',
                 (string) $i,
                 'success',
-                "效能測試資料 #{$i}",
+                "效能測試資料 #{(string)i}",
                 json_encode([
                     'performance_test' => true,
                     'sequence' => $i,
@@ -315,11 +315,11 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function outputPerformanceReport(string $title, array $results): void
     {
-        echo "\n{$title}:\n";
+        echo "\n{(string)title}:\n";
         echo str_repeat('=', strlen($title) + 1) . "\n";
 
         foreach ($results as $size => $result) {
-            echo "批次大小: {$size}\n";
+            echo "批次大小: {(string)size}\n";
             echo '  - 執行時間: ' . number_format($result['duration'], 4) . " 秒\n";
             echo '  - 吞吐量: ' . number_format($result['throughput'], 2) . " 筆/秒\n";
             echo '  - 平均每筆: ' . number_format($result['avg_per_record'] * 1000, 2) . " ms\n\n";

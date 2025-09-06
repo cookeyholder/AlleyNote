@@ -536,17 +536,17 @@ final class TokenBlacklistEntryTest extends TestCase
     public function testGetValidTokenTypes(): void
     {
         $types = TokenBlacklistEntry::getValidTokenTypes();
-        $this->assertArrayHasKey(TokenBlacklistEntry::TOKEN_TYPE_ACCESS, array_flip($types));
-        $this->assertArrayHasKey(TokenBlacklistEntry::TOKEN_TYPE_REFRESH, array_flip($types));
+        $this->assertArrayHasKey(TokenBlacklistEntry::TOKEN_TYPE_ACCESS, array_flip(is_array($types) ? array_filter($types, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey(TokenBlacklistEntry::TOKEN_TYPE_REFRESH, array_flip(is_array($types) ? array_filter($types, fn($v) => is_string($v) || is_int($v)) : []));
         $this->assertCount(2, $types);
     }
 
     public function testGetValidReasons(): void
     {
         $reasons = TokenBlacklistEntry::getValidReasons();
-        $this->assertArrayHasKey(TokenBlacklistEntry::REASON_LOGOUT, array_flip($reasons));
-        $this->assertArrayHasKey(TokenBlacklistEntry::REASON_SECURITY_BREACH, array_flip($reasons));
-        $this->assertArrayHasKey(TokenBlacklistEntry::REASON_PASSWORD_CHANGED, array_flip($reasons));
+        $this->assertArrayHasKey(TokenBlacklistEntry::REASON_LOGOUT, array_flip(is_array($reasons) ? array_filter($reasons, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey(TokenBlacklistEntry::REASON_SECURITY_BREACH, array_flip(is_array($reasons) ? array_filter($reasons, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey(TokenBlacklistEntry::REASON_PASSWORD_CHANGED, array_flip(is_array($reasons) ? array_filter($reasons, fn($v) => is_string($v) || is_int($v)) : []));
         $this->assertGreaterThanOrEqual(10, count($reasons));
     }
 

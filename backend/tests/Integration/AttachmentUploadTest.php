@@ -139,7 +139,7 @@ class AttachmentUploadTest extends TestCase
         $successfulUploads = 0;
         for ($i = 1; $i <= 3; $i++) {
             $file = $this->createUploadedFileMock(
-                "test{$i}.jpg",
+                "test{(string)i}.jpg",
                 'image/jpeg',
                 1024,
             );
@@ -190,7 +190,7 @@ class AttachmentUploadTest extends TestCase
 
             try {
                 $this->attachmentService->upload($postId, $file, 1);
-                $this->fail("應該拒絕 {$mimeType} 類型的檔案");
+                $this->fail("應該拒絕 {(string)mimeType} 類型的檔案");
             } catch (ValidationException $e) {
                 $this->assertStringContainsString('不支援的檔案類型', $e->getMessage());
             }

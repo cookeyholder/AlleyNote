@@ -143,7 +143,7 @@ final class StatisticsCalculationService
 
         $mean = array_sum($values) / count($values);
         $variance = array_sum(
-            array_map(fn($value) => ($value - $mean) ** 2, $values),
+            array_map(fn($value) => ((is_numeric($value) ? (float)$value : 0.0) - (is_numeric($mean) ? (float)$mean : 0.0)) ** 2, $values),
         ) / count($values);
 
         $standardDeviation = sqrt($variance);
@@ -350,7 +350,7 @@ final class StatisticsCalculationService
                 return $currentUsers > 0 ? 100.0 : 0.0;
             }
 
-            $growth = (($currentUsers - $previousUsers) / $previousUsers) * 100;
+            $growth = (((is_numeric($currentUsers) ? (float)$currentUsers : 0.0) - (is_numeric($previousUsers) ? (float)$previousUsers : 0.0)) / $previousUsers) * 100;
 
             return round($growth, 2);
         } catch (Throwable) {
@@ -415,7 +415,7 @@ final class StatisticsCalculationService
         $first = $values[0];
         $last = $values[$count - 1];
 
-        $growthRate = $first != 0 ? (($last - $first) / $first) * 100 : 0;
+        $growthRate = $first != 0 ? (((is_numeric($last) ? (float)$last : 0.0) - (is_numeric($first) ? (float)$first : 0.0)) / $first) * 100 : 0;
 
         $direction = match (true) {
             $growthRate > 5 => 'increasing',

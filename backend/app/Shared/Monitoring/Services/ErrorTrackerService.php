@@ -119,7 +119,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             }
             /** @var array<string, mixed> $context */
             $context = $record['context'];
-            if (isset($context['exception_class']) && is_string($context['exception_class'])) {
+            if (is_string($context['exception_class'])) {
                 $type = $context['exception_class'];
                 if (!isset($stats['error_types'][$type])) {
                     $stats['error_types'][$type] = 0;
@@ -135,7 +135,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             }
             /** @var array<string, mixed> $context */
             $context = $record['context'];
-            if (isset($context['file']) && is_string($context['file'])) {
+            if (is_string($context['file'])) {
                 $file = basename($context['file']);
                 if (!isset($stats['top_error_files'][$file])) {
                     $stats['top_error_files'][$file] = 0;
@@ -228,7 +228,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             }
             /** @var array<string, mixed> $context */
             $context = $record['context'];
-            if (isset($context['exception_class']) && is_string($context['exception_class'])) {
+            if (is_string($context['exception_class'])) {
                 $timestampValue = $record['timestamp'] ?? 0;
                 $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int) $timestampValue : time();
                 $date = date('Y-m-d', $timestamp);
@@ -453,7 +453,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
             $hourlyCount = 0;
             foreach ($errors as $error) {
-                if (is_array($error) && isset($error['timestamp']) && is_numeric($error['timestamp'])) {
+                if (is_array($error) && is_numeric($error['timestamp'])) {
                     $errorTimestamp = (int) $error['timestamp'];
                     if ($errorTimestamp >= $hourStart && $errorTimestamp < $hourEnd) {
                         $hourlyCount++;

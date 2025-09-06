@@ -204,7 +204,7 @@ class CacheServiceProvider
         assert(is_array($drivers), 'Drivers config must be an array');
 
         // 記憶體驅動
-        if (isset($drivers['memory']) && is_array($drivers['memory']) && ($drivers['memory']['enabled'] ?? true)) {
+        if (is_array($drivers['memory']) && ($drivers['memory']['enabled'] ?? true)) {
             $driver = $container->get('cache.driver.memory');
             assert($driver instanceof CacheDriverInterface, 'Memory driver must implement CacheDriverInterface');
             $priority = $drivers['memory']['priority'] ?? 90;
@@ -213,7 +213,7 @@ class CacheServiceProvider
         }
 
         // 檔案驅動
-        if (isset($drivers['file']) && is_array($drivers['file']) && ($drivers['file']['enabled'] ?? true)) {
+        if (is_array($drivers['file']) && ($drivers['file']['enabled'] ?? true)) {
             $driver = $container->get('cache.driver.file');
             assert($driver instanceof CacheDriverInterface, 'File driver must implement CacheDriverInterface');
             $priority = $drivers['file']['priority'] ?? 50;
@@ -222,7 +222,7 @@ class CacheServiceProvider
         }
 
         // Redis 驅動
-        if (extension_loaded('redis') && isset($drivers['redis']) && is_array($drivers['redis']) && ($drivers['redis']['enabled'] ?? false)) {
+        if (extension_loaded('redis') && is_array($drivers['redis']) && ($drivers['redis']['enabled'] ?? false)) {
             try {
                 $driver = $container->get('cache.driver.redis');
                 assert($driver instanceof CacheDriverInterface, 'Redis driver must implement CacheDriverInterface');
@@ -268,7 +268,7 @@ class CacheServiceProvider
                 if (!is_array($config)) {
                     $config = [];
                 }
-                $maxItems = isset($config['max_size']) && is_int($config['max_size'])
+                $maxItems = is_int($config['max_size'])
                     ? $config['max_size']
                     : 1000;
 
@@ -281,7 +281,7 @@ class CacheServiceProvider
                     $config = [];
                 }
                 $defaultPath = $c->has('cache.path') ? $c->get('cache.path') : '/tmp/cache';
-                $path = isset($config['path']) && is_string($config['path'])
+                $path = is_string($config['path'])
                     ? $config['path']
                     : (is_string($defaultPath) ? $defaultPath : '/tmp/cache');
 

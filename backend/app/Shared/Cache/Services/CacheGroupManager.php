@@ -426,7 +426,7 @@ class CacheGroupManager
         }
 
         // 檢查最大年齡規則
-        if (isset($rules['max_age']) && is_int($rules['max_age'])) {
+        if (is_int($rules['max_age'])) {
             $group = $this->getGroup($groupName);
             if ($group && $this->isGroupExpired($groupName, $rules['max_age'])) {
                 return true;

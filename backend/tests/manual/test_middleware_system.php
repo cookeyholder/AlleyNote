@@ -286,9 +286,9 @@ class LoggingMiddleware extends AbstractMiddleware
 
     protected function execute(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        echo "執行中介軟體: {$this->message}\n";
+        echo "執行中介軟體: {(string)this->message}\n";
         $response = $handler->handle($request);
-        echo "完成中介軟體: {$this->message}\n";
+        echo "完成中介軟體: {(string)this->message}\n";
 
         return $response;
     }
@@ -488,7 +488,7 @@ try {
         'slug' => 'hello-world',
         'id' => 456,
     ], ['page' => 2, 'limit' => 10]);
-    echo "生成的 URL: {$url}\n";
+    echo "生成的 URL: {(string)url}\n";
 } catch (Exception $e) {
     echo 'URL 生成錯誤: ' . $e->getMessage() . "\n";
 }

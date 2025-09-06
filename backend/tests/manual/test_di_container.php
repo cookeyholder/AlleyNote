@@ -53,23 +53,23 @@ try {
     $appVersion = $container->get('app.version');
     $appDebug = $container->get('app.debug');
 
-    echo "✅ 應用程式名稱: {$appName}\n";
-    echo "✅ 應用程式版本: {$appVersion}\n";
+    echo "✅ 應用程式名稱: {(string)appName}\n";
+    echo "✅ 應用程式版本: {(string)appVersion}\n";
     echo '✅ 除錯模式: ' . ($appDebug ? 'enabled' : 'disabled') . "\n";
 
     echo "\n測試 4: 測試路由統計功能\n";
 
     $routingStats = RoutingServiceProvider::getRoutingStats($container);
     if (isset($routingStats['error'])) {
-        echo "⚠️  路由統計暫時無法取得: {$routingStats['error']}\n";
+        echo "⚠️  路由統計暫時無法取得: {(string)routingStats['error']}\n";
     } else {
         echo "✅ 路由統計:\n";
-        echo "   - 總路由數: {$routingStats['total_routes']}\n";
-        echo "   - 載入檔案數: {$routingStats['files_loaded']}\n";
+        echo "   - 總路由數: {(string)routingStats['total_routes']}\n";
+        echo "   - 載入檔案數: {(string)routingStats['files_loaded']}\n";
         echo '   - 路由群組: ' . implode(', ', array_keys($routingStats['groups'])) . "\n";
 
         foreach ($routingStats['groups'] as $group => $count) {
-            echo "     * {$group}: {$count} 條路由\n";
+            echo "     * {(string)group}: {(string)count} 條路由\n";
         }
     }
 
@@ -100,7 +100,7 @@ try {
     echo "✅ 路由檔案配置:\n";
     foreach ($routeFiles as $group => $filePath) {
         $exists = file_exists($filePath) ? '✅' : '❌';
-        echo "   {$exists} {$group}: {$filePath}\n";
+        echo "   {(string)exists} {(string)group}: {(string)filePath}\n";
     }
 
     echo "\n測試 7: 測試完整請求處理\n";
@@ -425,7 +425,7 @@ try {
 
     $response = $app->run($request);
     echo "✅ 請求處理成功\n";
-    echo "   - 回應狀態: {$response->getStatusCode()}\n";
+    echo "   - 回應狀態: {(string)response->getStatusCode()}\n";
     echo '   - 內容類型: ' . $response->getHeaderLine('Content-Type') . "\n";
 } catch (Exception $e) {
     echo '❌ 測試失敗: ' . $e->getMessage() . "\n";

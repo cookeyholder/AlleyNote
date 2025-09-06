@@ -423,8 +423,6 @@ final class StatisticsCacheServiceTest extends TestCase
             ->method('execute')
             ->with($this->callback(function ($params) use ($period) {
                 return is_array($params)
-                       && isset($params['start_date'])
-                       && isset($params['end_date'])
                        && $params['start_date'] === $period->startDate->format('Y-m-d H:i:s')
                        && $params['end_date'] === $period->endDate->format('Y-m-d H:i:s');
             }))

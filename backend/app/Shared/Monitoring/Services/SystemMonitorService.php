@@ -386,7 +386,7 @@ class SystemMonitorService implements SystemMonitorInterface
             // 取得表格數量
             $stmt = $this->database->query("SELECT COUNT(*) as table_count FROM sqlite_master WHERE type='table'");
             $result = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
-            if (is_array($result) && isset($result['table_count']) && is_numeric($result['table_count'])) {
+            if (is_array($result) && is_numeric($result['table_count'])) {
                 $stats['table_count'] = (int) $result['table_count'];
             }
 

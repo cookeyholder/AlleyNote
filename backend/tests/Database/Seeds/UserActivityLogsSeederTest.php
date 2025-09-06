@@ -157,7 +157,7 @@ class UserActivityLogsSeederTest extends TestCase
         $hasBlockedEvent = false;
         /** @var array<string, mixed> $event */
         foreach ($securityEvents as $event) {
-            if (isset($event['status']) && $event['status'] === 'blocked') {
+            if ($event['status'] === 'blocked') {
                 $hasBlockedEvent = true;
                 break;
             }

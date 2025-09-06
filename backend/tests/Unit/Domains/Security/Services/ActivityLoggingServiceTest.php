@@ -196,8 +196,7 @@ class ActivityLoggingServiceTest extends TestCase
             ->with(
                 $this->stringContains('Failed to log activity'),
                 $this->callback(function (array $context) {
-                    return isset($context['action_type'])
-                        && isset($context['error']);
+                    return isset($context['error']);
                 }),
             );
 

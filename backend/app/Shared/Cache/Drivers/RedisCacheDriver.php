@@ -378,11 +378,11 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $this->redis->connect($host, $port, $timeout);
 
-            if (isset($config['password']) && is_string($config['password'])) {
+            if (is_string($config['password'])) {
                 $this->redis->auth($config['password']);
             }
 
-            if (isset($config['database']) && is_int($config['database'])) {
+            if (is_int($config['database'])) {
                 $this->redis->select($config['database']);
             }
         } catch (RedisException $e) {

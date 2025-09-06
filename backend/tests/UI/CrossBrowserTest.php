@@ -53,7 +53,7 @@ class CrossBrowserTest extends UITestCase
         $this->testResponsiveDesign();
 
         // 截圖保存
-        $this->captureScreenshot("compatibility-{$browser['name']}");
+        $this->captureScreenshot("compatibility-{(string)browser['name']}");
 
         // 關閉瀏覽器
         $this->browserAction('close');

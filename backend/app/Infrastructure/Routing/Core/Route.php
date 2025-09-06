@@ -162,7 +162,7 @@ class Route implements RouteInterface
             $clone->name = $attributes['name'];
         }
 
-        if (isset($attributes['middlewares']) && is_array($attributes['middlewares'])) {
+        if (is_array($attributes['middlewares'])) {
             $clone->middlewares = [];
             $clone->addMiddlewares($attributes['middlewares']);
         }

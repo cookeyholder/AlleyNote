@@ -85,7 +85,7 @@ class JwtPerformanceTest extends TestCase
         $this->assertLessThan(
             $maxTimePerToken,
             $averageTime,
-            "JWT token 產生平均時間 ({$averageTime}s) 超過要求 ({$maxTimePerToken}s)",
+            "JWT token 產生平均時間 ({(string)averageTime}s) 超過要求 ({(string)maxTimePerToken}s)",
         );
     }
 
@@ -130,7 +130,7 @@ class JwtPerformanceTest extends TestCase
         $this->assertLessThan(
             $maxTimePerValidation,
             $averageTime,
-            "JWT token 驗證平均時間 ({$averageTime}s) 超過要求 ({$maxTimePerValidation}s)",
+            "JWT token 驗證平均時間 ({(string)averageTime}s) 超過要求 ({(string)maxTimePerValidation}s)",
         );
     }
 
@@ -177,7 +177,7 @@ class JwtPerformanceTest extends TestCase
         $this->assertLessThan(
             5120,
             $memoryPerToken,
-            "每個 token 記憶體使用量 ({$memoryPerToken} bytes) 超過 5KB",
+            "每個 token 記憶體使用量 ({(string)memoryPerToken} bytes) 超過 5KB",
         );
 
         // 清理記憶體
@@ -202,8 +202,8 @@ class JwtPerformanceTest extends TestCase
         $refreshTokenSize = strlen($tokenPair->getRefreshToken());
 
         echo "\nToken 大小統計:\n";
-        echo "Access Token: {$accessTokenSize} bytes\n";
-        echo "Refresh Token: {$refreshTokenSize} bytes\n";
+        echo "Access Token: {(string)accessTokenSize} bytes\n";
+        echo "Refresh Token: {(string)refreshTokenSize} bytes\n";
 
         // 驗證 token 大小合理（通常 JWT 不超過 8KB）
         $this->assertLessThan(8192, $accessTokenSize, 'Access token 太大');

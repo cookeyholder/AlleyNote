@@ -343,7 +343,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $originalHistogramCount = count($histogramData);
             $this->histograms[$key] = array_filter(
                 $histogramData,
-                fn($histogram) => is_array($histogram) && isset($histogram['timestamp']) && is_numeric($histogram['timestamp']) && $histogram['timestamp'] > $cutoffTime,
+                fn($histogram) => is_array($histogram) && is_numeric($histogram['timestamp']) && $histogram['timestamp'] > $cutoffTime,
             );
             $cleanedCount += $originalHistogramCount - count($this->histograms[$key]);
 

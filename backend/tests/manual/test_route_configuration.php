@@ -110,15 +110,15 @@ try {
 
     $stats = $routeLoader->getRouteStats();
     echo "✅ 路由載入成功\n";
-    echo "   - 總路由數: {$stats['total_routes']}\n";
-    echo "   - 載入檔案數: {$stats['files_loaded']}\n";
+    echo "   - 總路由數: {(string)stats['total_routes']}\n";
+    echo "   - 載入檔案數: {(string)stats['files_loaded']}\n";
     echo '   - 路由群組: ' . implode(', ', array_keys($stats['groups'])) . "\n";
 
     // 檢查載入的路由
     $loadedRoutes = $routeLoader->getLoadedRoutes();
     echo "   - 已載入路由:\n";
     foreach ($loadedRoutes as $route) {
-        echo "     * {$route['name']}: {$route['methods'][0]} {$route['path']}\n";
+        echo "     * {(string)route['name']}: {(string)route['methods'][0]} {(string)route['path']}\n";
     }
 } catch (Exception $e) {
     echo '❌ 路由載入失敗: ' . $e->getMessage() . "\n";
@@ -176,10 +176,10 @@ try {
 
     $stats = $multiRouteLoader->getRouteStats();
     echo "✅ 多檔案路由載入成功\n";
-    echo "   - 總路由數: {$stats['total_routes']}\n";
+    echo "   - 總路由數: {(string)stats['total_routes']}\n";
     echo "   - 路由群組統計:\n";
     foreach ($stats['groups'] as $group => $count) {
-        echo "     * {$group}: {$count} 條路由\n";
+        echo "     * {(string)group}: {(string)count} 條路由\n";
     }
 } catch (Exception $e) {
     echo '❌ 多檔案路由載入失敗: ' . $e->getMessage() . "\n";

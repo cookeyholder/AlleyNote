@@ -388,10 +388,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                 'error' => $e->getMessage(),
             ]);
 
-            return [
-                'error' => $e->getMessage(),
-                'health_status' => 'unhealthy',
-            ];
+            return ['error' => $error, 'health_status' => 'unhealthy', 'manager_stats' => [], 'cache_keys' => [], 'ttl_config' => [], 'tag_config' => []];
         }
     }
 
@@ -402,7 +399,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
             // 檢查是否有任何驅動可用
             foreach ($healthStatus as $driverStatus) {
-                if (isset($driverStatus['available']) && $driverStatus['available'] === true) {
+                if ($driverStatus['available'] === true) {
                     return true;
                 }
             }

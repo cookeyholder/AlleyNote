@@ -89,8 +89,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         // 檢查 Session 是否過期 (最大閒置時間 2 小時)
         $maxIdleTime = 7200; // 2 hours
         if (
-            isset($_SESSION['last_activity'])
-            && (time() - $_SESSION['last_activity']) > $maxIdleTime
+            (time() - $_SESSION['last_activity']) > $maxIdleTime
         ) {
             return false;
         }
@@ -159,7 +158,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function requiresIpVerification(): bool
     {
-        return isset($_SESSION['requires_ip_verification']) && $_SESSION['requires_ip_verification'] === true;
+        return $_SESSION['requires_ip_verification'] === true;
     }
 
     /**

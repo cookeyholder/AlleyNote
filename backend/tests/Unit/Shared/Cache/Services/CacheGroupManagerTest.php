@@ -249,9 +249,9 @@ class CacheGroupManagerTest extends TestCase
 
         // 檢查所有分組是否都已建立
         $allGroups = $this->groupManager->getAllGroups();
-        $this->assertArrayHasKey('user_123', array_flip($allGroups));
-        $this->assertArrayHasKey('user_456', array_flip($allGroups));
-        $this->assertArrayHasKey('module_posts', array_flip($allGroups));
+        $this->assertArrayHasKey('user_123', array_flip(is_array($allGroups) ? array_filter($allGroups, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey('user_456', array_flip(is_array($allGroups) ? array_filter($allGroups, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey('module_posts', array_flip(is_array($allGroups) ? array_filter($allGroups, fn($v) => is_string($v) || is_int($v)) : []));
 
         // 模擬清空 - 每個分組清空 2 個項目
         $this->taggedCache->method('flushByTags')

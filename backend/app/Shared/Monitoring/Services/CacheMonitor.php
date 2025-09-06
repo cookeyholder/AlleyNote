@@ -468,7 +468,7 @@ class CacheMonitor implements CacheMonitorInterface
             $originalErrorCount = is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0;
             $errorData['recent_errors'] = is_array($errorData['recent_errors']) ? array_filter(
                 $errorData['recent_errors'],
-                fn($error) => is_array($error) && isset($error['timestamp']) && $error['timestamp'] > $cutoffTime,
+                fn($error) => is_array($error) && $error['timestamp'] > $cutoffTime,
             ) : [];
             $cleaned += $originalErrorCount - (is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0);
         }

@@ -36,8 +36,7 @@ class ErrorTrackerServiceTest extends TestCase
             ->with(
                 $this->equalTo('Test error message'),
                 $this->callback(function ($context) {
-                    return isset($context['exception_class'])
-                        && $context['exception_class'] === Exception::class;
+                    return $context['exception_class'] === Exception::class;
                 }),
             );
 

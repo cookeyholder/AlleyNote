@@ -39,9 +39,9 @@ class TagManagementController extends BaseController
     {
         try {
             $queryParams = $request->getQueryParams();
-            $page = max(1, isset($queryParams['page']) && is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
-            $limit = min(100, max(10, isset($queryParams['limit']) && is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 20));
-            $search = isset($queryParams['search']) && is_string($queryParams['search']) ? $queryParams['search'] : '';
+            $page = max(1, is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
+            $limit = min(100, max(10, is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 20));
+            $search = is_string($queryParams['search']) ? $queryParams['search'] : '';
 
             $tags = [];
             $totalTags = 0;
@@ -126,7 +126,7 @@ class TagManagementController extends BaseController
     public function getTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $tagName = isset($args['tag']) && is_string($args['tag']) ? urldecode($args['tag']) : '';
+            $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
                 throw new InvalidArgumentException('標籤名稱不能為空');
@@ -189,7 +189,7 @@ class TagManagementController extends BaseController
     public function deleteTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $tagName = isset($args['tag']) && is_string($args['tag']) ? urldecode($args['tag']) : '';
+            $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
                 throw new InvalidArgumentException('標籤名稱不能為空');
@@ -352,7 +352,7 @@ class TagManagementController extends BaseController
     public function deleteGroup(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $groupName = isset($args['group']) && is_string($args['group']) ? urldecode($args['group']) : '';
+            $groupName = is_string($args['group']) ? urldecode($args['group']) : '';
 
             if (empty($groupName)) {
                 throw new InvalidArgumentException('群組名稱不能為空');
@@ -417,7 +417,7 @@ class TagManagementController extends BaseController
     public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $tagName = isset($args['tag']) && is_string($args['tag']) ? urldecode($args['tag']) : '';
+            $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
                 throw new InvalidArgumentException('標籤名稱不能為空');
@@ -697,7 +697,7 @@ class TagManagementController extends BaseController
     public function flushGroup(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $groupName = isset($args['group']) && is_string($args['group']) ? urldecode($args['group']) : '';
+            $groupName = is_string($args['group']) ? urldecode($args['group']) : '';
 
             if (empty($groupName)) {
                 throw new InvalidArgumentException('群組名稱不能為空');

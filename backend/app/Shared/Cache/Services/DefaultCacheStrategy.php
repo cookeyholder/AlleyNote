@@ -41,12 +41,12 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     public function __construct(array $config = [])
     {
-        $this->minTtl = isset($config['min_ttl']) && is_int($config['min_ttl']) ? $config['min_ttl'] : 60;
-        $this->maxTtl = isset($config['max_ttl']) && is_int($config['max_ttl']) ? $config['max_ttl'] : 86400;
-        $this->excludePatterns = isset($config['exclude_patterns']) && is_array($config['exclude_patterns'])
+        $this->minTtl = is_int($config['min_ttl']) ? $config['min_ttl'] : 60;
+        $this->maxTtl = is_int($config['max_ttl']) ? $config['max_ttl'] : 86400;
+        $this->excludePatterns = is_array($config['exclude_patterns'])
             ? array_filter($config['exclude_patterns'], 'is_string')
             : [];
-        $this->maxValueSize = isset($config['max_value_size']) && is_int($config['max_value_size']) ? $config['max_value_size'] : 1024 * 1024; // 1MB
+        $this->maxValueSize = is_int($config['max_value_size']) ? $config['max_value_size'] : 1024 * 1024; // 1MB
     }
 
     public function shouldCache(string $key, mixed $value, int $ttl): bool
@@ -207,8 +207,8 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             }
 
             try {
-                $key = isset($params['key']) && is_string($params['key']) ? $params['key'] : '';
-                $ttl = isset($params['ttl']) && is_int($params['ttl']) ? $params['ttl'] : 3600;
+                $key = is_string($params['key']) ? $params['key'] : '';
+                $ttl = is_int($params['ttl']) ? $params['ttl'] : 3600;
 
                 return match ($operation) {
                     'get' => $driver->get($key, $params['default'] ?? null),

@@ -213,7 +213,7 @@ readonly class StatisticsCalculationConsole
 
             if ($periodResult['success']) {
                 $extra = '';
-                if (isset($periodResult['cached']) && $periodResult['cached']) {
+                if ($periodResult['cached']) {
                     $extra = ' (快取)';
                 } elseif (isset($periodResult['snapshot_id'])) {
                     $extra = " (快照: {$periodResult['snapshot_id']})";
@@ -221,7 +221,7 @@ readonly class StatisticsCalculationConsole
                 $this->printSuccess("{$status} {$period}: {$duration}s{$extra}");
             } else {
                 $error = $periodResult['error'] ?? 'Unknown error';
-                if (isset($periodResult['skipped']) && $periodResult['skipped']) {
+                if ($periodResult['skipped']) {
                     $this->printWarning("{$status} {$period}: 已跳過 - {$error}");
                 } else {
                     $this->printError("{$status} {$period}: {$error}");

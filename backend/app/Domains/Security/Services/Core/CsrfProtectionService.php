@@ -189,7 +189,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 }
             } else {
                 // 降級到單一權杖模式
-                if (isset($_SESSION['csrf_token']) && isset($_SESSION['csrf_token_time'])) {
+                if (isset($_SESSION['csrf_token_time'])) {
                     return hash_equals($_SESSION['csrf_token'], $token)
                         && (time() - $_SESSION['csrf_token_time']) <= self::TOKEN_EXPIRY;
                 }
