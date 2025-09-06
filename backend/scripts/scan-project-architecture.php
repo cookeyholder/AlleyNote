@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * AlleyNote 專案架構掃描器
- * 
+ *
  * 產生整個專案的詳細快照，包括：
  * - 檔案結構和關係
  * - 類別依賴關係
@@ -75,7 +75,7 @@ class ProjectArchitectureScanner
     private function scanDirectory(string $path, int $depth = 0): array
     {
         $structure = [];
-        
+
         if ($depth > 10) return $structure; // 防止無限遞歸
 
         $iterator = new DirectoryIterator($path);
@@ -83,7 +83,7 @@ class ProjectArchitectureScanner
             if ($fileInfo->isDot()) continue;
 
             $relativePath = str_replace($this->projectRoot . '/', '', $fileInfo->getPathname());
-            
+
             if ($fileInfo->isDir()) {
                 // 忽略一些不重要的目錄
                 if (in_array($fileInfo->getFilename(), ['vendor', 'node_modules', '.git', 'coverage-reports', 'storage'])) {
@@ -129,7 +129,7 @@ class ProjectArchitectureScanner
                 $stats['total_files']++;
                 $ext = $item['extension'] ?? 'no_extension';
                 $stats['by_extension'][$ext] = ($stats['by_extension'][$ext] ?? 0) + 1;
-                
+
                 $dir = dirname($currentPath . '/' . $name);
                 $stats['by_directory'][$dir] = ($stats['by_directory'][$dir] ?? 0) + 1;
             } elseif ($item['type'] === 'directory' && !isset($item['ignored'])) {
@@ -143,7 +143,7 @@ class ProjectArchitectureScanner
         echo "🐘 分析 PHP 檔案...\n";
 
         $phpFiles = $this->findPHPFiles();
-        
+
         foreach ($phpFiles as $file) {
             $this->analyzePHPFile($file);
         }
@@ -152,14 +152,14 @@ class ProjectArchitectureScanner
     private function findPHPFiles(): array
     {
         $files = [];
-        
+
         // 檢查路徑是否存在
         $backendPath = $this->projectRoot . '/backend';
         if (!is_dir($backendPath)) {
             // 如果我們已經在 backend 目錄中
             $backendPath = $this->projectRoot;
         }
-        
+
         if (!is_dir($backendPath)) {
             echo "警告：找不到 backend 目錄，使用當前目錄：{$this->projectRoot}\n";
             $backendPath = $this->projectRoot;
@@ -171,7 +171,7 @@ class ProjectArchitectureScanner
         );
 
         foreach ($iterator as $file) {
-            if ($file->getExtension() === 'php' && 
+            if ($file->getExtension() === 'php' &&
                 !str_contains($file->getPathname(), '/vendor/') &&
                 !str_contains($file->getPathname(), '/storage/')) {
                 $files[] = $file->getPathname();
@@ -187,7 +187,7 @@ class ProjectArchitectureScanner
         if (!$content) return;
 
         $relativePath = str_replace($this->projectRoot . '/', '', $filePath);
-        
+
         $analysis = [
             'path' => $relativePath,
             'namespace' => $this->extractNamespace($content),
@@ -461,7 +461,7 @@ class ProjectArchitectureScanner
     {
         // 分析層次間的依賴關係
         $violations = [];
-        
+
         // 這裡可以實作更詳細的層次依賴檢查
         return ['violations' => $violations, 'clean_architecture_score' => 85];
     }
@@ -469,7 +469,7 @@ class ProjectArchitectureScanner
     private function analyzeDomainBoundaries(): array
     {
         $domains = [];
-        
+
         foreach ($this->snapshot['php_files'] as $file => $analysis) {
             if (str_contains($file, '/Domains/')) {
                 $pathParts = explode('/', $file);
@@ -504,7 +504,7 @@ class ProjectArchitectureScanner
         $totalFiles = count($this->snapshot['php_files']);
         $totalClasses = count($this->classMap);
         $totalInterfaces = count($this->interfaceMap);
-        
+
         return [
             'total_files' => $totalFiles,
             'total_classes' => $totalClasses,
@@ -522,7 +522,7 @@ class ProjectArchitectureScanner
 
         return [
             'total_dependencies' => $totalDependencies,
-            'avg_dependencies_per_file' => count($this->dependencies) > 0 ? 
+            'avg_dependencies_per_file' => count($this->dependencies) > 0 ?
                 round($totalDependencies / count($this->dependencies), 2) : 0
         ];
     }
@@ -531,15 +531,15 @@ class ProjectArchitectureScanner
     {
         // 簡化的可維護性評分
         $score = 100;
-        
+
         // 檔案數量懲罰
         $fileCount = count($this->snapshot['php_files']);
         if ($fileCount > 500) $score -= 10;
-        
+
         // 依賴複雜度懲罰
         $avgDeps = $this->metrics['dependency_metrics']['avg_dependencies_per_file'] ?? 0;
         if ($avgDeps > 20) $score -= 15;
-        
+
         // 設計模式加分
         $patternCount = 0;
         foreach ($this->patterns as $pattern => $instances) {
