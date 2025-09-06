@@ -92,17 +92,12 @@ class MemoryTagRepositoryTest extends TestCase
         $keys = ['key1', 'key2', 'key3'];
         $tag = 'user:123';
 
-        foreach ($keys as $key) {
-            $this->repository->setTags($key, [$tag], 3600);
-        }
+        $this->setupKeysWithSameTag($keys, $tag);
 
         $deletedKeys = $this->repository->deleteByTags($tag);
         $this->assertEquals($keys, $deletedKeys);
 
-        // 驗證標籤已被清空
-        foreach ($keys as $key) {
-            $this->assertEmpty($this->repository->getTags($key));
-        }
+        $this->assertAllKeysTagsAreEmpty($keys);
     }
 
     public function testDeleteKey(): void
@@ -159,22 +154,11 @@ class MemoryTagRepositoryTest extends TestCase
 
     public function testGetTagStatistics(): void
     {
-        $testData = [
-            'key1' => ['user:123'],
-            'key2' => ['user:123'],
-            'key3' => ['module:posts'],
-            'key4' => ['module:posts'],
-            'key5' => ['module:posts'],
-        ];
-
-        foreach ($testData as $key => $tags) {
-            $this->repository->setTags($key, $tags, 3600);
-        }
+        $this->setupTagStatisticsTestData();
 
         $stats = $this->repository->getTagStatistics();
 
-        $this->assertEquals(2, $stats['user:123']);
-        $this->assertEquals(3, $stats['module:posts']);
+        $this->assertTagStatisticsAreCorrect($stats);
     }
 
     public function testTouch(): void
@@ -295,5 +279,58 @@ class MemoryTagRepositoryTest extends TestCase
         $this->assertCount(2, $retrievedTags);
         $this->assertArrayHasKey('user:123', array_flip($retrievedTags));
         $this->assertArrayHasKey('module:posts', array_flip($retrievedTags));
+    }
+
+    /**
+     * Setup test data for tag statistics test.
+     */
+    private function setupTagStatisticsTestData(): void
+    {
+        $testData = [
+            'key1' => ['user:123'],
+            'key2' => ['user:123'],
+            'key3' => ['module:posts'],
+            'key4' => ['module:posts'],
+            'key5' => ['module:posts'],
+        ];
+
+        foreach ($testData as $key => $tags) {
+            $this->repository->setTags($key, $tags, 3600);
+        }
+    }
+
+    /**
+     * Assert that tag statistics are correct.
+     *
+     * @param array<string, int> $stats
+     */
+    private function assertTagStatisticsAreCorrect(array $stats): void
+    {
+        $this->assertEquals(2, $stats['user:123']);
+        $this->assertEquals(3, $stats['module:posts']);
+    }
+
+    /**
+     * Setup multiple keys with the same tag.
+     *
+     * @param array<int, string> $keys
+     */
+    private function setupKeysWithSameTag(array $keys, string $tag): void
+    {
+        foreach ($keys as $key) {
+            $this->repository->setTags($key, [$tag], 3600);
+        }
+    }
+
+    /**
+     * Assert that all keys have empty tags.
+     *
+     * @param array<int, string> $keys
+     */
+    private function assertAllKeysTagsAreEmpty(array $keys): void
+    {
+        foreach ($keys as $key) {
+            $this->assertEmpty($this->repository->getTags($key));
+        }
     }
 }

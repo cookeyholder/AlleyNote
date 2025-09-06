@@ -107,15 +107,7 @@ class CacheGroupManagerTest extends TestCase
 
         // 模擬清空操作 - 注意 flushByTags 接收陣列參數
         $this->taggedCache->method('flushByTags')
-            ->willReturnCallback(function ($tags) {
-                if (is_array($tags) && in_array('group_parent_group', $tags)) {
-                    return 3;
-                } elseif (is_array($tags) && in_array('group_child_group', $tags)) {
-                    return 2;
-                }
-
-                return 0;
-            });
+            ->willReturnCallback([$this, 'calculateFlushCascadeResult']);
 
         $totalCleared = $this->groupManager->flushGroup($parentGroup, true);
 
@@ -243,31 +235,14 @@ class CacheGroupManagerTest extends TestCase
     public function testFlushByPattern(): void
     {
         // 建立符合模式的分組
-        $this->groupManager->group('user_123', ['user_tag']);
-        $this->groupManager->group('user_456', ['user_tag']);
-        $this->groupManager->group('module_posts', ['module_tag']);
+        $this->setupGroupsForPatternTest();
 
         // 檢查所有分組是否都已建立
-        $allGroups = $this->groupManager->getAllGroups();
-        $this->assertArrayHasKey('user_123', array_flip($allGroups));
-        $this->assertArrayHasKey('user_456', array_flip($allGroups));
-        $this->assertArrayHasKey('module_posts', array_flip($allGroups));
+        $this->assertAllTestGroupsExist();
 
         // 模擬清空 - 每個分組清空 2 個項目
         $this->taggedCache->method('flushByTags')
-            ->willReturnCallback(function ($tags) {
-                // 檢查是否為分組標籤
-                if (is_array($tags) && count($tags) === 1) {
-                    $tag = $tags[0];
-                    // 如果是 user_* 分組標籤，返回 2
-                    // 注意：CacheTag::group("user_123") 經過 normalizeName 後變成 "group_user_123"
-                    if (is_string($tag) && strpos($tag, 'group_user_') === 0) {
-                        return 2;
-                    }
-                }
-
-                return 0;
-            });
+            ->willReturnCallback([$this, 'calculatePatternFlushResult']);
 
         $clearedCount = $this->groupManager->flushByPattern('user_*');
         $this->assertEquals(4, $clearedCount); // 2 user groups * 2 items each
@@ -361,5 +336,64 @@ class CacheGroupManagerTest extends TestCase
 
         // 5. 驗證分組已被移除
         $this->assertFalse($this->groupManager->hasGroup($groupName));
+    }
+
+    /**
+     * Calculate flush cascade result for testing.
+     *
+     * @param array<int, string> $tags
+     */
+    public function calculateFlushCascadeResult(array $tags): int
+    {
+        if (is_array($tags) && in_array('group_parent_group', $tags)) {
+            return 3;
+        } elseif (is_array($tags) && in_array('group_child_group', $tags)) {
+            return 2;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Setup groups for pattern testing.
+     */
+    private function setupGroupsForPatternTest(): void
+    {
+        $this->groupManager->group('user_123', ['user_tag']);
+        $this->groupManager->group('user_456', ['user_tag']);
+        $this->groupManager->group('module_posts', ['module_tag']);
+    }
+
+    /**
+     * Assert all test groups exist.
+     */
+    private function assertAllTestGroupsExist(): void
+    {
+        $allGroups = $this->groupManager->getAllGroups();
+        $groupsArray = array_flip($allGroups);
+        
+        $this->assertArrayHasKey('user_123', $groupsArray);
+        $this->assertArrayHasKey('user_456', $groupsArray);
+        $this->assertArrayHasKey('module_posts', $groupsArray);
+    }
+
+    /**
+     * Calculate pattern flush result for testing.
+     *
+     * @param array<int, string> $tags
+     */
+    public function calculatePatternFlushResult(array $tags): int
+    {
+        // 檢查是否為分組標籤
+        if (is_array($tags) && count($tags) === 1) {
+            $tag = $tags[0];
+            // 如果是 user_* 分組標籤，返回 2
+            // 注意：CacheTag::group("user_123") 經過 normalizeName 後變成 "group_user_123"
+            if (is_string($tag) && strpos($tag, 'group_user_') === 0) {
+                return 2;
+            }
+        }
+
+        return 0;
     }
 }
