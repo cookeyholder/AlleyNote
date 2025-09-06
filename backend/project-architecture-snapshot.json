@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-06 19:28:58",
+        "scan_time": "2025-09-06 19:39:53",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -160,7 +160,7 @@
             "type": "file",
             "path": "test-error-analysis-snapshot.json",
             "extension": "json",
-            "size": 675992
+            "size": 672898
         },
         "app": {
             "type": "directory",
@@ -3507,7 +3507,7 @@
                             "type": "file",
                             "path": "tests\/Integration\/RateLimitTest.php",
                             "extension": "php",
-                            "size": 5967
+                            "size": 5855
                         },
                         "AuthControllerTest.php": {
                             "type": "file",
@@ -3645,7 +3645,7 @@
                             "type": "file",
                             "path": "tests\/Integration\/PostControllerTest.php",
                             "extension": "php",
-                            "size": 19833
+                            "size": 19826
                         },
                         "Http": {
                             "type": "directory",
@@ -3669,13 +3669,13 @@
                             "type": "file",
                             "path": "tests\/Integration\/JwtTokenBlacklistIntegrationTest.php",
                             "extension": "php",
-                            "size": 13855
+                            "size": 13848
                         },
                         "DIValidationIntegrationTest.php": {
                             "type": "file",
                             "path": "tests\/Integration\/DIValidationIntegrationTest.php",
                             "extension": "php",
-                            "size": 12464
+                            "size": 12496
                         },
                         "Api": {
                             "type": "directory",
@@ -3747,7 +3747,7 @@
                             "type": "file",
                             "path": "tests\/Integration\/FileSystemBackupTest.php",
                             "extension": "php",
-                            "size": 9795
+                            "size": 9683
                         },
                         "DatabaseBackupTest.php": {
                             "type": "file",
@@ -3927,7 +3927,7 @@
                             "type": "file",
                             "path": "tests\/Performance\/DatabaseOptimizationValidationTest.php",
                             "extension": "php",
-                            "size": 3236
+                            "size": 3229
                         },
                         "SimpleUserActivityLogPerformanceTest.php": {
                             "type": "file",
@@ -4833,7 +4833,7 @@
             "type": "file",
             "path": "test-error-analysis-report.md",
             "extension": "md",
-            "size": 9752
+            "size": 9136
         },
         "phpunit_clean.xml": {
             "type": "file",
@@ -4845,7 +4845,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1572126
+            "size": 1576873
         },
         "phpstan-T4.1-baseline.neon": {
             "type": "file",
@@ -4881,7 +4881,7 @@
             "type": "file",
             "path": "project-architecture-summary.md",
             "extension": "md",
-            "size": 825
+            "size": 826
         },
         "vendor": {
             "type": "directory",
@@ -4891,7 +4891,7 @@
             "type": "file",
             "path": ".phpunit.result.cache",
             "extension": "cache",
-            "size": 151330
+            "size": 151300
         }
     },
     "file_statistics": {

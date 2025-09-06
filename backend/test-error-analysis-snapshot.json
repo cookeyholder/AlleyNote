@@ -1,7 +1,7 @@
 {
     "scan_info": {
         "project": "AlleyNote",
-        "scan_time": "2025-09-06 19:29:02",
+        "scan_time": "2025-09-06 19:48:13",
         "scan_type": "test_error_analysis",
         "phpstan_level": 10
     },
@@ -14,7 +14,7 @@
             },
             {
                 "type": "high_cyclomatic_complexity",
-                "complexity": 17,
+                "complexity": 15,
                 "severity": "high"
             }
         ],
@@ -536,9 +536,15 @@
             "test_methods": [
                 "testSeederCreatesExpectedData",
                 "testSeederCreatesVariousActionTypes",
+                "testSeederCreatesAuthActionTypes",
+                "testSeederCreatesPostActionTypes",
+                "testSeederCreatesAttachmentActionTypes",
                 "testSeederCreatesVariousStatuses",
+                "testSeederCreatesSuccessAndFailedStatuses",
+                "testSeederCreatesErrorAndBlockedStatuses",
                 "testSeederCreatesValidDataFormat",
                 "testSeederCreatesSecurityEvents",
+                "testSecurityEventsIncludeBlockedStatus",
                 "testSeederTruncatesExistingData"
             ],
             "assertions": {
@@ -561,15 +567,17 @@
                 "php8_attributes": [
                     "Test"
                 ],
-                "docblock_annotations": [
-                    "var"
-                ]
+                "docblock_annotations": {
+                    "0": "return",
+                    "3": "param",
+                    "7": "var"
+                }
             },
             "complexity_indicators": {
-                "line_count": 215,
-                "method_count": 6,
+                "line_count": 371,
+                "method_count": 12,
                 "assertion_count": 23,
-                "cyclomatic_complexity": 17,
+                "cyclomatic_complexity": 15,
                 "nested_level": 4
             },
             "potential_issues": [
@@ -1161,9 +1169,6 @@
                 "PHPUnit\\Framework\\TestCase",
                 "Psr\\Log\\LoggerInterface",
                 "RuntimeException",
-                "($actionType, $userId, $targetType, $targetId, $metadata) {\n                return $dto->getActionType() === $actionType\n                    && $dto->getUserId() === $userId\n                    && $dto->getTargetType() === $targetType\n                    && $dto->getTargetId() === $targetId\n                    && $dto->getMetadata() === $metadata\n                    && $dto->getStatus() === ActivityStatus::SUCCESS",
-                "($actionType, $userId, $reason, $metadata) {\n                return $dto->getActionType() === $actionType\n                    && $dto->getUserId() === $userId\n                    && $dto->getDescription() === $reason\n                    && $dto->getMetadata() === $metadata\n                    && $dto->getStatus() === ActivityStatus::FAILED",
-                "($actionType, $description, $metadata) {\n                return $dto->getActionType() === $actionType\n                    && $dto->getDescription() === $description\n                    && $dto->getMetadata() === $metadata\n                    && $dto->getStatus() === ActivityStatus::BLOCKED",
                 "($cleanupDate) {\n                return $date->format('Y-m-d') === $cleanupDate->format('Y-m-d')",
                 "($actionType) {\n                    return $context['action_type'] === $actionType->value"
             ],
@@ -1174,7 +1179,7 @@
                 ]
             },
             "complexity_indicators": {
-                "line_count": 343,
+                "line_count": 387,
                 "method_count": 0,
                 "assertion_count": 15,
                 "cyclomatic_complexity": 13,
@@ -2670,9 +2675,13 @@
                 "App\\Shared\\Cache\\Repositories\\MemoryTagRepository",
                 "PHPUnit\\Framework\\TestCase"
             ],
-            "phpunit_attributes": [],
+            "phpunit_attributes": {
+                "docblock_annotations": [
+                    "param"
+                ]
+            },
             "complexity_indicators": {
-                "line_count": 300,
+                "line_count": 337,
                 "method_count": 17,
                 "assertion_count": 28,
                 "cyclomatic_complexity": 11,
@@ -2705,7 +2714,8 @@
                 "testCheckInvalidationRules",
                 "testLoggingCalls",
                 "testErrorHandling",
-                "testGroupLifecycle"
+                "testGroupLifecycle",
+                "setupGroupsForPatternTest"
             ],
             "assertions": {
                 "assertEquals": 12,
@@ -2729,13 +2739,17 @@
                 "PHPUnit\\Framework\\TestCase",
                 "Psr\\Log\\LoggerInterface"
             ],
-            "phpunit_attributes": [],
+            "phpunit_attributes": {
+                "docblock_annotations": [
+                    "param"
+                ]
+            },
             "complexity_indicators": {
-                "line_count": 366,
-                "method_count": 19,
+                "line_count": 400,
+                "method_count": 20,
                 "assertion_count": 32,
                 "cyclomatic_complexity": 15,
-                "nested_level": 5
+                "nested_level": 4
             },
             "potential_issues": [
                 "uses_sleep_in_test",
