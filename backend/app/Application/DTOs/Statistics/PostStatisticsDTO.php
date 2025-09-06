@@ -230,7 +230,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 取得格式化的統計資訊.
-     * 
+     *
      * @return array<string, mixed>
      */
     public function getFormattedStatistics(): array
@@ -279,7 +279,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 比較與另一篇文章的效能.
-     * 
+     *
      * @return array<string, mixed>
      */
     public function compareWith(PostStatisticsDTO $other): array
@@ -299,7 +299,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * 
+     *
      * @return array<string, mixed>
      */
     public function toArray(): array
@@ -339,7 +339,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * 
+     *
      * @return array<string, mixed>
      */
     public function jsonSerialize(): array
@@ -362,7 +362,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 計算互動率.
-     * 
+     *
      * @param array<string, mixed> $metrics
      */
     private static function calculateEngagementRate(array $metrics): float
@@ -383,7 +383,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 計算效能評分.
-     * 
+     *
      * @param array<string, mixed> $metrics
      */
     private static function calculatePerformanceScore(array $metrics): float
@@ -427,7 +427,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 驗證額外指標.
-     * 
+     *
      * @param array<string, mixed> $metrics
      */
     private function validateAdditionalMetrics(array $metrics): void

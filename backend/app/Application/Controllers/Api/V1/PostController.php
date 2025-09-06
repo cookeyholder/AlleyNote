@@ -1010,7 +1010,7 @@ class PostController extends BaseController
 
     /**
      * 刪除貼文.
-     * 
+     *
      * @param array<string, mixed> $args 路由參數
      */
     public function destroy(Request $request, Response $response, array $args): Response

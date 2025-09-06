@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 $files = [
     'app/Application/DTOs/Statistics/SourceDistributionDTO.php',
-    'app/Application/DTOs/Statistics/StatisticsOverviewDTO.php', 
+    'app/Application/DTOs/Statistics/StatisticsOverviewDTO.php',
     'app/Application/DTOs/Statistics/UserActivityDTO.php',
 ];
 
@@ -53,26 +53,26 @@ $replacements = [
 // 執行替換
 foreach ($replacements as $replacement) {
     $filePath = "/var/www/html/{$replacement['file']}";
-    
+
     if (!file_exists($filePath)) {
         echo "檔案不存在: {$filePath}\n";
         continue;
     }
-    
+
     $content = file_get_contents($filePath);
     if ($content === false) {
         echo "無法讀取檔案: {$filePath}\n";
         continue;
     }
-    
+
     $pattern = $replacement['pattern'];
     $newContent = preg_replace($pattern, $replacement['replacement'], $content);
-    
+
     if ($newContent === null) {
         echo "正規表達式錯誤: {$filePath}\n";
         continue;
     }
-    
+
     if ($newContent !== $content) {
         $result = file_put_contents($filePath, $newContent);
         if ($result === false) {

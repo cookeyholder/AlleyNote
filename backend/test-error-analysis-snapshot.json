@@ -1,7 +1,7 @@
 {
     "scan_info": {
         "project": "AlleyNote",
-        "scan_time": "2025-09-07 00:16:18",
+        "scan_time": "2025-09-07 00:34:04",
         "scan_type": "test_error_analysis",
         "phpstan_level": 10
     },
@@ -25736,103 +25736,10 @@
                 "identifier": "nullCoalesce.expr"
             }
         ],
-        "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/SourceDistributionDTO.php": [
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::fromArray() has parameter $data with no value type specified in iterable type array.",
-                "line": 72,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::getDistributionSummary() return type has no value type specified in iterable type array.",
-                "line": 271,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::getFormattedDistribution() return type has no value type specified in iterable type array.",
-                "line": 299,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::compareWith() return type has no value type specified in iterable type array.",
-                "line": 337,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::toArray() return type has no value type specified in iterable type array.",
-                "line": 397,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::jsonSerialize() return type has no value type specified in iterable type array.",
-                "line": 425,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::validateSourceStatistics() has parameter $sourceStatistics with no value type specified in iterable type array.",
-                "line": 486,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            }
-        ],
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php": [
             {
-                "message": "Method App\\Application\\DTOs\\Statistics\\StatisticsOverviewDTO::fromArray() has parameter $data with no value type specified in iterable type array.",
-                "line": 75,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\StatisticsOverviewDTO::getFormattedOverview() return type has no value type specified in iterable type array.",
-                "line": 168,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\StatisticsOverviewDTO::getSummary() return type has no value type specified in iterable type array.",
-                "line": 213,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
                 "message": "Method App\\Application\\DTOs\\Statistics\\StatisticsOverviewDTO::getTopSource() return type has no value type specified in iterable type array.",
-                "line": 228,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\StatisticsOverviewDTO::toArray() return type has no value type specified in iterable type array.",
-                "line": 275,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\StatisticsOverviewDTO::jsonSerialize() return type has no value type specified in iterable type array.",
-                "line": 326,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\StatisticsOverviewDTO::validateSourceStatistics() has parameter $sourceStatistics with no value type specified in iterable type array.",
-                "line": 347,
+                "line": 234,
                 "ignorable": true,
                 "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
                 "identifier": "missingType.iterableValue"
@@ -48209,7 +48116,7 @@
         "error_type_distribution": {
             "type_mismatch": 936,
             "unsafe_type_cast": 100,
-            "missing_iterable_value_type": 822,
+            "missing_iterable_value_type": 809,
             "other": 1589,
             "return_type_mismatch": 94,
             "parameter_type_mismatch": 48,
@@ -48227,8 +48134,7 @@
             "\/var\/www\/html\/app\/Application\/Controllers\/PostController.php": 4,
             "\/var\/www\/html\/app\/Application\/Controllers\/Security\/CSPReportController.php": 25,
             "\/var\/www\/html\/app\/Application\/Controllers\/Web\/SwaggerController.php": 3,
-            "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/SourceDistributionDTO.php": 7,
-            "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php": 7,
+            "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php": 1,
             "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/UserActivityDTO.php": 12,
             "\/var\/www\/html\/app\/Application\/Middleware\/AuthorizationMiddleware.php": 2,
             "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthenticationMiddleware.php": 5,
@@ -48490,9 +48396,9 @@
             "\/var\/www\/html\/tests\/Unit\/Validation\/ValidatorTest.php": 6
         },
         "most_common_errors": {
-            "Method CLASS::METHOD() return type has no value type specified in iterable type array.": 444,
+            "Method CLASS::METHOD() return type has no value type specified in iterable type array.": 435,
             "Cannot access offset STRING on mixed.": 355,
-            "Method CLASS::METHOD() has parameter $VAR with no value type specified in iterable type array.": 332,
+            "Method CLASS::METHOD() has parameter $VAR with no value type specified in iterable type array.": 328,
             "Cannot call method getName() on ReflectionType|null.": 137,
             "Cannot call method andReturn() on mixed.": 118,
             "Call to an undefined method CLASS::METHOD().": 106,
@@ -51406,10 +51312,10 @@
         },
         {
             "type": "missing_iterable_value_type",
-            "frequency": 822,
+            "frequency": 809,
             "priority": "high",
             "title": "添加陣列泛型型別註解",
-            "description": "在 822 個地方缺少陣列值型別規範。PHPStan Level 10 要求所有可迭代型別指定值型別。",
+            "description": "在 809 個地方缺少陣列值型別規範。PHPStan Level 10 要求所有可迭代型別指定值型別。",
             "action": "使用 @return array<string, mixed> 或 @param array<int, string> 等泛型註解指定陣列元素型別。",
             "fix_example": "\/**\n * @return array<string, mixed>\n *\/\npublic function getData(): array"
         },
@@ -51588,19 +51494,19 @@
     "summary": {
         "total_test_files": 144,
         "total_source_files": 268,
-        "total_phpstan_errors": 3695,
-        "files_with_errors": 269,
+        "total_phpstan_errors": 3682,
+        "files_with_errors": 268,
         "most_common_error_type": "type_mismatch",
         "estimated_fix_time": {
-            "total_minutes": 32319,
-            "total_hours": 538.7,
-            "easy_fixes": 913,
+            "total_minutes": 32300,
+            "total_hours": 538.3,
+            "easy_fixes": 900,
             "medium_fixes": 1078,
             "hard_fixes": 1704,
             "batch_fix_potential": [
                 {
                     "type": "missing_iterable_value_type",
-                    "count": 822,
+                    "count": 809,
                     "potential": "high",
                     "time_saved_percent": 60
                 },

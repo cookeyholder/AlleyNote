@@ -68,7 +68,7 @@ class CSPReportController
 
     /**
      * 驗證 CSP 報告格式.
-     * 
+     *
      * @param array<string, mixed> $report
      */
     private function isValidCSPReport(array $report): bool
@@ -93,7 +93,7 @@ class CSPReportController
 
     /**
      * 記錄 CSP 違規.
-     * 
+     *
      * @param array<string, mixed> $report
      */
     private function logViolation(array $report, Request $request): void
@@ -156,7 +156,7 @@ class CSPReportController
 
     /**
      * 計算違規嚴重程度.
-     * 
+     *
      * @param array<string, mixed> $cspReport
      */
     private function calculateSeverity(array $cspReport): string
@@ -190,7 +190,7 @@ class CSPReportController
 
     /**
      * 檢查是否需要發送警報.
-     * 
+     *
      * @param array<string, mixed> $logData
      */
     private function checkForAlert(array $logData): void
@@ -211,7 +211,7 @@ class CSPReportController
 
     /**
      * 取得最近的違規記錄.
-     * 
+     *
      * @return array<int, mixed>
      */
     private function getRecentViolations(string $ip, int $seconds): array
@@ -246,7 +246,7 @@ class CSPReportController
 
     /**
      * 發送警報.
-     * 
+     *
      * @param array<string, mixed> $alertData
      */
     private function sendAlert(array $alertData): void

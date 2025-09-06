@@ -68,6 +68,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
+     *
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -231,7 +233,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得前 N 個來源.
-     * 
+     *
      * @return array<int, SourceStatistics>
      */
     public function getTopSources(int $limit = 3): array
@@ -244,7 +246,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得來源排名.
-     * 
+     *
      * @return array<int, array<string, mixed>>
      */
     public function getSourceRanking(): array
@@ -267,6 +269,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得分佈摘要
+     *
+     * @return array<string, mixed>
      */
     public function getDistributionSummary(): array
     {
@@ -295,6 +299,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得格式化的分佈資訊.
+     *
+     * @return array<string, mixed>
      */
     public function getFormattedDistribution(): array
     {
@@ -333,6 +339,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 比較與另一個分佈的差異.
+     *
+     * @return array<string, mixed>
      */
     public function compareWith(SourceDistributionDTO $other): array
     {
@@ -393,6 +401,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -421,6 +431,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
+     *
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -482,6 +494,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 驗證來源統計資料.
+     *
+     * @param array<SourceStatistics> $sourceStatistics
      */
     private function validateSourceStatistics(array $sourceStatistics): void
     {
