@@ -106,170 +106,57 @@ class PasswordHashingTest extends TestCase
     #[Test]
     public function shouldHashPasswordUsingArgon2id(): void
     {
-        // 準備測試資料
-        $userData = [
-            'username' => 'testuser',
-            'email' => 'test@example.com',
-            'password' => 'password123',
-            'confirm_password' => 'password123',
-            'user_ip' => '127.0.0.1',
-        ];
-
-        // 建立 DTO
+        $userData = $this->getTestUserData('testuser', 'test@example.com', 'password123');
         $dto = new RegisterUserDTO($this->validator, $userData);
 
-        // 註冊使用者
         $result = $this->authService->register($dto);
+        $this->assertValidRegistrationResult($result);
 
-        // 調試：檢查 register 方法的返回值
-        $this->assertNotNull($result, '使用者註冊不應該返回 null');
-        $this->assertArrayHasKey('user', $result, '註冊結果應該包含 user 鍵');
+        $userId = $this->extractUserIdFromResult($result);
+        $hashedPassword = $this->getHashedPasswordFromDatabase($userId);
 
-        $user = $result['user'];
-
-        // 根據實際返回的結構來取得使用者 ID
-        $userId = null;
-        if (is_array($user) && isset($user['id'])) {
-            $userId = $user['id'];
-        } elseif (is_object($user) && method_exists($user, 'getId')) {
-            $userId = $user->getId();
-        } elseif (is_object($user) && isset($user->id)) {
-            $userId = $user->id;
-        }
-
-        $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
-
-        // 從資料庫取得雜湊後的密碼
-        $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
-        $stmt->execute([$userId]);
-        $hashedPassword = $stmt->fetchColumn();
-
-        // 確保查詢成功
-        $this->assertNotFalse($hashedPassword, '無法從資料庫取得雜湊密碼');
-        $this->assertIsString($hashedPassword, '雜湊密碼必須是字串型別');
-
-        // 驗證使用 Argon2id 演算法
-        $this->assertStringStartsWith('$argon2id$', $hashedPassword);
-
-        // 驗證原始密碼可以通過驗證
-        $this->assertTrue(password_verify($userData['password'], $hashedPassword));
+        $this->assertArgon2idHash($hashedPassword, $userData['password']);
     }
 
     #[Test]
     public function shouldUseAppropriateHashingOptions(): void
     {
-        // 準備測試資料
-        $userData = [
-            'username' => 'testuser2',
-            'email' => 'test2@example.com',
-            'password' => 'securepassword456',
-            'confirm_password' => 'securepassword456',
-            'user_ip' => '127.0.0.1',
-        ];
-
-        // 建立 DTO
+        $userData = $this->getTestUserData('testuser2', 'test2@example.com', 'securepassword456');
         $dto = new RegisterUserDTO($this->validator, $userData);
 
-        // 註冊使用者
         $result = $this->authService->register($dto);
-        $user = $result['user'];
+        $userId = $this->extractUserIdFromResult($result);
+        $hashedPassword = $this->getHashedPasswordFromDatabase($userId);
 
-        // 根據實際返回的結構來取得使用者 ID
-        $userId = null;
-        if (is_array($user) && isset($user['id'])) {
-            $userId = $user['id'];
-        } elseif (is_object($user) && method_exists($user, 'getId')) {
-            $userId = $user->getId();
-        } elseif (is_object($user) && isset($user->id)) {
-            $userId = $user->id;
-        }
-
-        $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
-
-        // 從資料庫取得雜湊後的密碼
-        $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
-        $stmt->execute([$userId]);
-        $hashedPassword = $stmt->fetchColumn();
-
-        // 確保查詢成功
-        $this->assertNotFalse($hashedPassword, '無法從資料庫取得雜湊密碼');
-        $this->assertIsString($hashedPassword, '雜湊密碼必須是字串型別');
-
-        // 取得雜湊資訊
-        $info = password_get_info($hashedPassword);
-
-        // 驗證使用適當的雜湊選項
-        $this->assertEquals(PASSWORD_ARGON2ID, $info['algo']);
-
-        // 驗證雜湊長度足夠
-        $this->assertGreaterThan(50, strlen($hashedPassword));
+        $this->assertAppropriateHashingOptions($hashedPassword);
     }
 
     #[Test]
     public function shouldRejectWeakPasswords(): void
     {
-        // 準備測試資料（弱密碼）
-        $userData = [
-            'username' => 'testuser3',
-            'email' => 'test3@example.com',
-            'password' => '123', // 太短的密碼
-            'confirm_password' => '123',
-            'user_ip' => '127.0.0.1',
-        ];
-
-        // 建立 DTO
+        $userData = $this->getTestUserData('testuser3', 'test3@example.com', '123'); // 太短的密碼
         $dto = new RegisterUserDTO($this->validator, $userData);
 
-        // 設定 passwordService 會拋出異常
-        $this->passwordService->shouldReceive('validatePassword')
-            ->with('123')
-            ->andThrow(new InvalidArgumentException('密碼長度必須至少為 8 個字元'));
+        $this->setupPasswordServiceToRejectWeakPassword('123');
 
-        // 預期會拋出例外
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('密碼長度必須至少為 8 個字元');
 
-        // 執行測試
         $this->authService->register($dto);
     }
 
     #[Test]
     public function shouldPreventPasswordReuse(): void
     {
-        // 準備測試資料
-        $userData = [
-            'username' => 'testuser4',
-            'email' => 'test4@example.com',
-            'password' => 'password123',
-            'confirm_password' => 'password123',
-            'user_ip' => '127.0.0.1',
-        ];
-
-        // 建立 DTO
+        $userData = $this->getTestUserData('testuser4', 'test4@example.com', 'password123');
         $dto = new RegisterUserDTO($this->validator, $userData);
 
-        // 註冊使用者
         $result = $this->authService->register($dto);
-        $user = $result['user'];
+        $userId = $this->extractUserIdFromResult($result);
 
-        // 根據實際返回的結構來取得使用者 ID
-        $userId = null;
-        if (is_array($user) && isset($user['id'])) {
-            $userId = $user['id'];
-        } elseif (is_object($user) && method_exists($user, 'getId')) {
-            $userId = $user->getId();
-        } elseif (is_object($user) && isset($user->id)) {
-            $userId = $user->id;
-        }
+        $this->assertValidUserId($userId);
 
-        // 確保使用者註冊成功且有 ID
-        $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
-        $this->assertIsInt($userId, '使用者 ID 應該是整數');
-
-        // 模擬使用者嘗試更新密碼為相同的密碼
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('新密碼不能與目前的密碼相同');
-
+        $this->expectPasswordReuseException();
         $this->userRepository->updatePassword($userId, $userData['password']);
     }
 
@@ -277,5 +164,120 @@ class PasswordHashingTest extends TestCase
     {
         parent::tearDown();
         Mockery::close();
+    }
+
+    /**
+     * 建立測試使用者資料
+     *
+     * @return array<string, string>
+     */
+    private function getTestUserData(string $username, string $email, string $password): array
+    {
+        return [
+            'username' => $username,
+            'email' => $email,
+            'password' => $password,
+            'confirm_password' => $password,
+            'user_ip' => '127.0.0.1',
+        ];
+    }
+
+    /**
+     * 驗證註冊結果有效
+     *
+     * @param mixed $result
+     */
+    private function assertValidRegistrationResult($result): void
+    {
+        $this->assertNotNull($result, '使用者註冊不應該返回 null');
+        $this->assertArrayHasKey('user', $result, '註冊結果應該包含 user 鍵');
+    }
+
+    /**
+     * 從註冊結果中提取使用者 ID
+     *
+     * @param mixed $result
+     */
+    private function extractUserIdFromResult($result): int
+    {
+        $user = $result['user'];
+
+        $userId = null;
+        if (is_array($user) && isset($user['id'])) {
+            $userId = $user['id'];
+        } elseif (is_object($user) && method_exists($user, 'getId')) {
+            $userId = $user->getId();
+        } elseif (is_object($user) && isset($user->id)) {
+            $userId = $user->id;
+        }
+
+        $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
+
+        return $userId;
+    }
+
+    /**
+     * 從資料庫取得雜湊密碼
+     */
+    private function getHashedPasswordFromDatabase(int $userId): string
+    {
+        $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
+        $stmt->execute([$userId]);
+        $hashedPassword = $stmt->fetchColumn();
+
+        $this->assertNotFalse($hashedPassword, '無法從資料庫取得雜湊密碼');
+        $this->assertIsString($hashedPassword, '雜湊密碼必須是字串型別');
+
+        return $hashedPassword;
+    }
+
+    /**
+     * 驗證 Argon2id 雜湊
+     */
+    private function assertArgon2idHash(string $hashedPassword, string $originalPassword): void
+    {
+        $this->assertStringStartsWith('$argon2id$', $hashedPassword);
+        $this->assertTrue(password_verify($originalPassword, $hashedPassword));
+    }
+
+    /**
+     * 驗證適當的雜湊選項
+     */
+    private function assertAppropriateHashingOptions(string $hashedPassword): void
+    {
+        $info = password_get_info($hashedPassword);
+
+        $this->assertEquals(PASSWORD_ARGON2ID, $info['algo']);
+        $this->assertGreaterThan(50, strlen($hashedPassword));
+    }
+
+    /**
+     * 設定密碼服務拒絕弱密碼
+     */
+    private function setupPasswordServiceToRejectWeakPassword(string $weakPassword): void
+    {
+        $this->passwordService->shouldReceive('validatePassword')
+            ->with($weakPassword)
+            ->andThrow(new InvalidArgumentException('密碼長度必須至少為 8 個字元'));
+    }
+
+    /**
+     * 驗證使用者 ID 有效
+     *
+     * @param mixed $userId
+     */
+    private function assertValidUserId($userId): void
+    {
+        $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
+        $this->assertIsInt($userId, '使用者 ID 應該是整數');
+    }
+
+    /**
+     * 期待密碼重複使用例外
+     */
+    private function expectPasswordReuseException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('新密碼不能與目前的密碼相同');
     }
 }
