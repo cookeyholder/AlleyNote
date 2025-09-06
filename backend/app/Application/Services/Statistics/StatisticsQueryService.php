@@ -67,12 +67,15 @@ final class StatisticsQueryService
             $endDate ??= new DateTimeImmutable();
 
             // 查詢統計快照
-            $snapshots = $this->statisticsRepository->findByDateRange(
+            $allSnapshots = $this->statisticsRepository->findByDateRange(
                 $startDate,
                 $endDate,
-                $limit,
-                ($page - 1) * $limit,
+                $limit * $page, // 取得足夠的資料進行分頁
             );
+
+            // 手動分頁
+            $offset = ($page - 1) * $limit;
+            $snapshots = array_slice($allSnapshots, $offset, $limit);
 
             // 如果有週期類型篩選，進行額外過濾
             if ($periodType !== null) {
@@ -86,7 +89,6 @@ final class StatisticsQueryService
             $totalCount = $this->statisticsRepository->countByDateRange(
                 $startDate,
                 $endDate,
-                $periodType,
             );
 
             $result = [
@@ -176,8 +178,6 @@ final class StatisticsQueryService
             // 查詢統計資料
             $trends = $this->postStatisticsRepository->getStatisticsTrends(
                 $period,
-                $sourceType,
-                $interval,
                 $dataPoints,
             );
 
@@ -349,9 +349,9 @@ final class StatisticsQueryService
 
             // 解析查詢參數
             $period = $this->parseQueryPeriod($queryParams);
-            $metrics = $queryParams['metrics'] ?? [];
-            $groupBy = $queryParams['group_by'] ?? null;
-            $filters = $queryParams['filters'] ?? [];
+            $metrics = is_array($queryParams['metrics'] ?? null) ? $queryParams['metrics'] : [];
+            $groupBy = is_string($queryParams['group_by'] ?? null) ? $queryParams['group_by'] : null;
+            $filters = is_array($queryParams['filters'] ?? null) ? $queryParams['filters'] : [];
 
             // 執行查詢
             $queryResult = $this->executeCustomQuery($period, $metrics, $groupBy, $filters);
@@ -492,9 +492,17 @@ final class StatisticsQueryService
             return 0.0;
         }
 
-        $mean = array_sum($values) / count($values);
-        $squaredDiffs = array_map(fn($value) => pow($value - $mean, 2), $values);
-        $variance = array_sum($squaredDiffs) / (count($values) - 1);
+        // 確保所有值都是數字
+        $numericValues = array_filter($values, 'is_numeric');
+        $numericValues = array_map('floatval', $numericValues);
+
+        if (count($numericValues) < 2) {
+            return 0.0;
+        }
+
+        $mean = array_sum($numericValues) / count($numericValues);
+        $squaredDiffs = array_map(fn(float $value) => pow($value - $mean, 2), $numericValues);
+        $variance = array_sum($squaredDiffs) / (count($numericValues) - 1);
 
         return round(sqrt($variance), 2);
     }
@@ -519,7 +527,12 @@ final class StatisticsQueryService
     {
         $startDate = new DateTimeImmutable(is_string($params['period_start'] ?? null) ? $params['period_start'] : 'now');
         $endDate = new DateTimeImmutable(is_string($params['period_end'] ?? null) ? $params['period_end'] : 'now');
-        $type = PeriodType::from($params['period_type'] ?? 'daily');
+
+        $periodType = $params['period_type'] ?? 'daily';
+        if (!is_string($periodType) && !is_int($periodType)) {
+            $periodType = 'daily';
+        }
+        $type = PeriodType::from($periodType);
 
         return StatisticsPeriod::create($startDate, $endDate, $type);
     }

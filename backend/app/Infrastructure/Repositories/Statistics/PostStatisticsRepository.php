@@ -149,7 +149,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{id: int, title: string, views: int, created_at: string}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得熱門文章失敗: {$e->getMessage()}",
@@ -194,7 +196,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{source_type: string, post_count: int, view_count: int, percentage: float}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得來源分布統計失敗: {$e->getMessage()}",
@@ -296,7 +300,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{date: string, post_count: int, view_count: int}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得文章發布趨勢失敗: {$e->getMessage()}",
@@ -333,7 +339,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{date: string, view_count: int, unique_views: int}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得觀看趨勢失敗: {$e->getMessage()}",
@@ -405,6 +413,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
+            /** @var array{id: int, title: string, views: int, created_at: string}|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result ?: null;
@@ -444,7 +453,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
+            /** @var array{total_new_posts: int, total_views: int, avg_views_per_post: float}|false $result */
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ?: [
                 'total_new_posts' => 0,
                 'total_views' => 0,
                 'avg_views_per_post' => 0.0,
@@ -509,7 +520,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{range: string, count: int, percentage: float}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得觀看次數分布失敗: {$e->getMessage()}",
@@ -603,7 +616,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{date: string, post_count: int, view_count: int, unique_views: int}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得統計趨勢失敗: {$e->getMessage()}",
@@ -641,7 +656,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{date: string, hour: int, activity_count: int}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得活動熱圖資料失敗: {$e->getMessage()}",
@@ -680,7 +697,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{user_id: int, username: string, post_count: int, total_views: int}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得活躍作者統計失敗: {$e->getMessage()}",
@@ -755,7 +774,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{tag: string, usage_count: int, post_count: int}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得標籤使用統計失敗: {$e->getMessage()}",
@@ -825,7 +846,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
+            /** @var array{views: int, comments: int, likes: int, shares: int, source: string}|false $result */
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ?: [
                 'views' => 0,
                 'comments' => 0,
                 'likes' => 0,
@@ -867,7 +890,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{publish_hour: string, publish_day: string, avg_views: float}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得發布時間統計失敗: {$e->getMessage()}",
@@ -902,7 +927,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            /** @var array<array{date: string, daily_views: int}> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得文章歷史表現失敗: {$e->getMessage()}",

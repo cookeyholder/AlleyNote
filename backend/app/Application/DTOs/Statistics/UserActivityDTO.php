@@ -54,7 +54,7 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     /**
      * 從統計資料建立 DTO.
-     * 
+     *
      * @param StatisticsPeriod $period
      * @param array<string, mixed> $userStats
      * @param array<array<string, mixed>> $topUsers
@@ -108,16 +108,16 @@ final readonly class UserActivityDTO implements JsonSerializable
         // 使用型別安全的方式存取期間資料
         /** @var array<string, mixed> $periodData */
         $periodData = is_array($data['period'] ?? []) ? $data['period'] : [];
-        
+
         $periodStartDate = $periodData['start_date'] ?? null;
         $startDate = is_string($periodStartDate) ? $periodStartDate : 'now';
-        
+
         $periodEndDate = $periodData['end_date'] ?? null;
         $endDate = is_string($periodEndDate) ? $periodEndDate : 'now';
-        
+
         $periodTypeValue = $periodData['type'] ?? null;
         $periodType = is_string($periodTypeValue) || is_int($periodTypeValue) ? $periodTypeValue : 'daily';
-        
+
         $period = StatisticsPeriod::create(
             new DateTimeImmutable($startDate),
             new DateTimeImmutable($endDate),
@@ -154,7 +154,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         $engagementMetricsRaw = $data['engagement_metrics'] ?? [];
         /** @var array<string, mixed> $engagementMetrics */
         $engagementMetrics = is_array($engagementMetricsRaw) ? $engagementMetricsRaw : [];
-            
+
         $generatedAtValue = $data['generated_at'] ?? null;
         $generatedAt = is_string($generatedAtValue) ? $generatedAtValue : 'now';
 
@@ -299,7 +299,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         uasort($timeAnalysis, static function ($a, $b): int {
             $countA = is_array($a) ? ($a['activity_count'] ?? 0) : 0;
             $countB = is_array($b) ? ($b['activity_count'] ?? 0) : 0;
-            return is_numeric($countB) && is_numeric($countA) ? 
+            return is_numeric($countB) && is_numeric($countA) ?
                 ((int)$countB <=> (int)$countA) : 0;
         });
 
@@ -476,7 +476,7 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     /**
      * 計算參與度指標
-     * 
+     *
      * @param array<string, mixed> $userStats
      * @return array<string, mixed>
      */
@@ -487,7 +487,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         $avgPageViewsValue = $userStats['avg_page_views'] ?? null;
         $bounceRateValue = $userStats['bounce_rate'] ?? null;
         $conversionRateValue = $userStats['conversion_rate'] ?? null;
-        
+
         return [
             'growth_rate' => is_numeric($growthRateValue) ? (float)$growthRateValue : 0.0,
             'avg_session_duration' => is_numeric($avgSessionDurationValue) ? (float)$avgSessionDurationValue : 0.0,

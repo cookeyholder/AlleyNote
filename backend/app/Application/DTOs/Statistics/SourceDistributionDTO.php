@@ -46,7 +46,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 從來源統計資料建立 DTO.
-     * 
+     *
      * @param StatisticsPeriod $period
      * @param array<SourceStatistics> $sourceStatistics
      * @param int $totalCount
@@ -77,14 +77,14 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         // 使用型別安全的方式存取期間資料
         /** @var array<string, mixed> $periodData */
         $periodData = is_array($data['period'] ?? []) ? $data['period'] : [];
-        
+
         // 型別安全地取得日期字串
         $periodStartDate = $periodData['start_date'] ?? null;
         $startDate = is_string($periodStartDate) ? $periodStartDate : 'now';
-        
+
         $periodEndDate = $periodData['end_date'] ?? null;
         $endDate = is_string($periodEndDate) ? $periodEndDate : 'now';
-        
+
         $periodTypeValue = $periodData['type'] ?? null;
         $periodType = is_string($periodTypeValue) || is_int($periodTypeValue) ? $periodTypeValue : 'daily';
 
@@ -104,13 +104,13 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             static function (array $sourceData): SourceStatistics {
                 $sourceTypeValue = $sourceData['source_type'] ?? null;
                 $sourceType = is_string($sourceTypeValue) || is_int($sourceTypeValue) ? $sourceTypeValue : 'web';
-                
+
                 $countValue = $sourceData['count'] ?? null;
                 $count = is_numeric($countValue) ? (int)$countValue : 0;
-                
+
                 $percentageValue = $sourceData['percentage'] ?? null;
                 $percentage = is_numeric($percentageValue) ? (float)$percentageValue : 0.0;
-                
+
                 return SourceStatistics::create(
                     SourceType::from($sourceType),
                     $count,
@@ -443,7 +443,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 計算分佈分析.
-     * 
+     *
      * @param array<SourceStatistics> $sourceStatistics
      * @param int $totalCount
      * @return array<string, mixed>
@@ -462,7 +462,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             if (!$source instanceof SourceStatistics) {
                 continue;
             }
-            
+
             if ($source->count->value > 0) {
                 $sourceCount = $source->count->value;
                 $proportion = $sourceCount / $totalCount;

@@ -42,6 +42,7 @@ final class StatisticsApplicationService
         private readonly StatisticsRepositoryInterface $statisticsRepository,
         private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
         private readonly UserStatisticsRepositoryInterface $userStatisticsRepository,
+        /** @phpstan-ignore-next-line property.onlyWritten */
         private readonly SystemStatisticsRepositoryInterface $systemStatisticsRepository,
         private readonly StatisticsCalculationService $calculationService,
         private readonly PostStatisticsService $postStatisticsService,
@@ -132,6 +133,7 @@ final class StatisticsApplicationService
         if ($cached !== null) {
             $this->logger->debug('從快取取得統計概覽', ['period' => $period->getDisplayString()]);
 
+            /** @var array<string, mixed> $cached */
             return $cached;
         }
 
@@ -218,6 +220,7 @@ final class StatisticsApplicationService
         // 嘗試從快取取得
         $cached = $this->cacheManager->get($cacheKey);
         if ($cached !== null) {
+            /** @var array<string, mixed> $cached */
             return $cached;
         }
 
@@ -263,7 +266,11 @@ final class StatisticsApplicationService
             $overview = $this->getStatisticsOverview($period);
 
             // 取得熱門內容分析
-            $popularContent = $this->analyzePopularContent($period, $options['popular_limit'] ?? 10);
+            $popularLimit = $options['popular_limit'] ?? 10;
+            if (!is_int($popularLimit)) {
+                $popularLimit = 10;
+            }
+            $popularContent = $this->analyzePopularContent($period, $popularLimit);
 
             // 計算趨勢資料
             $historicalData = $this->statisticsRepository->findByDateRange(
@@ -279,8 +286,8 @@ final class StatisticsApplicationService
                 'popular_content' => $popularContent,
                 'trends' => $trends,
                 'summary' => [
-                    'total_metrics' => count($overview['metrics']),
-                    'source_types' => count($overview['source_statistics']),
+                    'total_metrics' => count(is_array($overview['metrics'] ?? null) ? $overview['metrics'] : []),
+                    'source_types' => count(is_array($overview['source_statistics'] ?? null) ? $overview['source_statistics'] : []),
                     'popular_items' => count($popularContent),
                     'trend_points' => count($trends),
                 ],

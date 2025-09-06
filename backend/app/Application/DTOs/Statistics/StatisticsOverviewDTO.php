@@ -48,7 +48,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從統計快照建立 DTO.
-     * 
+     *
      * @param StatisticsPeriod $period
      * @param StatisticsMetric $totalPosts
      * @param StatisticsMetric $totalViews
@@ -81,16 +81,16 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         // 使用型別安全的方式存取期間資料
         /** @var array<string, mixed> $periodData */
         $periodData = is_array($data['period'] ?? []) ? $data['period'] : [];
-        
+
         $periodStartDate = $periodData['start_date'] ?? null;
         $startDate = is_string($periodStartDate) ? $periodStartDate : 'now';
-        
+
         $periodEndDate = $periodData['end_date'] ?? null;
         $endDate = is_string($periodEndDate) ? $periodEndDate : 'now';
-        
+
         $periodTypeValue = $periodData['type'] ?? null;
         $periodType = is_string($periodTypeValue) || is_int($periodTypeValue) ? $periodTypeValue : 'daily';
-        
+
         $period = StatisticsPeriod::create(
             new DateTimeImmutable($startDate),
             new DateTimeImmutable($endDate),
@@ -102,7 +102,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         $totalViewsData = is_array($data['total_views'] ?? []) ? $data['total_views'] : [];
         $totalViewsValue = $totalViewsData['value'] ?? null;
         $totalViewsDescription = $totalViewsData['description'] ?? null;
-        
+
         $totalViews = StatisticsMetric::count(
             is_numeric($totalViewsValue) ? (int)$totalViewsValue : 0,
             is_string($totalViewsDescription) ? $totalViewsDescription : '總瀏覽數'
@@ -112,7 +112,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         $totalPostsData = is_array($data['total_posts'] ?? []) ? $data['total_posts'] : [];
         $totalPostsValue = $totalPostsData['value'] ?? null;
         $totalPostsDescription = $totalPostsData['description'] ?? null;
-        
+
         $totalPosts = StatisticsMetric::count(
             is_numeric($totalPostsValue) ? (int)$totalPostsValue : 0,
             is_string($totalPostsDescription) ? $totalPostsDescription : '總文章數'
@@ -128,13 +128,13 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
             static function (array $sourceData): SourceStatistics {
                 $sourceTypeValue = $sourceData['source_type'] ?? null;
                 $sourceType = is_string($sourceTypeValue) || is_int($sourceTypeValue) ? $sourceTypeValue : 'web';
-                
+
                 $countValue = $sourceData['count'] ?? null;
                 $count = is_numeric($countValue) ? (int)$countValue : 0;
-                
+
                 $percentageValue = $sourceData['percentage'] ?? null;
                 $percentage = is_numeric($percentageValue) ? (float)$percentageValue : 0.0;
-                
+
                 return SourceStatistics::create(
                     SourceType::from($sourceType),
                     $count,
@@ -148,7 +148,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         $additionalMetricsRaw = $data['additional_metrics'] ?? [];
         /** @var array<string, mixed> $additionalMetrics */
         $additionalMetrics = is_array($additionalMetricsRaw) ? $additionalMetricsRaw : [];
-            
+
         $generatedAtValue = $data['generated_at'] ?? null;
         $generatedAt = is_string($generatedAtValue) ? $generatedAtValue : 'now';
 

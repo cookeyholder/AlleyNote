@@ -5,7 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 /**
  * 基於 Context7 MCP PHPStan Level 10 最佳實務修復 DTO mixed 型別問題
- * 
+ *
  * 重點修復策略：
  * 1. 消除所有 mixed 型別使用
  * 2. 使用明確的型別檢查和轉換
@@ -82,7 +82,7 @@ PHP;
         // 使用型別安全的輔助方法確保期間資料正確
         /** @var array<string, mixed> $periodData */
         $periodData = self::ensureArrayValue($data, 'period');
-        
+
         $startDate = self::ensureStringValue($periodData, 'start_date', 'now');
         $endDate = self::ensureStringValue($periodData, 'end_date', 'now');
         $periodType = self::ensureStringOrIntValue($periodData, 'type', 'daily');
@@ -134,7 +134,7 @@ PHP;
             if (!$source instanceof \App\Domains\Statistics\ValueObjects\SourceStatistics) {
                 continue;
             }
-            
+
             $sourceCount = $source->count;
             $percentage = $totalCount > 0 ? ($sourceCount / $totalCount) * 100 : 0;
             $percentages[] = [
@@ -150,7 +150,7 @@ PHP;
 
     /**
      * 型別安全地取得陣列值
-     * 
+     *
      * @param array<string, mixed> $data
      * @param string $key
      * @param array<mixed> $default
@@ -164,7 +164,7 @@ PHP;
 
     /**
      * 型別安全地取得字串值
-     * 
+     *
      * @param array<string, mixed> $data
      * @param string $key
      * @param string $default
@@ -178,7 +178,7 @@ PHP;
 
     /**
      * 型別安全地取得整數值
-     * 
+     *
      * @param array<string, mixed> $data
      * @param string $key
      * @param int $default
@@ -187,21 +187,21 @@ PHP;
     private static function ensureIntValue(array $data, string $key, int $default = 0): int
     {
         $value = $data[$key] ?? $default;
-        
+
         if (is_int($value)) {
             return $value;
         }
-        
+
         if (is_numeric($value)) {
             return (int) $value;
         }
-        
+
         return $default;
     }
 
     /**
      * 型別安全地取得浮點數值
-     * 
+     *
      * @param array<string, mixed> $data
      * @param string $key
      * @param float $default
@@ -210,21 +210,21 @@ PHP;
     private static function ensureFloatValue(array $data, string $key, float $default = 0.0): float
     {
         $value = $data[$key] ?? $default;
-        
+
         if (is_float($value)) {
             return $value;
         }
-        
+
         if (is_numeric($value)) {
             return (float) $value;
         }
-        
+
         return $default;
     }
 
     /**
      * 型別安全地取得字串或整數值
-     * 
+     *
      * @param array<string, mixed> $data
      * @param string $key
      * @param string|int $default
@@ -233,11 +233,11 @@ PHP;
     private static function ensureStringOrIntValue(array $data, string $key, string|int $default = ''): string|int
     {
         $value = $data[$key] ?? $default;
-        
+
         if (is_string($value) || is_int($value)) {
             return $value;
         }
-        
+
         return $default;
     }
 PHP;
@@ -245,7 +245,7 @@ PHP;
         // 執行替換
         $content = str_replace($oldFromArray, $newFromArray, $content);
         $content = str_replace($oldCalculatePercentages, $newCalculatePercentages, $content);
-        
+
         // 在類別結尾前添加輔助方法
         $content = str_replace('}', $helperMethods . "\n}", $content);
 
@@ -299,7 +299,7 @@ PHP;
 
     /**
      * 安全地存取陣列元素
-     * 
+     *
      * @param array<string, mixed> $data
      * @param string $key
      * @return mixed
