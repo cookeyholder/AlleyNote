@@ -43,21 +43,21 @@ class CommandsConsoleFixer
             PeriodType::YEARLY => \'yearly\',
             PeriodType::YEARLY => \'yearly\', // 移除重複的 case
         }';
-        
+
         $newMatch = 'match ($periodType) {
             PeriodType::DAILY => \'daily\',
             PeriodType::WEEKLY => \'weekly\',
             PeriodType::MONTHLY => \'monthly\',
             PeriodType::YEARLY => \'yearly\',
         }';
-        
+
         $content = str_replace($oldMatch, $newMatch, $content);
 
         // 3. 修復 foreach 型別問題 - 檢查是否為陣列
         $oldForeach = 'foreach ($result as $item) {';
         $newForeach = 'if (is_array($result)) {
             foreach ($result as $item) {';
-        
+
         // 找到所有 foreach 並修復
         $content = preg_replace_callback(
             '/foreach\s*\(\s*\$([a-zA-Z_][a-zA-Z0-9_]*)\s*as\s*\$([a-zA-Z_][a-zA-Z0-9_]*)\s*\)\s*\{/',
@@ -72,42 +72,42 @@ class CommandsConsoleFixer
         // 4. 修復陣列存取的 mixed 型別問題
         $arrayAccessFixes = [
             // $result 的各種存取
-            "\$result['total_periods']" => 
+            "\$result['total_periods']" =>
             "is_numeric(\$result['total_periods'] ?? null) ? \$result['total_periods'] : 0",
-            
-            "\$result['success_count']" => 
+
+            "\$result['success_count']" =>
             "is_numeric(\$result['success_count'] ?? null) ? \$result['success_count'] : 0",
-            
-            "\$result['failure_count']" => 
+
+            "\$result['failure_count']" =>
             "is_numeric(\$result['failure_count'] ?? null) ? \$result['failure_count'] : 0",
-            
+
             // $periodResult 的各種存取
-            "\$periodResult['success']" => 
+            "\$periodResult['success']" =>
             "(\$periodResult['success'] ?? false)",
-            
-            "\$periodResult['duration']" => 
+
+            "\$periodResult['duration']" =>
             "is_numeric(\$periodResult['duration'] ?? null) ? (float) \$periodResult['duration'] : 0.0",
-            
-            "\$periodResult['cached']" => 
+
+            "\$periodResult['cached']" =>
             "(\$periodResult['cached'] ?? false)",
-            
-            "\$periodResult['snapshot_id']" => 
+
+            "\$periodResult['snapshot_id']" =>
             "is_string(\$periodResult['snapshot_id'] ?? null) ? \$periodResult['snapshot_id'] : ''",
-            
-            "\$periodResult['error']" => 
+
+            "\$periodResult['error']" =>
             "is_string(\$periodResult['error'] ?? null) ? \$periodResult['error'] : ''",
-            
-            "\$periodResult['skipped']" => 
+
+            "\$periodResult['skipped']" =>
             "(\$periodResult['skipped'] ?? false)",
-            
+
             // $status 的各種存取
-            "\$status['lock_timeout']" => 
+            "\$status['lock_timeout']" =>
             "is_numeric(\$status['lock_timeout'] ?? null) ? \$status['lock_timeout'] : 0",
-            
-            "\$status['max_retries']" => 
+
+            "\$status['max_retries']" =>
             "is_numeric(\$status['max_retries'] ?? null) ? \$status['max_retries'] : 0",
-            
-            "\$status['retry_delay']" => 
+
+            "\$status['retry_delay']" =>
             "is_numeric(\$status['retry_delay'] ?? null) ? \$status['retry_delay'] : 0",
         ];
 
@@ -117,10 +117,10 @@ class CommandsConsoleFixer
 
         // 5. 修復字串插值中的 mixed 型別
         $stringInterpolationFixes = [
-            'echo "錯誤: {$error} (週期: {$period})" . PHP_EOL;' => 
+            'echo "錯誤: {$error} (週期: {$period})" . PHP_EOL;' =>
             'echo "錯誤: " . (is_string($error) ? $error : "未知錯誤") . " (週期: " . (is_string($period) ? $period : "未知週期") . ")" . PHP_EOL;',
-            
-            'echo "跳過: {$error} (週期: {$period})" . PHP_EOL;' => 
+
+            'echo "跳過: {$error} (週期: {$period})" . PHP_EOL;' =>
             'echo "跳過: " . (is_string($error) ? $error : "未知錯誤") . " (週期: " . (is_string($period) ? $period : "未知週期") . ")" . PHP_EOL;',
         ];
 
@@ -152,14 +152,14 @@ class CommandsConsoleFixer
         // 1. 修復 mixed 參數型別問題
         $mixedParameterFixes = [
             // handleInvalidCommand 參數
-            'private function handleInvalidCommand($command): void' => 
+            'private function handleInvalidCommand($command): void' =>
             '/**
      * @param mixed $command
      */
     private function handleInvalidCommand($command): void',
-            
+
             // 在方法內部進行型別檢查
-            'echo "無效的指令: {$command}" . PHP_EOL;' => 
+            'echo "無效的指令: {$command}" . PHP_EOL;' =>
             'echo "無效的指令: " . (is_string($command) ? $command : "未知指令") . PHP_EOL;',
         ];
 
@@ -198,7 +198,7 @@ class CommandsConsoleFixer
 
         // 7. 修復從 $_SERVER 存取的型別問題
         $serverAccessFixes = [
-            '$_SERVER[\'argv\']' => 
+            '$_SERVER[\'argv\']' =>
             '(array) ($_SERVER[\'argv\'] ?? [])',
         ];
 
@@ -208,11 +208,11 @@ class CommandsConsoleFixer
 
         // 8. 在所有變數使用前加入型別檢查
         $variableTypeFixes = [
-            'if ($input === \'help\' || $input === \'--help\' || $input === \'-h\') {' => 
+            'if ($input === \'help\' || $input === \'--help\' || $input === \'-h\') {' =>
             '$inputStr = is_string($input) ? $input : \'\';
         if ($inputStr === \'help\' || $inputStr === \'--help\' || $inputStr === \'-h\') {',
-            
-            'if ($input === \'exit\' || $input === \'quit\' || $input === \'q\') {' => 
+
+            'if ($input === \'exit\' || $input === \'quit\' || $input === \'q\') {' =>
             'if ($inputStr === \'exit\' || $inputStr === \'quit\' || $inputStr === \'q\') {',
         ];
 

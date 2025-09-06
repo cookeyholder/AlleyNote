@@ -19,17 +19,17 @@ $content = file_get_contents($file);
 // 檢查是否真的有重複的 YEARLY 案例
 if (substr_count($content, 'PeriodType::YEARLY =>') > 1) {
     echo "發現重複的 PeriodType::YEARLY 案例，將移除重複項目\n";
-    
+
     // 找到第一個 match 語句並確保只有一個 YEARLY 案例
     $pattern = '/(return match.*?\{)(.*?)(default.*?\}.*?;)/s';
     if (preg_match($pattern, $content, $matches)) {
         $matchCases = $matches[2];
-        
+
         // 移除重複的 YEARLY 行
         $lines = explode("\n", $matchCases);
         $uniqueLines = [];
         $yearlyFound = false;
-        
+
         foreach ($lines as $line) {
             if (strpos($line, 'PeriodType::YEARLY =>') !== false) {
                 if (!$yearlyFound) {
@@ -41,10 +41,10 @@ if (substr_count($content, 'PeriodType::YEARLY =>') > 1) {
                 $uniqueLines[] = $line;
             }
         }
-        
+
         $newMatchCases = implode("\n", $uniqueLines);
         $newContent = str_replace($matchCases, $newMatchCases, $content);
-        
+
         file_put_contents($file, $newContent);
         echo "已移除重複的 YEARLY 案例\n";
     }
@@ -57,7 +57,7 @@ $content = file_get_contents($file);
 $patterns = [
     // 將 $periodType->value 改為 $periodType->name
     '/(\$periodType->)value/' => '${1}name',
-    
+
     // 確保字串連接正確
     '/"不支援的週期類型: " \. \$periodType->name/' => '"不支援的週期類型: {$periodType->name}"',
 ];

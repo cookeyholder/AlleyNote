@@ -23,7 +23,7 @@ class PhpStanLevel10Fixer
         $this->fixStatisticsConsoleErrors();
         $this->fixValueObjectsErrors();
         $this->fixTestErrors();
-        
+
         $this->reportResults();
     }
 
@@ -34,7 +34,7 @@ class PhpStanLevel10Fixer
     private function fixStatisticsConsoleErrors(): void
     {
         echo "🔧 修復 Statistics Console 錯誤...\n";
-        
+
         $file = 'app/Domains/Statistics/Console/StatisticsCalculationConsole.php';
         if (!file_exists($file)) {
             echo "跳過：檔案不存在 $file\n";
@@ -47,13 +47,13 @@ class PhpStanLevel10Fixer
         // 修復 mixed 類型參數驗證
         $patterns = [
             // 修復 handleInvalidCommand mixed 參數
-            '/function handleInvalidCommand\(mixed \$command\): void/' => 
+            '/function handleInvalidCommand\(mixed \$command\): void/' =>
                 'function handleInvalidCommand(mixed $command): void',
-            
+
             // 修復 implode mixed 參數
-            '/implode\([^,]+, (\$[^)]+)\)/' => 
+            '/implode\([^,]+, (\$[^)]+)\)/' =>
                 'implode(\', \', is_array($1) ? $1 : [])',
-            
+
             // 修復執行參數類型檢查
             '/->execute\(\s*([^,]+),\s*([^,]+),\s*([^)]+)\s*\)/' =>
                 '->execute(
@@ -63,15 +63,15 @@ class PhpStanLevel10Fixer
                 )',
 
             // 修復 explode mixed 參數
-            '/explode\([^,]+, (\$[^)]+)\)/' => 
+            '/explode\([^,]+, (\$[^)]+)\)/' =>
                 'explode(\',\', is_string($1) ? $1 : \'\')',
-            
+
             // 修復 str_starts_with mixed 參數
-            '/str_starts_with\((\$[^,]+), [^)]+\)/' => 
+            '/str_starts_with\((\$[^,]+), [^)]+\)/' =>
                 'str_starts_with(is_string($1) ? $1 : \'\', \'value\')',
-            
+
             // 修復 number_format mixed 參數
-            '/number_format\((\$[^)]+)\)/' => 
+            '/number_format\((\$[^)]+)\)/' =>
                 'number_format(is_numeric($1) ? (float)$1 : 0.0)',
         ];
 
@@ -119,7 +119,7 @@ class PhpStanLevel10Fixer
     private function fixValueObjectsErrors(): void
     {
         echo "🔧 修復 Value Objects 錯誤...\n";
-        
+
         $files = [
             'app/Domains/Statistics/Entities/StatisticsSnapshot.php',
             'app/Domains/Statistics/ValueObjects/SourceStatistics.php'
@@ -138,8 +138,8 @@ class PhpStanLevel10Fixer
             $patterns = [
                 // 在建構子調用前添加類型檢查
                 '/new\s+([A-Za-z\\\\]+)\s*\(\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*(\$[^,]+),\s*(\$[^)]+)\s*\)/' =>
-                    'new $1($2, $3, $4, $5, 
-                        is_array($6) ? $6 : [], 
+                    'new $1($2, $3, $4, $5,
+                        is_array($6) ? $6 : [],
                         is_array($7) ? $7 : []
                     )',
             ];
@@ -167,11 +167,11 @@ class PhpStanLevel10Fixer
     private function fixTestErrors(): void
     {
         echo "🔧 修復測試檔案錯誤...\n";
-        
+
         // 查找所有測試檔案
         $testFiles = glob('tests/**/*Test.php') ?: [];
         $testFiles = array_merge($testFiles, glob('tests/*/*/*Test.php') ?: []);
-        
+
         foreach ($testFiles as $file) {
             $content = file_get_contents($file);
             $originalContent = $content;
@@ -214,14 +214,14 @@ class PhpStanLevel10Fixer
     {
         echo "\n📊 修復結果報告:\n";
         echo "已修復檔案數量: " . count($this->fixedFiles) . "\n";
-        
+
         if (!empty($this->fixedFiles)) {
             echo "\n已修復的檔案:\n";
             foreach ($this->fixedFiles as $file) {
                 echo "  - $file\n";
             }
         }
-        
+
         echo "\n🎯 建議下一步:\n";
         echo "1. 執行 PHPStan 檢查: docker compose exec -T web ./vendor/bin/phpstan analyse\n";
         echo "2. 執行測試: docker compose exec -T web ./vendor/bin/phpunit\n";

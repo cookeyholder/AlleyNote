@@ -39,9 +39,9 @@ $content = preg_replace($duplicatePattern, $replacement, $content);
 // 3. 修復特定的陣列存取問題 - 只針對明確的錯誤
 $arrayAccessFixes = [
     // 修復輸出格式中的 mixed 型別問題
-    'echo "處理週期: {$period} (共 {count(is_array($periods) ? $periods : [])} 個)";' => 
+    'echo "處理週期: {$period} (共 {count(is_array($periods) ? $periods : [])} 個)";' =>
     'echo "處理週期: " . (is_string($period) ? $period : "未知") . " (共 " . count(is_array($periods) ? $periods : []) . " 個)";',
-    
+
     // 修復統計結果輸出
     'echo "統計處理完成 - 總週期: {is_numeric($result[\'total_periods\'] ?? null) ? $result[\'total_periods\'] : 0}, 成功: {is_numeric($result[\'success_count\'] ?? null) ? $result[\'success_count\'] : 0}, 失敗: {is_numeric($result[\'failure_count\'] ?? null) ? $result[\'failure_count\'] : 0}";' =>
     'echo "統計處理完成 - 總週期: " . (is_numeric($result[\'total_periods\'] ?? null) ? $result[\'total_periods\'] : 0) . ", 成功: " . (is_numeric($result[\'success_count\'] ?? null) ? $result[\'success_count\'] : 0) . ", 失敗: " . (is_numeric($result[\'failure_count\'] ?? null) ? $result[\'failure_count\'] : 0);',
