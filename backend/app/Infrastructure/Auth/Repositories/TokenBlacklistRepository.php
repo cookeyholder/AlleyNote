@@ -84,9 +84,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $currentTime = new DateTime();
             $sql = '
-                SELECT COUNT(*) 
-                FROM token_blacklist 
-                WHERE jti = :jti 
+                SELECT COUNT(*)
+                FROM token_blacklist
+                WHERE jti = :jti
                 AND expires_at > :current_time
             ';
 
@@ -114,9 +114,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $currentTime = new DateTime();
             // 假設我們在 metadata 中儲存 token_hash
             $sql = '
-                SELECT COUNT(*) 
-                FROM token_blacklist 
-                WHERE JSON_EXTRACT(metadata, "$.token_hash") = :token_hash 
+                SELECT COUNT(*)
+                FROM token_blacklist
+                WHERE JSON_EXTRACT(metadata, "$.token_hash") = :token_hash
                 AND expires_at > :current_time
             ';
 
@@ -162,7 +162,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE jti = :jti
             ';
 
@@ -192,7 +192,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE user_id = :user_id
                 ORDER BY blacklisted_at DESC
             ';
@@ -233,7 +233,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE device_id = :device_id
                 ORDER BY blacklisted_at DESC
             ';
@@ -274,7 +274,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE token_type = :token_type
                 ORDER BY blacklisted_at DESC
             ';
@@ -315,7 +315,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE reason = :reason
                 ORDER BY blacklisted_at DESC
             ';
@@ -419,9 +419,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $currentTime = new DateTime();
             $placeholders = str_repeat('?,', count($jtis) - 1) . '?';
             $sql = "
-                SELECT jti 
-                FROM token_blacklist 
-                WHERE jti IN ({$placeholders}) 
+                SELECT jti
+                FROM token_blacklist
+                WHERE jti IN ({$placeholders})
                 AND expires_at > ?
             ";
 
@@ -484,10 +484,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             // 先查找該使用者所有的 refresh token
             $selectSql = '
-                SELECT jti 
-                FROM refresh_tokens 
-                WHERE user_id = :user_id 
-                AND revoked = 0 
+                SELECT jti
+                FROM refresh_tokens
+                WHERE user_id = :user_id
+                AND revoked = 0
                 AND expires_at > :current_time
             ';
 
@@ -546,10 +546,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             // 查找該裝置所有的 refresh token
             $selectSql = '
-                SELECT jti, user_id 
-                FROM refresh_tokens 
-                WHERE device_id = :device_id 
-                AND revoked = 0 
+                SELECT jti, user_id
+                FROM refresh_tokens
+                WHERE device_id = :device_id
+                AND revoked = 0
                 AND expires_at > :current_time
             ';
 
@@ -636,7 +636,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $cutoffDate->modify("-{$days} days");
 
             $sql = '
-                DELETE FROM token_blacklist 
+                DELETE FROM token_blacklist
                 WHERE blacklisted_at <= :cutoff_date
             ';
 
@@ -731,13 +731,13 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total_blacklisted,
                     COUNT(CASE WHEN token_type = "access" THEN 1 END) as access_tokens,
                     COUNT(CASE WHEN token_type = "refresh" THEN 1 END) as refresh_tokens,
                     COUNT(CASE WHEN reason IN ("security_breach", "suspicious_activity", "device_lost", "invalid_signature") THEN 1 END) as security_related,
                     MAX(blacklisted_at) as last_blacklisted
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE user_id = :user_id
             ';
 
@@ -774,7 +774,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
             ';
 
             if ($since !== null) {
@@ -815,9 +815,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             // 優先取得安全相關的項目
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE reason IN ("security_breach", "suspicious_activity", "device_lost", "invalid_signature")
-                ORDER BY blacklisted_at DESC 
+                ORDER BY blacklisted_at DESC
                 LIMIT :limit
             ';
 
@@ -849,7 +849,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE 1=1
             ';
 
@@ -1007,7 +1007,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $formattedTime = $currentTime->format('Y-m-d H:i:s');
 
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total_entries,
                     COUNT(CASE WHEN expires_at > :current_time_1 THEN 1 END) as active_entries,
                     COUNT(CASE WHEN expires_at <= :current_time_2 THEN 1 END) as expired_entries

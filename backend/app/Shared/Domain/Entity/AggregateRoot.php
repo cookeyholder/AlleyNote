@@ -10,8 +10,7 @@ namespace App\Shared\Domain\Entity;
  */
 abstract class AggregateRoot
 {
-    /**
-     * @var array<object> 領域事件列表
+    /**\n      * @var array<object> 領域事件列表
      */
     private array $domainEvents = [];
 

@@ -22,8 +22,7 @@ class RedisTagRepository implements TagRepositoryInterface
 
     private const KEY_TAG_PREFIX = 'key_tags:';
 
-    /**
-     * @var Redis Redis 連線實例
+    /**\n      * @var Redis Redis 連線實例
      */
     private Redis $redis;
 

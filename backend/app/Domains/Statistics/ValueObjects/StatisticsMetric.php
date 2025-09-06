@@ -12,8 +12,7 @@ use App\Domains\Statistics\Exceptions\InvalidStatisticsMetricException;
  */
 readonly class StatisticsMetric
 {
-    /**
-     * @param int|float $value 數值
+    /**\n      * @param int|float $value 數值
      * @param string $unit 單位
      * @param string $description 描述
      * @param int $precision 精確度（小數位數）

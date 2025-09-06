@@ -15,13 +15,9 @@ use JsonSerializable;
  */
 class SuspiciousActivityAnalysisDTO implements JsonSerializable
 {
-    /**
-     * @param string $analysisId 分析識別碼
-     * @param string|null $targetId 目標識別碼
+    /**\n      * @param string $analysisId 分析識別碼
      * @param int $timeWindowMinutes 分析時間窗口（分鐘）
-     * @param ActivitySeverity $severityLevel 嚴重程度等級
      * @param array<string, int> $failureCounts 各活動類型失敗計數
-     * @param array<string, mixed> $metadata 額外的元數據
      * @param float $confidenceScore 信心分數（0-1）
      */
     public function __construct(
@@ -44,7 +40,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * 工廠方法：建立使用者分析結果.
      * @param array<string, mixed> $activityCounts
-     * @param array<string, mixed> $detectionRules
      * @param array<string, mixed> $metadata
      */
     public static function forUser(
@@ -81,7 +76,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * 工廠方法：建立 IP 分析結果.
      * @param array<string, mixed> $activityCounts
-     * @param array<string, mixed> $detectionRules
      * @param array<string, mixed> $metadata
      */
     public static function forIpAddress(
@@ -118,7 +112,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * 工廠方法：建立全域分析結果.
      * @param array<string, mixed> $activityCounts
-     * @param array<string, mixed> $detectionRules
      * @param array<string, mixed> $metadata
      */
     public static function forGlobalPattern(
@@ -186,43 +179,28 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     {
         return $this->severityLevel;
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getActivityCounts(): array
+    /**\n      * @return array<string, mixed>
+     */    public function getActivityCounts(): array
     {
         return $this->activityCounts;
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getFailureCounts(): array
+    /**\n      * @return array<string, mixed>
+     */    public function getFailureCounts(): array
     {
         return $this->failureCounts;
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getAnomalyScores(): array
+    /**\n      * @return array<string, mixed>
+     */    public function getAnomalyScores(): array
     {
         return $this->anomalyScores;
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getDetectionRules(): array
+    /**\n      * @return array<string, mixed>
+     */    public function getDetectionRules(): array
     {
         return $this->detectionRules;
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getMetadata(): array
+    /**\n      * @return array<string, mixed>
+     */    public function getMetadata(): array
     {
         return $this->metadata;
     }

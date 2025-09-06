@@ -164,12 +164,10 @@ class CacheService implements CacheServiceInterface
         }
 
         return true;
+     /**
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getMultiple(array $keys): array
+     * @return array<string, mixed>    public function getMultiple(array $keys): array
+      */
     {
         $result = [];
         foreach ($keys as $key) {

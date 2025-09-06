@@ -18,9 +18,8 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         private readonly UserRepository $userRepository,
     ) {}
 
-    /**
-     * @return array<string, mixed>|null
-     */
+    /**\n      * @return array<string, mixed>|null
+      */
     public function findByUsername(string $username): ?array
     {
         // 委託給原始 repository 的相應方法
@@ -30,9 +29,8 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return is_array($result) ? $result : null;
     }
 
-    /**
-     * @return array<string, mixed>|null
-     */
+    /**\n      * @return array<string, mixed>|null
+      */
     public function findByEmail(string $email): ?array
     {
         // 委託給原始 repository
@@ -42,9 +40,8 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return is_array($result) ? $result : null;
     }
 
-    /**
-     * @return array<string, mixed>|null
-     */
+    /**\n      * @return array<string, mixed>|null
+      */
     public function findByUuid(string $uuid): ?array
     {
         // 委託給原始 repository
@@ -54,9 +51,8 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return is_array($result) ? $result : null;
     }
 
-    /**
-     * @return array<string, mixed>|null
-     */
+    /**\n      * @return array<string, mixed>|null
+      */
     public function validateCredentials(string $username, string $password): ?array
     {
         // 暫時實作 - 原始 repository 沒有此方法，需要自行實現驗證邏輯
@@ -84,20 +80,16 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         // 委託給原始 repository，但需要轉換參數類型
         return $this->userRepository->updateLastLogin((string) $userId);
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function findById(int $id): ?array
+    /**\n      * @return array<string, mixed>
+     */    public function findById(int $id): ?array
     {
         // 委託給原始 repository
         return $this->userRepository->findById($id);
     }
 
-    /**
-     * @param array<string, mixed> $data
+    /**\n      * @param array<string, mixed> $data
      * @return array<string, mixed>
-     */
+      */
     public function create(array $data): array
     {
         /** @var array<string, mixed> $result */
@@ -137,36 +129,26 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     {
         return true;
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array
+    /**\n      * @return array<string, mixed>
+     */    public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array
     {
         return [];
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getTrashed(int $page = 1, int $perPage = 10): array
+    /**\n      * @return array<string, mixed>
+     */    public function getTrashed(int $page = 1, int $perPage = 10): array
     {
         return [];
     }
 
-    /**
-     * @param array<string, mixed> $fields
+    /**\n      * @param array<string, mixed> $fields
      * @return array<string, mixed>
-     */
+      */
     public function search(string $keyword, array $fields = [], int $limit = 10): array
     {
         return [];
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getStats(array $conditions = []): array
+    /**\n      * @return array<string, mixed>
+     */    public function getStats(array $conditions = []): array
     {
         return [];
     }

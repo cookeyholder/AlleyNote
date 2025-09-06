@@ -136,8 +136,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                SELECT * FROM ' . self::TABLE_NAME . ' 
-                WHERE user_id = ? AND device_id = ? 
+                SELECT * FROM ' . self::TABLE_NAME . '
+                WHERE user_id = ? AND device_id = ?
                 ORDER BY created_at DESC
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -176,8 +176,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                UPDATE ' . self::TABLE_NAME . ' 
-                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
+                UPDATE ' . self::TABLE_NAME . '
+                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ?
                 WHERE jti = ?
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -202,8 +202,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                UPDATE ' . self::TABLE_NAME . ' 
-                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
+                UPDATE ' . self::TABLE_NAME . '
+                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ?
                 WHERE user_id = ? AND status = ?
             ';
             $params = [
@@ -236,8 +236,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                UPDATE ' . self::TABLE_NAME . ' 
-                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
+                UPDATE ' . self::TABLE_NAME . '
+                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ?
                 WHERE user_id = ? AND device_id = ? AND status = ?
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -344,7 +344,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         try {
             $cutoffDate = new DateTime("-{$days} days");
             $sql = '
-                DELETE FROM ' . self::TABLE_NAME . ' 
+                DELETE FROM ' . self::TABLE_NAME . '
                 WHERE status = ? AND revoked_at <= ?
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -366,12 +366,12 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total,
                     SUM(CASE WHEN status = ? AND expires_at > ? THEN 1 ELSE 0 END) as active,
                     SUM(CASE WHEN expires_at <= ? THEN 1 ELSE 0 END) as expired,
                     SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as revoked
-                FROM ' . self::TABLE_NAME . ' 
+                FROM ' . self::TABLE_NAME . '
                 WHERE user_id = ?
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -410,15 +410,15 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                     SELECT jti, parent_token_jti, 1 as level
                     FROM ' . self::TABLE_NAME . '
                     WHERE jti = ? OR parent_token_jti = ?
-                    
+
                     UNION ALL
-                    
+
                     SELECT t.jti, t.parent_token_jti, tf.level + 1
                     FROM ' . self::TABLE_NAME . ' t
                     INNER JOIN token_family tf ON t.parent_token_jti = tf.jti
                     WHERE tf.level < 100  -- 防止無限遞迴
                 )
-                SELECT DISTINCT rt.* 
+                SELECT DISTINCT rt.*
                 FROM token_family tf
                 JOIN ' . self::TABLE_NAME . ' rt ON rt.jti = tf.jti
                 ORDER BY rt.created_at
@@ -446,8 +446,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             $placeholders = implode(',', array_fill(0, count($jtis), '?'));
             $sql = '
-                UPDATE ' . self::TABLE_NAME . ' 
-                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
+                UPDATE ' . self::TABLE_NAME . '
+                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ?
                 WHERE jti IN (' . $placeholders . ')
             ';
 
@@ -514,8 +514,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             $placeholders = implode(',', array_fill(0, count($jtis), '?'));
             $sql = '
-                UPDATE ' . self::TABLE_NAME . ' 
-                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
+                UPDATE ' . self::TABLE_NAME . '
+                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ?
                 WHERE jti IN (' . $placeholders . ')
             ';
 
@@ -544,7 +544,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         try {
             $thresholdDate = new DateTime("+{$thresholdHours} hours");
             $sql = '
-                SELECT * FROM ' . self::TABLE_NAME . ' 
+                SELECT * FROM ' . self::TABLE_NAME . '
                 WHERE expires_at <= ? AND expires_at > ? AND status = ?
                 ORDER BY expires_at ASC
             ';
@@ -569,7 +569,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total_tokens,
                     SUM(CASE WHEN status = ? AND expires_at > ? THEN 1 ELSE 0 END) as active_tokens,
                     SUM(CASE WHEN expires_at <= ? THEN 1 ELSE 0 END) as expired_tokens,
@@ -616,7 +616,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         try {
             // 先找出直接相關的 token
             $sql = '
-                SELECT * FROM ' . self::TABLE_NAME . ' 
+                SELECT * FROM ' . self::TABLE_NAME . '
                 WHERE jti = ? OR parent_token_jti = ?
                 ORDER BY created_at
             ';

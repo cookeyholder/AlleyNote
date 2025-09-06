@@ -301,8 +301,7 @@ class StatisticsAdminController extends BaseController
      * @param array<string, mixed> $body
      * @return array<string, mixed>
      */
-    /**
-     * @param array<string, mixed> $body
+    /**\n      * @param array<string, mixed> $body
      * @return array<string, mixed>
      */
     private function validateRefreshParams(array $body): array
@@ -353,8 +352,7 @@ class StatisticsAdminController extends BaseController
      * @param array<string, mixed> $queryParams
      * @return array<string, mixed>
      */
-    /**
-     * @param array<string, mixed> $queryParams
+    /**\n      * @param array<string, mixed> $queryParams
      * @return array<string, mixed>
      */
     private function validateClearCacheParams(array $queryParams): array

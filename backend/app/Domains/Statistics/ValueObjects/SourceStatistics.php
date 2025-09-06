@@ -13,8 +13,7 @@ use App\Domains\Statistics\Exceptions\InvalidSourceStatisticsException;
  */
 readonly class SourceStatistics
 {
-    /**
-     * @param SourceType $sourceType 來源類型
+    /**\n      * @param SourceType $sourceType 來源類型
      * @param StatisticsMetric $count 計數
      * @param StatisticsMetric $percentage 百分比
      * @param array<string, StatisticsMetric> $additionalMetrics 額外指標

@@ -77,7 +77,9 @@ class Application
         // 驗證配置的完整性
         $errors = $config->validate();
         if (!empty($errors)) {
-            $errorMessage = "環境配置錯誤:\n" . implode("\n", $errors);
+            $errorMessage = "環境配置錯誤:
+" . implode("
+", $errors);
 
             throw new Exception($errorMessage);
         }
@@ -247,7 +249,10 @@ class Application
                 return substr($this->content, $this->position);
             }
 
-            /** @return array<mixed> */
+            /**\n              * @return array<mixed>
+
+
+             */
             public function getMetadata(?string $key = null): mixed
             {
                 return [];
@@ -301,7 +306,10 @@ class Application
                 return $this;
             }
 
-            /** @return array<string, array<string>> */
+            /**\n              * @return array<string, array<string>>
+
+
+             */
             public function getHeaders(): mixed
             {
                 return ['Content-Type' => ['application/json']];
@@ -312,7 +320,10 @@ class Application
                 return strtolower($name) === 'content-type';
             }
 
-            /** @return array<mixed> */
+            /**\n              * @return array<mixed>
+
+
+             */
             public function getHeader(string $name): mixed
             {
                 return strtolower($name) === 'content-type' ? ['application/json'] : [];

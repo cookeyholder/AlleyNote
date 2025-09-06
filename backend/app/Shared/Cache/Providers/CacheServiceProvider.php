@@ -39,11 +39,7 @@ class CacheServiceProvider
 
     /** @var array<string, mixed> 設定 */
     private array $config;
-     * @param array<string, mixed> $config
-
-    /**
-     */
-    public function __construct(Container $container, array $config = [])
+     * @param array<string, mixed> $config    public function __construct(Container $container, array $config = [])
     {
         $this->container = $container;
         $defaultConfig = $this->getDefaultConfig();

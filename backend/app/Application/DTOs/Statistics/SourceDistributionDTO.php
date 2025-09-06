@@ -26,8 +26,7 @@ use JsonSerializable;
  */
 final readonly class SourceDistributionDTO implements JsonSerializable
 {
-    /**
-     * @param StatisticsPeriod $period 統計週期
+    /**\n      * @param StatisticsPeriod $period 統計週期
      * @param array<SourceStatistics> $sourceStatistics 來源統計清單
      * @param int $totalCount 總數量
      * @param array<string, mixed> $distributionAnalysis 分佈分析

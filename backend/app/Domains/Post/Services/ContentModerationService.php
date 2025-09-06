@@ -18,11 +18,8 @@ class ContentModerationService
     private RichTextProcessorService $richTextProcessor;
 
     private array $config;
-     * @param array<string, mixed> $config
-
-    /**
-     */
-    public function __construct(
+    /**\n      * @param array<string, mixed> $config
+     */    public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
         array $config = [],

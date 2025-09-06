@@ -17,8 +17,7 @@ trait CacheTestTrait
 {
     protected CacheService|MockInterface $cache;
 
-    /**
-     * @var array<string, mixed>
+    /**\n      * @var array<string, mixed>
      */
     protected static array $cacheStorage = [];
 

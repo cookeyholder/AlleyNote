@@ -216,11 +216,8 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return $this->remember($key, $callback, 0);
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getStats(): array
+    /**\n      * @return array<string, mixed>
+     */    public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
         $hitRate = $totalRequests > 0 ? ($this->stats['hits'] / $totalRequests) * 100 : 0;
@@ -346,7 +343,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 增加新標籤到快取管理器.
-      * @param string|array<string> $tags 標籤
+     * @param string|array<string> $tags 標籤
      */
     public function addTags(string|array $tags): TaggedCacheInterface
     {
@@ -358,7 +355,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得當前標籤化快取的所有鍵.
-      * @return array<string> 快取鍵陣列
+     * @return array<string> 快取鍵陣列
      */
     public function getTaggedKeys(): array
     {
@@ -371,8 +368,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 使用指定標籤存放快取項目.
-      * @param string $key 快取鍵
-     * @param array<string> $tags 標籤陣列
+     * @param string $key 快取鍵
      * @return bool 是否成功
      */
     public function putWithTags(string $key, mixed $value, array $tags, int $ttl = 3600): bool
@@ -387,7 +383,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得快取項目的所有標籤.
-      * @param string $key 快取鍵
+     * @param string $key 快取鍵
      * @return array<string> 標籤陣列
      */
     public function getTagsByKey(string $key): array
@@ -404,7 +400,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 為現有快取項目添加標籤.
-      * @param string $key 快取鍵
+     * @param string $key 快取鍵
      * @return bool 是否成功
      */
     public function addTagsToKey(string $key, string|array $tags): bool
@@ -421,7 +417,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 從快取項目移除標籤.
-      * @param string $key 快取鍵
+     * @param string $key 快取鍵
      * @return bool 是否成功
      */
     public function removeTagsFromKey(string $key, string|array $tags): bool
@@ -452,7 +448,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 檢查快取項目是否包含指定標籤.
-      * @param string $key 快取鍵
+     * @param string $key 快取鍵
      * @return bool 是否包含
      */
     public function hasTag(string $key, string $tag): bool
@@ -462,7 +458,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 清除未使用的標籤.
-      * @return int 清除的標籤數量
+     * @return int 清除的標籤數量
      */
     public function cleanupUnusedTags(): int
     {
@@ -488,7 +484,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得當前標籤.
-      * @return array<string> 標籤陣列
+     * @return array<string> 標籤陣列
      */
     public function getTags(): array
     {
@@ -497,7 +493,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 根據標籤清空快取.
-      * @param array<string>|string $tags 要清空的標籤
+     * @param array<string>|string $tags 要清空的標籤
      * @return int 清空的項目數量
      */
     public function flushByTags(array|string $tags): int
@@ -529,7 +525,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 根據標籤取得快取鍵.
-      * @param string $tag 標籤名稱
+     * @param string $tag 標籤名稱
      * @return array<string> 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array
@@ -551,7 +547,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 根據多個標籤取得共同的快取鍵.
-      * @param array<string> $tags 標籤陣列
+     * @param array<string> $tags 標籤陣列
      * @return array<string> 共同的快取鍵陣列
      */
     public function getKeysByTags(array $tags): array
@@ -582,7 +578,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 檢查標籤是否存在.
-      * @param string $tag 標籤名稱
+     * @param string $tag 標籤名稱
      * @return bool 是否存在
      */
     public function tagExists(string $tag): bool
@@ -592,7 +588,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得所有標籤.
-      * @return array<string> 所有標籤陣列
+     * @return array<string> 所有標籤陣列
      */
     public function getAllTags(): array
     {
@@ -601,7 +597,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得標籤統計資訊.
-      * @return array<string, mixed> 標籤統計資訊
+     * @return array<string, mixed> 標籤統計資訊
      */
     public function getTagStatistics(): array
     {
@@ -623,7 +619,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 將快取鍵添加到標籤索引.
-      * @param string $key 快取鍵
+     * @param string $key 快取鍵
      */
     private function addKeyToTags(string $key, array $tags): void
     {
@@ -640,7 +636,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 從所有標籤索引中移除快取鍵.
-      * @param string $key 快取鍵
+     * @param string $key 快取鍵
      */
     private function removeKeyFromAllTags(string $key): void
     {
@@ -663,7 +659,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 設定快取標籤.
-      * @param array<string>|string $tags 標籤陣列或單一標籤
+     * @param array<string>|string $tags 標籤陣列或單一標籤
      * @return TaggedCacheInterface 標籤化快取實例
      */
     public function tags(array|string $tags): TaggedCacheInterface

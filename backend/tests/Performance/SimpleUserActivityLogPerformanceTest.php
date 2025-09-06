@@ -251,10 +251,15 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function outputQueryPerformanceReport(string $scenario, float $duration, float $avgQueryTime, int $iterations): void
     {
-        echo "\n{$scenario} 效能報告:\n";
-        echo '- 總執行時間: ' . number_format($duration, 4) . " 秒\n";
-        echo '- 平均查詢時間: ' . number_format($avgQueryTime * 1000, 2) . " ms\n";
-        echo '- 每秒查詢數: ' . number_format($iterations / $duration, 2) . " QPS\n";
+        echo "
+{$scenario} 效能報告:
+";
+        echo '- 總執行時間: ' . number_format($duration, 4) . " 秒
+";
+        echo '- 平均查詢時間: ' . number_format($avgQueryTime * 1000, 2) . " ms
+";
+        echo '- 每秒查詢數: ' . number_format($iterations / $duration, 2) . " QPS
+";
     }
 
     /**
@@ -340,10 +345,15 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
         $totalTime = array_sum(array_column($results, 'duration'));
         $avgTime = $totalTime / $totalPages;
 
-        echo "\n分頁查詢效能報告:\n";
-        echo '- 總查詢時間: ' . number_format($totalTime, 4) . " 秒\n";
-        echo '- 平均查詢時間: ' . number_format($avgTime * 1000, 2) . " ms\n";
-        echo '- 每秒頁面數: ' . number_format($totalPages / $totalTime, 2) . " PPS\n";
+        echo "
+分頁查詢效能報告:
+";
+        echo '- 總查詢時間: ' . number_format($totalTime, 4) . " 秒
+";
+        echo '- 平均查詢時間: ' . number_format($avgTime * 1000, 2) . " ms
+";
+        echo '- 每秒頁面數: ' . number_format($totalPages / $totalTime, 2) . " PPS
+";
     }
 
     /**
@@ -476,14 +486,22 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function outputPerformanceReport(string $title, array $results): void
     {
-        echo "\n{$title}:\n";
-        echo str_repeat('=', strlen($title) + 1) . "\n";
+        echo "
+{$title}:
+";
+        echo str_repeat('=', strlen($title) + 1) . "
+";
 
         foreach ($results as $size => $result) {
-            echo "批次大小: {$size}\n";
-            echo '  - 執行時間: ' . number_format($result['duration'], 4) . " 秒\n";
-            echo '  - 吞吐量: ' . number_format($result['throughput'], 2) . " 筆/秒\n";
-            echo '  - 平均每筆: ' . number_format($result['avg_per_record'] * 1000, 2) . " ms\n\n";
+            echo "批次大小: {$size}
+";
+            echo '  - 執行時間: ' . number_format($result['duration'], 4) . " 秒
+";
+            echo '  - 吞吐量: ' . number_format($result['throughput'], 2) . " 筆/秒
+";
+            echo '  - 平均每筆: ' . number_format($result['avg_per_record'] * 1000, 2) . " ms
+
+";
         }
     }
 }

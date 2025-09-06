@@ -28,9 +28,8 @@ class LayeredCacheDriver implements CacheDriverInterface
         'layer_promotions' => 0,
     ];
 
-    /**
-     * @param array<CacheDriverInterface> $layers 快取層級，按優先順序排列
-     */
+    /**\n      * @param array<CacheDriverInterface> $layers 快取層級，按優先順序排列
+      */
     public function __construct(array $layers)
     {
         if (empty($layers)) {
@@ -289,11 +288,8 @@ class LayeredCacheDriver implements CacheDriverInterface
     {
         return $this->remember($key, $callback, 0);
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getStats(): array
+    /**\n      * @return array<string, mixed>
+     */    public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
         $hitRate = $totalRequests > 0 ? ($this->stats['hits'] / $totalRequests) * 100 : 0;

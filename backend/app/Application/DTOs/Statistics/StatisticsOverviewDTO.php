@@ -27,8 +27,7 @@ use JsonSerializable;
  */
 final readonly class StatisticsOverviewDTO implements JsonSerializable
 {
-    /**
-     * @param StatisticsPeriod $period 統計週期
+    /**\n      * @param StatisticsPeriod $period 統計週期
      * @param StatisticsMetric $totalPosts 總文章數
      * @param StatisticsMetric $totalViews 總瀏覽數
      * @param array<SourceStatistics> $sourceStatistics 來源統計

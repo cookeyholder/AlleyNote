@@ -25,8 +25,7 @@ use JsonSerializable;
  */
 final readonly class UserActivityDTO implements JsonSerializable
 {
-    /**
-     * @param StatisticsPeriod $period 統計週期
+    /**\n      * @param StatisticsPeriod $period 統計週期
      * @param StatisticsMetric $totalActiveUsers 總活躍使用者數
      * @param StatisticsMetric $newUsers 新使用者數
      * @param StatisticsMetric $returningUsers 回訪使用者數

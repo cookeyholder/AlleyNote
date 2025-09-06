@@ -97,9 +97,9 @@ class IntegrationTestExampleTest extends IntegrationTestCase
 
         // 4. 驗證整合結果
         $stmt = $this->db->prepare('
-            SELECT p.*, u.username 
-            FROM posts p 
-            JOIN users u ON p.user_id = u.id 
+            SELECT p.*, u.username
+            FROM posts p
+            JOIN users u ON p.user_id = u.id
             WHERE p.id = ?
         ');
         $stmt->execute([$postId]);

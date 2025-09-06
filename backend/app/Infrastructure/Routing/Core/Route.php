@@ -27,10 +27,8 @@ class Route implements RouteInterface
     /** @var string[] */
     private array $parameterNames = [];
 
-    /**
-     * @param string[] $methods HTTP 方法列表
-     * @param array<string, mixed> $handler
-     */
+    /**\n      * @param string[] $methods HTTP 方法列表
+      */
     public function __construct(
         private readonly array $methods,
         private readonly string $pattern,
@@ -179,7 +177,7 @@ class Route implements RouteInterface
 
     /**
      * 添加中介軟體（支援字串別名、實例和陣列）.
-      * @param array<string, mixed> $middleware
+     * @param array<string, mixed> $middleware
      */
     public function middleware($middleware): self
     {
@@ -230,7 +228,7 @@ class Route implements RouteInterface
 
     /**
      * 從路由模式中提取參數名稱.
-      * @param string $pattern 路由模式
+     * @param string $pattern 路由模式
      * @return string[] 參數名稱陣列
      */
     private function extractParameterNames(string $pattern): array
@@ -270,11 +268,8 @@ class Route implements RouteInterface
     {
         return new self(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'], $pattern, $handler);
     }
-     * @param array<string, mixed> $methods
-
-    /**
-     */
-    public static function match(array $methods, string $pattern, callable|string $handler): self
+    /**\n      * @param array<string, mixed> $methods
+     */    public static function match(array $methods, string $pattern, callable|string $handler): self
     {
         return new self($methods, $pattern, $handler);
     }

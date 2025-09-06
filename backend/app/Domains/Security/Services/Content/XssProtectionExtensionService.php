@@ -22,11 +22,8 @@ class XssProtectionExtensionService
     private ContentModerationService $contentModerator;
 
     private array $config;
-     * @param array<string, mixed> $config
-
-    /**
-     */
-    public function __construct(
+    /**\n      * @param array<string, mixed> $config
+     */    public function __construct(
         XssProtectionService $baseXssProtection,
         RichTextProcessorService $richTextProcessor,
         ContentModerationService $contentModerator,

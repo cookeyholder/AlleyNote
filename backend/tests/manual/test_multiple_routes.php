@@ -10,7 +10,9 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 use App\Application;
 use Psr\Http\Message\ServerRequestInterface;
 
-echo "=== 多種路由配置測試 ===\n\n";
+echo "=== 多種路由配置測試 ===
+
+";
 
 $app = new Application();
 
@@ -54,7 +56,8 @@ $testCases = [
 ];
 
 foreach ($testCases as $index => $testCase) {
-    echo '測試 ' . ($index + 1) . ": {(string)testCase['name']}\n";
+    echo '測試 ' . ($index + 1) . ": {(string)testCase['name']}
+";
 
     try {
         // 建立測試請求
@@ -385,18 +388,24 @@ foreach ($testCases as $index => $testCase) {
 
         $response = $app->run($request);
 
-        echo "   ✅ 狀態: {(string)response->getStatusCode()}\n";
+        echo "   ✅ 狀態: {(string)response->getStatusCode()}
+";
         $bodyContent = (string) $response->getBody();
-        echo '   📄 內容: ' . substr(str_replace(["\n", '    '], [' ', ' '], $bodyContent), 0, 100);
+        echo '   📄 內容: ' . substr(str_replace(["
+", '    '], [' ', ' '], $bodyContent), 0, 100);
         if (strlen($bodyContent) > 100) {
             echo '...';
         }
-        echo "\n";
+        echo "
+";
     } catch (Exception $e) {
-        echo '   ❌ 錯誤: ' . $e->getMessage() . "\n";
+        echo '   ❌ 錯誤: ' . $e->getMessage() . "
+";
     }
 
-    echo "\n";
+    echo "
+";
 }
 
-echo "=== 測試完成 ===\n";
+echo "=== 測試完成 ===
+";

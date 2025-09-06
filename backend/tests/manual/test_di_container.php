@@ -16,94 +16,130 @@ use App\Infrastructure\Routing\RouteLoader;
 use App\Infrastructure\Routing\RouteValidator;
 use Psr\Http\Message\ServerRequestInterface;
 
-echo "=== DI 容器整合測試 ===\n\n";
+echo "=== DI 容器整合測試 ===
+
+";
 
 try {
-    echo "測試 1: 建立應用程式實例和容器\n";
+    echo "測試 1: 建立應用程式實例和容器
+";
     $app = new Application();
     $container = $app->getContainer();
-    echo "✅ 應用程式和容器初始化成功\n";
+    echo "✅ 應用程式和容器初始化成功
+";
 
-    echo "\n測試 2: 檢查路由系統服務註冊\n";
+    echo "
+測試 2: 檢查路由系統服務註冊
+";
 
     // 測試路由器服務
     $router = $container->get(RouterInterface::class);
-    echo '✅ RouterInterface: ' . get_class($router) . "\n";
+    echo '✅ RouterInterface: ' . get_class($router) . "
+";
 
     // 測試路由驗證器
     $validator = $container->get(RouteValidator::class);
-    echo '✅ RouteValidator: ' . get_class($validator) . "\n";
+    echo '✅ RouteValidator: ' . get_class($validator) . "
+";
 
     // 測試路由載入器
     $routeLoader = $container->get(RouteLoader::class);
-    echo '✅ RouteLoader: ' . get_class($routeLoader) . "\n";
+    echo '✅ RouteLoader: ' . get_class($routeLoader) . "
+";
 
     // 測試控制器解析器
     $controllerResolver = $container->get(ControllerResolver::class);
-    echo '✅ ControllerResolver: ' . get_class($controllerResolver) . "\n";
+    echo '✅ ControllerResolver: ' . get_class($controllerResolver) . "
+";
 
     // 測試路由分派器
     $routeDispatcher = $container->get(RouteDispatcher::class);
-    echo '✅ RouteDispatcher: ' . get_class($routeDispatcher) . "\n";
+    echo '✅ RouteDispatcher: ' . get_class($routeDispatcher) . "
+";
 
-    echo "\n測試 3: 檢查應用程式配置\n";
+    echo "
+測試 3: 檢查應用程式配置
+";
 
     // 測試應用程式配置
     $appName = $container->get('app.name');
     $appVersion = $container->get('app.version');
     $appDebug = $container->get('app.debug');
 
-    echo "✅ 應用程式名稱: {(string)appName}\n";
-    echo "✅ 應用程式版本: {(string)appVersion}\n";
-    echo '✅ 除錯模式: ' . ($appDebug ? 'enabled' : 'disabled') . "\n";
+    echo "✅ 應用程式名稱: {(string)appName}
+";
+    echo "✅ 應用程式版本: {(string)appVersion}
+";
+    echo '✅ 除錯模式: ' . ($appDebug ? 'enabled' : 'disabled') . "
+";
 
-    echo "\n測試 4: 測試路由統計功能\n";
+    echo "
+測試 4: 測試路由統計功能
+";
 
     $routingStats = RoutingServiceProvider::getRoutingStats($container);
     if (isset($routingStats['error'])) {
-        echo "⚠️  路由統計暫時無法取得: {(string)routingStats['error']}\n";
+        echo "⚠️  路由統計暫時無法取得: {(string)routingStats['error']}
+";
     } else {
-        echo "✅ 路由統計:\n";
-        echo "   - 總路由數: {(string)routingStats['total_routes']}\n";
-        echo "   - 載入檔案數: {(string)routingStats['files_loaded']}\n";
-        echo '   - 路由群組: ' . implode(', ', array_keys($routingStats['groups'])) . "\n";
+        echo "✅ 路由統計:
+";
+        echo "   - 總路由數: {(string)routingStats['total_routes']}
+";
+        echo "   - 載入檔案數: {(string)routingStats['files_loaded']}
+";
+        echo '   - 路由群組: ' . implode(', ', array_keys($routingStats['groups'])) . "
+";
 
         foreach ($routingStats['groups'] as $group => $count) {
-            echo "     * {(string)group}: {(string)count} 條路由\n";
+            echo "     * {(string)group}: {(string)count} 條路由
+";
         }
     }
 
-    echo "\n測試 5: 測試服務實例化正確性\n";
+    echo "
+測試 5: 測試服務實例化正確性
+";
 
     // 測試同一服務的多次取得是否為單例
     $router1 = $container->get(RouterInterface::class);
     $router2 = $container->get(RouterInterface::class);
 
     if ($router1 === $router2) {
-        echo "✅ 路由器服務單例模式正確\n";
+        echo "✅ 路由器服務單例模式正確
+";
     } else {
-        echo "⚠️  路由器服務非單例模式\n";
+        echo "⚠️  路由器服務非單例模式
+";
     }
 
     $validator1 = $container->get(RouteValidator::class);
     $validator2 = $container->get(RouteValidator::class);
 
     if ($validator1 === $validator2) {
-        echo "✅ 驗證器服務單例模式正確\n";
+        echo "✅ 驗證器服務單例模式正確
+";
     } else {
-        echo "⚠️  驗證器服務非單例模式\n";
+        echo "⚠️  驗證器服務非單例模式
+";
     }
 
-    echo "\n測試 6: 測試路由檔案配置\n";
+    echo "
+測試 6: 測試路由檔案配置
+";
 
     $routeFiles = RoutingServiceProvider::getRouteFiles();
-    echo "✅ 路由檔案配置:\n";
+    echo "✅ 路由檔案配置:
+";
     foreach ($routeFiles as $group => $filePath) {
         $exists = file_exists($filePath) ? '✅' : '❌';
-        echo "   {(string)exists} {(string)group}: {(string)filePath}\n";
+        echo "   {(string)exists} {(string)group}: {(string)filePath}
+";
     }
 
-    echo "\n測試 7: 測試完整請求處理\n";
+    echo "
+測試 7: 測試完整請求處理
+";
 
     // 建立測試請求
     $request = new class implements ServerRequestInterface {
@@ -424,15 +460,23 @@ try {
     };
 
     $response = $app->run($request);
-    echo "✅ 請求處理成功\n";
-    echo "   - 回應狀態: {(string)response->getStatusCode()}\n";
-    echo '   - 內容類型: ' . $response->getHeaderLine('Content-Type') . "\n";
+    echo "✅ 請求處理成功
+";
+    echo "   - 回應狀態: {(string)response->getStatusCode()}
+";
+    echo '   - 內容類型: ' . $response->getHeaderLine('Content-Type') . "
+";
 } catch (Exception $e) {
-    echo '❌ 測試失敗: ' . $e->getMessage() . "\n";
-    echo '   - 檔案: ' . $e->getFile() . ':' . $e->getLine() . "\n";
+    echo '❌ 測試失敗: ' . $e->getMessage() . "
+";
+    echo '   - 檔案: ' . $e->getFile() . ':' . $e->getLine() . "
+";
     if (method_exists($e, 'getTraceAsString')) {
-        echo '   - 追蹤: ' . substr($e->getTraceAsString(), 0, 500) . "...\n";
+        echo '   - 追蹤: ' . substr($e->getTraceAsString(), 0, 500) . "...
+";
     }
 }
 
-echo "\n=== 測試完成 ===\n";
+echo "
+=== 測試完成 ===
+";

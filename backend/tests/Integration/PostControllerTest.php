@@ -535,8 +535,7 @@ class PostControllerTest extends TestCase
         return $stream;
     }
 
-    /**
-     * @return ResponseInterface&MockInterface
+    /**\n      * @return ResponseInterface&MockInterface
      */
     protected function createResponseMock(): ResponseInterface
     {

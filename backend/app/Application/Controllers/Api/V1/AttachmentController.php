@@ -356,7 +356,9 @@ class AttachmentController
 
         $response->getBody()->write((json_encode([
             'data' => array_map(
-                /** @param \App\Domains\Attachment\Models\Attachment $attachment */
+                /**\n                  * @param \App\Domains\Attachment\Models\Attachment $attachment
+
+                 */
                 fn($attachment) => $attachment->toArray(),
                 $attachments,
             ),

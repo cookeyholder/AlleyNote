@@ -216,7 +216,8 @@ readonly class StatisticsCalculationConsole
      */
     private function printCalculationResults(array $result): void
     {
-        $this->printInfo("\n=== 統計計算結果 ===");
+        $this->printInfo("
+=== 統計計算結果 ===");
         $this->printInfo('總執行時間: ' . number_format(is_numeric($result['total_duration'] ?? 0) ? (float) ($result['total_duration'] ?? 0) : 0, 2) . ' 秒');
         $totalPeriods = $result['total_periods'] ?? 0;
         $this->printInfo('總週期數: ' . (is_numeric($totalPeriods) ? (int) $totalPeriods : 0));
@@ -228,7 +229,8 @@ readonly class StatisticsCalculationConsole
             $this->printError('失敗: ' . (int) $failureCount);
         }
 
-        $this->printInfo("\n=== 詳細結果 ===");
+        $this->printInfo("
+=== 詳細結果 ===");
 
         $results = $result['results'] ?? [];
         if (is_array($results)) {
@@ -276,7 +278,8 @@ readonly class StatisticsCalculationConsole
      */
     private function printStatusResults(array $status): void
     {
-        $this->printInfo("\n=== 統計計算任務狀態 ===");
+        $this->printInfo("
+=== 統計計算任務狀態 ===");
 
         $lockTimeout = $status['lock_timeout'] ?? 0;
         $maxRetries = $status['max_retries'] ?? 0;
@@ -286,7 +289,8 @@ readonly class StatisticsCalculationConsole
         $this->printInfo('最大重試次數: ' . (is_numeric($maxRetries) ? (int) $maxRetries : 0));
         $this->printInfo('重試間隔: ' . (is_numeric($retryDelay) ? (int) $retryDelay : 0) . ' 秒');
 
-        $this->printInfo("\n=== 週期狀態 ===");
+        $this->printInfo("
+=== 週期狀態 ===");
 
         $periods = $status['periods'] ?? [];
         if (is_array($periods)) {
@@ -354,7 +358,8 @@ readonly class StatisticsCalculationConsole
      */
     private function printSuccess(string $message): void
     {
-        echo "\033[32m{$message}\033[0m\n";
+        echo "\033[32m{$message}\033[0m
+";
     }
 
     /**
@@ -362,7 +367,8 @@ readonly class StatisticsCalculationConsole
      */
     private function printWarning(string $message): void
     {
-        echo "\033[33m{$message}\033[0m\n";
+        echo "\033[33m{$message}\033[0m
+";
     }
 
     /**
@@ -370,7 +376,8 @@ readonly class StatisticsCalculationConsole
      */
     private function printError(string $message): void
     {
-        echo "\033[31m{$message}\033[0m\n";
+        echo "\033[31m{$message}\033[0m
+";
     }
 
     /**
@@ -378,6 +385,7 @@ readonly class StatisticsCalculationConsole
      */
     private function printInfo(string $message): void
     {
-        echo "{$message}\n";
+        echo "{$message}
+";
     }
 }

@@ -42,7 +42,9 @@ class RoutePerformanceTester
 
     public function runAllTests(): void
     {
-        echo "=== 路由系統效能基準測試 ===\n\n";
+        echo "=== 路由系統效能基準測試 ===
+
+";
 
         $registrationResult = $this->testRouteRegistration();
         $this->testRouteMatching();
@@ -52,12 +54,14 @@ class RoutePerformanceTester
         $this->showRouteStatistics();
         $this->cleanupTestFiles();
 
-        echo "=== 效能測試完成 ===\n";
+        echo "=== 效能測試完成 ===
+";
     }
 
     private function testRouteRegistration(): array
     {
-        echo "測試 1: 路由註冊效能 ({$this->routeCount} 條路由)\n";
+        echo "測試 1: 路由註冊效能 ({$this->routeCount} 條路由)
+";
         $startTime = microtime(true);
         $startMemory = memory_get_usage(true);
 
@@ -87,22 +91,26 @@ class RoutePerformanceTester
     private function displayRegistrationResults(float $time, int $memory): void
     {
         echo sprintf(
-            "✅ 註冊 %d 條路由耗時: %.4f 秒 (平均 %.6f 秒/路由)\n",
+            "✅ 註冊 %d 條路由耗時: %.4f 秒 (平均 %.6f 秒/路由)
+",
             $this->routeCount,
             $time,
             $time / $this->routeCount,
         );
         echo sprintf(
-            "✅ 記憶體使用: %.2f MB (平均 %.2f KB/路由)\n",
+            "✅ 記憶體使用: %.2f MB (平均 %.2f KB/路由)
+",
             $memory / 1024 / 1024,
             ($memory / 1024) / $this->routeCount,
         );
-        echo "\n";
+        echo "
+";
     }
 
     private function testRouteMatching(): void
     {
-        echo "測試 2: 路由匹配效能 ({$this->matchTests} 次匹配)\n";
+        echo "測試 2: 路由匹配效能 ({$this->matchTests} 次匹配)
+";
 
         $testPaths = $this->generateTestPaths();
         $startTime = microtime(true);
@@ -135,24 +143,29 @@ class RoutePerformanceTester
     private function displayMatchingResults(float $matchingTime): void
     {
         echo sprintf(
-            "✅ %d 次路由匹配耗時: %.4f 秒 (平均 %.6f 秒/匹配)\n",
+            "✅ %d 次路由匹配耗時: %.4f 秒 (平均 %.6f 秒/匹配)
+",
             $this->matchTests,
             $matchingTime,
             $matchingTime / $this->matchTests,
         );
-        echo sprintf("✅ 匹配速度: %.0f 匹配/秒\n", $this->matchTests / $matchingTime);
-        echo "\n";
+        echo sprintf("✅ 匹配速度: %.0f 匹配/秒
+", $this->matchTests / $matchingTime);
+        echo "
+";
     }
 
     private function testCachePerformance(): void
     {
-        echo "測試 3: 快取效能測試\n";
+        echo "測試 3: 快取效能測試
+";
 
         $cacheTestCollection = $this->createCacheTestCollection();
         $memoryCacheTime = $this->testMemoryCache($cacheTestCollection);
         $this->testFileCache($cacheTestCollection, $memoryCacheTime);
 
-        echo "\n";
+        echo "
+";
     }
 
     private function createCacheTestCollection(): RouteCollection
@@ -181,11 +194,13 @@ class RoutePerformanceTester
             $memoryCache->load();
 
             $memoryCacheTime = microtime(true) - $startTime;
-            echo sprintf("✅ 記憶體快取 (100 條路由): %.6f 秒\n", $memoryCacheTime);
+            echo sprintf("✅ 記憶體快取 (100 條路由): %.6f 秒
+", $memoryCacheTime);
 
             return $memoryCacheTime;
         } catch (Exception $e) {
-            echo '⚠️ 記憶體快取測試失敗: ' . $e->getMessage() . "\n";
+            echo '⚠️ 記憶體快取測試失敗: ' . $e->getMessage() . "
+";
 
             return 1.0; // 預設值避免除零錯誤
         }
@@ -205,7 +220,8 @@ class RoutePerformanceTester
             $fileCacheTime = microtime(true) - $startTime;
             $this->displayFileCacheResults($fileCacheTime, $memoryCacheTime);
         } catch (Exception $e) {
-            echo '⚠️ 檔案快取測試失敗: ' . $e->getMessage() . "\n";
+            echo '⚠️ 檔案快取測試失敗: ' . $e->getMessage() . "
+";
         }
     }
 
@@ -221,36 +237,48 @@ class RoutePerformanceTester
 
     private function displayFileCacheResults(float $fileCacheTime, float $memoryCacheTime): void
     {
-        echo sprintf("✅ 檔案快取 (100 條路由): %.6f 秒\n", $fileCacheTime);
-        echo sprintf("✅ 記憶體快取比檔案快取快 %.1f 倍\n", $fileCacheTime / $memoryCacheTime);
+        echo sprintf("✅ 檔案快取 (100 條路由): %.6f 秒
+", $fileCacheTime);
+        echo sprintf("✅ 記憶體快取比檔案快取快 %.1f 倍
+", $fileCacheTime / $memoryCacheTime);
     }
 
     private function analyzeMemoryUsage(): void
     {
-        echo "測試 4: 記憶體使用量分析\n";
+        echo "測試 4: 記憶體使用量分析
+";
 
         $finalMemory = memory_get_usage(true);
         $peakMemory = memory_get_peak_usage(true);
 
-        echo sprintf("✅ 目前記憶體使用: %.2f MB\n", $finalMemory / 1024 / 1024);
-        echo sprintf("✅ 峰值記憶體使用: %.2f MB\n", $peakMemory / 1024 / 1024);
-        echo sprintf("✅ 每條路由平均記憶體: %.2f KB\n", ($finalMemory / 1024) / $this->routeCount);
-        echo "\n";
+        echo sprintf("✅ 目前記憶體使用: %.2f MB
+", $finalMemory / 1024 / 1024);
+        echo sprintf("✅ 峰值記憶體使用: %.2f MB
+", $peakMemory / 1024 / 1024);
+        echo sprintf("✅ 每條路由平均記憶體: %.2f KB
+", ($finalMemory / 1024) / $this->routeCount);
+        echo "
+";
     }
 
     private function generatePerformanceSummary(array $registrationResult): void
     {
-        echo "測試 5: 效能摘要\n";
+        echo "測試 5: 效能摘要
+";
 
         $registrationTime = $registrationResult['time'];
         $averageMatchTime = $this->calculateAverageMatchTime();
         $memoryUsage = memory_get_usage(true) / 1024 / 1024;
         $memoryCacheTime = 0.01; // 從快取測試中獲取，這裡使用預設值
 
-        echo '✅ 路由註冊速度: ' . $this->evaluatePerformance($registrationTime, 0.1, 0.5) . "\n";
-        echo '✅ 路由匹配速度: ' . $this->evaluatePerformance($averageMatchTime, 0.001, 0.005) . "\n";
-        echo '✅ 記憶體效率: ' . $this->evaluatePerformance($memoryUsage, 10, 50, true) . "\n";
-        echo '✅ 快取效能: ' . $this->evaluatePerformance($memoryCacheTime, 0.01, 0.1) . "\n";
+        echo '✅ 路由註冊速度: ' . $this->evaluatePerformance($registrationTime, 0.1, 0.5) . "
+";
+        echo '✅ 路由匹配速度: ' . $this->evaluatePerformance($averageMatchTime, 0.001, 0.005) . "
+";
+        echo '✅ 記憶體效率: ' . $this->evaluatePerformance($memoryUsage, 10, 50, true) . "
+";
+        echo '✅ 快取效能: ' . $this->evaluatePerformance($memoryCacheTime, 0.01, 0.1) . "
+";
     }
 
     private function calculateAverageMatchTime(): float
@@ -269,13 +297,19 @@ class RoutePerformanceTester
 
     private function showRouteStatistics(): void
     {
-        echo "\n測試 6: 路由統計資訊\n";
+        echo "
+測試 6: 路由統計資訊
+";
 
         $routes = $this->router->getRoutes();
-        echo sprintf("✅ 總路由數量: %d\n", $routes->count());
-        echo sprintf("✅ GET 方法路由: %d\n", count($routes->getByMethod('GET')));
-        echo sprintf("✅ 命名路由數量: %d\n", $this->routeCount);
-        echo "\n";
+        echo sprintf("✅ 總路由數量: %d
+", $routes->count());
+        echo sprintf("✅ GET 方法路由: %d
+", count($routes->getByMethod('GET')));
+        echo sprintf("✅ 命名路由數量: %d
+", $this->routeCount);
+        echo "
+";
     }
 
     private function cleanupTestFiles(): void

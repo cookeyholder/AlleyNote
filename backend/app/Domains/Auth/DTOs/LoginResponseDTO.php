@@ -12,11 +12,9 @@ use App\Domains\Auth\ValueObjects\TokenPair;
  * 封裝使用者登入成功後的回應資料，包括令牌、使用者資訊和相關中繼資料。
  */
 final readonly class LoginResponseDTO
-     * @param array<string, mixed> $permissions
-{
-    /**
+    /**\n      * @param array<string, mixed> $permissions
      */
-    public function __construct(
+{    public function __construct(
         public TokenPair $tokens,
         public int $userId,
         public string $userEmail,

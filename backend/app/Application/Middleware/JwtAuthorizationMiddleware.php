@@ -51,11 +51,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @var array<string, mixed>
      */
     private array $config;
-     * @param array<string, mixed> $config
-
-    /**
-     */
-    public function __construct(
+    /**\n      * @param array<string, mixed> $config
+     */    public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
         array $config = [],
@@ -65,7 +62,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 處理 JWT 授權請求.
-      * @param ServerRequestInterface $request HTTP 請求物件
+     * @param ServerRequestInterface $request HTTP 請求物件
      * @return ResponseInterface HTTP 回應物件
      */
     public function process(
@@ -119,8 +116,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 執行授權檢查.
-      * @param int $userId 使用者 ID
-     * @param array<string> $userPermissions 使用者權限
+     * @param int $userId 使用者 ID
      * @param string $action 操作名稱
      * @return AuthorizationResult 授權結果
      */
@@ -177,8 +173,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 基於角色的授權檢查.
-      * @param string|null $userRole 使用者角色
-     * @param string $action 操作名稱
+     * @param string|null $userRole 使用者角色
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByRole(?string $userRole, string $resource, string $action): AuthorizationResult
@@ -220,8 +215,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 基於權限的授權檢查.
-      * @param array<string> $userPermissions 使用者權限
-     * @param string $action 操作名稱
+     * @param array<string> $userPermissions 使用者權限
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByPermission(array $userPermissions, string $resource, string $action): AuthorizationResult
@@ -262,8 +256,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 基於屬性的授權檢查 (ABAC).
-      * @param int $userId 使用者 ID
-     * @param string $resource 資源名稱
+     * @param int $userId 使用者 ID
      * @param ServerRequestInterface $request HTTP 請求物件
      * @return AuthorizationResult 授權結果
      */
@@ -299,8 +292,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 自訂授權策略.
-      * @param int $userId 使用者 ID
-     * @param array<string> $userPermissions 使用者權限
+     * @param int $userId 使用者 ID
      * @param string $action 操作名稱
      * @return AuthorizationResult 授權結果
      */
@@ -331,7 +323,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查是否為超級管理員.
-      * @param string|null $userRole 使用者角色
+     * @param string|null $userRole 使用者角色
      */
     private function isSuperAdmin(?string $userRole): bool
     {
@@ -345,7 +337,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 時間基礎的存取控制檢查.
-      * @param string|null $userRole 使用者角色
+     * @param string|null $userRole 使用者角色
      * @return AuthorizationResult 授權結果
      */
     private function checkTimeBasedAccess(?string $userRole, string $action): AuthorizationResult
@@ -376,8 +368,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * IP 基礎的存取控制檢查.
-      * @param ServerRequestInterface $request HTTP 請求物件
-     * @param string $resource 資源名稱
+     * @param ServerRequestInterface $request HTTP 請求物件
      * @return AuthorizationResult 授權結果
      */
     private function checkIpBasedAccess(
@@ -427,8 +418,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 資源擁有者檢查.
-      * @param int $userId 使用者 ID
-     * @param ServerRequestInterface $request HTTP 請求物件
+     * @param int $userId 使用者 ID
      * @return AuthorizationResult 授權結果
      */
     private function checkResourceOwnership(
@@ -462,7 +452,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 從請求中提取資源名稱.
-      * @param ServerRequestInterface $request HTTP 請求物件
+     * @param ServerRequestInterface $request HTTP 請求物件
      * @return string 資源名稱
      */
     private function extractResource(ServerRequestInterface $request): string
@@ -487,7 +477,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 從請求中提取操作名稱.
-      * @param ServerRequestInterface $request HTTP 請求物件
+     * @param ServerRequestInterface $request HTTP 請求物件
      * @return string 操作名稱
      */
     private function extractAction(ServerRequestInterface $request): string
@@ -516,7 +506,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 從請求中提取資源 ID.
-      * @param ServerRequestInterface $request HTTP 請求物件
+     * @param ServerRequestInterface $request HTTP 請求物件
      * @return int|null 資源 ID 或 null
      */
     private function extractResourceId(ServerRequestInterface $request, string $resource): ?int
@@ -548,7 +538,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 從路徑片段中提取資源 ID.
-      * @param array<string> $segments 路徑片段
+     * @param array<string> $segments 路徑片段
      * @return int|null 資源 ID 或 null
      */
     private function extractResourceIdFromPath(array $segments): ?int
@@ -570,8 +560,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查使用者是否為資源擁有者.
-      * @param int $userId 使用者 ID
-     * @param int $resourceId 資源 ID
+     * @param int $userId 使用者 ID
      */
     private function isResourceOwner(int $userId, string $resource, int $resourceId): bool
     {
@@ -597,7 +586,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得客戶端真實 IP 位址.
-      * @param ServerRequestInterface $request HTTP 請求物件
+     * @param ServerRequestInterface $request HTTP 請求物件
      * @return string 客戶端 IP 位址
      */
     private function getClientIpAddress(ServerRequestInterface $request): string
@@ -638,7 +627,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查 IP 是否在指定清單中.
-      * @param string $ip 要檢查的 IP 位址
+     * @param string $ip 要檢查的 IP 位址
      */
     private function isIpInList(string $ip, array $ipList): bool
     {
@@ -653,7 +642,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查 IP 是否匹配指定的模式.
-      * @param string $ip 要檢查的 IP 位址
+     * @param string $ip 要檢查的 IP 位址
      */
     private function ipMatches(string $ip, string $pattern): bool
     {
@@ -860,7 +849,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 將授權資訊注入到請求中.
-      * @param ServerRequestInterface $request HTTP 請求物件
+     * @param ServerRequestInterface $request HTTP 請求物件
      * @return ServerRequestInterface 注入授權資訊後的請求物件
      */
     private function injectAuthorizationContext(
@@ -877,7 +866,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 建立禁止存取的回應.
-      * @param string $message 錯誤訊息
+     * @param string $message 錯誤訊息
      * @return ResponseInterface HTTP 回應物件
      */
     private function createForbiddenResponse(string $message, string $code = 'FORBIDDEN'): ResponseInterface
@@ -902,7 +891,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查是否應該處理此請求.
-      * @param ServerRequestInterface $request HTTP 請求物件
+     * @param ServerRequestInterface $request HTTP 請求物件
      * @return bool 是否應該處理
      */
     public function shouldProcess(ServerRequestInterface $request): bool
@@ -946,7 +935,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得預設配置.
-      * @return array<string, mixed>
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {
@@ -970,7 +959,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得中介軟體優先順序.
-      * @return int 優先順序（數值越小優先級越高）
+     * @return int 優先順序（數值越小優先級越高）
      */
     public function getPriority(): int
     {
@@ -979,7 +968,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得中介軟體名稱.
-      * @return string 中介軟體名稱
+     * @return string 中介軟體名稱
      */
     public function getName(): string
     {
@@ -988,7 +977,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 設定中介軟體優先順序.
-      * @param int $priority 優先順序
+     * @param int $priority 優先順序
      */
     public function setPriority(int $priority): self
     {
@@ -999,7 +988,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 設定中介軟體是否啟用.
-      * @param bool $enabled 是否啟用
+     * @param bool $enabled 是否啟用
      */
     public function setEnabled(bool $enabled): self
     {
@@ -1010,7 +999,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查中介軟體是否啟用.
-      * @return bool 是否啟用
+     * @return bool 是否啟用
      */
     public function isEnabled(): bool
     {
@@ -1019,7 +1008,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得授權配置.
-      * @return array<string, mixed>
+     * @return array<string, mixed>
      */
     public function getConfig(): array
     {
@@ -1028,7 +1017,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 設定授權配置.
-      * @param array<string, mixed> $config 配置陣列
+     * @param array<string, mixed> $config 配置陣列
      */
     public function setConfig(array $config): self
     {

@@ -10,20 +10,30 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 use App\Application;
 use Psr\Http\Message\ServerRequestInterface;
 
-echo "=== 完整應用程式路由載入測試 ===\n\n";
+echo "=== 完整應用程式路由載入測試 ===
+
+";
 
 try {
-    echo "測試 1: 建立應用程式實例\n";
+    echo "測試 1: 建立應用程式實例
+";
     $app = new Application();
-    echo "✅ 應用程式初始化成功\n";
+    echo "✅ 應用程式初始化成功
+";
 
-    echo "\n測試 2: 檢查路由器\n";
+    echo "
+測試 2: 檢查路由器
+";
     $router = $app->getRouter();
     $routes = $router->getRoutes();
-    echo "✅ 路由器初始化成功\n";
-    echo '   - 路由集合類型: ' . get_class($routes) . "\n";
+    echo "✅ 路由器初始化成功
+";
+    echo '   - 路由集合類型: ' . get_class($routes) . "
+";
 
-    echo "\n測試 3: 建立測試請求\n";
+    echo "
+測試 3: 建立測試請求
+";
 
     // 建立 PSR-7 相容的請求
     $request = new class implements ServerRequestInterface {
@@ -343,22 +353,36 @@ try {
         }
     };
 
-    echo "✅ 測試請求建立成功\n";
-    echo '   - 方法: ' . $request->getMethod() . "\n";
-    echo '   - URI: ' . $request->getRequestTarget() . "\n";
+    echo "✅ 測試請求建立成功
+";
+    echo '   - 方法: ' . $request->getMethod() . "
+";
+    echo '   - URI: ' . $request->getRequestTarget() . "
+";
 
-    echo "\n測試 4: 處理請求\n";
+    echo "
+測試 4: 處理請求
+";
     $response = $app->run($request);
-    echo "✅ 請求處理成功\n";
-    echo '   - 回應狀態: ' . $response->getStatusCode() . "\n";
-    echo '   - 內容類型: ' . $response->getHeaderLine('Content-Type') . "\n";
-    echo '   - 回應內容: ' . $response->getBody() . "\n";
+    echo "✅ 請求處理成功
+";
+    echo '   - 回應狀態: ' . $response->getStatusCode() . "
+";
+    echo '   - 內容類型: ' . $response->getHeaderLine('Content-Type') . "
+";
+    echo '   - 回應內容: ' . $response->getBody() . "
+";
 } catch (Exception $e) {
-    echo '❌ 測試失敗: ' . $e->getMessage() . "\n";
-    echo '   - 檔案: ' . $e->getFile() . ':' . $e->getLine() . "\n";
+    echo '❌ 測試失敗: ' . $e->getMessage() . "
+";
+    echo '   - 檔案: ' . $e->getFile() . ':' . $e->getLine() . "
+";
     if (method_exists($e, 'getTraceAsString')) {
-        echo '   - 追蹤: ' . substr($e->getTraceAsString(), 0, 500) . "...\n";
+        echo '   - 追蹤: ' . substr($e->getTraceAsString(), 0, 500) . "...
+";
     }
 }
 
-echo "\n=== 測試完成 ===\n";
+echo "
+=== 測試完成 ===
+";

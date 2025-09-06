@@ -40,11 +40,8 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /** @var string 標籤索引前綴 */
     private const TAG_INDEX_PREFIX = 'tag_index:';
-     * @param array<string, mixed> $config
-
-    /**
-     */
-    public function __construct(array $config = [])
+    /**\n      * @param array<string, mixed> $config
+     */    public function __construct(array $config = [])
     {
         $this->redis = new Redis();
         $prefix = $config['prefix'] ?? 'alleynote_cache:';
@@ -319,11 +316,8 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return $this->remember($key, $callback, 0);
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getStats(): array
+    /**\n      * @return array<string, mixed>
+     */    public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
         $hitRate = $totalRequests > 0 ? ($this->stats['hits'] / $totalRequests) * 100 : 0;
@@ -453,7 +447,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 設定快取標籤.
-      * @param array<string>|string $tags 標籤陣列或單一標籤
+     * @param array<string>|string $tags 標籤陣列或單一標籤
      * @return TaggedCacheInterface 標籤化快取實例
      */
     public function tags(array|string $tags): TaggedCacheInterface
@@ -469,7 +463,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得當前標籤.
-      * @return array<string> 標籤陣列
+     * @return array<string> 標籤陣列
      */
     public function getTags(): array
     {
@@ -478,7 +472,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 根據標籤清空快取.
-      * @param array<string>|string $tags 要清空的標籤
+     * @param array<string>|string $tags 要清空的標籤
      * @return int 清空的項目數量
      */
     public function flushByTags(array|string $tags): int
@@ -511,7 +505,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 根據標籤取得快取鍵.
-      * @param string $tag 標籤名稱
+     * @param string $tag 標籤名稱
      * @return array<string> 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array
@@ -539,7 +533,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 根據多個標籤取得共同的快取鍵.
-      * @param array<string> $tags 標籤陣列
+     * @param array<string> $tags 標籤陣列
      * @return array<string> 共同的快取鍵陣列
      */
     public function getKeysByTags(array $tags): array
@@ -576,7 +570,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 檢查標籤是否存在.
-      * @param string $tag 標籤名稱
+     * @param string $tag 標籤名稱
      * @return bool 是否存在
      */
     public function tagExists(string $tag): bool
@@ -593,7 +587,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得所有標籤.
-      * @return array<string> 所有標籤陣列
+     * @return array<string> 所有標籤陣列
      */
     public function getAllTags(): array
     {
@@ -617,7 +611,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得標籤統計資訊.
-      * @return array<string, mixed> 標籤統計資訊
+     * @return array<string, mixed> 標籤統計資訊
      */
     public function getTagStatistics(): array
     {
@@ -779,7 +773,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 將快取鍵添加到標籤索引.
-      * @param string $key 快取鍵
+     * @param string $key 快取鍵
      */
     private function addKeyToTags(string $key, array $tags): void
     {
@@ -797,7 +791,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 從所有標籤索引中移除快取鍵.
-      * @param string $key 快取鍵
+     * @param string $key 快取鍵
      */
     private function removeKeyFromAllTags(string $key): void
     {
@@ -816,7 +810,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得標籤索引鍵.
-      * @param string $tag 標籤名稱
+     * @param string $tag 標籤名稱
      * @return string 標籤索引鍵
      */
     private function getTagIndexKey(string $tag): string

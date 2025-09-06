@@ -15,11 +15,8 @@ class AttachmentRepository
         private PDO $db,
         private CacheServiceInterface $cache,
     ) {}
-     * @param array<string, mixed> $data
-
-    /**
-     */
-    public function create(array $data): Attachment
+    /**\n      * @param array<string, mixed> $data
+     */    public function create(array $data): Attachment
     {
         $uuid = Uuid::uuid4()->toString();
 
@@ -87,11 +84,8 @@ class AttachmentRepository
             return $data ? new Attachment($data) : null;
         });
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getByPostId(int $postId): array
+    /**\n      * @return array<string, mixed>
+     */    public function getByPostId(int $postId): array
     {
         return $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
             $sql = '

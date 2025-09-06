@@ -7,11 +7,9 @@ namespace App\Shared\Exceptions\Validation;
 use App\Shared\Exceptions\ValidationException;
 
 class RequestValidationException extends ValidationException
-     * @param array<string, mixed> $errors
-{
-    /**
+    /**\n      * @param array<string, mixed> $errors
      */
-    public function __construct(string $message = '', array $errors = [])
+{    public function __construct(string $message = '', array $errors = [])
     {
         if (empty($message) && !empty($errors)) {
             $message = '請求資料驗證失敗';
@@ -24,11 +22,8 @@ class RequestValidationException extends ValidationException
     {
         return new self('請求資料格式錯誤，必須為有效的 JSON 格式');
     }
-     * @param array<string, mixed> $fields
-
-    /**
-     */
-    public static function missingRequiredFields(array $fields): self
+    /**\n      * @param array<string, mixed> $fields
+     */    public static function missingRequiredFields(array $fields): self
     {
         $errors = [];
         foreach ($fields as $field) {
@@ -80,11 +75,8 @@ class RequestValidationException extends ValidationException
 
         return new self('日期格式錯誤', $errors);
     }
-     * @param array<string, mixed> $allowedValues
-
-    /**
-     */
-    public static function valueNotInList(string $field, $value, array $allowedValues): self
+    /**\n      * @param array<string, mixed> $allowedValues
+     */    public static function valueNotInList(string $field, $value, array $allowedValues): self
     {
         $allowedList = implode(', ', $allowedValues);
         $errors = [$field => "'{$value}' 不在允許的值清單中：{$allowedList}"];
@@ -115,11 +107,8 @@ class RequestValidationException extends ValidationException
 
         return new self('值重複', $errors);
     }
-     * @param array<string, mixed> $allowedTypes
-
-    /**
-     */
-    public static function invalidFileType(string $field, string $actualType, array $allowedTypes): self
+    /**\n      * @param array<string, mixed> $allowedTypes
+     */    public static function invalidFileType(string $field, string $actualType, array $allowedTypes): self
     {
         $allowedList = implode(', ', $allowedTypes);
         $errors = [$field => "檔案類型 '{$actualType}' 不被支援，允許的類型：{$allowedList}"];
@@ -135,11 +124,8 @@ class RequestValidationException extends ValidationException
 
         return new self('檔案大小超出限制', $errors);
     }
-     * @param array<string, mixed> $errors
-
-    /**
-     */
-    public static function customValidation(array $errors): self
+    /**\n      * @param array<string, mixed> $errors
+     */    public static function customValidation(array $errors): self
     {
         return new self('自定義驗證失敗', $errors);
     }

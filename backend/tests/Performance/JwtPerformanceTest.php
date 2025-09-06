@@ -76,10 +76,15 @@ class JwtPerformanceTest extends TestCase
 
         // 輸出效能統計
         $this->addToAssertionCount(1);
-        echo "\n效能統計:\n";
-        echo '總時間: ' . round($totalTime * 1000, 2) . "ms\n";
-        echo '平均時間: ' . round($averageTime * 1000, 2) . "ms/token\n";
-        echo '每秒可產生: ' . round(1 / $averageTime) . " tokens\n";
+        echo "
+效能統計:
+";
+        echo '總時間: ' . round($totalTime * 1000, 2) . "ms
+";
+        echo '平均時間: ' . round($averageTime * 1000, 2) . "ms/token
+";
+        echo '每秒可產生: ' . round(1 / $averageTime) . " tokens
+";
 
         // 驗證效能要求
         $this->assertLessThan(
@@ -121,10 +126,15 @@ class JwtPerformanceTest extends TestCase
         $averageTime = $totalTime / $iterations;
 
         // 輸出效能統計
-        echo "\n驗證效能統計:\n";
-        echo '總時間: ' . round($totalTime * 1000, 2) . "ms\n";
-        echo '平均時間: ' . round($averageTime * 1000, 2) . "ms/validation\n";
-        echo '每秒可驗證: ' . round(1 / $averageTime) . " tokens\n";
+        echo "
+驗證效能統計:
+";
+        echo '總時間: ' . round($totalTime * 1000, 2) . "ms
+";
+        echo '平均時間: ' . round($averageTime * 1000, 2) . "ms/validation
+";
+        echo '每秒可驗證: ' . round(1 / $averageTime) . " tokens
+";
 
         // 驗證效能要求
         $this->assertLessThan(
@@ -167,11 +177,17 @@ class JwtPerformanceTest extends TestCase
         $memoryUsed = $finalMemory - $initialMemory;
         $memoryPerToken = $memoryUsed / 1000;
 
-        echo "\n記憶體使用統計:\n";
-        echo '初始記憶體: ' . round($initialMemory / 1024) . "KB\n";
-        echo '最終記憶體: ' . round($finalMemory / 1024) . "KB\n";
-        echo '使用記憶體: ' . round($memoryUsed / 1024) . "KB\n";
-        echo '每個 token: ' . round($memoryPerToken) . " bytes\n";
+        echo "
+記憶體使用統計:
+";
+        echo '初始記憶體: ' . round($initialMemory / 1024) . "KB
+";
+        echo '最終記憶體: ' . round($finalMemory / 1024) . "KB
+";
+        echo '使用記憶體: ' . round($memoryUsed / 1024) . "KB
+";
+        echo '每個 token: ' . round($memoryPerToken) . " bytes
+";
 
         // 驗證記憶體使用合理（每個 token 不超過 5KB）
         $this->assertLessThan(
@@ -201,9 +217,13 @@ class JwtPerformanceTest extends TestCase
         $accessTokenSize = strlen($tokenPair->getAccessToken());
         $refreshTokenSize = strlen($tokenPair->getRefreshToken());
 
-        echo "\nToken 大小統計:\n";
-        echo "Access Token: {(string)accessTokenSize} bytes\n";
-        echo "Refresh Token: {(string)refreshTokenSize} bytes\n";
+        echo "
+Token 大小統計:
+";
+        echo "Access Token: {(string)accessTokenSize} bytes
+";
+        echo "Refresh Token: {(string)refreshTokenSize} bytes
+";
 
         // 驗證 token 大小合理（通常 JWT 不超過 8KB）
         $this->assertLessThan(8192, $accessTokenSize, 'Access token 太大');

@@ -11,11 +11,8 @@ class RateLimitService
     public function __construct(
         private readonly CacheService $cache,
     ) {}
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
+    /**\n      * @return array<string, mixed>
+     */    public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
     {
         $key = "rate_limit:{$ip}";
 

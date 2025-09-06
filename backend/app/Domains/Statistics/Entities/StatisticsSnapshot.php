@@ -21,8 +21,7 @@ use DateTimeImmutable;
  */
 class StatisticsSnapshot extends AggregateRoot
 {
-    /**
-     * @param Uuid $id 識別碼
+    /**\n      * @param Uuid $id 識別碼
      * @param StatisticsPeriod $period 統計週期
      * @param StatisticsMetric $totalPosts 總文章數
      * @param StatisticsMetric $totalViews 總瀏覽數

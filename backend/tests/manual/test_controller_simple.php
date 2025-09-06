@@ -344,7 +344,9 @@ class MockRequest implements ServerRequestInterface
     }
 }
 
-echo "=== 控制器整合測試 ===\n\n";
+echo "=== 控制器整合測試 ===
+
+";
 
 try {
     // 建立 DI 容器
@@ -358,7 +360,8 @@ try {
     // 建立控制器解析器
     $controllerResolver = new ControllerResolver($container);
 
-    echo "1. 測試控制器解析...\n";
+    echo "1. 測試控制器解析...
+";
 
     // 建立測試路由
     $route = Route::get('/api/posts/{id}', 'PostController@show');
@@ -370,20 +373,28 @@ try {
     // 測試控制器解析
     $result = $controllerResolver->resolve($route, $request, ['id' => '123']);
 
-    echo "   ✓ 控制器解析成功\n";
-    echo '   ✓ 回應狀態碼: ' . $result->getStatusCode() . "\n";
-    echo '   ✓ 內容類型: ' . $result->getHeaderLine('Content-Type') . "\n";
+    echo "   ✓ 控制器解析成功
+";
+    echo '   ✓ 回應狀態碼: ' . $result->getStatusCode() . "
+";
+    echo '   ✓ 內容類型: ' . $result->getHeaderLine('Content-Type') . "
+";
 
     $body = $result->getBody()->getContents();
     $data = json_decode($body, true);
     if ($data && $data['success'] === true) {
-        echo "   ✓ 回應內容正確\n";
-        echo '   ✓ 貼文 ID: ' . $data['data']['id'] . "\n";
+        echo "   ✓ 回應內容正確
+";
+        echo '   ✓ 貼文 ID: ' . $data['data']['id'] . "
+";
     } else {
-        echo "   ✗ 回應內容格式錯誤\n";
+        echo "   ✗ 回應內容格式錯誤
+";
     }
 
-    echo "\n2. 測試不同控制器方法...\n";
+    echo "
+2. 測試不同控制器方法...
+";
 
     $testCases = [
         ['GET', '/api/posts', 'PostController@index', [], '取得貼文列表'],
@@ -396,14 +407,20 @@ try {
 
         try {
             $result = $controllerResolver->resolve($route, $request, $params);
-            echo '   ✓ {(string)description}: ' . $result->getStatusCode() . "\n";
+            echo '   ✓ {(string)description}: ' . $result->getStatusCode() . "
+";
         } catch (Exception $e) {
-            echo '   ✗ {(string)description}: 錯誤 - ' . $e->getMessage() . "\n";
+            echo '   ✗ {(string)description}: 錯誤 - ' . $e->getMessage() . "
+";
         }
     }
 
-    echo "\n=== 測試完成 ===\n";
+    echo "
+=== 測試完成 ===
+";
 } catch (Exception $e) {
-    echo '測試失敗: ' . $e->getMessage() . "\n";
-    echo '檔案: ' . $e->getFile() . ':' . $e->getLine() . "\n";
+    echo '測試失敗: ' . $e->getMessage() . "
+";
+    echo '檔案: ' . $e->getFile() . ':' . $e->getLine() . "
+";
 }

@@ -155,7 +155,9 @@ class RichTextProcessorService
         $content = preg_replace('/\sspellcheck="[^"]*"/i', '', $content);
 
         // 正規化換行符號
-        $content = str_replace(["\r\n", "\r"], "\n", $content);
+        $content = str_replace(["\r
+", "\r"], "
+", $content);
 
         // 移除空的段落
         $content = preg_replace('/]*>(\s|&nbsp;)*/i', '', $content);

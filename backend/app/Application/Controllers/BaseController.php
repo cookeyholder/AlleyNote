@@ -28,8 +28,7 @@ abstract class BaseController
         return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
     }
 
-    /**
-     * @param array<string, mixed> $data
+    /**\n      * @param array<string, mixed> $data
      */
     protected function jsonResponse(array $data, int $httpCode = 200): string
     {
@@ -54,8 +53,7 @@ abstract class BaseController
         );
     }
 
-    /**
-     * @param array<string, mixed> $data
+    /**\n      * @param array<string, mixed> $data
      */
     protected function paginatedResponse(array $data, int $total, int $page, int $perPage): string
     {

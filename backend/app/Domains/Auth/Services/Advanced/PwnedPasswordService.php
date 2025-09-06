@@ -114,7 +114,8 @@ class PwnedPasswordService
      */
     private function findHashInList(string $suffix, string $hashList): int
     {
-        $lines = explode("\r\n", $hashList);
+        $lines = explode("\r
+", $hashList);
 
         foreach ($lines as $line) {
             $parts = explode(':', $line);

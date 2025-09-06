@@ -40,8 +40,7 @@ final class CreateActivityLogDTO implements JsonSerializable
         }
     }
 
-    /**
-     * @param array<string, mixed> $data
+    /**\n      * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -171,8 +170,7 @@ final class CreateActivityLogDTO implements JsonSerializable
         return $this->description;
     }
 
-    /**
-     * @return array<string, mixed>|null
+    /**\n      * @return array<string, mixed>|null
      */
     public function getMetadata(): ?array
     {
@@ -240,8 +238,7 @@ final class CreateActivityLogDTO implements JsonSerializable
         return $new;
     }
 
-    /**
-     * @param array<string, mixed> $metadata
+    /**\n      * @param array<string, mixed> $metadata
      */
     public function withMetadata(array $metadata): self
     {
@@ -288,8 +285,7 @@ final class CreateActivityLogDTO implements JsonSerializable
         ];
     }
 
-    /**
-     * @return array<string, mixed>
+    /**\n      * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

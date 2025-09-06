@@ -23,11 +23,8 @@ class Response implements ResponseInterface
     private array $headerNames = [];
 
     private StreamInterface $body;
-     * @param array<string, mixed> $headers
-
-    /**
-     */
-    public function __construct(
+    /**\n      * @param array<string, mixed> $headers
+     */    public function __construct(
         int $statusCode = 200,
         array $headers = [],
         StreamInterface|string|null $body = null,

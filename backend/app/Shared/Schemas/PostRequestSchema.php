@@ -27,7 +27,19 @@ use OpenApi\Attributes as OA;
             description: '貼文內容，支援 Markdown 格式',
             minLength: 1,
             maxLength: 10000,
-            example: "親愛的使用者，\n\n系統將於 **2025年1月20日 02:00-04:00** 進行維護，期間服務可能暫時中斷。\n\n維護內容：\n- 資料庫效能優化\n- 安全性更新\n- 新功能部署\n\n造成不便敬請見諒。\n\n---\n技術團隊",
+            example: "親愛的使用者，
+
+系統將於 **2025年1月20日 02:00-04:00** 進行維護，期間服務可能暫時中斷。
+
+維護內容：
+- 資料庫效能優化
+- 安全性更新
+- 新功能部署
+
+造成不便敬請見諒。
+
+---
+技術團隊",
         ),
         new OA\Property(
             property: 'category',
@@ -78,7 +90,9 @@ use OpenApi\Attributes as OA;
     ],
     example: [
         'title' => '系統維護通知 - 2025年1月20日',
-        'content' => "親愛的使用者，\n\n系統將於 **2025年1月20日 02:00-04:00** 進行維護...",
+        'content' => "親愛的使用者，
+
+系統將於 **2025年1月20日 02:00-04:00** 進行維護...",
         'category' => 'announcement',
         'priority' => 'high',
         'expires_at' => '2025-12-31T23:59:59+08:00',
@@ -107,7 +121,11 @@ use OpenApi\Attributes as OA;
             description: '更新貼文內容',
             minLength: 1,
             maxLength: 10000,
-            example: "**重要更新**\n\n原定於 2025年1月20日 的系統維護將延期至 **2025年1月25日**。\n\n詳細資訊請參考最新公告。",
+            example: "**重要更新**
+
+原定於 2025年1月20日 的系統維護將延期至 **2025年1月25日**。
+
+詳細資訊請參考最新公告。",
         ),
         new OA\Property(
             property: 'category',
@@ -161,7 +179,9 @@ use OpenApi\Attributes as OA;
     ],
     example: [
         'title' => '【更新】系統維護延期通知',
-        'content' => "**重要更新**\n\n原定於 2025年1月20日 的系統維護將延期...",
+        'content' => "**重要更新**
+
+原定於 2025年1月20日 的系統維護將延期...",
         'category' => 'urgent',
         'status' => 'published',
         'priority' => 'urgent',

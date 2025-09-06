@@ -27,11 +27,8 @@ class Attachment
     private ?string $updatedAt = null;
 
     private ?string $deletedAt = null;
-     * @param array<string, mixed> $attributes
-
-    /**
-     */
-    public function __construct(array $attributes = [])
+    /**\n      * @param array<string, mixed> $attributes
+     */    public function __construct(array $attributes = [])
     {
         $this->id = $attributes['id'] ?? null;
         $this->uuid = $attributes['uuid'] ?? null;
@@ -100,11 +97,8 @@ class Attachment
     {
         return $this->deletedAt;
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function toArray(): array
+    /**\n      * @return array<string, mixed>
+     */    public function toArray(): array
     {
         return [
             'id' => $this->id,

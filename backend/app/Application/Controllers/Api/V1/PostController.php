@@ -338,8 +338,7 @@ class PostController extends BaseController
             ),
         ],
     )]
-    /**
-     * @param array<string, mixed> $args 路由參數
+    /**\n      * @param array<string, mixed> $args 路由參數
      */
     public function show(Request $request, Response $response, array $args): Response
     {
@@ -486,8 +485,7 @@ class PostController extends BaseController
             ),
         ],
     )]
-    /**
-     * @param array<string, mixed> $args 路由參數
+    /**\n      * @param array<string, mixed> $args 路由參數
      */
     public function update(Request $request, Response $response, array $args): Response
     {
@@ -651,8 +649,7 @@ class PostController extends BaseController
             ),
         ],
     )]
-    /**
-     * @param array<string, mixed> $args 路由參數
+    /**\n      * @param array<string, mixed> $args 路由參數
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
@@ -840,8 +837,7 @@ class PostController extends BaseController
             ),
         ],
     )]
-    /**
-     * @param array<string, mixed> $args 路由參數
+    /**\n      * @param array<string, mixed> $args 路由參數
      */
     public function togglePin(Request $request, Response $response, array $args): Response
     {

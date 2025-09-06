@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 /**
  * 修復語法錯誤的腳本
- * 
+ *
  * 修復由自動化腳本造成的文檔註解語法錯誤
  */
 
@@ -26,7 +26,7 @@ class SyntaxErrorFixer
 
         // 獲取有語法錯誤的檔案
         $errorFiles = $this->getSyntaxErrorFiles();
-        
+
         foreach ($errorFiles as $file) {
             $this->fixFile($file);
         }
@@ -48,7 +48,7 @@ class SyntaxErrorFixer
 
         $files = [];
         $lines = explode("\n", $output);
-        
+
         foreach ($lines as $line) {
             if (preg_match('/^\s*Line\s+(.+\.php)/', $line, $matches)) {
                 $file = trim($matches[1]);
@@ -77,25 +77,25 @@ class SyntaxErrorFixer
         $fixes = 0;
 
         // 修復常見的語法錯誤
-        
+
         // 1. 修復重複的 @param 行
         $content = preg_replace('/(\s*\*\s*@param\s+[^*\n]+)\n\s*\*\s*@param\s+[^*\n]+(?=\n)/m', '$1', $content);
-        
+
         // 2. 修復孤立的 @param 行（沒有正確的文檔塊結構）
         $content = preg_replace('/^(\s*)\*\s*@param\s+([^*\n]+)(?=\n\s*(?:public|private|protected|\}))/m', '$1/**\n$1 * @param $2\n$1 */', $content);
-        
+
         // 3. 修復文檔塊後面緊跟參數註解的問題
         $content = preg_replace('/(\s*\*\/)\s*\n\s*\*\s*@param\s+([^*\n]+)(?=\n)/m', '$1', $content);
-        
+
         // 4. 修復空的文檔塊
         $content = preg_replace('/(\s*)\/\*\*\s*\n\s*\*\/\s*\n\s*\*\s*@param/m', '$1/**\n$1 * @param', $content);
-        
+
         // 5. 修復缺少結束的文檔塊
         $content = preg_replace('/(\s*)\*\s*@param\s+([^*\n]+)\s*\n(\s*)(public|private|protected)/m', '$1/**\n$1 * @param $2\n$1 */\n$3$4', $content);
-        
+
         // 6. 修復格式錯誤的文檔塊
         $content = preg_replace('/(\s*)\/\*\*\s*\n\s*\*\s*\n\s*\*\s*@param/m', '$1/**\n$1 * @param', $content);
-        
+
         // 7. 移除多餘的星號
         $content = preg_replace('/^(\s*)\*\s*\*\s*(@param|@return)/m', '$1 * $2', $content);
 

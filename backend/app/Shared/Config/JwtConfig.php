@@ -103,8 +103,11 @@ final class JwtConfig
             throw new InvalidArgumentException('JWT_PRIVATE_KEY 環境變數未設定');
         }
 
-        // 將環境變數中的 \n 轉換為實際的換行符
-        $privateKey = str_replace('\\n', "\n", $privateKey);
+        // 將環境變數中的
+ 轉換為實際的換行符
+        $privateKey = str_replace('\
+', "
+", $privateKey);
 
         // 驗證私鑰格式
         if (!str_contains($privateKey, 'BEGIN PRIVATE KEY')) {
@@ -125,8 +128,11 @@ final class JwtConfig
             throw new InvalidArgumentException('JWT_PUBLIC_KEY 環境變數未設定');
         }
 
-        // 將環境變數中的 \n 轉換為實際的換行符
-        $publicKey = str_replace('\\n', "\n", $publicKey);
+        // 將環境變數中的
+ 轉換為實際的換行符
+        $publicKey = str_replace('\
+', "
+", $publicKey);
 
         // 驗證公鑰格式
         if (!str_contains($publicKey, 'BEGIN PUBLIC KEY')) {

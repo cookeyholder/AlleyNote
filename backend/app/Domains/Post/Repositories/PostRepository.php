@@ -402,11 +402,8 @@ class PostRepository implements PostRepositoryInterface
             $stmt->execute([$postId, $tagId, $now]);
         }
     }
-     * @param array<string, mixed> $data
-
-    /**
-     */
-    public function update(int $id, array $data): Post
+    /**\n      * @param array<string, mixed> $data
+     */    public function update(int $id, array $data): Post
     {
         // 檢查文章是否存在
         $post = $this->find($id);
@@ -467,11 +464,8 @@ class PostRepository implements PostRepositoryInterface
 
         return $stmt->execute([$id]);
     }
-     * @param array<string, mixed> $conditions
-
-    /**
-     */
-    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
+    /**\n      * @param array<string, mixed> $conditions
+     */    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
@@ -568,11 +562,8 @@ class PostRepository implements PostRepositoryInterface
             );
         }, self::CACHE_TTL);
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
+    /**\n      * @return array<string, mixed>
+     */    public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
         $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
 
@@ -684,11 +675,8 @@ class PostRepository implements PostRepositoryInterface
 
         return $result;
     }
-     * @param array<string, mixed> $tagIds
-
-    /**
-     */
-    public function setTags(int $id, array $tagIds): bool
+    /**\n      * @param array<string, mixed> $tagIds
+     */    public function setTags(int $id, array $tagIds): bool
     {
         $this->db->beginTransaction();
 

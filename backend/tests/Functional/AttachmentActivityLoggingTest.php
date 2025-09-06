@@ -68,10 +68,10 @@ class AttachmentActivityLoggingTest extends TestCase
 
         // 驗證記錄
         $logs = $this->pdo->query("
-            SELECT * FROM user_activity_logs 
-            WHERE action_type = 'attachment.uploaded' 
+            SELECT * FROM user_activity_logs
+            WHERE action_type = 'attachment.uploaded'
             AND user_id IS NULL
-            ORDER BY created_at DESC 
+            ORDER BY created_at DESC
             LIMIT 1
         ")->fetch(PDO::FETCH_ASSOC);
 
@@ -110,10 +110,10 @@ class AttachmentActivityLoggingTest extends TestCase
 
         // 驗證記錄
         $logs = $this->pdo->query("
-            SELECT * FROM user_activity_logs 
-            WHERE action_type = 'attachment.downloaded' 
+            SELECT * FROM user_activity_logs
+            WHERE action_type = 'attachment.downloaded'
             AND user_id IS NULL
-            ORDER BY created_at DESC 
+            ORDER BY created_at DESC
             LIMIT 1
         ")->fetch(PDO::FETCH_ASSOC);
 
@@ -151,10 +151,10 @@ class AttachmentActivityLoggingTest extends TestCase
 
         // 驗證記錄
         $logs = $this->pdo->query("
-            SELECT * FROM user_activity_logs 
-            WHERE action_type = 'attachment.deleted' 
+            SELECT * FROM user_activity_logs
+            WHERE action_type = 'attachment.deleted'
             AND user_id IS NULL
-            ORDER BY created_at DESC 
+            ORDER BY created_at DESC
             LIMIT 1
         ")->fetch(PDO::FETCH_ASSOC);
 
@@ -194,10 +194,10 @@ class AttachmentActivityLoggingTest extends TestCase
 
         // 驗證記錄
         $logs = $this->pdo->query("
-            SELECT * FROM user_activity_logs 
-            WHERE action_type = 'attachment.permission_denied' 
+            SELECT * FROM user_activity_logs
+            WHERE action_type = 'attachment.permission_denied'
             AND user_id IS NULL
-            ORDER BY created_at DESC 
+            ORDER BY created_at DESC
             LIMIT 1
         ")->fetch(PDO::FETCH_ASSOC);
 
@@ -238,10 +238,10 @@ class AttachmentActivityLoggingTest extends TestCase
 
         // 驗證記錄
         $logs = $this->pdo->query("
-            SELECT * FROM user_activity_logs 
-            WHERE action_type = 'attachment.size_exceeded' 
+            SELECT * FROM user_activity_logs
+            WHERE action_type = 'attachment.size_exceeded'
             AND user_id IS NULL
-            ORDER BY created_at DESC 
+            ORDER BY created_at DESC
             LIMIT 1
         ")->fetch(PDO::FETCH_ASSOC);
 
@@ -281,10 +281,10 @@ class AttachmentActivityLoggingTest extends TestCase
 
         // 驗證記錄
         $logs = $this->pdo->query("
-            SELECT * FROM user_activity_logs 
-            WHERE action_type = 'attachment.virus_detected' 
+            SELECT * FROM user_activity_logs
+            WHERE action_type = 'attachment.virus_detected'
             AND user_id IS NULL
-            ORDER BY created_at DESC 
+            ORDER BY created_at DESC
             LIMIT 1
         ")->fetch(PDO::FETCH_ASSOC);
 

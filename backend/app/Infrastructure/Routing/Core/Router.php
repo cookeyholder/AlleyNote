@@ -34,59 +34,38 @@ class Router implements RouterInterface
     {
         $this->routes = new RouteCollection();
     }
-     * @param array<string, mixed> $handler
-
-    /**
-     */
-    public function get(string $pattern, $handler): RouteInterface
+    /**\n      * @param array<string, mixed> $handler
+     */    public function get(string $pattern, $handler): RouteInterface
     {
         return $this->map(['GET'], $pattern, $handler);
     }
-     * @param array<string, mixed> $handler
-
-    /**
-     */
-    public function post(string $pattern, $handler): RouteInterface
+    /**\n      * @param array<string, mixed> $handler
+     */    public function post(string $pattern, $handler): RouteInterface
     {
         return $this->map(['POST'], $pattern, $handler);
     }
-     * @param array<string, mixed> $handler
-
-    /**
-     */
-    public function put(string $pattern, $handler): RouteInterface
+    /**\n      * @param array<string, mixed> $handler
+     */    public function put(string $pattern, $handler): RouteInterface
     {
         return $this->map(['PUT'], $pattern, $handler);
     }
-     * @param array<string, mixed> $handler
-
-    /**
-     */
-    public function patch(string $pattern, $handler): RouteInterface
+    /**\n      * @param array<string, mixed> $handler
+     */    public function patch(string $pattern, $handler): RouteInterface
     {
         return $this->map(['PATCH'], $pattern, $handler);
     }
-     * @param array<string, mixed> $handler
-
-    /**
-     */
-    public function delete(string $pattern, $handler): RouteInterface
+    /**\n      * @param array<string, mixed> $handler
+     */    public function delete(string $pattern, $handler): RouteInterface
     {
         return $this->map(['DELETE'], $pattern, $handler);
     }
-     * @param array<string, mixed> $handler
-
-    /**
-     */
-    public function options(string $pattern, $handler): RouteInterface
+    /**\n      * @param array<string, mixed> $handler
+     */    public function options(string $pattern, $handler): RouteInterface
     {
         return $this->map(['OPTIONS'], $pattern, $handler);
     }
-     * @param array<string, mixed> $handler
-
-    /**
-     */
-    public function map(array $methods, string $pattern, $handler): RouteInterface
+    /**\n      * @param array<string, mixed> $handler
+     */    public function map(array $methods, string $pattern, $handler): RouteInterface
     {
         // 套用群組前綴
         if (!empty($this->currentGroupAttributes['prefix'])) {
@@ -109,11 +88,8 @@ class Router implements RouterInterface
 
         return $route;
     }
-     * @param array<string, mixed> $handler
-
-    /**
-     */
-    public function any(string $pattern, $handler): RouteInterface
+    /**\n      * @param array<string, mixed> $handler
+     */    public function any(string $pattern, $handler): RouteInterface
     {
         return $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $pattern, $handler);
     }
@@ -250,7 +226,7 @@ class Router implements RouterInterface
 
     /**
      * 合併群組屬性.
-      * @param array<string, mixed> $previous
+     * @param array<string, mixed> $previous
      * @return array<string, mixed>
      */
     private function mergeGroupAttributes(array $previous, array $new): array

@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 /**
  * 智能 missing_iterable_value_type 錯誤批量修復腳本
- * 
+ *
  * 基於既有經驗和 PHPStan 輸出，自動識別並修復 missing_iterable_value_type 錯誤
- * 
+ *
  * 功能特色：
  * - 自動掃描 PHPStan 錯誤
  * - 智能模式識別和修復
@@ -122,7 +122,7 @@ class SmartIterableValueTypeFixer
         }
 
         $iterableValueErrors = [];
-        
+
         // 處理不同格式的 PHPStan 輸出
         if (isset($data['files'])) {
             // 標準 PHPStan JSON 格式
@@ -221,7 +221,7 @@ class SmartIterableValueTypeFixer
         $message = $error['message'];
 
         // 檢測錯誤類型並應用相應修復
-        
+
         // 1. 修復方法參數中的陣列型別
         if (preg_match('/parameter \$(\w+) .* iterable type array/', $message, $matches)) {
             $paramName = $matches[1];
@@ -253,7 +253,7 @@ class SmartIterableValueTypeFixer
     private function fixMethodParameter(string $content, int $lineIndex, string $paramName): string
     {
         $lines = explode("\n", $content);
-        
+
         // 確定適當的型別
         $arrayType = $this->commonArrayTypes[$paramName] ?? 'array<string, mixed>';
 
@@ -262,7 +262,7 @@ class SmartIterableValueTypeFixer
         if ($methodLineIndex !== -1) {
             $docBlockStart = $this->findOrCreateDocBlock($lines, $methodLineIndex);
             $paramLine = "     * @param {$arrayType} \${$paramName}";
-            
+
             // 檢查是否已經存在該參數的註解
             $docBlockEnd = $methodLineIndex;
             for ($i = $docBlockStart; $i < $methodLineIndex; $i++) {
@@ -272,7 +272,7 @@ class SmartIterableValueTypeFixer
                     return implode("\n", $lines);
                 }
             }
-            
+
             // 添加新的參數註解
             array_splice($lines, $methodLineIndex - 1, 0, [$paramLine]);
         }
@@ -283,7 +283,7 @@ class SmartIterableValueTypeFixer
     private function fixMethodReturnType(string $content, int $lineIndex, string $file): string
     {
         $lines = explode("\n", $content);
-        
+
         // 檢測方法名稱
         $methodName = $this->extractMethodName($lines[$lineIndex]);
         if (!$methodName) {
@@ -305,7 +305,7 @@ class SmartIterableValueTypeFixer
         if ($methodLineIndex !== -1) {
             $docBlockStart = $this->findOrCreateDocBlock($lines, $methodLineIndex);
             $returnLine = "     * @return {$returnType}";
-            
+
             // 檢查是否已經存在返回型別註解
             for ($i = $docBlockStart; $i < $methodLineIndex; $i++) {
                 if (strpos($lines[$i], "@return") !== false) {
@@ -314,7 +314,7 @@ class SmartIterableValueTypeFixer
                     return implode("\n", $lines);
                 }
             }
-            
+
             // 添加新的返回型別註解
             array_splice($lines, $methodLineIndex - 1, 0, [$returnLine]);
         }
@@ -331,7 +331,7 @@ class SmartIterableValueTypeFixer
         if (preg_match('/public\s+array\s+\$(\w+)/', $currentLine, $matches)) {
             $propertyName = $matches[1];
             $arrayType = $this->commonArrayTypes[$propertyName] ?? 'array<string, mixed>';
-            
+
             // 在屬性上方添加 @var 註解
             $propertyDocLine = "    /** @var {$arrayType} */";
             array_splice($lines, $lineIndex, 0, [$propertyDocLine]);
@@ -344,7 +344,7 @@ class SmartIterableValueTypeFixer
     {
         // 向下尋找方法定義行
         for ($i = $startIndex; $i < count($lines) && $i < $startIndex + 5; $i++) {
-            if (preg_match('/public\s+function\s+\w+/', $lines[$i]) || 
+            if (preg_match('/public\s+function\s+\w+/', $lines[$i]) ||
                 preg_match('/private\s+function\s+\w+/', $lines[$i]) ||
                 preg_match('/protected\s+function\s+\w+/', $lines[$i]) ||
                 preg_match('/public\s+static\s+function\s+\w+/', $lines[$i])) {
@@ -358,7 +358,7 @@ class SmartIterableValueTypeFixer
     {
         // 檢查方法上方是否已有文檔塊
         $docBlockStart = $methodLineIndex - 1;
-        
+
         // 如果已經有 */ 結束的文檔塊，找到開始位置
         if (isset($lines[$docBlockStart]) && strpos($lines[$docBlockStart], '*/') !== false) {
             while ($docBlockStart > 0 && strpos($lines[$docBlockStart], '/**') === false) {
@@ -419,7 +419,7 @@ class SmartIterableValueTypeFixer
 
         echo "\n✅ 修復完成！\n";
         echo "💡 建議執行 PHPStan 確認修復效果\n";
-        
+
         // 清理備份檔案
         foreach ($this->backupFiles as $backupPath) {
             if (file_exists($backupPath)) {

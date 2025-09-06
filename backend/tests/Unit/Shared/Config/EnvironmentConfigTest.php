@@ -83,7 +83,13 @@ final class EnvironmentConfigTest extends TestCase
     public function testBasicConfigOperations(): void
     {
         // 建立測試配置檔
-        $envContent = "APP_NAME=TestApp\nAPP_ENV=testing\nDB_CONNECTION=sqlite\nDB_DATABASE=:memory:\nJWT_PRIVATE_KEY=test-key\nJWT_PUBLIC_KEY=test-pub\n";
+        $envContent = "APP_NAME=TestApp
+APP_ENV=testing
+DB_CONNECTION=sqlite
+DB_DATABASE=:memory:
+JWT_PRIVATE_KEY=test-key
+JWT_PUBLIC_KEY=test-pub
+";
         file_put_contents($this->testConfigPath . '/.env.testing', $envContent);
 
         $config = new EnvironmentConfig('testing', $this->testConfigPath);
@@ -97,7 +103,13 @@ final class EnvironmentConfigTest extends TestCase
     public function testValidation(): void
     {
         // 使用記憶體資料庫配置以符合測試環境要求
-        $envContent = "APP_NAME=TestApp\nAPP_ENV=testing\nDB_CONNECTION=sqlite\nDB_DATABASE=:memory:\nJWT_PRIVATE_KEY=test-key\nJWT_PUBLIC_KEY=test-pub\n";
+        $envContent = "APP_NAME=TestApp
+APP_ENV=testing
+DB_CONNECTION=sqlite
+DB_DATABASE=:memory:
+JWT_PRIVATE_KEY=test-key
+JWT_PUBLIC_KEY=test-pub
+";
         file_put_contents($this->testConfigPath . '/.env.testing', $envContent);
 
         $config = new EnvironmentConfig('testing', $this->testConfigPath);

@@ -23,8 +23,7 @@ class CreateIpRuleDTO extends BaseDTO
 
     public readonly int $createdBy;
 
-    /**
-     * @param ValidatorInterface $validator 驗證器實例
+    /**\n      * @param ValidatorInterface $validator 驗證器實例
      * @param array<string, mixed> $data 輸入資料
      *                                   * @throws ValidationException 當驗證失敗時
      */

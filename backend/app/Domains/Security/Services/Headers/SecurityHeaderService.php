@@ -12,11 +12,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     private array $config;
 
     private ?string $currentNonce = null;
-     * @param array<string, mixed> $config
-
-    /**
-     */
-    public function __construct(array $config = [])
+    /**\n      * @param array<string, mixed> $config
+     */    public function __construct(array $config = [])
     {
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
@@ -248,11 +245,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             || $_SERVER['SERVER_PORT'] == 443
             || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    private function getDefaultConfig(): array
+    /**\n      * @return array<string, mixed>
+     */    private function getDefaultConfig(): array
     {
         return [
             'csp' => [

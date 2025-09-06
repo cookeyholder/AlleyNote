@@ -55,11 +55,8 @@ class XssProtectionService implements XssProtectionServiceInterface
 
         return $cleaned;
     }
-     * @return array<string, mixed>
-
-    /**
-     */
-    public function cleanArray(array $data, array $keys = []): array
+    /**\n      * @return array<string, mixed>
+     */    public function cleanArray(array $data, array $keys = []): array
     {
         if (empty($keys)) {
             return $this->cleanArrayRecursive($data);
@@ -92,11 +89,8 @@ class XssProtectionService implements XssProtectionServiceInterface
     {
         return $this->clean($input);
     }
-     * @param array<string, mixed> $data
-
-    /**
-     */
-    public function sanitizeArray(array $data): array
+    /**\n      * @param array<string, mixed> $data
+     */    public function sanitizeArray(array $data): array
     {
         return $this->cleanArrayRecursive($data);
     }
@@ -142,11 +136,8 @@ class XssProtectionService implements XssProtectionServiceInterface
         $strictConfig->set('AutoFormat.RemoveEmpty', true);
         $this->strictPurifier = new HTMLPurifier($strictConfig);
     }
-     * @param array<string, mixed> $data
-
-    /**
-     */
-    private function cleanArrayRecursive(array $data): array
+    /**\n      * @param array<string, mixed> $data
+     */    private function cleanArrayRecursive(array $data): array
     {
         foreach ($data as $key => $value) {
             if (is_string($value)) {
