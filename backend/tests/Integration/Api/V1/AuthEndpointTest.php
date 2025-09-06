@@ -111,51 +111,11 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
      */
     public function testLoginEndpointReturnsJwtTokens(): void
     {
-        $loginData = [
-            'email' => 'test@example.com',
-            'password' => 'password123',
-        ];
-
+        $loginData = $this->getTestLoginData();
+        
         try {
             $response = $this->createRequest('POST', '/api/auth/login', $loginData);
-            $responseBody = (string) $response->getBody();
-            $data = json_decode($responseBody, true);
-
-            // 如果是 404，表示路由沒有正確配置
-            if ($response->getStatusCode() === 404) {
-                $this->markTestSkipped('Login route not configured: ' . $responseBody);
-
-                return;
-            }
-
-            // 如果是 500，表示有內部錯誤，但至少路由是配置的
-            if ($response->getStatusCode() === 500) {
-                $this->assertIsArray($data, 'Response should be JSON even on error');
-                $this->assertArrayHasKey('error', $data, 'Error response should contain error field');
-                $this->markTestSkipped('Login endpoint configured but has internal error: ' . $data['error']);
-
-                return;
-            }
-
-            // 如果是其他狀態碼，檢查是否為預期的認證錯誤
-            if (in_array($response->getStatusCode(), [400, 401, 422])) {
-                $this->assertIsArray($data, 'Response should be JSON');
-                $this->assertArrayHasKey('success', $data, 'Response should have success field');
-                $this->assertFalse($data['success'], 'Login should fail with test credentials');
-                $this->markTestSkipped('Login endpoint rejects test credentials (expected): ' . ($data['error'] ?? 'unknown error'));
-
-                return;
-            }
-
-            // 成功的情況
-            $this->assertEquals(200, $response->getStatusCode());
-            $this->assertIsArray($data);
-            $this->assertArrayHasKey('success', $data);
-            $this->assertTrue($data['success']);
-            $this->assertArrayHasKey('access_token', $data);
-            $this->assertArrayHasKey('refresh_token', $data);
-            $this->assertArrayHasKey('token_type', $data);
-            $this->assertEquals('Bearer', $data['token_type']);
+            $this->processLoginResponse($response);
         } catch (Exception $e) {
             $this->markTestSkipped('Login endpoint test failed: ' . $e->getMessage());
         }
@@ -166,32 +126,11 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
      */
     public function testRefreshTokenEndpoint(): void
     {
-        $refreshData = [
-            'refresh_token' => 'fake.refresh.token',
-        ];
-
+        $refreshData = $this->getTestRefreshData();
+        
         try {
             $response = $this->createRequest('POST', '/api/auth/refresh', $refreshData);
-            $responseBody = (string) $response->getBody();
-
-            // 如果是 404，表示路由沒有正確配置
-            if ($response->getStatusCode() === 404) {
-                $this->markTestSkipped('Refresh token route not configured: ' . $responseBody);
-
-                return;
-            }
-
-            $data = json_decode($responseBody, true);
-
-            // 應該是 400 或 401（因為使用假的 token）
-            $this->assertThat($response->getStatusCode(), $this->logicalOr(
-                $this->equalTo(400),
-                $this->equalTo(401),
-                $this->equalTo(500),
-            ));
-            $this->assertIsArray($data);
-            $this->assertArrayHasKey('success', $data);
-            $this->assertFalse($data['success']);
+            $this->processRefreshResponse($response);
         } catch (Exception $e) {
             $this->markTestSkipped('Refresh token endpoint test failed: ' . $e->getMessage());
         }
@@ -202,32 +141,11 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
      */
     public function testLogoutEndpoint(): void
     {
-        $logoutData = [
-            'access_token' => 'fake.access.token',
-            'refresh_token' => 'fake.refresh.token',
-        ];
-
+        $logoutData = $this->getTestLogoutData();
+        
         try {
             $response = $this->createRequest('POST', '/api/auth/logout', $logoutData);
-            $responseBody = (string) $response->getBody();
-
-            // 如果是 404，表示路由沒有正確配置
-            if ($response->getStatusCode() === 404) {
-                $this->markTestSkipped('Logout route not configured: ' . $responseBody);
-
-                return;
-            }
-
-            $data = json_decode($responseBody, true);
-
-            // 應該是 400 或 401（因為使用假的 token）
-            $this->assertThat($response->getStatusCode(), $this->logicalOr(
-                $this->equalTo(200),
-                $this->equalTo(400),
-                $this->equalTo(401),
-                $this->equalTo(500),
-            ));
-            $this->assertIsArray($data);
+            $this->processLogoutResponse($response);
         } catch (Exception $e) {
             $this->markTestSkipped('Logout endpoint test failed: ' . $e->getMessage());
         }
@@ -330,5 +248,166 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
         unset($_POST, $_ENV['APP_ENV'], $_ENV['DB_CONNECTION'], $_ENV['DB_DATABASE']);
 
         parent::tearDown();
+    }
+
+    /**
+     * 取得測試登入資料
+     * 
+     * @return array{email: string, password: string}
+     */
+    private function getTestLoginData(): array
+    {
+        return [
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ];
+    }
+
+    /**
+     * 處理登入回應
+     */
+    private function processLoginResponse(ResponseInterface $response): void
+    {
+        $responseBody = (string) $response->getBody();
+        $data = json_decode($responseBody, true);
+
+        // 如果是 404，表示路由沒有正確配置
+        if ($response->getStatusCode() === 404) {
+            $this->markTestSkipped('Login route not configured: ' . $responseBody);
+            return;
+        }
+
+        // 如果是 500，表示有內部錯誤，但至少路由是配置的
+        if ($response->getStatusCode() === 500) {
+            $this->handleLoginServerError($data);
+            return;
+        }
+
+        // 如果是其他狀態碼，檢查是否為預期的認證錯誤
+        if (in_array($response->getStatusCode(), [400, 401, 422])) {
+            $this->handleLoginAuthError($data);
+            return;
+        }
+
+        // 成功的情況
+        $this->assertLoginSuccess($response, $data);
+    }
+
+    /**
+     * 處理登入伺服器錯誤
+     * 
+     * @param mixed $data
+     */
+    private function handleLoginServerError($data): void
+    {
+        $this->assertIsArray($data, 'Response should be JSON even on error');
+        $this->assertArrayHasKey('error', $data, 'Error response should contain error field');
+        $this->markTestSkipped('Login endpoint configured but has internal error: ' . $data['error']);
+    }
+
+    /**
+     * 處理登入認證錯誤
+     * 
+     * @param mixed $data
+     */
+    private function handleLoginAuthError($data): void
+    {
+        $this->assertIsArray($data, 'Response should be JSON');
+        $this->assertArrayHasKey('success', $data, 'Response should have success field');
+        $this->assertFalse($data['success'], 'Login should fail with test credentials');
+        $this->markTestSkipped('Login endpoint rejects test credentials (expected): ' . ($data['error'] ?? 'unknown error'));
+    }
+
+    /**
+     * 斷言登入成功
+     * 
+     * @param mixed $data
+     */
+    private function assertLoginSuccess(ResponseInterface $response, $data): void
+    {
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('success', $data);
+        $this->assertTrue($data['success']);
+        $this->assertArrayHasKey('access_token', $data);
+        $this->assertArrayHasKey('refresh_token', $data);
+        $this->assertArrayHasKey('token_type', $data);
+        $this->assertEquals('Bearer', $data['token_type']);
+    }
+
+    /**
+     * 取得測試刷新 token 資料
+     * 
+     * @return array{refresh_token: string}
+     */
+    private function getTestRefreshData(): array
+    {
+        return [
+            'refresh_token' => 'fake.refresh.token',
+        ];
+    }
+
+    /**
+     * 處理刷新 token 回應
+     */
+    private function processRefreshResponse(ResponseInterface $response): void
+    {
+        $responseBody = (string) $response->getBody();
+
+        // 如果是 404，表示路由沒有正確配置
+        if ($response->getStatusCode() === 404) {
+            $this->markTestSkipped('Refresh token route not configured: ' . $responseBody);
+            return;
+        }
+
+        $data = json_decode($responseBody, true);
+
+        // 應該是 400 或 401（因為使用假的 token）
+        $this->assertThat($response->getStatusCode(), $this->logicalOr(
+            $this->equalTo(400),
+            $this->equalTo(401),
+            $this->equalTo(500),
+        ));
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('success', $data);
+        $this->assertFalse($data['success']);
+    }
+
+    /**
+     * 取得測試登出資料
+     * 
+     * @return array{access_token: string, refresh_token: string}
+     */
+    private function getTestLogoutData(): array
+    {
+        return [
+            'access_token' => 'fake.access.token',
+            'refresh_token' => 'fake.refresh.token',
+        ];
+    }
+
+    /**
+     * 處理登出回應
+     */
+    private function processLogoutResponse(ResponseInterface $response): void
+    {
+        $responseBody = (string) $response->getBody();
+
+        // 如果是 404，表示路由沒有正確配置
+        if ($response->getStatusCode() === 404) {
+            $this->markTestSkipped('Logout route not configured: ' . $responseBody);
+            return;
+        }
+
+        $data = json_decode($responseBody, true);
+
+        // 應該是 200、400 或 401（因為使用假的 token）
+        $this->assertThat($response->getStatusCode(), $this->logicalOr(
+            $this->equalTo(200),
+            $this->equalTo(400),
+            $this->equalTo(401),
+            $this->equalTo(500),
+        ));
+        $this->assertIsArray($data);
     }
 }
