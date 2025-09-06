@@ -40,12 +40,8 @@ final class FirebaseJwtProviderTest extends TestCase
 
         // 設定測試環境變數
         $_ENV['JWT_ALGORITHM'] = 'RS256';
-        $_ENV['JWT_PRIVATE_KEY'] = str_replace("
-", '\
-', $this->validPrivateKey);
-        $_ENV['JWT_PUBLIC_KEY'] = str_replace("
-", '\
-', $this->validPublicKey);
+        $_ENV['JWT_PRIVATE_KEY'] = str_replace("\n", '\\n', $this->validPrivateKey);
+        $_ENV['JWT_PUBLIC_KEY'] = str_replace("\n", '\\n', $this->validPublicKey);
         $_ENV['JWT_ISSUER'] = 'alleynote-test';
         $_ENV['JWT_AUDIENCE'] = 'alleynote-app';
         $_ENV['JWT_ACCESS_TOKEN_TTL'] = '3600'; // 1 小時
@@ -113,9 +109,7 @@ final class FirebaseJwtProviderTest extends TestCase
         $this->generateAlternativeKeys();
 
         // 暫時修改環境變數（使用不匹配的公鑰）
-        $_ENV['JWT_PUBLIC_KEY'] = str_replace("
-", '\
-', $this->invalidPublicKey);
+        $_ENV['JWT_PUBLIC_KEY'] = str_replace("\n", '\\n', $this->invalidPublicKey);
 
         $this->expectException(InvalidArgumentException::class);
 
