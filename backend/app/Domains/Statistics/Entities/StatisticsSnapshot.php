@@ -36,8 +36,8 @@ class StatisticsSnapshot extends AggregateRoot
         private StatisticsPeriod $period,
         private StatisticsMetric $totalPosts,
         private StatisticsMetric $totalViews,
-        private array $sourceStats,
-        private array $additionalMetrics,
+        private array /** @var array<SourceStatistics> $sourceStats */ $sourceStats,
+        private array /** @var array<string, StatisticsMetric> $additionalMetrics */ $additionalMetrics,
         private DateTimeImmutable $createdAt,
         private ?DateTimeImmutable $updatedAt = null,
     ) {}
@@ -80,8 +80,8 @@ class StatisticsSnapshot extends AggregateRoot
             $period,
             $totalPostsMetric,
             $totalViewsMetric,
-            $sourceStats,
-            $additionalMetrics,
+            /** @var array<SourceStatistics> $sourceStats */ $sourceStats,
+            /** @var array<string, StatisticsMetric> $additionalMetrics */ $additionalMetrics,
             $now,
         );
 
@@ -105,8 +105,8 @@ class StatisticsSnapshot extends AggregateRoot
         StatisticsPeriod $period,
         StatisticsMetric $totalPosts,
         StatisticsMetric $totalViews,
-        array $sourceStats,
-        array $additionalMetrics,
+        array /** @var array<SourceStatistics> $sourceStats */ $sourceStats,
+        array /** @var array<string, StatisticsMetric> $additionalMetrics */ $additionalMetrics,
         DateTimeImmutable $createdAt,
         ?DateTimeImmutable $updatedAt = null,
     ): self {
@@ -115,8 +115,8 @@ class StatisticsSnapshot extends AggregateRoot
             $period,
             $totalPosts,
             $totalViews,
-            $sourceStats,
-            $additionalMetrics,
+            /** @var array<SourceStatistics> $sourceStats */ $sourceStats,
+            /** @var array<string, StatisticsMetric> $additionalMetrics */ $additionalMetrics,
             $createdAt,
             $updatedAt,
         );

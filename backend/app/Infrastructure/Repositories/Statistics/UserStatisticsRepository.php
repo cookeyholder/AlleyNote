@@ -133,7 +133,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC); return is_array($result) ? $result : [];
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得使用者註冊趨勢失敗: {$e->getMessage()}",
@@ -178,7 +178,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC); return is_array($result) ? $result : [];
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得使用者活躍度統計失敗: {$e->getMessage()}",
@@ -233,7 +233,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC); return is_array($result) ? $result : [];
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得最活躍使用者失敗: {$e->getMessage()}",
@@ -447,7 +447,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC); return is_array($result) ? $result : [];
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得使用者分群統計失敗: {$e->getMessage()}",
@@ -657,7 +657,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC); return is_array($result) ? $result : [];
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "計算使用者參與度評分失敗: {$e->getMessage()}",
@@ -692,7 +692,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC); return is_array($result) ? $result : [];
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "取得使用者活動時間分布失敗: {$e->getMessage()}",
@@ -730,7 +730,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC); return is_array($result) ? $result : [];
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "計算使用者活躍度趨勢失敗: {$e->getMessage()}",

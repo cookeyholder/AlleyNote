@@ -93,36 +93,62 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     public static function fromArray(array $data): self
     {
+        // 確保期間資料存在且正確
+        $periodData = $data['period'] ?? [];
+        $startDate = is_string($periodData['start_date'] ?? null) ? $periodData['start_date'] : 'now';
+        $endDate = is_string($periodData['end_date'] ?? null) ? $periodData['end_date'] : 'now';
+        $periodType = $periodData['type'] ?? 'daily';
+        
         $period = StatisticsPeriod::create(
-            new DateTimeImmutable($data['period']['start_date']),
-            new DateTimeImmutable($data['period']['end_date']),
-            PeriodType::from($data['period']['type']),
+            new DateTimeImmutable($startDate),
+            new DateTimeImmutable($endDate),
+            PeriodType::from($periodType),
         );
 
-        $totalActive = StatisticsMetric::count(
-            $data['total_active_users'],
-            '總活躍使用者數',
+        // 安全地提取統計指標
+        $activeUsers = StatisticsMetric::count(
+            is_numeric($data['active_users'] ?? 0) ? (int)$data['active_users'] : 0,
+            '活躍用戶數'
         );
 
         $newUsers = StatisticsMetric::count(
-            $data['new_users'],
-            '新使用者數',
+            is_numeric($data['new_users'] ?? 0) ? (int)$data['new_users'] : 0,
+            '新用戶數'
         );
 
         $returningUsers = StatisticsMetric::count(
-            $data['returning_users'] ?? 0,
-            '回訪使用者數',
+            is_numeric($data['returning_users'] ?? 0) ? (int)$data['returning_users'] : 0,
+            '回訪用戶數'
         );
+
+        /** @var array<array> $topActiveUsers */
+        $topActiveUsers = is_array($data['top_active_users'] ?? []) 
+            ? $data['top_active_users'] 
+            : [];
+
+        /** @var array<string, mixed> $activityPatterns */
+        $activityPatterns = is_array($data['activity_patterns'] ?? []) 
+            ? $data['activity_patterns'] 
+            : [];
+
+        /** @var array<string, mixed> $engagementMetrics */
+        $engagementMetrics = is_array($data['engagement_metrics'] ?? []) 
+            ? $data['engagement_metrics'] 
+            : [];
+            
+        $generatedAt = is_string($data['generated_at'] ?? null) 
+            ? $data['generated_at'] 
+            : 'now';
 
         return new self(
             $period,
-            $totalActive,
+            $activeUsers,
             $newUsers,
             $returningUsers,
-            $data['top_active_users'] ?? [],
-            $data['activity_patterns'] ?? [],
-            $data['engagement_metrics'] ?? [],
-            new DateTimeImmutable($data['generated_at'] ?? 'now'),
+            $topActiveUsers,
+            $activityPatterns,
+            $engagementMetrics,
+            new DateTimeImmutable($generatedAt),
         );
     }
 

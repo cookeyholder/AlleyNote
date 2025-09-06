@@ -77,15 +77,27 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
             // 計算成長率
             $growthRates = [
-                'posts_growth' => $this->calculateGrowthRate($totals['total_posts'] ?? 0, $periodStats['period_posts'] ?? 0),
-                'users_growth' => $this->calculateGrowthRate($totals['total_users'] ?? 0, $periodStats['period_users'] ?? 0),
-                'views_growth' => $this->calculateGrowthRate($totals['total_views'] ?? 0, $periodStats['period_views'] ?? 0),
-                'activities_growth' => $this->calculateGrowthRate($totals['total_activities'] ?? 0, $periodStats['period_activities'] ?? 0),
+                'posts_growth' => $this->calculateGrowthRate(
+                    is_numeric($totals['total_posts'] ?? 0) ? (int)$totals['total_posts'] : 0,
+                    is_numeric($periodStats['period_posts'] ?? 0) ? (int)$periodStats['period_posts'] : 0
+                ),
+                'users_growth' => $this->calculateGrowthRate(
+                    is_numeric($totals['total_users'] ?? 0) ? (int)$totals['total_users'] : 0,
+                    is_numeric($periodStats['period_users'] ?? 0) ? (int)$periodStats['period_users'] : 0
+                ),
+                'views_growth' => $this->calculateGrowthRate(
+                    is_numeric($totals['total_views'] ?? 0) ? (int)$totals['total_views'] : 0,
+                    is_numeric($periodStats['period_views'] ?? 0) ? (int)$periodStats['period_views'] : 0
+                ),
+                'activities_growth' => $this->calculateGrowthRate(
+                    is_numeric($totals['total_activities'] ?? 0) ? (int)$totals['total_activities'] : 0,
+                    is_numeric($periodStats['period_activities'] ?? 0) ? (int)$periodStats['period_activities'] : 0
+                ),
             ];
 
             return [
-                'total_statistics' => $totals ?: [],
-                'period_statistics' => $periodStats ?: [],
+                'total_statistics' => is_array($totals) ? $totals : [],
+                'period_statistics' => is_array($periodStats) ? $periodStats : [],
                 'growth_rates' => $growthRates,
                 'system_health' => [
                     'status' => 'healthy',
@@ -479,12 +491,13 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             $totalSeconds = $period->endDate->getTimestamp() - $period->startDate->getTimestamp();
-            $avgRequestsPerSecond = $totalSeconds > 0 ? ($result['total_requests'] ?? 0) / $totalSeconds : 0;
+            $totalRequests = is_numeric($result['total_requests'] ?? 0) ? (int)$result['total_requests'] : 0;
+            $avgRequestsPerSecond = $totalSeconds > 0 ? $totalRequests / $totalSeconds : 0;
 
             return [
                 'avg_response_time' => 0.25, // 簡化值
-                'peak_concurrent_users' => (int) ($result['peak_concurrent_users'] ?? 0),
-                'total_requests' => (int) ($result['total_requests'] ?? 0),
+                'peak_concurrent_users' => is_numeric($result['peak_concurrent_users'] ?? 0) ? (int)$result['peak_concurrent_users'] : 0,
+                'total_requests' => is_numeric($result['total_requests'] ?? 0) ? (int)$result['total_requests'] : 0,
                 'avg_requests_per_second' => round($avgRequestsPerSecond, 4),
             ];
         } catch (PDOException $e) {

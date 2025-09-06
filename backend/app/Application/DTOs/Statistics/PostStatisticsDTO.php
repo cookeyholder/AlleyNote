@@ -58,26 +58,59 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 從文章資料建立 DTO.
+     * @param array<string, mixed> $postData
      */
     public static function fromPostData(array $postData, StatisticsPeriod $period): self
     {
+        // 確保必要欄位存在且型別正確
+        $id = is_string($postData['id'] ?? null) ? $postData['id'] : '';
+        if ($id === '') {
+            throw new \InvalidArgumentException('文章 ID 不能為空');
+        }
+
+        $title = is_string($postData['title'] ?? null) ? $postData['title'] : '';
+        if ($title === '') {
+            throw new \InvalidArgumentException('文章標題不能為空');
+        }
+
+        $sourceType = $postData['source_type'] ?? 'web';
+        if (!is_string($sourceType) && !is_int($sourceType)) {
+            $sourceType = 'web';
+        }
+
+        $viewCount = is_numeric($postData['view_count'] ?? null) ? (int) $postData['view_count'] : 0;
+        $likeCount = is_numeric($postData['like_count'] ?? null) ? (int) $postData['like_count'] : 0;
+        $commentCount = is_numeric($postData['comment_count'] ?? null) ? (int) $postData['comment_count'] : 0;
+        $shareCount = is_numeric($postData['share_count'] ?? null) ? (int) $postData['share_count'] : 0;
+
+        /** @var array<string, mixed> $additionalMetrics */
+        $additionalMetrics = is_array($postData['additional_metrics'] ?? null) ? $postData['additional_metrics'] : [];
+
+        $publishedAt = is_string($postData['published_at'] ?? null) ? $postData['published_at'] : '';
+        if ($publishedAt === '') {
+            throw new \InvalidArgumentException('發布時間不能為空');
+        }
+
+        $updatedAt = is_string($postData['updated_at'] ?? null) ? $postData['updated_at'] : $publishedAt;
+
         return new self(
-            Uuid::fromString($postData['id']),
-            $postData['title'],
-            SourceType::from($postData['source_type'] ?? 'web'),
-            StatisticsMetric::count($postData['view_count'] ?? 0, '瀏覽次數'),
-            StatisticsMetric::count($postData['like_count'] ?? 0, '按讚次數'),
-            StatisticsMetric::count($postData['comment_count'] ?? 0, '評論次數'),
-            StatisticsMetric::count($postData['share_count'] ?? 0, '分享次數'),
+            Uuid::fromString($id),
+            $title,
+            SourceType::from($sourceType),
+            StatisticsMetric::count($viewCount, '瀏覽次數'),
+            StatisticsMetric::count($likeCount, '按讚次數'),
+            StatisticsMetric::count($commentCount, '評論次數'),
+            StatisticsMetric::count($shareCount, '分享次數'),
             $period,
-            $postData['additional_metrics'] ?? [],
-            new DateTimeImmutable($postData['published_at']),
-            new DateTimeImmutable($postData['updated_at'] ?? $postData['published_at']),
+            $additionalMetrics,
+            new DateTimeImmutable($publishedAt),
+            new DateTimeImmutable($updatedAt),
         );
     }
 
     /**
      * 建立帶有統計分析的 DTO.
+     * @param array<string, mixed> $rawMetrics
      */
     public static function withAnalysis(
         Uuid $postId,
@@ -88,16 +121,22 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         DateTimeImmutable $publishedAt,
     ): self {
         // 建立統計指標
-        $viewCount = StatisticsMetric::count($rawMetrics['views'] ?? 0, '瀏覽次數');
-        $likeCount = StatisticsMetric::count($rawMetrics['likes'] ?? 0, '按讚次數');
-        $commentCount = StatisticsMetric::count($rawMetrics['comments'] ?? 0, '評論次數');
-        $shareCount = StatisticsMetric::count($rawMetrics['shares'] ?? 0, '分享次數');
+        $viewsValue = is_numeric($rawMetrics['views'] ?? null) ? (int) $rawMetrics['views'] : 0;
+        $likesValue = is_numeric($rawMetrics['likes'] ?? null) ? (int) $rawMetrics['likes'] : 0;
+        $commentsValue = is_numeric($rawMetrics['comments'] ?? null) ? (int) $rawMetrics['comments'] : 0;
+        $sharesValue = is_numeric($rawMetrics['shares'] ?? null) ? (int) $rawMetrics['shares'] : 0;
+
+        $viewCount = StatisticsMetric::count($viewsValue, '瀏覽次數');
+        $likeCount = StatisticsMetric::count($likesValue, '按讚次數');
+        $commentCount = StatisticsMetric::count($commentsValue, '評論次數');
+        $shareCount = StatisticsMetric::count($sharesValue, '分享次數');
 
         // 計算額外指標
+        /** @var array<string, mixed> $additionalMetrics */
         $additionalMetrics = [
             'engagement_rate' => self::calculateEngagementRate($rawMetrics),
             'performance_score' => self::calculatePerformanceScore($rawMetrics),
-            'trend_direction' => $rawMetrics['trend_direction'] ?? 'stable',
+            'trend_direction' => is_string($rawMetrics['trend_direction'] ?? null) ? $rawMetrics['trend_direction'] : 'stable',
             'peak_time' => $rawMetrics['peak_time'] ?? null,
         ];
 
@@ -135,7 +174,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     public function getTotalEngagements(): int
     {
-        return $this->likeCount->value + $this->commentCount->value + $this->shareCount->value;
+        return (int)($this->likeCount->value + $this->commentCount->value + $this->shareCount->value);
     }
 
     /**
@@ -143,8 +182,8 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     public function getPerformanceScore(): float
     {
-        return $this->additionalMetrics['performance_score']
-               ?? $this->calculateDefaultPerformanceScore();
+        $score = $this->additionalMetrics['performance_score'] ?? null;
+        return is_numeric($score) ? (float)$score : $this->calculateDefaultPerformanceScore();
     }
 
     /**
@@ -173,7 +212,8 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     public function getTrendDirection(): string
     {
-        return $this->additionalMetrics['trend_direction'] ?? 'stable';
+        $direction = $this->additionalMetrics['trend_direction'] ?? 'stable';
+        return is_string($direction) ? $direction : 'stable';
     }
 
     /**
@@ -181,9 +221,8 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     public function getAgeInDays(): int
     {
-        $now = new DateTimeImmutable();
-
-        return $now->diff($this->publishedAt)->days;
+        $diff = (new DateTimeImmutable())->diff($this->publishedAt);
+        return (int)$diff->days;
     }
 
     /**
@@ -315,14 +354,16 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     private static function calculateEngagementRate(array $metrics): float
     {
-        $views = $metrics['views'] ?? 0;
+        $views = is_numeric($metrics['views'] ?? 0) ? (int)($metrics['views'] ?? 0) : 0;
         if ($views === 0) {
             return 0.0;
         }
 
-        $engagements = ($metrics['likes'] ?? 0)
-                      + ($metrics['comments'] ?? 0)
-                      + ($metrics['shares'] ?? 0);
+        $likes = is_numeric($metrics['likes'] ?? 0) ? (int)($metrics['likes'] ?? 0) : 0;
+        $comments = is_numeric($metrics['comments'] ?? 0) ? (int)($metrics['comments'] ?? 0) : 0;
+        $shares = is_numeric($metrics['shares'] ?? 0) ? (int)($metrics['shares'] ?? 0) : 0;
+
+        $engagements = $likes + $comments + $shares;
 
         return round(($engagements / $views) * 100, 2);
     }
@@ -332,12 +373,12 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     private static function calculatePerformanceScore(array $metrics): float
     {
-        $views = $metrics['views'] ?? 0;
+        $views = is_numeric($metrics['views'] ?? 0) ? (int)($metrics['views'] ?? 0) : 0;
         $engagementRate = self::calculateEngagementRate($metrics);
 
         // 基本評分公式：瀏覽數權重 70%，互動率權重 30%
-        $viewScore = min($views / 1000, 1) * 70; // 1000 瀏覽為滿分
-        $engagementScore = min($engagementRate / 10, 1) * 30; // 10% 互動率為滿分
+        $viewScore = min((float)$views / 1000.0, 1.0) * 70.0; // 1000 瀏覽為滿分
+        $engagementScore = min($engagementRate / 10.0, 1.0) * 30.0; // 10% 互動率為滿分
 
         return round($viewScore + $engagementScore, 2);
     }

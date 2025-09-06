@@ -71,38 +71,63 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      */
     public static function fromArray(array $data): self
     {
+        // 確保期間資料存在且正確
+        $periodData = $data['period'] ?? [];
+        $startDate = is_string($periodData['start_date'] ?? null) ? $periodData['start_date'] : 'now';
+        $endDate = is_string($periodData['end_date'] ?? null) ? $periodData['end_date'] : 'now';
+        $periodType = $periodData['type'] ?? 'daily';
+        
         $period = StatisticsPeriod::create(
-            new DateTimeImmutable($data['period']['start_date']),
-            new DateTimeImmutable($data['period']['end_date']),
-            PeriodType::from($data['period']['type']),
+            new DateTimeImmutable($startDate),
+            new DateTimeImmutable($endDate),
+            PeriodType::from($periodType),
         );
 
-        $totalPosts = StatisticsMetric::count(
-            $data['total_posts']['value'],
-            $data['total_posts']['description'] ?? '總文章數',
-        );
-
+        // 安全地提取統計指標
+        $totalViewsData = $data['total_views'] ?? [];
         $totalViews = StatisticsMetric::count(
-            $data['total_views']['value'],
-            $data['total_views']['description'] ?? '總瀏覽數',
+            is_numeric($totalViewsData['value'] ?? 0) ? (int)$totalViewsData['value'] : 0,
+            is_string($totalViewsData['description'] ?? '') ? $totalViewsData['description'] : '總瀏覽數'
         );
 
+        $totalPostsData = $data['total_posts'] ?? [];
+        $totalPosts = StatisticsMetric::count(
+            is_numeric($totalPostsData['value'] ?? 0) ? (int)$totalPostsData['value'] : 0,
+            is_string($totalPostsData['description'] ?? '') ? $totalPostsData['description'] : '總文章數'
+        );
+
+        // 來源統計資料
+        $sourceStatsData = $data['source_statistics'] ?? [];
+        if (!is_array($sourceStatsData)) {
+            $sourceStatsData = [];
+        }
+
+        /** @var array<SourceStatistics> $sourceStatistics */
         $sourceStatistics = array_map(
             fn(array $sourceData) => SourceStatistics::create(
-                SourceType::from($sourceData['source_type']),
-                $sourceData['count'],
-                $sourceData['percentage'],
+                SourceType::from($sourceData['source_type'] ?? 'web'),
+                is_numeric($sourceData['count'] ?? 0) ? (int)$sourceData['count'] : 0,
+                is_numeric($sourceData['percentage'] ?? 0.0) ? (float)$sourceData['percentage'] : 0.0,
             ),
-            $data['source_statistics'] ?? [],
+            $sourceStatsData,
         );
+
+        /** @var array<string, mixed> $additionalMetrics */
+        $additionalMetrics = is_array($data['additional_metrics'] ?? []) 
+            ? $data['additional_metrics'] 
+            : [];
+            
+        $generatedAt = is_string($data['generated_at'] ?? null) 
+            ? $data['generated_at'] 
+            : 'now';
 
         return new self(
             $period,
-            $totalPosts,
             $totalViews,
+            $totalPosts,
             $sourceStatistics,
-            $data['additional_metrics'] ?? [],
-            new DateTimeImmutable($data['generated_at'] ?? 'now'),
+            $additionalMetrics,
+            new DateTimeImmutable($generatedAt),
         );
     }
 

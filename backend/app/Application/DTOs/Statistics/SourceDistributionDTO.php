@@ -52,6 +52,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         array $sourceStatistics,
         int $totalCount,
     ): self {
+        /** @var array<string, mixed> $analysis */
         $analysis = self::calculateDistributionAnalysis($sourceStatistics, $totalCount);
 
         return new self(
@@ -68,27 +69,51 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      */
     public static function fromArray(array $data): self
     {
+        // 確保期間資料存在且正確
+        $periodData = $data['period'] ?? [];
+        $startDate = is_string($periodData['start_date'] ?? null) ? $periodData['start_date'] : 'now';
+        $endDate = is_string($periodData['end_date'] ?? null) ? $periodData['end_date'] : 'now';
+        $periodType = $periodData['type'] ?? 'daily';
+
         $period = StatisticsPeriod::create(
-            new DateTimeImmutable($data['period']['start_date']),
-            new DateTimeImmutable($data['period']['end_date']),
-            PeriodType::from($data['period']['type']),
+            new DateTimeImmutable($startDate),
+            new DateTimeImmutable($endDate),
+            PeriodType::from($periodType),
         );
 
+        // 確保來源統計資料是陣列
+        $sourceStatsData = $data['source_statistics'] ?? [];
+        if (!is_array($sourceStatsData)) {
+            $sourceStatsData = [];
+        }
+
+        /** @var array<SourceStatistics> $sourceStatistics */
         $sourceStatistics = array_map(
             fn(array $sourceData) => SourceStatistics::create(
-                SourceType::from($sourceData['source_type']),
-                $sourceData['count'],
-                $sourceData['percentage'],
+                SourceType::from($sourceData['source_type'] ?? 'web'),
+                is_numeric($sourceData['count'] ?? 0) ? (int)$sourceData['count'] : 0,
+                is_numeric($sourceData['percentage'] ?? 0.0) ? (float)$sourceData['percentage'] : 0.0,
             ),
-            $data['source_statistics'] ?? [],
+            $sourceStatsData,
         );
+
+        $totalCount = is_numeric($data['total_count'] ?? 0) ? (int)$data['total_count'] : 0;
+
+        /** @var array<string, mixed> $distributionAnalysis */
+        $distributionAnalysis = is_array($data['distribution_analysis'] ?? [])
+            ? $data['distribution_analysis']
+            : [];
+
+        $generatedAt = is_string($data['generated_at'] ?? null)
+            ? $data['generated_at']
+            : 'now';
 
         return new self(
             $period,
             $sourceStatistics,
-            $data['total_count'],
-            $data['distribution_analysis'] ?? [],
-            new DateTimeImmutable($data['generated_at'] ?? 'now'),
+            $totalCount,
+            $distributionAnalysis,
+            new DateTimeImmutable($generatedAt),
         );
     }
 

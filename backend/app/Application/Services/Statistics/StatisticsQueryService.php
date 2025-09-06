@@ -517,8 +517,8 @@ final class StatisticsQueryService
      */
     private function parseQueryPeriod(array $params): StatisticsPeriod
     {
-        $startDate = new DateTimeImmutable($params['period_start']);
-        $endDate = new DateTimeImmutable($params['period_end']);
+        $startDate = new DateTimeImmutable(is_string($params['period_start'] ?? null) ? $params['period_start'] : 'now');
+        $endDate = new DateTimeImmutable(is_string($params['period_end'] ?? null) ? $params['period_end'] : 'now');
         $type = PeriodType::from($params['period_type'] ?? 'daily');
 
         return StatisticsPeriod::create($startDate, $endDate, $type);

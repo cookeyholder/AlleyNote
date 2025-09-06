@@ -515,8 +515,8 @@ class StatisticsController extends BaseController
             $period = $this->createPeriodFromParams($params);
 
             $statistics = $this->queryService->getUserActivityStatistics(
-                $period, 
-                is_numeric($params['page'] ?? null) ? (int) $params['page'] : 1, 
+                $period,
+                is_numeric($params['page'] ?? null) ? (int) $params['page'] : 1,
                 is_numeric($params['per_page'] ?? null) ? (int) $params['per_page'] : 20
             );
 
