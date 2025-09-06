@@ -265,7 +265,7 @@ class ValidationExceptionTest extends TestCase
         ];
         $this->assertCount(6, $allErrors);
         foreach ($expectedErrors as $expectedError) {
-            $this->assertArrayHasKey($expectedError, array_flip($allErrors));
+            $this->assertArrayHasKey($expectedError, array_flip(is_array($allErrors) ? array_filter($allErrors, fn($v) => is_string($v) || is_int($v)) : []));
         }
     }
 

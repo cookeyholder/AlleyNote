@@ -174,8 +174,8 @@ class PostControllerActivityLoggingTest extends TestCase
 
         $metadata = json_decode($logs[0]['metadata'], true);
         $this->assertSame('update', $metadata['operation']);
-        $this->assertArrayHasKey('title', array_flip($metadata['changes']));
-        $this->assertArrayHasKey('content', array_flip($metadata['changes']));
+        $this->assertArrayHasKey('title', array_flip(is_array($metadata['changes']) ? array_filter($metadata['changes'], fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey('content', array_flip(is_array($metadata['changes']) ? array_filter($metadata['changes'], fn($v) => is_string($v) || is_int($v)) : []));
     }
 
     #[Test]
@@ -227,8 +227,8 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->assertCount(2, $recentLogs);
 
         $activityTypes = array_column($recentLogs, 'action_type');
-        $this->assertArrayHasKey(ActivityType::POST_UPDATED->value, array_flip($activityTypes));
-        $this->assertArrayHasKey(ActivityType::POST_VIEWED->value, array_flip($activityTypes));
+        $this->assertArrayHasKey(ActivityType::POST_UPDATED->value, array_flip(is_array($activityTypes) ? array_filter($activityTypes, fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey(ActivityType::POST_VIEWED->value, array_flip(is_array($activityTypes) ? array_filter($activityTypes, fn($v) => is_string($v) || is_int($v)) : []));
         $this->assertNotContains(ActivityType::POST_CREATED->value, $activityTypes);
     }
 }
