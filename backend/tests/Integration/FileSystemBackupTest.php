@@ -89,11 +89,11 @@ class FileSystemBackupTest extends TestCase
         // 驗證所有檔案都有備份
         foreach ($this->testFiles as $path => $content) {
             $backedUpFile = $extractedDir . $path;
-            $this->assertFileExists($backedUpFile, "檔案 {(string)path} 未被備份");
+            $this->assertFileExists($backedUpFile, "檔案 {$path} 未被備份");
             $this->assertEquals(
                 $content,
                 file_get_contents($backedUpFile),
-                "檔案 {(string)path} 的內容不符",
+                "檔案 {$path} 的內容不符",
             );
         }
     }
@@ -103,10 +103,10 @@ class FileSystemBackupTest extends TestCase
     {
         // 先建立備份
         $backupFile = $this->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
-        exec("cd '{(string)this->testDir}' && tar -czf '$backupFile' .");
+        exec("cd '{$this->testDir}' && tar -czf '$backupFile' .");
 
         // 清空原始目錄
-        exec("rm -rf '{(string)this->testDir}/uploads' '{(string)this->testDir}/storage'");
+        exec("rm -rf '{$this->testDir}/uploads' '{$this->testDir}/storage'");
         mkdir($this->testDir . '/uploads');
         mkdir($this->testDir . '/storage');
 
@@ -127,16 +127,16 @@ class FileSystemBackupTest extends TestCase
         // 驗證所有檔案都有還原
         foreach ($this->testFiles as $path => $content) {
             $restoredFile = $this->testDir . $path;
-            $this->assertFileExists($restoredFile, "檔案 {(string)path} 未被還原");
+            $this->assertFileExists($restoredFile, "檔案 {$path} 未被還原");
             $this->assertEquals(
                 $content,
                 file_get_contents($restoredFile),
-                "檔案 {(string)path} 的內容不符",
+                "檔案 {$path} 的內容不符",
             );
             $this->assertEquals(
                 0o644,
                 octdec(substr(sprintf('%o', fileperms($restoredFile)), -4)),
-                "檔案 {(string)path} 的權限不正確",
+                "檔案 {$path} 的權限不正確",
             );
         }
     }
@@ -236,7 +236,7 @@ class FileSystemBackupTest extends TestCase
         ));
 
         // 清空原始目錄
-        exec("rm -rf '{(string)this->testDir}/uploads' '{(string)this->testDir}/storage'");
+        exec("rm -rf '{$this->testDir}/uploads' '{$this->testDir}/storage'");
         mkdir($this->testDir . '/uploads');
         mkdir($this->testDir . '/storage');
 
@@ -258,17 +258,17 @@ class FileSystemBackupTest extends TestCase
             $this->assertEquals(
                 $originalMetadata[$path]['permissions'],
                 fileperms($file),
-                "檔案 {(string)path} 的權限不符",
+                "檔案 {$path} 的權限不符",
             );
             $this->assertEquals(
                 $originalMetadata[$path]['owner'],
                 fileowner($file),
-                "檔案 {(string)path} 的擁有者不符",
+                "檔案 {$path} 的擁有者不符",
             );
             $this->assertEquals(
                 $originalMetadata[$path]['group'],
                 filegroup($file),
-                "檔案 {(string)path} 的群組不符",
+                "檔案 {$path} 的群組不符",
             );
         }
     }
@@ -277,11 +277,11 @@ class FileSystemBackupTest extends TestCase
     {
         // 清理測試目錄
         if (is_dir($this->testDir)) {
-            exec("chmod -R 755 '{(string)this->testDir}'"); // 確保有權限刪除
-            exec("rm -rf '{(string)this->testDir}'");
+            exec("chmod -R 755 '{$this->testDir}'"); // 確保有權限刪除
+            exec("rm -rf '{$this->testDir}'");
         }
         if (is_dir($this->backupDir)) {
-            exec("rm -rf '{(string)this->backupDir}'");
+            exec("rm -rf '{$this->backupDir}'");
         }
 
         parent::tearDown();
