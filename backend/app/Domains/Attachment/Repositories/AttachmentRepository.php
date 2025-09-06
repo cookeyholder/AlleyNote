@@ -84,8 +84,10 @@ class AttachmentRepository
             return $data ? new Attachment($data) : null;
         });
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getByPostId(int $postId): array
+    /**
+     * @return array<int, \App\Domains\Attachment\Models\Attachment>
+     */
+    public function getByPostId(int $postId): array
     {
         return $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
             $sql = '

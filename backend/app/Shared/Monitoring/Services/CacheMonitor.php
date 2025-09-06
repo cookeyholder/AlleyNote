@@ -36,8 +36,11 @@ class CacheMonitor implements CacheMonitorInterface
 
     /** @var array<string, mixed> 設定 */
     private array $config;
-    /**\n      * @param array<string, mixed> $config
-     */    public function __construct(?LoggerInterface $logger = null, array $config = [])
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function __construct(?LoggerInterface $logger = null, array $config = [])
     {
         $this->logger = $logger ?? new NullLogger();
         /** @var array<string, mixed> $mergedConfig */
@@ -356,8 +359,10 @@ class CacheMonitor implements CacheMonitorInterface
 
         return $comparison;
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array
     {
         $slowOps = array_filter($this->operationHistory, fn($op) => $op['duration'] >= $thresholdMs);
 
@@ -480,8 +485,10 @@ class CacheMonitor implements CacheMonitorInterface
 
         return $cleaned;
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getMetrics(): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function getMetrics(): array
     {
         $stats = $this->calculateGlobalStats();
 
@@ -497,8 +504,10 @@ class CacheMonitor implements CacheMonitorInterface
             'hit_rate' => $stats['global_hit_rate'],
         ];
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getDriverPerformance(): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function getDriverPerformance(): array
     {
         $performance = [];
 
@@ -531,8 +540,10 @@ class CacheMonitor implements CacheMonitorInterface
 
         return $performance;
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getHealth(): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function getHealth(): array
     {
         return $this->getHealthOverview();
     }

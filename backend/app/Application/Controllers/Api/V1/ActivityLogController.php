@@ -67,10 +67,33 @@ class ActivityLogController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
+            $actionType = $data['action_type'] ?? '';
+            if (!is_string($actionType) && !is_int($actionType)) {
+                $errorResponse = json_encode(['error' => 'Invalid action_type format']);
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            $userId = $data['user_id'] ?? 0;
+            if (!is_numeric($userId)) {
+                $errorResponse = json_encode(['error' => 'Invalid user_id format']);
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            $metadata = $data['metadata'] ?? [];
+            if (!is_array($metadata)) {
+                $errorResponse = json_encode(['error' => 'Invalid metadata format']);
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            /** @var array<string, mixed> $metadata */
+
             $dto = new CreateActivityLogDTO(
-                actionType: ActivityType::from($data['action_type'] ?? ''),
-                userId: (int) ($data['user_id'] ?? 0),
-                metadata: $data['metadata'] ?? [],
+                actionType: ActivityType::from($actionType),
+                userId: (int) $userId,
+                metadata: $metadata,
             );
 
             $result = $this->loggingService->log($dto);
@@ -113,8 +136,11 @@ class ActivityLogController extends BaseController
     {
         try {
             $params = $request->getQueryParams();
-            $limit = (int) ($params['limit'] ?? 20);
-            $offset = (int) ($params['offset'] ?? 0);
+            $limitParam = $params['limit'] ?? 20;
+            $offsetParam = $params['offset'] ?? 0;
+
+            $limit = is_numeric($limitParam) ? (int) $limitParam : 20;
+            $offset = is_numeric($offsetParam) ? (int) $offsetParam : 0;
 
             $logs = $this->repository->findAll($limit, $offset);
 

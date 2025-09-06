@@ -29,6 +29,10 @@ class AttachmentController
             throw ValidationException::fromSingleError('user_id', '使用者未登入');
         }
 
+        if (!is_numeric($userId)) {
+            throw ValidationException::fromSingleError('user_id', '無效的使用者 ID');
+        }
+
         return (int) $userId;
     }
 
@@ -132,7 +136,14 @@ class AttachmentController
     {
         try {
             $currentUserId = $this->getCurrentUserId($request);
-            $postId = (int) $request->getAttribute('post_id');
+            $postIdAttr = $request->getAttribute('post_id');
+            if (!is_numeric($postIdAttr)) {
+                $response->getBody()->write((json_encode([
+                    'error' => '無效的貼文 ID',
+                ]) ?: ''));
+                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+            }
+            $postId = (int) $postIdAttr;
             $files = $request->getUploadedFiles();
 
             if (!isset($files['file'])) {
@@ -145,7 +156,18 @@ class AttachmentController
                     ->withHeader('Content-Type', 'application/json');
             }
 
-            $attachment = $this->attachmentService->upload($postId, $files['file'], $currentUserId);
+            $file = $files['file'];
+            if (!$file instanceof \Psr\Http\Message\UploadedFileInterface) {
+                $response->getBody()->write((json_encode([
+                    'error' => '無效的上傳檔案格式',
+                ]) ?: ''));
+
+                return $response
+                    ->withStatus(400)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            $attachment = $this->attachmentService->upload($postId, $file, $currentUserId);
 
             $jsonResponse = json_encode([
                 'data' => $attachment->toArray(),
@@ -255,9 +277,13 @@ class AttachmentController
         ],
     )]
     /**
-     * 下載附件.
+     * 下載附件
      *
+     * @param Request $request
+     * @param Response $response
      * @param array<string, mixed> $args 路由參數
+     *
+     * @return Response
      */
     public function download(Request $request, Response $response, array $args): Response
     {
@@ -351,13 +377,17 @@ class AttachmentController
     )]
     public function list(Request $request, Response $response): Response
     {
-        $postId = (int) $request->getAttribute('post_id');
+        $postIdValue = $request->getAttribute('post_id');
+        if (!is_string($postIdValue) && !is_int($postIdValue)) {
+            throw ValidationException::fromSingleError('post_id', '無效的貼文識別碼');
+        }
+        $postId = (int) $postIdValue;
         $attachments = $this->attachmentService->getByPostId($postId);
 
         $response->getBody()->write((json_encode([
             'data' => array_map(
-                /**\n                  * @param \App\Domains\Attachment\Models\Attachment $attachment
-
+                /**
+                 * @param \App\Domains\Attachment\Models\Attachment $attachment
                  */
                 fn($attachment) => $attachment->toArray(),
                 $attachments,

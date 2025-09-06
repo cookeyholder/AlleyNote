@@ -568,8 +568,10 @@ class AttachmentService implements AttachmentServiceInterface
             ],
         );
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getByPostId(int $postId): array
+    /**
+     * @return array<int, \App\Domains\Attachment\Models\Attachment>
+     */
+    public function getByPostId(int $postId): array
     {
         return $this->attachmentRepo->getByPostId($postId);
     }

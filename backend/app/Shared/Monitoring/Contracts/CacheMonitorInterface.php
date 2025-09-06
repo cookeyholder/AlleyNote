@@ -93,7 +93,7 @@ interface CacheMonitorInterface
      *
      * @param int $limit 限制數量
      * @param int $thresholdMs 閾值（毫秒）
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
      */
     public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array;
 
