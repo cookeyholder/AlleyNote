@@ -1,9 +1,6 @@
 
 includes:
 	- vendor/phpstan/phpstan-mockery/extension.neon
-	- phpstan-mockery-ignore.neon
-	- phpstan-test-exclusions.neon
-	- phpstan-level-10-baseline.neon
 
 parameters:
     treatPhpDocTypesAsCertain: false
