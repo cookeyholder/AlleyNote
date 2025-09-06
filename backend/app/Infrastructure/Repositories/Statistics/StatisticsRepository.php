@@ -455,9 +455,16 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             /** @var array<string, mixed>|false $row */
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            if (!is_array($row)) {
+                return [
+                    'min' => null,
+                    'max' => null,
+                ];
+            }
+
             return [
-                'min' => $row['min_date'] ? new DateTimeImmutable(($row['min_date'] ?? null)) : null,
-                'max' => $row['max_date'] ? new DateTimeImmutable(($row['max_date'] ?? null)) : null,
+                'min' => isset($row['min_date']) && is_string($row['min_date']) ? new DateTimeImmutable($row['min_date']) : null,
+                'max' => isset($row['max_date']) && is_string($row['max_date']) ? new DateTimeImmutable($row['max_date']) : null,
             ];
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -505,30 +512,73 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
      */
     private function buildSnapshotFromRow(array $row): StatisticsSnapshot
     {
+        // 驗證必要欄位
+        if (!isset($row['start_date']) || !is_string($row['start_date'])) {
+            throw new RuntimeException('Missing or invalid start_date');
+        }
+        if (!isset($row['end_date']) || !is_string($row['end_date'])) {
+            throw new RuntimeException('Missing or invalid end_date');
+        }
+        if (!isset($row['period_type']) || (!is_string($row['period_type']) && !is_int($row['period_type']))) {
+            throw new RuntimeException('Missing or invalid period_type');
+        }
+        if (!isset($row['uuid']) || !is_string($row['uuid'])) {
+            throw new RuntimeException('Missing or invalid uuid');
+        }
+
         $period = StatisticsPeriod::create(
-            new DateTimeImmutable(($row['start_date'] ?? null)),
-            new DateTimeImmutable(($row['end_date'] ?? null)),
-            PeriodType::from(($row['period_type'] ?? null)),
+            new DateTimeImmutable($row['start_date']),
+            new DateTimeImmutable($row['end_date']),
+            PeriodType::from($row['period_type']),
         );
 
-        $snapshotData = json_decode(($row['snapshot_data'] ?? null), true) ?? [];
+        $snapshotDataRaw = $row['snapshot_data'] ?? '{}';
+        if (!is_string($snapshotDataRaw)) {
+            $snapshotDataRaw = '{}';
+        }
+        $snapshotData = json_decode($snapshotDataRaw, true);
+        if (!is_array($snapshotData)) {
+            $snapshotData = [];
+        }
 
         // 建立基本指標
-        $totalPosts = StatisticsMetric::count((int) ($row['total_posts'] ?? null), '總文章數');
-        $totalViews = StatisticsMetric::count((int) ($row['total_views'] ?? null), '總瀏覽數');
+        $totalPostsValue = $row['total_posts'] ?? 0;
+        $totalViewsValue = $row['total_views'] ?? 0;
+        $totalPosts = StatisticsMetric::count(
+            is_numeric($totalPostsValue) ? (int) $totalPostsValue : 0,
+            '總文章數'
+        );
+        $totalViews = StatisticsMetric::count(
+            is_numeric($totalViewsValue) ? (int) $totalViewsValue : 0,
+            '總瀏覽數'
+        );
+
+        // 確保 snapshotData 是正確的型別
+        /** @var array<string, mixed> $typedSnapshotData */
+        $typedSnapshotData = $snapshotData;
 
         // 反序列化額外指標
-        $additionalMetrics = $this->deserializeMetrics($snapshotData);
+        $additionalMetrics = $this->deserializeMetrics($typedSnapshotData);
+
+        // 確保日期欄位存在且有效
+        $createdAt = isset($row['created_at']) && is_string($row['created_at'])
+            ? $row['created_at']
+            : date('Y-m-d H:i:s');
+
+        $updatedAt = null;
+        if (isset($row['updated_at']) && is_string($row['updated_at'])) {
+            $updatedAt = $row['updated_at'];
+        }
 
         return StatisticsSnapshot::fromData(
-            Uuid::fromString(($row['uuid'] ?? null)),
+            Uuid::fromString($row['uuid']),
             $period,
             $totalPosts,
             $totalViews,
             [], // 來源統計，暫時為空陣列
             $additionalMetrics,
-            new DateTimeImmutable(($row['created_at'] ?? null)),
-            $row['updated_at'] ? new DateTimeImmutable(($row['updated_at'] ?? null)) : null,
+            new DateTimeImmutable($createdAt),
+            $updatedAt ? new DateTimeImmutable($updatedAt) : null,
         );
     }
 
@@ -564,10 +614,13 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
         // 儲存來源統計
         $sourceStats = [];
         foreach ($snapshot->getSourceStats() as $sourceStat) {
+            $viewsMetric = $sourceStat->getAdditionalMetric('views');
+            $viewCount = $viewsMetric !== null ? $viewsMetric->value : 0;
+
             $sourceStats[] = [
                 'source_type' => $sourceStat->sourceType->value,
                 'post_count' => $sourceStat->count->value,
-                'view_count' => $sourceStat->getAdditionalMetric('views')?->value ?? 0,
+                'view_count' => $viewCount,
                 'percentage' => $sourceStat->percentage->value,
             ];
         }
@@ -591,10 +644,25 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
 
         foreach ($data as $key => $metricData) {
             if (is_array($metricData) && isset($metricData['value'])) {
+                $value = $metricData['value'];
+                $unit = $metricData['unit'] ?? '';
+                $description = $metricData['description'] ?? $key;
+
+                // 確保類型正確
+                if (!is_numeric($value)) {
+                    continue;
+                }
+                if (!is_string($unit)) {
+                    $unit = '';
+                }
+                if (!is_string($description)) {
+                    $description = (string) $key;
+                }
+
                 $metrics[$key] = StatisticsMetric::create(
-                    $metricData['value'],
-                    $metricData['unit'] ?? '',
-                    $metricData['description'] ?? $key,
+                    is_int($value) || is_float($value) ? $value : (float) $value,
+                    $unit,
+                    $description,
                 );
             }
         }
