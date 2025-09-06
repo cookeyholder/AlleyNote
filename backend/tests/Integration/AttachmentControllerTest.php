@@ -42,7 +42,13 @@ class AttachmentControllerTest extends TestCase
         $this->response->shouldReceive('getBody')->andReturn($this->stream);
         $this->stream->shouldReceive('write')
             ->andReturnUsing(function ($content) {
-                return strlen($content);
+                if (is_string($content)) {
+                    return strlen($content);
+                }
+                if (is_scalar($content)) {
+                    return strlen((string) $content);
+                }
+                return 0;
             });
 
         // 設定 AttachmentService mock 期望

@@ -378,14 +378,19 @@ class AuthController extends BaseController
                     ->withHeader('Content-Type', 'application/json');
             }
 
+            // 確保 credentials 是正確的類型
+            /** @var array<string, mixed> $credentials */
+            $credentials = is_array($credentials) ? $credentials : [];
+
             // 建立登入請求 DTO
             $loginRequest = LoginRequestDTO::fromArray($credentials);
 
             // 建立裝置資訊
+            $deviceName = $credentials['device_name'] ?? null;
             $deviceInfo = DeviceInfo::fromUserAgent(
                 userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
                 ipAddress: $this->getClientIpAddress($request),
-                deviceName: $credentials['device_name'] ?? null,
+                deviceName: is_string($deviceName) ? $deviceName : null,
             );
 
             // 執行 JWT 認證登入
@@ -418,7 +423,7 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             // 記錄登入失敗 - 驗證錯誤
-            if (isset($credentials['email'])) {
+            if (isset($credentials['email']) && is_string($credentials['email'])) {
                 $this->logLoginFailure($request, $credentials['email'], $e->getMessage());
             }
 
@@ -433,7 +438,7 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
             // 記錄登入失敗 - 使用者不存在
-            if (isset($credentials['email'])) {
+            if (isset($credentials['email']) && is_string($credentials['email'])) {
                 $this->logLoginFailure($request, $credentials['email'], '使用者名稱或密碼錯誤');
             }
 
@@ -448,7 +453,7 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
             // 記錄登入失敗 - 密碼錯誤或其他驗證失敗
-            if (isset($credentials['email'])) {
+            if (isset($credentials['email']) && is_string($credentials['email'])) {
                 $this->logLoginFailure($request, $credentials['email'], '使用者名稱或密碼錯誤');
             }
 
@@ -463,7 +468,7 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             // 記錄登入失敗 - 系統錯誤
-            if (isset($credentials['email'])) {
+            if (isset($credentials['email']) && is_string($credentials['email'])) {
                 $this->logLoginFailure($request, $credentials['email'], '系統發生錯誤');
             }
 
@@ -532,17 +537,19 @@ class AuthController extends BaseController
             }
 
             // 建立登出請求 DTO
+            $logoutAllDevices = $requestData['logout_all_devices'] ?? false;
             $logoutRequest = LogoutRequestDTO::fromArray([
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
-                'revoke_all_tokens' => $requestData['logout_all_devices'] ?? false,
+                'revoke_all_tokens' => is_bool($logoutAllDevices) ? $logoutAllDevices : false,
             ]);
 
             // 建立裝置資訊
+            $deviceName = $requestData['device_name'] ?? null;
             $deviceInfo = DeviceInfo::fromUserAgent(
                 userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
                 ipAddress: $this->getClientIpAddress($request),
-                deviceName: $requestData['device_name'] ?? null,
+                deviceName: is_string($deviceName) ? $deviceName : null,
             );
 
             // 執行登出
@@ -836,14 +843,19 @@ class AuthController extends BaseController
                     ->withHeader('Content-Type', 'application/json');
             }
 
+            // 確保 requestData 是正確的類型
+            /** @var array<string, mixed> $requestData */
+            $requestData = is_array($requestData) ? $requestData : [];
+
             // 建立刷新請求 DTO
             $refreshRequest = RefreshRequestDTO::fromArray($requestData);
 
             // 建立裝置資訊
+            $deviceName = $requestData['device_name'] ?? null;
             $deviceInfo = DeviceInfo::fromUserAgent(
                 userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
                 ipAddress: $this->getClientIpAddress($request),
-                deviceName: $requestData['device_name'] ?? null,
+                deviceName: is_string($deviceName) ? $deviceName : null,
             );
 
             // 執行 JWT token 刷新
