@@ -38,7 +38,10 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     /** @var int 最大值大小（位元組） */
     private int $maxValueSize;
+     * @param array<string, mixed> $config
 
+    /**
+     */
     public function __construct(array $config = [])
     {
         $this->minTtl = is_int($config['min_ttl'] ?? null) ? $config['min_ttl'] : 60;
@@ -192,7 +195,10 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
         return null;
     }
+     * @param array<string, mixed> $params
 
+    /**
+     */
     public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
         array $availableDrivers,
@@ -233,7 +239,10 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             default => null,
         };
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function getStats(): array
     {
         $totalDecisions = $this->stats['cache_decisions'];
@@ -300,6 +309,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     /**
      * 取得排除模式。
+     * @return array<string, mixed>
      */
     public function getExcludePatterns(): array
     {

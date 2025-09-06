@@ -22,7 +22,10 @@ class XssProtectionExtensionService
     private ContentModerationService $contentModerator;
 
     private array $config;
+     * @param array<string, mixed> $config
 
+    /**
+     */
     public function __construct(
         XssProtectionService $baseXssProtection,
         RichTextProcessorService $richTextProcessor,
@@ -37,6 +40,7 @@ class XssProtectionExtensionService
 
     /**
      * 情境感知的 XSS 防護.
+     * @param array<string, mixed> $options
      */
     public function protectByContext(string $input, string $context, array $options = []): array
     {
@@ -86,6 +90,7 @@ class XssProtectionExtensionService
 
     /**
      * 富文本編輯器防護.
+     * @param array<string, mixed> $options
      */
     private function protectRichTextEditor(string $input, array $options): array
     {
@@ -115,6 +120,7 @@ class XssProtectionExtensionService
 
     /**
      * 使用者簡介防護.
+     * @param array<string, mixed> $options
      */
     private function protectUserBio(string $input, array $options): array
     {
@@ -135,6 +141,7 @@ class XssProtectionExtensionService
 
     /**
      * 文章標題防護.
+     * @param array<string, mixed> $options
      */
     private function protectPostTitle(string $input, array $options): array
     {
@@ -158,6 +165,7 @@ class XssProtectionExtensionService
 
     /**
      * 文章內容防護.
+     * @param array<string, mixed> $options
      */
     private function protectPostContent(string $input, array $options): array
     {
@@ -192,6 +200,7 @@ class XssProtectionExtensionService
 
     /**
      * 評論防護.
+     * @param array<string, mixed> $options
      */
     private function protectComment(string $input, array $options): array
     {
@@ -217,6 +226,7 @@ class XssProtectionExtensionService
 
     /**
      * 搜尋查詢防護.
+     * @param array<string, mixed> $options
      */
     private function protectSearchQuery(string $input, array $options): array
     {
@@ -243,6 +253,7 @@ class XssProtectionExtensionService
 
     /**
      * URL 參數防護.
+     * @param array<string, mixed> $options
      */
     private function protectUrlParameter(string $input, array $options): array
     {
@@ -260,6 +271,7 @@ class XssProtectionExtensionService
 
     /**
      * JSON 資料防護.
+     * @param array<string, mixed> $options
      */
     private function protectJsonData(string $input, array $options): array
     {
@@ -292,6 +304,7 @@ class XssProtectionExtensionService
 
     /**
      * 檔案上傳防護.
+     * @param array<string, mixed> $options
      */
     private function protectFileUpload(string $input, array $options): array
     {
@@ -325,6 +338,7 @@ class XssProtectionExtensionService
 
     /**
      * 通用防護.
+     * @param array<string, mixed> $options
      */
     private function protectGeneric(string $input, array $options): array
     {
@@ -407,6 +421,7 @@ class XssProtectionExtensionService
 
     /**
      * 預設設定.
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {

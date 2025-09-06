@@ -18,7 +18,10 @@ class ContentModerationService
     private RichTextProcessorService $richTextProcessor;
 
     private array $config;
+     * @param array<string, mixed> $config
 
+    /**
+     */
     public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
@@ -31,6 +34,7 @@ class ContentModerationService
 
     /**
      * 審核內容.
+     * @param array<string, mixed> $metadata
      */
     public function moderateContent(string $content, array $metadata = []): mixed
     {
@@ -118,6 +122,7 @@ class ContentModerationService
 
     /**
      * 品質檢查.
+     * @param array<string, mixed> $metadata
      */
     private function checkQuality(string $content, array $metadata): mixed
     {
@@ -193,6 +198,7 @@ class ContentModerationService
 
     /**
      * 計算垃圾內容分數.
+     * @param array<string, mixed> $metadata
      */
     private function calculateSpamScore(string $content, array $metadata): float
     {
@@ -232,6 +238,7 @@ class ContentModerationService
 
     /**
      * 決定最終審核狀態.
+     * @param array<string, mixed> $result
      */
     private function determineFinalStatus(array &$result): void
     {

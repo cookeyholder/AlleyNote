@@ -352,7 +352,7 @@ final class RefreshTokenService
      * 取得使用者的活躍 refresh token 統計.
      *
      * @param int $userId 使用者 ID
-     * @return array{total: int, by_device: array, by_status: array}
+     * @return array<string, mixed>
      */
     public function getUserTokenStats(int $userId): array
     {
@@ -438,6 +438,7 @@ final class RefreshTokenService
 
     /**
      * 驗證裝置匹配（從資料庫資料）.
+     * @param array<string, mixed> $tokenData
      */
     private function verifyDeviceMatchFromData(array $tokenData, DeviceInfo $currentDevice): bool
     {
@@ -447,6 +448,7 @@ final class RefreshTokenService
 
     /**
      * 執行 token 輪轉（從資料庫資料）.
+     * @param array<string, mixed> $tokenData
      */
     private function performTokenRotationFromData(array $tokenData, DeviceInfo $deviceInfo): RefreshToken
     {

@@ -245,6 +245,7 @@ class CacheKeys
 
     /**
      * 解析快取鍵取得各部分.
+     * @return array<string, mixed>
      */
     public static function parseKey(string $key): array
     {

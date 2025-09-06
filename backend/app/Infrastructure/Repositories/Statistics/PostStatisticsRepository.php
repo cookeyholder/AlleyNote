@@ -954,6 +954,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
     /**
      * 根據來源類型取得文章數據.
+     * @return array<string, mixed>
      */
     public function getPostsBySourceType(StatisticsPeriod $period): array
     {
@@ -992,6 +993,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
     /**
      * 取得每小時分布統計.
+     * @return array<string, mixed>
      */
     public function getHourlyDistribution(StatisticsPeriod $period): array
     {

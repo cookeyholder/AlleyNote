@@ -180,7 +180,10 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         // 打亂字元順序
         return str_shuffle($password);
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function calculatePasswordStrength(string $password): array
     {
         $score = 0;
@@ -299,7 +302,10 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             throw ValidationException::fromErrors(['password' => $errors], '密碼必須' . implode('、', $errors));
         }
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     private function isCommonPassword(string $password): array
     {
         // 首先使用 HIBP API 檢查

@@ -126,7 +126,10 @@ class RouteCollection implements RouteCollectionInterface
     {
         return count($this->routes);
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function toArray(): array
     {
         $data = [];
@@ -143,7 +146,10 @@ class RouteCollection implements RouteCollectionInterface
 
         return $data;
     }
+     * @param array<string, mixed> $data
 
+    /**
+     */
     public static function fromArray(array $data): RouteCollectionInterface
     {
         $collection = new self();
@@ -173,8 +179,8 @@ class RouteCollection implements RouteCollectionInterface
      * 序列化路由處理器.
      *
      * 注意：這裡的實作是簡化版本，實際使用時可能需要更複雜的序列化邏輯
-     *
-     * @param callable|string|array $handler
+      * @param array<string, mixed> $handler
+     * @return array<string, mixed>
      */
     private function serializeHandler($handler): string|array
     {

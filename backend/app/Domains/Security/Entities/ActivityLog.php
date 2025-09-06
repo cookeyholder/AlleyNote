@@ -55,7 +55,10 @@ class ActivityLog
     private DateTimeImmutable $occurredAt;
 
     private DateTimeImmutable $createdAt;
+     * @param array<string, mixed> $metadata
 
+    /**
+     */
     public function __construct(
         ActivityType $actionType,
         ?int $userId = null,
@@ -146,7 +149,10 @@ class ActivityLog
     {
         return $this->description;
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function getMetadata(): ?array
     {
         if ($this->metadata === null) {
@@ -222,8 +228,7 @@ class ActivityLog
 
     /**
      * 取得活動的上下文資訊.
-     *
-     * @return array<string, mixed>
+      * @return array<string, mixed>
      */
     public function getContext(): array
     {
@@ -246,8 +251,7 @@ class ActivityLog
 
     /**
      * 轉換為陣列格式.
-     *
-     * @return array<string, mixed>
+      * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -275,8 +279,7 @@ class ActivityLog
 
     /**
      * 轉換為用於日誌記錄的格式.
-     *
-     * @return array<string, mixed>
+      * @return array<string, mixed>
      */
     public function toLogFormat(): array
     {
@@ -300,8 +303,7 @@ class ActivityLog
 
     /**
      * 從資料庫資料建立 ActivityLog 實體.
-     *
-     * @param array<string, mixed> $data
+      * @param array<string, mixed> $data
      */
     public static function fromDatabaseRow(array $data): self
     {
@@ -341,6 +343,7 @@ class ActivityLog
 
     /**
      * 從 DTO 建立 ActivityLog 實體.
+     * @param array<string, mixed> $metadata
      */
     public static function fromDTO(
         ActivityType $actionType,

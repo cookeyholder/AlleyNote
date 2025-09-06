@@ -393,8 +393,8 @@ final class StatisticsCalculationService
     /**
      * 計算趨勢分析.
      *
-     * @param array $data 資料陣列
-     * @return array 趨勢分析結果
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     public function calculateTrends(array $data): array
     {

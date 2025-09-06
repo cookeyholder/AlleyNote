@@ -511,6 +511,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
 
     /**
      * 從資料庫結果建立統計快照實體.
+     * @param array<string, mixed> $row
      */
     private function buildSnapshotFromRow(array $row): StatisticsSnapshot
     {
@@ -586,6 +587,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
 
     /**
      * 序列化快照資料.
+     * @return array<string, mixed>
      */
     private function serializeSnapshotData(StatisticsSnapshot $snapshot): array
     {

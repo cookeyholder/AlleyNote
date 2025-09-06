@@ -1211,6 +1211,7 @@ class TokenBlacklistRepositoryTest extends TestCase
 
     /**
      * 設定批次交易 Mock.
+     * @param array<string, mixed> $executeResults
      */
     private function setupBatchTransactionMock(int $executeCount, array $executeResults = []): void
     {
@@ -1275,6 +1276,7 @@ class TokenBlacklistRepositoryTest extends TestCase
 
     /**
      * 驗證批次查詢參數回調.
+     * @param array<string, mixed> $expectedJtis
      */
     private function createBatchQueryParamsCallback(array $expectedJtis): callable
     {

@@ -34,7 +34,10 @@ class Post implements JsonSerializable
     private string $createdAt;
 
     private string $updatedAt;
+     * @param array<string, mixed> $data
 
+    /**
+     */
     public function __construct(array $data)
     {
         $this->id = (int) ($data['id'] ?? 0);
@@ -158,8 +161,7 @@ class Post implements JsonSerializable
 
     /**
      * 取得清理過的資料陣列，適用於前端顯示.
-     *
-     * @param OutputSanitizerInterface $sanitizer 清理服務
+      * @param OutputSanitizerInterface $sanitizer 清理服務
      * @return array<mixed>
      */
     public function toSafeArray(OutputSanitizerInterface $sanitizer): mixed
@@ -180,7 +182,10 @@ class Post implements JsonSerializable
     {
         return $this->toArray();
     }
+     * @param array<string, mixed> $data
 
+    /**
+     */
     public static function fromArray(array $data): self
     {
         return new self($data);

@@ -57,6 +57,7 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 處理計算指令。
+     * @param array<string, mixed> $options
      */
     private function handleCalculateCommand(array $options): int
     {
@@ -148,6 +149,7 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 解析命令行參數。
+     * @param array<string, mixed> $arguments
      */
     private function parseArguments(array $arguments): array
     {
@@ -210,6 +212,7 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 輸出計算結果。
+     * @param array<string, mixed> $result
      */
     private function printCalculationResults(array $result): void
     {
@@ -269,6 +272,7 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 輸出狀態結果。
+     * @param array<string, mixed> $status
      */
     private function printStatusResults(array $status): void
     {

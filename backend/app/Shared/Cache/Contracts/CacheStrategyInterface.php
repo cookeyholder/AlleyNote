@@ -37,6 +37,7 @@ interface CacheStrategyInterface
      * 處理快取驅動故障。
      *
      * @param array<string, CacheDriverInterface> $availableDrivers 可用驅動
+     * @param array<string, mixed> $params
      */
     public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
@@ -47,6 +48,7 @@ interface CacheStrategyInterface
 
     /**
      * 獲取策略統計資訊。
+     * @return array<string, mixed>
      */
     public function getStats(): array;
 

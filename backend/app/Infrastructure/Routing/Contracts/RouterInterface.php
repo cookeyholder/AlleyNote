@@ -16,42 +16,42 @@ interface RouterInterface
     /**
      * 註冊 GET 路由.
      *
-     * @param callable|string|array $handler
+     * @param array<string, mixed> $handler
      */
     public function get(string $pattern, $handler): RouteInterface;
 
     /**
      * 註冊 POST 路由.
      *
-     * @param callable|string|array $handler
+     * @param array<string, mixed> $handler
      */
     public function post(string $pattern, $handler): RouteInterface;
 
     /**
      * 註冊 PUT 路由.
      *
-     * @param callable|string|array $handler
+     * @param array<string, mixed> $handler
      */
     public function put(string $pattern, $handler): RouteInterface;
 
     /**
      * 註冊 PATCH 路由.
      *
-     * @param callable|string|array $handler
+     * @param array<string, mixed> $handler
      */
     public function patch(string $pattern, $handler): RouteInterface;
 
     /**
      * 註冊 DELETE 路由.
      *
-     * @param callable|string|array $handler
+     * @param array<string, mixed> $handler
      */
     public function delete(string $pattern, $handler): RouteInterface;
 
     /**
      * 註冊 OPTIONS 路由.
      *
-     * @param callable|string|array $handler
+     * @param array<string, mixed> $handler
      */
     public function options(string $pattern, $handler): RouteInterface;
 
@@ -59,14 +59,14 @@ interface RouterInterface
      * 註冊支援任何 HTTP 方法的路由.
      *
      * @param string[] $methods
-     * @param callable|string|array $handler
+     * @param array<string, mixed> $handler
      */
     public function map(array $methods, string $pattern, $handler): RouteInterface;
 
     /**
      * 註冊支援所有 HTTP 方法的路由.
      *
-     * @param callable|string|array $handler
+     * @param array<string, mixed> $handler
      */
     public function any(string $pattern, $handler): RouteInterface;
 

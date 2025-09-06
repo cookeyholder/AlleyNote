@@ -33,6 +33,7 @@ readonly class StatisticsSnapshotUpdated
 
     /**
      * 取得事件資料.
+     * @return array<string, mixed>
      */
     public function getEventData(): array
     {

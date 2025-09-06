@@ -1257,6 +1257,7 @@ final class RefreshTokenRepositoryTest extends TestCase
 
     /**
      * 建立測試用的 RefreshToken 資料陣列.
+     * @return array<string, mixed>
      */
     private function createSampleTokenData(string $jti = 'test-jti', int $userId = 1): array
     {

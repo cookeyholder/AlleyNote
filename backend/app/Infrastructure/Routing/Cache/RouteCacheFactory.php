@@ -26,7 +26,7 @@ class RouteCacheFactory
     /**
      * 建立路由快取實例.
      *
-     * @param array{driver: string, path?: string, ttl?: int, redis?: array} $config 快取配置
+     * @param array<string, mixed> $config
      */
     public function create(array $config): RouteCacheInterface
     {

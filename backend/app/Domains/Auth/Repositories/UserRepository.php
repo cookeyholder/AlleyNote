@@ -15,7 +15,10 @@ class UserRepository
         private PDO $db,
         private ?PasswordSecurityServiceInterface $passwordService = null,
     ) {}
+     * @param array<string, mixed> $data
 
+    /**
+     */
     public function create(array $data): array
     {
         $sql = 'INSERT INTO users (uuid, username, email, password) VALUES (:uuid, :username, :email, :password)';
@@ -42,7 +45,10 @@ class UserRepository
 
         return $this->findById((int) $this->db->lastInsertId());
     }
+     * @param array<string, mixed> $data
 
+    /**
+     */
     public function update(string $id, array $data): array
     {
         $fields = [];
@@ -76,7 +82,10 @@ class UserRepository
 
         return $stmt->execute(['id' => $id]);
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function findById(int $id): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
@@ -86,7 +95,10 @@ class UserRepository
 
         return $result ?: null;
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function findByUuid(string $uuid): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE uuid = :uuid');
@@ -96,7 +108,10 @@ class UserRepository
 
         return $result ?: null;
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function findByUsername(string $username): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE username = :username');
@@ -106,7 +121,10 @@ class UserRepository
 
         return $result ?: null;
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function findByEmail(string $email): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE email = :email');

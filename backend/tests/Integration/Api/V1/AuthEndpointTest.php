@@ -70,6 +70,8 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
 
     /**
      * 建立 HTTP 請求
+     * @param array<string, mixed> $body
+     * @param array<string, mixed> $headers
      */
     private function createRequest(string $method, string $path, ?array $body = null, array $headers = []): ResponseInterface
     {

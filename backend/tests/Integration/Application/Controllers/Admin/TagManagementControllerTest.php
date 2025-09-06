@@ -60,6 +60,7 @@ class TagManagementControllerTest extends TestCase
 
     /**
      * 安全地解析 JSON 響應，確保型別安全.
+     * @return array<string, mixed>
      */
     private function safeJsonDecode(mixed $content): ?array
     {
@@ -73,6 +74,8 @@ class TagManagementControllerTest extends TestCase
 
     /**
      * 驗證響應資料結構.
+     * @param array<string, mixed> $data
+     * @param array<string, mixed> $expectedKeys
      */
     private function validateResponse(array $data, array $expectedKeys): bool
     {

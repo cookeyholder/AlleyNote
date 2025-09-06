@@ -70,7 +70,10 @@ class TaggedCacheIntegrationTest extends TestCase
             {
                 return $callback();
             }
+     * @param array<string, mixed> $params
 
+    /**
+     */
             public function handleDriverFailure(
                 CacheDriverInterface $failedDriver,
                 array $availableDrivers,
@@ -79,7 +82,10 @@ class TaggedCacheIntegrationTest extends TestCase
             ): mixed {
                 return null;
             }
+     * @return array<string, mixed>
 
+    /**
+     */
             public function getStats(): array
             {
                 return [];
@@ -210,7 +216,10 @@ class TaggedCacheIntegrationTest extends TestCase
             );
         }
     }
+     * @param array<string, mixed> $stats
 
+    /**
+     */
     private function verifyTagStatisticsResults(array $stats): void
     {
         // 修正：TaggedCacheManager.getTagStatistics() 回傳的是簡單的標籤統計
@@ -419,8 +428,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 設定併發標籤測試資料.
-     *
-     * @return array{baseKey: string, sharedTag: string, count: int}
+      * @return array{baseKey: string, sharedTag: string, count: int}
      */
     private function setupConcurrentTaggedData(): array
     {
@@ -443,8 +451,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 驗證共享標籤關聯.
-     *
-     * @param array{baseKey: string, sharedTag: string, count: int} $concurrentData
+      * @param array{baseKey: string, sharedTag: string, count: int} $concurrentData
      */
     private function verifySharedTagAssociations(array $concurrentData): void
     {
@@ -459,8 +466,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 驗證共享標籤清空.
-     *
-     * @param array{baseKey: string, sharedTag: string, count: int} $concurrentData
+      * @param array{baseKey: string, sharedTag: string, count: int} $concurrentData
      */
     private function verifySharedTagFlush(array $concurrentData): void
     {
@@ -476,8 +482,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 取得標籤類型測試案例.
-     *
-     * @return array<string, string>
+      * @return array<string, string>
      */
     private function getTagTypeTestCases(): array
     {
@@ -491,8 +496,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 設定並驗證標籤分類.
-     *
-     * @param array<string, string> $testCases
+      * @param array<string, string> $testCases
      */
     private function setupAndVerifyTagClassification(array $testCases): void
     {
@@ -507,8 +511,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 驗證標籤統計.
-     *
-     * @param array<string, string> $testCases
+      * @param array<string, string> $testCases
      */
     private function verifyTagStatistics(array $testCases): void
     {
@@ -520,8 +523,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 設定標籤清空測試資料.
-     *
-     * @return array<string, array{value: string, tags: array<string>}>
+      * @return array<string, array{value: string, tags: array<string>}>
      */
     private function setupTagFlushingTestData(): array
     {
@@ -542,8 +544,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 驗證測試資料已儲存.
-     *
-     * @param array<string, array{value: string, tags: array<string>}> $testData
+      * @param array<string, array{value: string, tags: array<string>}> $testData
      */
     private function verifyTestDataStored(array $testData): void
     {
@@ -554,8 +555,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 執行並驗證標籤清空.
-     *
-     * @param array<string, array{value: string, tags: array<string>}> $testData
+      * @param array<string, array{value: string, tags: array<string>}> $testData
      */
     private function executeAndVerifyTagFlushing(array $testData): void
     {
@@ -574,8 +574,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 設定多標籤測試資料.
-     *
-     * @return array{keys: array<string>, tags: array<string, array<string>>}
+      * @return array{keys: array<string>, tags: array<string, array<string>>}
      */
     private function setupMultipleTagTestData(): array
     {
@@ -597,8 +596,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 執行並驗證多標籤清空.
-     *
-     * @param array{keys: array<string>, tags: array<string, array<string>>} $multiTagData
+      * @param array{keys: array<string>, tags: array<string, array<string>>} $multiTagData
      */
     private function executeAndVerifyMultipleTagFlushing(array $multiTagData): void
     {

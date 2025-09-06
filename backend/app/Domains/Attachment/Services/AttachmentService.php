@@ -250,6 +250,7 @@ class AttachmentService implements AttachmentServiceInterface
 
     /**
      * 改善的檔案驗證流程（減緩 TOCTOU 風險）.
+     * @return array<string, mixed>
      */
     private function secureFileValidation(UploadedFileInterface $file): array
     {
@@ -461,7 +462,10 @@ class AttachmentService implements AttachmentServiceInterface
             throw $e;
         }
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function download(string $uuid, int $currentUserId): array
     {
         $attachment = $this->attachmentRepo->findByUuid($uuid);
@@ -567,7 +571,10 @@ class AttachmentService implements AttachmentServiceInterface
             ],
         );
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function getByPostId(int $postId): array
     {
         return $this->attachmentRepo->getByPostId($postId);

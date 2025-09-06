@@ -27,6 +27,7 @@ class MonitoringServiceProvider
 {
     /**
      * 取得監控服務的 DI 定義。
+     * @return array<string, mixed>
      */
     public static function getDefinitions(): array
     {

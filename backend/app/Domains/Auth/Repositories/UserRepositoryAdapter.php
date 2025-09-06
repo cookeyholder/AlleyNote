@@ -84,7 +84,10 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         // 委託給原始 repository，但需要轉換參數類型
         return $this->userRepository->updateLastLogin((string) $userId);
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function findById(int $id): ?array
     {
         // 委託給原始 repository
@@ -134,12 +137,18 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     {
         return true;
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array
     {
         return [];
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function getTrashed(int $page = 1, int $perPage = 10): array
     {
         return [];
@@ -153,7 +162,10 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     {
         return [];
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function getStats(array $conditions = []): array
     {
         return [];

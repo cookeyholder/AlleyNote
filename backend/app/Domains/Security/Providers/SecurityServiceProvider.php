@@ -28,6 +28,7 @@ class SecurityServiceProvider
 {
     /**
      * 取得所有 Security 服務定義.
+     * @return array<string, mixed>
      */
     public static function getDefinitions(): array
     {

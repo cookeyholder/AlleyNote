@@ -18,7 +18,7 @@ interface CacheMonitorInterface
      * @param string $driver 使用的驅動名稱
      * @param bool $success 操作是否成功
      * @param float $duration 操作耗時（毫秒）
-     * @param array $context 額外上下文資訊
+     * @param array<string, mixed> $context
      */
     public function recordOperation(
         string $operation,
@@ -52,7 +52,7 @@ interface CacheMonitorInterface
      * @param string $driver 驅動名稱
      * @param string $operation 操作類型
      * @param string $error 錯誤訊息
-     * @param array $context 錯誤上下文
+     * @param array<string, mixed> $context
      */
     public function recordError(string $driver, string $operation, string $error, array $context = []): void;
 
@@ -61,7 +61,7 @@ interface CacheMonitorInterface
      *
      * @param string $driver 驅動名稱
      * @param bool $healthy 是否健康
-     * @param array $details 健康檢查詳細資訊
+     * @param array<string, mixed> $details
      */
     public function recordHealthStatus(string $driver, bool $healthy, array $details = []): void;
 
@@ -70,6 +70,7 @@ interface CacheMonitorInterface
      *
      * @param string|null $driver 指定驅動，null 表示所有驅動
      * @param string|null $timeRange 時間範圍 (1h, 24h, 7d, 30d)
+     * @return array<string, mixed>
      */
     public function getCacheStats(?string $driver = null, ?string $timeRange = null): array;
 
@@ -77,11 +78,13 @@ interface CacheMonitorInterface
      * 取得命中率統計。
      *
      * @param string|null $timeRange 時間範圍
+     * @return array<string, mixed>
      */
     public function getHitRateStats(?string $timeRange = null): array;
 
     /**
      * 取得驅動效能比較。
+     * @return array<string, mixed>
      */
     public function getDriverPerformanceComparison(): array;
 
@@ -90,11 +93,13 @@ interface CacheMonitorInterface
      *
      * @param int $limit 限制數量
      * @param int $thresholdMs 閾值（毫秒）
+     * @return array<string, mixed>
      */
     public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array;
 
     /**
      * 取得快取容量使用情況。
+     * @return array<string, mixed>
      */
     public function getCacheCapacityStats(): array;
 
@@ -102,11 +107,13 @@ interface CacheMonitorInterface
      * 取得快取錯誤統計。
      *
      * @param string|null $timeRange 時間範圍
+     * @return array<string, mixed>
      */
     public function getErrorStats(?string $timeRange = null): array;
 
     /**
      * 取得快取健康狀態。
+     * @return array<string, mixed>
      */
     public function getHealthOverview(): array;
 

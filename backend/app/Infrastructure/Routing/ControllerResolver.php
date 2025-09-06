@@ -28,6 +28,7 @@ class ControllerResolver
 
     /**
      * 解析並執行控制器方法.
+     * @param array<string, mixed> $parameters
      */
     public function resolve(
         RouteInterface $route,
@@ -56,6 +57,7 @@ class ControllerResolver
 
     /**
      * 處理閉包函式處理器.
+     * @param array<string, mixed> $parameters
      */
     private function handleCallable(callable $handler, ServerRequestInterface $request, array $parameters): ResponseInterface
     {
@@ -356,6 +358,7 @@ class ControllerResolver
 
     /**
      * 處理字串格式處理器 "ControllerClass@method".
+     * @param array<string, mixed> $parameters
      */
     private function handleStringHandler(string $handler, ServerRequestInterface $request, array $parameters): ResponseInterface
     {
@@ -370,6 +373,8 @@ class ControllerResolver
 
     /**
      * 處理陣列格式處理器 [ControllerClass::class, 'method'].
+     * @param array<string, mixed> $handler
+     * @param array<string, mixed> $parameters
      */
     private function handleArrayHandler(array $handler, ServerRequestInterface $request, array $parameters): ResponseInterface
     {
@@ -431,6 +436,7 @@ class ControllerResolver
 
     /**
      * 解析建構子參數.
+     * @return array<string, mixed>
      */
     private function resolveConstructorArguments(ReflectionMethod $constructor): array
     {
@@ -470,6 +476,7 @@ class ControllerResolver
 
     /**
      * 解析控制器方法參數.
+     * @param array<string, mixed> $routeParameters
      */
     private function resolveMethodArguments(
         object $controller,

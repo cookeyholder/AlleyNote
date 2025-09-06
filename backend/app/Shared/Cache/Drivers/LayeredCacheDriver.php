@@ -289,7 +289,10 @@ class LayeredCacheDriver implements CacheDriverInterface
     {
         return $this->remember($key, $callback, 0);
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
@@ -370,6 +373,7 @@ class LayeredCacheDriver implements CacheDriverInterface
 
     /**
      * 取得所有層級。
+     * @return array<string, mixed>
      */
     public function getLayers(): array
     {

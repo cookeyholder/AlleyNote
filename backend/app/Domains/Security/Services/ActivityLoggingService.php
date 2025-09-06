@@ -144,7 +144,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * @param int|null $userId 使用者ID，匿名操作時可為 null
      * @param string|null $targetType 目標類型 (如: 'post', 'user', 'file')
      * @param string|null $targetId 目標ID
-     * @param array|null $metadata 額外的元資料
+     * @param array<string, mixed> $metadata
      * @return bool 記錄是否成功
      *
      * @example
@@ -197,7 +197,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * @param ActivityType $actionType 活動類型
      * @param int|null $userId 使用者ID
      * @param string $reason 失敗原因描述
-     * @param array|null $metadata 額外的元資料，如錯誤代碼、堆疊追蹤等
+     * @param array<string, mixed> $metadata
      * @return bool 記錄是否成功
      *
      * @example
@@ -243,7 +243,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      *
      * @param ActivityType $actionType 活動類型（必須是安全相關類型）
      * @param string $description 安全事件的詳細描述
-     * @param array|null $metadata 相關的安全資訊和上下文
+     * @param array<string, mixed> $metadata
      * @return bool 記錄是否成功
      *
      * @example
@@ -290,6 +290,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
 
     /**
      * 批次記錄多個活動.
+     * @param array<string, mixed> $dtos
      */
     public function logBatch(array $dtos): int
     {

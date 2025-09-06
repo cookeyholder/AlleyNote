@@ -12,7 +12,10 @@ use App\Domains\Auth\ValueObjects\TokenPair;
  * 封裝使用者 Token 刷新成功後的回應資料。
  */
 final readonly class RefreshResponseDTO
+     * @param array<string, mixed> $permissions
 {
+    /**
+     */
     public function __construct(
         public TokenPair $tokens,
         public int $userId,
@@ -23,6 +26,7 @@ final readonly class RefreshResponseDTO
 
     /**
      * 轉換為陣列.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

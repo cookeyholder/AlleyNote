@@ -30,7 +30,7 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array $data 輸入資料
+     * @param array<string, mixed> $data
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -200,6 +200,7 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）.
+     * @return array<string, mixed>
      */
     protected function getValidationRules(): array
     {
@@ -216,7 +217,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 動態驗證資料（只驗證提供的欄位）.
      *
-     * @param array $data 要驗證的資料
+     * @param array<string, mixed> $data
      * @return array<mixed> 驗證通過的資料
      * @throws ValidationException 當驗證失敗時
      */
@@ -243,6 +244,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Repository 使用）
      * 只包含有值的欄位.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

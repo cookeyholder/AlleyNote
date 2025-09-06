@@ -13,46 +13,55 @@ interface PerformanceMonitorInterface
 {
     /**
      * 開始監控一個操作。
+     * @param array<string, mixed> $context
      */
     public function startMonitoring(string $operation, array $context = []): string;
 
     /**
      * 結束監控一個操作。
+     * @param array<string, mixed> $context
      */
     public function endMonitoring(string $monitoringId, array $context = []): void;
 
     /**
      * 記錄一個性能指標。
+     * @param array<string, mixed> $tags
      */
     public function recordMetric(string $name, float $value, string $unit = 'ms', array $tags = []): void;
 
     /**
      * 記錄一個計數器指標。
+     * @param array<string, mixed> $tags
      */
     public function incrementCounter(string $name, array $tags = []): void;
 
     /**
      * 記錄一個計量表指標。
+     * @param array<string, mixed> $tags
      */
     public function recordGauge(string $name, float $value, array $tags = []): void;
 
     /**
      * 記錄一個直方圖指標。
+     * @param array<string, mixed> $tags
      */
     public function recordHistogram(string $name, float $value, array $tags = []): void;
 
     /**
      * 取得效能統計資料。
+     * @return array<string, mixed>
      */
     public function getPerformanceStats(?string $operation = null): array;
 
     /**
      * 取得慢查詢記錄。
+     * @return array<string, mixed>
      */
     public function getSlowQueries(int $limit = 10): array;
 
     /**
      * 取得效能警告。
+     * @return array<string, mixed>
      */
     public function getPerformanceWarnings(): array;
 

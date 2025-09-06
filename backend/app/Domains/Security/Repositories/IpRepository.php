@@ -74,7 +74,10 @@ class IpRepository implements IpRepositoryInterface
 
         return ($ip & $mask) === $subnet;
     }
+     * @param array<string, mixed> $data
 
+    /**
+     */
     private function createIpListFromData(array $data): IpList
     {
         // 確保資料欄位型別正確
@@ -89,7 +92,10 @@ class IpRepository implements IpRepositoryInterface
             'updated_at' => (string) $data['updated_at'],
         ]);
     }
+     * @param array<string, mixed> $data
 
+    /**
+     */
     public function create(array $data): IpList
     {
         $this->validateIpAddress($data['ip_address']);
@@ -189,7 +195,10 @@ class IpRepository implements IpRepositoryInterface
             return $this->createIpListFromData($result);
         }, self::CACHE_TTL);
     }
+     * @param array<string, mixed> $data
 
+    /**
+     */
     public function update(int $id, array $data): IpList
     {
         if (isset($data['ip_address'])) {
@@ -260,7 +269,10 @@ class IpRepository implements IpRepositoryInterface
             $results,
         );
     }
+     * @param array<string, mixed> $conditions
 
+    /**
+     */
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         $offset = ($page - 1) * $perPage;

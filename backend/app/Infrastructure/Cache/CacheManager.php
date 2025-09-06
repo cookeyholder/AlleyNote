@@ -114,6 +114,7 @@ class CacheManager
 
     /**
      * 取得或設定多個快取值
+     * @param array<string, mixed> $keys
      */
     public function many(array $keys): array
     {
@@ -127,6 +128,7 @@ class CacheManager
 
     /**
      * 設定多個快取值
+     * @param array<string, mixed> $values
      */
     public function putMany(array $values, ?int $ttl = null): bool
     {
@@ -180,6 +182,7 @@ class CacheManager
 
     /**
      * 取得快取統計資訊.
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {

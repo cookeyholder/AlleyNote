@@ -15,36 +15,43 @@ interface ErrorTrackerInterface
 {
     /**
      * 記錄一個錯誤。
+     * @param array<string, mixed> $context
      */
     public function recordError(Throwable $error, array $context = []): string;
 
     /**
      * 記錄一個警告。
+     * @param array<string, mixed> $context
      */
     public function recordWarning(string $message, array $context = []): string;
 
     /**
      * 記錄一個訊息。
+     * @param array<string, mixed> $context
      */
     public function recordInfo(string $message, array $context = []): string;
 
     /**
      * 記錄關鍵錯誤（需要立即注意）。
+     * @param array<string, mixed> $context
      */
     public function recordCriticalError(Throwable $error, array $context = []): string;
 
     /**
      * 取得錯誤統計資料。
+     * @return array<string, mixed>
      */
     public function getErrorStats(int $hours = 24): array;
 
     /**
      * 取得最近的錯誤記錄。
+     * @return array<string, mixed>
      */
     public function getRecentErrors(int $limit = 50): array;
 
     /**
      * 取得錯誤趨勢分析。
+     * @return array<string, mixed>
      */
     public function getErrorTrends(int $days = 7): array;
 
@@ -55,6 +62,7 @@ interface ErrorTrackerInterface
 
     /**
      * 取得錯誤摘要報告。
+     * @return array<string, mixed>
      */
     public function getErrorSummary(int $hours = 24): array;
 

@@ -55,6 +55,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 開始監控一個操作。
+     * @param array<string, mixed> $context
      */
     public function startMonitoring(string $operation, array $context = []): string
     {
@@ -78,6 +79,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 結束監控一個操作。
+     * @param array<string, mixed> $context
      */
     public function endMonitoring(string $monitoringId, array $context = []): void
     {
@@ -138,6 +140,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 記錄一個性能指標。
+     * @param array<string, mixed> $tags
      */
     public function recordMetric(string $name, float $value, string $unit = 'ms', array $tags = []): void
     {
@@ -166,6 +169,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 記錄一個計數器指標。
+     * @param array<string, mixed> $tags
      */
     public function incrementCounter(string $name, array $tags = []): void
     {
@@ -187,6 +191,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 記錄一個計量表指標。
+     * @param array<string, mixed> $tags
      */
     public function recordGauge(string $name, float $value, array $tags = []): void
     {
@@ -195,6 +200,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 記錄一個直方圖指標。
+     * @param array<string, mixed> $tags
      */
     public function recordHistogram(string $name, float $value, array $tags = []): void
     {
@@ -217,6 +223,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得效能統計資料。
+     * @return array<string, mixed>
      */
     public function getPerformanceStats(?string $operation = null): array
     {
@@ -243,6 +250,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得慢查詢記錄。
+     * @return array<string, mixed>
      */
     public function getSlowQueries(int $limit = 10): array
     {
@@ -255,6 +263,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得效能警告。
+     * @return array<string, mixed>
      */
     public function getPerformanceWarnings(): array
     {
@@ -365,6 +374,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 建立指標鍵名。
+     * @param array<string, mixed> $tags
      */
     private function buildMetricKey(string $name, array $tags): string
     {
@@ -384,6 +394,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 記錄慢操作。
+     * @param array<string, mixed> $context
      */
     private function recordSlowOperation(string $operation, float $duration, array $context): void
     {
@@ -403,6 +414,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得特定操作的統計。
+     * @return array<string, mixed>
      */
     private function getOperationStats(string $operation): array
     {
@@ -437,6 +449,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 計算指標摘要。
+     * @param array<string, mixed> $metricsSubset
      */
     private function calculateMetricsSummary(?array $metricsSubset = null): array
     {
@@ -465,6 +478,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 計算直方圖摘要。
+     * @return array<string, mixed>
      */
     private function calculateHistogramSummary(): array
     {
@@ -494,6 +508,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 計算百分位數。
+     * @param array<string, mixed> $values
      */
     private function percentile(array $values, int $percentile): float
     {

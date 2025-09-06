@@ -70,7 +70,7 @@ class PasswordManagementService
      * 檢查密碼強度並提供建議.
      *
      * @param string $password 要檢查的密碼
-     * @return array 包含強度評分和建議的陣列
+     * @return array<string, mixed>
      */
     public function checkPasswordStrength(string $password): array
     {

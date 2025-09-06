@@ -726,7 +726,7 @@ class ValidatorTest extends TestCase
     /**
      * 測試有效值的助手方法.
      *
-     * @param array $validValues 有效值陣列
+     * @param array<string, mixed> $validValues
      * @param string $rule 驗證規則
      * @param string $field 欄位名稱
      */
@@ -744,7 +744,7 @@ class ValidatorTest extends TestCase
     /**
      * 測試無效值的助手方法.
      *
-     * @param array $invalidValues 無效值陣列
+     * @param array<string, mixed> $invalidValues
      * @param string $rule 驗證規則
      * @param string $field 欄位名稱
      */

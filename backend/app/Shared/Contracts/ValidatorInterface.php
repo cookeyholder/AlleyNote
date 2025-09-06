@@ -29,7 +29,7 @@ interface ValidatorInterface
      * @param array<string, mixed> $data 要驗證的資料
      * @param array<string, mixed> $rules 驗證規則
      * @throws ValidationException 當驗證失敗時
-     * @return array 驗證通過的資料
+     * @return array<string, mixed>
      */
     public function validateOrFail(array $data, array $rules): array;
 

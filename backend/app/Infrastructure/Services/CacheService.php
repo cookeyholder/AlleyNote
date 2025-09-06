@@ -165,7 +165,10 @@ class CacheService implements CacheServiceInterface
 
         return true;
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function getMultiple(array $keys): array
     {
         $result = [];
@@ -222,6 +225,7 @@ class CacheService implements CacheServiceInterface
 
     /**
      * 取得快取統計資訊.
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {

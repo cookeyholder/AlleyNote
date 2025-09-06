@@ -39,7 +39,10 @@ class CacheServiceProvider
 
     /** @var array<string, mixed> 設定 */
     private array $config;
+     * @param array<string, mixed> $config
 
+    /**
+     */
     public function __construct(Container $container, array $config = [])
     {
         $this->container = $container;
@@ -252,6 +255,7 @@ class CacheServiceProvider
 
     /**
      * 取得 DI 容器定義。
+     * @return array<string, mixed>
      */
     public static function getDefinitions(): array
     {
@@ -432,6 +436,7 @@ class CacheServiceProvider
 
     /**
      * 取得預設設定。
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {
@@ -485,6 +490,7 @@ class CacheServiceProvider
 
     /**
      * 取得設定。
+     * @return array<string, mixed>
      */
     public function getConfig(): array
     {
@@ -493,6 +499,7 @@ class CacheServiceProvider
 
     /**
      * 更新設定。
+     * @param array<string, mixed> $config
      */
     public function updateConfig(array $config): void
     {
@@ -524,6 +531,7 @@ class CacheConfigBuilder
 
     /**
      * 設定記憶體驅動。
+     * @param array<string, mixed> $config
      */
     public function memoryDriver(array $config = []): self
     {
@@ -542,6 +550,7 @@ class CacheConfigBuilder
 
     /**
      * 設定檔案驅動。
+     * @param array<string, mixed> $config
      */
     public function fileDriver(?string $path = null, array $config = []): self
     {
@@ -565,6 +574,7 @@ class CacheConfigBuilder
 
     /**
      * 設定 Redis 驅動。
+     * @param array<string, mixed> $config
      */
     public function redisDriver(array $config = []): self
     {
@@ -586,6 +596,7 @@ class CacheConfigBuilder
 
     /**
      * 設定快取策略。
+     * @param array<string, mixed> $config
      */
     public function strategy(array $config): self
     {
@@ -601,6 +612,7 @@ class CacheConfigBuilder
 
     /**
      * 設定管理器。
+     * @param array<string, mixed> $config
      */
     public function manager(array $config): self
     {
@@ -616,6 +628,7 @@ class CacheConfigBuilder
 
     /**
      * 建構設定。
+     * @return array<string, mixed>
      */
     public function build(): array
     {

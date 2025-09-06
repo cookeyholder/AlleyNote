@@ -497,6 +497,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得統計摘要.
+     * @return array<string, mixed>
      */
     public function getSummary(): array
     {
@@ -516,6 +517,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 轉換為陣列.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

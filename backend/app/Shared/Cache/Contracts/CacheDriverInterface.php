@@ -85,6 +85,7 @@ interface CacheDriverInterface
 
     /**
      * 取得快取統計資訊。
+     * @return array<string, mixed>
      */
     public function getStats(): array;
 

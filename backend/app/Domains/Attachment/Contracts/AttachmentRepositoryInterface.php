@@ -33,6 +33,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      *
      * @param int $postId 貼文 ID
      * @param bool $includeDeleted 是否包含已刪除的附件
+     * @return array<string, mixed>
      */
     public function getByPostId(int $postId, bool $includeDeleted = false): array;
 
@@ -41,6 +42,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      *
      * @param int $userId 使用者 ID
      * @param int $limit 限制筆數
+     * @return array<string, mixed>
      */
     public function getByUserId(int $userId, int $limit = 50): array;
 
@@ -86,6 +88,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
      * @param array<string, mixed> $filters 篩選條件
+     * @return array<string, mixed>
      */
     public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array;
 
@@ -94,6 +97,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      *
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
+     * @return array<string, mixed>
      */
     public function getTrashed(int $page = 1, int $perPage = 10): array;
 
@@ -102,6 +106,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      *
      * @param string $mimeType MIME 類型
      * @param int $limit 限制筆數
+     * @return array<string, mixed>
      */
     public function getByMimeType(string $mimeType, int $limit = 10): array;
 
@@ -111,6 +116,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param int $minSize 最小檔案大小（位元組）
      * @param int $maxSize 最大檔案大小（位元組）
      * @param int $limit 限制筆數
+     * @return array<string, mixed>
      */
     public function getBySizeRange(int $minSize, int $maxSize, int $limit = 10): array;
 
@@ -118,6 +124,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * 取得孤兒附件（沒有關聯貼文的附件）.
      *
      * @param int $olderThanDays 超過指定天數的附件
+     * @return array<string, mixed>
      */
     public function getOrphanedAttachments(int $olderThanDays = 7): array;
 
@@ -125,7 +132,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * 統計附件資訊.
      *
      * @param array<string, mixed> $conditions 統計條件
-     * @return array 包含總數、總大小、各類型數量等
+     * @return array<string, mixed>
      */
     public function getStats(array $conditions = []): array;
 
@@ -160,6 +167,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param string $keyword 關鍵字
      * @param array<string, mixed> $fields 搜尋欄位
      * @param int $limit 限制筆數
+     * @return array<string, mixed>
      */
     public function search(string $keyword, array $fields = ['original_name'], int $limit = 10): array;
 }

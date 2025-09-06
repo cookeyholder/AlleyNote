@@ -36,7 +36,7 @@ final class PostStatisticsService
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 回傳數量限制
-     * @return array{posts: array, summary: array} 熱門文章分析結果
+     * @return array<string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularPosts(StatisticsPeriod $period, int $limit = 10): array
@@ -88,7 +88,7 @@ final class PostStatisticsService
      * 分析文章來源分佈.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array{distribution: array, insights: array} 來源分析結果
+     * @return array<string, mixed>
      */
     public function analyzeSourceDistribution(StatisticsPeriod $period): array
     {
@@ -143,7 +143,7 @@ final class PostStatisticsService
      *
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
-     * @return array{score: float, factors: array, grade: string} 品質評分結果
+     * @return array<string, mixed>
      */
     public function calculatePostQualityScore(int $postId, StatisticsPeriod $period): array
     {
@@ -204,7 +204,7 @@ final class PostStatisticsService
      * 分析文章趨勢.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array{trending_up: array, trending_down: array, stable: array} 趨勢分析結果
+     * @return array<string, mixed>
      */
     public function analyzeTrends(StatisticsPeriod $period): array
     {
@@ -296,7 +296,7 @@ final class PostStatisticsService
      * 取得最佳發布時間建議.
      *
      * @param StatisticsPeriod $period 分析週期
-     * @return array{best_hours: array, best_days: array, insights: array} 發布時間建議
+     * @return array<string, mixed>
      */
     public function getBestPublishingTimes(StatisticsPeriod $period): array
     {
@@ -457,7 +457,7 @@ final class PostStatisticsService
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 回傳數量限制
-     * @return array 熱門內容分析結果
+     * @return array<string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 10): array
@@ -470,7 +470,7 @@ final class PostStatisticsService
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 回傳數量限制
-     * @return array 熱門文章列表
+     * @return array<string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array

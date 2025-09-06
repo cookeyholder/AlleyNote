@@ -68,7 +68,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者行為模式分析.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array{hourly_activity: array, weekly_activity: array} 行為模式資料
+     * @return array<string, mixed>
      */
     public function getUserBehaviorPatterns(StatisticsPeriod $period): array;
 
@@ -102,7 +102,7 @@ interface UserStatisticsRepositoryInterface
      * 取得新使用者首次活動分析.
      *
      * @param StatisticsPeriod $period 統計週期（註冊期間）
-     * @return array{new_users_with_activity: array, total_new_users_with_activity: int, avg_days_to_first_activity: float} 首次活動分析
+     * @return array<string, mixed>
      */
     public function getNewUserFirstActivityAnalysis(StatisticsPeriod $period): array;
 
@@ -110,7 +110,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者互動網路分析.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array{total_interactions: int, unique_interacting_users: int, avg_interactions_per_user: float, most_connected_users: array} 互動網路分析
+     * @return array<string, mixed>
      */
     public function getUserInteractionNetworkStats(StatisticsPeriod $period): array;
 
@@ -118,7 +118,7 @@ interface UserStatisticsRepositoryInterface
      * 計算使用者生命週期價值分析.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array{user_lifetime_values: array, total_analyzed_users: int, avg_lifetime_value: float} 生命週期價值分析
+     * @return array<string, mixed>
      */
     public function getUserLifetimeValueAnalysis(StatisticsPeriod $period): array;
 

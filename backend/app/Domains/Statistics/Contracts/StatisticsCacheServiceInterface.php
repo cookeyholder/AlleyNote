@@ -141,7 +141,7 @@ interface StatisticsCacheServiceInterface
     /**
      * 取得快取統計資訊。
      *
-     * @return array{
+     * @return array<string, mixed>
      *     manager_stats: array,
      *     cache_keys: array,
      *     ttl_config: array,

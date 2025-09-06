@@ -370,7 +370,10 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             return false;
         }
     }
+     * @return array<string, mixed>
 
+    /**
+     */
     public function getStats(): array
     {
         try {
@@ -476,6 +479,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     /**
      * 取得快取鍵統計資訊。
+     * @return array<string, mixed>
      */
     private function getCacheKeyStats(): array
     {

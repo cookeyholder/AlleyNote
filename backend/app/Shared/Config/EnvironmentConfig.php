@@ -140,6 +140,7 @@ final class EnvironmentConfig
 
     /**
      * 取得所有已載入的配置.
+     * @return array<string, mixed>
      */
     public function all(): array
     {
@@ -150,6 +151,7 @@ final class EnvironmentConfig
 
     /**
      * 驗證環境配置的完整性.
+     * @return array<string, mixed>
      */
     public function validate(): array
     {
@@ -338,6 +340,7 @@ final class EnvironmentConfig
 
     /**
      * 環境特定的驗證.
+     * @return array<string, mixed>
      */
     private function validateEnvironmentSpecific(): array
     {
@@ -360,6 +363,7 @@ final class EnvironmentConfig
 
     /**
      * 驗證生產環境配置.
+     * @return array<string, mixed>
      */
     private function validateProductionConfig(): array
     {
@@ -396,6 +400,7 @@ final class EnvironmentConfig
 
     /**
      * 驗證測試環境配置.
+     * @return array<string, mixed>
      */
     private function validateTestingConfig(): array
     {
@@ -412,6 +417,7 @@ final class EnvironmentConfig
 
     /**
      * 驗證開發環境配置.
+     * @return array<string, mixed>
      */
     private function validateDevelopmentConfig(): array
     {

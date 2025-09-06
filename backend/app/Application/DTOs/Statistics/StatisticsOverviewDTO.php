@@ -71,7 +71,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
-     * 
+     *
      * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
@@ -230,6 +230,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得主要來源.
+     * @return array<int, mixed>
      */
     public function getTopSource(): ?array
     {
@@ -277,7 +278,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * 
+     *
      * @return array<string, mixed>
      */
     public function toArray(): array
@@ -330,7 +331,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * 
+     *
      * @return array<string, mixed>
      */
     public function jsonSerialize(): array
@@ -353,7 +354,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 驗證來源統計資料.
-     * 
+     *
      * @param array<SourceStatistics> $sourceStatistics
      */
     private function validateSourceStatistics(array $sourceStatistics): void

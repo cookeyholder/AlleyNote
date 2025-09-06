@@ -294,7 +294,7 @@ readonly class SourceStatistics
     /**
      * 轉換為陣列.
      *
-     * @return array{
+     * @return array<string, mixed>
      *     source_type: string,
      *     source_name: string,
      *     source_description: string,
