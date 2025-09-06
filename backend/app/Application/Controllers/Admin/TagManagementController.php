@@ -122,6 +122,8 @@ class TagManagementController extends BaseController
      * 取得特定標籤詳細資訊.
      *
      * GET /admin/cache/tags/{tag}
+     *
+     * @param array<string, mixed> $args
      */
     public function getTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -185,6 +187,8 @@ class TagManagementController extends BaseController
      * 刪除標籤.
      *
      * DELETE /admin/cache/tags/{tag}
+     *
+     * @param array<string, mixed> $args
      */
     public function deleteTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -348,6 +352,8 @@ class TagManagementController extends BaseController
      * 刪除標籤群組.
      *
      * DELETE /admin/cache/groups/{group}
+     *
+     * @param array<string, mixed> $args
      */
     public function deleteGroup(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -413,6 +419,8 @@ class TagManagementController extends BaseController
      * 清除單一標籤.
      *
      * POST /admin/cache/tags/{tag}/flush
+     *
+     * @param array<string, mixed> $args
      */
     public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -693,6 +701,8 @@ class TagManagementController extends BaseController
      * 清除標籤群組.
      *
      * POST /admin/cache/groups/{group}/flush
+     *
+     * @param array<string, mixed> $args
      */
     public function flushGroup(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {

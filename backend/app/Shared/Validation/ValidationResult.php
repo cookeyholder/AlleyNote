@@ -100,7 +100,7 @@ class ValidationResult implements JsonSerializable
      */
     public function getFieldErrors(string $field): array
     {
-        return (array)($this->errors[$field] ?? []);
+        return (array) ($this->errors[$field] ?? []);
     }
 
     /**
@@ -198,7 +198,7 @@ class ValidationResult implements JsonSerializable
      */
     public function getFieldFailedRules(string $field): array
     {
-        return (array)($this->failedRules[$field] ?? []);
+        return (array) ($this->failedRules[$field] ?? []);
     }
 
     /**

@@ -37,6 +37,7 @@ abstract class BaseController
         header('Content-Type: application/json; charset=utf-8');
 
         $jsonString = json_encode($data, JSON_UNESCAPED_UNICODE);
+
         return $jsonString !== false ? $jsonString : '{}';
     }
 

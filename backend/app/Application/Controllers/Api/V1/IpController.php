@@ -21,6 +21,10 @@ class IpController
         private OutputSanitizerInterface $sanitizer,
     ) {}
 
+    /**
+     * @param array<string, mixed> $request
+     * @return array<string, mixed>
+     */
     public function create(array $request): array
     {
         try {
@@ -49,6 +53,10 @@ class IpController
         }
     }
 
+    /**
+     * @param array<string, mixed> $request
+     * @return array<string, mixed>
+     */
     public function getByType(array $request): array
     {
         try {
@@ -78,6 +86,10 @@ class IpController
         }
     }
 
+    /**
+     * @param array<string, mixed> $request
+     * @return array<string, mixed>
+     */
     public function checkAccess(array $request): array
     {
         try {

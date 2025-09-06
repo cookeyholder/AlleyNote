@@ -123,7 +123,7 @@ final class StatisticsApplicationService
      * 取得統計概覽.
      *
      * 提供統計資料的概覽資訊，包含快取機制。
-     * 
+     *
      * @return array<string, mixed>
      */
     public function getStatisticsOverview(StatisticsPeriod $period): array
@@ -214,7 +214,7 @@ final class StatisticsApplicationService
      * 分析熱門內容.
      *
      * 分析指定週期內的熱門內容，提供詳細的分析資料。
-     * 
+     *
      * @return array<string, mixed>
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 20): array
@@ -256,7 +256,7 @@ final class StatisticsApplicationService
      * 產生統計報告.
      *
      * 產生指定週期的完整統計報告。
-     * 
+     *
      * @param array<string, mixed> $options
      * @return array<string, mixed>
      */
@@ -359,7 +359,7 @@ final class StatisticsApplicationService
 
     /**
      * 檢查統計服務健康狀態.
-     * 
+     *
      * @return array<string, mixed>
      */
     public function checkHealthStatus(): array
@@ -475,7 +475,7 @@ final class StatisticsApplicationService
 
     /**
      * 檢查快取健康狀態.
-     * 
+     *
      * @return array<string, mixed>
      */
     private function checkCacheHealth(): array
@@ -502,7 +502,7 @@ final class StatisticsApplicationService
 
     /**
      * 檢查資料庫健康狀態.
-     * 
+     *
      * @return array<string, mixed>
      */
     private function checkDatabaseHealth(): array
@@ -520,7 +520,7 @@ final class StatisticsApplicationService
 
     /**
      * 檢查計算服務健康狀態.
-     * 
+     *
      * @return array<string, mixed>
      */
     private function checkCalculationHealth(): array

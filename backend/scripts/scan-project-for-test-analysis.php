@@ -436,7 +436,8 @@ class TestErrorAnalysisScanner
             $sourceNamespace = preg_replace('/\\\\Test$/', '', $sourceNamespace);
 
             foreach ($this->sourceFiles as $sourceFile => $sourceData) {
-                if ($sourceData['namespace'] === $sourceNamespace) {
+                $sourceDataNamespace = $sourceData['namespace'] ?? '';
+                if ($sourceDataNamespace === $sourceNamespace) {
                     $potentialSources[] = [
                         'file' => $sourceFile,
                         'match_type' => 'namespace',
@@ -453,32 +454,48 @@ class TestErrorAnalysisScanner
     {
         echo "🔍 收集 PHPStan 錯誤...\n";
 
-        // 執行 PHPStan 並收集錯誤
-        $command = 'docker compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G --error-format=json tests/';
-        $output = shell_exec("cd {$this->projectRoot} && $command 2>/dev/null");
+        // 先嘗試收集整個專案的 PHPStan 錯誤 (JSON 格式)
+        $command = './vendor/bin/phpstan analyse --memory-limit=1G --error-format=json';
+        $output = shell_exec("cd /var/www/html && $command 2>/dev/null");
 
         if ($output) {
             $phpstanResult = json_decode($output, true);
             if ($phpstanResult && isset($phpstanResult['files'])) {
-                $this->phpstanErrors = $phpstanResult['files'];
+                // 轉換 PHPStan JSON 格式為我們的格式
+                foreach ($phpstanResult['files'] as $filePath => $fileData) {
+                    if (isset($fileData['messages']) && !empty($fileData['messages'])) {
+                        $this->phpstanErrors[$filePath] = $fileData['messages'];
+                    }
+                }
+                echo "   - 成功從 JSON 格式收集錯誤\n";
             }
         }
 
         // 如果 JSON 格式失敗，嘗試收集純文字格式
         if (empty($this->phpstanErrors)) {
+            echo "   - JSON 格式失敗，嘗試純文字格式...\n";
             $this->collectPHPStanErrorsText();
         }
 
-        echo "   - 收集了來自 " . count($this->phpstanErrors) . " 個檔案的錯誤\n";
+        $totalErrors = 0;
+        foreach ($this->phpstanErrors as $errors) {
+            $totalErrors += count($errors);
+        }
+
+        echo "   - 收集了來自 " . count($this->phpstanErrors) . " 個檔案的 {$totalErrors} 個錯誤\n";
     }
 
     private function collectPHPStanErrorsText(): void
     {
-        $command = 'docker compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G tests/';
-        $output = shell_exec("cd {$this->projectRoot} && $command 2>&1");
+        // 收集整個專案的 PHPStan 錯誤 (純文字格式)
+        $command = './vendor/bin/phpstan analyse --memory-limit=1G';
+        $output = shell_exec("cd /var/www/html && $command 2>&1");
 
         if ($output) {
             $this->parsePhpstanTextOutput($output);
+            echo "   - 從純文字格式解析錯誤\n";
+        } else {
+            echo "   - 無法執行 PHPStan 或沒有輸出\n";
         }
     }
 
@@ -486,28 +503,55 @@ class TestErrorAnalysisScanner
     {
         $lines = explode("\n", $output);
         $currentFile = null;
+        $currentLine = null;
         $errors = [];
 
         foreach ($lines as $line) {
-            // 檢測檔案名稱行
-            if (preg_match('/^\s*Line\s+(.+\.php)\s*$/', $line, $matches)) {
-                $currentFile = trim($matches[1]);
+            $line = trim($line);
+            
+            // 檢測錯誤統計行 (如: Found 3723 errors)
+            if (preg_match('/Found (\d+) errors?/i', $line, $matches)) {
+                echo "   - 找到總共 {$matches[1]} 個錯誤\n";
                 continue;
             }
 
-            // 檢測錯誤行
-            if ($currentFile && preg_match('/^\s*(\d+)\s+(.+)$/', $line, $matches)) {
-                $lineNumber = (int)$matches[1];
-                $message = trim($matches[2]);
+            // 跳過進度條和其他資訊行
+            if (preg_match('/^\s*\d+\/\d+\s*\[/', $line) || 
+                strpos($line, 'Note: Using configuration file') !== false ||
+                strpos($line, '🪪') !== false || 
+                strpos($line, '💡') !== false ||
+                empty($line)) {
+                continue;
+            }
 
+            // 檢測檔案路徑和行號的行 (格式: /path/to/file.php:123)
+            if (preg_match('/^(.+\.php):(\d+)$/', $line, $matches)) {
+                $currentFile = $matches[1];
+                $currentLine = (int)$matches[2];
+                continue;
+            }
+
+            // 檢測錯誤訊息行 (通常有縮排並包含錯誤描述)
+            if ($currentFile && $currentLine && preg_match('/^\s+(.+)$/', $line, $matches)) {
+                $message = trim($matches[1]);
+                
+                // 跳過空行和非錯誤訊息的行
+                if (empty($message)) {
+                    continue;
+                }
+
+                // 如果訊息包含 'tip:' 或 'identifier:' 則可能是額外資訊，也要記錄
                 if (!isset($errors[$currentFile])) {
                     $errors[$currentFile] = [];
                 }
 
                 $errors[$currentFile][] = [
-                    'line' => $lineNumber,
+                    'line' => $currentLine,
                     'message' => $message
                 ];
+                
+                // 重置當前行，準備下一個錯誤
+                $currentLine = null;
             }
         }
 
@@ -543,6 +587,11 @@ class TestErrorAnalysisScanner
 
     private function categorizeError(string $message): string
     {
+        // PHPStan Level 10 常見錯誤類型分類
+        if (strpos($message, 'no value type specified in iterable type') !== false) {
+            return 'missing_iterable_value_type';
+        }
+
         if (strpos($message, 'is_array()') !== false && strpos($message, 'will always evaluate to true') !== false) {
             return 'redundant_is_array_check';
         }
@@ -571,8 +620,28 @@ class TestErrorAnalysisScanner
             return 'type_mismatch';
         }
 
+        if (strpos($message, 'should return') !== false && strpos($message, 'but returns') !== false) {
+            return 'return_type_mismatch';
+        }
+
+        if (strpos($message, 'does not accept') !== false) {
+            return 'parameter_type_mismatch';
+        }
+
+        if (strpos($message, 'Cannot cast') !== false) {
+            return 'unsafe_type_cast';
+        }
+
         if (strpos($message, 'Offset') !== false && strpos($message, 'might not exist') !== false) {
             return 'potential_undefined_offset';
+        }
+
+        if (strpos($message, 'Property') !== false && strpos($message, 'does not accept') !== false) {
+            return 'property_type_mismatch';
+        }
+
+        if (strpos($message, 'Method') !== false && strpos($message, 'should return') !== false) {
+            return 'method_return_type_issue';
         }
 
         return 'other';
@@ -941,34 +1010,74 @@ class TestErrorAnalysisScanner
         ];
 
         switch ($errorType) {
+            case 'missing_iterable_value_type':
+                $suggestion['title'] = '添加陣列泛型型別註解';
+                $suggestion['description'] = "在 {$count} 個地方缺少陣列值型別規範。PHPStan Level 10 要求所有可迭代型別指定值型別。";
+                $suggestion['action'] = '使用 @return array<string, mixed> 或 @param array<int, string> 等泛型註解指定陣列元素型別。';
+                $suggestion['fix_example'] = "/**\n * @return array<string, mixed>\n */\npublic function getData(): array";
+                break;
+
             case 'redundant_is_array_check':
                 $suggestion['title'] = '移除多餘的 is_array() 檢查';
                 $suggestion['description'] = "在 {$count} 個地方發現多餘的 is_array() 檢查。建議移除這些檢查，因為變數型別已經確定為陣列。";
                 $suggestion['action'] = '使用更精確的型別提示和 PHPDoc 註解，避免不必要的執行時型別檢查。';
+                $suggestion['fix_example'] = "// 移除: if (is_array(\$data)) { ... }\n// 因為 \$data 已經是已知的陣列型別";
                 break;
 
             case 'redundant_isset_check':
                 $suggestion['title'] = '移除多餘的 isset() 檢查';
                 $suggestion['description'] = "在 {$count} 個地方發現多餘的 isset() 檢查。建議移除這些檢查，因為陣列鍵值已經確定存在。";
                 $suggestion['action'] = '重新檢查陣列結構定義，確保型別註解正確反映實際結構。';
+                $suggestion['fix_example'] = "// 移除: if (isset(\$array['key'])) { ... }\n// 當 \$array 結構已確定包含 'key'";
+                break;
+
+            case 'type_mismatch':
+                $suggestion['title'] = '修正型別不匹配問題';
+                $suggestion['description'] = "在 {$count} 個地方發現型別不匹配。方法期望的參數型別與實際傳入的型別不符。";
+                $suggestion['action'] = '檢查方法簽名，確保傳入的參數型別正確，或添加型別轉換。';
+                $suggestion['fix_example'] = "// 添加型別註解:\n/** @var array<string, mixed> \$data */\n\$data = \$this->getData();";
+                break;
+
+            case 'return_type_mismatch':
+                $suggestion['title'] = '修正回傳型別不匹配';
+                $suggestion['description'] = "在 {$count} 個地方發現方法回傳型別與宣告不符。";
+                $suggestion['action'] = '添加正確的回傳型別註解或修正實際回傳的資料型別。';
+                $suggestion['fix_example'] = "/**\n * @return array<string, mixed>\n */\npublic function process(): array";
+                break;
+
+            case 'parameter_type_mismatch':
+                $suggestion['title'] = '修正參數型別不匹配';
+                $suggestion['description'] = "在 {$count} 個地方發現參數型別不匹配。";
+                $suggestion['action'] = '檢查方法調用，確保傳入的參數符合方法簽名的型別要求。';
+                $suggestion['fix_example'] = "// 添加型別轉換或斷言:\nassert(\$value instanceof ExpectedType);\n\$result = \$this->method(\$value);";
+                break;
+
+            case 'property_type_mismatch':
+                $suggestion['title'] = '修正屬性型別不匹配';
+                $suggestion['description'] = "在 {$count} 個地方發現屬性型別不匹配。";
+                $suggestion['action'] = '檢查屬性賦值，確保賦值的型別符合屬性宣告的型別。';
+                $suggestion['fix_example'] = "// 添加型別斷言:\n\$obj = \$container->get(MyClass::class);\nassert(\$obj instanceof MyClass);\n\$this->property = \$obj;";
                 break;
 
             case 'always_true_condition':
                 $suggestion['title'] = '移除永遠為真的條件';
                 $suggestion['description'] = "在 {$count} 個地方發現永遠為真的條件判斷。";
                 $suggestion['action'] = '檢查測試邏輯，移除不必要的條件判斷或修正測試資料。';
+                $suggestion['fix_example'] = "// 移除不必要的條件:\n// if (true) { ... } -> 直接執行程式碼";
                 break;
 
             case 'always_false_condition':
                 $suggestion['title'] = '修正永遠為假的條件';
                 $suggestion['description'] = "在 {$count} 個地方發現永遠為假的條件判斷。";
                 $suggestion['action'] = '檢查測試邏輯是否有錯誤，可能需要修正條件或測試資料。';
+                $suggestion['fix_example'] = "// 檢查邏輯錯誤:\n// if (false) { ... } -> 可能條件寫錯了";
                 break;
 
             default:
                 $suggestion['title'] = "修正 {$errorType} 錯誤";
                 $suggestion['description'] = "發現 {$count} 個 {$errorType} 型別的錯誤。";
                 $suggestion['action'] = '請檢查相關程式碼並進行必要的修正。';
+                $suggestion['fix_example'] = '根據具體錯誤訊息進行修正。';
         }
 
         return $suggestion;
@@ -1096,10 +1205,19 @@ class TestErrorAnalysisScanner
 
     private function estimateFixTime(int $errorCount): array
     {
-        // 估算修復時間 (分鐘)
-        $easyErrors = ['redundant_is_array_check', 'redundant_isset_check'];
-        $mediumErrors = ['always_true_condition', 'always_false_condition'];
-        $hardErrors = ['type_mismatch', 'impossible_type'];
+        // 估算修復時間 (分鐘) - 根據錯誤類型調整
+        $easyErrors = [
+            'missing_iterable_value_type', 'redundant_is_array_check', 
+            'redundant_isset_check', 'always_true_condition', 'always_false_condition'
+        ];
+        $mediumErrors = [
+            'type_mismatch', 'return_type_mismatch', 'parameter_type_mismatch', 
+            'already_narrowed_type'
+        ];
+        $hardErrors = [
+            'impossible_type', 'unsafe_type_cast', 'property_type_mismatch',
+            'method_return_type_issue', 'potential_undefined_offset'
+        ];
 
         $distribution = $this->errorPatterns['error_type_distribution'] ?? [];
 
@@ -1117,14 +1235,44 @@ class TestErrorAnalysisScanner
             }
         }
 
-        $estimatedMinutes = ($easyCount * 2) + ($mediumCount * 5) + ($hardCount * 15);
+        // 調整時間估算：簡單錯誤 1-2 分鐘，中等 3-8 分鐘，困難 10-20 分鐘
+        $estimatedMinutes = ($easyCount * 1.5) + ($mediumCount * 5) + ($hardCount * 15);
 
         return [
-            'total_minutes' => $estimatedMinutes,
+            'total_minutes' => (int)$estimatedMinutes,
+            'total_hours' => round($estimatedMinutes / 60, 1),
             'easy_fixes' => $easyCount,
             'medium_fixes' => $mediumCount,
-            'hard_fixes' => $hardCount
+            'hard_fixes' => $hardCount,
+            'batch_fix_potential' => $this->calculateBatchFixPotential($distribution)
         ];
+    }
+
+    private function calculateBatchFixPotential(array $distribution): array
+    {
+        $batchable = [];
+        
+        // 可以批量修復的錯誤類型
+        $batchableTypes = [
+            'missing_iterable_value_type' => 'high',
+            'redundant_is_array_check' => 'high',
+            'redundant_isset_check' => 'high',
+            'type_mismatch' => 'medium',
+            'return_type_mismatch' => 'medium'
+        ];
+        
+        foreach ($batchableTypes as $type => $potential) {
+            if (isset($distribution[$type]) && $distribution[$type] > 3) {
+                $batchable[] = [
+                    'type' => $type,
+                    'count' => $distribution[$type],
+                    'potential' => $potential,
+                    'time_saved_percent' => $potential === 'high' ? 60 : 30
+                ];
+            }
+        }
+        
+        return $batchable;
     }
 
     private function calculateTestQualityScore(): int
@@ -1174,10 +1322,19 @@ class TestErrorAnalysisScanner
 
         $report .= "## ⏱️ 預估修復時間\n";
         $fixTime = $summary['estimated_fix_time'];
-        $report .= "- 總預估時間：" . $fixTime['total_minutes'] . " 分鐘\n";
-        $report .= "- 簡單修復：" . $fixTime['easy_fixes'] . " 個 (約 " . ($fixTime['easy_fixes'] * 2) . " 分鐘)\n";
+        $report .= "- 總預估時間：" . $fixTime['total_minutes'] . " 分鐘 (" . $fixTime['total_hours'] . " 小時)\n";
+        $report .= "- 簡單修復：" . $fixTime['easy_fixes'] . " 個 (約 " . ($fixTime['easy_fixes'] * 1.5) . " 分鐘)\n";
         $report .= "- 中等修復：" . $fixTime['medium_fixes'] . " 個 (約 " . ($fixTime['medium_fixes'] * 5) . " 分鐘)\n";
         $report .= "- 困難修復：" . $fixTime['hard_fixes'] . " 個 (約 " . ($fixTime['hard_fixes'] * 15) . " 分鐘)\n\n";
+
+        // 批量修復潛力分析
+        if (!empty($fixTime['batch_fix_potential'])) {
+            $report .= "### 🔄 批量修復機會\n";
+            foreach ($fixTime['batch_fix_potential'] as $batch) {
+                $report .= "- **{$batch['type']}**: {$batch['count']} 個錯誤，可節省 {$batch['time_saved_percent']}% 時間\n";
+            }
+            $report .= "\n";
+        }
 
         $report .= "## 🔍 錯誤類型分佈\n";
         foreach ($this->errorPatterns['error_type_distribution'] as $type => $count) {
@@ -1192,8 +1349,15 @@ class TestErrorAnalysisScanner
 
             $report .= "### {$priorityIcon} " . $suggestion['title'] . "\n";
             $report .= "**優先級：** " . ucfirst($priority) . "\n";
+            $report .= "**頻率：** " . ($suggestion['frequency'] ?? 'N/A') . " 次\n";
             $report .= "**描述：** " . $suggestion['description'] . "\n";
-            $report .= "**建議行動：** " . $suggestion['action'] . "\n\n";
+            $report .= "**建議行動：** " . $suggestion['action'] . "\n";
+            
+            if (isset($suggestion['fix_example'])) {
+                $report .= "**修復範例：**\n```php\n" . $suggestion['fix_example'] . "\n```\n";
+            }
+            
+            $report .= "\n";
         }
 
         $report .= "## 🚨 檢測到的反模式\n";
