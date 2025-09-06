@@ -508,7 +508,7 @@ class TestErrorAnalysisScanner
 
         foreach ($lines as $line) {
             $line = trim($line);
-            
+
             // 檢測錯誤統計行 (如: Found 3723 errors)
             if (preg_match('/Found (\d+) errors?/i', $line, $matches)) {
                 echo "   - 找到總共 {$matches[1]} 個錯誤\n";
@@ -516,9 +516,9 @@ class TestErrorAnalysisScanner
             }
 
             // 跳過進度條和其他資訊行
-            if (preg_match('/^\s*\d+\/\d+\s*\[/', $line) || 
+            if (preg_match('/^\s*\d+\/\d+\s*\[/', $line) ||
                 strpos($line, 'Note: Using configuration file') !== false ||
-                strpos($line, '🪪') !== false || 
+                strpos($line, '🪪') !== false ||
                 strpos($line, '💡') !== false ||
                 empty($line)) {
                 continue;
@@ -534,7 +534,7 @@ class TestErrorAnalysisScanner
             // 檢測錯誤訊息行 (通常有縮排並包含錯誤描述)
             if ($currentFile && $currentLine && preg_match('/^\s+(.+)$/', $line, $matches)) {
                 $message = trim($matches[1]);
-                
+
                 // 跳過空行和非錯誤訊息的行
                 if (empty($message)) {
                     continue;
@@ -549,7 +549,7 @@ class TestErrorAnalysisScanner
                     'line' => $currentLine,
                     'message' => $message
                 ];
-                
+
                 // 重置當前行，準備下一個錯誤
                 $currentLine = null;
             }
@@ -1207,11 +1207,11 @@ class TestErrorAnalysisScanner
     {
         // 估算修復時間 (分鐘) - 根據錯誤類型調整
         $easyErrors = [
-            'missing_iterable_value_type', 'redundant_is_array_check', 
+            'missing_iterable_value_type', 'redundant_is_array_check',
             'redundant_isset_check', 'always_true_condition', 'always_false_condition'
         ];
         $mediumErrors = [
-            'type_mismatch', 'return_type_mismatch', 'parameter_type_mismatch', 
+            'type_mismatch', 'return_type_mismatch', 'parameter_type_mismatch',
             'already_narrowed_type'
         ];
         $hardErrors = [
@@ -1251,7 +1251,7 @@ class TestErrorAnalysisScanner
     private function calculateBatchFixPotential(array $distribution): array
     {
         $batchable = [];
-        
+
         // 可以批量修復的錯誤類型
         $batchableTypes = [
             'missing_iterable_value_type' => 'high',
@@ -1260,7 +1260,7 @@ class TestErrorAnalysisScanner
             'type_mismatch' => 'medium',
             'return_type_mismatch' => 'medium'
         ];
-        
+
         foreach ($batchableTypes as $type => $potential) {
             if (isset($distribution[$type]) && $distribution[$type] > 3) {
                 $batchable[] = [
@@ -1271,7 +1271,7 @@ class TestErrorAnalysisScanner
                 ];
             }
         }
-        
+
         return $batchable;
     }
 
@@ -1352,11 +1352,11 @@ class TestErrorAnalysisScanner
             $report .= "**頻率：** " . ($suggestion['frequency'] ?? 'N/A') . " 次\n";
             $report .= "**描述：** " . $suggestion['description'] . "\n";
             $report .= "**建議行動：** " . $suggestion['action'] . "\n";
-            
+
             if (isset($suggestion['fix_example'])) {
                 $report .= "**修復範例：**\n```php\n" . $suggestion['fix_example'] . "\n```\n";
             }
-            
+
             $report .= "\n";
         }
 

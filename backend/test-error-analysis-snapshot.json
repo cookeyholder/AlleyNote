@@ -1,7 +1,7 @@
 {
     "scan_info": {
         "project": "AlleyNote",
-        "scan_time": "2025-09-07 00:05:24",
+        "scan_time": "2025-09-07 00:16:18",
         "scan_type": "test_error_analysis",
         "phpstan_level": 10
     },
@@ -744,151 +744,151 @@
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 350,
+                "line": 353,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 372,
+                "line": 375,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logSuccess() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 390,
+                "line": 393,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 406,
+                "line": 409,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 495,
+                "line": 501,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 513,
+                "line": 519,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "category": "type_mismatch",
-                "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
-            },
-            {
-                "line": 527,
-                "message": "Parameter #2 $data of class App\\Domains\\Post\\DTOs\\UpdatePostDTO constructor expects array, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
                 "line": 533,
+                "message": "Parameter #2 $data of class App\\Domains\\Post\\DTOs\\UpdatePostDTO constructor expects array, mixed given.",
+                "category": "type_mismatch",
+                "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
+            },
+            {
+                "line": 539,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logSuccess() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 552,
+                "line": 558,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 569,
+                "line": 575,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 585,
+                "line": 591,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 657,
+                "line": 666,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 678,
+                "line": 687,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logSuccess() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 694,
+                "line": 703,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 711,
+                "line": 720,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 727,
+                "line": 736,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 743,
+                "line": 752,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 843,
+                "line": 855,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 861,
+                "line": 873,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 879,
+                "line": 891,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 901,
+                "line": 913,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logSuccess() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 920,
+                "line": 932,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 936,
+                "line": 948,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 952,
+                "line": 964,
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 986,
+                "line": 998,
                 "message": "Parameter #2 $string of function explode expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
@@ -897,108 +897,108 @@
         "\/var\/www\/html\/app\/Application\/Controllers\/Security\/CSPReportController.php": [
             {
                 "line": 50,
-                "message": "Parameter #1 $report of method App\\Application\\Controllers\\Security\\CSPReportController::isValidCSPReport() expects array, mixed given.",
+                "message": "Parameter #1 $report of method App\\Application\\Controllers\\Security\\CSPReportController::isValidCSPReport() expects array<string, mixed>, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
                 "line": 55,
-                "message": "Parameter #1 $report of method App\\Application\\Controllers\\Security\\CSPReportController::logViolation() expects array, mixed given.",
+                "message": "Parameter #1 $report of method App\\Application\\Controllers\\Security\\CSPReportController::logViolation() expects array<string, mixed>, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 102,
-                "message": "Parameter #1 $cspReport of method App\\Application\\Controllers\\Security\\CSPReportController::calculateSeverity() expects array, mixed given.",
+                "line": 106,
+                "message": "Parameter #1 $cspReport of method App\\Application\\Controllers\\Security\\CSPReportController::calculateSeverity() expects array<string, mixed>, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 140,
+                "line": 144,
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 141,
+                "line": 145,
                 "message": "Parameter #2 $string of function explode expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 162,
+                "line": 168,
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 165,
+                "line": 171,
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 166,
+                "line": 172,
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 167,
+                "line": 173,
                 "message": "Parameter #2 $subject of function preg_match expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 175,
+                "line": 181,
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 176,
+                "line": 182,
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 191,
+                "line": 199,
                 "message": "Parameter #1 $ip of method App\\Application\\Controllers\\Security\\CSPReportController::getRecentViolations() expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 218,
+                "line": 228,
                 "message": "Parameter #1 $array of function array_reverse expects array, list<string>|false given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 219,
+                "line": 229,
                 "message": "Parameter #1 $json of function json_decode expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 224,
+                "line": 234,
                 "message": "Parameter #1 $datetime of function strtotime expects string, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 247,
+                "line": 259,
                 "message": "Parameter #2 ...$values of function sprintf expects bool|float|int|string|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 248,
+                "line": 260,
                 "message": "Parameter #3 ...$values of function sprintf expects bool|float|int|string|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
             },
             {
-                "line": 249,
+                "line": 261,
                 "message": "Parameter #4 ...$values of function sprintf expects bool|float|int|string|null, mixed given.",
                 "category": "type_mismatch",
                 "fix_suggestion": "確保傳入的參數型別與期望的型別匹配"
@@ -24731,7 +24731,7 @@
             },
             {
                 "message": "Cannot call method toArray() on mixed.",
-                "line": 359,
+                "line": 360,
                 "ignorable": true,
                 "identifier": "method.nonObject"
             }
@@ -25296,251 +25296,244 @@
             },
             {
                 "message": "Cannot cast mixed to int.",
-                "line": 344,
+                "line": 347,
                 "ignorable": true,
                 "identifier": "cast.int"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 350,
+                "line": 353,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Binary operation \".\" between 'Invalid post ID: ' and mixed results in an error.",
-                "line": 351,
+                "line": 354,
                 "ignorable": true,
                 "identifier": "binaryOp.invalid"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logSuccess() expects int|null, mixed given.",
-                "line": 372,
+                "line": 375,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 390,
+                "line": 393,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 406,
+                "line": 409,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Method App\\Application\\Controllers\\Api\\V1\\PostController::update() has parameter $args with no value type specified in iterable type array.",
-                "line": 421,
+                "line": 424,
                 "ignorable": true,
                 "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
                 "identifier": "missingType.iterableValue"
             },
             {
                 "message": "Cannot cast mixed to int.",
-                "line": 489,
+                "line": 495,
                 "ignorable": true,
                 "identifier": "cast.int"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 495,
+                "line": 501,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Binary operation \".\" between 'Invalid post ID: ' and mixed results in an error.",
-                "line": 496,
+                "line": 502,
                 "ignorable": true,
                 "identifier": "binaryOp.invalid"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 513,
+                "line": 519,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #2 $data of class App\\Domains\\Post\\DTOs\\UpdatePostDTO constructor expects array, mixed given.",
-                "line": 527,
-                "ignorable": true,
-                "identifier": "argument.type"
-            },
-            {
-                "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logSuccess() expects int|null, mixed given.",
                 "line": 533,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
-                "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 552,
+                "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logSuccess() expects int|null, mixed given.",
+                "line": 539,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 569,
+                "line": 558,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 585,
+                "line": 575,
+                "ignorable": true,
+                "identifier": "argument.type"
+            },
+            {
+                "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
+                "line": 591,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Method App\\Application\\Controllers\\Api\\V1\\PostController::delete() has parameter $args with no value type specified in iterable type array.",
-                "line": 600,
+                "line": 606,
                 "ignorable": true,
                 "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
                 "identifier": "missingType.iterableValue"
             },
             {
                 "message": "Cannot cast mixed to int.",
-                "line": 651,
+                "line": 660,
                 "ignorable": true,
                 "identifier": "cast.int"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 657,
+                "line": 666,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Binary operation \".\" between 'Invalid post ID: ' and mixed results in an error.",
-                "line": 658,
+                "line": 667,
                 "ignorable": true,
                 "identifier": "binaryOp.invalid"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logSuccess() expects int|null, mixed given.",
-                "line": 678,
+                "line": 687,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 694,
+                "line": 703,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 711,
+                "line": 720,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 727,
+                "line": 736,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 743,
+                "line": 752,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Method App\\Application\\Controllers\\Api\\V1\\PostController::togglePin() has parameter $args with no value type specified in iterable type array.",
-                "line": 758,
+                "line": 767,
                 "ignorable": true,
                 "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
                 "identifier": "missingType.iterableValue"
             },
             {
                 "message": "Cannot cast mixed to int.",
-                "line": 837,
+                "line": 849,
                 "ignorable": true,
                 "identifier": "cast.int"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 843,
+                "line": 855,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Binary operation \".\" between 'Invalid post ID: ' and mixed results in an error.",
-                "line": 844,
+                "line": 856,
                 "ignorable": true,
                 "identifier": "binaryOp.invalid"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 861,
+                "line": 873,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Cannot access offset 'pinned' on mixed.",
-                "line": 875,
+                "line": 887,
                 "ignorable": true,
                 "identifier": "offsetAccess.nonOffsetAccessible"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 879,
+                "line": 891,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logSuccess() expects int|null, mixed given.",
-                "line": 901,
+                "line": 913,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 920,
+                "line": 932,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 936,
+                "line": 948,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter $userId of method App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface::logFailure() expects int|null, mixed given.",
-                "line": 952,
+                "line": 964,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #2 $string of function explode expects string, mixed given.",
-                "line": 986,
+                "line": 998,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Method App\\Application\\Controllers\\Api\\V1\\PostController::getUserIp() should return string but returns mixed.",
-                "line": 990,
+                "line": 1002,
                 "ignorable": true,
                 "identifier": "return.type"
             },
             {
                 "message": "Method App\\Application\\Controllers\\Api\\V1\\PostController::getUserIp() should return string but returns mixed.",
-                "line": 996,
+                "line": 1008,
                 "ignorable": true,
                 "identifier": "return.type"
             },
             {
-                "message": "Method App\\Application\\Controllers\\Api\\V1\\PostController::destroy() has parameter $args with no value type specified in iterable type array.",
-                "line": 1002,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
                 "message": "Cannot cast mixed to int.",
-                "line": 1005,
+                "line": 1019,
                 "ignorable": true,
                 "identifier": "cast.int"
             }
@@ -25573,194 +25566,152 @@
         ],
         "\/var\/www\/html\/app\/Application\/Controllers\/Security\/CSPReportController.php": [
             {
-                "message": "Parameter #1 $report of method App\\Application\\Controllers\\Security\\CSPReportController::isValidCSPReport() expects array, mixed given.",
+                "message": "Parameter #1 $report of method App\\Application\\Controllers\\Security\\CSPReportController::isValidCSPReport() expects array<string, mixed>, mixed given.",
                 "line": 50,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
-                "message": "Parameter #1 $report of method App\\Application\\Controllers\\Security\\CSPReportController::logViolation() expects array, mixed given.",
+                "message": "Parameter #1 $report of method App\\Application\\Controllers\\Security\\CSPReportController::logViolation() expects array<string, mixed>, mixed given.",
                 "line": 55,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
-                "message": "Method App\\Application\\Controllers\\Security\\CSPReportController::isValidCSPReport() has parameter $report with no value type specified in iterable type array.",
-                "line": 72,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
                 "message": "Cannot access offset 'blocked-uri'|'document-uri'|'violated-directive' on mixed.",
-                "line": 84,
+                "line": 86,
                 "ignorable": true,
                 "identifier": "offsetAccess.nonOffsetAccessible"
             },
             {
-                "message": "Method App\\Application\\Controllers\\Security\\CSPReportController::logViolation() has parameter $report with no value type specified in iterable type array.",
-                "line": 95,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Parameter #1 $cspReport of method App\\Application\\Controllers\\Security\\CSPReportController::calculateSeverity() expects array, mixed given.",
-                "line": 102,
+                "message": "Parameter #1 $cspReport of method App\\Application\\Controllers\\Security\\CSPReportController::calculateSeverity() expects array<string, mixed>, mixed given.",
+                "line": 106,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
-                "line": 140,
+                "line": 144,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #2 $string of function explode expects string, mixed given.",
-                "line": 141,
-                "ignorable": true,
-                "identifier": "argument.type"
-            },
-            {
-                "message": "Method App\\Application\\Controllers\\Security\\CSPReportController::getClientIP() should return string but returns mixed.",
                 "line": 145,
                 "ignorable": true,
+                "identifier": "argument.type"
+            },
+            {
+                "message": "Method App\\Application\\Controllers\\Security\\CSPReportController::getClientIP() should return string but returns mixed.",
+                "line": 149,
+                "ignorable": true,
                 "identifier": "return.type"
             },
             {
                 "message": "Method App\\Application\\Controllers\\Security\\CSPReportController::getClientIP() should return string but returns mixed.",
-                "line": 150,
+                "line": 154,
                 "ignorable": true,
                 "identifier": "return.type"
             },
             {
-                "message": "Method App\\Application\\Controllers\\Security\\CSPReportController::calculateSeverity() has parameter $cspReport with no value type specified in iterable type array.",
-                "line": 156,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
-                "line": 162,
+                "line": 168,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
-                "line": 165,
+                "line": 171,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
-                "line": 166,
+                "line": 172,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #2 $subject of function preg_match expects string, mixed given.",
-                "line": 167,
+                "line": 173,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
-                "line": 175,
+                "line": 181,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #1 $haystack of function strpos expects string, mixed given.",
-                "line": 176,
+                "line": 182,
                 "ignorable": true,
                 "identifier": "argument.type"
-            },
-            {
-                "message": "Method App\\Application\\Controllers\\Security\\CSPReportController::checkForAlert() has parameter $logData with no value type specified in iterable type array.",
-                "line": 188,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
             },
             {
                 "message": "Parameter #1 $ip of method App\\Application\\Controllers\\Security\\CSPReportController::getRecentViolations() expects string, mixed given.",
-                "line": 191,
+                "line": 199,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
-                "message": "Method App\\Application\\Controllers\\Security\\CSPReportController::getRecentViolations() return type has no value type specified in iterable type array.",
-                "line": 207,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
                 "message": "Argument of an invalid type mixed supplied for foreach, only iterables are supported.",
-                "line": 218,
+                "line": 228,
                 "ignorable": true,
                 "identifier": "foreach.nonIterable"
             },
             {
                 "message": "Parameter #1 $array of function array_reverse expects array, list<string>|false given.",
-                "line": 218,
+                "line": 228,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #1 $json of function json_decode expects string, mixed given.",
-                "line": 219,
+                "line": 229,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Cannot access offset 'timestamp' on mixed.",
-                "line": 224,
+                "line": 234,
                 "ignorable": true,
                 "identifier": "offsetAccess.nonOffsetAccessible"
             },
             {
                 "message": "Parameter #1 $datetime of function strtotime expects string, mixed given.",
-                "line": 224,
+                "line": 234,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Cannot access offset 'ip' on mixed.",
-                "line": 229,
+                "line": 239,
                 "ignorable": true,
                 "identifier": "offsetAccess.nonOffsetAccessible"
             },
             {
-                "message": "Method App\\Application\\Controllers\\Security\\CSPReportController::sendAlert() has parameter $alertData with no value type specified in iterable type array.",
-                "line": 240,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
                 "message": "Parameter #2 ...$values of function sprintf expects bool|float|int|string|null, mixed given.",
-                "line": 247,
+                "line": 259,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #3 ...$values of function sprintf expects bool|float|int|string|null, mixed given.",
-                "line": 248,
+                "line": 260,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Parameter #4 ...$values of function sprintf expects bool|float|int|string|null, mixed given.",
-                "line": 249,
+                "line": 261,
                 "ignorable": true,
                 "identifier": "argument.type"
             },
             {
                 "message": "Expression on left side of ?? is not nullable.",
-                "line": 252,
+                "line": 264,
                 "ignorable": true,
                 "identifier": "nullCoalesce.expr"
             }
@@ -25785,57 +25736,6 @@
                 "identifier": "nullCoalesce.expr"
             }
         ],
-        "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php": [
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\PostStatisticsDTO::getFormattedStatistics() return type has no value type specified in iterable type array.",
-                "line": 234,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\PostStatisticsDTO::compareWith() return type has no value type specified in iterable type array.",
-                "line": 281,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\PostStatisticsDTO::toArray() return type has no value type specified in iterable type array.",
-                "line": 299,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\PostStatisticsDTO::jsonSerialize() return type has no value type specified in iterable type array.",
-                "line": 337,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\PostStatisticsDTO::calculateEngagementRate() has parameter $metrics with no value type specified in iterable type array.",
-                "line": 358,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\PostStatisticsDTO::calculatePerformanceScore() has parameter $metrics with no value type specified in iterable type array.",
-                "line": 377,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\PostStatisticsDTO::validateAdditionalMetrics() has parameter $metrics with no value type specified in iterable type array.",
-                "line": 419,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            }
-        ],
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/SourceDistributionDTO.php": [
             {
                 "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::fromArray() has parameter $data with no value type specified in iterable type array.",
@@ -25845,57 +25745,43 @@
                 "identifier": "missingType.iterableValue"
             },
             {
-                "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::getTopSources() return type has no value type specified in iterable type array.",
-                "line": 235,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
-                "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::getSourceRanking() return type has no value type specified in iterable type array.",
-                "line": 246,
-                "ignorable": true,
-                "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
-                "identifier": "missingType.iterableValue"
-            },
-            {
                 "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::getDistributionSummary() return type has no value type specified in iterable type array.",
-                "line": 267,
+                "line": 271,
                 "ignorable": true,
                 "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
                 "identifier": "missingType.iterableValue"
             },
             {
                 "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::getFormattedDistribution() return type has no value type specified in iterable type array.",
-                "line": 295,
+                "line": 299,
                 "ignorable": true,
                 "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
                 "identifier": "missingType.iterableValue"
             },
             {
                 "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::compareWith() return type has no value type specified in iterable type array.",
-                "line": 333,
+                "line": 337,
                 "ignorable": true,
                 "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
                 "identifier": "missingType.iterableValue"
             },
             {
                 "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::toArray() return type has no value type specified in iterable type array.",
-                "line": 393,
+                "line": 397,
                 "ignorable": true,
                 "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
                 "identifier": "missingType.iterableValue"
             },
             {
                 "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::jsonSerialize() return type has no value type specified in iterable type array.",
-                "line": 421,
+                "line": 425,
                 "ignorable": true,
                 "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
                 "identifier": "missingType.iterableValue"
             },
             {
                 "message": "Method App\\Application\\DTOs\\Statistics\\SourceDistributionDTO::validateSourceStatistics() has parameter $sourceStatistics with no value type specified in iterable type array.",
-                "line": 482,
+                "line": 486,
                 "ignorable": true,
                 "tip": "See: https:\/\/phpstan.org\/blog\/solving-phpstan-no-value-type-specified-in-iterable-type",
                 "identifier": "missingType.iterableValue"
@@ -48323,7 +48209,7 @@
         "error_type_distribution": {
             "type_mismatch": 936,
             "unsafe_type_cast": 100,
-            "missing_iterable_value_type": 838,
+            "missing_iterable_value_type": 822,
             "other": 1589,
             "return_type_mismatch": 94,
             "parameter_type_mismatch": 48,
@@ -48337,12 +48223,11 @@
             "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/AttachmentController.php": 6,
             "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/AuthController.php": 72,
             "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/IpController.php": 2,
-            "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/PostController.php": 59,
+            "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/PostController.php": 58,
             "\/var\/www\/html\/app\/Application\/Controllers\/PostController.php": 4,
-            "\/var\/www\/html\/app\/Application\/Controllers\/Security\/CSPReportController.php": 31,
+            "\/var\/www\/html\/app\/Application\/Controllers\/Security\/CSPReportController.php": 25,
             "\/var\/www\/html\/app\/Application\/Controllers\/Web\/SwaggerController.php": 3,
-            "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php": 7,
-            "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/SourceDistributionDTO.php": 9,
+            "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/SourceDistributionDTO.php": 7,
             "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php": 7,
             "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/UserActivityDTO.php": 12,
             "\/var\/www\/html\/app\/Application\/Middleware\/AuthorizationMiddleware.php": 2,
@@ -48605,9 +48490,9 @@
             "\/var\/www\/html\/tests\/Unit\/Validation\/ValidatorTest.php": 6
         },
         "most_common_errors": {
-            "Method CLASS::METHOD() return type has no value type specified in iterable type array.": 451,
+            "Method CLASS::METHOD() return type has no value type specified in iterable type array.": 444,
             "Cannot access offset STRING on mixed.": 355,
-            "Method CLASS::METHOD() has parameter $VAR with no value type specified in iterable type array.": 341,
+            "Method CLASS::METHOD() has parameter $VAR with no value type specified in iterable type array.": 332,
             "Cannot call method getName() on ReflectionType|null.": 137,
             "Cannot call method andReturn() on mixed.": 118,
             "Call to an undefined method CLASS::METHOD().": 106,
@@ -51521,10 +51406,10 @@
         },
         {
             "type": "missing_iterable_value_type",
-            "frequency": 838,
+            "frequency": 822,
             "priority": "high",
             "title": "添加陣列泛型型別註解",
-            "description": "在 838 個地方缺少陣列值型別規範。PHPStan Level 10 要求所有可迭代型別指定值型別。",
+            "description": "在 822 個地方缺少陣列值型別規範。PHPStan Level 10 要求所有可迭代型別指定值型別。",
             "action": "使用 @return array<string, mixed> 或 @param array<int, string> 等泛型註解指定陣列元素型別。",
             "fix_example": "\/**\n * @return array<string, mixed>\n *\/\npublic function getData(): array"
         },
@@ -51703,19 +51588,19 @@
     "summary": {
         "total_test_files": 144,
         "total_source_files": 268,
-        "total_phpstan_errors": 3711,
-        "files_with_errors": 270,
+        "total_phpstan_errors": 3695,
+        "files_with_errors": 269,
         "most_common_error_type": "type_mismatch",
         "estimated_fix_time": {
-            "total_minutes": 32343,
-            "total_hours": 539.1,
-            "easy_fixes": 929,
+            "total_minutes": 32319,
+            "total_hours": 538.7,
+            "easy_fixes": 913,
             "medium_fixes": 1078,
             "hard_fixes": 1704,
             "batch_fix_potential": [
                 {
                     "type": "missing_iterable_value_type",
-                    "count": 838,
+                    "count": 822,
                     "potential": "high",
                     "time_saved_percent": 60
                 },

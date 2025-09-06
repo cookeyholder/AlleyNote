@@ -1,24 +1,24 @@
 # AlleyNote 測試錯誤分析報告
 
-生成時間：2025-09-07 00:05:24
+生成時間：2025-09-07 00:16:18
 PHPStan 等級：Level 10
 
 ## 📊 摘要統計
 - 測試檔案數：144
 - 原始檔案數：268
-- PHPStan 錯誤總數：3711
-- 有錯誤的檔案數：270
+- PHPStan 錯誤總數：3695
+- 有錯誤的檔案數：269
 - 最常見錯誤類型：type_mismatch
 - 測試品質評分：70/100
 
 ## ⏱️ 預估修復時間
-- 總預估時間：32343 分鐘 (539.1 小時)
-- 簡單修復：929 個 (約 1393.5 分鐘)
+- 總預估時間：32319 分鐘 (538.7 小時)
+- 簡單修復：913 個 (約 1369.5 分鐘)
 - 中等修復：1078 個 (約 5390 分鐘)
 - 困難修復：1704 個 (約 25560 分鐘)
 
 ### 🔄 批量修復機會
-- **missing_iterable_value_type**: 838 個錯誤，可節省 60% 時間
+- **missing_iterable_value_type**: 822 個錯誤，可節省 60% 時間
 - **redundant_is_array_check**: 5 個錯誤，可節省 60% 時間
 - **type_mismatch**: 936 個錯誤，可節省 30% 時間
 - **return_type_mismatch**: 94 個錯誤，可節省 30% 時間
@@ -26,7 +26,7 @@ PHPStan 等級：Level 10
 ## 🔍 錯誤類型分佈
 - type_mismatch：936 個
 - unsafe_type_cast：100 個
-- missing_iterable_value_type：838 個
+- missing_iterable_value_type：822 個
 - other：1589 個
 - return_type_mismatch：94 個
 - parameter_type_mismatch：48 個
@@ -60,8 +60,8 @@ $data = $this->getData();
 
 ### 🔴 添加陣列泛型型別註解
 **優先級：** High
-**頻率：** 838 次
-**描述：** 在 838 個地方缺少陣列值型別規範。PHPStan Level 10 要求所有可迭代型別指定值型別。
+**頻率：** 822 次
+**描述：** 在 822 個地方缺少陣列值型別規範。PHPStan Level 10 要求所有可迭代型別指定值型別。
 **建議行動：** 使用 @return array<string, mixed> 或 @param array<int, string> 等泛型註解指定陣列元素型別。
 **修復範例：**
 ```php
@@ -374,7 +374,7 @@ $result = $this->method($value);
 - AuthServiceTest.php：71 個錯誤
 - TokenBlacklistRepositoryInterfaceTest.php：64 個錯誤
 - XssPreventionTest.php：61 個錯誤
-- PostController.php：59 個錯誤
+- PostController.php：58 個錯誤
 
 ## 🎯 下一步行動建議
 1. 優先修復高優先級的重構建議

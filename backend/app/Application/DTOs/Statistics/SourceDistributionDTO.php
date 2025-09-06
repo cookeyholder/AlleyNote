@@ -231,6 +231,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得前 N 個來源.
+     * 
+     * @return array<int, SourceStatistics>
      */
     public function getTopSources(int $limit = 3): array
     {
@@ -242,6 +244,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得來源排名.
+     * 
+     * @return array<int, array<string, mixed>>
      */
     public function getSourceRanking(): array
     {
