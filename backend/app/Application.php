@@ -91,6 +91,7 @@ class Application
         $builder = new ContainerBuilder();
 
         // 載入容器配置檔案
+        /** @var array<string, mixed> $containerConfig */
         $containerConfig = require __DIR__ . '/../config/container.php';
         $builder->addDefinitions($containerConfig);
 
@@ -102,7 +103,9 @@ class Application
      */
     private function initializeRouter(): void
     {
-        $this->router = $this->container->get(RouterInterface::class);
+        $router = $this->container->get(RouterInterface::class);
+        assert($router instanceof RouterInterface);
+        $this->router = $router;
     }
 
     /**
@@ -110,7 +113,9 @@ class Application
      */
     private function initializeRouteDispatcher(): void
     {
-        $this->routeDispatcher = $this->container->get(RouteDispatcher::class);
+        $dispatcher = $this->container->get(RouteDispatcher::class);
+        assert($dispatcher instanceof RouteDispatcher);
+        $this->routeDispatcher = $dispatcher;
     }
 
     /**
@@ -296,7 +301,7 @@ class Application
                 return $this;
             }
 
-            /** @return array<mixed>> */
+            /** @return array<string, array<string>> */
             public function getHeaders(): mixed
             {
                 return ['Content-Type' => ['application/json']];
