@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 /**
  * 完整 PHP 檔案清理器
- * 
+ *
  * 清理所有可能的語法問題和特殊字符
  */
 
@@ -38,7 +38,7 @@ class CompletePHPCleaner
     private function getAllPHPFiles(): array
     {
         $files = [];
-        
+
         // app 目錄
         $this->scanDirectory($this->baseDir . '/app', $files);
         // tests 目錄
@@ -91,7 +91,7 @@ class CompletePHPCleaner
         // 移除所有錯誤的轉義序列
         $content = preg_replace('/\\\\n(\s*)([\*\/])/', "\n$1$2", $content);
         $content = str_replace('\n', "\n", $content);
-        
+
         return $content;
     }
 
@@ -99,10 +99,10 @@ class CompletePHPCleaner
     {
         // 標準化換行符
         $content = str_replace(["\r\n", "\r"], "\n", $content);
-        
+
         // 移除行尾空格
         $content = preg_replace('/[ \t]+$/m', '', $content);
-        
+
         // 確保檔案以換行符結尾
         if (!empty($content) && substr($content, -1) !== "\n") {
             $content .= "\n";
@@ -116,10 +116,10 @@ class CompletePHPCleaner
         // 修復重複的文檔塊標記
         $content = preg_replace('/\/\*\*\s*\n\s*\/\*\*/', '/**', $content);
         $content = preg_replace('/\*\/\s*\n\s*\*\//', '*/', $content);
-        
+
         // 修復格式錯誤的文檔塊
         $content = preg_replace('/(\s*)\/\*\*\s*\n(\s*)\*\s*@/', '$1/**\n$2 * @', $content);
-        
+
         return $content;
     }
 

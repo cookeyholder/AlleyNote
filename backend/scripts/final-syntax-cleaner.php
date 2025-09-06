@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 /**
  * 最終語法錯誤清理腳本
- * 
+ *
  * 處理剩餘的文檔註解語法問題
  */
 
@@ -25,7 +25,7 @@ class FinalSyntaxCleaner
 
         // 處理所有 PHP 檔案
         $files = $this->getAllPHPFiles();
-        
+
         foreach ($files as $file) {
             $this->cleanFile($file);
         }
@@ -74,16 +74,16 @@ class FinalSyntaxCleaner
 
         // 修復重複的文檔塊開始標記
         $content = preg_replace('/(\s*)\/\*\*\s*\n(\s*)\/\*\*\s*\n/m', '$1/**\n', $content);
-        
+
         // 修復重複的文檔塊結束標記
         $content = preg_replace('/(\s*)\*\/\s*\n(\s*)\*\/\s*\n/m', '$1 */\n', $content);
-        
+
         // 修復孤立的 */ 在註解中間
         $content = preg_replace('/(\s*)\*\/\s*\n(\s*)\*\s*@(param|return)/m', '$2 * @$3', $content);
-        
+
         // 修復空的文檔塊
         $content = preg_replace('/(\s*)\/\*\*\s*\n(\s*)\*\/\s*\n/m', '', $content);
-        
+
         // 修復格式錯誤的單行註解
         $content = preg_replace('/(\s*)\/\*\*\s*@(param|return)\s+([^\n]+)\s*\*\//m', '$1/**\n$1 * @$2 $3\n$1 */', $content);
 

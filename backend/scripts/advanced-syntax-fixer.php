@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 /**
  * 強化版語法錯誤修復腳本
- * 
+ *
  * 專門處理自動化修復過程中產生的文檔註解語法錯誤
  */
 
@@ -26,7 +26,7 @@ class AdvancedSyntaxFixer
 
         // 獲取有語法錯誤的檔案
         $errorFiles = $this->getSyntaxErrorFiles();
-        
+
         foreach ($errorFiles as $file) {
             $this->fixFile($file);
         }
@@ -48,7 +48,7 @@ class AdvancedSyntaxFixer
 
         $files = [];
         $lines = explode("\n", $output);
-        
+
         foreach ($lines as $line) {
             if (preg_match('/^\s*Line\s+(.+\.php)/', $line, $matches)) {
                 $file = trim($matches[1]);
@@ -115,27 +115,27 @@ class AdvancedSyntaxFixer
 
         while ($i < count($lines)) {
             $line = $lines[$i];
-            
+
             // 檢查是否為孤立的註解
-            if (preg_match('/^\s*\*\s*@(param|return)\s+/', $line) && 
+            if (preg_match('/^\s*\*\s*@(param|return)\s+/', $line) &&
                 ($i === 0 || !preg_match('/^\s*\*/', $lines[$i-1]))) {
-                
+
                 // 找到對應的方法
                 $methodLine = $this->findNextMethodLine($lines, $i);
-                
+
                 if ($methodLine !== -1) {
                     // 創建文檔塊
                     $indent = $this->getIndentation($lines[$methodLine]);
                     $fixedLines[] = $indent . '/**';
                     $fixedLines[] = $line;
-                    
+
                     // 收集所有連續的註解
                     $j = $i + 1;
                     while ($j < count($lines) && preg_match('/^\s*\*\s*@(param|return)\s+/', $lines[$j])) {
                         $fixedLines[] = $lines[$j];
                         $j++;
                     }
-                    
+
                     $fixedLines[] = $indent . ' */';
                     $i = $j - 1;
                 } else {
@@ -144,7 +144,7 @@ class AdvancedSyntaxFixer
             } else {
                 $fixedLines[] = $line;
             }
-            
+
             $i++;
         }
 
@@ -155,7 +155,7 @@ class AdvancedSyntaxFixer
     {
         // 修復格式錯誤的文檔塊
         $content = preg_replace('/(\s*)\/\*\*\s*\n\s*\*\s*\n\s*\*\s*@(param|return)/m', '$1/**\n$1 * @$2', $content);
-        
+
         // 修復缺少開始的文檔塊
         $content = preg_replace('/^(\s*)\*\s*@(param|return)\s+([^\n]+)(\n(?:\s*\*\s*@(?:param|return)\s+[^\n]+\n)*)\s*(public|private|protected)/m', '$1/**\n$1 * @$2 $3$4$1 */\n$1$5', $content);
 
@@ -166,7 +166,7 @@ class AdvancedSyntaxFixer
     {
         // 移除重複的 @param 註解
         $content = preg_replace('/(\s*\*\s*@param\s+[^\n]+)\n\s*\*\s*@param\s+[^\n]+(?=\n)/m', '$1', $content);
-        
+
         // 移除重複的 @return 註解
         $content = preg_replace('/(\s*\*\s*@return\s+[^\n]+)\n\s*\*\s*@return\s+[^\n]+(?=\n)/m', '$1', $content);
 

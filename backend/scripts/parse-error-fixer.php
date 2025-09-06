@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 /**
  * 解析錯誤修復腳本
- * 
+ *
  * 修復所有剩餘的 PHP 語法解析錯誤
  */
 
@@ -25,7 +25,7 @@ class ParseErrorFixer
 
         // 獲取有解析錯誤的檔案
         $errorFiles = $this->getParseErrorFiles();
-        
+
         foreach ($errorFiles as $file) {
             $this->fixParseErrors($file);
         }
@@ -45,7 +45,7 @@ class ParseErrorFixer
 
         $files = [];
         $lines = explode("\n", $output);
-        
+
         foreach ($lines as $line) {
             if (preg_match('/^\s*Line\s+(.+\.php)/', $line, $matches)) {
                 $file = trim($matches[1]);
@@ -107,7 +107,7 @@ class ParseErrorFixer
 
         for ($i = 0; $i < count($lines); $i++) {
             $line = $lines[$i];
-            
+
             // 修復包含 @return 但格式錯誤的行
             if (preg_match('/^\s*\*\s*@return\s+/', $line)) {
                 // 確保前面有正確的文檔塊開始
@@ -115,7 +115,7 @@ class ParseErrorFixer
                     $indent = $this->getLineIndentation($line);
                     array_splice($fixedLines, -1, 0, [$indent . '/**']);
                 }
-                
+
                 // 確保後面有正確的文檔塊結束
                 if ($i < count($lines) - 1) {
                     $nextLine = $lines[$i + 1];
@@ -127,7 +127,7 @@ class ParseErrorFixer
                     }
                 }
             }
-            
+
             $fixedLines[] = $line;
         }
 
@@ -139,7 +139,7 @@ class ParseErrorFixer
         // 修復重複或格式錯誤的文檔塊
         $content = preg_replace('/(\s*)\/\*\*\s*\n(\s*)\/\*\*\s*\n/m', '$1/**\n', $content);
         $content = preg_replace('/(\s*)\*\/\s*\n(\s*)\*\/\s*\n/m', '$1 */\n', $content);
-        
+
         // 修復孤立的 @return 行
         $content = preg_replace('/^(\s*)\*\s*@return\s+([^\n]+)\n(\s*)(public|private|protected)/m', '$1/**\n$1 * @return $2\n$1 */\n$3$4', $content);
 

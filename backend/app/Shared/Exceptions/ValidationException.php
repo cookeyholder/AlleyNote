@@ -29,11 +29,11 @@ class ValidationException extends Exception
         return $this->validationResult;
     }
 
-    /**\n      * @param array<string, mixed> $errors
+    /**
+     * Static factory method for creating from an array of errors
+     * @param array<string, mixed> $errors
+     * @param array<string, mixed>|string $failedRulesOrMessage
      */
-    // Static factory method for creating from an array of errors
-    /**\n      * @param array<string, mixed> $failedRulesOrMessage
-      */
     public static function fromErrors(array $errors, array|string $failedRulesOrMessage = '', string $message = ''): self
     {
         // Handle overloaded parameters
@@ -59,16 +59,18 @@ class ValidationException extends Exception
         return new self($validationResult, $message);
     }
 
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */
-    // Override getErrors to delegate to ValidationResult    public function getErrors(): array
+    public function getErrors(): array
     {
         return $this->validationResult->getErrors();
     }
 
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */
-    // Get failed rules from ValidationResult    public function getFailedRules(): array
+    public function getFailedRules(): array
     {
         return $this->validationResult->getFailedRules();
     }
