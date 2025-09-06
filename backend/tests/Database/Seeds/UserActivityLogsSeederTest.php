@@ -67,16 +67,54 @@ class UserActivityLogsSeederTest extends TestCase
         $this->runSeeder();
 
         // Assert: 驗證有不同的行為類型
-        $stmt = $this->pdo->query('SELECT DISTINCT action_type FROM user_activity_logs');
-        $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
-
-        $actionTypes = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-        $this->assertArrayHasKey('auth.login.success', array_flip(array_filter($actionTypes, fn($v) => is_string($v) || is_int($v))), '應包含成功登入記錄');
-        $this->assertArrayHasKey('auth.login.failed', array_flip(array_filter($actionTypes, fn($v) => is_string($v) || is_int($v))), '應包含失敗登入記錄');
-        $this->assertArrayHasKey('post.created', array_flip(array_filter($actionTypes, fn($v) => is_string($v) || is_int($v))), '應包含文章建立記錄');
-        $this->assertArrayHasKey('attachment.uploaded', array_flip(is_array($actionTypes) ? array_filter($actionTypes, fn($v) => is_string($v) || is_int($v)) : []), '應包含附件上傳記錄');
+        $actionTypes = $this->getDistinctActionTypes();
         $this->assertGreaterThanOrEqual(5, count($actionTypes), '應包含多種不同的行為類型');
+    }
+
+    /**
+     * 測試包含認證相關的行為類型.
+     */
+    #[Test]
+    public function testSeederCreatesAuthActionTypes(): void
+    {
+        $this->pdo->exec('DELETE FROM user_activity_logs');
+        $this->runSeeder();
+
+        $actionTypes = $this->getDistinctActionTypes();
+        $validActionTypes = array_flip(array_filter($actionTypes, fn($v) => is_string($v) || is_int($v)));
+
+        $this->assertArrayHasKey('auth.login.success', $validActionTypes, '應包含成功登入記錄');
+        $this->assertArrayHasKey('auth.login.failed', $validActionTypes, '應包含失敗登入記錄');
+    }
+
+    /**
+     * 測試包含文章相關的行為類型.
+     */
+    #[Test]
+    public function testSeederCreatesPostActionTypes(): void
+    {
+        $this->pdo->exec('DELETE FROM user_activity_logs');
+        $this->runSeeder();
+
+        $actionTypes = $this->getDistinctActionTypes();
+        $validActionTypes = array_flip(array_filter($actionTypes, fn($v) => is_string($v) || is_int($v)));
+
+        $this->assertArrayHasKey('post.created', $validActionTypes, '應包含文章建立記錄');
+    }
+
+    /**
+     * 測試包含附件相關的行為類型.
+     */
+    #[Test]
+    public function testSeederCreatesAttachmentActionTypes(): void
+    {
+        $this->pdo->exec('DELETE FROM user_activity_logs');
+        $this->runSeeder();
+
+        $actionTypes = $this->getDistinctActionTypes();
+        $validActionTypes = array_flip(is_array($actionTypes) ? array_filter($actionTypes, fn($v) => is_string($v) || is_int($v)) : []);
+
+        $this->assertArrayHasKey('attachment.uploaded', $validActionTypes, '應包含附件上傳記錄');
     }
 
     /**
@@ -90,16 +128,40 @@ class UserActivityLogsSeederTest extends TestCase
         $this->runSeeder();
 
         // Assert: 驗證有不同的狀態
-        $stmt = $this->pdo->query('SELECT DISTINCT status FROM user_activity_logs');
-        $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
-
-        $statuses = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-        $this->assertArrayHasKey('success', array_flip(array_filter($statuses, fn($v) => is_string($v) || is_int($v))), '應包含成功狀態的記錄');
-        $this->assertArrayHasKey('failed', array_flip(array_filter($statuses, fn($v) => is_string($v) || is_int($v))), '應包含失敗狀態的記錄');
-        $this->assertArrayHasKey('error', array_flip(array_filter($statuses, fn($v) => is_string($v) || is_int($v))), '應包含錯誤狀態的記錄');
-        $this->assertArrayHasKey('blocked', array_flip(is_array($statuses) ? array_filter($statuses, fn($v) => is_string($v) || is_int($v)) : []), '應包含被阻擋狀態的記錄');
+        $statuses = $this->getDistinctStatuses();
         $this->assertGreaterThanOrEqual(3, count($statuses), '應包含多種不同的狀態');
+    }
+
+    /**
+     * 測試包含成功和失敗狀態.
+     */
+    #[Test]
+    public function testSeederCreatesSuccessAndFailedStatuses(): void
+    {
+        $this->pdo->exec('DELETE FROM user_activity_logs');
+        $this->runSeeder();
+
+        $statuses = $this->getDistinctStatuses();
+        $validStatuses = array_flip(array_filter($statuses, fn($v) => is_string($v) || is_int($v)));
+
+        $this->assertArrayHasKey('success', $validStatuses, '應包含成功狀態的記錄');
+        $this->assertArrayHasKey('failed', $validStatuses, '應包含失敗狀態的記錄');
+    }
+
+    /**
+     * 測試包含錯誤和阻擋狀態.
+     */
+    #[Test]
+    public function testSeederCreatesErrorAndBlockedStatuses(): void
+    {
+        $this->pdo->exec('DELETE FROM user_activity_logs');
+        $this->runSeeder();
+
+        $statuses = $this->getDistinctStatuses();
+        $validStatuses = array_flip(array_filter($statuses, fn($v) => is_string($v) || is_int($v)));
+
+        $this->assertArrayHasKey('error', $validStatuses, '應包含錯誤狀態的記錄');
+        $this->assertArrayHasKey('blocked', array_flip(is_array($statuses) ? array_filter($statuses, fn($v) => is_string($v) || is_int($v)) : []), '應包含被阻擋狀態的記錄');
     }
 
     /**
@@ -113,27 +175,11 @@ class UserActivityLogsSeederTest extends TestCase
         $this->runSeeder();
 
         // Assert: 隨機選擇一筆資料進行格式驗證
-        $stmt = $this->pdo->query('SELECT * FROM user_activity_logs LIMIT 1');
-        $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
+        $record = $this->getRandomRecord();
 
-        $record = $stmt->fetch(PDO::FETCH_ASSOC);
-        $this->assertIsArray($record, 'Record should be an array');
-
-        $this->assertNotEmpty($record['uuid'], 'UUID 不應為空');
-        $this->assertIsString($record['uuid'], 'UUID should be a string');
-        $this->assertMatchesRegularExpression('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $record['uuid'], 'UUID 格式應正確');
-        $this->assertNotEmpty($record['action_type'], 'action_type 不應為空');
-        $this->assertNotEmpty($record['action_category'], 'action_category 不應為空');
-        $this->assertNotEmpty($record['status'], 'status 不應為空');
-        $this->assertNotEmpty($record['created_at'], 'created_at 不應為空');
-        $this->assertNotEmpty($record['occurred_at'], 'occurred_at 不應為空');
-
-        // 驗證 JSON 格式的欄位
-        if ($record['metadata']) {
-            $this->assertIsString($record['metadata'], 'metadata should be a string');
-            $decodedMetadata = json_decode($record['metadata'], true);
-            $this->assertIsArray($decodedMetadata, 'metadata 應為有效的 JSON 格式');
-        }
+        $this->assertBasicFieldsAreValid($record);
+        $this->assertUuidFormatIsCorrect($record['uuid']);
+        $this->assertMetadataIsValidJson($record);
     }
 
     /**
@@ -147,21 +193,22 @@ class UserActivityLogsSeederTest extends TestCase
         $this->runSeeder();
 
         // Assert: 驗證有安全相關記錄
-        $stmt = $this->pdo->query('SELECT * FROM user_activity_logs WHERE action_category = "security"');
-        $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
-
-        $securityEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+        $securityEvents = $this->getSecurityEvents();
         $this->assertGreaterThan(0, count($securityEvents), '應包含安全事件記錄');
+    }
 
-        $hasBlockedEvent = false;
-        /** @var array<string, mixed> $event */
-        foreach ($securityEvents as $event) {
-            if ($event['status'] === 'blocked') {
-                $hasBlockedEvent = true;
-                break;
-            }
-        }
+    /**
+     * 測試安全事件包含被阻擋的狀態.
+     */
+    #[Test]
+    public function testSecurityEventsIncludeBlockedStatus(): void
+    {
+        $this->pdo->exec('DELETE FROM user_activity_logs');
+        $this->runSeeder();
+
+        $securityEvents = $this->getSecurityEvents();
+        $hasBlockedEvent = $this->hasBlockedSecurityEvent($securityEvents);
+        
         $this->assertTrue($hasBlockedEvent, '應包含被阻擋的安全事件');
     }
 
@@ -210,5 +257,114 @@ class UserActivityLogsSeederTest extends TestCase
                 $this->fail("Seeder 執行時發生錯誤: $output");
             }
         }
+    }
+
+    /**
+     * 取得不同的行為類型.
+     *
+     * @return array<int, string>
+     */
+    private function getDistinctActionTypes(): array
+    {
+        $stmt = $this->pdo->query('SELECT DISTINCT action_type FROM user_activity_logs');
+        $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
+
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * 取得不同的狀態.
+     *
+     * @return array<int, string>
+     */
+    private function getDistinctStatuses(): array
+    {
+        $stmt = $this->pdo->query('SELECT DISTINCT status FROM user_activity_logs');
+        $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
+
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * 取得隨機記錄.
+     *
+     * @return array<string, mixed>
+     */
+    private function getRandomRecord(): array
+    {
+        $stmt = $this->pdo->query('SELECT * FROM user_activity_logs LIMIT 1');
+        $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
+
+        $record = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->assertIsArray($record, 'Record should be an array');
+
+        return $record;
+    }
+
+    /**
+     * 驗證基本欄位是否有效.
+     *
+     * @param array<string, mixed> $record
+     */
+    private function assertBasicFieldsAreValid(array $record): void
+    {
+        $this->assertNotEmpty($record['uuid'], 'UUID 不應為空');
+        $this->assertIsString($record['uuid'], 'UUID should be a string');
+        $this->assertNotEmpty($record['action_type'], 'action_type 不應為空');
+        $this->assertNotEmpty($record['action_category'], 'action_category 不應為空');
+        $this->assertNotEmpty($record['status'], 'status 不應為空');
+        $this->assertNotEmpty($record['created_at'], 'created_at 不應為空');
+        $this->assertNotEmpty($record['occurred_at'], 'occurred_at 不應為空');
+    }
+
+    /**
+     * 驗證 UUID 格式是否正確.
+     */
+    private function assertUuidFormatIsCorrect(string $uuid): void
+    {
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $uuid, 'UUID 格式應正確');
+    }
+
+    /**
+     * 驗證 metadata 是否為有效的 JSON.
+     *
+     * @param array<string, mixed> $record
+     */
+    private function assertMetadataIsValidJson(array $record): void
+    {
+        if ($record['metadata']) {
+            $this->assertIsString($record['metadata'], 'metadata should be a string');
+            $decodedMetadata = json_decode($record['metadata'], true);
+            $this->assertIsArray($decodedMetadata, 'metadata 應為有效的 JSON 格式');
+        }
+    }
+
+    /**
+     * 取得安全事件.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function getSecurityEvents(): array
+    {
+        $stmt = $this->pdo->query('SELECT * FROM user_activity_logs WHERE action_category = "security"');
+        $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * 檢查是否有被阻擋的安全事件.
+     *
+     * @param array<int, array<string, mixed>> $securityEvents
+     */
+    private function hasBlockedSecurityEvent(array $securityEvents): bool
+    {
+        /** @var array<string, mixed> $event */
+        foreach ($securityEvents as $event) {
+            if ($event['status'] === 'blocked') {
+                return true;
+            }
+        }
+        return false;
     }
 }

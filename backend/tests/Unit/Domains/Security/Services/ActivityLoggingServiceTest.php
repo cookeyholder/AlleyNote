@@ -28,6 +28,14 @@ class ActivityLoggingServiceTest extends TestCase
 
     private ActivityLoggingServiceInterface $service;
 
+    // Properties for callback validation
+    private ActivityType $expectedActionType;
+    private int $expectedUserId;
+    private ?string $expectedTargetType = null;
+    private ?string $expectedTargetId = null;
+    private ?string $expectedDescription = null;
+    private ?array $expectedMetadata = null;
+
     protected function setUp(): void
     {
         $this->repository = $this->createMock(ActivityLogRepositoryInterface::class);
@@ -79,16 +87,16 @@ class ActivityLoggingServiceTest extends TestCase
         $targetId = '123';
         $metadata = ['login_method' => 'password'];
 
+        // Store expected values for callback validation
+        $this->expectedActionType = $actionType;
+        $this->expectedUserId = $userId;
+        $this->expectedTargetType = $targetType;
+        $this->expectedTargetId = $targetId;
+        $this->expectedMetadata = $metadata;
+
         $this->repository->expects($this->once())
             ->method('create')
-            ->with($this->callback(function (CreateActivityLogDTO $dto) use ($actionType, $userId, $targetType, $targetId, $metadata) {
-                return $dto->getActionType() === $actionType
-                    && $dto->getUserId() === $userId
-                    && $dto->getTargetType() === $targetType
-                    && $dto->getTargetId() === $targetId
-                    && $dto->getMetadata() === $metadata
-                    && $dto->getStatus() === ActivityStatus::SUCCESS;
-            }))
+            ->with($this->callback([$this, 'validateSuccessOperationDto']))
             ->willReturn([
                 'id' => 1,
                 'action_type' => $actionType->value,
@@ -110,15 +118,15 @@ class ActivityLoggingServiceTest extends TestCase
         $reason = 'Invalid password';
         $metadata = ['attempt_count' => 3];
 
+        // Store expected values for callback validation
+        $this->expectedActionType = $actionType;
+        $this->expectedUserId = $userId;
+        $this->expectedDescription = $reason;
+        $this->expectedMetadata = $metadata;
+
         $this->repository->expects($this->once())
             ->method('create')
-            ->with($this->callback(function (CreateActivityLogDTO $dto) use ($actionType, $userId, $reason, $metadata) {
-                return $dto->getActionType() === $actionType
-                    && $dto->getUserId() === $userId
-                    && $dto->getDescription() === $reason
-                    && $dto->getMetadata() === $metadata
-                    && $dto->getStatus() === ActivityStatus::FAILED;
-            }))
+            ->with($this->callback([$this, 'validateFailureOperationDto']))
             ->willReturn([
                 'id' => 1,
                 'action_type' => $actionType->value,
@@ -139,14 +147,14 @@ class ActivityLoggingServiceTest extends TestCase
         $description = 'IP blocked due to suspicious activity';
         $metadata = ['ip_address' => '192.168.1.100', 'reason' => 'brute_force'];
 
+        // Store expected values for callback validation
+        $this->expectedActionType = $actionType;
+        $this->expectedDescription = $description;
+        $this->expectedMetadata = $metadata;
+
         $this->repository->expects($this->once())
             ->method('create')
-            ->with($this->callback(function (CreateActivityLogDTO $dto) use ($actionType, $description, $metadata) {
-                return $dto->getActionType() === $actionType
-                    && $dto->getDescription() === $description
-                    && $dto->getMetadata() === $metadata
-                    && $dto->getStatus() === ActivityStatus::BLOCKED;
-            }))
+            ->with($this->callback([$this, 'validateSecurityEventDto']))
             ->willReturn([
                 'id' => 1,
                 'action_type' => $actionType->value,
@@ -338,5 +346,41 @@ class ActivityLoggingServiceTest extends TestCase
         // Act & Assert
         $this->assertFalse($this->service->logSuccess($lowSeverityAction, 1));
         $this->assertTrue($this->service->logSecurityEvent($highSeverityAction, 'High severity event'));
+    }
+
+    /**
+     * Validate DTO for success operation.
+     */
+    public function validateSuccessOperationDto(CreateActivityLogDTO $dto): bool
+    {
+        return $dto->getActionType() === $this->expectedActionType
+            && $dto->getUserId() === $this->expectedUserId
+            && $dto->getTargetType() === $this->expectedTargetType
+            && $dto->getTargetId() === $this->expectedTargetId
+            && $dto->getMetadata() === $this->expectedMetadata
+            && $dto->getStatus() === ActivityStatus::SUCCESS;
+    }
+
+    /**
+     * Validate DTO for failure operation.
+     */
+    public function validateFailureOperationDto(CreateActivityLogDTO $dto): bool
+    {
+        return $dto->getActionType() === $this->expectedActionType
+            && $dto->getUserId() === $this->expectedUserId
+            && $dto->getDescription() === $this->expectedDescription
+            && $dto->getMetadata() === $this->expectedMetadata
+            && $dto->getStatus() === ActivityStatus::FAILED;
+    }
+
+    /**
+     * Validate DTO for security event.
+     */
+    public function validateSecurityEventDto(CreateActivityLogDTO $dto): bool
+    {
+        return $dto->getActionType() === $this->expectedActionType
+            && $dto->getDescription() === $this->expectedDescription
+            && $dto->getMetadata() === $this->expectedMetadata
+            && $dto->getStatus() === ActivityStatus::BLOCKED;
     }
 }
