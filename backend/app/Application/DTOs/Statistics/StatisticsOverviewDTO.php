@@ -48,6 +48,13 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從統計快照建立 DTO.
+     * 
+     * @param StatisticsPeriod $period
+     * @param StatisticsMetric $totalPosts
+     * @param StatisticsMetric $totalViews
+     * @param array<SourceStatistics> $sourceStatistics
+     * @param array<string, mixed> $additionalMetrics
+     * @return self
      */
     public static function fromSnapshot(
         StatisticsPeriod $period,
@@ -71,11 +78,18 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      */
     public static function fromArray(array $data): self
     {
-        // 確保期間資料存在且正確
-        $periodData = $data['period'] ?? [];
-        $startDate = is_string($periodData['start_date'] ?? null) ? $periodData['start_date'] : 'now';
-        $endDate = is_string($periodData['end_date'] ?? null) ? $periodData['end_date'] : 'now';
-        $periodType = $periodData['type'] ?? 'daily';
+        // 使用型別安全的方式存取期間資料
+        /** @var array<string, mixed> $periodData */
+        $periodData = is_array($data['period'] ?? []) ? $data['period'] : [];
+        
+        $periodStartDate = $periodData['start_date'] ?? null;
+        $startDate = is_string($periodStartDate) ? $periodStartDate : 'now';
+        
+        $periodEndDate = $periodData['end_date'] ?? null;
+        $endDate = is_string($periodEndDate) ? $periodEndDate : 'now';
+        
+        $periodTypeValue = $periodData['type'] ?? null;
+        $periodType = is_string($periodTypeValue) || is_int($periodTypeValue) ? $periodTypeValue : 'daily';
         
         $period = StatisticsPeriod::create(
             new DateTimeImmutable($startDate),
@@ -84,42 +98,63 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         );
 
         // 安全地提取統計指標
-        $totalViewsData = $data['total_views'] ?? [];
+        /** @var array<string, mixed> $totalViewsData */
+        $totalViewsData = is_array($data['total_views'] ?? []) ? $data['total_views'] : [];
+        $totalViewsValue = $totalViewsData['value'] ?? null;
+        $totalViewsDescription = $totalViewsData['description'] ?? null;
+        
         $totalViews = StatisticsMetric::count(
-            is_numeric($totalViewsData['value'] ?? 0) ? (int)$totalViewsData['value'] : 0,
-            is_string($totalViewsData['description'] ?? '') ? $totalViewsData['description'] : '總瀏覽數'
+            is_numeric($totalViewsValue) ? (int)$totalViewsValue : 0,
+            is_string($totalViewsDescription) ? $totalViewsDescription : '總瀏覽數'
         );
 
-        $totalPostsData = $data['total_posts'] ?? [];
+        /** @var array<string, mixed> $totalPostsData */
+        $totalPostsData = is_array($data['total_posts'] ?? []) ? $data['total_posts'] : [];
+        $totalPostsValue = $totalPostsData['value'] ?? null;
+        $totalPostsDescription = $totalPostsData['description'] ?? null;
+        
         $totalPosts = StatisticsMetric::count(
-            is_numeric($totalPostsData['value'] ?? 0) ? (int)$totalPostsData['value'] : 0,
-            is_string($totalPostsData['description'] ?? '') ? $totalPostsData['description'] : '總文章數'
+            is_numeric($totalPostsValue) ? (int)$totalPostsValue : 0,
+            is_string($totalPostsDescription) ? $totalPostsDescription : '總文章數'
         );
 
         // 來源統計資料
-        $sourceStatsData = $data['source_statistics'] ?? [];
-        if (!is_array($sourceStatsData)) {
-            $sourceStatsData = [];
-        }
+        $sourceStatsDataRaw = $data['source_statistics'] ?? [];
+        /** @var array<array<string, mixed>> $sourceStatsData */
+        $sourceStatsData = is_array($sourceStatsDataRaw) ? array_filter($sourceStatsDataRaw, 'is_array') : [];
 
         /** @var array<SourceStatistics> $sourceStatistics */
         $sourceStatistics = array_map(
-            fn(array $sourceData) => SourceStatistics::create(
-                SourceType::from($sourceData['source_type'] ?? 'web'),
-                is_numeric($sourceData['count'] ?? 0) ? (int)$sourceData['count'] : 0,
-                is_numeric($sourceData['percentage'] ?? 0.0) ? (float)$sourceData['percentage'] : 0.0,
-            ),
+            static function (array $sourceData): SourceStatistics {
+                $sourceTypeValue = $sourceData['source_type'] ?? null;
+                $sourceType = is_string($sourceTypeValue) || is_int($sourceTypeValue) ? $sourceTypeValue : 'web';
+                
+                $countValue = $sourceData['count'] ?? null;
+                $count = is_numeric($countValue) ? (int)$countValue : 0;
+                
+                $percentageValue = $sourceData['percentage'] ?? null;
+                $percentage = is_numeric($percentageValue) ? (float)$percentageValue : 0.0;
+                
+                return SourceStatistics::create(
+                    SourceType::from($sourceType),
+                    $count,
+                    $percentage,
+                );
+            },
             $sourceStatsData,
         );
 
+        /** @var array<string, mixed> $additionalMetricsRaw */
+        $additionalMetricsRaw = $data['additional_metrics'] ?? [];
         /** @var array<string, mixed> $additionalMetrics */
-        $additionalMetrics = is_array($data['additional_metrics'] ?? []) 
-            ? $data['additional_metrics'] 
-            : [];
+        $additionalMetrics = is_array($additionalMetricsRaw) ? $additionalMetricsRaw : [];
             
-        $generatedAt = is_string($data['generated_at'] ?? null) 
-            ? $data['generated_at'] 
-            : 'now';
+        $generatedAtValue = $data['generated_at'] ?? null;
+        $generatedAt = is_string($generatedAtValue) ? $generatedAtValue : 'now';
+
+        // 確保型別安全
+        assert(is_array($sourceStatistics));
+        assert(array_is_list($sourceStatistics));
 
         return new self(
             $period,

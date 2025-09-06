@@ -46,6 +46,11 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 從來源統計資料建立 DTO.
+     * 
+     * @param StatisticsPeriod $period
+     * @param array<SourceStatistics> $sourceStatistics
+     * @param int $totalCount
+     * @return self
      */
     public static function fromSourceStatistics(
         StatisticsPeriod $period,
@@ -69,11 +74,19 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      */
     public static function fromArray(array $data): self
     {
-        // 確保期間資料存在且正確
-        $periodData = $data['period'] ?? [];
-        $startDate = is_string($periodData['start_date'] ?? null) ? $periodData['start_date'] : 'now';
-        $endDate = is_string($periodData['end_date'] ?? null) ? $periodData['end_date'] : 'now';
-        $periodType = $periodData['type'] ?? 'daily';
+        // 使用型別安全的方式存取期間資料
+        /** @var array<string, mixed> $periodData */
+        $periodData = is_array($data['period'] ?? []) ? $data['period'] : [];
+        
+        // 型別安全地取得日期字串
+        $periodStartDate = $periodData['start_date'] ?? null;
+        $startDate = is_string($periodStartDate) ? $periodStartDate : 'now';
+        
+        $periodEndDate = $periodData['end_date'] ?? null;
+        $endDate = is_string($periodEndDate) ? $periodEndDate : 'now';
+        
+        $periodTypeValue = $periodData['type'] ?? null;
+        $periodType = is_string($periodTypeValue) || is_int($periodTypeValue) ? $periodTypeValue : 'daily';
 
         $period = StatisticsPeriod::create(
             new DateTimeImmutable($startDate),
@@ -82,31 +95,45 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         );
 
         // 確保來源統計資料是陣列
-        $sourceStatsData = $data['source_statistics'] ?? [];
-        if (!is_array($sourceStatsData)) {
-            $sourceStatsData = [];
-        }
+        $sourceStatsDataRaw = $data['source_statistics'] ?? [];
+        /** @var array<array<string, mixed>> $sourceStatsData */
+        $sourceStatsData = is_array($sourceStatsDataRaw) ? array_filter($sourceStatsDataRaw, 'is_array') : [];
 
         /** @var array<SourceStatistics> $sourceStatistics */
         $sourceStatistics = array_map(
-            fn(array $sourceData) => SourceStatistics::create(
-                SourceType::from($sourceData['source_type'] ?? 'web'),
-                is_numeric($sourceData['count'] ?? 0) ? (int)$sourceData['count'] : 0,
-                is_numeric($sourceData['percentage'] ?? 0.0) ? (float)$sourceData['percentage'] : 0.0,
-            ),
+            static function (array $sourceData): SourceStatistics {
+                $sourceTypeValue = $sourceData['source_type'] ?? null;
+                $sourceType = is_string($sourceTypeValue) || is_int($sourceTypeValue) ? $sourceTypeValue : 'web';
+                
+                $countValue = $sourceData['count'] ?? null;
+                $count = is_numeric($countValue) ? (int)$countValue : 0;
+                
+                $percentageValue = $sourceData['percentage'] ?? null;
+                $percentage = is_numeric($percentageValue) ? (float)$percentageValue : 0.0;
+                
+                return SourceStatistics::create(
+                    SourceType::from($sourceType),
+                    $count,
+                    $percentage,
+                );
+            },
             $sourceStatsData,
         );
 
-        $totalCount = is_numeric($data['total_count'] ?? 0) ? (int)$data['total_count'] : 0;
+        $totalCountValue = $data['total_count'] ?? null;
+        $totalCount = is_numeric($totalCountValue) ? (int)$totalCountValue : 0;
 
+        /** @var array<string, mixed> $distributionAnalysisRaw */
+        $distributionAnalysisRaw = $data['distribution_analysis'] ?? [];
         /** @var array<string, mixed> $distributionAnalysis */
-        $distributionAnalysis = is_array($data['distribution_analysis'] ?? [])
-            ? $data['distribution_analysis']
-            : [];
+        $distributionAnalysis = is_array($distributionAnalysisRaw) ? $distributionAnalysisRaw : [];
 
-        $generatedAt = is_string($data['generated_at'] ?? null)
-            ? $data['generated_at']
-            : 'now';
+        $generatedAtValue = $data['generated_at'] ?? null;
+        $generatedAt = is_string($generatedAtValue) ? $generatedAtValue : 'now';
+
+        // 確保型別安全
+        assert(is_array($sourceStatistics));
+        assert(array_is_list($sourceStatistics));
 
         return new self(
             $period,
@@ -416,6 +443,10 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 計算分佈分析.
+     * 
+     * @param array<SourceStatistics> $sourceStatistics
+     * @param int $totalCount
+     * @return array<string, mixed>
      */
     private static function calculateDistributionAnalysis(array $sourceStatistics, int $totalCount): array
     {
@@ -428,8 +459,13 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         $hhi = 0.0;
 
         foreach ($sourceStatistics as $source) {
+            if (!$source instanceof SourceStatistics) {
+                continue;
+            }
+            
             if ($source->count->value > 0) {
-                $proportion = $source->count->value / $totalCount;
+                $sourceCount = $source->count->value;
+                $proportion = $sourceCount / $totalCount;
                 $shannon -= $proportion * log($proportion);
                 $hhi += $proportion * $proportion;
             }

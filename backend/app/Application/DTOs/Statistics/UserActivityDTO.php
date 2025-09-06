@@ -52,24 +52,36 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 從統計資料建立 DTO.
      */
+    /**
+     * 從統計資料建立 DTO.
+     * 
+     * @param StatisticsPeriod $period
+     * @param array<string, mixed> $userStats
+     * @param array<array<string, mixed>> $topUsers
+     * @param array<string, mixed> $patterns
+     * @return self
+     */
     public static function fromStatistics(
         StatisticsPeriod $period,
         array $userStats,
         array $topUsers = [],
         array $patterns = [],
     ): self {
+        $totalActiveValue = $userStats['total_active'] ?? null;
         $totalActive = StatisticsMetric::count(
-            $userStats['total_active'] ?? 0,
+            is_numeric($totalActiveValue) ? (int)$totalActiveValue : 0,
             '總活躍使用者數',
         );
 
+        $newUsersValue = $userStats['new_users'] ?? null;
         $newUsers = StatisticsMetric::count(
-            $userStats['new_users'] ?? 0,
+            is_numeric($newUsersValue) ? (int)$newUsersValue : 0,
             '新使用者數',
         );
 
+        $returningUsersValue = $userStats['returning_users'] ?? null;
         $returningUsers = StatisticsMetric::count(
-            $userStats['returning_users'] ?? 0,
+            is_numeric($returningUsersValue) ? (int)$returningUsersValue : 0,
             '回訪使用者數',
         );
 
@@ -93,11 +105,18 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     public static function fromArray(array $data): self
     {
-        // 確保期間資料存在且正確
-        $periodData = $data['period'] ?? [];
-        $startDate = is_string($periodData['start_date'] ?? null) ? $periodData['start_date'] : 'now';
-        $endDate = is_string($periodData['end_date'] ?? null) ? $periodData['end_date'] : 'now';
-        $periodType = $periodData['type'] ?? 'daily';
+        // 使用型別安全的方式存取期間資料
+        /** @var array<string, mixed> $periodData */
+        $periodData = is_array($data['period'] ?? []) ? $data['period'] : [];
+        
+        $periodStartDate = $periodData['start_date'] ?? null;
+        $startDate = is_string($periodStartDate) ? $periodStartDate : 'now';
+        
+        $periodEndDate = $periodData['end_date'] ?? null;
+        $endDate = is_string($periodEndDate) ? $periodEndDate : 'now';
+        
+        $periodTypeValue = $periodData['type'] ?? null;
+        $periodType = is_string($periodTypeValue) || is_int($periodTypeValue) ? $periodTypeValue : 'daily';
         
         $period = StatisticsPeriod::create(
             new DateTimeImmutable($startDate),
@@ -106,39 +125,38 @@ final readonly class UserActivityDTO implements JsonSerializable
         );
 
         // 安全地提取統計指標
+        $activeUsersValue = $data['active_users'] ?? null;
         $activeUsers = StatisticsMetric::count(
-            is_numeric($data['active_users'] ?? 0) ? (int)$data['active_users'] : 0,
+            is_numeric($activeUsersValue) ? (int)$activeUsersValue : 0,
             '活躍用戶數'
         );
 
+        $newUsersValue = $data['new_users'] ?? null;
         $newUsers = StatisticsMetric::count(
-            is_numeric($data['new_users'] ?? 0) ? (int)$data['new_users'] : 0,
+            is_numeric($newUsersValue) ? (int)$newUsersValue : 0,
             '新用戶數'
         );
 
+        $returningUsersValue = $data['returning_users'] ?? null;
         $returningUsers = StatisticsMetric::count(
-            is_numeric($data['returning_users'] ?? 0) ? (int)$data['returning_users'] : 0,
+            is_numeric($returningUsersValue) ? (int)$returningUsersValue : 0,
             '回訪用戶數'
         );
 
-        /** @var array<array> $topActiveUsers */
-        $topActiveUsers = is_array($data['top_active_users'] ?? []) 
-            ? $data['top_active_users'] 
-            : [];
+        $topActiveUsersRaw = $data['top_active_users'] ?? [];
+        /** @var array<array<string, mixed>> $topActiveUsers */
+        $topActiveUsers = is_array($topActiveUsersRaw) ? array_filter($topActiveUsersRaw, 'is_array') : [];
 
+        $activityPatternsRaw = $data['activity_patterns'] ?? [];
         /** @var array<string, mixed> $activityPatterns */
-        $activityPatterns = is_array($data['activity_patterns'] ?? []) 
-            ? $data['activity_patterns'] 
-            : [];
+        $activityPatterns = is_array($activityPatternsRaw) ? $activityPatternsRaw : [];
 
+        $engagementMetricsRaw = $data['engagement_metrics'] ?? [];
         /** @var array<string, mixed> $engagementMetrics */
-        $engagementMetrics = is_array($data['engagement_metrics'] ?? []) 
-            ? $data['engagement_metrics'] 
-            : [];
+        $engagementMetrics = is_array($engagementMetricsRaw) ? $engagementMetricsRaw : [];
             
-        $generatedAt = is_string($data['generated_at'] ?? null) 
-            ? $data['generated_at'] 
-            : 'now';
+        $generatedAtValue = $data['generated_at'] ?? null;
+        $generatedAt = is_string($generatedAtValue) ? $generatedAtValue : 'now';
 
         return new self(
             $period,
@@ -189,7 +207,8 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     public function getGrowthRate(): float
     {
-        return $this->engagementMetrics['growth_rate'] ?? 0.0;
+        $value = $this->engagementMetrics['growth_rate'] ?? null;
+        return is_numeric($value) ? (float)$value : 0.0;
     }
 
     /**
@@ -197,7 +216,8 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     public function getAverageSessionDuration(): float
     {
-        return $this->engagementMetrics['avg_session_duration'] ?? 0.0;
+        $value = $this->engagementMetrics['avg_session_duration'] ?? null;
+        return is_numeric($value) ? (float)$value : 0.0;
     }
 
     /**
@@ -205,7 +225,8 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     public function getAveragePageViews(): float
     {
-        return $this->engagementMetrics['avg_page_views'] ?? 0.0;
+        $value = $this->engagementMetrics['avg_page_views'] ?? null;
+        return is_numeric($value) ? (float)$value : 0.0;
     }
 
     /**
@@ -213,7 +234,8 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     public function getBounceRate(): float
     {
-        return $this->engagementMetrics['bounce_rate'] ?? 0.0;
+        $value = $this->engagementMetrics['bounce_rate'] ?? null;
+        return is_numeric($value) ? (float)$value : 0.0;
     }
 
     /**
@@ -259,7 +281,8 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     public function getActivityTimeAnalysis(): array
     {
-        return $this->activityPatterns['time_analysis'] ?? [];
+        $value = $this->activityPatterns['time_analysis'] ?? null;
+        return is_array($value) ? $value : [];
     }
 
     /**
@@ -273,7 +296,12 @@ final readonly class UserActivityDTO implements JsonSerializable
         }
 
         // 排序並取前3個時段
-        uasort($timeAnalysis, fn($a, $b) => ($b['activity_count'] ?? 0) <=> ($a['activity_count'] ?? 0));
+        uasort($timeAnalysis, static function ($a, $b): int {
+            $countA = is_array($a) ? ($a['activity_count'] ?? 0) : 0;
+            $countB = is_array($b) ? ($b['activity_count'] ?? 0) : 0;
+            return is_numeric($countB) && is_numeric($countA) ? 
+                ((int)$countB <=> (int)$countA) : 0;
+        });
 
         return array_slice($timeAnalysis, 0, 3, true);
     }
@@ -446,14 +474,26 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 計算參與度指標.
      */
+    /**
+     * 計算參與度指標
+     * 
+     * @param array<string, mixed> $userStats
+     * @return array<string, mixed>
+     */
     private static function calculateEngagementMetrics(array $userStats): array
     {
+        $growthRateValue = $userStats['growth_rate'] ?? null;
+        $avgSessionDurationValue = $userStats['avg_session_duration'] ?? null;
+        $avgPageViewsValue = $userStats['avg_page_views'] ?? null;
+        $bounceRateValue = $userStats['bounce_rate'] ?? null;
+        $conversionRateValue = $userStats['conversion_rate'] ?? null;
+        
         return [
-            'growth_rate' => $userStats['growth_rate'] ?? 0.0,
-            'avg_session_duration' => $userStats['avg_session_duration'] ?? 0.0,
-            'avg_page_views' => $userStats['avg_page_views'] ?? 0.0,
-            'bounce_rate' => $userStats['bounce_rate'] ?? 0.0,
-            'conversion_rate' => $userStats['conversion_rate'] ?? 0.0,
+            'growth_rate' => is_numeric($growthRateValue) ? (float)$growthRateValue : 0.0,
+            'avg_session_duration' => is_numeric($avgSessionDurationValue) ? (float)$avgSessionDurationValue : 0.0,
+            'avg_page_views' => is_numeric($avgPageViewsValue) ? (float)$avgPageViewsValue : 0.0,
+            'bounce_rate' => is_numeric($bounceRateValue) ? (float)$bounceRateValue : 0.0,
+            'conversion_rate' => is_numeric($conversionRateValue) ? (float)$conversionRateValue : 0.0,
             'calculated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
         ];
     }
@@ -483,9 +523,6 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     private function validateActivityPatterns(array $patterns): void
     {
-        // 基本驗證：確保是陣列格式
-        if (!is_array($patterns)) {
-            throw new InvalidArgumentException('活動模式必須是陣列格式');
-        }
+        // 活動模式陣列格式已通過型別檢查確認
     }
 }
