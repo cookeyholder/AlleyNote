@@ -208,7 +208,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
             foreach ($activities as $activity) {
                 $date = $activity['date'];
                 $hour = (int) $activity['hour'];
-                $count = (int) $activity['activity_count'];
+                $count = (int) is_numeric($activity['activity_count'] ?? null) ? (int) $activity['activity_count'] : 0;
 
                 if (!isset($heatmap[$date])) {
                     $heatmap[$date] = array_fill(0, 24, 0);

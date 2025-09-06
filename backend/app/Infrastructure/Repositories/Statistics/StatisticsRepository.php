@@ -101,6 +101,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute(['uuid' => $id->toString()]);
 
+            /** @var array<string, mixed>|false $row */
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $row ? $this->buildSnapshotFromRow($row) : null;
@@ -134,6 +135,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
+            /** @var array<string, mixed>|false $row */
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $row ? $this->buildSnapshotFromRow($row) : null;
@@ -251,6 +253,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
 
+            /** @var array<string, mixed>|false $row */
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $row ? $this->buildSnapshotFromRow($row) : null;
@@ -278,6 +281,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
 
+            /** @var array<string, mixed>|false $row */
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $row ? $this->buildSnapshotFromRow($row) : null;
@@ -300,7 +304,9 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
 
-            return (int) $stmt->fetchColumn();
+            /** @var int|false $result */
+            $result = $stmt->fetchColumn();
+            return $result !== false ? $result : 0;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "計算統計快照總數失敗: {$e->getMessage()}",
@@ -446,6 +452,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
 
+            /** @var array<string, mixed>|false $row */
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return [
@@ -481,7 +488,9 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
                 'end_date' => $endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return (int) $stmt->fetchColumn();
+            /** @var int|false $result */
+            $result = $stmt->fetchColumn();
+            return $result !== false ? $result : 0;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 "計算日期範圍內統計快照總數失敗: {$e->getMessage()}",
@@ -569,6 +578,12 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
 
     /**
      * 反序列化指標資料.
+     */
+    /**
+     * 反序列化指標資料
+     * 
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     private function deserializeMetrics(array $data): array
     {

@@ -263,7 +263,7 @@ readonly class StatisticsCalculationCommand
             PeriodType::WEEKLY => $this->createWeeklyPeriod($now),
             PeriodType::MONTHLY => $this->createMonthlyPeriod($now),
             PeriodType::YEARLY => $this->createYearlyPeriod($now),
-            default => throw new InvalidArgumentException("不支援的週期類型: {$periodType->value}"),
+            default => throw new InvalidArgumentException("不支援的週期類型: " . $periodType->name),
         };
     }
 
@@ -386,16 +386,18 @@ readonly class StatisticsCalculationCommand
         $lockFiles = glob($lockPattern);
         $cleanedCount = 0;
 
-        foreach ($lockFiles as $lockFile) {
-            if (!$this->isLocked($lockFile)) {
-                $this->releaseLock($lockFile);
-                $cleanedCount++;
+        if (is_array($lockFiles)) {
+            foreach ($lockFiles as $lockFile) {
+                if (!$this->isLocked($lockFile)) {
+                    $this->releaseLock($lockFile);
+                    $cleanedCount++;
+                }
             }
         }
 
         $this->logger->info('清理過期鎖定檔案', [
             'cleaned_count' => $cleanedCount,
-            'total_found' => count($lockFiles),
+            'total_found' => is_array($lockFiles) ? count($lockFiles) : 0,
         ]);
 
         return $cleanedCount;

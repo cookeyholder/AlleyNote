@@ -566,7 +566,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             return [
                 'new_users_with_activity' => [],
-                'total_new_users_with_activity' => (int) ($result['total_new_users_with_activity'] ?? 0),
+                'total_new_users_with_activity' => (int) (is_numeric($result['total_new_users_with_activity'] ?? null) ? (int) $result['total_new_users_with_activity'] : 0 ?? 0),
                 'avg_days_to_first_activity' => round((float) ($result['avg_days_to_first_activity'] ?? 0), 2),
             ];
         } catch (PDOException $e) {
