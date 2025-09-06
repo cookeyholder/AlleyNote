@@ -36,12 +36,12 @@ readonly class StatisticsCalculationConsole
                 'arguments' => $arguments,
             ]);
 
-            return match ($options['command']) {
+            return match (($options['command'] ?? null)) {
                 'calculate' => $this->handleCalculateCommand($options),
                 'status' => $this->handleStatusCommand(),
                 'cleanup' => $this->handleCleanupCommand(),
                 'help' => $this->handleHelpCommand(),
-                default => $this->handleInvalidCommand($options['command']),
+                default => $this->handleInvalidCommand(($options['command'] ?? null)),
             };
         } catch (Exception $e) {
             $this->logger->error('統計計算控制台執行失敗', [
@@ -79,7 +79,7 @@ readonly class StatisticsCalculationConsole
 
         $this->printCalculationResults($result);
 
-        return $result['failure_count'] > 0 ? 1 : 0;
+        return ($result['failure_count'] ?? null) > 0 ? 1 : 0;
     }
 
     /**
@@ -185,7 +185,7 @@ readonly class StatisticsCalculationConsole
         }
 
         // 如果沒有指定週期，使用預設值
-        if (empty($options['periods']) && $options['command'] === 'calculate') {
+        if (empty(($options['periods'] ?? null)) && $options['command'] === 'calculate') {
             $options['periods'] = ['daily', 'weekly', 'monthly'];
         }
 
@@ -198,22 +198,22 @@ readonly class StatisticsCalculationConsole
     private function printCalculationResults(array $result): void
     {
         $this->printInfo("\n=== 統計計算結果 ===");
-        $this->printInfo('總執行時間: ' . number_format($result['total_duration'], 2) . ' 秒');
-        $this->printInfo("總週期數: {$result['total_periods']}");
-        $this->printSuccess("成功: {$result['success_count']}");
+        $this->printInfo('總執行時間: ' . number_format($result['total_duration'] ?? 0, 2) . ' 秒');
+        $this->printInfo("總週期數: " . ($result['total_periods'] ?? 0));
+        $this->printSuccess("成功: " . ($result['success_count'] ?? 0));
 
-        if ($result['failure_count'] > 0) {
-            $this->printError("失敗: {$result['failure_count']}");
+        if (($result['failure_count'] ?? null) > 0) {
+            $this->printError("失敗: " . ($result['failure_count'] ?? 0));
         }
 
         $this->printInfo("\n=== 詳細結果 ===");
-        foreach ($result['results'] as $period => $periodResult) {
+        foreach (($result['results'] ?? null) as $period => $periodResult) {
             $status = $periodResult['success'] ? '✓' : '✗';
             $duration = number_format($periodResult['duration'] ?? 0, 2);
 
-            if ($periodResult['success']) {
+            if (($periodResult['success'] ?? null)) {
                 $extra = '';
-                if ($periodResult['cached']) {
+                if (($periodResult['cached'] ?? null)) {
                     $extra = ' (快取)';
                 } elseif (isset($periodResult['snapshot_id'])) {
                     $extra = " (快照: {$periodResult['snapshot_id']})";
@@ -221,7 +221,7 @@ readonly class StatisticsCalculationConsole
                 $this->printSuccess("{$status} {$period}: {$duration}s{$extra}");
             } else {
                 $error = $periodResult['error'] ?? 'Unknown error';
-                if ($periodResult['skipped']) {
+                if (($periodResult['skipped'] ?? null)) {
                     $this->printWarning("{$status} {$period}: 已跳過 - {$error}");
                 } else {
                     $this->printError("{$status} {$period}: {$error}");
@@ -236,21 +236,21 @@ readonly class StatisticsCalculationConsole
     private function printStatusResults(array $status): void
     {
         $this->printInfo("\n=== 統計計算任務狀態 ===");
-        $this->printInfo("鎖定超時時間: {$status['lock_timeout']} 秒");
-        $this->printInfo("最大重試次數: {$status['max_retries']}");
-        $this->printInfo("重試間隔: {$status['retry_delay']} 秒");
+        $this->printInfo("鎖定超時時間: " . ($status['lock_timeout'] ?? 0) . " 秒");
+        $this->printInfo("最大重試次數: " . ($status['max_retries'] ?? 0));
+        $this->printInfo("重試間隔: " . ($status['retry_delay'] ?? 0) . " 秒");
 
         $this->printInfo("\n=== 週期狀態 ===");
-        foreach ($status['periods'] as $period => $periodStatus) {
+        foreach (($status['periods'] ?? null) as $period => $periodStatus) {
             $lockedStatus = $periodStatus['locked'] ? '🔒 已鎖定' : '🔓 可用';
             $this->printInfo("{$period}: {$lockedStatus}");
 
-            if ($periodStatus['locked'] && $periodStatus['lock_time']) {
-                $lockAge = $periodStatus['lock_age_seconds'];
-                $this->printInfo('  鎖定時間: ' . date('Y-m-d H:i:s', $periodStatus['lock_time']));
+            if (($periodStatus['locked'] ?? null) && ($periodStatus['lock_time'] ?? null)) {
+                $lockAge = ($periodStatus['lock_age_seconds'] ?? null);
+                $this->printInfo('  鎖定時間: ' . date('Y-m-d H:i:s', ($periodStatus['lock_time'] ?? null)));
                 $this->printInfo("  鎖定時長: {$lockAge} 秒");
 
-                if ($lockAge > $status['lock_timeout']) {
+                if ($lockAge > ($status['lock_timeout'] ?? null)) {
                     $this->printWarning('  ⚠️ 鎖定時間過長，可能需要清理');
                 }
             }

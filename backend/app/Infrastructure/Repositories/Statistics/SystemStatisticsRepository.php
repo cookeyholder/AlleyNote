@@ -206,8 +206,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
             $heatmap = [];
 
             foreach ($activities as $activity) {
-                $date = $activity['date'];
-                $hour = (int) $activity['hour'];
+                $date = ($activity['date'] ?? null);
+                $hour = (int) ($activity['hour'] ?? null);
                 $count = (int) is_numeric($activity['activity_count'] ?? null) ? (int) $activity['activity_count'] : 0;
 
                 if (!isset($heatmap[$date])) {
@@ -450,8 +450,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
         $errors = $this->getErrorAndExceptionStats($period);
 
         $healthScore = 100.0;
-        if ($errors['summary']['total_errors'] > 0) {
-            $healthScore -= min($errors['summary']['total_errors'] * 0.1, 20);
+        if (($errors['summary'] ?? null)['total_errors'] > 0) {
+            $healthScore -= min(($errors['summary'] ?? null)['total_errors'] * 0.1, 20);
         }
 
         return [
@@ -463,7 +463,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 'network' => 'healthy',
             ],
             'recent_issues' => [],
-            'performance_metrics' => $performance['total_statistics'],
+            'performance_metrics' => ($performance['total_statistics'] ?? null),
         ];
     }
 
@@ -613,7 +613,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     public function isSystemHealthyInPeriod(StatisticsPeriod $period): bool
     {
         $errors = $this->getErrorAndExceptionStats($period);
-        $errorCount = $errors['summary']['total_errors'];
+        $errorCount = ($errors['summary'] ?? null)['total_errors'];
 
         return $errorCount < 100; // 簡化的健康檢查
     }
@@ -628,10 +628,10 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
         return [
             'uptime_percentage' => 99.95,
-            'error_rate' => $errors['summary']['error_rate_percentage'],
-            'avg_response_time' => $load['avg_response_time'],
+            'error_rate' => ($errors['summary'] ?? null)['error_rate_percentage'],
+            'avg_response_time' => ($load['avg_response_time'] ?? null),
             'peak_memory_usage' => 512.8,
-            'total_events' => $load['total_requests'],
+            'total_events' => ($load['total_requests'] ?? null),
         ];
     }
 

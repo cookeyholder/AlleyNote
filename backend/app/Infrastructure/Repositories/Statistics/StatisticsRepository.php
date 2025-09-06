@@ -456,8 +456,8 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return [
-                'min' => $row['min_date'] ? new DateTimeImmutable($row['min_date']) : null,
-                'max' => $row['max_date'] ? new DateTimeImmutable($row['max_date']) : null,
+                'min' => $row['min_date'] ? new DateTimeImmutable(($row['min_date'] ?? null)) : null,
+                'max' => $row['max_date'] ? new DateTimeImmutable(($row['max_date'] ?? null)) : null,
             ];
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -506,29 +506,29 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
     private function buildSnapshotFromRow(array $row): StatisticsSnapshot
     {
         $period = StatisticsPeriod::create(
-            new DateTimeImmutable($row['start_date']),
-            new DateTimeImmutable($row['end_date']),
-            PeriodType::from($row['period_type']),
+            new DateTimeImmutable(($row['start_date'] ?? null)),
+            new DateTimeImmutable(($row['end_date'] ?? null)),
+            PeriodType::from(($row['period_type'] ?? null)),
         );
 
-        $snapshotData = json_decode($row['snapshot_data'], true) ?? [];
+        $snapshotData = json_decode(($row['snapshot_data'] ?? null), true) ?? [];
 
         // 建立基本指標
-        $totalPosts = StatisticsMetric::count((int) $row['total_posts'], '總文章數');
-        $totalViews = StatisticsMetric::count((int) $row['total_views'], '總瀏覽數');
+        $totalPosts = StatisticsMetric::count((int) ($row['total_posts'] ?? null), '總文章數');
+        $totalViews = StatisticsMetric::count((int) ($row['total_views'] ?? null), '總瀏覽數');
 
         // 反序列化額外指標
         $additionalMetrics = $this->deserializeMetrics($snapshotData);
 
         return StatisticsSnapshot::fromData(
-            Uuid::fromString($row['uuid']),
+            Uuid::fromString(($row['uuid'] ?? null)),
             $period,
             $totalPosts,
             $totalViews,
             [], // 來源統計，暫時為空陣列
             $additionalMetrics,
-            new DateTimeImmutable($row['created_at']),
-            $row['updated_at'] ? new DateTimeImmutable($row['updated_at']) : null,
+            new DateTimeImmutable(($row['created_at'] ?? null)),
+            $row['updated_at'] ? new DateTimeImmutable(($row['updated_at'] ?? null)) : null,
         );
     }
 
