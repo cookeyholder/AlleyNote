@@ -2,12 +2,12 @@
 
 ## 📋 專案概況
 - **目標**: 完成 15 個高優先級測試重構項目
-- **當前進度**: 5/15 完成 (33.3%)
+- **當前進度**: 6/15 完成 (40.0%)
 - **測試品質評分**: 70/100 → 目標 85-90/100
 - **總測試數**: 1457 個測試
 - **總斷言數**: 6659 個斷言
 
-## ✅ 已完成項目 (5/15)
+## ✅ 已完成項目 (6/15)
 
 - [x] **UserActivityLogsSeederTest.php** ✅
   - 完成時間: 2025-09-06
@@ -35,27 +35,28 @@
   - 測試狀態: 43 個測試全部通過，184 個斷言
   - 重構重點: 提取批次交易處理邏輯，簡化複雜的參數驗證回調
 
-## 🔄 待完成項目 (10/15)
-
-### 🔴 第一階段：核心認證系統 (優先級: 極高)
-
-- ✅ **2. RefreshTokenRepositoryTest.php** 
-  - 狀態: 已完成 ✅ (2024-12-14)
+- [x] **RefreshTokenRepositoryTest.php** ✅
+  - 完成時間: 2024-12-14
   - 位置: `tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php`
   - 問題: high_cyclomatic_complexity 反模式
-  - 完成時間: 35 分鐘 (較預估多 20 分鐘，因為測試數量龐大)
+  - 重構時間: 35 分鐘 (較預估多 20 分鐘，因為測試數量龐大)
   - 重構策略: 提取 PDO Mock 設定助手方法，簡化複雜的資料庫操作測試
   - 測試狀態: 50 個測試全部通過，164 個斷言
   - 重構重點: 最複雜的 refresh token 生命周期測試，包含批次操作和事務處理
 
+## 🔄 待完成項目 (9/15)
+
 ### 🟡 第二階段：核心驗證與快取 (優先級: 高)
 
-- [ ] **3. ValidatorTest.php**
+- [x] **3. ValidatorTest.php** ✅
+  - 完成時間: 2024-12-14
   - 位置: `tests/Unit/Validation/ValidatorTest.php`
   - 問題: high_cyclomatic_complexity 反模式
-  - 預估時間: 20 分鐘
-  - 重構策略: 分割複雜的驗證規則測試
-  - 相關功能: 核心驗證邏輯
+  - 重構時間: 25 分鐘 (符合預估)
+  - 重構策略: Extract Method 模式 - 建立 9 個驗證助手方法，提取複雜迴圈邏輯
+  - 測試狀態: 29 個測試全部通過，1194 個斷言
+  - 重構重點: 將多個 foreach 迴圈提取為助手方法，大幅降低循環複雜度
+  - PHPStan: Level 10 合規 ✅
 
 - [ ] **4. TaggedCacheIntegrationTest.php**
   - 位置: `tests/Integration/Shared/Cache/Services/TaggedCacheIntegrationTest.php`
@@ -154,8 +155,9 @@
 
 ### 重構亮點
 - **RefreshTokenRepositoryTest.php**: 成功重構 50 個測試方法，採用 Extract Method 模式大幅簡化複雜的資料庫操作測試
+- **ValidatorTest.php**: 成功重構 29 個測試方法，建立 9 個驗證助手方法，將複雜的 foreach 迴圈提取為可重用的助手方法，大幅降低循環複雜度
 - **第一階段達標**: 認證系統核心測試品質提升完成，為後續開發奠定堅實基礎
 
 ---
 
-**下一步行動**: 開始重構 RefreshTokenRepositoryTest.php
+**下一步行動**: 開始重構 TaggedCacheIntegrationTest.php
