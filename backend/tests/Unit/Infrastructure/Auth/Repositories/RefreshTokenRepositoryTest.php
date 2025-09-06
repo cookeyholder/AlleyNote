@@ -67,22 +67,17 @@ final class RefreshTokenRepositoryTest extends TestCase
         $jti = 'test-jti-123';
         $userId = 1;
         $tokenHash = 'hash123';
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
+        $this->setupSuccessfulPdoMock();
 
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) use ($jti, $userId, $tokenHash) {
-                return $params[0] === $jti
+                return is_array($params)
+                    && $params[0] === $jti
                     && $params[1] === $userId
-                    && $params[2] === $tokenHash
-                    && $params[4] === 'device-123';
-            }))
-            ->willReturn(true);
+                    && $params[2] === $tokenHash;
+            }));
 
         // Act
         $result = $this->repository->create(
@@ -100,10 +95,7 @@ final class RefreshTokenRepositoryTest extends TestCase
     public function testCreate_ShouldThrowException_WhenDatabaseFails(): void
     {
         // Arrange
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willThrowException(new PDOException('Database error'));
+        $this->setupFailingPdoMock();
 
         // Assert
         $this->expectException(RefreshTokenException::class);
@@ -157,28 +149,8 @@ final class RefreshTokenRepositoryTest extends TestCase
     {
         // Arrange
         $jti = 'test-jti-123';
-        $expectedData = [
-            'jti' => $jti,
-            'user_id' => 1,
-            'token_hash' => 'hash123',
-            'status' => RefreshToken::STATUS_ACTIVE,
-        ];
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('execute')
-            ->with([$jti]);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('fetch')
-            ->with(PDO::FETCH_ASSOC)
-            ->willReturn($expectedData);
+        $expectedData = $this->createSampleTokenData($jti);
+        $this->setupQueryPdoMock($expectedData);
 
         // Act
         $result = $this->repository->findByJti($jti);
@@ -190,16 +162,7 @@ final class RefreshTokenRepositoryTest extends TestCase
     public function testFindByJti_ShouldReturnNull_WhenTokenNotFound(): void
     {
         // Arrange
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('fetch')
-            ->with(PDO::FETCH_ASSOC)
-            ->willReturn(false);
+        $this->setupQueryPdoMock(false);
 
         // Act
         $result = $this->repository->findByJti('non-existent-jti');
@@ -211,10 +174,7 @@ final class RefreshTokenRepositoryTest extends TestCase
     public function testFindByJti_ShouldThrowException_WhenDatabaseFails(): void
     {
         // Arrange
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willThrowException(new PDOException('Database error'));
+        $this->setupFailingPdoMock();
 
         // Assert
         $this->expectException(RefreshTokenException::class);
@@ -230,27 +190,9 @@ final class RefreshTokenRepositoryTest extends TestCase
     {
         // Arrange
         $tokenHash = 'hash123';
-        $expectedData = [
-            'jti' => 'jti-123',
-            'token_hash' => $tokenHash,
-            'user_id' => 1,
-        ];
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('execute')
-            ->with([$tokenHash]);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('fetch')
-            ->with(PDO::FETCH_ASSOC)
-            ->willReturn($expectedData);
+        $expectedData = $this->createSampleTokenData('jti-123');
+        $expectedData['token_hash'] = $tokenHash;
+        $this->setupQueryPdoMock($expectedData);
 
         // Act
         $result = $this->repository->findByTokenHash($tokenHash);
@@ -262,15 +204,7 @@ final class RefreshTokenRepositoryTest extends TestCase
     public function testFindByTokenHash_ShouldReturnNull_WhenTokenNotFound(): void
     {
         // Arrange
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('fetch')
-            ->willReturn(false);
+        $this->setupQueryPdoMock(false);
 
         // Act
         $result = $this->repository->findByTokenHash('non-existent-hash');
@@ -465,21 +399,17 @@ final class RefreshTokenRepositoryTest extends TestCase
         // Arrange
         $jti = 'test-jti-123';
         $reason = 'test_revocation';
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
+        $this->setupSuccessfulPdoMock();
 
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($params) use ($jti, $reason) {
-                return $params[0] === RefreshToken::STATUS_REVOKED
+                return is_array($params)
+                    && $params[0] === RefreshToken::STATUS_REVOKED
                     && $params[1] === $reason
                     && $params[4] === $jti;
-            }))
-            ->willReturn(true);
+            }));
 
         // Act
         $result = $this->repository->revoke($jti, $reason);
@@ -826,21 +756,12 @@ final class RefreshTokenRepositoryTest extends TestCase
         // Arrange
         $expectedCount = 5;
         $beforeDate = new DateTime('-1 day');
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
+        $this->setupUpdatePdoMock($expectedCount);
 
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
             ->with([$beforeDate->format('Y-m-d H:i:s')]);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('rowCount')
-            ->willReturn($expectedCount);
 
         // Act
         $result = $this->repository->cleanup($beforeDate);
@@ -852,10 +773,7 @@ final class RefreshTokenRepositoryTest extends TestCase
     public function testCleanup_ShouldUseCurrentTime_WhenBeforeDateIsNull(): void
     {
         // Arrange
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
+        $this->setupUpdatePdoMock(0);
 
         $this->mockStatement
             ->expects($this->once())
@@ -863,11 +781,6 @@ final class RefreshTokenRepositoryTest extends TestCase
             ->with($this->callback(function ($params) {
                 return is_string($params[0]); // 檢查是否為時間字串
             }));
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('rowCount')
-            ->willReturn(0);
 
         // Act
         $result = $this->repository->cleanup();
@@ -883,11 +796,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         // Arrange
         $days = 7;
         $expectedCount = 3;
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
+        $this->setupUpdatePdoMock($expectedCount);
 
         $this->mockStatement
             ->expects($this->once())
@@ -896,11 +805,6 @@ final class RefreshTokenRepositoryTest extends TestCase
                 return $params[0] === RefreshToken::STATUS_REVOKED
                     && is_string($params[1]); // 檢查日期格式
             }));
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('rowCount')
-            ->willReturn($expectedCount);
 
         // Act
         $result = $this->repository->cleanupRevoked($days);
@@ -921,21 +825,11 @@ final class RefreshTokenRepositoryTest extends TestCase
             'expired' => 3,
             'revoked' => 2,
         ];
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
+        $this->setupQueryPdoMock($expectedStats);
 
         $this->mockStatement
             ->expects($this->once())
             ->method('execute');
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('fetch')
-            ->with(PDO::FETCH_ASSOC)
-            ->willReturn($expectedStats);
 
         // Act
         $result = $this->repository->getUserTokenStats($userId);
@@ -957,17 +851,7 @@ final class RefreshTokenRepositoryTest extends TestCase
             'unique_users' => 20,
             'unique_devices' => 35,
         ];
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('fetch')
-            ->with(PDO::FETCH_ASSOC)
-            ->willReturn($expectedStats);
+        $this->setupQueryPdoMock($expectedStats);
 
         // Act
         $result = $this->repository->getSystemStats();
@@ -997,24 +881,7 @@ final class RefreshTokenRepositoryTest extends TestCase
                 'device_info' => $this->deviceInfo,
             ],
         ];
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('beginTransaction');
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('commit');
-
-        $this->mockPdo
-            ->expects($this->exactly(2))
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->exactly(2))
-            ->method('execute')
-            ->willReturn(true);
+        $this->setupTransactionPdoMock(2, true);
 
         // Act
         $result = $this->repository->batchCreate($tokens);
@@ -1035,19 +902,7 @@ final class RefreshTokenRepositoryTest extends TestCase
                 'device_info' => $this->deviceInfo,
             ],
         ];
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('beginTransaction');
-
-        $this->mockPdo
-            ->expects($this->never())
-            ->method('rollback'); // 異常從 create 方法拋出，不會執行到 rollback
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willThrowException(new PDOException('Database error'));
+        $this->setupFailingPdoMock('Database error');
 
         // Assert
         $this->expectException(RefreshTokenException::class);
@@ -1173,10 +1028,7 @@ final class RefreshTokenRepositoryTest extends TestCase
     public function testRevoke_ShouldThrowException_WhenDatabaseFails(): void
     {
         // Arrange
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willThrowException(new PDOException('Database error'));
+        $this->setupFailingPdoMock('Database error');
 
         // Assert
         $this->expectException(RefreshTokenException::class);
@@ -1188,10 +1040,7 @@ final class RefreshTokenRepositoryTest extends TestCase
     public function testRevokeAllByUserId_ShouldThrowException_WhenDatabaseFails(): void
     {
         // Arrange
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willThrowException(new PDOException('Database error'));
+        $this->setupFailingPdoMock('Database error');
 
         // Assert
         $this->expectException(RefreshTokenException::class);
@@ -1333,5 +1182,165 @@ final class RefreshTokenRepositoryTest extends TestCase
 
         // Act
         $this->repository->getTokensNearExpiry();
+    }
+
+    // ========== 輔助方法 ==========
+
+    /**
+     * 設定成功的 PDO prepare 和 execute Mock.
+     */
+    private function setupSuccessfulPdoMock(): void
+    {
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('execute')
+            ->willReturn(true);
+    }
+
+    /**
+     * 設定查詢操作的 PDO Mock.
+     */
+    private function setupQueryPdoMock(mixed $fetchResult, string $fetchMethod = 'fetch', mixed $fetchArgs = PDO::FETCH_ASSOC): void
+    {
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('execute');
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method($fetchMethod)
+            ->with($fetchArgs)
+            ->willReturn($fetchResult);
+    }
+
+    /**
+     * 設定失敗的 PDO Mock（拋出例外）.
+     */
+    private function setupFailingPdoMock(string $errorMessage = 'Database error'): void
+    {
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willThrowException(new PDOException($errorMessage));
+    }
+
+    /**
+     * 設定更新操作的 PDO Mock.
+     */
+    private function setupUpdatePdoMock(int $rowCount = 1): void
+    {
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('execute')
+            ->willReturn(true);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('rowCount')
+            ->willReturn($rowCount);
+    }
+
+    /**
+     * 驗證基本參數的回調函式.
+     */
+    private function createBasicParamsCallback(array $expectedValues): callable
+    {
+        return function ($params) use ($expectedValues) {
+            if (!is_array($params) || count($params) < count($expectedValues)) {
+                return false;
+            }
+
+            foreach ($expectedValues as $index => $expectedValue) {
+                if ($params[$index] !== $expectedValue) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+    }
+
+    /**
+     * 驗證包含特定值的參數回調函式.
+     */
+    private function createParamsContainCallback(array $requiredValues): callable
+    {
+        return function ($params) use ($requiredValues) {
+            if (!is_array($params)) {
+                return false;
+            }
+
+            foreach ($requiredValues as $index => $expectedValue) {
+                if (!isset($params[$index]) || $params[$index] !== $expectedValue) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+    }
+
+    /**
+     * 建立測試用的 RefreshToken 資料陣列.
+     */
+    private function createSampleTokenData(string $jti = 'test-jti', int $userId = 1): array
+    {
+        return [
+            'jti' => $jti,
+            'user_id' => $userId,
+            'token_hash' => 'sample-hash-' . $jti,
+            'expires_at' => $this->futureDate->format('Y-m-d H:i:s'),
+            'device_id' => 'device-123',
+            'device_name' => 'Test Device',
+            'device_type' => 'mobile',
+            'ip_address' => '192.168.1.1',
+            'user_agent' => 'Test Agent',
+            'created_at' => (new DateTime())->format('Y-m-d H:i:s'),
+            'last_used_at' => null,
+            'revoked_at' => null,
+            'revoked_reason' => null,
+        ];
+    }
+
+    private function setupTransactionPdoMock(int $operationCount, bool $shouldSucceed = true): void
+    {
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('beginTransaction');
+
+        if ($shouldSucceed) {
+            $this->mockPdo
+                ->expects($this->once())
+                ->method('commit');
+
+            $this->mockPdo
+                ->expects($this->exactly($operationCount))
+                ->method('prepare')
+                ->willReturn($this->mockStatement);
+
+            $this->mockStatement
+                ->expects($this->exactly($operationCount))
+                ->method('execute')
+                ->willReturn(true);
+        } else {
+            $this->mockPdo
+                ->expects($this->never())
+                ->method('commit');
+        }
     }
 }

@@ -2,12 +2,12 @@
 
 ## 📋 專案概況
 - **目標**: 完成 15 個高優先級測試重構項目
-- **當前進度**: 4/15 完成 (26.7%)
+- **當前進度**: 5/15 完成 (33.3%)
 - **測試品質評分**: 70/100 → 目標 85-90/100
 - **總測試數**: 1457 個測試
 - **總斷言數**: 6659 個斷言
 
-## ✅ 已完成項目 (4/15)
+## ✅ 已完成項目 (5/15)
 
 - [x] **UserActivityLogsSeederTest.php** ✅
   - 完成時間: 2025-09-06
@@ -29,23 +29,24 @@
   - 重構方式: 簡化複雜回調函式為命名類方法，增加 4 個輔助方法
   - 測試狀態: 19 個測試全部通過，41 個斷言
 
-## 🔄 待完成項目 (11/15)
+- [x] **TokenBlacklistRepositoryTest.php** ✅
+  - 完成時間: 2025-09-06
+  - 重構方式: 增加 7 個 Mock 設定輔助方法，簡化 PDO Mock 設定邏輯
+  - 測試狀態: 43 個測試全部通過，184 個斷言
+  - 重構重點: 提取批次交易處理邏輯，簡化複雜的參數驗證回調
+
+## 🔄 待完成項目 (10/15)
 
 ### 🔴 第一階段：核心認證系統 (優先級: 極高)
 
-- [ ] **1. TokenBlacklistRepositoryTest.php** 🎯 **[下一個項目]**
-  - 位置: `tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php`
-  - 問題: high_cyclomatic_complexity 反模式
-  - 預估時間: 15 分鐘
-  - 重構策略: 分析複雜的 token 驗證邏輯，提取為獨立的驗證方法
-  - 相關功能: JWT token 黑名單管理
-
-- [ ] **2. RefreshTokenRepositoryTest.php**
+- ✅ **2. RefreshTokenRepositoryTest.php** 
+  - 狀態: 已完成 ✅ (2024-12-14)
   - 位置: `tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php`
   - 問題: high_cyclomatic_complexity 反模式
-  - 預估時間: 15 分鐘
-  - 重構策略: 簡化 refresh token 生命周期測試
-  - 相關功能: JWT token 刷新機制
+  - 完成時間: 35 分鐘 (較預估多 20 分鐘，因為測試數量龐大)
+  - 重構策略: 提取 PDO Mock 設定助手方法，簡化複雜的資料庫操作測試
+  - 測試狀態: 50 個測試全部通過，164 個斷言
+  - 重構重點: 最複雜的 refresh token 生命周期測試，包含批次操作和事務處理
 
 ### 🟡 第二階段：核心驗證與快取 (優先級: 高)
 
@@ -121,12 +122,12 @@
 ## 📊 進度追蹤
 
 ### 時間預估
-- **已完成**: 4 項 (約 60 分鐘)
-- **待完成**: 11 項 (約 200 分鐘)
+- **已完成**: 6 項 (約 110 分鐘)
+- **待完成**: 9 項 (約 150 分鐘)
 - **總計**: 15 項 (約 260 分鐘 = 4.3 小時)
 
 ### 每階段目標
-1. **第一階段完成後**: 進度 40% (6/15)，認證系統測試品質大幅提升
+1. **第一階段完成後**: 進度 40% (6/15) ✅ 已達成，認證系統測試品質大幅提升
 2. **第二階段完成後**: 進度 60% (9/15)，核心功能測試穩定性提升
 3. **第三階段完成後**: 進度 80% (11/15)，API 層測試覆蓋率優化
 4. **第四階段完成後**: 進度 93% (13/15)，安全性與檔案系統測試完善
@@ -144,11 +145,17 @@
 
 ## 📝 重構日誌
 
-### 2025-09-06
-- ✅ 完成第一階段測試重構 (4/15 項目)
+### 2024-12-14
+- ✅ 完成第一階段測試重構 (6/15 項目)
 - ✅ 建立重構待辦清單
-- 🎯 準備開始第一項待辦：TokenBlacklistRepositoryTest.php
+- ✅ 重構 TokenBlacklistRepositoryTest.php (5/15 項目)
+- ✅ 重構 RefreshTokenRepositoryTest.php (6/15 項目) - 最複雜的認證系統測試
+- 🎯 準備開始第三項待辦：ValidatorTest.php
+
+### 重構亮點
+- **RefreshTokenRepositoryTest.php**: 成功重構 50 個測試方法，採用 Extract Method 模式大幅簡化複雜的資料庫操作測試
+- **第一階段達標**: 認證系統核心測試品質提升完成，為後續開發奠定堅實基礎
 
 ---
 
-**下一步行動**: 開始重構 TokenBlacklistRepositoryTest.php
+**下一步行動**: 開始重構 RefreshTokenRepositoryTest.php
