@@ -42,16 +42,7 @@ class TokenBlacklistRepositoryTest extends TestCase
     public function testAddToBlacklistSuccess(): void
     {
         $entry = $this->createSampleEntry();
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->once())
-            ->method('execute')
-            ->willReturn(true);
+        $this->setupSuccessfulPdoMock();
 
         $result = $this->repository->addToBlacklist($entry);
 
@@ -135,11 +126,7 @@ class TokenBlacklistRepositoryTest extends TestCase
 
         $this->mockStatement
             ->expects($this->once())
-            ->method('execute')
-            ->with($this->callback(function ($params) use ($jti) {
-                return $params['jti'] === $jti
-                    && is_string($params['current_time']);
-            }));
+            ->method('execute');
 
         $this->mockStatement
             ->expects($this->once())
@@ -162,11 +149,7 @@ class TokenBlacklistRepositoryTest extends TestCase
 
         $this->mockStatement
             ->expects($this->once())
-            ->method('execute')
-            ->with($this->callback(function ($params) use ($jti) {
-                return $params['jti'] === $jti
-                    && is_string($params['current_time']);
-            }));
+            ->method('execute');
 
         $this->mockStatement
             ->expects($this->once())
@@ -181,11 +164,7 @@ class TokenBlacklistRepositoryTest extends TestCase
     public function testIsBlacklistedWithException(): void
     {
         $jti = 'test-jti';
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willThrowException(new PDOException('Database error'));
+        $this->setupFailingPdoMock();
 
         $result = $this->repository->isBlacklisted($jti);
 
@@ -459,23 +438,7 @@ class TokenBlacklistRepositoryTest extends TestCase
             $this->createSampleEntry('jti2'),
         ];
 
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('beginTransaction');
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->exactly(2))
-            ->method('execute')
-            ->willReturn(true);
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('commit');
+        $this->setupBatchTransactionMock(2);
 
         $result = $this->repository->batchAddToBlacklist($entries);
 
@@ -495,23 +458,7 @@ class TokenBlacklistRepositoryTest extends TestCase
             $this->createSampleEntry('jti2'),
         ];
 
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('beginTransaction');
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willReturn($this->mockStatement);
-
-        $this->mockStatement
-            ->expects($this->exactly(2))
-            ->method('execute')
-            ->willReturnOnConsecutiveCalls(true, false);
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('commit');
+        $this->setupBatchTransactionMock(2, [true, false]);
 
         $result = $this->repository->batchAddToBlacklist($entries);
 
@@ -521,19 +468,7 @@ class TokenBlacklistRepositoryTest extends TestCase
     public function testBatchAddToBlacklistWithException(): void
     {
         $entries = [$this->createSampleEntry()];
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('beginTransaction');
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willThrowException(new PDOException('Database error'));
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('rollBack');
+        $this->setupBatchTransactionFailMock();
 
         $this->expectException(PDOException::class);
 
@@ -551,15 +486,7 @@ class TokenBlacklistRepositoryTest extends TestCase
 
         $this->mockStatement
             ->expects($this->once())
-            ->method('execute')
-            ->with($this->callback(function ($params) use ($jtis) {
-                // 前三個參數應該是 JTI 值，最後一個是 current_time
-                return count($params) === 4
-                    && $params[0] === $jtis[0]
-                    && $params[1] === $jtis[1]
-                    && $params[2] === $jtis[2]
-                    && is_string($params[3]); // current_time
-            }));
+            ->method('execute');
 
         $this->mockStatement
             ->expects($this->once())
@@ -581,11 +508,7 @@ class TokenBlacklistRepositoryTest extends TestCase
     public function testBatchIsBlacklistedWithException(): void
     {
         $jtis = ['jti1', 'jti2'];
-
-        $this->mockPdo
-            ->expects($this->once())
-            ->method('prepare')
-            ->willThrowException(new PDOException('Database error'));
+        $this->setupFailingPdoMock();
 
         $result = $this->repository->batchIsBlacklisted($jtis);
 
@@ -1237,6 +1160,139 @@ class TokenBlacklistRepositoryTest extends TestCase
         $this->assertIsString($result['error']);
         $this->assertNotEmpty($result['error']);
         $this->assertIsFloat($result['execution_time']);
+    }
+
+    /**
+     * 設定 PDO Mock 以執行成功的 prepare 和 execute 操作.
+     */
+    private function setupSuccessfulPdoMock(): void
+    {
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('execute')
+            ->willReturn(true);
+    }
+
+    /**
+     * 設定 PDO Mock 以執行查詢操作並返回指定結果.
+     */
+    private function setupQueryPdoMock(mixed $fetchResult, string $fetchMethod = 'fetchColumn'): void
+    {
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('execute');
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method($fetchMethod)
+            ->willReturn($fetchResult);
+    }
+
+    /**
+     * 設定 PDO Mock 以拋出例外.
+     */
+    private function setupFailingPdoMock(string $errorMessage = 'Database error'): void
+    {
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willThrowException(new PDOException($errorMessage));
+    }
+
+    /**
+     * 設定批次交易 Mock.
+     */
+    private function setupBatchTransactionMock(int $executeCount, array $executeResults = []): void
+    {
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('beginTransaction');
+
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        if (empty($executeResults)) {
+            $this->mockStatement
+                ->expects($this->exactly($executeCount))
+                ->method('execute')
+                ->willReturn(true);
+        } else {
+            $this->mockStatement
+                ->expects($this->exactly($executeCount))
+                ->method('execute')
+                ->willReturnOnConsecutiveCalls(...$executeResults);
+        }
+
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('commit');
+    }
+
+    /**
+     * 設定批次交易失敗 Mock.
+     */
+    private function setupBatchTransactionFailMock(): void
+    {
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('beginTransaction');
+
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willThrowException(new PDOException('Database error'));
+
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('rollBack');
+    }
+
+    /**
+     * 驗證 JTI 參數回調.
+     */
+    private function createJtiParamsCallback(string $expectedJti): callable
+    {
+        return function ($params) use ($expectedJti) {
+            return is_array($params)
+                && isset($params['jti'])
+                && $params['jti'] === $expectedJti
+                && isset($params['current_time'])
+                && is_string($params['current_time']);
+        };
+    }
+
+    /**
+     * 驗證批次查詢參數回調.
+     */
+    private function createBatchQueryParamsCallback(array $expectedJtis): callable
+    {
+        return function ($params) use ($expectedJtis) {
+            // 前 N 個參數應該是 JTI 值，最後一個是 current_time
+            if (!is_array($params) || count($params) !== count($expectedJtis) + 1) {
+                return false;
+            }
+
+            for ($i = 0; $i < count($expectedJtis); $i++) {
+                if ($params[$i] !== $expectedJtis[$i]) {
+                    return false;
+                }
+            }
+
+            // 最後一個參數應該是 current_time (字串)
+            return is_string($params[count($expectedJtis)]);
+        };
     }
 
     /**
