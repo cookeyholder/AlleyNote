@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-06 19:39:53",
+        "scan_time": "2025-09-06 21:31:24",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -160,7 +160,7 @@
             "type": "file",
             "path": "test-error-analysis-snapshot.json",
             "extension": "json",
-            "size": 672898
+            "size": 673397
         },
         "app": {
             "type": "directory",
@@ -2602,6 +2602,12 @@
             "extension": "php",
             "size": 951
         },
+        "TEST_REFACTORING_TODO.md": {
+            "type": "file",
+            "path": "TEST_REFACTORING_TODO.md",
+            "extension": "md",
+            "size": 10495
+        },
         "phpstan-mockery-ignore.neon": {
             "type": "file",
             "path": "phpstan-mockery-ignore.neon",
@@ -2660,7 +2666,7 @@
                                     "type": "file",
                                     "path": "tests\/Database\/Seeds\/UserActivityLogsSeederTest.php",
                                     "extension": "php",
-                                    "size": 8917
+                                    "size": 12493
                                 }
                             }
                         }
@@ -2790,11 +2796,17 @@
                                                     "extension": "php",
                                                     "size": 13102
                                                 },
+                                                "ActivityLoggingServiceTest.php.backup": {
+                                                    "type": "file",
+                                                    "path": "tests\/Unit\/Domains\/Security\/Services\/ActivityLoggingServiceTest.php.backup",
+                                                    "extension": "backup",
+                                                    "size": 10781
+                                                },
                                                 "ActivityLoggingServiceTest.php": {
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Security\/Services\/ActivityLoggingServiceTest.php",
                                                     "extension": "php",
-                                                    "size": 10927
+                                                    "size": 12275
                                                 }
                                             }
                                         }
@@ -3010,7 +3022,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Shared\/Cache\/Repositories\/MemoryTagRepositoryTest.php",
                                                     "extension": "php",
-                                                    "size": 8982
+                                                    "size": 9852
                                                 }
                                             }
                                         },
@@ -3022,7 +3034,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Shared\/Cache\/Services\/CacheGroupManagerTest.php",
                                                     "extension": "php",
-                                                    "size": 11965
+                                                    "size": 12583
                                                 }
                                             }
                                         },
@@ -3267,13 +3279,13 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepositoryTest.php",
                                                     "extension": "php",
-                                                    "size": 37424
+                                                    "size": 38873
                                                 },
                                                 "RefreshTokenRepositoryTest.php": {
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepositoryTest.php",
                                                     "extension": "php",
-                                                    "size": 37567
+                                                    "size": 38059
                                                 }
                                             }
                                         }
@@ -3451,7 +3463,7 @@
                                     "type": "file",
                                     "path": "tests\/Unit\/Validation\/ValidatorTest.php",
                                     "extension": "php",
-                                    "size": 28346
+                                    "size": 27840
                                 },
                                 "ValidationResultTest.php": {
                                     "type": "file",
@@ -3495,7 +3507,7 @@
                             "type": "file",
                             "path": "tests\/Security\/PasswordHashingTest.php",
                             "extension": "php",
-                            "size": 9647
+                            "size": 9145
                         }
                     }
                 },
@@ -3573,7 +3585,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Integration\/Shared\/Cache\/Services\/TaggedCacheIntegrationTest.php",
                                                     "extension": "php",
-                                                    "size": 11484
+                                                    "size": 19549
                                                 }
                                             }
                                         }
@@ -3689,7 +3701,7 @@
                                             "type": "file",
                                             "path": "tests\/Integration\/Api\/V1\/AuthEndpointTest.php",
                                             "extension": "php",
-                                            "size": 11419
+                                            "size": 12981
                                         }
                                     }
                                 }
@@ -3717,7 +3729,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php",
                                                     "extension": "php",
-                                                    "size": 17451
+                                                    "size": 23341
                                                 }
                                             }
                                         },
@@ -3747,7 +3759,7 @@
                             "type": "file",
                             "path": "tests\/Integration\/FileSystemBackupTest.php",
                             "extension": "php",
-                            "size": 9683
+                            "size": 11791
                         },
                         "DatabaseBackupTest.php": {
                             "type": "file",
@@ -3759,7 +3771,7 @@
                             "type": "file",
                             "path": "tests\/Integration\/AttachmentUploadTest.php",
                             "extension": "php",
-                            "size": 11335
+                            "size": 12707
                         }
                     }
                 },
@@ -4833,7 +4845,7 @@
             "type": "file",
             "path": "test-error-analysis-report.md",
             "extension": "md",
-            "size": 9136
+            "size": 8890
         },
         "phpunit_clean.xml": {
             "type": "file",
@@ -4845,7 +4857,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1576873
+            "size": 1582455
         },
         "phpstan-T4.1-baseline.neon": {
             "type": "file",
@@ -4891,16 +4903,16 @@
             "type": "file",
             "path": ".phpunit.result.cache",
             "extension": "cache",
-            "size": 151300
+            "size": 153605
         }
     },
     "file_statistics": {
-        "total_files": 596,
+        "total_files": 598,
         "by_extension": {
             "neon": 7,
             "php": 535,
             "bak": 3,
-            "md": 4,
+            "md": 5,
             "sqlite3": 1,
             "gitkeep": 1,
             "testing": 1,
@@ -4909,9 +4921,9 @@
             "json": 5,
             "2025-08-30_13-17-14": 3,
             "2025-08-30_08-53-31": 2,
+            "backup": 2,
             "disabled": 1,
             "jpg": 1,
-            "backup": 1,
             "cache": 2,
             "html": 1,
             "yaml": 1,
@@ -4922,7 +4934,7 @@
             "development": 1
         },
         "by_directory": {
-            "\/": 27,
+            "\/": 28,
             "\/database\/migrations": 10,
             "\/database": 2,
             "\/database\/seeds": 3,
@@ -5035,7 +5047,7 @@
             "\/tests\/Unit\/Domains\/Statistics\/Services": 3,
             "\/tests\/Unit\/Domains\/Security\/Enums": 2,
             "\/tests\/Unit\/Domains\/Security\/Repositories": 1,
-            "\/tests\/Unit\/Domains\/Security\/Services": 2,
+            "\/tests\/Unit\/Domains\/Security\/Services": 3,
             "\/tests\/Unit\/Domains\/Auth\/Contracts": 3,
             "\/tests\/Unit\/Domains\/Auth\/Exceptions": 6,
             "\/tests\/Unit\/Domains\/Auth\/Services": 6,
@@ -14293,14 +14305,28 @@
                 "setUp",
                 "testSeederCreatesExpectedData",
                 "testSeederCreatesVariousActionTypes",
+                "testSeederCreatesAuthActionTypes",
+                "testSeederCreatesPostActionTypes",
+                "testSeederCreatesAttachmentActionTypes",
                 "testSeederCreatesVariousStatuses",
+                "testSeederCreatesSuccessAndFailedStatuses",
+                "testSeederCreatesErrorAndBlockedStatuses",
                 "testSeederCreatesValidDataFormat",
                 "testSeederCreatesSecurityEvents",
+                "testSecurityEventsIncludeBlockedStatus",
                 "testSeederTruncatesExistingData",
-                "runSeeder"
+                "runSeeder",
+                "getDistinctActionTypes",
+                "getDistinctStatuses",
+                "getRandomRecord",
+                "assertBasicFieldsAreValid",
+                "assertUuidFormatIsCorrect",
+                "assertMetadataIsValidJson",
+                "getSecurityEvents",
+                "hasBlockedSecurityEvent"
             ],
             "constants": [],
-            "lines_of_code": 215
+            "lines_of_code": 371
         },
         "tests\/Unit\/Database\/DatabaseConnectionTest.php": {
             "path": "tests\/Unit\/Database\/DatabaseConnectionTest.php",
@@ -14763,9 +14789,6 @@
                 "PHPUnit\\Framework\\TestCase",
                 "Psr\\Log\\LoggerInterface",
                 "RuntimeException",
-                "($actionType, $userId, $targetType, $targetId, $metadata) {\n                return $dto->getActionType() === $actionType\n                    && $dto->getUserId() === $userId\n                    && $dto->getTargetType() === $targetType\n                    && $dto->getTargetId() === $targetId\n                    && $dto->getMetadata() === $metadata\n                    && $dto->getStatus() === ActivityStatus::SUCCESS",
-                "($actionType, $userId, $reason, $metadata) {\n                return $dto->getActionType() === $actionType\n                    && $dto->getUserId() === $userId\n                    && $dto->getDescription() === $reason\n                    && $dto->getMetadata() === $metadata\n                    && $dto->getStatus() === ActivityStatus::FAILED",
-                "($actionType, $description, $metadata) {\n                return $dto->getActionType() === $actionType\n                    && $dto->getDescription() === $description\n                    && $dto->getMetadata() === $metadata\n                    && $dto->getStatus() === ActivityStatus::BLOCKED",
                 "($cleanupDate) {\n                return $date->format('Y-m-d') === $cleanupDate->format('Y-m-d')",
                 "($actionType) {\n                    return $context['action_type'] === $actionType->value"
             ],
@@ -14784,10 +14807,13 @@
                 "it_can_cleanup_old_records",
                 "it_skips_logging_when_disabled_for_action_type",
                 "it_logs_warning_when_skipping_disabled_action",
-                "it_respects_log_level_in_convenience_methods"
+                "it_respects_log_level_in_convenience_methods",
+                "validateSuccessOperationDto",
+                "validateFailureOperationDto",
+                "validateSecurityEventDto"
             ],
             "constants": [],
-            "lines_of_code": 343
+            "lines_of_code": 387
         },
         "tests\/Unit\/Domains\/Auth\/Contracts\/JwtTokenServiceInterfaceTest.php": {
             "path": "tests\/Unit\/Domains\/Auth\/Contracts\/JwtTokenServiceInterfaceTest.php",
@@ -15894,10 +15920,14 @@
                 "testTagExpiration",
                 "testMultipleKeysWithSameTag",
                 "testEmptyTagArray",
-                "testDuplicateTagsNormalization"
+                "testDuplicateTagsNormalization",
+                "setupTagStatisticsTestData",
+                "assertTagStatisticsAreCorrect",
+                "setupKeysWithSameTag",
+                "assertAllKeysTagsAreEmpty"
             ],
             "constants": [],
-            "lines_of_code": 300
+            "lines_of_code": 337
         },
         "tests\/Unit\/Shared\/Cache\/Services\/CacheGroupManagerTest.php": {
             "path": "tests\/Unit\/Shared\/Cache\/Services\/CacheGroupManagerTest.php",
@@ -15934,10 +15964,14 @@
                 "testCheckInvalidationRules",
                 "testLoggingCalls",
                 "testErrorHandling",
-                "testGroupLifecycle"
+                "testGroupLifecycle",
+                "calculateFlushCascadeResult",
+                "setupGroupsForPatternTest",
+                "assertAllTestGroupsExist",
+                "calculatePatternFlushResult"
             ],
             "constants": [],
-            "lines_of_code": 366
+            "lines_of_code": 400
         },
         "tests\/Unit\/Shared\/Cache\/ValueObjects\/CacheTagTest.php": {
             "path": "tests\/Unit\/Shared\/Cache\/ValueObjects\/CacheTagTest.php",
@@ -16627,12 +16661,11 @@
                 "PHPUnit\\Framework\\MockObject\\MockObject",
                 "PHPUnit\\Framework\\TestCase",
                 "ReflectionProperty",
-                "($jti) {\n                return $params['jti'] === $jti\n                    && is_string($params['current_time'])",
-                "($jti) {\n                return $params['jti'] === $jti\n                    && is_string($params['current_time'])",
                 "($tokenHash) {\n                return $params['token_hash'] === $tokenHash\n                    && is_string($params['current_time'])",
-                "($jtis) {\n                \/\/ 前三個參數應該是 JTI 值，最後一個是 current_time\n                return count($params) === 4\n                    && $params[0] === $jtis[0]\n                    && $params[1] === $jtis[1]\n                    && $params[2] === $jtis[2]\n                    && is_string($params[3])",
                 "($userId, $excludeJti) {\n                return $params['user_id'] === $userId\n                    && $params['exclude_jti'] === $excludeJti\n                    && is_string($params['current_time'])",
-                "($deviceId) {\n                return $params['device_id'] === $deviceId\n                    && is_string($params['current_time'])"
+                "($deviceId) {\n                return $params['device_id'] === $deviceId\n                    && is_string($params['current_time'])",
+                "($expectedJti) {\n            return is_array($params)\n                && isset($params['jti'])\n                && $params['jti'] === $expectedJti\n                && isset($params['current_time'])\n                && is_string($params['current_time'])",
+                "($expectedJtis) {\n            \/\/ 前 N 個參數應該是 JTI 值，最後一個是 current_time\n            if (!is_array($params) || count($params) !== count($expectedJtis) + 1) {\n                return false"
             ],
             "functions": [
                 "setUp",
@@ -16679,10 +16712,17 @@
                 "testGetSizeInfoSuccess",
                 "testOptimizeSuccess",
                 "testOptimizeWithException",
+                "setupSuccessfulPdoMock",
+                "setupQueryPdoMock",
+                "setupFailingPdoMock",
+                "setupBatchTransactionMock",
+                "setupBatchTransactionFailMock",
+                "createJtiParamsCallback",
+                "createBatchQueryParamsCallback",
                 "createSampleEntry"
             ],
             "constants": [],
-            "lines_of_code": 1262
+            "lines_of_code": 1318
         },
         "tests\/Unit\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepositoryTest.php": {
             "path": "tests\/Unit\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepositoryTest.php",
@@ -16703,16 +16743,18 @@
                 "PDOStatement",
                 "PHPUnit\\Framework\\MockObject\\MockObject",
                 "PHPUnit\\Framework\\TestCase",
-                "($jti, $userId, $tokenHash) {\n                return $params[0] === $jti\n                    && $params[1] === $userId\n                    && $params[2] === $tokenHash\n                    && $params[4] === 'device-123'",
+                "($jti, $userId, $tokenHash) {\n                return is_array($params)\n                    && $params[0] === $jti\n                    && $params[1] === $userId\n                    && $params[2] === $tokenHash",
                 "($parentJti) {\n                return $params[12] === $parentJti",
                 "($userId) {\n                return $params[0] === $userId",
                 "($userId) {\n                return count($params) === 3 && $params[0] === $userId && $params[1] === RefreshToken::STATUS_ACTIVE",
                 "($jti) {\n                return $params[2] === $jti",
-                "($jti, $reason) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && $params[4] === $jti",
+                "($jti, $reason) {\n                return is_array($params)\n                    && $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && $params[4] === $jti",
                 "($userId, $reason) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && $params[4] === $userId\n                    && $params[5] === RefreshToken::STATUS_ACTIVE",
                 "($excludeJti) {\n                return count($params) === 7 && $params[6] === $excludeJti",
                 "($userId, $deviceId, $reason) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && $params[4] === $userId\n                    && $params[5] === $deviceId\n                    && $params[6] === RefreshToken::STATUS_ACTIVE",
-                "($reason, $jtis) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && array_slice($params, 4) === $jtis"
+                "($reason, $jtis) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && array_slice($params, 4) === $jtis",
+                "($expectedValues) {\n            if (!is_array($params) || count($params) < count($expectedValues)) {\n                return false",
+                "($requiredValues) {\n            if (!is_array($params)) {\n                return false"
             ],
             "functions": [
                 "setUp",
@@ -16765,10 +16807,18 @@
                 "testCleanupRevoked_ShouldThrowException_WhenDatabaseFails",
                 "testGetUserTokenStats_ShouldThrowException_WhenDatabaseFails",
                 "testGetSystemStats_ShouldThrowException_WhenDatabaseFails",
-                "testGetTokensNearExpiry_ShouldThrowException_WhenDatabaseFails"
+                "testGetTokensNearExpiry_ShouldThrowException_WhenDatabaseFails",
+                "setupSuccessfulPdoMock",
+                "setupQueryPdoMock",
+                "setupFailingPdoMock",
+                "setupUpdatePdoMock",
+                "createBasicParamsCallback",
+                "createParamsContainCallback",
+                "createSampleTokenData",
+                "setupTransactionPdoMock"
             ],
             "constants": [],
-            "lines_of_code": 1338
+            "lines_of_code": 1347
         },
         "tests\/Unit\/Infrastructure\/Repositories\/Statistics\/StatisticsRepositoryTest.php": {
             "path": "tests\/Unit\/Infrastructure\/Repositories\/Statistics\/StatisticsRepositoryTest.php",
@@ -17418,11 +17468,21 @@
                 "test_validate_or_fail",
                 "test_check_rule_method",
                 "test_stop_on_first_failure",
+                "validateAndCountErrors",
                 "test_validator_performance",
-                "test_memory_leak"
+                "generatePerformanceTestData",
+                "getPerformanceTestRules",
+                "runPerformanceValidations",
+                "test_memory_leak",
+                "runMemoryLeakTest",
+                "assertValidValues",
+                "assertInvalidValues",
+                "valueToString",
+                "assertRulePasses",
+                "assertRuleFailsWithError"
             ],
             "constants": [],
-            "lines_of_code": 770
+            "lines_of_code": 826
         },
         "tests\/Unit\/Validation\/ValidationResultTest.php": {
             "path": "tests\/Unit\/Validation\/ValidationResultTest.php",
@@ -17628,10 +17688,19 @@
                 "shouldUseAppropriateHashingOptions",
                 "shouldRejectWeakPasswords",
                 "shouldPreventPasswordReuse",
-                "tearDown"
+                "tearDown",
+                "getTestUserData",
+                "assertValidRegistrationResult",
+                "extractUserIdFromResult",
+                "getHashedPasswordFromDatabase",
+                "assertArgon2idHash",
+                "assertAppropriateHashingOptions",
+                "setupPasswordServiceToRejectWeakPassword",
+                "assertValidUserId",
+                "expectPasswordReuseException"
             ],
             "constants": [],
-            "lines_of_code": 282
+            "lines_of_code": 284
         },
         "tests\/Integration\/RateLimitTest.php": {
             "path": "tests\/Integration\/RateLimitTest.php",
@@ -17900,6 +17969,8 @@
             ],
             "functions": [
                 "setUp",
+                "setupCacheManager",
+                "createTestCacheStrategy",
                 "shouldCache",
                 "selectDriver",
                 "decideTtl",
@@ -17907,19 +17978,45 @@
                 "handleDriverFailure",
                 "getStats",
                 "resetStats",
+                "setupTagRepository",
+                "setupTaggedCacheManager",
                 "tearDown",
                 "testBasicTaggedCaching",
+                "createBasicTaggedCacheTestData",
+                "verifyTaggedCacheData",
                 "testTagFlushing",
                 "testMultipleTagFlushing",
                 "testTagStatistics",
+                "setupTagStatisticsTestData",
+                "verifyTagStatisticsResults",
                 "testTaggingWithComplexValues",
+                "createComplexValueTestData",
+                "verifyComplexValueCaching",
+                "verifyComplexValueTags",
                 "testTagExpiration",
+                "createTagExpirationTestData",
+                "verifyDataExistsBeforeExpiration",
+                "verifyDataExpiredAfterTtl",
                 "testConcurrentTagging",
                 "testTagTypeClassification",
-                "testErrorRecovery"
+                "testErrorRecovery",
+                "createErrorRecoveryTestData",
+                "verifyInvalidTagErrorHandling",
+                "verifyOriginalDataIntegrity",
+                "setupConcurrentTaggedData",
+                "verifySharedTagAssociations",
+                "verifySharedTagFlush",
+                "getTagTypeTestCases",
+                "setupAndVerifyTagClassification",
+                "verifyTagStatistics",
+                "setupTagFlushingTestData",
+                "verifyTestDataStored",
+                "executeAndVerifyTagFlushing",
+                "setupMultipleTagTestData",
+                "executeAndVerifyMultipleTagFlushing"
             ],
             "constants": [],
-            "lines_of_code": 331
+            "lines_of_code": 617
         },
         "tests\/Integration\/PostControllerTest_new.php": {
             "path": "tests\/Integration\/PostControllerTest_new.php",
@@ -18368,10 +18465,19 @@
                 "testProtectedEndpointWithoutToken",
                 "testProtectedEndpointWithInvalidToken",
                 "testApplicationBootstrap",
-                "tearDown"
+                "tearDown",
+                "getTestLoginData",
+                "processLoginResponse",
+                "handleLoginServerError",
+                "handleLoginAuthError",
+                "assertLoginSuccess",
+                "getTestRefreshData",
+                "processRefreshResponse",
+                "getTestLogoutData",
+                "processLogoutResponse"
             ],
             "constants": [],
-            "lines_of_code": 335
+            "lines_of_code": 414
         },
         "tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php": {
             "path": "tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php",
@@ -18392,7 +18498,8 @@
                 "Psr\\Http\\Message\\ServerRequestInterface",
                 "Psr\\Http\\Message\\StreamInterface",
                 "Psr\\Log\\LoggerInterface",
-                "RuntimeException"
+                "RuntimeException",
+                "($groupName) {\n                return $this->validateCreateGroupResponse($content, $groupName)"
             ],
             "functions": [
                 "setUp",
@@ -18408,10 +18515,40 @@
                 "testFlushGroup",
                 "testErrorHandling",
                 "testInvalidInput",
-                "createStreamWithContent"
+                "createStreamWithContent",
+                "getTestQueryParams",
+                "setupMockDriverForListTags",
+                "setupCacheManagerForListTags",
+                "expectSuccessfulListTagsResponse",
+                "validateListTagsResponse",
+                "setupMockDriverForGetTag",
+                "setupCacheManagerForGetTag",
+                "expectSuccessfulGetTagResponse",
+                "validateGetTagResponse",
+                "setupMockDriversForFlushTag",
+                "expectSuccessfulFlushTagResponse",
+                "validateFlushTagResponse",
+                "setupMockDriverForFlushTags",
+                "setupCacheManagerForFlushTags",
+                "expectSuccessfulFlushTagsResponse",
+                "validateFlushTagsResponse",
+                "setupMockDriversForTagStatistics",
+                "setupGroupManagerForTagStatistics",
+                "expectSuccessfulTagStatisticsResponse",
+                "validateTagStatisticsResponse",
+                "getTestGroupData",
+                "setupGroupManagerForCreateGroup",
+                "expectSuccessfulCreateGroupResponse",
+                "validateCreateGroupResponse",
+                "getMockGroupData",
+                "expectSuccessfulListGroupsResponse",
+                "validateListGroupsResponse",
+                "setupGroupManagerForFlushGroup",
+                "expectSuccessfulFlushGroupResponse",
+                "validateFlushGroupResponse"
             ],
             "constants": [],
-            "lines_of_code": 463
+            "lines_of_code": 709
         },
         "tests\/Integration\/Application\/Controllers\/Api\/Statistics\/StatisticsControllerIntegrationTest.php": {
             "path": "tests\/Integration\/Application\/Controllers\/Api\/Statistics\/StatisticsControllerIntegrationTest.php",
@@ -18459,15 +18596,32 @@
                 "setUp",
                 "createTestFiles",
                 "backupFilesSuccessfully",
+                "executeBackupScript",
+                "assertBackupFileCreated",
+                "assertBackupContainsAllFiles",
+                "extractBackupFile",
                 "restoreFilesSuccessfully",
+                "createManualBackup",
+                "clearOriginalFiles",
+                "executeRestoreScript",
+                "assertAllFilesRestored",
                 "handleBackupErrorsGracefully",
                 "handleRestoreErrorsGracefully",
                 "handlePermissionErrors",
+                "executeBackupScriptWithExpectedError",
+                "executeRestoreScriptWithExpectedError",
+                "ensureBackupFileDoesNotExist",
+                "executeRestoreScriptWithSpecificError",
                 "maintainFileMetadataDuringBackupRestore",
+                "recordOriginalFileMetadata",
+                "performFullBackupRestore",
+                "executeManualBackup",
+                "executeManualRestore",
+                "assertFileMetadataPreserved",
                 "tearDown"
             ],
             "constants": [],
-            "lines_of_code": 290
+            "lines_of_code": 364
         },
         "tests\/Integration\/DatabaseBackupTest.php": {
             "path": "tests\/Integration\/DatabaseBackupTest.php",
@@ -18522,21 +18676,44 @@
                 "Psr\\Http\\Message\\UploadedFileInterface",
                 "RuntimeException",
                 "Tests\\TestCase",
-                "($size) {\n                $directory = dirname($path)"
+                "($size) {\n                $this->ensureDirectoryExists(dirname($path))"
             ],
             "functions": [
                 "setUp",
+                "setupMockServices",
+                "configureMockDefaults",
+                "setupUploadDirectory",
+                "setupRepositories",
+                "setupAttachmentService",
+                "insertTestPostData",
                 "createUploadedFileMock",
+                "configureFileMockBasicProperties",
+                "configureFileMockStream",
+                "configureFileMockMoveTo",
+                "ensureDirectoryExists",
                 "should_handle_concurrent_uploads",
+                "performMultipleUploads",
+                "attemptSingleUpload",
                 "should_handle_large_file_upload",
+                "uploadLargeFile",
                 "should_validate_file_types",
+                "testAllInvalidFileTypes",
+                "testSingleInvalidFileType",
                 "should_handle_disk_full_error",
                 "should_handle_permission_error",
+                "createUploadFileWithError",
+                "configureBasicFileMockForError",
+                "configureFileMockToThrowError",
                 "tearDown",
-                "createTestTables"
+                "cleanupTestFiles",
+                "restoreDirectoryPermissions",
+                "removeAllFilesInDirectory",
+                "removeSubdirectory",
+                "createTestTables",
+                "dropExistingTables"
             ],
             "constants": [],
-            "lines_of_code": 317
+            "lines_of_code": 391
         },
         "tests\/Shared\/Cache\/CacheSystemTest.php": {
             "path": "tests\/Shared\/Cache\/CacheSystemTest.php",
@@ -24372,7 +24549,7 @@
             "avg_classes_per_file": 0.8
         },
         "dependency_metrics": {
-            "total_dependencies": 2307,
+            "total_dependencies": 2306,
             "avg_dependencies_per_file": 4.38
         },
         "maintainability_score": 100,
@@ -31689,21 +31866,6 @@
             },
             {
                 "type": "use",
-                "target": "($actionType, $userId, $targetType, $targetId, $metadata) {\n                return $dto->getActionType() === $actionType\n                    && $dto->getUserId() === $userId\n                    && $dto->getTargetType() === $targetType\n                    && $dto->getTargetId() === $targetId\n                    && $dto->getMetadata() === $metadata\n                    && $dto->getStatus() === ActivityStatus::SUCCESS",
-                "file": null
-            },
-            {
-                "type": "use",
-                "target": "($actionType, $userId, $reason, $metadata) {\n                return $dto->getActionType() === $actionType\n                    && $dto->getUserId() === $userId\n                    && $dto->getDescription() === $reason\n                    && $dto->getMetadata() === $metadata\n                    && $dto->getStatus() === ActivityStatus::FAILED",
-                "file": null
-            },
-            {
-                "type": "use",
-                "target": "($actionType, $description, $metadata) {\n                return $dto->getActionType() === $actionType\n                    && $dto->getDescription() === $description\n                    && $dto->getMetadata() === $metadata\n                    && $dto->getStatus() === ActivityStatus::BLOCKED",
-                "file": null
-            },
-            {
-                "type": "use",
                 "target": "($cleanupDate) {\n                return $date->format('Y-m-d') === $cleanupDate->format('Y-m-d')",
                 "file": null
             },
@@ -33176,22 +33338,7 @@
             },
             {
                 "type": "use",
-                "target": "($jti) {\n                return $params['jti'] === $jti\n                    && is_string($params['current_time'])",
-                "file": null
-            },
-            {
-                "type": "use",
-                "target": "($jti) {\n                return $params['jti'] === $jti\n                    && is_string($params['current_time'])",
-                "file": null
-            },
-            {
-                "type": "use",
                 "target": "($tokenHash) {\n                return $params['token_hash'] === $tokenHash\n                    && is_string($params['current_time'])",
-                "file": null
-            },
-            {
-                "type": "use",
-                "target": "($jtis) {\n                \/\/ 前三個參數應該是 JTI 值，最後一個是 current_time\n                return count($params) === 4\n                    && $params[0] === $jtis[0]\n                    && $params[1] === $jtis[1]\n                    && $params[2] === $jtis[2]\n                    && is_string($params[3])",
                 "file": null
             },
             {
@@ -33202,6 +33349,16 @@
             {
                 "type": "use",
                 "target": "($deviceId) {\n                return $params['device_id'] === $deviceId\n                    && is_string($params['current_time'])",
+                "file": null
+            },
+            {
+                "type": "use",
+                "target": "($expectedJti) {\n            return is_array($params)\n                && isset($params['jti'])\n                && $params['jti'] === $expectedJti\n                && isset($params['current_time'])\n                && is_string($params['current_time'])",
+                "file": null
+            },
+            {
+                "type": "use",
+                "target": "($expectedJtis) {\n            \/\/ 前 N 個參數應該是 JTI 值，最後一個是 current_time\n            if (!is_array($params) || count($params) !== count($expectedJtis) + 1) {\n                return false",
                 "file": null
             }
         ],
@@ -33258,7 +33415,7 @@
             },
             {
                 "type": "use",
-                "target": "($jti, $userId, $tokenHash) {\n                return $params[0] === $jti\n                    && $params[1] === $userId\n                    && $params[2] === $tokenHash\n                    && $params[4] === 'device-123'",
+                "target": "($jti, $userId, $tokenHash) {\n                return is_array($params)\n                    && $params[0] === $jti\n                    && $params[1] === $userId\n                    && $params[2] === $tokenHash",
                 "file": null
             },
             {
@@ -33283,7 +33440,7 @@
             },
             {
                 "type": "use",
-                "target": "($jti, $reason) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && $params[4] === $jti",
+                "target": "($jti, $reason) {\n                return is_array($params)\n                    && $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && $params[4] === $jti",
                 "file": null
             },
             {
@@ -33304,6 +33461,16 @@
             {
                 "type": "use",
                 "target": "($reason, $jtis) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && array_slice($params, 4) === $jtis",
+                "file": null
+            },
+            {
+                "type": "use",
+                "target": "($expectedValues) {\n            if (!is_array($params) || count($params) < count($expectedValues)) {\n                return false",
+                "file": null
+            },
+            {
+                "type": "use",
+                "target": "($requiredValues) {\n            if (!is_array($params)) {\n                return false",
                 "file": null
             }
         ],
@@ -35712,6 +35879,11 @@
                 "type": "use",
                 "target": "RuntimeException",
                 "file": null
+            },
+            {
+                "type": "use",
+                "target": "($groupName) {\n                return $this->validateCreateGroupResponse($content, $groupName)",
+                "file": null
             }
         ],
         "tests\/Integration\/Application\/Controllers\/Api\/Statistics\/StatisticsControllerIntegrationTest.php": [
@@ -35843,7 +36015,7 @@
             },
             {
                 "type": "use",
-                "target": "($size) {\n                $directory = dirname($path)",
+                "target": "($size) {\n                $this->ensureDirectoryExists(dirname($path))",
                 "file": null
             }
         ],

@@ -49,12 +49,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
     /**
      * 從統計快照建立 DTO.
      *
-     * @param StatisticsPeriod $period
-     * @param StatisticsMetric $totalPosts
-     * @param StatisticsMetric $totalViews
      * @param array<SourceStatistics> $sourceStatistics
      * @param array<string, mixed> $additionalMetrics
-     * @return self
      */
     public static function fromSnapshot(
         StatisticsPeriod $period,
@@ -104,8 +100,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         $totalViewsDescription = $totalViewsData['description'] ?? null;
 
         $totalViews = StatisticsMetric::count(
-            is_numeric($totalViewsValue) ? (int)$totalViewsValue : 0,
-            is_string($totalViewsDescription) ? $totalViewsDescription : '總瀏覽數'
+            is_numeric($totalViewsValue) ? (int) $totalViewsValue : 0,
+            is_string($totalViewsDescription) ? $totalViewsDescription : '總瀏覽數',
         );
 
         /** @var array<string, mixed> $totalPostsData */
@@ -114,8 +110,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         $totalPostsDescription = $totalPostsData['description'] ?? null;
 
         $totalPosts = StatisticsMetric::count(
-            is_numeric($totalPostsValue) ? (int)$totalPostsValue : 0,
-            is_string($totalPostsDescription) ? $totalPostsDescription : '總文章數'
+            is_numeric($totalPostsValue) ? (int) $totalPostsValue : 0,
+            is_string($totalPostsDescription) ? $totalPostsDescription : '總文章數',
         );
 
         // 來源統計資料
@@ -130,10 +126,10 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
                 $sourceType = is_string($sourceTypeValue) || is_int($sourceTypeValue) ? $sourceTypeValue : 'web';
 
                 $countValue = $sourceData['count'] ?? null;
-                $count = is_numeric($countValue) ? (int)$countValue : 0;
+                $count = is_numeric($countValue) ? (int) $countValue : 0;
 
                 $percentageValue = $sourceData['percentage'] ?? null;
-                $percentage = is_numeric($percentageValue) ? (float)$percentageValue : 0.0;
+                $percentage = is_numeric($percentageValue) ? (float) $percentageValue : 0.0;
 
                 return SourceStatistics::create(
                     SourceType::from($sourceType),

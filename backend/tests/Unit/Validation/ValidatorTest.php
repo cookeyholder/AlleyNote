@@ -736,7 +736,7 @@ class ValidatorTest extends TestCase
             $result = $this->validator->validate([$field => $value], [$field => $rule]);
             $this->assertTrue(
                 $result->isValid(),
-                "值 '" . $this->valueToString($value) . "' 應該通過 {$rule} 驗證"
+                "值 '" . $this->valueToString($value) . "' 應該通過 {$rule} 驗證",
             );
         }
     }
@@ -754,7 +754,7 @@ class ValidatorTest extends TestCase
             $result = $this->validator->validate([$field => $value], [$field => $rule]);
             $this->assertFalse(
                 $result->isValid(),
-                "值 '" . $this->valueToString($value) . "' 不應該通過 {$rule} 驗證"
+                "值 '" . $this->valueToString($value) . "' 不應該通過 {$rule} 驗證",
             );
         }
     }
@@ -805,7 +805,7 @@ class ValidatorTest extends TestCase
         $result = $this->validator->validate([$field => $value], [$field => $rule]);
         $this->assertTrue(
             $result->isValid(),
-            "值 '" . $this->valueToString($value) . "' 應該通過 {$rule} 驗證"
+            "值 '" . $this->valueToString($value) . "' 應該通過 {$rule} 驗證",
         );
     }
 

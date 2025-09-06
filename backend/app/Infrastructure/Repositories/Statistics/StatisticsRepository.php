@@ -306,6 +306,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
 
             /** @var int|false $result */
             $result = $stmt->fetchColumn();
+
             return $result !== false ? $result : 0;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -497,6 +498,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
 
             /** @var int|false $result */
             $result = $stmt->fetchColumn();
+
             return $result !== false ? $result : 0;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -546,11 +548,11 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
         $totalViewsValue = $row['total_views'] ?? 0;
         $totalPosts = StatisticsMetric::count(
             is_numeric($totalPostsValue) ? (int) $totalPostsValue : 0,
-            '總文章數'
+            '總文章數',
         );
         $totalViews = StatisticsMetric::count(
             is_numeric($totalViewsValue) ? (int) $totalViewsValue : 0,
-            '總瀏覽數'
+            '總瀏覽數',
         );
 
         // 確保 snapshotData 是正確的型別
@@ -633,7 +635,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
      * 反序列化指標資料.
      */
     /**
-     * 反序列化指標資料
+     * 反序列化指標資料.
      *
      * @param array<string, mixed> $data
      * @return array<string, StatisticsMetric>

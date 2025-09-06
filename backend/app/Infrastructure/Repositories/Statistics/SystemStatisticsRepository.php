@@ -109,19 +109,19 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
             $growthRates = [
                 'posts_growth' => $this->calculateGrowthRate(
                     $totals['total_posts'],
-                    $periodStats['period_posts']
+                    $periodStats['period_posts'],
                 ),
                 'users_growth' => $this->calculateGrowthRate(
                     $totals['total_users'],
-                    $periodStats['period_users']
+                    $periodStats['period_users'],
                 ),
                 'views_growth' => $this->calculateGrowthRate(
                     $totals['total_views'],
-                    $periodStats['period_views']
+                    $periodStats['period_views'],
                 ),
                 'activities_growth' => $this->calculateGrowthRate(
                     $totals['total_activities'],
-                    $periodStats['period_activities']
+                    $periodStats['period_activities'],
                 ),
             ];
 
@@ -804,6 +804,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
             }
 
             $version = $stmt->fetchColumn();
+
             return is_string($version) ? $version : 'Unknown';
         } catch (PDOException $e) {
             return 'Unknown';

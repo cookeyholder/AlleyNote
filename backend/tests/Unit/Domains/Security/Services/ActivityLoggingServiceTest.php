@@ -30,10 +30,15 @@ class ActivityLoggingServiceTest extends TestCase
 
     // Properties for callback validation
     private ActivityType $expectedActionType;
+
     private int $expectedUserId;
+
     private ?string $expectedTargetType = null;
+
     private ?string $expectedTargetId = null;
+
     private ?string $expectedDescription = null;
+
     private ?array $expectedMetadata = null;
 
     protected function setUp(): void

@@ -441,7 +441,7 @@ final class PostStatisticsService
         }
 
         $variance = array_sum(
-            array_map(fn($value) => ((float)$value - $mean) ** 2, $performances),
+            array_map(fn($value) => ((float) $value - $mean) ** 2, $performances),
         ) / count($performances);
 
         $coefficientOfVariation = sqrt($variance) / $mean;

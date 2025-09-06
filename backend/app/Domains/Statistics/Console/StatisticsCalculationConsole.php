@@ -78,8 +78,8 @@ readonly class StatisticsCalculationConsole
         }
 
         // 確保參數類型正確
-        $periodsParam = is_array($periods) ? array_map(static function(mixed $p): string {
-            return is_string($p) || is_numeric($p) ? (string)$p : 'daily';
+        $periodsParam = is_array($periods) ? array_map(static function (mixed $p): string {
+            return is_string($p) || is_numeric($p) ? (string) $p : 'daily';
         }, $periods) : ['daily', 'weekly', 'monthly'];
         $forceParam = is_bool($force) ? $force : false;
         $skipCacheParam = is_bool($skipCache) ? $skipCache : false;
@@ -89,7 +89,8 @@ readonly class StatisticsCalculationConsole
         $this->printCalculationResults($result);
 
         $failureCount = $result['failure_count'] ?? 0;
-        return is_numeric($failureCount) && (int)$failureCount > 0 ? 1 : 0;
+
+        return is_numeric($failureCount) && (int) $failureCount > 0 ? 1 : 0;
     }
 
     /**
@@ -213,15 +214,15 @@ readonly class StatisticsCalculationConsole
     private function printCalculationResults(array $result): void
     {
         $this->printInfo("\n=== 統計計算結果 ===");
-        $this->printInfo('總執行時間: ' . number_format(is_numeric($result['total_duration'] ?? 0) ? (float)($result['total_duration'] ?? 0) : 0, 2) . ' 秒');
+        $this->printInfo('總執行時間: ' . number_format(is_numeric($result['total_duration'] ?? 0) ? (float) ($result['total_duration'] ?? 0) : 0, 2) . ' 秒');
         $totalPeriods = $result['total_periods'] ?? 0;
-        $this->printInfo("總週期數: " . (is_numeric($totalPeriods) ? (int)$totalPeriods : 0));
+        $this->printInfo('總週期數: ' . (is_numeric($totalPeriods) ? (int) $totalPeriods : 0));
         $successCount = $result['success_count'] ?? 0;
-        $this->printSuccess("成功: " . (is_numeric($successCount) ? (int)$successCount : 0));
+        $this->printSuccess('成功: ' . (is_numeric($successCount) ? (int) $successCount : 0));
 
         $failureCount = $result['failure_count'] ?? 0;
-        if (is_numeric($failureCount) && (int)$failureCount > 0) {
-            $this->printError("失敗: " . (int)$failureCount);
+        if (is_numeric($failureCount) && (int) $failureCount > 0) {
+            $this->printError('失敗: ' . (int) $failureCount);
         }
 
         $this->printInfo("\n=== 詳細結果 ===");
@@ -236,8 +237,8 @@ readonly class StatisticsCalculationConsole
                 $success = $periodResult['success'] ?? false;
                 $duration = $periodResult['duration'] ?? 0;
                 $status = $success ? '✓' : '✗';
-                $durationStr = number_format(is_float($duration) || is_int($duration) ? (float)$duration : 0, 2);
-                $periodStr = (string)$period;
+                $durationStr = number_format(is_float($duration) || is_int($duration) ? (float) $duration : 0, 2);
+                $periodStr = (string) $period;
 
                 if ($success) {
                     $extra = '';
@@ -247,13 +248,13 @@ readonly class StatisticsCalculationConsole
                     if ($cached) {
                         $extra = ' (快取)';
                     } elseif ($snapshotId !== null) {
-                        $snapshotIdStr = is_string($snapshotId) || is_numeric($snapshotId) ? (string)$snapshotId : 'unknown';
+                        $snapshotIdStr = is_string($snapshotId) || is_numeric($snapshotId) ? (string) $snapshotId : 'unknown';
                         $extra = " (快照: {$snapshotIdStr})";
                     }
                     $this->printSuccess("{$status} {$periodStr}: {$durationStr}s{$extra}");
                 } else {
                     $error = $periodResult['error'] ?? 'Unknown error';
-                    $errorStr = is_string($error) || is_numeric($error) ? (string)$error : 'Unknown error';
+                    $errorStr = is_string($error) || is_numeric($error) ? (string) $error : 'Unknown error';
                     $skipped = $periodResult['skipped'] ?? false;
 
                     if ($skipped) {
@@ -277,9 +278,9 @@ readonly class StatisticsCalculationConsole
         $maxRetries = $status['max_retries'] ?? 0;
         $retryDelay = $status['retry_delay'] ?? 0;
 
-        $this->printInfo("鎖定超時時間: " . (is_numeric($lockTimeout) ? (int)$lockTimeout : 0) . " 秒");
-        $this->printInfo("最大重試次數: " . (is_numeric($maxRetries) ? (int)$maxRetries : 0));
-        $this->printInfo("重試間隔: " . (is_numeric($retryDelay) ? (int)$retryDelay : 0) . " 秒");
+        $this->printInfo('鎖定超時時間: ' . (is_numeric($lockTimeout) ? (int) $lockTimeout : 0) . ' 秒');
+        $this->printInfo('最大重試次數: ' . (is_numeric($maxRetries) ? (int) $maxRetries : 0));
+        $this->printInfo('重試間隔: ' . (is_numeric($retryDelay) ? (int) $retryDelay : 0) . ' 秒');
 
         $this->printInfo("\n=== 週期狀態 ===");
 
@@ -292,7 +293,7 @@ readonly class StatisticsCalculationConsole
 
                 $locked = $periodStatus['locked'] ?? false;
                 $lockedStatus = $locked ? '🔒 已鎖定' : '🔓 可用';
-                $periodStr = (string)$period;
+                $periodStr = (string) $period;
                 $this->printInfo("{$periodStr}: {$lockedStatus}");
 
                 if ($locked && isset($periodStatus['lock_time']) && isset($periodStatus['lock_age_seconds'])) {
@@ -300,10 +301,10 @@ readonly class StatisticsCalculationConsole
                     $lockAge = $periodStatus['lock_age_seconds'];
 
                     if (is_numeric($lockTime)) {
-                        $this->printInfo('  鎖定時間: ' . date('Y-m-d H:i:s', (int)$lockTime));
+                        $this->printInfo('  鎖定時間: ' . date('Y-m-d H:i:s', (int) $lockTime));
                     }
 
-                    $lockAgeStr = is_float($lockAge) || is_int($lockAge) ? (int)$lockAge : 0;
+                    $lockAgeStr = is_float($lockAge) || is_int($lockAge) ? (int) $lockAge : 0;
                     $this->printInfo("  鎖定時長: {$lockAgeStr} 秒");
 
                     if (is_numeric($lockAge) && is_numeric($lockTimeout) && $lockAge > $lockTimeout) {

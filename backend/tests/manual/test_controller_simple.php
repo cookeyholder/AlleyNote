@@ -396,9 +396,9 @@ try {
 
         try {
             $result = $controllerResolver->resolve($route, $request, $params);
-            echo "   ✓ {(string)description}: " . $result->getStatusCode() . "\n";
+            echo '   ✓ {(string)description}: ' . $result->getStatusCode() . "\n";
         } catch (Exception $e) {
-            echo "   ✗ {(string)description}: 錯誤 - " . $e->getMessage() . "\n";
+            echo '   ✗ {(string)description}: 錯誤 - ' . $e->getMessage() . "\n";
         }
     }
 

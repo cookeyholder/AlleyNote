@@ -1,7 +1,7 @@
 {
     "scan_info": {
         "project": "AlleyNote",
-        "scan_time": "2025-09-06 19:48:13",
+        "scan_time": "2025-09-06 21:31:15",
         "scan_type": "test_error_analysis",
         "phpstan_level": 10
     },
@@ -212,13 +212,18 @@
         ],
         "tests\/Unit\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepositoryTest.php": [
             {
+                "type": "redundant_type_check",
+                "description": "Using is_array() on known arrays",
+                "severity": "low"
+            },
+            {
                 "type": "too_many_test_methods",
                 "count": 43,
                 "severity": "medium"
             },
             {
                 "type": "high_cyclomatic_complexity",
-                "complexity": 11,
+                "complexity": 14,
                 "severity": "high"
             },
             {
@@ -229,13 +234,18 @@
         ],
         "tests\/Unit\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepositoryTest.php": [
             {
+                "type": "redundant_type_check",
+                "description": "Using is_array() on known arrays",
+                "severity": "low"
+            },
+            {
                 "type": "too_many_test_methods",
                 "count": 50,
                 "severity": "medium"
             },
             {
                 "type": "high_cyclomatic_complexity",
-                "complexity": 21,
+                "complexity": 31,
                 "severity": "high"
             }
         ],
@@ -255,19 +265,18 @@
         ],
         "tests\/Unit\/Validation\/ValidatorTest.php": [
             {
-                "type": "excessive_assertion_usage",
-                "assertion": "assertTrue",
-                "count": 52,
-                "severity": "medium"
+                "type": "redundant_type_check",
+                "description": "Using is_array() on known arrays",
+                "severity": "low"
             },
             {
                 "type": "too_many_test_methods",
-                "count": 29,
+                "count": 30,
                 "severity": "medium"
             },
             {
                 "type": "high_cyclomatic_complexity",
-                "complexity": 23,
+                "complexity": 17,
                 "severity": "high"
             }
         ],
@@ -276,11 +285,6 @@
                 "type": "redundant_type_check",
                 "description": "Using is_array() on known arrays",
                 "severity": "low"
-            },
-            {
-                "type": "high_cyclomatic_complexity",
-                "complexity": 19,
-                "severity": "high"
             }
         ],
         "tests\/Integration\/PostActivityLoggingTest.php": [
@@ -293,7 +297,7 @@
         "tests\/Integration\/Shared\/Cache\/Services\/TaggedCacheIntegrationTest.php": [
             {
                 "type": "high_cyclomatic_complexity",
-                "complexity": 11,
+                "complexity": 13,
                 "severity": "high"
             }
         ],
@@ -338,27 +342,22 @@
             },
             {
                 "type": "excessive_mocking",
-                "mock_count": 16,
+                "mock_count": 15,
                 "severity": "medium"
             }
         ],
         "tests\/Integration\/FileSystemBackupTest.php": [
             {
                 "type": "high_cyclomatic_complexity",
-                "complexity": 11,
+                "complexity": 15,
                 "severity": "high"
             }
         ],
         "tests\/Integration\/AttachmentUploadTest.php": [
             {
                 "type": "high_cyclomatic_complexity",
-                "complexity": 12,
+                "complexity": 13,
                 "severity": "high"
-            },
-            {
-                "type": "deep_nesting",
-                "level": 7,
-                "severity": "medium"
             }
         ],
         "tests\/manual\/test_multiple_routes.php": [
@@ -3766,12 +3765,11 @@
                 "PHPUnit\\Framework\\MockObject\\MockObject",
                 "PHPUnit\\Framework\\TestCase",
                 "ReflectionProperty",
-                "($jti) {\n                return $params['jti'] === $jti\n                    && is_string($params['current_time'])",
-                "($jti) {\n                return $params['jti'] === $jti\n                    && is_string($params['current_time'])",
                 "($tokenHash) {\n                return $params['token_hash'] === $tokenHash\n                    && is_string($params['current_time'])",
-                "($jtis) {\n                \/\/ 前三個參數應該是 JTI 值，最後一個是 current_time\n                return count($params) === 4\n                    && $params[0] === $jtis[0]\n                    && $params[1] === $jtis[1]\n                    && $params[2] === $jtis[2]\n                    && is_string($params[3])",
                 "($userId, $excludeJti) {\n                return $params['user_id'] === $userId\n                    && $params['exclude_jti'] === $excludeJti\n                    && is_string($params['current_time'])",
-                "($deviceId) {\n                return $params['device_id'] === $deviceId\n                    && is_string($params['current_time'])"
+                "($deviceId) {\n                return $params['device_id'] === $deviceId\n                    && is_string($params['current_time'])",
+                "($expectedJti) {\n            return is_array($params)\n                && isset($params['jti'])\n                && $params['jti'] === $expectedJti\n                && isset($params['current_time'])\n                && is_string($params['current_time'])",
+                "($expectedJtis) {\n            \/\/ 前 N 個參數應該是 JTI 值，最後一個是 current_time\n            if (!is_array($params) || count($params) !== count($expectedJtis) + 1) {\n                return false"
             ],
             "phpunit_attributes": {
                 "docblock_annotations": [
@@ -3782,13 +3780,16 @@
                 ]
             },
             "complexity_indicators": {
-                "line_count": 1262,
+                "line_count": 1318,
                 "method_count": 43,
                 "assertion_count": 50,
-                "cyclomatic_complexity": 11,
-                "nested_level": 3
+                "cyclomatic_complexity": 14,
+                "nested_level": 5
             },
-            "potential_issues": []
+            "potential_issues": [
+                "redundant_is_array_check",
+                "potentially_redundant_isset"
+            ]
         },
         "tests\/Unit\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepositoryTest.php": {
             "type": "test",
@@ -3870,16 +3871,18 @@
                 "PDOStatement",
                 "PHPUnit\\Framework\\MockObject\\MockObject",
                 "PHPUnit\\Framework\\TestCase",
-                "($jti, $userId, $tokenHash) {\n                return $params[0] === $jti\n                    && $params[1] === $userId\n                    && $params[2] === $tokenHash\n                    && $params[4] === 'device-123'",
+                "($jti, $userId, $tokenHash) {\n                return is_array($params)\n                    && $params[0] === $jti\n                    && $params[1] === $userId\n                    && $params[2] === $tokenHash",
                 "($parentJti) {\n                return $params[12] === $parentJti",
                 "($userId) {\n                return $params[0] === $userId",
                 "($userId) {\n                return count($params) === 3 && $params[0] === $userId && $params[1] === RefreshToken::STATUS_ACTIVE",
                 "($jti) {\n                return $params[2] === $jti",
-                "($jti, $reason) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && $params[4] === $jti",
+                "($jti, $reason) {\n                return is_array($params)\n                    && $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && $params[4] === $jti",
                 "($userId, $reason) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && $params[4] === $userId\n                    && $params[5] === RefreshToken::STATUS_ACTIVE",
                 "($excludeJti) {\n                return count($params) === 7 && $params[6] === $excludeJti",
                 "($userId, $deviceId, $reason) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && $params[4] === $userId\n                    && $params[5] === $deviceId\n                    && $params[6] === RefreshToken::STATUS_ACTIVE",
-                "($reason, $jtis) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && array_slice($params, 4) === $jtis"
+                "($reason, $jtis) {\n                return $params[0] === RefreshToken::STATUS_REVOKED\n                    && $params[1] === $reason\n                    && array_slice($params, 4) === $jtis",
+                "($expectedValues) {\n            if (!is_array($params) || count($params) < count($expectedValues)) {\n                return false",
+                "($requiredValues) {\n            if (!is_array($params)) {\n                return false"
             ],
             "phpunit_attributes": {
                 "docblock_annotations": [
@@ -3887,13 +3890,16 @@
                 ]
             },
             "complexity_indicators": {
-                "line_count": 1338,
+                "line_count": 1347,
                 "method_count": 50,
                 "assertion_count": 34,
-                "cyclomatic_complexity": 21,
-                "nested_level": 3
+                "cyclomatic_complexity": 31,
+                "nested_level": 5
             },
-            "potential_issues": []
+            "potential_issues": [
+                "redundant_is_array_check",
+                "potentially_redundant_isset"
+            ]
         },
         "tests\/Unit\/Infrastructure\/Repositories\/Statistics\/StatisticsRepositoryTest.php": {
             "type": "test",
@@ -4729,12 +4735,13 @@
                 "test_check_rule_method",
                 "test_stop_on_first_failure",
                 "test_validator_performance",
-                "test_memory_leak"
+                "test_memory_leak",
+                "runMemoryLeakTest"
             ],
             "assertions": {
                 "assertEquals": 2,
-                "assertTrue": 52,
-                "assertFalse": 47,
+                "assertTrue": 32,
+                "assertFalse": 30,
                 "assertLessThan": 3
             },
             "mocks": [],
@@ -4753,17 +4760,20 @@
                     "2": "domain",
                     "3": "test",
                     "5": "sub",
-                    "11": "name"
+                    "11": "name",
+                    "15": "param",
+                    "19": "return"
                 }
             },
             "complexity_indicators": {
-                "line_count": 770,
-                "method_count": 29,
-                "assertion_count": 104,
-                "cyclomatic_complexity": 23,
+                "line_count": 826,
+                "method_count": 30,
+                "assertion_count": 67,
+                "cyclomatic_complexity": 17,
                 "nested_level": 4
             },
             "potential_issues": [
+                "redundant_is_array_check",
                 "potentially_redundant_isset"
             ]
         },
@@ -5034,8 +5044,8 @@
             "assertions": {
                 "assertEquals": 1,
                 "assertTrue": 1,
-                "assertNotNull": 4,
-                "assertIsString": 2,
+                "assertNotNull": 3,
+                "assertIsString": 1,
                 "assertIsInt": 1,
                 "assertGreaterThan": 1
             },
@@ -5065,15 +5075,17 @@
                 "php8_attributes": [
                     "Test"
                 ],
-                "docblock_annotations": [
-                    "example"
-                ]
+                "docblock_annotations": {
+                    "0": "example",
+                    "4": "return",
+                    "5": "param"
+                }
             },
             "complexity_indicators": {
-                "line_count": 282,
+                "line_count": 284,
                 "method_count": 0,
-                "assertion_count": 10,
-                "cyclomatic_complexity": 19,
+                "assertion_count": 8,
+                "cyclomatic_complexity": 7,
                 "nested_level": 3
             },
             "potential_issues": [
@@ -5440,7 +5452,7 @@
                 "testErrorRecovery"
             ],
             "assertions": {
-                "assertEquals": 9,
+                "assertEquals": 8,
                 "assertTrue": 7,
                 "assertNull": 8,
                 "assertNotNull": 4,
@@ -5463,12 +5475,17 @@
                 "PHPUnit\\Framework\\TestCase",
                 "Psr\\Log\\NullLogger"
             ],
-            "phpunit_attributes": [],
+            "phpunit_attributes": {
+                "docblock_annotations": [
+                    "return",
+                    "param"
+                ]
+            },
             "complexity_indicators": {
-                "line_count": 331,
+                "line_count": 617,
                 "method_count": 9,
-                "assertion_count": 29,
-                "cyclomatic_complexity": 11,
+                "assertion_count": 28,
+                "cyclomatic_complexity": 13,
                 "nested_level": 4
             },
             "potential_issues": [
@@ -6117,11 +6134,13 @@
                 ],
                 "docblock_annotations": {
                     "0": "var",
-                    "2": "example"
+                    "2": "return",
+                    "3": "example",
+                    "4": "param"
                 }
             },
             "complexity_indicators": {
-                "line_count": 335,
+                "line_count": 414,
                 "method_count": 6,
                 "assertion_count": 19,
                 "cyclomatic_complexity": 18,
@@ -6156,16 +6175,15 @@
                     "ServerRequestInterface::class",
                     "ResponseInterface::class",
                     "StreamInterface::class",
-                    "MemoryCacheDriver::class",
-                    "ResponseInterface::class",
-                    "MemoryCacheDriver::class",
+                    "StreamInterface::class",
                     "MemoryCacheDriver::class",
                     "MemoryCacheDriver::class",
                     "MemoryCacheDriver::class",
                     "MemoryCacheDriver::class",
                     "MemoryCacheDriver::class",
                     "MemoryCacheDriver::class",
-                    "StreamInterface::class"
+                    "MemoryCacheDriver::class",
+                    "MemoryCacheDriver::class"
                 ]
             },
             "data_providers": [],
@@ -6180,11 +6198,17 @@
                 "Psr\\Http\\Message\\ServerRequestInterface",
                 "Psr\\Http\\Message\\StreamInterface",
                 "Psr\\Log\\LoggerInterface",
-                "RuntimeException"
+                "RuntimeException",
+                "($groupName) {\n                return $this->validateCreateGroupResponse($content, $groupName)"
             ],
-            "phpunit_attributes": [],
+            "phpunit_attributes": {
+                "docblock_annotations": [
+                    "return",
+                    "param"
+                ]
+            },
             "complexity_indicators": {
-                "line_count": 463,
+                "line_count": 709,
                 "method_count": 10,
                 "assertion_count": 10,
                 "cyclomatic_complexity": 77,
@@ -6236,7 +6260,8 @@
             "test_methods": [],
             "assertions": {
                 "assertEquals": 8,
-                "assertNotNull": 2,
+                "assertNotNull": 1,
+                "assertNotEmpty": 1,
                 "assertGreaterThan": 1
             },
             "mocks": [],
@@ -6248,14 +6273,19 @@
             "phpunit_attributes": {
                 "php8_attributes": [
                     "Test"
+                ],
+                "docblock_annotations": [
+                    "return",
+                    "var",
+                    "param"
                 ]
             },
             "complexity_indicators": {
-                "line_count": 290,
+                "line_count": 364,
                 "method_count": 0,
                 "assertion_count": 11,
-                "cyclomatic_complexity": 11,
-                "nested_level": 4
+                "cyclomatic_complexity": 15,
+                "nested_level": 5
             },
             "potential_issues": []
         },
@@ -6294,7 +6324,10 @@
             "type": "test",
             "namespace": "Tests\\Integration",
             "test_class": "AttachmentUploadTest",
-            "test_methods": [],
+            "test_methods": [
+                "testAllInvalidFileTypes",
+                "testSingleInvalidFileType"
+            ],
             "assertions": {
                 "assertEquals": 2,
                 "assertInstanceOf": 2
@@ -6304,8 +6337,7 @@
                     "AuthorizationService::class",
                     "ActivityLoggingServiceInterface::class",
                     "LoggingSecurityServiceInterface::class",
-                    "UploadedFileInterface::class",
-                    "StreamInterface::class",
+                    "LoggingSecurityServiceInterface::class",
                     "UploadedFileInterface::class",
                     "StreamInterface::class",
                     "UploadedFileInterface::class",
@@ -6331,20 +6363,23 @@
                 "Psr\\Http\\Message\\UploadedFileInterface",
                 "RuntimeException",
                 "Tests\\TestCase",
-                "($size) {\n                $directory = dirname($path)"
+                "($size) {\n                $this->ensureDirectoryExists(dirname($path))"
             ],
             "phpunit_attributes": {
                 "php8_attributes": [
                     "Group",
                     "Test"
+                ],
+                "docblock_annotations": [
+                    "var"
                 ]
             },
             "complexity_indicators": {
-                "line_count": 317,
-                "method_count": 0,
+                "line_count": 391,
+                "method_count": 2,
                 "assertion_count": 4,
-                "cyclomatic_complexity": 12,
-                "nested_level": 7
+                "cyclomatic_complexity": 13,
+                "nested_level": 4
             },
             "potential_issues": []
         },
@@ -18212,15 +18247,6 @@
             "pattern": "high_cyclomatic_complexity",
             "title": "修正測試反模式",
             "description": "在 tests\/Unit\/Validation\/ValidatorTest.php 中發現 high_cyclomatic_complexity 反模式",
-            "priority": "high",
-            "action": "將複雜的測試分割成多個較簡單的測試方法"
-        },
-        {
-            "type": "anti_pattern",
-            "file": "tests\/Security\/PasswordHashingTest.php",
-            "pattern": "high_cyclomatic_complexity",
-            "title": "修正測試反模式",
-            "description": "在 tests\/Security\/PasswordHashingTest.php 中發現 high_cyclomatic_complexity 反模式",
             "priority": "high",
             "action": "將複雜的測試分割成多個較簡單的測試方法"
         },

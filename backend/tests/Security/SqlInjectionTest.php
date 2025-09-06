@@ -164,7 +164,7 @@ class SqlInjectionTest extends TestCase
             $results = $this->repository->paginate(1, 10, ['search' => $maliciousInput]);
 
             // 確保搜尋不會因為SQL注入而回傳所有資料
-            $this->assertLessThanOrEqual(3, $results['total'], "SQL injection should not return all data: {(string)maliciousInput}");
+            $this->assertLessThanOrEqual(3, $results['total'], 'SQL injection should not return all data: {(string)maliciousInput}');
         }
 
         // 確認資料表和原始資料仍然完整

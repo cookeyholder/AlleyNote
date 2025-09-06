@@ -47,10 +47,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     /**
      * 從來源統計資料建立 DTO.
      *
-     * @param StatisticsPeriod $period
      * @param array<SourceStatistics> $sourceStatistics
-     * @param int $totalCount
-     * @return self
      */
     public static function fromSourceStatistics(
         StatisticsPeriod $period,
@@ -106,10 +103,10 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 $sourceType = is_string($sourceTypeValue) || is_int($sourceTypeValue) ? $sourceTypeValue : 'web';
 
                 $countValue = $sourceData['count'] ?? null;
-                $count = is_numeric($countValue) ? (int)$countValue : 0;
+                $count = is_numeric($countValue) ? (int) $countValue : 0;
 
                 $percentageValue = $sourceData['percentage'] ?? null;
-                $percentage = is_numeric($percentageValue) ? (float)$percentageValue : 0.0;
+                $percentage = is_numeric($percentageValue) ? (float) $percentageValue : 0.0;
 
                 return SourceStatistics::create(
                     SourceType::from($sourceType),
@@ -121,7 +118,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         );
 
         $totalCountValue = $data['total_count'] ?? null;
-        $totalCount = is_numeric($totalCountValue) ? (int)$totalCountValue : 0;
+        $totalCount = is_numeric($totalCountValue) ? (int) $totalCountValue : 0;
 
         /** @var array<string, mixed> $distributionAnalysisRaw */
         $distributionAnalysisRaw = $data['distribution_analysis'] ?? [];
@@ -445,7 +442,6 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * 計算分佈分析.
      *
      * @param array<SourceStatistics> $sourceStatistics
-     * @param int $totalCount
      * @return array<string, mixed>
      */
     private static function calculateDistributionAnalysis(array $sourceStatistics, int $totalCount): array

@@ -1256,46 +1256,6 @@ final class RefreshTokenRepositoryTest extends TestCase
     }
 
     /**
-     * 驗證基本參數的回調函式.
-     */
-    private function createBasicParamsCallback(array $expectedValues): callable
-    {
-        return function ($params) use ($expectedValues) {
-            if (!is_array($params) || count($params) < count($expectedValues)) {
-                return false;
-            }
-
-            foreach ($expectedValues as $index => $expectedValue) {
-                if ($params[$index] !== $expectedValue) {
-                    return false;
-                }
-            }
-
-            return true;
-        };
-    }
-
-    /**
-     * 驗證包含特定值的參數回調函式.
-     */
-    private function createParamsContainCallback(array $requiredValues): callable
-    {
-        return function ($params) use ($requiredValues) {
-            if (!is_array($params)) {
-                return false;
-            }
-
-            foreach ($requiredValues as $index => $expectedValue) {
-                if (!isset($params[$index]) || $params[$index] !== $expectedValue) {
-                    return false;
-                }
-            }
-
-            return true;
-        };
-    }
-
-    /**
      * 建立測試用的 RefreshToken 資料陣列.
      */
     private function createSampleTokenData(string $jti = 'test-jti', int $userId = 1): array
@@ -1310,7 +1270,7 @@ final class RefreshTokenRepositoryTest extends TestCase
             'device_type' => 'mobile',
             'ip_address' => '192.168.1.1',
             'user_agent' => 'Test Agent',
-            'created_at' => (new DateTime())->format('Y-m-d H:i:s'),
+            'created_at' => new DateTime()->format('Y-m-d H:i:s'),
             'last_used_at' => null,
             'revoked_at' => null,
             'revoked_reason' => null,

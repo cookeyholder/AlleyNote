@@ -151,6 +151,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{id: int, title: string, views: int, created_at: string}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -198,6 +199,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{source_type: string, post_count: int, view_count: int, percentage: float}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -302,6 +304,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{date: string, post_count: int, view_count: int}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -341,6 +344,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{date: string, view_count: int, unique_views: int}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -455,6 +459,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array{total_new_posts: int, total_views: int, avg_views_per_post: float}|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
             return $result ?: [
                 'total_new_posts' => 0,
                 'total_views' => 0,
@@ -522,6 +527,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{range: string, count: int, percentage: float}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -618,6 +624,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{date: string, post_count: int, view_count: int, unique_views: int}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -658,6 +665,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{date: string, hour: int, activity_count: int}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -699,6 +707,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{user_id: int, username: string, post_count: int, total_views: int}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -776,6 +785,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{tag: string, usage_count: int, post_count: int}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -848,6 +858,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array{views: int, comments: int, likes: int, shares: int, source: string}|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
             return $result ?: [
                 'views' => 0,
                 'comments' => 0,
@@ -892,6 +903,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{publish_hour: string, publish_day: string, avg_views: float}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(
@@ -929,6 +941,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             /** @var array<array{date: string, daily_views: int}> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException(

@@ -178,6 +178,7 @@ class UserActivityLogsSeederTest extends TestCase
         $record = $this->getRandomRecord();
 
         $this->assertBasicFieldsAreValid($record);
+        $this->assertIsString($record['uuid'], 'UUID should be a string');
         $this->assertUuidFormatIsCorrect($record['uuid']);
         $this->assertMetadataIsValidJson($record);
     }
@@ -208,7 +209,7 @@ class UserActivityLogsSeederTest extends TestCase
 
         $securityEvents = $this->getSecurityEvents();
         $hasBlockedEvent = $this->hasBlockedSecurityEvent($securityEvents);
-        
+
         $this->assertTrue($hasBlockedEvent, '應包含被阻擋的安全事件');
     }
 
@@ -269,6 +270,7 @@ class UserActivityLogsSeederTest extends TestCase
         $stmt = $this->pdo->query('SELECT DISTINCT action_type FROM user_activity_logs');
         $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
 
+        /** @var array<int, string> */
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
@@ -282,6 +284,7 @@ class UserActivityLogsSeederTest extends TestCase
         $stmt = $this->pdo->query('SELECT DISTINCT status FROM user_activity_logs');
         $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
 
+        /** @var array<int, string> */
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
@@ -298,6 +301,7 @@ class UserActivityLogsSeederTest extends TestCase
         $record = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->assertIsArray($record, 'Record should be an array');
 
+        /** @var array<string, mixed> */
         return $record;
     }
 
@@ -349,6 +353,7 @@ class UserActivityLogsSeederTest extends TestCase
         $stmt = $this->pdo->query('SELECT * FROM user_activity_logs WHERE action_category = "security"');
         $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
 
+        /** @var array<int, array<string, mixed>> */
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -365,6 +370,7 @@ class UserActivityLogsSeederTest extends TestCase
                 return true;
             }
         }
+
         return false;
     }
 }

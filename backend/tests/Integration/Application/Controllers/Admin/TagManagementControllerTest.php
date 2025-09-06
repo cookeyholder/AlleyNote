@@ -261,7 +261,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 取得測試查詢參數
+     * 取得測試查詢參數.
      *
      * @return array<string, string>
      */
@@ -275,7 +275,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定列表標籤的 Mock 驅動程式
+     * 設定列表標籤的 Mock 驅動程式.
      */
     private function setupMockDriverForListTags(): MemoryCacheDriver&MockObject
     {
@@ -294,7 +294,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定快取管理器用於列表標籤測試
+     * 設定快取管理器用於列表標籤測試.
      */
     private function setupCacheManagerForListTags(MemoryCacheDriver&MockObject $mockDriver): void
     {
@@ -307,7 +307,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 期待成功的列表標籤回應
+     * 期待成功的列表標籤回應.
      */
     private function expectSuccessfulListTagsResponse(): void
     {
@@ -319,7 +319,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 驗證列表標籤回應內容
+     * 驗證列表標籤回應內容.
      */
     private function validateListTagsResponse(mixed $content): bool
     {
@@ -334,7 +334,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定取得標籤的 Mock 驅動程式
+     * 設定取得標籤的 Mock 驅動程式.
      */
     private function setupMockDriverForGetTag(): MemoryCacheDriver&MockObject
     {
@@ -357,7 +357,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定快取管理器用於取得標籤測試
+     * 設定快取管理器用於取得標籤測試.
      */
     private function setupCacheManagerForGetTag(MemoryCacheDriver&MockObject $mockDriver): void
     {
@@ -369,7 +369,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 期待成功的取得標籤回應
+     * 期待成功的取得標籤回應.
      */
     private function expectSuccessfulGetTagResponse(): void
     {
@@ -381,7 +381,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 驗證取得標籤回應內容
+     * 驗證取得標籤回應內容.
      */
     private function validateGetTagResponse(mixed $content): bool
     {
@@ -399,7 +399,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定清空標籤的 Mock 驅動程式
+     * 設定清空標籤的 Mock 驅動程式.
      */
     private function setupMockDriversForFlushTag(): void
     {
@@ -418,7 +418,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 期待成功的清空標籤回應
+     * 期待成功的清空標籤回應.
      */
     private function expectSuccessfulFlushTagResponse(): void
     {
@@ -430,7 +430,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 驗證清空標籤回應內容
+     * 驗證清空標籤回應內容.
      */
     private function validateFlushTagResponse(mixed $content): bool
     {
@@ -447,7 +447,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定清空多個標籤的 Mock 驅動程式
+     * 設定清空多個標籤的 Mock 驅動程式.
      *
      * @param array<string> $testTags
      */
@@ -469,7 +469,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定快取管理器用於清空多個標籤測試
+     * 設定快取管理器用於清空多個標籤測試.
      */
     private function setupCacheManagerForFlushTags(MemoryCacheDriver&MockObject $mockDriver): void
     {
@@ -482,7 +482,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 期待成功的清空多個標籤回應
+     * 期待成功的清空多個標籤回應.
      */
     private function expectSuccessfulFlushTagsResponse(): void
     {
@@ -494,7 +494,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 驗證清空多個標籤回應內容
+     * 驗證清空多個標籤回應內容.
      */
     private function validateFlushTagsResponse(mixed $content): bool
     {
@@ -510,7 +510,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定標籤統計的 Mock 驅動程式
+     * 設定標籤統計的 Mock 驅動程式.
      */
     private function setupMockDriversForTagStatistics(): void
     {
@@ -540,7 +540,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定群組管理器用於標籤統計測試
+     * 設定群組管理器用於標籤統計測試.
      */
     private function setupGroupManagerForTagStatistics(): void
     {
@@ -551,7 +551,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 期待成功的標籤統計回應
+     * 期待成功的標籤統計回應.
      */
     private function expectSuccessfulTagStatisticsResponse(): void
     {
@@ -563,7 +563,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 驗證標籤統計回應內容
+     * 驗證標籤統計回應內容.
      */
     private function validateTagStatisticsResponse(mixed $content): bool
     {
@@ -577,7 +577,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 取得測試群組資料
+     * 取得測試群組資料.
      *
      * @return array{name: string, tags: array<string>}
      */
@@ -590,7 +590,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定群組管理器用於建立群組測試
+     * 設定群組管理器用於建立群組測試.
      *
      * @param array{name: string, tags: array<string>} $testGroupData
      */
@@ -603,7 +603,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 期待成功的建立群組回應
+     * 期待成功的建立群組回應.
      */
     private function expectSuccessfulCreateGroupResponse(string $groupName): void
     {
@@ -615,7 +615,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 驗證建立群組回應內容
+     * 驗證建立群組回應內容.
      */
     private function validateCreateGroupResponse(mixed $content, string $expectedGroupName): bool
     {
@@ -629,7 +629,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 取得模擬群組資料
+     * 取得模擬群組資料.
      *
      * @return array<string, array<string, mixed>>
      */
@@ -642,7 +642,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 期待成功的列表群組回應
+     * 期待成功的列表群組回應.
      */
     private function expectSuccessfulListGroupsResponse(): void
     {
@@ -654,7 +654,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 驗證列表群組回應內容
+     * 驗證列表群組回應內容.
      */
     private function validateListGroupsResponse(mixed $content): bool
     {
@@ -670,7 +670,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 設定群組管理器用於清空群組測試
+     * 設定群組管理器用於清空群組測試.
      */
     private function setupGroupManagerForFlushGroup(): void
     {
@@ -682,7 +682,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 期待成功的清空群組回應
+     * 期待成功的清空群組回應.
      */
     private function expectSuccessfulFlushGroupResponse(): void
     {
@@ -694,7 +694,7 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 驗證清空群組回應內容
+     * 驗證清空群組回應內容.
      */
     private function validateFlushGroupResponse(mixed $content): bool
     {

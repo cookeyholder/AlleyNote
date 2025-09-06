@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Services;
 
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
-use App\Domains\Statistics\Contracts\SystemStatisticsRepositoryInterface;
 use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Exceptions\StatisticsCalculationException;
 use App\Domains\Statistics\Services\PostStatisticsService;
@@ -41,7 +40,7 @@ final class PostStatisticsServiceTest extends TestCase
         $this->mockPostRepository = $this->createMock(PostStatisticsRepositoryInterface::class);
 
         $this->service = new PostStatisticsService(
-            $this->mockPostRepository
+            $this->mockPostRepository,
         );
     }
 

@@ -373,10 +373,10 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $bounceResult = $stmt->fetch(PDO::FETCH_ASSOC);
             $bounceRate = 0.0;
-            if (is_array($bounceResult) &&
-                isset($bounceResult['single_page_sessions'], $bounceResult['total_sessions']) &&
-                is_numeric($bounceResult['single_page_sessions']) && is_numeric($bounceResult['total_sessions']) &&
-                (int) $bounceResult['total_sessions'] > 0) {
+            if (is_array($bounceResult)
+                && isset($bounceResult['single_page_sessions'], $bounceResult['total_sessions'])
+                && is_numeric($bounceResult['single_page_sessions']) && is_numeric($bounceResult['total_sessions'])
+                && (int) $bounceResult['total_sessions'] > 0) {
                 $bounceRate = ((float) $bounceResult['single_page_sessions'] / (float) $bounceResult['total_sessions']) * 100;
             }
 
@@ -431,10 +431,10 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $conversionResult = $stmt->fetch(PDO::FETCH_ASSOC);
             $conversionRate = 0.0;
-            if (is_array($conversionResult) &&
-                isset($conversionResult['users_with_posts'], $conversionResult['total_active_users']) &&
-                is_numeric($conversionResult['users_with_posts']) && is_numeric($conversionResult['total_active_users']) &&
-                (int) $conversionResult['total_active_users'] > 0) {
+            if (is_array($conversionResult)
+                && isset($conversionResult['users_with_posts'], $conversionResult['total_active_users'])
+                && is_numeric($conversionResult['users_with_posts']) && is_numeric($conversionResult['total_active_users'])
+                && (int) $conversionResult['total_active_users'] > 0) {
                 $conversionRate = ((float) $conversionResult['users_with_posts'] / (float) $conversionResult['total_active_users']) * 100;
             }
 

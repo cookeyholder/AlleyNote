@@ -1,6 +1,6 @@
 # AlleyNote 測試錯誤分析報告
 
-生成時間：2025-09-06 19:48:13
+生成時間：2025-09-06 21:31:15
 PHPStan 等級：Level 10
 
 ## 📊 摘要統計
@@ -53,11 +53,6 @@ PHPStan 等級：Level 10
 ### 🔴 修正測試反模式
 **優先級：** High
 **描述：** 在 tests/Unit/Validation/ValidatorTest.php 中發現 high_cyclomatic_complexity 反模式
-**建議行動：** 將複雜的測試分割成多個較簡單的測試方法
-
-### 🔴 修正測試反模式
-**優先級：** High
-**描述：** 在 tests/Security/PasswordHashingTest.php 中發現 high_cyclomatic_complexity 反模式
 **建議行動：** 將複雜的測試分割成多個較簡單的測試方法
 
 ### 🔴 修正測試反模式
@@ -177,11 +172,13 @@ PHPStan 等級：Level 10
 - too_many_test_methods (嚴重程度：medium)
 
 ### TokenBlacklistRepositoryTest.php
+- redundant_type_check (嚴重程度：low)
 - too_many_test_methods (嚴重程度：medium)
 - high_cyclomatic_complexity (嚴重程度：high)
 - excessive_mocking (嚴重程度：medium)
 
 ### RefreshTokenRepositoryTest.php
+- redundant_type_check (嚴重程度：low)
 - too_many_test_methods (嚴重程度：medium)
 - high_cyclomatic_complexity (嚴重程度：high)
 
@@ -192,13 +189,12 @@ PHPStan 等級：Level 10
 - too_many_test_methods (嚴重程度：medium)
 
 ### ValidatorTest.php
-- excessive_assertion_usage (嚴重程度：medium)
+- redundant_type_check (嚴重程度：low)
 - too_many_test_methods (嚴重程度：medium)
 - high_cyclomatic_complexity (嚴重程度：high)
 
 ### PasswordHashingTest.php
 - redundant_type_check (嚴重程度：low)
-- high_cyclomatic_complexity (嚴重程度：high)
 
 ### PostActivityLoggingTest.php
 - excessive_mocking (嚴重程度：medium)
@@ -228,7 +224,6 @@ PHPStan 等級：Level 10
 
 ### AttachmentUploadTest.php
 - high_cyclomatic_complexity (嚴重程度：high)
-- deep_nesting (嚴重程度：medium)
 
 ### test_multiple_routes.php
 - deep_nesting (嚴重程度：medium)

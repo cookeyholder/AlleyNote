@@ -8,7 +8,6 @@ use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Services\StatisticsCacheService;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
-use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;

@@ -7,7 +7,6 @@ namespace App\Application\Controllers\Api\Statistics;
 use App\Application\Controllers\BaseController;
 use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Application\Services\Statistics\StatisticsQueryService;
-use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
@@ -517,7 +516,7 @@ class StatisticsController extends BaseController
             $statistics = $this->queryService->getUserActivityStatistics(
                 $period,
                 is_numeric($params['page'] ?? null) ? (int) $params['page'] : 1,
-                is_numeric($params['per_page'] ?? null) ? (int) $params['per_page'] : 20
+                is_numeric($params['per_page'] ?? null) ? (int) $params['per_page'] : 20,
             );
 
             $this->logger->info('使用者統計 API 成功回應', [
@@ -887,6 +886,7 @@ class StatisticsController extends BaseController
                 $params['start_date'] = new DateTimeImmutable($startDate);
             } catch (Exception $e) {
                 $dateValue = is_string($queryParams['start_date'] ?? null) ? $queryParams['start_date'] : '(invalid)';
+
                 throw new InvalidArgumentException("無效的開始日期格式: {$dateValue}");
             }
         }
@@ -900,6 +900,7 @@ class StatisticsController extends BaseController
                 $params['end_date'] = new DateTimeImmutable($endDate);
             } catch (Exception $e) {
                 $dateValue = is_string($queryParams['end_date'] ?? null) ? $queryParams['end_date'] : '(invalid)';
+
                 throw new InvalidArgumentException("無效的結束日期格式: {$dateValue}");
             }
         }
@@ -984,7 +985,7 @@ class StatisticsController extends BaseController
     }
 
     /**
-     * 確保所有陣列鍵都是字串型態
+     * 確保所有陣列鍵都是字串型態.
      * @param array<mixed, mixed> $params
      * @return array<string, mixed>
      */
@@ -996,6 +997,7 @@ class StatisticsController extends BaseController
                 $stringKeyParams[$key] = $value;
             }
         }
+
         return $stringKeyParams;
     }
 }

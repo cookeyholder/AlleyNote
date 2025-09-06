@@ -108,7 +108,7 @@ class PostActivityLoggingTest extends TestCase
                 '123', // target_id
                 Mockery::on(function ($metadata) {
                     return $metadata['title'] === 'Test Post'
-                        ;
+                    ;
                 }),
             )
             ->andReturn(true);
@@ -214,7 +214,7 @@ class PostActivityLoggingTest extends TestCase
                 '123', // target_id
                 Mockery::on(function ($metadata) {
                     return $metadata['title'] === 'Test Post'
-                        ;
+                    ;
                 }),
             )
             ->andReturn(true);
@@ -286,7 +286,7 @@ class PostActivityLoggingTest extends TestCase
                 Mockery::on(function ($metadata) {
                     return $metadata['title'] === 'Test Post'
                         && $metadata['pinned'] === true
-                        ;
+                    ;
                 }),
             )
             ->andReturn(true);

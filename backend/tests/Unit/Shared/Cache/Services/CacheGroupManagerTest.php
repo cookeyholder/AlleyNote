@@ -371,7 +371,7 @@ class CacheGroupManagerTest extends TestCase
     {
         $allGroups = $this->groupManager->getAllGroups();
         $groupsArray = array_flip($allGroups);
-        
+
         $this->assertArrayHasKey('user_123', $groupsArray);
         $this->assertArrayHasKey('user_456', $groupsArray);
         $this->assertArrayHasKey('module_posts', $groupsArray);

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domains\Statistics\Services;
 
-use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\Enums\PeriodType;
@@ -42,7 +41,7 @@ final class StatisticsCalculatorServiceTest extends TestCase
 
         $this->mockUserRepository = $this->createMock(UserStatisticsRepositoryInterface::class);
         $this->service = new StatisticsCalculationService(
-            $this->mockUserRepository
+            $this->mockUserRepository,
         );
     }
 

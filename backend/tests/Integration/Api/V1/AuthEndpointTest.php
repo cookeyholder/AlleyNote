@@ -112,7 +112,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     public function testLoginEndpointReturnsJwtTokens(): void
     {
         $loginData = $this->getTestLoginData();
-        
+
         try {
             $response = $this->createRequest('POST', '/api/auth/login', $loginData);
             $this->processLoginResponse($response);
@@ -127,7 +127,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     public function testRefreshTokenEndpoint(): void
     {
         $refreshData = $this->getTestRefreshData();
-        
+
         try {
             $response = $this->createRequest('POST', '/api/auth/refresh', $refreshData);
             $this->processRefreshResponse($response);
@@ -142,7 +142,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     public function testLogoutEndpoint(): void
     {
         $logoutData = $this->getTestLogoutData();
-        
+
         try {
             $response = $this->createRequest('POST', '/api/auth/logout', $logoutData);
             $this->processLogoutResponse($response);
@@ -251,8 +251,8 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     }
 
     /**
-     * 取得測試登入資料
-     * 
+     * 取得測試登入資料.
+     *
      * @return array{email: string, password: string}
      */
     private function getTestLoginData(): array
@@ -264,7 +264,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     }
 
     /**
-     * 處理登入回應
+     * 處理登入回應.
      */
     private function processLoginResponse(ResponseInterface $response): void
     {
@@ -274,18 +274,21 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
         // 如果是 404，表示路由沒有正確配置
         if ($response->getStatusCode() === 404) {
             $this->markTestSkipped('Login route not configured: ' . $responseBody);
+
             return;
         }
 
         // 如果是 500，表示有內部錯誤，但至少路由是配置的
         if ($response->getStatusCode() === 500) {
             $this->handleLoginServerError($data);
+
             return;
         }
 
         // 如果是其他狀態碼，檢查是否為預期的認證錯誤
         if (in_array($response->getStatusCode(), [400, 401, 422])) {
             $this->handleLoginAuthError($data);
+
             return;
         }
 
@@ -294,8 +297,8 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     }
 
     /**
-     * 處理登入伺服器錯誤
-     * 
+     * 處理登入伺服器錯誤.
+     *
      * @param mixed $data
      */
     private function handleLoginServerError($data): void
@@ -306,8 +309,8 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     }
 
     /**
-     * 處理登入認證錯誤
-     * 
+     * 處理登入認證錯誤.
+     *
      * @param mixed $data
      */
     private function handleLoginAuthError($data): void
@@ -320,7 +323,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
 
     /**
      * 斷言登入成功
-     * 
+     *
      * @param mixed $data
      */
     private function assertLoginSuccess(ResponseInterface $response, $data): void
@@ -336,8 +339,8 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     }
 
     /**
-     * 取得測試刷新 token 資料
-     * 
+     * 取得測試刷新 token 資料.
+     *
      * @return array{refresh_token: string}
      */
     private function getTestRefreshData(): array
@@ -348,7 +351,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     }
 
     /**
-     * 處理刷新 token 回應
+     * 處理刷新 token 回應.
      */
     private function processRefreshResponse(ResponseInterface $response): void
     {
@@ -357,6 +360,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
         // 如果是 404，表示路由沒有正確配置
         if ($response->getStatusCode() === 404) {
             $this->markTestSkipped('Refresh token route not configured: ' . $responseBody);
+
             return;
         }
 
@@ -374,8 +378,8 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     }
 
     /**
-     * 取得測試登出資料
-     * 
+     * 取得測試登出資料.
+     *
      * @return array{access_token: string, refresh_token: string}
      */
     private function getTestLogoutData(): array
@@ -387,7 +391,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     }
 
     /**
-     * 處理登出回應
+     * 處理登出回應.
      */
     private function processLogoutResponse(ResponseInterface $response): void
     {
@@ -396,6 +400,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
         // 如果是 404，表示路由沒有正確配置
         if ($response->getStatusCode() === 404) {
             $this->markTestSkipped('Logout route not configured: ' . $responseBody);
+
             return;
         }
 

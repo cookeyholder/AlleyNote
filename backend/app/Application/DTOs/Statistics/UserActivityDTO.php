@@ -55,11 +55,9 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 從統計資料建立 DTO.
      *
-     * @param StatisticsPeriod $period
      * @param array<string, mixed> $userStats
      * @param array<array<string, mixed>> $topUsers
      * @param array<string, mixed> $patterns
-     * @return self
      */
     public static function fromStatistics(
         StatisticsPeriod $period,
@@ -69,19 +67,19 @@ final readonly class UserActivityDTO implements JsonSerializable
     ): self {
         $totalActiveValue = $userStats['total_active'] ?? null;
         $totalActive = StatisticsMetric::count(
-            is_numeric($totalActiveValue) ? (int)$totalActiveValue : 0,
+            is_numeric($totalActiveValue) ? (int) $totalActiveValue : 0,
             '總活躍使用者數',
         );
 
         $newUsersValue = $userStats['new_users'] ?? null;
         $newUsers = StatisticsMetric::count(
-            is_numeric($newUsersValue) ? (int)$newUsersValue : 0,
+            is_numeric($newUsersValue) ? (int) $newUsersValue : 0,
             '新使用者數',
         );
 
         $returningUsersValue = $userStats['returning_users'] ?? null;
         $returningUsers = StatisticsMetric::count(
-            is_numeric($returningUsersValue) ? (int)$returningUsersValue : 0,
+            is_numeric($returningUsersValue) ? (int) $returningUsersValue : 0,
             '回訪使用者數',
         );
 
@@ -127,20 +125,20 @@ final readonly class UserActivityDTO implements JsonSerializable
         // 安全地提取統計指標
         $activeUsersValue = $data['active_users'] ?? null;
         $activeUsers = StatisticsMetric::count(
-            is_numeric($activeUsersValue) ? (int)$activeUsersValue : 0,
-            '活躍用戶數'
+            is_numeric($activeUsersValue) ? (int) $activeUsersValue : 0,
+            '活躍用戶數',
         );
 
         $newUsersValue = $data['new_users'] ?? null;
         $newUsers = StatisticsMetric::count(
-            is_numeric($newUsersValue) ? (int)$newUsersValue : 0,
-            '新用戶數'
+            is_numeric($newUsersValue) ? (int) $newUsersValue : 0,
+            '新用戶數',
         );
 
         $returningUsersValue = $data['returning_users'] ?? null;
         $returningUsers = StatisticsMetric::count(
-            is_numeric($returningUsersValue) ? (int)$returningUsersValue : 0,
-            '回訪用戶數'
+            is_numeric($returningUsersValue) ? (int) $returningUsersValue : 0,
+            '回訪用戶數',
         );
 
         $topActiveUsersRaw = $data['top_active_users'] ?? [];
@@ -208,7 +206,8 @@ final readonly class UserActivityDTO implements JsonSerializable
     public function getGrowthRate(): float
     {
         $value = $this->engagementMetrics['growth_rate'] ?? null;
-        return is_numeric($value) ? (float)$value : 0.0;
+
+        return is_numeric($value) ? (float) $value : 0.0;
     }
 
     /**
@@ -217,7 +216,8 @@ final readonly class UserActivityDTO implements JsonSerializable
     public function getAverageSessionDuration(): float
     {
         $value = $this->engagementMetrics['avg_session_duration'] ?? null;
-        return is_numeric($value) ? (float)$value : 0.0;
+
+        return is_numeric($value) ? (float) $value : 0.0;
     }
 
     /**
@@ -226,7 +226,8 @@ final readonly class UserActivityDTO implements JsonSerializable
     public function getAveragePageViews(): float
     {
         $value = $this->engagementMetrics['avg_page_views'] ?? null;
-        return is_numeric($value) ? (float)$value : 0.0;
+
+        return is_numeric($value) ? (float) $value : 0.0;
     }
 
     /**
@@ -235,7 +236,8 @@ final readonly class UserActivityDTO implements JsonSerializable
     public function getBounceRate(): float
     {
         $value = $this->engagementMetrics['bounce_rate'] ?? null;
-        return is_numeric($value) ? (float)$value : 0.0;
+
+        return is_numeric($value) ? (float) $value : 0.0;
     }
 
     /**
@@ -282,6 +284,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     public function getActivityTimeAnalysis(): array
     {
         $value = $this->activityPatterns['time_analysis'] ?? null;
+
         return is_array($value) ? $value : [];
     }
 
@@ -299,8 +302,9 @@ final readonly class UserActivityDTO implements JsonSerializable
         uasort($timeAnalysis, static function ($a, $b): int {
             $countA = is_array($a) ? ($a['activity_count'] ?? 0) : 0;
             $countB = is_array($b) ? ($b['activity_count'] ?? 0) : 0;
-            return is_numeric($countB) && is_numeric($countA) ?
-                ((int)$countB <=> (int)$countA) : 0;
+
+            return is_numeric($countB) && is_numeric($countA)
+                ? ((int) $countB <=> (int) $countA) : 0;
         });
 
         return array_slice($timeAnalysis, 0, 3, true);
@@ -475,7 +479,7 @@ final readonly class UserActivityDTO implements JsonSerializable
      * 計算參與度指標.
      */
     /**
-     * 計算參與度指標
+     * 計算參與度指標.
      *
      * @param array<string, mixed> $userStats
      * @return array<string, mixed>
@@ -489,11 +493,11 @@ final readonly class UserActivityDTO implements JsonSerializable
         $conversionRateValue = $userStats['conversion_rate'] ?? null;
 
         return [
-            'growth_rate' => is_numeric($growthRateValue) ? (float)$growthRateValue : 0.0,
-            'avg_session_duration' => is_numeric($avgSessionDurationValue) ? (float)$avgSessionDurationValue : 0.0,
-            'avg_page_views' => is_numeric($avgPageViewsValue) ? (float)$avgPageViewsValue : 0.0,
-            'bounce_rate' => is_numeric($bounceRateValue) ? (float)$bounceRateValue : 0.0,
-            'conversion_rate' => is_numeric($conversionRateValue) ? (float)$conversionRateValue : 0.0,
+            'growth_rate' => is_numeric($growthRateValue) ? (float) $growthRateValue : 0.0,
+            'avg_session_duration' => is_numeric($avgSessionDurationValue) ? (float) $avgSessionDurationValue : 0.0,
+            'avg_page_views' => is_numeric($avgPageViewsValue) ? (float) $avgPageViewsValue : 0.0,
+            'bounce_rate' => is_numeric($bounceRateValue) ? (float) $bounceRateValue : 0.0,
+            'conversion_rate' => is_numeric($conversionRateValue) ? (float) $conversionRateValue : 0.0,
             'calculated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
         ];
     }

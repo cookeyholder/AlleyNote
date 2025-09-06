@@ -394,7 +394,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                 'manager_stats' => [],
                 'cache_keys' => [],
                 'ttl_config' => [],
-                'tag_config' => []
+                'tag_config' => [],
             ];
         }
     }
@@ -436,7 +436,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             // 確保回傳格式為 array<string, mixed>
             if (!empty($results)) {
                 /** @var array<string, mixed> */
-                return (array)$results;
+                return (array) $results;
             }
 
             return ['success' => true, 'message' => 'cleanup completed'];

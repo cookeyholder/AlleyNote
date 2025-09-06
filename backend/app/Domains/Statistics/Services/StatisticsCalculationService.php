@@ -141,7 +141,7 @@ final class StatisticsCalculationService
 
         $mean = array_sum($values) / count($values);
         $variance = array_sum(
-            array_map(fn($value) => ((float)$value - $mean) ** 2, $values),
+            array_map(fn($value) => ((float) $value - $mean) ** 2, $values),
         ) / count($values);
 
         $standardDeviation = sqrt($variance);
@@ -289,7 +289,7 @@ final class StatisticsCalculationService
 
         foreach ($monthlyData as $month => $values) {
             if (count($values) > 0) {
-                $monthKey = (string)$month;
+                $monthKey = (string) $month;
                 $monthlyAverages[$monthKey] = array_sum($values) / count($values);
                 $overallAverage += $monthlyAverages[$monthKey];
                 $totalMonths++;
@@ -422,8 +422,8 @@ final class StatisticsCalculationService
         $last = $values[$count - 1];
 
         // 確保值是數值類型
-        $firstValue = is_numeric($first) ? (float)$first : 0.0;
-        $lastValue = is_numeric($last) ? (float)$last : 0.0;
+        $firstValue = is_numeric($first) ? (float) $first : 0.0;
+        $lastValue = is_numeric($last) ? (float) $last : 0.0;
 
         $growthRate = $firstValue != 0 ? (($lastValue - $firstValue) / $firstValue) * 100 : 0;
 

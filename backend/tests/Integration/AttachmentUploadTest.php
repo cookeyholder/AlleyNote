@@ -42,43 +42,72 @@ class AttachmentUploadTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Mock authService
+        $this->setupMockServices();
+        $this->setupUploadDirectory();
+        $this->setupRepositories();
+        $this->setupAttachmentService();
+        $this->createTestTables();
+        $this->insertTestPostData();
+    }
+
+    private function setupMockServices(): void
+    {
         $this->authService = Mockery::mock(AuthorizationService::class);
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->logger = Mockery::mock(LoggingSecurityServiceInterface::class);
+
+        $this->configureMockDefaults();
+    }
+
+    private function configureMockDefaults(): void
+    {
+        // 配置 AuthorizationService Mock 期望
         $this->authService->shouldReceive('canUploadAttachment')->byDefault()->andReturn(true);
         $this->authService->shouldReceive('canDeleteAttachment')->byDefault()->andReturn(true);
-        $this->authService->shouldReceive('isSuperAdmin')->byDefault()->andReturn(false);
+        $this->authService->shouldReceive('isSuperAdmin')->byDefault()->andReturn(true);
 
-        // Mock activity logger
+        // 配置 ActivityLoggingService Mock 期望
         $this->activityLogger->shouldReceive('logSuccess')->byDefault()->andReturn(true);
         $this->activityLogger->shouldReceive('logFailure')->byDefault()->andReturn(true);
         $this->activityLogger->shouldReceive('log')->byDefault()->andReturn(true);
+        $this->activityLogger->shouldReceive('logActivity')->byDefault()->andReturn(true);
 
-        // Mock logger
-        $this->logger = Mockery::mock(LoggingSecurityServiceInterface::class);
+        // 配置 LoggingSecurityService Mock 期望
         $this->logger->shouldReceive('logSecurityEvent')->byDefault();
         $this->logger->shouldReceive('enrichSecurityContext')->byDefault()->andReturn([]);
+    }
 
-        // 建立測試用目錄
+    private function setupUploadDirectory(): void
+    {
         $this->uploadDir = sys_get_temp_dir() . '/alleynote_test_' . uniqid();
         mkdir($this->uploadDir);
+    }
 
-        // 初始化測試依賴
+    private function setupRepositories(): void
+    {
         $this->attachmentRepo = new AttachmentRepository($this->db, $this->cache);
-        $this->postRepo = new PostRepository($this->db, $this->cache, $this->logger);
+        $logger = Mockery::mock(LoggingSecurityServiceInterface::class);
+        $this->postRepo = new PostRepository($this->db, $this->cache, $logger);
+    }
 
-        // 初始化測試對象
+    private function setupAttachmentService(): void
+    {
+        /** @var AuthorizationService $authService */
+        $authService = $this->authService;
+        /** @var ActivityLoggingServiceInterface $activityLogger */
+        $activityLogger = $this->activityLogger;
+
         $this->attachmentService = new AttachmentService(
             $this->attachmentRepo,
             $this->postRepo,
-            $this->authService,
-            $this->activityLogger,
+            $authService,
+            $activityLogger,
             $this->uploadDir,
         );
+    }
 
-        $this->createTestTables();
-
-        // 插入一筆 id=1 的測試文章（補齊所有必要欄位）
+    private function insertTestPostData(): void
+    {
         $now = date('Y-m-d H:i:s');
         $uuid = 'test-uuid-1';
         $seq = 1;
@@ -102,58 +131,86 @@ class AttachmentUploadTest extends TestCase
     protected function createUploadedFileMock(string $filename, string $mimeType, int $size): UploadedFileInterface
     {
         $file = Mockery::mock(UploadedFileInterface::class);
-        $file->shouldReceive('getClientFilename')
-            ->andReturn($filename);
-        $file->shouldReceive('getClientMediaType')
-            ->andReturn($mimeType);
-        $file->shouldReceive('getSize')
-            ->andReturn($size);
-        $stream = Mockery::mock(StreamInterface::class);
-        $stream->shouldReceive('getContents')
-            ->andReturn(str_repeat('x', $size));
-        $stream->shouldReceive('rewind')
-            ->andReturn(true);
+        $this->configureFileMockBasicProperties($file, $filename, $mimeType, $size);
+        $this->configureFileMockStream($file, $size);
+        $this->configureFileMockMoveTo($file, $size);
 
-        $file->shouldReceive('getStream')
-            ->andReturn($stream);
+        return $file;
+    }
+
+    private function configureFileMockBasicProperties(MockInterface $file, string $filename, string $mimeType, int $size): void
+    {
+        $file->shouldReceive('getClientFilename')->andReturn($filename);
+        $file->shouldReceive('getClientMediaType')->andReturn($mimeType);
+        $file->shouldReceive('getSize')->andReturn($size);
+    }
+
+    private function configureFileMockStream(MockInterface $file, int $size): void
+    {
+        $stream = Mockery::mock(StreamInterface::class);
+        $stream->shouldReceive('getContents')->andReturn(str_repeat('x', $size));
+        $stream->shouldReceive('rewind')->andReturn(true);
+        $file->shouldReceive('getStream')->andReturn($stream);
+    }
+
+    private function configureFileMockMoveTo(MockInterface $file, int $size): void
+    {
         $file->shouldReceive('moveTo')
             ->andReturnUsing(function ($path) use ($size) {
-                $directory = dirname($path);
-                if (!is_dir($directory)) {
-                    mkdir($directory, 0o755, true);
-                }
+                $this->ensureDirectoryExists(dirname($path));
                 file_put_contents($path, str_repeat('x', $size));
 
                 return true;
             });
+    }
 
-        return $file;
+    private function ensureDirectoryExists(string $directory): void
+    {
+        if (!is_dir($directory)) {
+            mkdir($directory, 0o755, true);
+        }
     }
 
     #[Test]
     public function should_handle_concurrent_uploads(): void
     {
         $postId = 1;
+        $fileCount = 3;
 
-        // 準備多個檔案 - 簡化為順序上傳測試
+        $successfulUploads = $this->performMultipleUploads($postId, $fileCount);
+
+        $this->assertEquals($fileCount, $successfulUploads, '所有上傳應該成功完成');
+    }
+
+    private function performMultipleUploads(int $postId, int $fileCount): int
+    {
         $successfulUploads = 0;
-        for ($i = 1; $i <= 3; $i++) {
-            $file = $this->createUploadedFileMock(
-                "test{(string)i}.jpg",
-                'image/jpeg',
-                1024,
-            );
 
-            try {
-                $attachment = $this->attachmentService->upload($postId, $file, 1);
-                $this->assertInstanceOf(Attachment::class, $attachment);
+        for ($i = 1; $i <= $fileCount; $i++) {
+            if ($this->attemptSingleUpload($postId, $i)) {
                 $successfulUploads++;
-            } catch (Exception $e) {
-                $this->fail('上傳失敗: ' . $e->getMessage());
             }
         }
 
-        $this->assertEquals(3, $successfulUploads, '所有上傳應該成功完成');
+        return $successfulUploads;
+    }
+
+    private function attemptSingleUpload(int $postId, int $fileIndex): bool
+    {
+        $file = $this->createUploadedFileMock(
+            "test{$fileIndex}.jpg",
+            'image/jpeg',
+            1024,
+        );
+
+        try {
+            $attachment = $this->attachmentService->upload($postId, $file, 1);
+            $this->assertInstanceOf(Attachment::class, $attachment);
+
+            return true;
+        } catch (Exception $e) {
+            $this->fail('上傳失敗: ' . $e->getMessage());
+        }
     }
 
     #[Test]
@@ -162,22 +219,32 @@ class AttachmentUploadTest extends TestCase
         $postId = 1;
         $fileSize = 10 * 1024 * 1024; // 10MB
 
+        $attachment = $this->uploadLargeFile($postId, $fileSize);
+
+        $this->assertInstanceOf(Attachment::class, $attachment);
+        $this->assertEquals($fileSize, $attachment->getFileSize());
+    }
+
+    private function uploadLargeFile(int $postId, int $fileSize): Attachment
+    {
         $file = $this->createUploadedFileMock(
             'large_file.jpg',
             'image/jpeg',
             $fileSize,
         );
 
-        $attachment = $this->attachmentService->upload($postId, $file, 1);
-
-        $this->assertInstanceOf(Attachment::class, $attachment);
-        $this->assertEquals($fileSize, $attachment->getFileSize());
+        return $this->attachmentService->upload($postId, $file, 1);
     }
 
     #[Test]
     public function should_validate_file_types(): void
     {
         $postId = 1;
+        $this->testAllInvalidFileTypes($postId);
+    }
+
+    private function testAllInvalidFileTypes(int $postId): void
+    {
         $invalidTypes = [
             'text/html' => 'test.html',
             'application/x-php' => 'test.php',
@@ -186,14 +253,19 @@ class AttachmentUploadTest extends TestCase
         ];
 
         foreach ($invalidTypes as $mimeType => $filename) {
-            $file = $this->createUploadedFileMock($filename, $mimeType, 1024);
+            $this->testSingleInvalidFileType($postId, $filename, $mimeType);
+        }
+    }
 
-            try {
-                $this->attachmentService->upload($postId, $file, 1);
-                $this->fail("應該拒絕 {(string)mimeType} 類型的檔案");
-            } catch (ValidationException $e) {
-                $this->assertStringContainsString('不支援的檔案類型', $e->getMessage());
-            }
+    private function testSingleInvalidFileType(int $postId, string $filename, string $mimeType): void
+    {
+        $file = $this->createUploadedFileMock($filename, $mimeType, 1024);
+
+        try {
+            $this->attachmentService->upload($postId, $file, 1);
+            $this->fail("應該拒絕 {$mimeType} 類型的檔案");
+        } catch (ValidationException $e) {
+            $this->assertStringContainsString('不支援的檔案類型', $e->getMessage());
         }
     }
 
@@ -201,19 +273,7 @@ class AttachmentUploadTest extends TestCase
     public function should_handle_disk_full_error(): void
     {
         $postId = 1;
-        $file = Mockery::mock(UploadedFileInterface::class);
-        $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
-        $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
-        $file->shouldReceive('getSize')->andReturn(1024);
-
-        $stream = Mockery::mock(StreamInterface::class);
-        $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
-        $stream->shouldReceive('rewind')->andReturn(true);
-        $file->shouldReceive('getStream')->andReturn($stream);
-
-        $file->shouldReceive('moveTo')
-            ->once()
-            ->andThrow(new RuntimeException('No space left on device'));
+        $file = $this->createUploadFileWithError('No space left on device');
 
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('檔案上傳失敗');
@@ -225,19 +285,7 @@ class AttachmentUploadTest extends TestCase
     public function should_handle_permission_error(): void
     {
         $postId = 1;
-        $file = Mockery::mock(UploadedFileInterface::class);
-        $file->shouldReceive('getClientFilename')->andReturn('test.jpg');
-        $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
-        $file->shouldReceive('getSize')->andReturn(1024);
-
-        $stream = Mockery::mock(StreamInterface::class);
-        $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
-        $stream->shouldReceive('rewind')->andReturn(true);
-        $file->shouldReceive('getStream')->andReturn($stream);
-
-        $file->shouldReceive('moveTo')
-            ->once()
-            ->andThrow(new RuntimeException('Permission denied'));
+        $file = $this->createUploadFileWithError('Permission denied');
 
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('檔案上傳失敗');
@@ -245,72 +293,98 @@ class AttachmentUploadTest extends TestCase
         $this->attachmentService->upload($postId, $file, 1);
     }
 
+    private function createUploadFileWithError(string $errorMessage): UploadedFileInterface
+    {
+        /** @var UploadedFileInterface&MockInterface $file */
+        $file = Mockery::mock(UploadedFileInterface::class);
+        $this->configureBasicFileMockForError($file);
+        $this->configureFileMockToThrowError($file, $errorMessage);
+
+        return $file;
+    }
+
+    private function configureBasicFileMockForError(UploadedFileInterface $file): void
+    {
+        /** @var UploadedFileInterface&MockInterface $mockFile */
+        $mockFile = $file;
+        $mockFile->shouldReceive('getClientFilename')->andReturn('test.jpg');
+        $mockFile->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
+        $mockFile->shouldReceive('getSize')->andReturn(1024);
+
+        $stream = Mockery::mock(StreamInterface::class);
+        $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
+        $stream->shouldReceive('rewind')->andReturn(true);
+        $mockFile->shouldReceive('getStream')->andReturn($stream);
+    }
+
+    private function configureFileMockToThrowError(UploadedFileInterface $file, string $errorMessage): void
+    {
+        /** @var UploadedFileInterface&MockInterface $mockFile */
+        $mockFile = $file;
+        $mockFile->shouldReceive('moveTo')
+            ->once()
+            ->andThrow(new RuntimeException($errorMessage));
+    }
+
     protected function tearDown(): void
     {
-        // 清理測試檔案
-        if (is_dir($this->uploadDir)) {
-            chmod($this->uploadDir, 0o755); // 恢復權限以便刪除
-            $files = glob($this->uploadDir . '/*');
-            foreach ($files as $file) {
-                if (is_file($file)) {
-                    unlink($file);
-                } elseif (is_dir($file)) {
-                    // 遞迴刪除資料夾
-                    $subFiles = glob($file . '/*');
-                    foreach ($subFiles as $subFile) {
-                        if (is_file($subFile)) {
-                            unlink($subFile);
-                        }
-                    }
-                    rmdir($file);
-                }
-            }
-            rmdir($this->uploadDir);
-        }
+        $this->cleanupTestFiles();
         parent::tearDown();
         Mockery::close();
     }
 
+    private function cleanupTestFiles(): void
+    {
+        if (!is_dir($this->uploadDir)) {
+            return;
+        }
+
+        $this->restoreDirectoryPermissions();
+        $this->removeAllFilesInDirectory();
+        rmdir($this->uploadDir);
+    }
+
+    private function restoreDirectoryPermissions(): void
+    {
+        chmod($this->uploadDir, 0o755); // 恢復權限以便刪除
+    }
+
+    private function removeAllFilesInDirectory(): void
+    {
+        $files = glob($this->uploadDir . '/*');
+
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            } elseif (is_dir($file)) {
+                $this->removeSubdirectory($file);
+            }
+        }
+    }
+
+    private function removeSubdirectory(string $directory): void
+    {
+        $subFiles = glob($directory . '/*');
+
+        foreach ($subFiles as $subFile) {
+            if (is_file($subFile)) {
+                unlink($subFile);
+            }
+        }
+
+        rmdir($directory);
+    }
+
     protected function createTestTables(): void
     {
-        // 先嘗試刪除已存在的資料表
+        $this->dropExistingTables();
+        $this->createPostsTable();
+        $this->createAttachmentsTable();
+    }
+
+    private function dropExistingTables(): void
+    {
         $this->db->exec('DROP TABLE IF EXISTS attachments');
         $this->db->exec('DROP TABLE IF EXISTS posts');
-
-        // 建立 posts 資料表（schema 與主程式一致）
-        $this->db->exec('
-            CREATE TABLE posts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                uuid VARCHAR(36) NOT NULL UNIQUE,
-                seq_number INTEGER NOT NULL UNIQUE,
-                title VARCHAR(255) NOT NULL,
-                content TEXT NOT NULL,
-                user_id INTEGER NOT NULL,
-                user_ip VARCHAR(45),
-                views INTEGER NOT NULL DEFAULT 0,
-                is_pinned INTEGER NOT NULL DEFAULT 0,
-                status VARCHAR(20) NOT NULL DEFAULT "draft",
-                publish_date DATETIME NOT NULL,
-                created_at DATETIME NOT NULL,
-                updated_at DATETIME NOT NULL,
-                deleted_at DATETIME NULL
-            )
-        ');
-
-        // 建立 attachments 資料表
-        $this->db->exec('
-            CREATE TABLE attachments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                uuid VARCHAR(36) NOT NULL,
-                post_id INTEGER NOT NULL,
-                filename VARCHAR(255) NOT NULL,
-                original_name VARCHAR(255) NOT NULL,
-                mime_type VARCHAR(255) NOT NULL,
-                file_size INTEGER NOT NULL,
-                storage_path VARCHAR(255) NOT NULL,
-                created_at DATETIME,
-                updated_at DATETIME
-            )
-        ');
     }
 }

@@ -33,11 +33,24 @@ class TaggedCacheIntegrationTest extends TestCase
 
     protected function setUp(): void
     {
-        // 建立 CacheManager 與 MemoryCacheDriver
-        $memoryDriver = new MemoryCacheDriver();
+        $this->setupCacheManager();
+        $this->setupTagRepository();
+        $this->setupTaggedCacheManager();
+    }
 
-        // 建立一個簡單的策略，不會調整 TTL（測試專用）
-        $strategy = new class implements CacheStrategyInterface {
+    private function setupCacheManager(): void
+    {
+        $memoryDriver = new MemoryCacheDriver();
+        $strategy = $this->createTestCacheStrategy();
+
+        $this->cacheManager = new CacheManager($strategy, new NullLogger());
+        $this->cacheManager->addDriver('memory', $memoryDriver);
+        $this->cacheManager->setDefaultDriver('memory');
+    }
+
+    private function createTestCacheStrategy(): CacheStrategyInterface
+    {
+        return new class implements CacheStrategyInterface {
             public function shouldCache(string $key, mixed $value, int $ttl): bool
             {
                 return true;
@@ -77,15 +90,15 @@ class TaggedCacheIntegrationTest extends TestCase
                 // Nothing to reset
             }
         };
+    }
 
-        $this->cacheManager = new CacheManager($strategy, new NullLogger());
-        $this->cacheManager->addDriver('memory', $memoryDriver);
-        $this->cacheManager->setDefaultDriver('memory');
-
-        // 建立 MemoryTagRepository
+    private function setupTagRepository(): void
+    {
         $this->tagRepository = new MemoryTagRepository();
+    }
 
-        // 建立 TaggedCacheManager
+    private function setupTaggedCacheManager(): void
+    {
         $this->taggedCache = new TaggedCacheManager(
             $this->cacheManager,
             $this->tagRepository,
@@ -102,36 +115,60 @@ class TaggedCacheIntegrationTest extends TestCase
 
     public function testBasicTaggedCaching(): void
     {
-        $key = 'test_key';
-        $value = 'test_value';
-        $tags = ['user_123', 'module_posts'];
+        $testData = $this->createBasicTaggedCacheTestData();
 
         // 測試帶標籤的快取儲存
-        $result = $this->taggedCache->putWithTags($key, $value, $tags, 3600);
+        $result = $this->taggedCache->putWithTags(
+            $testData['key'],
+            $testData['value'],
+            $testData['tags'],
+            3600,
+        );
         $this->assertTrue($result);
 
+        // 驗證標籤和快取值
+        $this->verifyTaggedCacheData($testData);
+    }
+
+    /**
+     * @return array{key: string, value: string, tags: array<string>}
+     */
+    private function createBasicTaggedCacheTestData(): array
+    {
+        return [
+            'key' => 'test_key',
+            'value' => 'test_value',
+            'tags' => ['user_123', 'module_posts'],
+        ];
+    }
+
+    /**
+     * @param array{key: string, value: string, tags: array<string>} $testData
+     */
+    private function verifyTaggedCacheData(array $testData): void
+    {
         // 測試標籤是否正確建立
-        foreach ($tags as $tagName) {
+        foreach ($testData['tags'] as $tagName) {
             $this->assertTrue($this->tagRepository->tagExists($tagName));
         }
 
         // 測試取得快取值
-        $cachedValue = $this->taggedCache->get($key);
-        $this->assertEquals($value, $cachedValue);
+        $cachedValue = $this->taggedCache->get($testData['key']);
+        $this->assertEquals($testData['value'], $cachedValue);
 
         // 測試透過標籤取得相關鍵
-        $keysByTag = $this->taggedCache->getKeysByTag('user_123');
-        $this->assertArrayHasKey($key, array_flip($keysByTag));
+        $keysByTag = $this->taggedCache->getKeysByTag($testData['tags'][0]);
+        $this->assertArrayHasKey($testData['key'], array_flip($keysByTag));
     }
 
     public function testTagFlushing(): void
     {
         // 準備測試資料
         $testData = $this->setupTagFlushingTestData();
-        
+
         // 驗證資料已儲存
         $this->verifyTestDataStored($testData);
-        
+
         // 執行標籤清空並驗證結果
         $this->executeAndVerifyTagFlushing($testData);
     }
@@ -140,7 +177,7 @@ class TaggedCacheIntegrationTest extends TestCase
     {
         // 準備測試資料
         $multiTagData = $this->setupMultipleTagTestData();
-        
+
         // 清空多個標籤並驗證結果
         $this->executeAndVerifyMultipleTagFlushing($multiTagData);
     }
@@ -148,66 +185,152 @@ class TaggedCacheIntegrationTest extends TestCase
     public function testTagStatistics(): void
     {
         // 準備測試資料
-        $this->taggedCache->putWithTags('user_1_post', 'content1', ['user_1', 'posts'], 3600);
-        $this->taggedCache->putWithTags('user_1_profile', 'profile1', ['user_1', 'profiles'], 3600);
-        $this->taggedCache->putWithTags('user_2_post', 'content2', ['user_2', 'posts'], 3600);
+        $this->setupTagStatisticsTestData();
 
         $stats = $this->taggedCache->getTagStatistics();
 
+        // 驗證統計結果
+        $this->verifyTagStatisticsResults($stats);
+    }
+
+    private function setupTagStatisticsTestData(): void
+    {
+        $testCases = [
+            ['key' => 'user_1_post', 'value' => 'content1', 'tags' => ['user_1', 'posts']],
+            ['key' => 'user_1_profile', 'value' => 'profile1', 'tags' => ['user_1', 'profiles']],
+            ['key' => 'user_2_post', 'value' => 'content2', 'tags' => ['user_2', 'posts']],
+        ];
+
+        foreach ($testCases as $testCase) {
+            $this->taggedCache->putWithTags(
+                $testCase['key'],
+                $testCase['value'],
+                $testCase['tags'],
+                3600,
+            );
+        }
+    }
+
+    private function verifyTagStatisticsResults(array $stats): void
+    {
         // 修正：TaggedCacheManager.getTagStatistics() 回傳的是簡單的標籤統計
-        $this->assertArrayHasKey('user_1', $stats);
-        $this->assertArrayHasKey('posts', $stats);
-        $this->assertEquals(2, $stats['user_1']);  // user_1 有 2 個快取項目
-        $this->assertEquals(2, $stats['posts']);   // posts 有 2 個快取項目
+        $expectedStats = [
+            'user_1' => 2,  // user_1 有 2 個快取項目
+            'posts' => 2,   // posts 有 2 個快取項目
+        ];
+
+        foreach ($expectedStats as $tag => $expectedCount) {
+            $this->assertArrayHasKey($tag, $stats);
+            $this->assertEquals($expectedCount, $stats[$tag]);
+        }
     }
 
     public function testTaggingWithComplexValues(): void
     {
-        // 測試複雜資料結構的標籤快取
-        $complexValue = [
-            'id' => 123,
-            'data' => ['nested' => 'value'],
-            'timestamp' => time(),
+        $testData = $this->createComplexValueTestData();
+
+        $this->taggedCache->putWithTags(
+            $testData['key'],
+            $testData['value'],
+            $testData['tags'],
+            3600,
+        );
+
+        $this->verifyComplexValueCaching($testData);
+        $this->verifyComplexValueTags($testData);
+    }
+
+    /**
+     * @return array{key: string, value: array<string, mixed>, tags: array<string>}
+     */
+    private function createComplexValueTestData(): array
+    {
+        return [
+            'key' => 'complex_data',
+            'value' => [
+                'id' => 123,
+                'data' => ['nested' => 'value'],
+                'timestamp' => time(),
+            ],
+            'tags' => ['complex', 'structured', 'user_123'],
         ];
+    }
 
-        $key = 'complex_data';
-        $tags = ['complex', 'structured', 'user_123'];
+    /**
+     * @param array{key: string, value: array<string, mixed>, tags: array<string>} $testData
+     */
+    private function verifyComplexValueCaching(array $testData): void
+    {
+        $retrievedValue = $this->taggedCache->get($testData['key']);
+        $this->assertEquals($testData['value'], $retrievedValue);
+    }
 
-        $this->taggedCache->putWithTags($key, $complexValue, $tags, 3600);
-
-        $retrievedValue = $this->taggedCache->get($key);
-        $this->assertEquals($complexValue, $retrievedValue);
-
+    /**
+     * @param array{key: string, value: array<string, mixed>, tags: array<string>} $testData
+     */
+    private function verifyComplexValueTags(array $testData): void
+    {
         // 驗證所有標籤都已建立
-        foreach ($tags as $tag) {
+        foreach ($testData['tags'] as $tag) {
             $this->assertTrue($this->tagRepository->tagExists($tag));
             $keys = $this->taggedCache->getKeysByTag($tag);
-            $this->assertArrayHasKey($key, array_flip($keys));
+            $this->assertArrayHasKey($testData['key'], array_flip($keys));
         }
     }
 
     public function testTagExpiration(): void
     {
-        $key = $this->testPrefix . 'expiring_key';
-        $value = 'expiring_value';
-        $tags = ['temp_tag'];
+        $testData = $this->createTagExpirationTestData();
 
-        // 使用 2 秒 TTL 測試過期
-        $ttl = 2;
-
-        $putResult = $this->taggedCache->putWithTags($key, $value, $tags, $ttl);
+        // 使用短 TTL 測試過期
+        $putResult = $this->taggedCache->putWithTags(
+            $testData['key'],
+            $testData['value'],
+            $testData['tags'],
+            $testData['ttl'],
+        );
         $this->assertTrue($putResult);
 
         // 立即驗證資料存在
-        $retrievedValue = $this->taggedCache->get($key);
-        $this->assertEquals($value, $retrievedValue);
-        $this->assertTrue($this->tagRepository->tagExists('temp_tag'));
+        $this->verifyDataExistsBeforeExpiration($testData);
 
+        // 等待過期並驗證
+        $this->verifyDataExpiredAfterTtl($testData);
+    }
+
+    /**
+     * @return array{key: string, value: string, tags: array<string>, ttl: int}
+     */
+    private function createTagExpirationTestData(): array
+    {
+        return [
+            'key' => $this->testPrefix . 'expiring_key',
+            'value' => 'expiring_value',
+            'tags' => ['temp_tag'],
+            'ttl' => 2, // 2 秒 TTL
+        ];
+    }
+
+    /**
+     * @param array{key: string, value: string, tags: array<string>, ttl: int} $testData
+     */
+    private function verifyDataExistsBeforeExpiration(array $testData): void
+    {
+        $retrievedValue = $this->taggedCache->get($testData['key']);
+        $this->assertEquals($testData['value'], $retrievedValue);
+        $this->assertTrue($this->tagRepository->tagExists($testData['tags'][0]));
+    }
+
+    /**
+     * @param array{key: string, value: string, tags: array<string>, ttl: int} $testData
+     */
+    private function verifyDataExpiredAfterTtl(array $testData): void
+    {
         // 等待過期
-        sleep($ttl + 1);
+        sleep($testData['ttl'] + 1);
 
         // 驗證資料已過期
-        $retrievedValue = $this->taggedCache->get($key);
+        $retrievedValue = $this->taggedCache->get($testData['key']);
         $this->assertNull($retrievedValue);
 
         // 注意：標籤可能仍存在於標籤儲存庫中，這取決於實作策略
@@ -218,10 +341,10 @@ class TaggedCacheIntegrationTest extends TestCase
     {
         // 測試併發情況下的標籤一致性
         $concurrentData = $this->setupConcurrentTaggedData();
-        
+
         // 驗證所有鍵都與共享標籤關聯
         $this->verifySharedTagAssociations($concurrentData);
-        
+
         // 清空共享標籤並驗證結果
         $this->verifySharedTagFlush($concurrentData);
     }
@@ -230,35 +353,73 @@ class TaggedCacheIntegrationTest extends TestCase
     {
         // 測試不同類型標籤的分類
         $testCases = $this->getTagTypeTestCases();
-        
+
         // 儲存測試資料並驗證標籤分類
         $this->setupAndVerifyTagClassification($testCases);
-        
+
         // 測試標籤統計
         $this->verifyTagStatistics($testCases);
     }
 
     public function testErrorRecovery(): void
     {
-        // 測試在部分操作失敗時的錯誤恢復
-        $key = 'error_test_key';
-        $value = 'error_test_value';
-        $tags = ['valid_tag', 'another_tag'];
+        $testData = $this->createErrorRecoveryTestData();
 
         // 正常儲存
-        $this->assertTrue($this->taggedCache->putWithTags($key, $value, $tags, 3600));
+        $this->assertTrue($this->taggedCache->putWithTags(
+            $testData['validKey'],
+            $testData['value'],
+            $testData['validTags'],
+            3600,
+        ));
 
-        // 嘗試使用無效標籤（空字串） - 應該拋出例外
-        $invalidTags = ['valid_tag', '', 'another_tag'];
+        // 測試無效標籤錯誤處理
+        $this->verifyInvalidTagErrorHandling($testData);
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->taggedCache->putWithTags($key . '_invalid', $value, $invalidTags, 3600);
-        $this->assertEquals($value, $this->taggedCache->get($key));
+        // 驗證原始資料未受影響
+        $this->verifyOriginalDataIntegrity($testData);
     }
 
     /**
-     * 設定併發標籤測試資料
-     * 
+     * @return array{validKey: string, invalidKey: string, value: string, validTags: array<string>, invalidTags: array<string>}
+     */
+    private function createErrorRecoveryTestData(): array
+    {
+        return [
+            'validKey' => 'error_test_key',
+            'invalidKey' => 'error_test_key_invalid',
+            'value' => 'error_test_value',
+            'validTags' => ['valid_tag', 'another_tag'],
+            'invalidTags' => ['valid_tag', '', 'another_tag'], // 包含空字串
+        ];
+    }
+
+    /**
+     * @param array{validKey: string, invalidKey: string, value: string, validTags: array<string>, invalidTags: array<string>} $testData
+     */
+    private function verifyInvalidTagErrorHandling(array $testData): void
+    {
+        // 嘗試使用無效標籤（空字串） - 應該拋出例外
+        $this->expectException(InvalidArgumentException::class);
+        $this->taggedCache->putWithTags(
+            $testData['invalidKey'],
+            $testData['value'],
+            $testData['invalidTags'],
+            3600,
+        );
+    }
+
+    /**
+     * @param array{validKey: string, invalidKey: string, value: string, validTags: array<string>, invalidTags: array<string>} $testData
+     */
+    private function verifyOriginalDataIntegrity(array $testData): void
+    {
+        $this->assertEquals($testData['value'], $this->taggedCache->get($testData['validKey']));
+    }
+
+    /**
+     * 設定併發標籤測試資料.
+     *
      * @return array{baseKey: string, sharedTag: string, count: int}
      */
     private function setupConcurrentTaggedData(): array
@@ -281,8 +442,8 @@ class TaggedCacheIntegrationTest extends TestCase
     }
 
     /**
-     * 驗證共享標籤關聯
-     * 
+     * 驗證共享標籤關聯.
+     *
      * @param array{baseKey: string, sharedTag: string, count: int} $concurrentData
      */
     private function verifySharedTagAssociations(array $concurrentData): void
@@ -297,8 +458,8 @@ class TaggedCacheIntegrationTest extends TestCase
     }
 
     /**
-     * 驗證共享標籤清空
-     * 
+     * 驗證共享標籤清空.
+     *
      * @param array{baseKey: string, sharedTag: string, count: int} $concurrentData
      */
     private function verifySharedTagFlush(array $concurrentData): void
@@ -314,8 +475,8 @@ class TaggedCacheIntegrationTest extends TestCase
     }
 
     /**
-     * 取得標籤類型測試案例
-     * 
+     * 取得標籤類型測試案例.
+     *
      * @return array<string, string>
      */
     private function getTagTypeTestCases(): array
@@ -329,8 +490,8 @@ class TaggedCacheIntegrationTest extends TestCase
     }
 
     /**
-     * 設定並驗證標籤分類
-     * 
+     * 設定並驗證標籤分類.
+     *
      * @param array<string, string> $testCases
      */
     private function setupAndVerifyTagClassification(array $testCases): void
@@ -345,8 +506,8 @@ class TaggedCacheIntegrationTest extends TestCase
     }
 
     /**
-     * 驗證標籤統計
-     * 
+     * 驗證標籤統計.
+     *
      * @param array<string, string> $testCases
      */
     private function verifyTagStatistics(array $testCases): void
@@ -358,8 +519,8 @@ class TaggedCacheIntegrationTest extends TestCase
     }
 
     /**
-     * 設定標籤清空測試資料
-     * 
+     * 設定標籤清空測試資料.
+     *
      * @return array<string, array{value: string, tags: array<string>}>
      */
     private function setupTagFlushingTestData(): array
@@ -380,8 +541,8 @@ class TaggedCacheIntegrationTest extends TestCase
     }
 
     /**
-     * 驗證測試資料已儲存
-     * 
+     * 驗證測試資料已儲存.
+     *
      * @param array<string, array{value: string, tags: array<string>}> $testData
      */
     private function verifyTestDataStored(array $testData): void
@@ -392,8 +553,8 @@ class TaggedCacheIntegrationTest extends TestCase
     }
 
     /**
-     * 執行並驗證標籤清空
-     * 
+     * 執行並驗證標籤清空.
+     *
      * @param array<string, array{value: string, tags: array<string>}> $testData
      */
     private function executeAndVerifyTagFlushing(array $testData): void
@@ -412,8 +573,8 @@ class TaggedCacheIntegrationTest extends TestCase
     }
 
     /**
-     * 設定多標籤測試資料
-     * 
+     * 設定多標籤測試資料.
+     *
      * @return array{keys: array<string>, tags: array<string, array<string>>}
      */
     private function setupMultipleTagTestData(): array
@@ -435,8 +596,8 @@ class TaggedCacheIntegrationTest extends TestCase
     }
 
     /**
-     * 執行並驗證多標籤清空
-     * 
+     * 執行並驗證多標籤清空.
+     *
      * @param array{keys: array<string>, tags: array<string, array<string>>} $multiTagData
      */
     private function executeAndVerifyMultipleTagFlushing(array $multiTagData): void

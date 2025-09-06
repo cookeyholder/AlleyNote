@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use PHPUnit\Framework\Attributes\Test;
+use RuntimeException;
 use Tests\TestCase;
 
 class FileSystemBackupTest extends TestCase
@@ -76,7 +77,7 @@ class FileSystemBackupTest extends TestCase
 
         $backupFiles = glob($this->backupDir . '/files_*.tar.gz');
         rsort($backupFiles);
-        
+
         return $backupFiles[0] ?? '';
     }
 
@@ -89,7 +90,7 @@ class FileSystemBackupTest extends TestCase
     private function assertBackupContainsAllFiles(string $backupFile): void
     {
         $extractedDir = $this->extractBackupFile($backupFile);
-        
+
         foreach ($this->testFiles as $path => $content) {
             $backedUpFile = $extractedDir . $path;
             $this->assertFileExists($backedUpFile, "檔案 {$path} 未被備份");
@@ -109,7 +110,7 @@ class FileSystemBackupTest extends TestCase
 
         $extractedDir = glob($tempDir . '/*')[0] ?? null;
         $this->assertNotNull($extractedDir, '解壓縮後目錄不存在');
-        
+
         return $extractedDir;
     }
 
@@ -126,6 +127,7 @@ class FileSystemBackupTest extends TestCase
     {
         $backupFile = $this->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
         exec("cd '{$this->testDir}' && tar -czf '$backupFile' .");
+
         return $backupFile;
     }
 
@@ -225,11 +227,11 @@ class FileSystemBackupTest extends TestCase
     private function ensureBackupFileDoesNotExist(): string
     {
         $nonExistentBackupFile = $this->backupDir . '/nonexistent_backup.tar.gz';
-        
+
         if (file_exists($nonExistentBackupFile)) {
             unlink($nonExistentBackupFile);
         }
-        
+
         return $nonExistentBackupFile;
     }
 
@@ -266,16 +268,16 @@ class FileSystemBackupTest extends TestCase
         $originalMetadata = [];
         foreach ($this->testFiles as $path => $content) {
             $file = $this->testDir . $path;
-            
+
             $permissions = fileperms($file);
             $owner = fileowner($file);
             $group = filegroup($file);
             $mtime = filemtime($file);
-            
+
             if ($permissions === false || $owner === false || $group === false || $mtime === false) {
-                throw new \RuntimeException("無法取得檔案 {$path} 的中繼資料");
+                throw new RuntimeException("無法取得檔案 {$path} 的中繼資料");
             }
-            
+
             $originalMetadata[$path] = [
                 'permissions' => $permissions,
                 'owner' => $owner,
@@ -283,6 +285,7 @@ class FileSystemBackupTest extends TestCase
                 'mtime' => $mtime,
             ];
         }
+
         /** @var array<string, array{permissions: int, owner: int, group: int, mtime: int}> */
         return $originalMetadata;
     }
@@ -290,11 +293,11 @@ class FileSystemBackupTest extends TestCase
     private function performFullBackupRestore(): string
     {
         $backupFile = $this->backupDir . '/files_backup.tar.gz';
-        
+
         $this->executeManualBackup($backupFile);
         $this->clearOriginalFiles();
         $this->executeManualRestore($backupFile);
-        
+
         return $backupFile;
     }
 

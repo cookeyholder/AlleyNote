@@ -65,12 +65,12 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         // 確保必要欄位存在且型別正確
         $id = is_string($postData['id'] ?? null) ? $postData['id'] : '';
         if ($id === '') {
-            throw new \InvalidArgumentException('文章 ID 不能為空');
+            throw new InvalidArgumentException('文章 ID 不能為空');
         }
 
         $title = is_string($postData['title'] ?? null) ? $postData['title'] : '';
         if ($title === '') {
-            throw new \InvalidArgumentException('文章標題不能為空');
+            throw new InvalidArgumentException('文章標題不能為空');
         }
 
         $sourceType = $postData['source_type'] ?? 'web';
@@ -88,7 +88,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
         $publishedAt = is_string($postData['published_at'] ?? null) ? $postData['published_at'] : '';
         if ($publishedAt === '') {
-            throw new \InvalidArgumentException('發布時間不能為空');
+            throw new InvalidArgumentException('發布時間不能為空');
         }
 
         $updatedAt = is_string($postData['updated_at'] ?? null) ? $postData['updated_at'] : $publishedAt;
@@ -174,7 +174,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     public function getTotalEngagements(): int
     {
-        return (int)($this->likeCount->value + $this->commentCount->value + $this->shareCount->value);
+        return (int) ($this->likeCount->value + $this->commentCount->value + $this->shareCount->value);
     }
 
     /**
@@ -183,7 +183,8 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     public function getPerformanceScore(): float
     {
         $score = $this->additionalMetrics['performance_score'] ?? null;
-        return is_numeric($score) ? (float)$score : $this->calculateDefaultPerformanceScore();
+
+        return is_numeric($score) ? (float) $score : $this->calculateDefaultPerformanceScore();
     }
 
     /**
@@ -213,6 +214,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     public function getTrendDirection(): string
     {
         $direction = $this->additionalMetrics['trend_direction'] ?? 'stable';
+
         return is_string($direction) ? $direction : 'stable';
     }
 
@@ -221,8 +223,9 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     public function getAgeInDays(): int
     {
-        $diff = (new DateTimeImmutable())->diff($this->publishedAt);
-        return (int)$diff->days;
+        $diff = new DateTimeImmutable()->diff($this->publishedAt);
+
+        return (int) $diff->days;
     }
 
     /**
@@ -354,14 +357,14 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     private static function calculateEngagementRate(array $metrics): float
     {
-        $views = is_numeric($metrics['views'] ?? 0) ? (int)($metrics['views'] ?? 0) : 0;
+        $views = is_numeric($metrics['views'] ?? 0) ? (int) ($metrics['views'] ?? 0) : 0;
         if ($views === 0) {
             return 0.0;
         }
 
-        $likes = is_numeric($metrics['likes'] ?? 0) ? (int)($metrics['likes'] ?? 0) : 0;
-        $comments = is_numeric($metrics['comments'] ?? 0) ? (int)($metrics['comments'] ?? 0) : 0;
-        $shares = is_numeric($metrics['shares'] ?? 0) ? (int)($metrics['shares'] ?? 0) : 0;
+        $likes = is_numeric($metrics['likes'] ?? 0) ? (int) ($metrics['likes'] ?? 0) : 0;
+        $comments = is_numeric($metrics['comments'] ?? 0) ? (int) ($metrics['comments'] ?? 0) : 0;
+        $shares = is_numeric($metrics['shares'] ?? 0) ? (int) ($metrics['shares'] ?? 0) : 0;
 
         $engagements = $likes + $comments + $shares;
 
@@ -373,11 +376,11 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      */
     private static function calculatePerformanceScore(array $metrics): float
     {
-        $views = is_numeric($metrics['views'] ?? 0) ? (int)($metrics['views'] ?? 0) : 0;
+        $views = is_numeric($metrics['views'] ?? 0) ? (int) ($metrics['views'] ?? 0) : 0;
         $engagementRate = self::calculateEngagementRate($metrics);
 
         // 基本評分公式：瀏覽數權重 70%，互動率權重 30%
-        $viewScore = min((float)$views / 1000.0, 1.0) * 70.0; // 1000 瀏覽為滿分
+        $viewScore = min((float) $views / 1000.0, 1.0) * 70.0; // 1000 瀏覽為滿分
         $engagementScore = min($engagementRate / 10.0, 1.0) * 30.0; // 10% 互動率為滿分
 
         return round($viewScore + $engagementScore, 2);

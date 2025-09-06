@@ -419,7 +419,7 @@ class StatisticsAdminController extends BaseController
         try {
             $taskStatus = $this->calculationCommand->getStatus();
             $periods = is_array($taskStatus['periods'] ?? null) ? $taskStatus['periods'] : [];
-            $lockedTasks = array_filter($periods, function($p): bool {
+            $lockedTasks = array_filter($periods, function ($p): bool {
                 return is_array($p) && ($p['locked'] ?? false) === true;
             });
 

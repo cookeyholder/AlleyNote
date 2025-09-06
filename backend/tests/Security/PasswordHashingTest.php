@@ -167,7 +167,7 @@ class PasswordHashingTest extends TestCase
     }
 
     /**
-     * 建立測試使用者資料
+     * 建立測試使用者資料.
      *
      * @return array<string, string>
      */
@@ -183,23 +183,25 @@ class PasswordHashingTest extends TestCase
     }
 
     /**
-     * 驗證註冊結果有效
+     * 驗證註冊結果有效.
      *
      * @param mixed $result
      */
     private function assertValidRegistrationResult($result): void
     {
         $this->assertNotNull($result, '使用者註冊不應該返回 null');
+        $this->assertIsArray($result, '註冊結果應該是陣列');
         $this->assertArrayHasKey('user', $result, '註冊結果應該包含 user 鍵');
     }
 
     /**
-     * 從註冊結果中提取使用者 ID
+     * 從註冊結果中提取使用者 ID.
      *
      * @param mixed $result
      */
     private function extractUserIdFromResult($result): int
     {
+        $this->assertIsArray($result, '註冊結果應該是陣列');
         $user = $result['user'];
 
         $userId = null;
@@ -212,6 +214,7 @@ class PasswordHashingTest extends TestCase
         }
 
         $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
+        $this->assertIsInt($userId, '使用者 ID 應該是整數');
 
         return $userId;
     }
@@ -232,7 +235,7 @@ class PasswordHashingTest extends TestCase
     }
 
     /**
-     * 驗證 Argon2id 雜湊
+     * 驗證 Argon2id 雜湊.
      */
     private function assertArgon2idHash(string $hashedPassword, string $originalPassword): void
     {
@@ -241,7 +244,7 @@ class PasswordHashingTest extends TestCase
     }
 
     /**
-     * 驗證適當的雜湊選項
+     * 驗證適當的雜湊選項.
      */
     private function assertAppropriateHashingOptions(string $hashedPassword): void
     {
@@ -262,7 +265,7 @@ class PasswordHashingTest extends TestCase
     }
 
     /**
-     * 驗證使用者 ID 有效
+     * 驗證使用者 ID 有效.
      *
      * @param mixed $userId
      */
@@ -273,7 +276,7 @@ class PasswordHashingTest extends TestCase
     }
 
     /**
-     * 期待密碼重複使用例外
+     * 期待密碼重複使用例外.
      */
     private function expectPasswordReuseException(): void
     {
