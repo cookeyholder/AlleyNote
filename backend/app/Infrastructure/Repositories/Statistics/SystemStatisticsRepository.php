@@ -45,7 +45,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
             $stmt = $this->pdo->prepare($totalSql);
             $stmt->execute();
-            $totals = $stmt->fetch(PDO::FETCH_ASSOC);
+            $totalsResult = $stmt->fetch(PDO::FETCH_ASSOC);
+            $totals = is_array($totalsResult) ? $totalsResult : [];
 
             // 取得週期內統計資料
             $periodSql = '
@@ -73,31 +74,32 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
-            $periodStats = $stmt->fetch(PDO::FETCH_ASSOC);
+            $periodStatsResult = $stmt->fetch(PDO::FETCH_ASSOC);
+            $periodStats = is_array($periodStatsResult) ? $periodStatsResult : [];
 
             // 計算成長率
             $growthRates = [
                 'posts_growth' => $this->calculateGrowthRate(
-                    is_numeric($totals['total_posts'] ?? 0) ? (int)$totals['total_posts'] : 0,
-                    is_numeric($periodStats['period_posts'] ?? 0) ? (int)$periodStats['period_posts'] : 0
+                    is_numeric($totals['total_posts'] ?? 0) ? (int) $totals['total_posts'] : 0,
+                    is_numeric($periodStats['period_posts'] ?? 0) ? (int) $periodStats['period_posts'] : 0
                 ),
                 'users_growth' => $this->calculateGrowthRate(
-                    is_numeric($totals['total_users'] ?? 0) ? (int)$totals['total_users'] : 0,
-                    is_numeric($periodStats['period_users'] ?? 0) ? (int)$periodStats['period_users'] : 0
+                    is_numeric($totals['total_users'] ?? 0) ? (int) $totals['total_users'] : 0,
+                    is_numeric($periodStats['period_users'] ?? 0) ? (int) $periodStats['period_users'] : 0
                 ),
                 'views_growth' => $this->calculateGrowthRate(
-                    is_numeric($totals['total_views'] ?? 0) ? (int)$totals['total_views'] : 0,
-                    is_numeric($periodStats['period_views'] ?? 0) ? (int)$periodStats['period_views'] : 0
+                    is_numeric($totals['total_views'] ?? 0) ? (int) $totals['total_views'] : 0,
+                    is_numeric($periodStats['period_views'] ?? 0) ? (int) $periodStats['period_views'] : 0
                 ),
                 'activities_growth' => $this->calculateGrowthRate(
-                    is_numeric($totals['total_activities'] ?? 0) ? (int)$totals['total_activities'] : 0,
-                    is_numeric($periodStats['period_activities'] ?? 0) ? (int)$periodStats['period_activities'] : 0
+                    is_numeric($totals['total_activities'] ?? 0) ? (int) $totals['total_activities'] : 0,
+                    is_numeric($periodStats['period_activities'] ?? 0) ? (int) $periodStats['period_activities'] : 0
                 ),
             ];
 
             return [
-                'total_statistics' => is_array($totals) ? $totals : [],
-                'period_statistics' => is_array($periodStats) ? $periodStats : [],
+                'total_statistics' => $totals,
+                'period_statistics' => $periodStats,
                 'growth_rates' => $growthRates,
                 'system_health' => [
                     'status' => 'healthy',
