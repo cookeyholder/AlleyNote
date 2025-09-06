@@ -14,10 +14,10 @@ class SyntaxErrorFixer
     public function run(): void
     {
         echo "🔧 修復語法錯誤...\n";
-        
+
         $this->fixRepositoryFiles();
         $this->fixTestFiles();
-        
+
         echo "✅ 修復完成，共修復 {$this->fixedFiles} 個檔案\n";
     }
 
@@ -67,7 +67,7 @@ class SyntaxErrorFixer
     private function fixTestFiles(): void
     {
         $testFiles = glob('tests/**/*Test.php') ?: [];
-        
+
         foreach ($testFiles as $file) {
             $content = file_get_contents($file);
             $originalContent = $content;

@@ -581,7 +581,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
      */
     /**
      * 反序列化指標資料
-     * 
+     *
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
