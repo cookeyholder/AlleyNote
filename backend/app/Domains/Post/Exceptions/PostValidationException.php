@@ -5,54 +5,60 @@ declare(strict_types=1);
 namespace App\Domains\Post\Exceptions;
 
 use App\Shared\Exceptions\ValidationException;
+use App\Shared\Validation\ValidationResult;
 
 class PostValidationException extends ValidationException
+{
     /**
      * @param array<string, mixed> $errors
      */
-{
-    public function __construct(string $message = '', /** @var array<string, mixed> */ array $errors = [])
+    public function __construct(string $message = '', array $errors/** @var array<string, mixed> */ = [])
     {
         if (empty($message) && !empty($errors)) {
             $message = '貼文資料驗證失敗';
         }
 
-        parent::__construct($message, $errors);
+        $formattedErrors = [];
+        foreach ($errors as $field => $error) {
+            $formattedErrors[$field] = is_array($error) ? $error : [$error];
+        }
+        $validationResult = ValidationResult::failure($formattedErrors, []);
+        parent::__construct($validationResult, $message);
     }
 
     public static function titleRequired(): self
     {
-        return new self('貼文標題不能為空', ['title' => '標題是必填欄位']);
+        return new self('貼文標題不能為空', ['title' => ['標題是必填欄位']]);
     }
 
     public static function titleTooLong(int $maxLength): self
     {
-        return new self('貼文標題過長', ['title' => "標題長度不能超過 {$maxLength} 個字元"]);
+        return new self('貼文標題過長', ['title' => ["標題長度不能超過 {$maxLength} 個字元"]]);
     }
 
     public static function contentRequired(): self
     {
-        return new self('貼文內容不能為空', ['content' => '內容是必填欄位']);
+        return new self('貼文內容不能為空', ['content' => ['內容是必填欄位']]);
     }
 
     public static function contentTooLong(int $maxLength): self
     {
-        return new self('貼文內容過長', ['content' => "內容長度不能超過 {$maxLength} 個字元"]);
+        return new self('貼文內容過長', ['content' => ["內容長度不能超過 {$maxLength} 個字元"]]);
     }
 
     public static function invalidCategory(string $category): self
     {
-        return new self('無效的貼文分類', ['category' => "分類 '{$category}' 不在允許的清單中"]);
+        return new self('無效的貼文分類', ['category' => ["分類 '{$category}' 不在允許的清單中"]]);
     }
 
     public static function invalidStatus(string $status): self
     {
-        return new self('無效的貼文狀態', ['status' => "狀態 '{$status}' 不是有效的狀態值"]);
+        return new self('無效的貼文狀態', ['status' => ["狀態 '{$status}' 不是有效的狀態值"]]);
     }
 
     public static function invalidPublishDate(): self
     {
-        return new self('無效的發布日期', ['publish_date' => '發布日期格式不正確或為過去時間']);
+        return new self('無效的發布日期', ['publish_date' => ['發布日期格式不正確或為過去時間']]);
     }
 
     /**

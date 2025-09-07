@@ -23,13 +23,9 @@ class StatisticsSnapshot extends AggregateRoot
 {
     /**
      * @param Uuid $id 識別碼
-     * @param StatisticsPeriod $period 統計週期
      * @param StatisticsMetric $totalPosts 總文章數
-     * @param StatisticsMetric $totalViews 總瀏覽數
      * @param array<SourceStatistics> $sourceStats 來源統計
-     * @param array<string, StatisticsMetric> $additionalMetrics 額外指標
      * @param DateTimeImmutable $createdAt 建立時間
-     * @param DateTimeImmutable|null $updatedAt 更新時間
      */
     private function __construct(
         private Uuid $id,
@@ -44,9 +40,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 建立新的統計快照.
-     *
      * @param array<SourceStatistics> $sourceStats
-     * @param array<string, StatisticsMetric> $additionalMetrics
      */
     public static function create(
         Uuid $id,
@@ -54,9 +48,9 @@ class StatisticsSnapshot extends AggregateRoot
         int $totalPosts = 0,
         int $totalViews = 0,
         /** @var array<string, mixed> */
-        array $sourceStats = [],
+        array $sourceStats/** @var array<string, mixed> */ = [],
         /** @var array<string, mixed> */
-        array $additionalMetrics = [],
+        array $additionalMetrics/** @var array<string, mixed> */ = [],
     ): self {
         // 驗證來源統計
         foreach ($sourceStats as $sourceStatistics) {
@@ -117,9 +111,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 從資料重建統計快照.
-     *
      * @param array<SourceStatistics> $sourceStats
-     * @param array<string, StatisticsMetric> $additionalMetrics
      */
     public static function fromData(
         Uuid $id,
@@ -127,9 +119,9 @@ class StatisticsSnapshot extends AggregateRoot
         StatisticsMetric $totalPosts,
         StatisticsMetric $totalViews,
         /** @var array<string, mixed> */
-        array $sourceStats,
+        array $sourceStats/** @var array<string, mixed> */,
         /** @var array<string, mixed> */
-        array $additionalMetrics,
+        array $additionalMetrics/** @var array<string, mixed> */,
         DateTimeImmutable $createdAt,
         ?DateTimeImmutable $updatedAt = null,
     ): self {
@@ -192,8 +184,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得所有來源統計.
-     *
-     * @return array<SourceStatistics>
+     * @return array<string, mixed><SourceStatistics>
      */
     public function getSourceStats(): array
     {
@@ -224,8 +215,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得所有額外指標.
-     *
-     * @return array<string, StatisticsMetric>
+     * @return array<string, mixed><string, StatisticsMetric>
      */
     public function getAdditionalMetrics(): array
     {
@@ -338,7 +328,6 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 更新來源統計.
-     *
      * @param array<SourceStatistics> $sourceStats
      */
     public function updateSourceStats(array $sourceStats): void
@@ -484,8 +473,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得排序後的來源統計（按計數降序）.
-     *
-     * @return array<SourceStatistics>
+     * @return array<string, mixed><SourceStatistics>
      */
     public function getSortedSourceStats(): array
     {
@@ -501,7 +489,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得統計摘要.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getSummary(): array
     {
@@ -521,7 +509,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {

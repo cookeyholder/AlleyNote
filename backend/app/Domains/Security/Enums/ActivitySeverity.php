@@ -78,8 +78,7 @@ enum ActivitySeverity: int
 
     /**
      * 取得所有嚴重程度等級.
-     *
-     * @return array<self>
+     * @return array<string, mixed><self>
      */
     public static function getAllLevels(): array
     {

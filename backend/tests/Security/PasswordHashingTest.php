@@ -168,7 +168,6 @@ class PasswordHashingTest extends TestCase
 
     /**
      * 建立測試使用者資料.
-     *
      * @return array<string, string>
      */
     private function getTestUserData(string $username, string $email, string $password): array
@@ -184,7 +183,6 @@ class PasswordHashingTest extends TestCase
 
     /**
      * 驗證註冊結果有效.
-     *
      * @param mixed $result
      */
     private function assertValidRegistrationResult($result): void
@@ -196,7 +194,6 @@ class PasswordHashingTest extends TestCase
 
     /**
      * 從註冊結果中提取使用者 ID.
-     *
      * @param mixed $result
      */
     private function extractUserIdFromResult($result): int
@@ -266,7 +263,6 @@ class PasswordHashingTest extends TestCase
 
     /**
      * 驗證使用者 ID 有效.
-     *
      * @param mixed $userId
      */
     private function assertValidUserId($userId): void

@@ -22,7 +22,6 @@ interface PostServiceInterface
     /**
      * 更新文章.
      * @param int $id 文章 ID
-     * @param UpdatePostDTO $dto 更新資料
      * @throws ValidationException
      * @throws NotFoundException
      */
@@ -45,9 +44,8 @@ interface PostServiceInterface
     /**
      * 取得文章列表（含分頁）.
      * @param int $page 頁碼
-     * @param int $perPage 每頁筆數
      * @param array<string, mixed> $filters
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      *                              items: Post[],
      *                              total: int,
      *                              page: int,
@@ -55,7 +53,7 @@ interface PostServiceInterface
      *                              last_page: int
      *                              }
      */
-    public function listPosts(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters = []): array;
+    public function listPosts(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters/** @var array<string, mixed> */ = []): array;
 
     /**
      * 取得置頂文章.
@@ -67,7 +65,6 @@ interface PostServiceInterface
     /**
      * 設定文章置頂狀態.
      * @param int $id 文章 ID
-     * @param bool $isPinned 是否置頂
      * @throws NotFoundException
      */
     public function setPinned(int $id, bool $isPinned): bool;
@@ -75,15 +72,13 @@ interface PostServiceInterface
     /**
      * 設定文章標籤.
      * @param int $id 文章 ID
-     * @param array<string, mixed> $tagIds
      * @throws NotFoundException
      */
-    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool;
+    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds/** @var array<string, mixed> */): bool;
 
     /**
      * 記錄文章觀看.
      * @param int $id 文章 ID
-     * @param string $userIp 使用者 IP
      * @param int|null $userId 使用者 ID（若已登入）
      * @throws NotFoundException
      */

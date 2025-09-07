@@ -52,15 +52,10 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 建構黑名單項目.
-     *
      * @param string $jti JWT 唯一識別符
-     * @param string $tokenType Token 類型 (access 或 refresh)
      * @param DateTimeImmutable $expiresAt Token 原始過期時間
-     * @param DateTimeImmutable $blacklistedAt 加入黑名單的時間
      * @param string $reason 加入黑名單的原因
-     * @param int|null $userId 相關使用者 ID
      * @param string|null $deviceId 相關裝置 ID
-     * @param array<string, mixed> $metadata 額外的元資料
      *
      * @throws InvalidArgumentException 當參數無效時
      */
@@ -73,7 +68,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         private ?int $userId = null,
         private ?string $deviceId = null,
         /** @var array<string, mixed> */
-        private array $metadata = [],
+        private array $metadata/** @var array<string, mixed> */ = [],
     ) {
         $this->validateJti($jti);
         $this->validateTokenType($tokenType);
@@ -86,7 +81,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 從陣列建立黑名單項目.
-     *
      * @param array<string, mixed> $data 黑名單資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
@@ -101,31 +95,46 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
         $expiresAt = $data['expires_at'] instanceof DateTimeImmutable
             ? $data['expires_at']
-            : new DateTimeImmutable($data['expires_at']);
+            : new DateTimeImmutable((string) $data['expires_at']);
 
         $blacklistedAt = $data['blacklisted_at'] instanceof DateTimeImmutable
             ? $data['blacklisted_at']
-            : new DateTimeImmutable($data['blacklisted_at']);
+            : new DateTimeImmutable((string) $data['blacklisted_at']);
 
         return new self(
-            jti: $data['jti'],
-            tokenType: $data['token_type'],
+            jti: (string) $data['jti'],
+            tokenType: (string) $data['token_type'],
             expiresAt: $expiresAt,
             blacklistedAt: $blacklistedAt,
-            reason: $data['reason'],
-            userId: $data['user_id'] ?? null,
-            deviceId: $data['device_id'] ?? null,
-            metadata: $data['metadata'] ?? [],
+            reason: (string) $data['reason'],
+            userId: isset($data['user_id']) ? (int) $data['user_id'] : null,
+            deviceId: isset($data['device_id']) ? (string) $data['device_id'] : null,
+            metadata: self::sanitizeMetadata($data['metadata'] ?? []),
         );
     }
 
     /**
+     * @return array<string, mixed><string, mixed>
+     */
+    private static function sanitizeMetadata(mixed $metadata): array
+    {
+        if (!is_array($metadata)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($metadata as $key => $value) {
+            $stringKey = is_string($key) ? $key : (string) $key;
+            $result[$stringKey] = $value;
+        }
+
+        return $result;
+    }
+
+    /**
      * 建立使用者登出的黑名單項目.
-     *
      * @param string $jti JWT ID
-     * @param string $tokenType Token 類型
      * @param DateTimeImmutable $expiresAt 過期時間
-     * @param int $userId 使用者 ID
      * @param string|null $deviceId 裝置 ID
      */
     public static function forUserLogout(
@@ -148,13 +157,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 建立安全性問題的黑名單項目.
-     *
      * @param string $jti JWT ID
-     * @param string $tokenType Token 類型
      * @param DateTimeImmutable $expiresAt 過期時間
-     * @param string $securityReason 安全原因
      * @param int|null $userId 使用者 ID
-     * @param array<string, mixed> $metadata 額外資訊
      */
     public static function forSecurityBreach(
         string $jti,
@@ -163,7 +168,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         string $securityReason,
         ?int $userId = null,
         /** @var array<string, mixed> */
-        array $metadata = [],
+        array $metadata/** @var array<string, mixed> */ = [],
     ): self {
         $validSecurityReasons = [
             self::REASON_SECURITY_BREACH,
@@ -189,11 +194,8 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 建立帳戶變更的黑名單項目.
-     *
      * @param string $jti JWT ID
-     * @param string $tokenType Token 類型
      * @param DateTimeImmutable $expiresAt 過期時間
-     * @param int $userId 使用者 ID
      * @param string $changeType 變更類型 (password_changed, account_suspended)
      */
     public static function forAccountChange(
@@ -279,8 +281,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得元資料.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getMetadata(): array
     {
@@ -289,7 +290,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得特定元資料.
-     *
      * @param string $key 元資料鍵
      * @return mixed|null
      */
@@ -316,7 +316,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 檢查是否已過原始過期時間（可以清理）.
-     *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
      */
     public function canBeCleanedUp(?DateTimeImmutable $now = null): bool
@@ -393,7 +392,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得優先級（用於清理順序）.
-     *
      * @return int 數字越小優先級越高
      */
     public function getPriority(): int
@@ -415,7 +413,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 檢查黑名單項目是否仍然有效.
-     *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
      */
     public function isActive(?DateTimeImmutable $now = null): bool
@@ -428,8 +425,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {
@@ -452,8 +448,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 轉換為資料庫儲存格式.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toDatabaseArray(): array
     {
@@ -471,8 +466,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -481,7 +475,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 檢查與另一個 TokenBlacklistEntry 是否相等.
-     *
      * @param TokenBlacklistEntry $other 另一個 TokenBlacklistEntry
      */
     public function equals(TokenBlacklistEntry $other): bool
@@ -525,8 +518,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的 Token 類型.
-     *
-     * @return array<string>
+     * @return array<string, mixed><string>
      */
     public static function getValidTokenTypes(): array
     {
@@ -535,8 +527,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的黑名單原因.
-     *
-     * @return array<string>
+     * @return array<string, mixed><string>
      */
     public static function getValidReasons(): array
     {
@@ -556,7 +547,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 驗證 JWT ID.
-     *
      * @param string $jti JWT ID
      * @throws InvalidArgumentException 當 JTI 無效時
      */
@@ -573,7 +563,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 驗證 Token 類型.
-     *
      * @param string $tokenType Token 類型
      * @throws InvalidArgumentException 當 Token 類型無效時
      */
@@ -588,7 +577,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 驗證黑名單原因.
-     *
      * @param string $reason 黑名單原因
      * @throws InvalidArgumentException 當原因無效時
      */
@@ -603,9 +591,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 驗證時間設定.
-     *
      * @param DateTimeImmutable $expiresAt 過期時間
-     * @param DateTimeImmutable $blacklistedAt 黑名單時間
      * @throws InvalidArgumentException 當時間設定無效時
      */
     private function validateTimes(DateTimeImmutable $expiresAt, DateTimeImmutable $blacklistedAt): void
@@ -626,7 +612,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 驗證使用者 ID.
-     *
      * @param int|null $userId 使用者 ID
      * @throws InvalidArgumentException 當使用者 ID 無效時
      */
@@ -639,7 +624,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 驗證裝置 ID.
-     *
      * @param string|null $deviceId 裝置 ID
      * @throws InvalidArgumentException 當裝置 ID 無效時
      */
@@ -658,7 +642,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 驗證元資料.
-     *
      * @param array<string, mixed> $metadata 元資料
      * @throws InvalidArgumentException 當元資料無效時
      */
@@ -672,7 +655,11 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         }
 
         // 限制元資料大小
-        $serializedSize = strlen(json_encode($metadata));
+        $jsonEncoded = json_encode($metadata);
+        if ($jsonEncoded === false) {
+            throw new InvalidArgumentException('Failed to encode metadata as JSON');
+        }
+        $serializedSize = strlen($jsonEncoded);
         if ($serializedSize > 65535) { // 64KB limit
             throw new InvalidArgumentException('Metadata size cannot exceed 64KB');
         }

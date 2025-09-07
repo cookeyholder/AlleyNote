@@ -31,7 +31,6 @@ final class StatisticsCalculationService
 
     /**
      * 計算平均每篇文章的觀看次數.
-     *
      * @param StatisticsSnapshot $snapshot 統計快照
      * @return float 平均觀看次數
      */
@@ -49,10 +48,8 @@ final class StatisticsCalculationService
 
     /**
      * 計算成長率.
-     *
      * @param StatisticsSnapshot $previousSnapshot 前一個快照
-     * @param StatisticsSnapshot $currentSnapshot 當前快照
-     * @return array{posts: float, views: float, users: float} 成長率資料
+     * @return array<string, mixed>{posts: float, views: float, users: float} 成長率資料
      * @throws StatisticsCalculationException 當計算失敗時
      */
     public function calculateGrowthRate(
@@ -85,7 +82,6 @@ final class StatisticsCalculationService
 
     /**
      * 取得前一個週期
-     *
      * @param StatisticsPeriod $period 當前週期
      * @return StatisticsPeriod 前一個週期
      */
@@ -96,9 +92,7 @@ final class StatisticsCalculationService
 
     /**
      * 計算趨勢方向.
-     *
      * @param StatisticsSnapshot $previousSnapshot 前一個快照
-     * @param StatisticsSnapshot $currentSnapshot 當前快照
      * @return string 趨勢方向：'up', 'down', 'stable'
      */
     public function calculateTrendDirection(
@@ -123,7 +117,6 @@ final class StatisticsCalculationService
 
     /**
      * 計算波動性.
-     *
      * @param array<StatisticsSnapshot> $snapshots 統計快照陣列
      * @return float 波動性係數（0-1之間，值越高表示波動越大）
      * @throws StatisticsCalculationException 當快照數量不足時
@@ -135,13 +128,13 @@ final class StatisticsCalculationService
         }
 
         $values = array_map(
-            fn(StatisticsSnapshot $snapshot): array => $snapshot->getTotalViews()->value,
+            fn(StatisticsSnapshot $snapshot): int => $snapshot->getTotalViews()->value,
             $snapshots,
         );
 
         $mean = array_sum($values) / count($values);
         $variance = array_sum(
-            array_map(fn($value): array => ((float) $value - $mean) ** 2, $values),
+            array_map(fn($value): float => ((float) $value - $mean) ** 2, $values),
         ) / count($values);
 
         $standardDeviation = sqrt($variance);
@@ -156,7 +149,6 @@ final class StatisticsCalculationService
 
     /**
      * 計算週期性能評分.
-     *
      * @param StatisticsSnapshot $snapshot 統計快照
      * @return float 效能評分（0-100）
      */
@@ -190,10 +182,8 @@ final class StatisticsCalculationService
 
     /**
      * 計算預測值
-     *
      * @param array<StatisticsSnapshot> $historicalSnapshots 歷史快照資料
-     * @param int $forecastDays 預測天數
-     * @return array{posts: int, views: int, confidence: float} 預測結果
+     * @return array<string, mixed>{posts: int, views: int, confidence: float} 預測結果
      * @throws StatisticsCalculationException 當歷史資料不足時
      */
     public function calculateForecast(array $historicalSnapshots, int $forecastDays = 7): array
@@ -203,8 +193,8 @@ final class StatisticsCalculationService
         }
 
         // 使用簡單線性回歸進行預測
-        $posts = array_map(fn($s): array => $s->getTotalPosts()->value, $historicalSnapshots);
-        $views = array_map(fn($s): array => $s->getTotalViews()->value, $historicalSnapshots);
+        $posts = array_map(fn($s): int => $s->getTotalPosts()->value, $historicalSnapshots);
+        $views = array_map(fn($s): int => $s->getTotalViews()->value, $historicalSnapshots);
 
         $postsGrowthRate = $this->calculateLinearGrowthRate($posts);
         $viewsGrowthRate = $this->calculateLinearGrowthRate($views);
@@ -227,13 +217,11 @@ final class StatisticsCalculationService
 
     /**
      * 計算相關性係數.
-     *
      * @param array<float> $x X軸資料
-     * @param array<float> $y Y軸資料
      * @return float 相關性係數（-1到1之間）
      * @throws StatisticsCalculationException 當資料長度不一致時
      */
-    public function calculateCorrelation(array $x, /** @var array<string, mixed> */ array $y): float
+    public function calculateCorrelation(array $x, /** @var array<string, mixed> */ array $y/** @var array<string, mixed> */): float
     {
         if (count($x) !== count($y) || count($x) < 2) {
             throw new StatisticsCalculationException('計算相關性需要相同長度且至少2個資料點');
@@ -242,9 +230,9 @@ final class StatisticsCalculationService
         $n = count($x);
         $sumX = array_sum($x);
         $sumY = array_sum($y);
-        $sumXY = array_sum(array_map(fn($i): array => $x[$i] * $y[$i], array_keys($x)));
-        $sumX2 = array_sum(array_map(fn($val): array => $val ** 2, $x));
-        $sumY2 = array_sum(array_map(fn($val): array => $val ** 2, $y));
+        $sumXY = array_sum(array_map(fn($i): float => $x[$i] * $y[$i], array_keys($x)));
+        $sumX2 = array_sum(array_map(fn($val): float => $val ** 2, $x));
+        $sumY2 = array_sum(array_map(fn($val): float => $val ** 2, $y));
 
         $numerator = ($n * $sumXY) - ($sumX * $sumY);
         $denominator = sqrt((($n * $sumX2) - ($sumX ** 2)) * (($n * $sumY2) - ($sumY ** 2)));
@@ -258,9 +246,8 @@ final class StatisticsCalculationService
 
     /**
      * 計算季節性指數.
-     *
      * @param array<StatisticsSnapshot> $snapshots 一年內的快照資料
-     * @return array<string, float> 季節性指數（按月份）
+     * @return array<string, mixed><string, float> 季節性指數（按月份）
      */
     public function calculateSeasonalityIndex(array $snapshots): array
     {
@@ -317,9 +304,7 @@ final class StatisticsCalculationService
 
     /**
      * 計算指標的成長率.
-     *
      * @param StatisticsMetric $previous 前一個指標
-     * @param StatisticsMetric $current 當前指標
      * @return float 成長率（百分比）
      */
     private function calculateMetricGrowthRate(
@@ -337,9 +322,7 @@ final class StatisticsCalculationService
 
     /**
      * 計算使用者成長率.
-     *
      * @param StatisticsPeriod $previousPeriod 前一個週期
-     * @param StatisticsPeriod $currentPeriod 當前週期
      * @return float 使用者成長率
      */
     private function calculateUserGrowthRate(
@@ -366,7 +349,6 @@ final class StatisticsCalculationService
 
     /**
      * 計算線性成長率.
-     *
      * @param array<int|float> $values 數值陣列
      * @return float 每期間的成長率
      */
@@ -382,8 +364,8 @@ final class StatisticsCalculationService
         // 計算線性回歸的斜率
         $sumX = array_sum($x);
         $sumY = array_sum($values);
-        $sumXY = array_sum(array_map(fn($i): array => $x[$i] * $values[$i], array_keys($x)));
-        $sumX2 = array_sum(array_map(fn($val): array => $val ** 2, $x));
+        $sumXY = array_sum(array_map(fn($i): float => $x[$i] * $values[$i], array_keys($x)));
+        $sumX2 = array_sum(array_map(fn($val): float => $val ** 2, $x));
 
         $slope = (($n * $sumXY) - ($sumX * $sumY)) / (($n * $sumX2) - ($sumX ** 2));
 
@@ -392,9 +374,8 @@ final class StatisticsCalculationService
 
     /**
      * 計算趨勢分析.
-     *
      * @param array<string, mixed> $data
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function calculateTrends(array $data): array
     {
@@ -407,7 +388,7 @@ final class StatisticsCalculationService
         }
 
         // 簡單趨勢計算
-        $values = array_values($data);
+        $values = array_values(array_filter(array_map('strval', $data), fn($item) => !empty($item)));
         $count = count($values);
 
         if ($count < 2) {
@@ -442,7 +423,6 @@ final class StatisticsCalculationService
 
     /**
      * 計算預測信心度.
-     *
      * @param array<StatisticsSnapshot> $snapshots 歷史快照
      * @return float 信心度（0-1之間）
      */
@@ -453,7 +433,7 @@ final class StatisticsCalculationService
         }
 
         // 基於數據一致性計算信心度
-        $views = array_map(fn($s): array => $s->getTotalViews()->value, $snapshots);
+        $views = array_map(fn($s): int => $s->getTotalViews()->value, $snapshots);
         $volatility = $this->calculateVolatility($snapshots);
 
         // 信心度與波動性成反比

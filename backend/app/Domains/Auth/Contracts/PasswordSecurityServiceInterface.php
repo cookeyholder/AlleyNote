@@ -37,7 +37,7 @@ interface PasswordSecurityServiceInterface
 
     /**
      * 計算密碼強度評分.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function calculatePasswordStrength(string $password): array;
 }

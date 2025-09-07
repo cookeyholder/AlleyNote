@@ -93,6 +93,9 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         return true;
     }
 
+    /**
+     * @param array<string, mixed> $drivers
+     */
     public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
     {
         $this->stats['driver_selections']++;
@@ -202,10 +205,10 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
         /** @var array<string, mixed> */
-        array $availableDrivers,
+        array $availableDrivers/** @var array<string, mixed> */,
         string $operation,
         /** @var array<string, mixed> */
-        array $params,
+        array $params/** @var array<string, mixed> */,
     ): mixed {
         $this->stats['failure_handles']++;
 
@@ -243,7 +246,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getStats(): array
     {
@@ -311,7 +314,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     /**
      * 取得排除模式。
-     * @return array<string>
+     * @return array<string, mixed><string>
      */
     public function getExcludePatterns(): array
     {

@@ -32,7 +32,6 @@ class MiddlewareResolver
 
     /**
      * 解析中介軟體（支援字串別名和實例）.
-     *
      * @param string|MiddlewareInterface $middleware
      * @throws InvalidArgumentException
      */
@@ -82,7 +81,6 @@ class MiddlewareResolver
 
     /**
      * 解析中介軟體陣列.
-     *
      * @param array<string|MiddlewareInterface> $middlewares
      * @return MiddlewareInterface[]
      */
@@ -99,7 +97,6 @@ class MiddlewareResolver
 
     /**
      * 檢查中介軟體是否可以解析.
-     *
      * @param string|MiddlewareInterface $middleware
      */
     public function canResolve($middleware): bool
@@ -127,8 +124,7 @@ class MiddlewareResolver
 
     /**
      * 取得所有可用的中介軟體別名.
-     *
-     * @return array<string, string>
+     * @return array<string, mixed><string, string>
      */
     public function getAliases(): array
     {

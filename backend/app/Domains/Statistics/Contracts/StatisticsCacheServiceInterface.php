@@ -42,23 +42,20 @@ interface StatisticsCacheServiceInterface
 
     /**
      * 取得標籤化快取實例。
-     *
      * @param string[] $tags 快取標籤
      */
     public function tags(array $tags): TaggedCacheInterface;
 
     /**
      * 依標籤清除快取。
-     *
      * @param string[] $tags 快取標籤
      */
     public function invalidateByTags(array $tags): bool;
 
     /**
      * 預熱快取。
-     *
      * @param array<string, callable> $callbacks 預熱回調函式
-     * @return array<string, array{success: bool, duration: float, data?: mixed, error?: string}>
+     * @return array<string, mixed><string, array{success: bool, duration: float, data?: mixed, error?: string}>
      */
     public function warmup(array $callbacks): array;
 
@@ -140,8 +137,7 @@ interface StatisticsCacheServiceInterface
 
     /**
      * 取得快取統計資訊。
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      *                              manager_stats: array,
      *                              cache_keys: array,
      *                              ttl_config: array,
@@ -158,8 +154,7 @@ interface StatisticsCacheServiceInterface
 
     /**
      * 清理過期的快取項目。
-     *
-     * @return array<string, mixed> 清理結果
+     * @return array<string, mixed><string, mixed> 清理結果
      */
     public function cleanup(): array;
 }

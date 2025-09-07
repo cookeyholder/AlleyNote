@@ -43,7 +43,6 @@ interface CacheManagerInterface
 
     /**
      * 取得或設定標籤化快取。
-     *
      * @param string|array<string> $tags 標籤
      */
     public function tags(string|array $tags): TaggedCacheInterface;
@@ -60,27 +59,26 @@ interface CacheManagerInterface
 
     /**
      * 取得快取統計資訊。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getStats(): array;
 
     /**
      * 取得所有驅動的健康狀態。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getHealthStatus(): array;
 
     /**
      * 預熱快取。
-     *
      * @param array<string, callable> $warmupCallbacks 預熱回調
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function warmup(array $warmupCallbacks): array;
 
     /**
      * 清理所有驅動的過期項目。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function cleanup(): array;
 
@@ -91,7 +89,7 @@ interface CacheManagerInterface
 
     /**
      * 取得所有可用的驅動程式。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getDrivers(): array;
 }

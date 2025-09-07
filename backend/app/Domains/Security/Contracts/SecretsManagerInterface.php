@@ -15,31 +15,25 @@ interface SecretsManagerInterface
 
     /**
      * 取得設定值
-     *
      * @param string $key 設定鍵名
-     * @param mixed $default 預設值
      * @return mixed
      */
     public function get(string $key, mixed $default = null);
 
     /**
      * 設定秘密值
-     *
      * @param string $key 設定鍵名
-     * @param string $value 設定值
      */
     public function set(string $key, string $value): void;
 
     /**
      * 檢查設定是否存在.
-     *
      * @param string $key 設定鍵名
      */
     public function has(string $key): bool;
 
     /**
      * 取得必需的設定值
-     *
      * @param string $key 設定鍵名
      * @throws ValidationException 如果設定不存在
      */
@@ -47,7 +41,6 @@ interface SecretsManagerInterface
 
     /**
      * 驗證必需的秘密設定.
-     *
      * @param array<string, mixed> $requiredKeys 必需的設定鍵名陣列
      * @throws ValidationException 如果有缺少的設定
      */
@@ -65,22 +58,20 @@ interface SecretsManagerInterface
 
     /**
      * 取得秘密設定摘要（敏感資料會被遮蔽）.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getSecretsSummary(): array;
 
     /**
      * 產生安全的隨機秘密.
-     *
      * @param int $length 長度
      */
     public function generateSecret(int $length = 32): string;
 
     /**
      * 驗證 .env 檔案的安全性.
-     *
      * @param string $filePath .env 檔案路徑
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function validateEnvFile(string $filePath = ''): array;
 }

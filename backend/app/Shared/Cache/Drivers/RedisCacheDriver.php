@@ -145,6 +145,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $keys
+     */
     public function many(array $keys): array
     {
         $result = [];
@@ -173,6 +176,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return $result;
     }
 
+    /**
+     * @param array<string, mixed> $values
+     */
     public function putMany(array $values, int $ttl = self::DEFAULT_TTL): bool
     {
         try {
@@ -217,6 +223,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $keys
+     */
     public function forgetMany(array $keys): bool
     {
         try {
@@ -322,7 +331,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getStats(): array
     {
@@ -470,7 +479,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得當前標籤.
-     * @return array<string> 標籤陣列
+     * @return array<string, mixed><string> 標籤陣列
      */
     public function getTags(): array
     {
@@ -513,7 +522,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     /**
      * 根據標籤取得快取鍵.
      * @param string $tag 標籤名稱
-     * @return array<string> 快取鍵陣列
+     * @return array<string, mixed><string> 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array
     {
@@ -541,7 +550,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     /**
      * 根據多個標籤取得共同的快取鍵.
      * @param array<string> $tags 標籤陣列
-     * @return array<string> 共同的快取鍵陣列
+     * @return array<string, mixed><string> 共同的快取鍵陣列
      */
     public function getKeysByTags(array $tags): array
     {
@@ -594,7 +603,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得所有標籤.
-     * @return array<string> 所有標籤陣列
+     * @return array<string, mixed><string> 所有標籤陣列
      */
     public function getAllTags(): array
     {
@@ -618,7 +627,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得標籤統計資訊.
-     * @return array<string, mixed> 標籤統計資訊
+     * @return array<string, mixed><string, mixed> 標籤統計資訊
      */
     public function getTagStatistics(): array
     {
@@ -747,7 +756,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     /**
      * 使用指定標籤存放快取項目.
      */
-    public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags, int $ttl = self::DEFAULT_TTL): bool
+    public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */, int $ttl = self::DEFAULT_TTL): bool
     {
         $this->tags = $tags;
 
@@ -781,9 +790,8 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     /**
      * 將快取鍵添加到標籤索引.
      * @param string $key 快取鍵
-     * @param array<string> $tags 標籤陣列
      */
-    private function addKeyToTags(string $key, array $tags): void
+    private function addKeyToTags(string $key, array $tags/** @var array<string, mixed> */): void
     {
         try {
             $prefixedKey = $this->getPrefixedKey($key);

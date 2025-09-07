@@ -208,7 +208,7 @@ class RouteValidator
 
     /**
      * 取得已註冊的路由清單.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getRegisteredRoutes(): array
     {

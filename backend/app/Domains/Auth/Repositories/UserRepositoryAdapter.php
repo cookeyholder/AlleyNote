@@ -19,7 +19,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     ) {}
 
     /**
-     * @return array<string, mixed>|null
+     * @return array<string, mixed><string, mixed>|null
      */
     public function findByUsername(string $username): ?array
     {
@@ -31,7 +31,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array<string, mixed><string, mixed>|null
      */
     public function findByEmail(string $email): ?array
     {
@@ -43,7 +43,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array<string, mixed><string, mixed>|null
      */
     public function findByUuid(string $uuid): ?array
     {
@@ -55,7 +55,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array<string, mixed><string, mixed>|null
      */
     public function validateCredentials(string $username, string $password): ?array
     {
@@ -86,7 +86,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function findById(int $id): ?array
     {
@@ -96,7 +96,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
 
     /**
      * @param array<string, mixed> $data
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function create(array $data): array
     {
@@ -106,7 +106,10 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return $result;
     }
 
-    public function update(int $id, /** @var array<string, mixed> */ array $data): bool
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function update(int $id, /** @var array<string, mixed> */ array $data/** @var array<string, mixed> */): bool
     {
         // 暫時實作 - 返回 true
         return true;
@@ -139,15 +142,15 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
-    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters = []): array
+    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters/** @var array<string, mixed> */ = []): array
     {
         return [];
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getTrashed(int $page = 1, int $perPage = 10): array
     {
@@ -156,15 +159,15 @@ class UserRepositoryAdapter implements UserRepositoryInterface
 
     /**
      * @param array<string, mixed> $fields
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
-    public function search(string $keyword, /** @var array<string, mixed> */ array $fields = [], int $limit = 10): array
+    public function search(string $keyword, /** @var array<string, mixed> */ array $fields/** @var array<string, mixed> */ = [], int $limit = 10): array
     {
         return [];
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getStats(array $conditions = []): array
     {

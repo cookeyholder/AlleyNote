@@ -301,7 +301,6 @@ class MemoryTagRepositoryTest extends TestCase
 
     /**
      * Assert that tag statistics are correct.
-     *
      * @param array<string, int> $stats
      */
     private function assertTagStatisticsAreCorrect(array $stats): void
@@ -312,7 +311,6 @@ class MemoryTagRepositoryTest extends TestCase
 
     /**
      * Setup multiple keys with the same tag.
-     *
      * @param array<int, string> $keys
      */
     private function setupKeysWithSameTag(array $keys, string $tag): void
@@ -324,7 +322,6 @@ class MemoryTagRepositoryTest extends TestCase
 
     /**
      * Assert that all keys have empty tags.
-     *
      * @param array<int, string> $keys
      */
     private function assertAllKeysTagsAreEmpty(array $keys): void

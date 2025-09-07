@@ -157,8 +157,9 @@ class PostRepository implements PostRepositoryInterface
     /**
      * 準備資料庫查詢結果為 Post 物件的資料.
      * @param array<string, mixed> $result
+     * @return array<string, mixed><string, mixed>
      */
-    private function preparePostData(array $result): mixed
+    private function preparePostData(array $result): array
     {
         return [
             'id' => (int) ($result['id'] ?? 0),
@@ -180,8 +181,9 @@ class PostRepository implements PostRepositoryInterface
     /**
      * 準備新文章的資料.
      * @param array<string, mixed> $data
+     * @return array<string, mixed><string, mixed>
      */
-    private function prepareNewPostData(array $data): mixed
+    private function prepareNewPostData(array $data): array
     {
         $now = format_datetime();
 
@@ -222,10 +224,11 @@ class PostRepository implements PostRepositoryInterface
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$id]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$result) {
+            if ($result === false) {
                 return null;
             }
 
+            /** @var array<string, mixed> $result */
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
@@ -242,8 +245,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$result) {
+        if (!$result || !is_array($result)) {
             return null;
         }
 
@@ -259,10 +261,12 @@ class PostRepository implements PostRepositoryInterface
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$uuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$result) {
+
+            if ($result === false) {
                 return null;
             }
 
+            /** @var array<string, mixed> $result */
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
@@ -275,10 +279,11 @@ class PostRepository implements PostRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$seqNumber]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$result) {
+        if ($result === false) {
             return null;
         }
 
+        /** @var array<string, mixed> $result */
         return Post::fromArray($this->preparePostData($result));
     }
 
@@ -323,8 +328,7 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * 檢查標籤是否存在.
-     * @param array<string, mixed> $tagIds
+     * @param array<int> $tagIds
      */
     private function tagsExist(array $tagIds): bool
     {
@@ -347,7 +351,7 @@ class PostRepository implements PostRepositoryInterface
      * @throws PDOException 當標籤不存在時拋出異常
      * @param array<string, mixed> $data
      */
-    public function create(array $data, /** @var array<string, mixed> */ array $tagIds = []): Post
+    public function create(array $data, array $tagIds/** @var array<string, mixed> */ = []): Post
     {
         return $this->executeInTransaction(function () use ($data, $tagIds) {
             // 資料已在 DTO 層級完成驗證，這裡直接處理
@@ -360,7 +364,7 @@ class PostRepository implements PostRepositoryInterface
             if (!$stmt->execute($data)) {
                 $errorInfo = $stmt->errorInfo();
 
-                throw new PDOException('Failed to insert post: ' . $errorInfo[2]);
+                throw new PDOException('Failed to insert post: ' . (string) ($errorInfo[2] ?? 'Unknown error'));
             }
             $postId = (int) $this->db->lastInsertId();
 
@@ -385,10 +389,9 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 指派標籤到文章.
-     * @throws PDOException 當標籤不存在時拋出異常
-     * @param array<string, mixed> $tagIds
+     * @param array<int> $tagIds
      */
-    private function assignTags(int $postId, /** @var array<string, mixed> */ array $tagIds): void
+    private function assignTags(int $postId, array $tagIds/** @var array<string, mixed> */): void
     {
         // 驗證標籤是否存在
         if (!$this->tagsExist($tagIds)) {
@@ -406,7 +409,7 @@ class PostRepository implements PostRepositoryInterface
     /**
      * @param array<string, mixed> $data
      */
-    public function update(int $id, /** @var array<string, mixed> */ array $data): Post
+    public function update(int $id, array $data/** @var array<string, mixed> */): Post
     {
         // 檢查文章是否存在
         $post = $this->find($id);
@@ -455,7 +458,12 @@ class PostRepository implements PostRepositoryInterface
         // 清除快取
         $this->invalidateCache($id);
 
-        return $this->find($id);
+        $updatedPost = $this->find($id);
+        if ($updatedPost === null) {
+            throw new RuntimeException('Failed to retrieve updated post');
+        }
+
+        return $updatedPost;
     }
 
     public function delete(int $id): bool
@@ -470,8 +478,9 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * @param array<string, mixed> $conditions
+     * @return array<string, mixed><string, mixed>
      */
-    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $conditions = []): array
+    public function paginate(int $page = 1, int $perPage = 10, array $conditions/** @var array<string, mixed> */ = []): array
     {
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
@@ -486,7 +495,7 @@ class PostRepository implements PostRepositoryInterface
                 'posts:page:%d:per:%d:%s',
                 $page,
                 $perPage,
-                md5((json_encode($conditions) ?? '')),
+                md5(json_encode($conditions) ?: ''),
             );
         }
 
@@ -535,11 +544,16 @@ class PostRepository implements PostRepositoryInterface
             }
 
             $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $items = array_map(
-                fn($row): array => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
+                function ($row): Post {
+                    /** @var array<string, mixed> $row */
+                    return Post::fromArray($this->preparePostData($row));
+                },
+                $results,
             );
 
+            /** @var array<string, mixed> */
             return [
                 'items' => $items,
                 'total' => $total,
@@ -550,10 +564,14 @@ class PostRepository implements PostRepositoryInterface
         }, self::CACHE_TTL);
     }
 
+    /**
+     * @return array<string, mixed><Post>
+     */
     public function getPinnedPosts(int $limit = 5): array
     {
         $cacheKey = PostCacheKeyService::pinnedPosts();
 
+        /** @var array<Post> */
         return $this->cache->remember($cacheKey, function () use ($limit) {
             $sql = $this->buildSelectQuery('is_pinned = 1')
                 . ' ORDER BY publish_date DESC LIMIT :limit';
@@ -562,20 +580,26 @@ class PostRepository implements PostRepositoryInterface
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return array_map(
-                fn($row): array => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
+                function ($row): Post {
+                    /** @var array<string, mixed> $row */
+                    return Post::fromArray($this->preparePostData($row));
+                },
+                $results,
             );
         }, self::CACHE_TTL);
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
         $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
 
+        /** @var array<string, mixed> */
         return $this->cache->remember($cacheKey, function () use ($tagId, $page, $perPage) {
             $offset = ($page - 1) * $perPage;
 
@@ -601,9 +625,13 @@ class PostRepository implements PostRepositoryInterface
             $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
             $stmt->execute();
 
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $items = array_map(
-                fn($row): array => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
+                function ($row): Post {
+                    /** @var array<string, mixed> $row */
+                    return Post::fromArray($this->preparePostData($row));
+                },
+                $results,
             );
 
             return [
@@ -688,7 +716,7 @@ class PostRepository implements PostRepositoryInterface
     /**
      * @param array<string, mixed> $tagIds
      */
-    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool
+    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds/** @var array<string, mixed> */): bool
     {
         $this->db->beginTransaction();
 
@@ -733,7 +761,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
 
         return array_map(
-            fn($row): array => Post::fromArray($this->preparePostData($row)),
+            fn($row) => Post::fromArray($this->preparePostData($row)),
             $stmt->fetchAll(PDO::FETCH_ASSOC),
         );
     }
@@ -746,10 +774,11 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$result) {
+        if ($result === false) {
             return null;
         }
 
+        /** @var array<string, mixed> $result */
         return Post::fromArray($this->preparePostData($result));
     }
 
@@ -761,9 +790,14 @@ class PostRepository implements PostRepositoryInterface
         $stmt->bindValue(':keyword', $keyword, PDO::PARAM_STR);
         $stmt->execute();
 
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         return array_map(
-            fn($row): array => Post::fromArray($this->preparePostData($row)),
-            $stmt->fetchAll(PDO::FETCH_ASSOC),
+            function ($row): Post {
+                /** @var array<string, mixed> $row */
+                return Post::fromArray($this->preparePostData($row));
+            },
+            $results,
         );
     }
 }

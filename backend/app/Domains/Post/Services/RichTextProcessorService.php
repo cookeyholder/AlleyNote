@@ -150,25 +150,24 @@ class RichTextProcessorService
     private function preprocessCKEditorContent(string $content): string
     {
         // 移除 CKEditor 可能插入的多餘屬性
-        $content = preg_replace('/\sdata-cke-[^=]*="[^"]*"/i', '', $content);
-        $content = preg_replace('/\scontenteditable="[^"]*"/i', '', $content);
-        $content = preg_replace('/\sspellcheck="[^"]*"/i', '', $content);
+        $content = preg_replace('/\sdata-cke-[^=]*="[^"]*"/i', '', $content) ?? $content;
+        $content = preg_replace('/\scontenteditable="[^"]*"/i', '', $content) ?? $content;
+        $content = preg_replace('/\sspellcheck="[^"]*"/i', '', $content) ?? $content;
 
         // 正規化換行符號
-        $content = str_replace(["\r
-", "\r"], '
-', $content);
+        $content = str_replace(["\r\n", "\r"], '\n', $content);
 
         // 移除空的段落
-        $content = preg_replace('/]*>(\s|&nbsp;)*/i', '', $content);
+        $content = preg_replace('/<p[^>]*>(\s|&nbsp;)*<\/p>/i', '', $content) ?? $content;
 
         return trim($content);
     }
 
     /**
      * 取得允許的標籤和屬性清單.
+     * @return array<string, mixed><string, array<string>>
      */
-    public function getAllowedElements(string $userLevel = 'basic'): mixed
+    public function getAllowedElements(string $userLevel = 'basic'): array
     {
         $purifier = match ($userLevel) {
             'admin' => $this->adminPurifier,
@@ -177,12 +176,21 @@ class RichTextProcessorService
         };
 
         $definition = $purifier->config->getHTMLDefinition();
-        $allowedElements = $definition->info;
+        if ($definition === null) {
+            return ['tags' => [], 'attributes' => []];
+        }
+
+        $allowedElements = $definition->info ?? [];
+        if (!is_array($allowedElements)) {
+            return ['tags' => [], 'attributes' => []];
+        }
 
         $tags = array_keys($allowedElements);
         $attributes = [];
         foreach ($allowedElements as $element) {
-            $attributes = array_merge($attributes, array_keys($element->attr));
+            if (isset($element->attr) && is_array($element->attr)) {
+                $attributes = array_merge($attributes, array_keys($element->attr));
+            }
         }
 
         return [
@@ -193,8 +201,9 @@ class RichTextProcessorService
 
     /**
      * 生成內容統計資訊.
+     * @return array<string, mixed><string, mixed>
      */
-    private function generateStatistics(string $original, string $filtered): mixed
+    private function generateStatistics(string $original, string $filtered): array
     {
         return [
             'original_length' => strlen($original),

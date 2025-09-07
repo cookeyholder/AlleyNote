@@ -141,7 +141,7 @@ final class EnvironmentConfig
 
     /**
      * 取得所有已載入的配置.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function all(): array
     {
@@ -221,7 +221,7 @@ final class EnvironmentConfig
         }
 
         $lines = explode('
-', $content);
+', is_string($content) ? $content : (string) $content);
 
         foreach ($lines as $line) {
             $line = trim($line);

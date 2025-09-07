@@ -19,12 +19,12 @@ class PostCacheKeyService
     /**
      * 建立快取鍵的通用方法.
      */
-    private static function buildKey(...$parts): string
+    private static function buildKey(mixed ...$parts): string
     {
         // 過濾空值並轉換為字串
         $cleanParts = array_filter(
-            array_map('strval', $parts),
-            fn($part): array => $part !== '',
+            array_map(fn($item) => is_scalar($item) ? (string) $item : '', $parts),
+            fn($part): bool => $part !== '',
         );
 
         return self::PREFIX . self::SEPARATOR . implode(self::SEPARATOR, $cleanParts);
@@ -33,7 +33,7 @@ class PostCacheKeyService
     /**
      * 建立模式匹配的快取鍵（用於刪除相關快取）.
      */
-    private static function pattern(...$parts): string
+    private static function pattern(mixed ...$parts): string
     {
         $pattern = self::buildKey(...$parts);
 

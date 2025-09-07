@@ -32,7 +32,6 @@ class ValidationException extends Exception
     /**
      * Static factory method for creating from an array of errors.
      * @param array<string, array<string>> $errors
-     * @param array<string, array<string>>|string $failedRulesOrMessage
      */
     public static function fromErrors(array $errors, array|string $failedRulesOrMessage = '', string $message = ''): self
     {
@@ -60,7 +59,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * @return array<string, array<string>>
+     * @return array<string, mixed><string, array<string>>
      */
     public function getErrors(): array
     {
@@ -68,7 +67,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * @return array<string, array<string>>
+     * @return array<string, mixed><string, array<string>>
      */
     public function getFailedRules(): array
     {
@@ -85,7 +84,7 @@ class ValidationException extends Exception
 
     /**
      * 轉換為 API 回應格式.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toApiResponse(): array
     {
@@ -99,7 +98,7 @@ class ValidationException extends Exception
 
     /**
      * 取得除錯資訊.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toDebugArray(): array
     {

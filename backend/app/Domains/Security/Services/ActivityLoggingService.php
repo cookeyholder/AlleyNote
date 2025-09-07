@@ -64,9 +64,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
 
     /**
      * 建構活動記錄服務.
-     *
      * @param ActivityLogRepositoryInterface $repository 活動記錄存儲庫
-     * @param LoggerInterface $logger 系統日誌記錄器
      */
     public function __construct(
         private ActivityLogRepositoryInterface $repository,
@@ -78,7 +76,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      *
      * 這是記錄活動的主要方法，提供完整的錯誤處理和日誌記錄。
      * 在記錄前會檢查活動類型是否啟用以及記錄等級是否符合要求。
-     *
      * @param CreateActivityLogDTO $dto 活動記錄資料傳輸物件
      * @return bool 記錄是否成功
      *
@@ -139,11 +136,8 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      *
      * 這是記錄成功操作的便利方法，會自動建立成功狀態的 DTO。
      * 相比直接使用 log() 方法，此方法更簡潔且語意更清晰。
-     *
      * @param ActivityType $actionType 活動類型
-     * @param int|null $userId 使用者ID，匿名操作時可為 null
      * @param string|null $targetType 目標類型 (如: 'post', 'user', 'file')
-     * @param string|null $targetId 目標ID
      * @param array<string, mixed> $metadata
      * @return bool 記錄是否成功
      *
@@ -193,11 +187,8 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      *
      * 專門用於記錄失敗的操作，會自動設定狀態為失敗並記錄失敗原因。
      * 這對於追蹤系統錯誤、使用者操作失敗等情況特別有用。
-     *
      * @param ActivityType $actionType 活動類型
-     * @param int|null $userId 使用者ID
      * @param string $reason 失敗原因描述
-     * @param array<string, mixed> $metadata
      * @return bool 記錄是否成功
      *
      * @example
@@ -240,9 +231,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      *
      * 專門用於記錄安全相關的事件，如可疑登入、權限違規、IP 封鎖等。
      * 這些事件通常需要特殊的關注和處理，系統會自動判斷事件的嚴重程度。
-     *
      * @param ActivityType $actionType 活動類型（必須是安全相關類型）
-     * @param string $description 安全事件的詳細描述
      * @param array<string, mixed> $metadata
      * @return bool 記錄是否成功
      *

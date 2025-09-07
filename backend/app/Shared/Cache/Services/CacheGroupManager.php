@@ -40,12 +40,10 @@ class CacheGroupManager
 
     /**
      * 建立快取分組.
-     *
      * @param string $groupName 分組名稱
-     * @param array<string> $tags 分組標籤
      * @return TaggedCacheInterface 標籤化快取實例
      */
-    public function group(string $groupName, /** @var array<string, mixed> */ array $tags = []): TaggedCacheInterface
+    public function group(string $groupName, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */ = []): TaggedCacheInterface
     {
         // 添加分組標籤
         $groupTag = CacheTag::group($groupName);
@@ -65,7 +63,6 @@ class CacheGroupManager
 
     /**
      * 取得快取分組.
-     *
      * @param string $groupName 分組名稱
      * @return TaggedCacheInterface|null 分組快取實例
      */
@@ -78,9 +75,7 @@ class CacheGroupManager
      * 設定分組依賴關係
      *
      * 當父分組失效時，子分組也會自動失效
-     *
      * @param string $parentGroup 父分組
-     * @param array<string>|string $childGroups 子分組
      */
     public function setDependencies(string $parentGroup, array|string $childGroups): void
     {
@@ -105,9 +100,7 @@ class CacheGroupManager
      * 設定自動失效規則.
      *
      * 當觸發條件滿足時，目標分組會自動失效
-     *
      * @param string $triggerPattern 觸發模式（支援萬用字元）
-     * @param array<string>|string $targetGroups 目標分組
      */
     public function setInvalidationRule(string $triggerPattern, array|string $targetGroups): void
     {
@@ -124,9 +117,7 @@ class CacheGroupManager
 
     /**
      * 清空分組快取.
-     *
      * @param string $groupName 分組名稱
-     * @param bool $cascade 是否級聯清空依賴的子分組
      * @return int 清空的快取項目數量
      */
     public function flushGroup(string $groupName, bool $cascade = true): int
@@ -159,7 +150,6 @@ class CacheGroupManager
 
     /**
      * 檢查並觸發自動失效規則.
-     *
      * @param string $key 快取鍵
      */
     public function checkInvalidationRules(string $key): void
@@ -183,8 +173,7 @@ class CacheGroupManager
 
     /**
      * 取得分組統計資訊.
-     *
-     * @return array<string, mixed> 統計資訊
+     * @return array<string, mixed><string, mixed> 統計資訊
      */
     public function getGroupStatistics(): array
     {
@@ -212,8 +201,7 @@ class CacheGroupManager
 
     /**
      * 取得所有分組名稱.
-     *
-     * @return array<string> 分組名稱陣列
+     * @return array<string, mixed><string> 分組名稱陣列
      */
     public function getAllGroups(): array
     {
@@ -222,7 +210,6 @@ class CacheGroupManager
 
     /**
      * 檢查分組是否存在.
-     *
      * @param string $groupName 分組名稱
      * @return bool 是否存在
      */
@@ -233,9 +220,7 @@ class CacheGroupManager
 
     /**
      * 移除分組.
-     *
      * @param string $groupName 分組名稱
-     * @param bool $flushCache 是否清空分組快取
      * @return bool 是否成功
      */
     public function removeGroup(string $groupName, bool $flushCache = true): bool
@@ -268,12 +253,10 @@ class CacheGroupManager
 
     /**
      * 建立使用者相關的快取分組.
-     *
      * @param int $userId 使用者 ID
-     * @param array<string> $additionalTags 額外標籤
      * @return TaggedCacheInterface 使用者快取分組
      */
-    public function userGroup(int $userId, /** @var array<string, mixed> */ array $additionalTags = []): TaggedCacheInterface
+    public function userGroup(int $userId, /** @var array<string, mixed> */ array $additionalTags/** @var array<string, mixed> */ = []): TaggedCacheInterface
     {
         $userTag = CacheTag::user($userId);
         $groupName = "user_{$userId}";
@@ -284,12 +267,10 @@ class CacheGroupManager
 
     /**
      * 建立模組相關的快取分組.
-     *
      * @param string $moduleName 模組名稱
-     * @param array<string> $additionalTags 額外標籤
      * @return TaggedCacheInterface 模組快取分組
      */
-    public function moduleGroup(string $moduleName, /** @var array<string, mixed> */ array $additionalTags = []): TaggedCacheInterface
+    public function moduleGroup(string $moduleName, /** @var array<string, mixed> */ array $additionalTags/** @var array<string, mixed> */ = []): TaggedCacheInterface
     {
         $moduleTag = CacheTag::module($moduleName);
         $groupName = "module_{$moduleName}";
@@ -300,12 +281,10 @@ class CacheGroupManager
 
     /**
      * 建立時間相關的快取分組.
-     *
      * @param string $period 時間週期
-     * @param array<string> $additionalTags 額外標籤
      * @return TaggedCacheInterface 時間快取分組
      */
-    public function temporalGroup(string $period, /** @var array<string, mixed> */ array $additionalTags = []): TaggedCacheInterface
+    public function temporalGroup(string $period, /** @var array<string, mixed> */ array $additionalTags/** @var array<string, mixed> */ = []): TaggedCacheInterface
     {
         $temporalTag = CacheTag::temporal($period);
         $groupName = "temporal_{$period}";
@@ -316,9 +295,7 @@ class CacheGroupManager
 
     /**
      * 批量清空多個分組.
-     *
      * @param array<string> $groupNames 分組名稱陣列
-     * @param bool $cascade 是否級聯清空
      * @return int 總清空的項目數量
      */
     public function flushGroups(array $groupNames, bool $cascade = true): int
@@ -334,7 +311,6 @@ class CacheGroupManager
 
     /**
      * 按模式清空分組.
-     *
      * @param string $pattern 分組名稱模式（支援 * 萬用字元）
      * @param bool $cascade 是否級聯清空
      * @return int 清空的項目數量
@@ -354,11 +330,9 @@ class CacheGroupManager
 
     /**
      * 設定分組失效規則.
-     *
      * @param string $groupName 分組名稱
-     * @param array<string, mixed> $rules 失效規則
      */
-    public function setInvalidationRules(string $groupName, /** @var array<string, mixed> */ array $rules): void
+    public function setInvalidationRules(string $groupName, /** @var array<string, mixed> */ array $rules/** @var array<string, mixed> */): void
     {
         $this->invalidationRules[$groupName] = $rules;
 
@@ -370,9 +344,8 @@ class CacheGroupManager
 
     /**
      * 取得分組失效規則.
-     *
      * @param string $groupName 分組名稱
-     * @return array<string, mixed> 失效規則
+     * @return array<string, mixed><string, mixed> 失效規則
      */
     public function getInvalidationRules(string $groupName): array
     {
@@ -390,9 +363,8 @@ class CacheGroupManager
 
     /**
      * 取得分組依賴關係
-     *
      * @param string $groupName 分組名稱
-     * @return array<string> 依賴的子分組
+     * @return array<string, mixed><string> 依賴的子分組
      */
     public function getDependencies(string $groupName): array
     {
@@ -401,7 +373,6 @@ class CacheGroupManager
 
     /**
      * 檢查分組是否應該失效.
-     *
      * @param string $groupName 分組名稱
      * @return bool 是否應該失效
      */
@@ -426,9 +397,7 @@ class CacheGroupManager
 
     /**
      * 檢查分組是否過期
-     *
      * @param string $groupName 分組名稱
-     * @param int $maxAge 最大年齡（秒）
      * @return bool 是否過期
      */
     private function isGroupExpired(string $groupName, int $maxAge): bool
@@ -450,10 +419,8 @@ class CacheGroupManager
 
     /**
      * 批量清空多個分組.
-     *
      * @param array<string> $groupNames 分組名稱陣列
-     * @param bool $cascade 是否級聯清空
-     * @return array<string, int> 每個分組清空的項目數量
+     * @return array<string, mixed><string, int> 每個分組清空的項目數量
      */
     public function flushMultipleGroups(array $groupNames, bool $cascade = true): array
     {
@@ -468,7 +435,6 @@ class CacheGroupManager
 
     /**
      * 檢查模式匹配.
-     *
      * @param string $text 要匹配的文字
      * @param string $pattern 匹配模式（支援 * 萬用字元）
      * @return bool 是否匹配

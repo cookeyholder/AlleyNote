@@ -108,10 +108,10 @@ class FileSecurityService implements FileSecurityServiceInterface
     {
         // 移除路徑分隔符號和其他危險字元
         $fileName = basename($fileName);
-        $fileName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $fileName);
+        $fileName = (string) preg_replace('/[^a-zA-Z0-9._-]/', '_', $fileName);
 
         // 移除多個連續的點號（防止路徑遍歷）
-        $fileName = preg_replace('/\.{2,}/', '.', $fileName);
+        $fileName = (string) preg_replace('/\.{2,}/', '.', $fileName);
 
         // 確保不以點號開始（隱藏檔案）
         $fileName = ltrim($fileName, '.');
@@ -172,7 +172,7 @@ class FileSecurityService implements FileSecurityServiceInterface
         }
 
         // 檢查多重副檔名
-        $parts = explode('.', $fileName);
+        $parts = explode('.', is_string($fileName) ? $fileName : (string) $fileName);
         if (count($parts) > 3) { // 允許最多兩個副檔名，如 file.tar.gz
             throw ValidationException::fromSingleError('filename', '檔案名稱包含過多副檔名');
         }
@@ -196,7 +196,7 @@ class FileSecurityService implements FileSecurityServiceInterface
 
         // 驗證副檔名與 MIME 類型是否匹配
         $fileName = $file->getClientFilename();
-        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo($fileName ?? '', PATHINFO_EXTENSION));
 
         if (!in_array($extension, self::ALLOWED_MIME_TYPES[$clientMimeType], true)) {
             throw ValidationException::fromSingleError('file', '檔案副檔名與類型不匹配');
@@ -214,7 +214,8 @@ class FileSecurityService implements FileSecurityServiceInterface
         }
 
         // 檢查檔案簽名（魔術數字）
-        if (!$this->validateFileSignature($content, $file->getClientMediaType())) {
+        $mimeType = $file->getClientMediaType() ?? '';
+        if (!$this->validateFileSignature($content, $mimeType)) {
             throw ValidationException::fromSingleError('file', '檔案格式驗證失敗');
         }
     }

@@ -18,7 +18,7 @@ class RouteMatchResult
         private readonly bool $isMatched,
         private readonly ?RouteInterface $route = null,
         /** @var array<string, mixed> */
-        private readonly array $parameters = [],
+        private readonly array $parameters/** @var array<string, mixed> */ = [],
         private readonly ?string $error = null,
     ) {}
 
@@ -40,7 +40,7 @@ class RouteMatchResult
 
     /**
      * 取得路由參數.
-     * @return array<string, string>
+     * @return array<string, mixed><string, string>
      */
     public function getParameters(): array
     {
@@ -67,7 +67,7 @@ class RouteMatchResult
      * 建立成功匹配的結果.
      * @param array<string, string> $parameters
      */
-    public static function success(RouteInterface $route, /** @var array<string, mixed> */ array $parameters = []): self
+    public static function success(RouteInterface $route, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */ = []): self
     {
         return new self(true, $route, $parameters);
     }

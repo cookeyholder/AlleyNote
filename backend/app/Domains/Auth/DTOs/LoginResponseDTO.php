@@ -27,7 +27,7 @@ final readonly class LoginResponseDTO
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {

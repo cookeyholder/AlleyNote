@@ -11,11 +11,9 @@ namespace App\Domains\Auth\DTOs;
  */
 final readonly class RefreshRequestDTO
 {
-    /**
-     * @param array<string, mixed>|null $scopes
-     */
     public function __construct(
         public string $refreshToken,
+        /** @var array<string>|null */
         public ?array $scopes = null,
     ) {}
 
@@ -25,15 +23,21 @@ final readonly class RefreshRequestDTO
      */
     public static function fromArray(array $data): self
     {
+        $scopes = null;
+        if (isset($data['scopes']) && is_array($data['scopes'])) {
+            // Normalize scopes to an array of strings to satisfy strict typing
+            $scopes = array_map(static fn(mixed $value): string => (string) $value, $data['scopes']);
+        }
+
         return new self(
             refreshToken: (string) ($data['refresh_token'] ?? ''),
-            scopes: isset($data['scopes']) && is_array($data['scopes']) ? $data['scopes'] : null,
+            scopes: $scopes,
         );
     }
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {

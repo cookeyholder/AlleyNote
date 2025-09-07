@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
+use Exception;
 use Throwable;
 
 /**
@@ -57,14 +58,14 @@ class JwtConfigurationException extends JwtException
         string $reason = self::MISSING_CONFIGURATION,
         ?Throwable $previous = null,
         /** @var array<string, mixed> */
-        array $additionalContext = [],
+        array $additionalContext/** @var array<string, mixed> */ = [],
     ) {
         $context = array_merge([
             'reason' => $reason,
             'timestamp' => time(),
         ], $additionalContext);
 
-        parent::__construct($message, self::ERROR_CODE, $previous, $context);
+        parent::__construct($message, self::ERROR_CODE, $previous instanceof Exception ? $previous : null, $context);
     }
 
     /**
@@ -72,7 +73,7 @@ class JwtConfigurationException extends JwtException
      */
     public function getReason(): string
     {
-        return $this->context['reason'] ?? self::MISSING_CONFIGURATION;
+        return (string) ($this->context['reason'] ?? self::MISSING_CONFIGURATION);
     }
 
     /**

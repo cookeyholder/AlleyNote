@@ -15,21 +15,18 @@ readonly class SourceStatistics
 {
     /**
      * @param SourceType $sourceType 來源類型
-     * @param StatisticsMetric $count 計數
      * @param StatisticsMetric $percentage 百分比
-     * @param array<string, StatisticsMetric> $additionalMetrics 額外指標
      */
     private function __construct(
         public SourceType $sourceType,
         public StatisticsMetric $count,
         public StatisticsMetric $percentage,
         /** @var array<string, mixed> */
-        public array $additionalMetrics = [],
+        public array $additionalMetrics/** @var array<string, mixed> */ = [],
     ) {}
 
     /**
      * 建立來源統計.
-     *
      * @param array<string, StatisticsMetric> $additionalMetrics
      */
     public static function create(
@@ -37,7 +34,7 @@ readonly class SourceStatistics
         int $count,
         float $percentage,
         /** @var array<string, mixed> */
-        array $additionalMetrics = [],
+        array $additionalMetrics/** @var array<string, mixed> */ = [],
     ): self {
         if ($count < 0) {
             throw new InvalidSourceStatisticsException(
@@ -160,8 +157,7 @@ readonly class SourceStatistics
 
     /**
      * 取得所有額外指標的鍵.
-     *
-     * @return array<string>
+     * @return array<string, mixed><string>
      */
     public function getAdditionalMetricKeys(): array
     {
@@ -295,8 +291,7 @@ readonly class SourceStatistics
 
     /**
      * 轉換為陣列.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      *                              source_type: string,
      *                              source_name: string,
      *                              source_description: string,

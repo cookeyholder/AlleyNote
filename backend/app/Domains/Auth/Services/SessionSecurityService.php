@@ -57,7 +57,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             if (ini_get('session.use_cookies')) {
                 $params = session_get_cookie_params();
                 setcookie(
-                    session_name(),
+                    (string) session_name(),
                     '',
                     time() - 42000,
                     $params['path'],
@@ -89,14 +89,14 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         // 檢查 Session 是否過期 (最大閒置時間 2 小時)
         $maxIdleTime = 7200; // 2 hours
         if (
-            (time() - $_SESSION['last_activity']) > $maxIdleTime
+            (time() - (int) $_SESSION['last_activity']) > $maxIdleTime
         ) {
             return false;
         }
 
         // 檢查 Session 是否超過最大生命週期 (8 小時)
         $maxLifetime = 28800; // 8 hours
-        if ((time() - $_SESSION['session_created_at']) > $maxLifetime) {
+        if ((time() - (int) $_SESSION['session_created_at']) > $maxLifetime) {
             return false;
         }
 
@@ -193,12 +193,12 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             return false;
         }
 
-        return (time() - $_SESSION['ip_change_detected_at']) > 300; // 5 分鐘
+        return (time() - (int) $_SESSION['ip_change_detected_at']) > 300; // 5 分鐘
     }
 
     /**
      * 全面的 Session 安全檢查.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function performSecurityCheck(string $currentIp, string $currentUserAgent): array
     {

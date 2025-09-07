@@ -17,9 +17,7 @@ abstract class DomainException extends Exception
 {
     /**
      * 建立領域例外.
-     *
      * @param string $message 例外訊息
-     * @param int $code 例外代碼
      * @param Throwable|null $previous 前一個例外
      */
     public function __construct(
@@ -34,14 +32,12 @@ abstract class DomainException extends Exception
      * 取得領域名稱.
      *
      * 由子類別實作，回傳該例外所屬的領域名稱
-     *
      * @return string 領域名稱
      */
     abstract public function getDomainName(): string;
 
     /**
      * 取得格式化的例外訊息.
-     *
      * @return string 格式化後的例外訊息
      */
     public function getFormattedMessage(): string
@@ -55,8 +51,7 @@ abstract class DomainException extends Exception
 
     /**
      * 轉換為陣列格式.
-     *
-     * @return array{domain: string, message: string, code: int, file: string, line: int}
+     * @return array<string, mixed>{domain: string, message: string, code: int, file: string, line: int}
      */
     public function toArray(): array
     {

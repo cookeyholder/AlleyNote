@@ -50,6 +50,9 @@ class PrefixedCacheManager implements CacheManagerInterface
         return $this->manager->remember($this->prefixKey($key), $callback, $ttl);
     }
 
+    /**
+     * @param array<string, mixed> $tags
+     */
     public function tags(string|array $tags): TaggedCacheInterface
     {
         return $this->manager->tags($tags);
@@ -71,7 +74,7 @@ class PrefixedCacheManager implements CacheManagerInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getDrivers(): array
     {
@@ -79,7 +82,7 @@ class PrefixedCacheManager implements CacheManagerInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getStats(): array
     {
@@ -87,7 +90,7 @@ class PrefixedCacheManager implements CacheManagerInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getHealthStatus(): array
     {
@@ -95,7 +98,7 @@ class PrefixedCacheManager implements CacheManagerInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function warmup(array $warmupCallbacks): array
     {
@@ -109,7 +112,7 @@ class PrefixedCacheManager implements CacheManagerInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function cleanup(): array
     {

@@ -262,7 +262,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得不同的行為類型.
-     *
      * @return array<int, string>
      */
     private function getDistinctActionTypes(): array
@@ -276,7 +275,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得不同的狀態.
-     *
      * @return array<int, string>
      */
     private function getDistinctStatuses(): array
@@ -290,7 +288,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得隨機記錄.
-     *
      * @return array<string, mixed>
      */
     private function getRandomRecord(): array
@@ -307,7 +304,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 驗證基本欄位是否有效.
-     *
      * @param array<string, mixed> $record
      */
     private function assertBasicFieldsAreValid(array $record): void
@@ -331,7 +327,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 驗證 metadata 是否為有效的 JSON.
-     *
      * @param array<string, mixed> $record
      */
     private function assertMetadataIsValidJson(array $record): void
@@ -345,7 +340,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得安全事件.
-     *
      * @return array<int, array<string, mixed>>
      */
     private function getSecurityEvents(): array
@@ -359,7 +353,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 檢查是否有被阻擋的安全事件.
-     *
      * @param array<int, array<string, mixed>> $securityEvents
      */
     private function hasBlockedSecurityEvent(array $securityEvents): bool

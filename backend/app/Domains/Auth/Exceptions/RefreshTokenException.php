@@ -64,16 +64,14 @@ class RefreshTokenException extends JwtException
 
     /**
      * 建立 Refresh Token 操作例外.
-     *
      * @param string $reason 失敗原因
-     * @param string $customMessage 自定義錯誤訊息
      * @param array<string, mixed> $additionalContext 額外上下文資訊
      */
     public function __construct(
         string $reason = self::REASON_NOT_FOUND,
         string $customMessage = '',
         /** @var array<string, mixed> */
-        array $additionalContext = [],
+        array $additionalContext/** @var array<string, mixed> */ = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason);
 
@@ -88,7 +86,6 @@ class RefreshTokenException extends JwtException
 
     /**
      * 建構預設錯誤訊息.
-     *
      * @param string $reason 失敗原因
      */
     private function buildDefaultMessage(string $reason): string
@@ -142,7 +139,7 @@ class RefreshTokenException extends JwtException
      */
     public function getReason(): string
     {
-        return $this->context['reason'] ?? self::REASON_NOT_FOUND;
+        return (string) ($this->context['reason'] ?? self::REASON_NOT_FOUND);
     }
 
     /**
@@ -150,7 +147,9 @@ class RefreshTokenException extends JwtException
      */
     public function getOperationId(): ?string
     {
-        return $this->context['operation_id'] ?? null;
+        $operationId = $this->context['operation_id'] ?? null;
+
+        return $operationId !== null ? (string) $operationId : null;
     }
 
     /**
@@ -158,7 +157,9 @@ class RefreshTokenException extends JwtException
      */
     public function getUserId(): ?int
     {
-        return $this->context['user_id'] ?? null;
+        $userId = $this->context['user_id'] ?? null;
+
+        return $userId !== null ? (int) $userId : null;
     }
 
     /**
@@ -166,22 +167,29 @@ class RefreshTokenException extends JwtException
      */
     public function getTokenId(): ?string
     {
-        return $this->context['token_id'] ?? null;
+        $tokenId = $this->context['token_id'] ?? null;
+
+        return $tokenId !== null ? (string) $tokenId : null;
     }
 
     /**
      * 取得裝置資訊（如果有）.
-     *
-     * @return array<string, mixed>|null
+     * @return array<string, mixed><string, mixed>|null
      */
     public function getDeviceInfo(): ?array
     {
-        return $this->context['device_info'] ?? null;
+        $deviceInfo = $this->context['device_info'] ?? null;
+
+        if ($deviceInfo !== null && is_array($deviceInfo)) {
+            /** @var array<string, mixed> $deviceInfo */
+            return $deviceInfo;
+        }
+
+        return null;
     }
 
     /**
      * 檢查是否為特定失敗原因.
-     *
      * @param string $reason 原因
      */
     public function isReason(string $reason): bool
@@ -236,9 +244,7 @@ class RefreshTokenException extends JwtException
 
     /**
      * 靜態工廠方法：Token 不存在.
-     *
      * @param string $tokenId Token ID
-     * @param int|null $userId 用戶 ID
      */
     public static function notFound(string $tokenId, ?int $userId = null): self
     {
@@ -252,9 +258,7 @@ class RefreshTokenException extends JwtException
 
     /**
      * 靜態工廠方法：Token 已被撤銷.
-     *
      * @param string $tokenId Token ID
-     * @param int $revokedAt 撤銷時間戳
      * @param string $revokedReason 撤銷原因
      */
     public static function revoked(string $tokenId, int $revokedAt, string $revokedReason = ''): self
@@ -269,9 +273,7 @@ class RefreshTokenException extends JwtException
 
     /**
      * 靜態工廠方法：Token 已使用.
-     *
      * @param string $tokenId Token ID
-     * @param int $usedAt 使用時間戳
      */
     public static function alreadyUsed(string $tokenId, int $usedAt): self
     {
@@ -284,9 +286,7 @@ class RefreshTokenException extends JwtException
 
     /**
      * 靜態工廠方法：裝置不匹配.
-     *
      * @param string $expectedFingerprint 期望的裝置指紋
-     * @param string $actualFingerprint 實際的裝置指紋
      * @param string $tokenId Token ID
      */
     public static function deviceMismatch(
@@ -303,9 +303,7 @@ class RefreshTokenException extends JwtException
 
     /**
      * 靜態工廠方法：用戶不匹配.
-     *
      * @param int $expectedUserId 期望的用戶 ID
-     * @param int $actualUserId 實際的用戶 ID
      * @param string $tokenId Token ID
      */
     public static function userMismatch(int $expectedUserId, int $actualUserId, string $tokenId): self
@@ -319,11 +317,9 @@ class RefreshTokenException extends JwtException
 
     /**
      * 靜態工廠方法：儲存失敗.
-     *
      * @param string $error 錯誤詳情
-     * @param array<string, mixed> $tokenData Token 資料
      */
-    public static function storageFailed(string $error, /** @var array<string, mixed> */ array $tokenData = []): self
+    public static function storageFailed(string $error, /** @var array<string, mixed> */ array $tokenData/** @var array<string, mixed> */ = []): self
     {
         return new self(self::REASON_STORAGE_FAILED, '', [
             'storage_error' => $error,
@@ -333,9 +329,7 @@ class RefreshTokenException extends JwtException
 
     /**
      * 靜態工廠方法：刪除失敗.
-     *
      * @param string $tokenId Token ID
-     * @param string $error 錯誤詳情
      */
     public static function deletionFailed(string $tokenId, string $error): self
     {
@@ -347,9 +341,7 @@ class RefreshTokenException extends JwtException
 
     /**
      * 靜態工廠方法：輪換失敗.
-     *
      * @param string $oldTokenId 舊 Token ID
-     * @param string $error 錯誤詳情
      */
     public static function rotationFailed(string $oldTokenId, string $error): self
     {
@@ -361,9 +353,7 @@ class RefreshTokenException extends JwtException
 
     /**
      * 靜態工廠方法：數量限制超出.
-     *
      * @param int $userId 用戶 ID
-     * @param int $currentCount 目前數量
      * @param int $maxLimit 最大限制
      */
     public static function limitExceeded(int $userId, int $currentCount, int $maxLimit): self
@@ -377,9 +367,7 @@ class RefreshTokenException extends JwtException
 
     /**
      * 靜態工廠方法：Token 系列不匹配.
-     *
      * @param string $expectedFamily 期望的 Token 系列
-     * @param string $actualFamily 實際的 Token 系列
      * @param string $tokenId Token ID
      */
     public static function familyMismatch(string $expectedFamily, string $actualFamily, string $tokenId): self

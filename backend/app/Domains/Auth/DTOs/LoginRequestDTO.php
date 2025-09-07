@@ -12,12 +12,13 @@ namespace App\Domains\Auth\DTOs;
 final readonly class LoginRequestDTO
 {
     /**
-     * @param array<string, mixed>|null $scopes
+     * @param array<string>|null $scopes
      */
     public function __construct(
         public string $email,
         public string $password,
         public bool $rememberMe = false,
+        /** @var array<string>|null */
         public ?array $scopes = null,
     ) {}
 
@@ -27,17 +28,23 @@ final readonly class LoginRequestDTO
      */
     public static function fromArray(array $data): self
     {
+        $scopes = null;
+        if (isset($data['scopes']) && is_array($data['scopes'])) {
+            // Normalize scope values to strings to satisfy strict typing expectations
+            $scopes = array_map(static fn(mixed $value): string => (string) $value, $data['scopes']);
+        }
+
         return new self(
             email: (string) ($data['email'] ?? ''),
             password: (string) ($data['password'] ?? ''),
             rememberMe: (bool) ($data['remember_me'] ?? false),
-            scopes: isset($data['scopes']) && is_array($data['scopes']) ? $data['scopes'] : null,
+            scopes: $scopes,
         );
     }
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {

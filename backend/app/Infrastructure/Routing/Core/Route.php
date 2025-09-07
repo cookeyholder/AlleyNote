@@ -32,7 +32,7 @@ class Route implements RouteInterface
      */
     public function __construct(
         /** @var array<string, mixed> */
-        private readonly array $methods,
+        private readonly array $methods/** @var array<string, mixed> */,
         private readonly string $pattern,
         private readonly mixed $handler,
     ) {
@@ -66,6 +66,9 @@ class Route implements RouteInterface
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $middlewares
+     */
     public function addMiddlewares(array $middlewares): self
     {
         foreach ($middlewares as $middleware) {
@@ -124,7 +127,10 @@ class Route implements RouteInterface
         return $this->matchesPath($path);
     }
 
-    public function generateUrl(array $parameters = [], /** @var array<string, mixed> */ array $queryParams = []): string
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    public function generateUrl(array $parameters = [], /** @var array<string, mixed> */ array $queryParams/** @var array<string, mixed> */ = []): string
     {
         $url = $this->pattern;
 
@@ -153,6 +159,9 @@ class Route implements RouteInterface
         return $url;
     }
 
+    /**
+     * @param array<string, mixed> $attributes
+     */
     public function withAttributes(array $attributes): self
     {
         $clone = clone $this;

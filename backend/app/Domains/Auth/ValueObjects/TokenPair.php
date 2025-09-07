@@ -21,11 +21,8 @@ final readonly class TokenPair implements JsonSerializable
 {
     /**
      * 建構 Token Pair.
-     *
      * @param string $accessToken JWT Access Token
-     * @param string $refreshToken Refresh Token
      * @param DateTimeImmutable $accessTokenExpiresAt Access Token 過期時間
-     * @param DateTimeImmutable $refreshTokenExpiresAt Refresh Token 過期時間
      * @param string $tokenType Token 類型，預設為 "Bearer"
      *
      * @throws InvalidArgumentException 當參數無效時
@@ -85,7 +82,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 取得 Access Token 剩餘有效秒數.
-     *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
      * @return int 剩餘秒數，如已過期則返回 0
      */
@@ -99,7 +95,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 取得 Refresh Token 剩餘有效秒數.
-     *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
      * @return int 剩餘秒數，如已過期則返回 0
      */
@@ -113,7 +108,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 檢查 Access Token 是否已過期
-     *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
      */
     public function isAccessTokenExpired(?DateTimeImmutable $now = null): bool
@@ -125,7 +119,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 檢查 Refresh Token 是否已過期
-     *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
      */
     public function isRefreshTokenExpired(?DateTimeImmutable $now = null): bool
@@ -137,7 +130,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 檢查是否兩個 token 都已過期
-     *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
      */
     public function isFullyExpired(?DateTimeImmutable $now = null): bool
@@ -147,7 +139,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 檢查是否可以進行 token 刷新（Access Token 過期但 Refresh Token 有效）.
-     *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
      */
     public function canRefresh(?DateTimeImmutable $now = null): bool
@@ -157,9 +148,7 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 檢查 Access Token 是否即將過期
-     *
      * @param int $thresholdSeconds 閾值秒數，預設為 300 秒 (5分鐘)
-     * @param DateTimeImmutable|null $now 檢查時間，預設為現在
      */
     public function isAccessTokenNearExpiry(int $thresholdSeconds = 300, ?DateTimeImmutable $now = null): bool
     {
@@ -183,8 +172,7 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {
@@ -200,9 +188,8 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 轉換為 API 回應格式（隱藏敏感資訊）.
-     *
      * @param bool $includeRefreshToken 是否包含 Refresh Token
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toApiResponse(bool $includeRefreshToken = true): array
     {
@@ -221,8 +208,7 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -231,7 +217,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 檢查與另一個 TokenPair 是否相等.
-     *
      * @param TokenPair $other 另一個 TokenPair
      */
     public function equals(TokenPair $other): bool
@@ -271,7 +256,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 驗證 Access Token.
-     *
      * @param string $accessToken Access Token
      * @throws InvalidArgumentException 當 Access Token 無效時
      */
@@ -282,7 +266,7 @@ final readonly class TokenPair implements JsonSerializable
         }
 
         // 基本的 JWT 格式檢查（三個部分用點分隔）
-        $parts = explode('.', $accessToken);
+        $parts = explode('.', is_string($accessToken) ? $accessToken : (string) $accessToken);
         if (count($parts) !== 3) {
             throw new InvalidArgumentException('Access token must be a valid JWT format (header.payload.signature)');
         }
@@ -297,7 +281,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 驗證 Refresh Token.
-     *
      * @param string $refreshToken Refresh Token
      * @throws InvalidArgumentException 當 Refresh Token 無效時
      */
@@ -319,7 +302,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 驗證 Token 類型.
-     *
      * @param string $tokenType Token 類型
      * @throws InvalidArgumentException 當 Token 類型無效時
      */
@@ -339,9 +321,7 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 驗證過期時間.
-     *
      * @param DateTimeImmutable $accessTokenExpiresAt Access Token 過期時間
-     * @param DateTimeImmutable $refreshTokenExpiresAt Refresh Token 過期時間
      * @throws InvalidArgumentException 當過期時間設定無效時
      */
     private function validateExpirationTimes(

@@ -20,17 +20,11 @@ final readonly class DeviceInfo implements JsonSerializable
 {
     /**
      * 建構裝置資訊.
-     *
      * @param string $deviceId 裝置唯一識別符
-     * @param string $deviceName 裝置名稱（用戶自訂或系統生成）
      * @param string $userAgent 使用者代理字串
-     * @param string $ipAddress IP 位址
      * @param string|null $platform 平台資訊 (Windows, macOS, Linux, iOS, Android 等)
-     * @param string|null $browser 瀏覽器資訊 (Chrome, Firefox, Safari 等)
      * @param string|null $browserVersion 瀏覽器版本
-     * @param string|null $osVersion 作業系統版本
      * @param bool $isMobile 是否為行動裝置
-     * @param bool $isTablet 是否為平板裝置
      * @param bool $isDesktop 是否為桌面裝置
      *
      * @throws InvalidArgumentException 當參數無效時
@@ -64,9 +58,7 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 從使用者代理和 IP 建立裝置資訊.
-     *
      * @param string $userAgent 使用者代理字串
-     * @param string $ipAddress IP 位址
      * @param string|null $deviceName 裝置名稱，若為 null 則自動生成
      */
     public static function fromUserAgent(string $userAgent, string $ipAddress, ?string $deviceName = null): self
@@ -81,19 +73,18 @@ final readonly class DeviceInfo implements JsonSerializable
             deviceName: $deviceName,
             userAgent: $userAgent,
             ipAddress: $ipAddress,
-            platform: $parsedInfo['platform'],
-            browser: $parsedInfo['browser'],
-            browserVersion: $parsedInfo['browserVersion'],
-            osVersion: $parsedInfo['osVersion'],
-            isMobile: $parsedInfo['isMobile'],
-            isTablet: $parsedInfo['isTablet'],
-            isDesktop: $parsedInfo['isDesktop'],
+            platform: isset($parsedInfo['platform']) ? (string) $parsedInfo['platform'] : null,
+            browser: isset($parsedInfo['browser']) ? (string) $parsedInfo['browser'] : null,
+            browserVersion: isset($parsedInfo['browserVersion']) ? (string) $parsedInfo['browserVersion'] : null,
+            osVersion: isset($parsedInfo['osVersion']) ? (string) $parsedInfo['osVersion'] : null,
+            isMobile: (bool) ($parsedInfo['isMobile'] ?? false),
+            isTablet: (bool) ($parsedInfo['isTablet'] ?? false),
+            isDesktop: (bool) ($parsedInfo['isDesktop'] ?? false),
         );
     }
 
     /**
      * 從陣列建立裝置資訊.
-     *
      * @param array<string, mixed> $data 裝置資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
@@ -107,17 +98,17 @@ final readonly class DeviceInfo implements JsonSerializable
         }
 
         return new self(
-            deviceId: $data['device_id'],
-            deviceName: $data['device_name'],
-            userAgent: $data['user_agent'],
-            ipAddress: $data['ip_address'],
-            platform: $data['platform'] ?? null,
-            browser: $data['browser'] ?? null,
-            browserVersion: $data['browser_version'] ?? null,
-            osVersion: $data['os_version'] ?? null,
-            isMobile: $data['is_mobile'] ?? false,
-            isTablet: $data['is_tablet'] ?? false,
-            isDesktop: $data['is_desktop'] ?? true,
+            deviceId: (string) $data['device_id'],
+            deviceName: (string) $data['device_name'],
+            userAgent: (string) $data['user_agent'],
+            ipAddress: (string) $data['ip_address'],
+            platform: isset($data['platform']) ? (string) $data['platform'] : null,
+            browser: isset($data['browser']) ? (string) $data['browser'] : null,
+            browserVersion: isset($data['browser_version']) ? (string) $data['browser_version'] : null,
+            osVersion: isset($data['os_version']) ? (string) $data['os_version'] : null,
+            isMobile: (bool) ($data['is_mobile'] ?? false),
+            isTablet: (bool) ($data['is_tablet'] ?? false),
+            isDesktop: (bool) ($data['is_desktop'] ?? true),
         );
     }
 
@@ -276,7 +267,6 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 檢查是否與另一個裝置資訊匹配.
-     *
      * @param DeviceInfo $other 另一個裝置資訊
      */
     public function matches(DeviceInfo $other): bool
@@ -286,8 +276,7 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {
@@ -310,8 +299,7 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 轉換為摘要格式（隱藏敏感資訊）.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toSummary(): array
     {
@@ -327,8 +315,7 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -337,7 +324,6 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 檢查與另一個 DeviceInfo 是否相等.
-     *
      * @param DeviceInfo $other 另一個 DeviceInfo
      */
     public function equals(DeviceInfo $other): bool
@@ -414,9 +400,7 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 生成裝置 ID.
-     *
      * @param string $userAgent 使用者代理
-     * @param string $ipAddress IP 位址
      */
     private static function generateDeviceId(string $userAgent, string $ipAddress): string
     {
@@ -427,23 +411,21 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 生成裝置名稱.
-     *
      * @param array<string, mixed> $parsedInfo 解析後的裝置資訊
      */
     private static function generateDeviceName(array $parsedInfo): string
     {
-        $platform = $parsedInfo['platform'] ?? 'Unknown';
-        $browser = $parsedInfo['browser'] ?? 'Browser';
+        $platform = (string) ($parsedInfo['platform'] ?? 'Unknown');
+        $browser = (string) ($parsedInfo['browser'] ?? 'Browser');
         $deviceType = $parsedInfo['isMobile'] ? 'Mobile' : ($parsedInfo['isTablet'] ? 'Tablet' : 'Desktop');
 
-        return "{$platform} {$deviceType} ({$browser})";
+        return $platform . ' ' . $deviceType . ' (' . $browser . ')';
     }
 
     /**
      * 解析使用者代理字串.
-     *
      * @param string $userAgent 使用者代理字串
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private static function parseUserAgent(string $userAgent): array
     {
@@ -512,7 +494,6 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 驗證裝置 ID.
-     *
      * @param string $deviceId 裝置 ID
      * @throws InvalidArgumentException 當裝置 ID 無效時
      */
@@ -533,7 +514,6 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 驗證裝置名稱.
-     *
      * @param string $deviceName 裝置名稱
      * @throws InvalidArgumentException 當裝置名稱無效時
      */
@@ -550,7 +530,6 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 驗證使用者代理.
-     *
      * @param string $userAgent 使用者代理
      * @throws InvalidArgumentException 當使用者代理無效時
      */
@@ -567,7 +546,6 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 驗證 IP 位址
-     *
      * @param string $ipAddress IP 位址
      * @throws InvalidArgumentException 當 IP 位址無效時
      */
@@ -584,7 +562,6 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 驗證平台.
-     *
      * @param string $platform 平台
      * @throws InvalidArgumentException 當平台無效時
      */
@@ -600,7 +577,6 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 驗證瀏覽器.
-     *
      * @param string $browser 瀏覽器
      * @throws InvalidArgumentException 當瀏覽器無效時
      */
@@ -626,9 +602,7 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 驗證裝置類型.
-     *
      * @param bool $isMobile 是否為行動裝置
-     * @param bool $isTablet 是否為平板裝置
      * @param bool $isDesktop 是否為桌面裝置
      * @throws InvalidArgumentException 當裝置類型設定無效時
      */

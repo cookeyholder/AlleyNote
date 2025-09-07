@@ -182,7 +182,7 @@ class CacheManager
 
     /**
      * 取得快取統計資訊.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getStats(): array
     {

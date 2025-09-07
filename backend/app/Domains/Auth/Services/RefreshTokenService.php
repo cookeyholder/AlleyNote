@@ -61,9 +61,7 @@ final class RefreshTokenService
 
     /**
      * 建立新的 refresh token.
-     *
      * @param int $userId 使用者 ID
-     * @param DeviceInfo $deviceInfo 裝置資訊
      * @param string|null $parentTokenJti 父 token JTI（token 輪轉時使用）
      * @return RefreshToken 新建立的 refresh token
      * @throws RefreshTokenException 當 token 建立失敗時
@@ -110,8 +108,9 @@ final class RefreshTokenService
                 $expiresAt,
                 $deviceInfo,
                 RefreshToken::STATUS_ACTIVE,
-                null, // 未撤銷
-                null, // 撤銷原因
+                null, // revokedReason
+                null, // revokedAt
+                null, // lastUsedAt
                 $parentTokenJti,
                 null, // created_at (由資料庫生成)
                 null, // updated_at (由資料庫生成)
@@ -141,9 +140,7 @@ final class RefreshTokenService
 
     /**
      * 使用 refresh token 產生新的 access token.
-     *
      * @param string $refreshToken 原始 refresh token
-     * @param DeviceInfo $deviceInfo 當前裝置資訊
      * @param bool $rotateToken 是否進行 token 輪轉
      * @return TokenPair 新的 token pair
      * @throws InvalidTokenException|TokenExpiredException|AuthenticationException
@@ -187,7 +184,7 @@ final class RefreshTokenService
                 $this->performTokenRotationFromData($tokenData, $deviceInfo);
             } else {
                 // 不輪轉時，更新使用時間
-                $this->refreshTokenRepository->updateLastUsed($tokenData['jti']);
+                $this->refreshTokenRepository->updateLastUsed((string) $tokenData['jti']);
             }
 
             $this->logger?->info('Access token refreshed successfully', [
@@ -216,9 +213,7 @@ final class RefreshTokenService
 
     /**
      * 撤銷單個 refresh token.
-     *
      * @param string $refreshToken 要撤銷的 refresh token
-     * @param string $reason 撤銷原因
      * @return bool 撤銷是否成功
      */
     public function revokeToken(string $refreshToken, string $reason = RefreshToken::REVOKE_REASON_MANUAL): bool
@@ -250,9 +245,7 @@ final class RefreshTokenService
 
     /**
      * 撤銷使用者的所有 refresh token.
-     *
      * @param int $userId 使用者 ID
-     * @param string $reason 撤銷原因
      * @param string|null $exceptJti 例外的 JTI（不撤銷）
      * @return int 撤銷的 token 數量
      */
@@ -271,7 +264,7 @@ final class RefreshTokenService
                     continue;
                 }
 
-                if ($this->refreshTokenRepository->revoke($tokenData['jti'], $reason)) {
+                if ($this->refreshTokenRepository->revoke((string) $tokenData['jti'], $reason)) {
                     $revokedCount++;
                 }
             }
@@ -295,9 +288,7 @@ final class RefreshTokenService
 
     /**
      * 撤銷裝置的所有 refresh token.
-     *
      * @param string $deviceId 裝置 ID
-     * @param string $reason 撤銷原因
      * @return int 撤銷的 token 數量
      */
     public function revokeDeviceTokens(string $deviceId, string $reason = RefreshToken::REVOKE_REASON_SECURITY): int
@@ -324,7 +315,6 @@ final class RefreshTokenService
 
     /**
      * 清理過期的 refresh token.
-     *
      * @return int 清理的 token 數量
      */
     public function cleanupExpiredTokens(): int
@@ -350,9 +340,8 @@ final class RefreshTokenService
 
     /**
      * 取得使用者的活躍 refresh token 統計.
-     *
      * @param int $userId 使用者 ID
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getUserTokenStats(int $userId): array
     {
@@ -427,7 +416,7 @@ final class RefreshTokenService
         if (count($activeTokens) >= self::MAX_TOKENS_PER_USER) {
             // 撤銷最舊的 token
             $oldestTokenData = $activeTokens[0]; // 假設已按時間排序
-            $this->revokeToken($oldestTokenData['jti'], RefreshToken::REVOKE_REASON_MANUAL);
+            $this->revokeToken((string) $oldestTokenData['jti'], RefreshToken::REVOKE_REASON_MANUAL);
 
             $this->logger?->info('Token limit enforced, oldest token revoked', [
                 'user_id' => $userId,
@@ -457,12 +446,12 @@ final class RefreshTokenService
             $newToken = $this->createRefreshToken(
                 (int) $tokenData['user_id'],
                 $deviceInfo,
-                $tokenData['jti'], // 設定父 token JTI
+                (string) $tokenData['jti'], // 設定父 token JTI
             );
 
             // 2. 撤銷舊的 token（但給予寬限期）
             $this->refreshTokenRepository->revoke(
-                $tokenData['jti'],
+                (string) $tokenData['jti'],
                 RefreshToken::REVOKE_REASON_TOKEN_ROTATION,
             );
 

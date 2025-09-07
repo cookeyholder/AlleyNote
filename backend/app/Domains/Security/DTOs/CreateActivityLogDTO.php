@@ -46,27 +46,26 @@ final class CreateActivityLogDTO implements JsonSerializable
     public static function fromArray(array $data): self
     {
         return new self(
-            actionType: ActivityType::from($data['action_type']),
-            userId: $data['user_id'] ?? null,
-            sessionId: $data['session_id'] ?? null,
-            status: isset($data['status']) ? ActivityStatus::from($data['status']) : ActivityStatus::SUCCESS,
-            targetType: $data['target_type'] ?? null,
-            targetId: $data['target_id'] ?? null,
-            description: $data['description'] ?? null,
-            metadata: $data['metadata'] ?? null,
-            ipAddress: $data['ip_address'] ?? null,
-            userAgent: $data['user_agent'] ?? null,
-            requestMethod: $data['request_method'] ?? null,
-            requestPath: $data['request_path'] ?? null,
+            actionType: ActivityType::from((string) ($data['action_type'] ?? '')),
+            userId: isset($data['user_id']) ? (int) $data['user_id'] : null,
+            sessionId: isset($data['session_id']) ? (string) $data['session_id'] : null,
+            status: isset($data['status']) ? ActivityStatus::from((string) $data['status']) : ActivityStatus::SUCCESS,
+            targetType: isset($data['target_type']) ? (string) $data['target_type'] : null,
+            targetId: isset($data['target_id']) ? (string) $data['target_id'] : null,
+            description: isset($data['description']) ? (string) $data['description'] : null,
+            metadata: isset($data['metadata']) && is_array($data['metadata']) ? $data['metadata'] : null,
+            ipAddress: isset($data['ip_address']) ? (string) $data['ip_address'] : null,
+            userAgent: isset($data['user_agent']) ? (string) $data['user_agent'] : null,
+            requestMethod: isset($data['request_method']) ? (string) $data['request_method'] : null,
+            requestPath: isset($data['request_path']) ? (string) $data['request_path'] : null,
             occurredAt: isset($data['occurred_at'])
-                ? new DateTimeImmutable($data['occurred_at'])
+                ? new DateTimeImmutable((string) $data['occurred_at'])
                 : new DateTimeImmutable(),
         );
     }
 
     /**
      * 快速建立成功操作的記錄.
-     *
      * @param array<string, mixed>|null $metadata
      */
     public static function success(
@@ -90,7 +89,6 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 快速建立失敗操作的記錄.
-     *
      * @param array<string, mixed>|null $metadata
      */
     public static function failure(
@@ -114,7 +112,6 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 快速建立安全事件的記錄.
-     *
      * @param array<string, mixed>|null $metadata
      */
     public static function securityEvent(
@@ -172,7 +169,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array<string, mixed><string, mixed>|null
      */
     public function getMetadata(): ?array
     {
@@ -264,8 +261,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 轉換為資料庫儲存格式.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {
@@ -289,7 +285,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -298,7 +294,6 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 驗證 metadata 是否可序列化.
-     *
      * @param array<string, mixed> $metadata
      */
     private function validateMetadata(array $metadata): void

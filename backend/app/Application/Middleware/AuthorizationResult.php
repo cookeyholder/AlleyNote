@@ -19,11 +19,8 @@ final readonly class AuthorizationResult implements JsonSerializable
 {
     /**
      * 建構授權結果.
-     *
      * @param bool $allowed 是否允許存取
-     * @param string $reason 授權原因或拒絕原因
      * @param string $code 結果代碼
-     * @param array<string> $appliedRules 應用的授權規則清單
      * @param array<string, mixed> $metadata 額外的元資料
      */
     public function __construct(
@@ -31,14 +28,13 @@ final readonly class AuthorizationResult implements JsonSerializable
         private string $reason,
         private string $code,
         /** @var array<string, mixed> */
-        private array $appliedRules = [],
+        private array $appliedRules/** @var array<string, mixed> */ = [],
         /** @var array<string, mixed> */
-        private array $metadata = [],
+        private array $metadata/** @var array<string, mixed> */ = [],
     ) {}
 
     /**
      * 檢查是否允許存取.
-     *
      * @return bool 是否允許
      */
     public function isAllowed(): bool
@@ -48,7 +44,6 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 檢查是否拒絕存取.
-     *
      * @return bool 是否拒絕
      */
     public function isDenied(): bool
@@ -58,7 +53,6 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 取得授權原因.
-     *
      * @return string 授權或拒絕的原因
      */
     public function getReason(): string
@@ -68,7 +62,6 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 取得結果代碼.
-     *
      * @return string 結果代碼
      */
     public function getCode(): string
@@ -78,8 +71,7 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 取得應用的授權規則.
-     *
-     * @return array<string> 規則清單
+     * @return array<string, mixed><string, mixed> 規則清單
      */
     public function getAppliedRules(): array
     {
@@ -88,8 +80,7 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 取得元資料.
-     *
-     * @return array<string, mixed> 元資料
+     * @return array<string, mixed><string, mixed> 元資料
      */
     public function getMetadata(): array
     {
@@ -98,9 +89,7 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 取得特定的元資料值.
-     *
      * @param string $key 元資料鍵
-     * @param mixed $default 預設值
      * @return mixed 元資料值
      */
     public function getMetadataValue(string $key, mixed $default = null): mixed
@@ -110,30 +99,26 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 檢查是否包含特定規則.
-     *
      * @param string $rule 規則名稱
      * @return bool 是否包含
      */
     public function hasRule(string $rule): bool
     {
-        return in_array($rule, $this->appliedRules, true);
+        return in_array($rule, array_keys($this->appliedRules), true);
     }
 
     /**
      * 建立允許的授權結果.
-     *
      * @param string $reason 允許原因
-     * @param string $code 結果代碼
-     * @param array<string> $appliedRules 應用的規則
-     * @param array<string, mixed> $metadata 元資料
+     * @param array<string, mixed> $appliedRules 應用的規則
      */
     public static function allow(
         string $reason = '存取被允許',
         string $code = 'ALLOWED',
         /** @var array<string, mixed> */
-        array $appliedRules = [],
+        array $appliedRules/** @var array<string, mixed> */ = [],
         /** @var array<string, mixed> */
-        array $metadata = [],
+        array $metadata/** @var array<string, mixed> */ = [],
     ): self {
         return new self(
             allowed: true,
@@ -146,19 +131,16 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 建立拒絕的授權結果.
-     *
      * @param string $reason 拒絕原因
-     * @param string $code 結果代碼
-     * @param array<string> $appliedRules 應用的規則
-     * @param array<string, mixed> $metadata 元資料
+     * @param array<string, mixed> $appliedRules 應用的規則
      */
     public static function deny(
         string $reason = '存取被拒絕',
         string $code = 'DENIED',
         /** @var array<string, mixed> */
-        array $appliedRules = [],
+        array $appliedRules/** @var array<string, mixed> */ = [],
         /** @var array<string, mixed> */
-        array $metadata = [],
+        array $metadata/** @var array<string, mixed> */ = [],
     ): self {
         return new self(
             allowed: false,
@@ -177,22 +159,20 @@ final readonly class AuthorizationResult implements JsonSerializable
         return self::allow(
             reason: '超級管理員擁有所有權限',
             code: 'SUPER_ADMIN_ACCESS',
-            appliedRules: ['super_admin'],
+            appliedRules: ['super_admin' => true],
         );
     }
 
     /**
      * 建立權限不足的拒絕結果.
-     *
      * @param string $resource 資源名稱
-     * @param string $action 操作名稱
      */
     public static function denyInsufficientPermissions(string $resource, string $action): self
     {
         return self::deny(
             reason: "使用者無權限執行操作：{$action} on {$resource}",
             code: 'INSUFFICIENT_PERMISSIONS',
-            appliedRules: ['permission_check'],
+            appliedRules: ['permission_check' => true],
         );
     }
 
@@ -204,13 +184,12 @@ final readonly class AuthorizationResult implements JsonSerializable
         return self::deny(
             reason: '使用者未認證',
             code: 'NOT_AUTHENTICATED',
-            appliedRules: ['authentication_check'],
+            appliedRules: ['authentication_check' => true],
         );
     }
 
     /**
      * 建立 IP 限制的拒絕結果.
-     *
      * @param string $ip IP 位址
      */
     public static function denyIpRestriction(string $ip): self
@@ -218,13 +197,12 @@ final readonly class AuthorizationResult implements JsonSerializable
         return self::deny(
             reason: "IP 位址 {$ip} 被限制存取",
             code: 'IP_RESTRICTION',
-            appliedRules: ['ip_restriction'],
+            appliedRules: ['ip_restriction' => true],
         );
     }
 
     /**
      * 建立時間限制的拒絕結果.
-     *
      * @param string $action 操作名稱
      */
     public static function denyTimeRestriction(string $action): self
@@ -232,14 +210,13 @@ final readonly class AuthorizationResult implements JsonSerializable
         return self::deny(
             reason: "操作 {$action} 在當前時間不被允許",
             code: 'TIME_RESTRICTION',
-            appliedRules: ['time_restriction'],
+            appliedRules: ['time_restriction' => true],
         );
     }
 
     /**
      * 轉換為陣列格式.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {
@@ -254,8 +231,7 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -264,7 +240,6 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 檢查與另一個 AuthorizationResult 是否相等.
-     *
      * @param AuthorizationResult $other 另一個授權結果
      * @return bool 是否相等
      */

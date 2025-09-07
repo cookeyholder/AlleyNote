@@ -106,7 +106,7 @@ class RouteLoader
      * 處理陣列格式的路由定義.
      * @param array<string, mixed> $routes
      */
-    private function processArrayRoutes(RouterInterface $router, /** @var array<string, mixed> */ array $routes, string $group, string $filePath): void
+    private function processArrayRoutes(RouterInterface $router, /** @var array<string, mixed> */ array $routes/** @var array<string, mixed> */, string $group, string $filePath): void
     {
         foreach ($routes as $routeName => $routeConfig) {
             // 確保路由配置是陣列
@@ -141,7 +141,7 @@ class RouteLoader
      * 註冊路由到路由器.
      * @param array<string, mixed> $routeConfig
      */
-    private function registerRoute(RouterInterface $router, /** @var array<string, mixed> */ array $routeConfig): void
+    private function registerRoute(RouterInterface $router, /** @var array<string, mixed> */ array $routeConfig/** @var array<string, mixed> */): void
     {
         $methods = (array) $routeConfig['methods'];
         $path = $routeConfig['path'];
@@ -171,7 +171,7 @@ class RouteLoader
 
     /**
      * 取得已載入的路由資訊.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getLoadedRoutes(): array
     {
@@ -180,7 +180,7 @@ class RouteLoader
 
     /**
      * 取得路由統計資訊.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getRouteStats(): array
     {
@@ -214,7 +214,7 @@ class RouteLoader
 
     /**
      * 透過群組篩選路由.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getRoutesByGroup(string $group): array
     {
@@ -225,7 +225,7 @@ class RouteLoader
 
     /**
      * 搜尋路由.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function findRoutes(callable $filter): array
     {

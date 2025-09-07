@@ -49,13 +49,9 @@ final class TokenBlacklistService
 
     /**
      * 將 token 加入黑名單.
-     *
      * @param string $jti JWT ID
-     * @param string $tokenType Token 類型
      * @param int $userId 使用者 ID
-     * @param DateTimeImmutable $expiresAt 過期時間
      * @param string $reason 黑名單原因
-     * @param string|null $deviceId 裝置 ID
      * @param array<string, mixed>|null $metadata 額外資料
      * @return bool 成功時回傳 true
      * @throws InvalidArgumentException 當參數無效時
@@ -111,7 +107,6 @@ final class TokenBlacklistService
 
     /**
      * 檢查 token 是否在黑名單中.
-     *
      * @param string $jti JWT ID
      * @return bool 在黑名單中時回傳 true
      */
@@ -136,9 +131,8 @@ final class TokenBlacklistService
 
     /**
      * 批次檢查 token 是否在黑名單中.
-     *
      * @param array<int, string> $jtis JTI 陣列
-     * @return array<string, bool> JTI 為 key，是否在黑名單為值的陣列
+     * @return array<string, mixed><string, bool> JTI 為 key，是否在黑名單為值的陣列
      */
     public function batchCheckBlacklist(array $jtis): array
     {
@@ -146,7 +140,7 @@ final class TokenBlacklistService
             return [];
         }
 
-        $validJtis = array_filter($jtis, fn($jti): array => !empty($jti));
+        $validJtis = array_filter($jtis, fn($jti): bool => !empty($jti));
 
         if (empty($validJtis)) {
             return [];
@@ -167,9 +161,7 @@ final class TokenBlacklistService
 
     /**
      * 將使用者的所有 token 加入黑名單.
-     *
      * @param int $userId 使用者 ID
-     * @param string $reason 黑名單原因
      * @param string|null $excludeJti 排除的 JTI
      * @return int 加入黑名單的 token 數量
      */
@@ -205,9 +197,7 @@ final class TokenBlacklistService
 
     /**
      * 將裝置的所有 token 加入黑名單.
-     *
      * @param string $deviceId 裝置 ID
-     * @param string $reason 黑名單原因
      * @return int 加入黑名單的 token 數量
      */
     public function blacklistDeviceTokens(string $deviceId, string $reason): int
@@ -241,7 +231,6 @@ final class TokenBlacklistService
 
     /**
      * 從黑名單中移除 token.
-     *
      * @param string $jti JWT ID
      * @return bool 移除成功時回傳 true
      */
@@ -273,7 +262,6 @@ final class TokenBlacklistService
 
     /**
      * 批次從黑名單中移除 token.
-     *
      * @param array<int, string> $jtis JTI 陣列
      * @return int 成功移除的數量
      */
@@ -283,7 +271,7 @@ final class TokenBlacklistService
             return 0;
         }
 
-        $validJtis = array_filter($jtis, fn($jti): array => !empty($jti));
+        $validJtis = array_filter($jtis, fn($jti): bool => !empty($jti));
 
         if (empty($validJtis)) {
             return 0;
@@ -310,9 +298,8 @@ final class TokenBlacklistService
 
     /**
      * 自動清理過期的黑名單項目.
-     *
      * @param int $batchSize 批次大小
-     * @return array<string, mixed> 清理結果統計
+     * @return array<string, mixed><string, mixed> 清理結果統計
      */
     public function autoCleanup(int $batchSize = self::DEFAULT_CLEANUP_BATCH_SIZE): array
     {
@@ -359,8 +346,7 @@ final class TokenBlacklistService
 
     /**
      * 取得黑名單統計資訊.
-     *
-     * @return array<string, mixed> 統計資訊
+     * @return array<string, mixed><string, mixed> 統計資訊
      */
     public function getStatistics(): array
     {
@@ -387,9 +373,8 @@ final class TokenBlacklistService
 
     /**
      * 取得使用者的黑名單統計.
-     *
      * @param int $userId 使用者 ID
-     * @return array<string, mixed> 使用者統計資訊
+     * @return array<string, mixed><string, mixed> 使用者統計資訊
      */
     public function getUserStatistics(int $userId): array
     {
@@ -414,15 +399,13 @@ final class TokenBlacklistService
 
     /**
      * 搜尋黑名單項目.
-     *
      * @param array<string, mixed> $criteria 搜尋條件
-     * @param int|null $limit 限制數量
      * @param int $offset 偏移量
-     * @return array<string, mixed> 搜尋結果
+     * @return array<string, mixed><string, mixed> 搜尋結果
      */
     public function searchBlacklistEntries(
         /** @var array<string, mixed> */
-        array $criteria,
+        array $criteria/** @var array<string, mixed> */,
         ?int $limit = null,
         int $offset = 0,
     ): array {
@@ -461,9 +444,8 @@ final class TokenBlacklistService
 
     /**
      * 取得最近的高優先級黑名單項目.
-     *
      * @param int $limit 限制數量
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<string, mixed><int, TokenBlacklistEntry> 黑名單項目陣列
      */
     public function getRecentHighPriorityEntries(int $limit = 50): array
     {
@@ -481,8 +463,7 @@ final class TokenBlacklistService
 
     /**
      * 最佳化黑名單儲存.
-     *
-     * @return array<string, mixed> 最佳化結果
+     * @return array<string, mixed><string, mixed> 最佳化結果
      */
     public function optimize(): array
     {
@@ -506,8 +487,7 @@ final class TokenBlacklistService
 
     /**
      * 檢查黑名單健康狀態.
-     *
-     * @return array<string, mixed> 健康狀態資訊
+     * @return array<string, mixed><string, mixed> 健康狀態資訊
      */
     public function getHealthStatus(): array
     {
@@ -564,7 +544,6 @@ final class TokenBlacklistService
 
     /**
      * 驗證 token 類型.
-     *
      * @param string $tokenType Token 類型
      * @throws InvalidArgumentException 當 token 類型無效時
      */
@@ -580,7 +559,6 @@ final class TokenBlacklistService
 
     /**
      * 驗證黑名單原因.
-     *
      * @param string $reason 黑名單原因
      * @throws InvalidArgumentException 當原因無效時
      */
@@ -606,11 +584,8 @@ final class TokenBlacklistService
 
     /**
      * 記錄黑名單操作.
-     *
      * @param string $action 操作類型
-     * @param string $jti JWT ID
      * @param string $reason 原因
-     * @param int $userId 使用者 ID
      * @param string|null $deviceId 裝置 ID
      */
     private function logBlacklistAction(
@@ -630,7 +605,6 @@ final class TokenBlacklistService
 
     /**
      * 記錄高優先級黑名單項目.
-     *
      * @param TokenBlacklistEntry $entry 黑名單項目
      */
     private function logHighPriorityBlacklist(TokenBlacklistEntry $entry): void

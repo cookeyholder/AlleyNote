@@ -31,10 +31,9 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array<string, mixed> $data 輸入資料
      * @throws ValidationException 當驗證失敗時
      */
-    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
+    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data/** @var array<string, mixed> */)
     {
         parent::__construct($validator);
 
@@ -46,11 +45,11 @@ class CreateAttachmentDTO extends BaseDTO
 
         // 設定屬性
         $this->postId = (int) $validatedData['post_id'];
-        $this->filename = trim($validatedData['filename']);
-        $this->originalName = trim($validatedData['original_name']);
-        $this->mimeType = trim($validatedData['mime_type']);
+        $this->filename = trim((string) $validatedData['filename']);
+        $this->originalName = trim((string) $validatedData['original_name']);
+        $this->mimeType = trim((string) $validatedData['mime_type']);
         $this->fileSize = (int) $validatedData['file_size'];
-        $this->storagePath = trim($validatedData['storage_path']);
+        $this->storagePath = trim((string) $validatedData['storage_path']);
         $this->uploadedBy = (int) $validatedData['uploaded_by'];
     }
 
@@ -65,7 +64,7 @@ class CreateAttachmentDTO extends BaseDTO
         });
 
         // 檔案名稱驗證規則
-        $this->validator->addRule('filename', function ($value, /** @var array<string, mixed> */ array $parameters) {
+        $this->validator->addRule('filename', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
             if (!is_string($value)) {
                 return false;
             }
@@ -92,7 +91,7 @@ class CreateAttachmentDTO extends BaseDTO
         });
 
         // 原始檔案名稱驗證規則
-        $this->validator->addRule('original_name', function ($value, /** @var array<string, mixed> */ array $parameters) {
+        $this->validator->addRule('original_name', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
             if (!is_string($value)) {
                 return false;
             }
@@ -143,7 +142,7 @@ class CreateAttachmentDTO extends BaseDTO
         });
 
         // 檔案大小驗證規則
-        $this->validator->addRule('file_size', function ($value, /** @var array<string, mixed> */ array $parameters) {
+        $this->validator->addRule('file_size', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
             if (!is_numeric($value)) {
                 return false;
             }
@@ -156,7 +155,7 @@ class CreateAttachmentDTO extends BaseDTO
         });
 
         // 儲存路徑驗證規則
-        $this->validator->addRule('storage_path', function ($value, /** @var array<string, mixed> */ array $parameters) {
+        $this->validator->addRule('storage_path', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
             if (!is_string($value)) {
                 return false;
             }
@@ -204,7 +203,7 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     protected function getValidationRules(): array
     {
@@ -221,7 +220,7 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {

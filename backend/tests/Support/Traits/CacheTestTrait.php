@@ -108,7 +108,6 @@ trait CacheTestTrait
 
     /**
      * 取得目前快取中的所有資料.
-     *
      * @return array<string, mixed>
      */
     protected function getCacheStorage(): array

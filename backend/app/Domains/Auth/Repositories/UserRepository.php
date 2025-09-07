@@ -8,6 +8,7 @@ use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use DateTime;
 use InvalidArgumentException;
 use PDO;
+use RuntimeException;
 
 class UserRepository
 {
@@ -18,6 +19,7 @@ class UserRepository
 
     /**
      * @param array<string, mixed> $data
+     * @return array<string, mixed><string, mixed>
      */
     public function create(array $data): array
     {
@@ -43,13 +45,19 @@ class UserRepository
             'password' => $data['password'],  // 密碼已在 AuthService 中雜湊
         ]);
 
-        return $this->findById((int) $this->db->lastInsertId());
+        $result = $this->findById((int) $this->db->lastInsertId());
+        if ($result === null) {
+            throw new RuntimeException('Failed to create user: could not retrieve created user');
+        }
+
+        return $result;
     }
 
     /**
      * @param array<string, mixed> $data
+     * @return array<string, mixed><string, mixed>
      */
-    public function update(string $id, /** @var array<string, mixed> */ array $data): array
+    public function update(string $id, array $data/** @var array<string, mixed> */): array
     {
         $fields = [];
         $params = ['id' => $id];
@@ -58,12 +66,17 @@ class UserRepository
             if (in_array($key, ['username', 'email', 'status', 'password'])) {
                 $fields[] = "{$key} = :{$key}";
                 $params[$key] = $key === 'password'
-                    ? password_hash($value, PASSWORD_ARGON2ID) : $value;
+                    ? password_hash((string) $value, PASSWORD_ARGON2ID) : $value;
             }
         }
 
         if (empty($fields)) {
-            return $this->findById($id);
+            $result = $this->findById((int) $id);
+            if ($result === null) {
+                throw new RuntimeException('User not found');
+            }
+
+            return $result;
         }
 
         $fields[] = 'updated_at = CURRENT_TIMESTAMP';
@@ -72,7 +85,12 @@ class UserRepository
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
 
-        return $this->findById($id);
+        $result = $this->findById((int) $id);
+        if ($result === null) {
+            throw new RuntimeException('Failed to update user: could not retrieve updated user');
+        }
+
+        return $result;
     }
 
     public function delete(string $id): bool
@@ -84,55 +102,59 @@ class UserRepository
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function findById(int $id): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
         $stmt->execute(['id' => $id]);
 
-        $result = $stmt->fetch();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $result ?: null;
+        /** @var array<string, mixed>|false $result */
+        return is_array($result) ? $result : null;
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>|null
      */
     public function findByUuid(string $uuid): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE uuid = :uuid');
         $stmt->execute(['uuid' => $uuid]);
 
-        $result = $stmt->fetch();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $result ?: null;
+        /** @var array<string, mixed>|false $result */
+        return is_array($result) ? $result : null;
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>|null
      */
     public function findByUsername(string $username): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE username = :username');
         $stmt->execute(['username' => $username]);
 
-        $result = $stmt->fetch();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $result ?: null;
+        /** @var array<string, mixed>|false $result */
+        return is_array($result) ? $result : null;
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>|null
      */
     public function findByEmail(string $email): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE email = :email');
         $stmt->execute(['email' => $email]);
 
-        $result = $stmt->fetch();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $result ?: null;
+        /** @var array<string, mixed>|false $result */
+        return is_array($result) ? $result : null;
     }
 
     public function updateLastLogin(string $id): bool
@@ -158,7 +180,7 @@ class UserRepository
         }
 
         // 檢查新密碼是否與目前密碼相同
-        if (password_verify($newPassword, $user['password'])) {
+        if (password_verify((string) $newPassword, (string) $user['password'])) {
             throw new InvalidArgumentException('新密碼不能與目前的密碼相同');
         }
 

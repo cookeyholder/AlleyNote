@@ -118,6 +118,9 @@ class Router implements RouterInterface
         return $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $pattern, $handler);
     }
 
+    /**
+     * @param array<string, mixed> $attributes
+     */
     public function group(array $attributes, callable $callback): void
     {
         $previousAttributes = $this->currentGroupAttributes;
@@ -160,7 +163,10 @@ class Router implements RouterInterface
         return $this->routes;
     }
 
-    public function url(string $name, /** @var array<string, mixed> */ array $parameters = []): string
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    public function url(string $name, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */ = []): string
     {
         $route = $this->routes->getByName($name);
 
@@ -222,6 +228,9 @@ class Router implements RouterInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $middlewares
+     */
     public function addGlobalMiddlewares(array $middlewares): void
     {
         if ($this->middlewareManager !== null) {
@@ -251,9 +260,9 @@ class Router implements RouterInterface
     /**
      * 合併群組屬性.
      * @param array<string, mixed> $previous
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
-    private function mergeGroupAttributes(array $previous, /** @var array<string, mixed> */ array $new): array
+    private function mergeGroupAttributes(array $previous, /** @var array<string, mixed> */ array $new/** @var array<string, mixed> */): array
     {
         $merged = $previous;
 

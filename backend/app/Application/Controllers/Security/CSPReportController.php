@@ -40,7 +40,7 @@ class CSPReportController
 
             // 解析報告資料
             $body = $request->getBody()->getContents();
-            $report = json_decode($body, true);
+            $report = json_decode(is_string($body) ? $body : (string) $body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return $response->withStatus(400);
@@ -79,7 +79,6 @@ class CSPReportController
 
     /**
      * 驗證 CSP 報告格式.
-     *
      * @param array<string, mixed> $report
      */
     private function isValidCSPReport(array $report): bool
@@ -109,7 +108,6 @@ class CSPReportController
 
     /**
      * 記錄 CSP 違規.
-     *
      * @param array<string, mixed> $report
      */
     private function logViolation(array $report, Request $request): void
@@ -195,7 +193,6 @@ class CSPReportController
 
     /**
      * 計算違規嚴重程度.
-     *
      * @param array<string, mixed> $cspReport
      */
     private function calculateSeverity(array $cspReport): string
@@ -237,7 +234,6 @@ class CSPReportController
 
     /**
      * 檢查是否需要發送警報.
-     *
      * @param array<string, mixed> $logData
      */
     private function checkForAlert(array $logData): void
@@ -264,8 +260,7 @@ class CSPReportController
 
     /**
      * 取得最近的違規記錄.
-     *
-     * @return array<int, mixed>
+     * @return array<string, mixed><int, mixed>
      */
     private function getRecentViolations(string $ip, int $seconds): array
     {
@@ -283,7 +278,7 @@ class CSPReportController
         $cutoffTime = time() - $seconds;
 
         foreach (array_reverse($lines) as $line) {
-            $data = json_decode($line, true);
+            $data = json_decode(is_string($line) ? $line : (string) $line, true);
             if (!is_array($data)) {
                 continue;
             }
@@ -308,7 +303,6 @@ class CSPReportController
 
     /**
      * 發送警報.
-     *
      * @param array<string, mixed> $alertData
      */
     private function sendAlert(array $alertData): void

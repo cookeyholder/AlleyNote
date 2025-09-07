@@ -23,7 +23,6 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 主要執行入口。
-     *
      * @param string[] $arguments 命令行參數
      */
     public function run(array $arguments): int

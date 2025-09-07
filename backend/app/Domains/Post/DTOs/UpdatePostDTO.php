@@ -30,10 +30,9 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array<string, mixed> $data
      * @throws ValidationException 當驗證失敗時
      */
-    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
+    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data/** @var array<string, mixed> */)
     {
         parent::__construct($validator);
 
@@ -74,7 +73,7 @@ class UpdatePostDTO extends BaseDTO
 
         // 處理狀態
         if (isset($validatedData['status'])) {
-            $this->status = PostStatus::from($validatedData['status']);
+            $this->status = PostStatus::from((string) $validatedData['status']);
         } else {
             $this->status = null;
         }
@@ -94,7 +93,7 @@ class UpdatePostDTO extends BaseDTO
     private function addPostValidationRules(): void
     {
         // 文章標題驗證規則（更新版本，允許空值）
-        $this->validator->addRule('post_title_update', function ($value, /** @var array<string, mixed> */ array $parameters) {
+        $this->validator->addRule('post_title_update', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
             if ($value === null || $value === '') {
                 return true; // 更新時允許空值
             }
@@ -122,7 +121,7 @@ class UpdatePostDTO extends BaseDTO
         });
 
         // 文章內容驗證規則（更新版本，允許空值）
-        $this->validator->addRule('post_content_update', function ($value, /** @var array<string, mixed> */ array $parameters) {
+        $this->validator->addRule('post_content_update', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
             if ($value === null || $value === '') {
                 return true; // 更新時允許空值
             }
@@ -158,7 +157,7 @@ class UpdatePostDTO extends BaseDTO
                 return false;
             }
 
-            $validStatuses = array_map(fn($status): array => $status->value, PostStatus::cases());
+            $validStatuses = array_map(fn($status): string => $status->value, PostStatus::cases());
 
             return in_array($value, $validStatuses, true);
         });
@@ -200,7 +199,7 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     protected function getValidationRules(): array
     {
@@ -216,12 +215,11 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * 動態驗證資料（只驗證提供的欄位）.
-     *
      * @param array<string, mixed> $data
-     * @return array<mixed> 驗證通過的資料
+     * @return array<string, mixed><string, mixed> 驗證通過的資料
      * @throws ValidationException 當驗證失敗時
      */
-    protected function validatePartialData(array $data): mixed
+    protected function validatePartialData(array $data): array
     {
         $rules = [];
         $availableRules = $this->getValidationRules();
@@ -244,7 +242,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Repository 使用）
      * 只包含有值的欄位.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {
@@ -291,7 +289,6 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * 檢查是否更新了特定欄位.
-     *
      * @param string $field 欄位名稱
      */
     public function hasUpdatedField(string $field): bool
@@ -302,22 +299,4 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 正確轉換布林值
      */
-    private function convertToBoolean(mixed $value): bool
-    {
-        if (is_bool($value)) {
-            return $value;
-        }
-
-        if (is_string($value)) {
-            $value = strtolower(trim($value));
-
-            return in_array($value, ['1', 'true', 'on', 'yes'], true);
-        }
-
-        if (is_numeric($value)) {
-            return (int) $value === 1;
-        }
-
-        return false;
-    }
 }

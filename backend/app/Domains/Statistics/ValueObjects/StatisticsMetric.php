@@ -14,9 +14,7 @@ readonly class StatisticsMetric
 {
     /**
      * @param int|float $value 數值
-     * @param string $unit 單位
      * @param string $description 描述
-     * @param int $precision 精確度（小數位數）
      */
     private function __construct(
         public int|float $value,
@@ -351,8 +349,7 @@ readonly class StatisticsMetric
 
     /**
      * 轉換為陣列.
-     *
-     * @return array{
+     * @return array<string, mixed>{
      *     value: int|float,
      *     unit: string,
      *     description: string,

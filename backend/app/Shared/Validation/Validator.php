@@ -61,7 +61,10 @@ class Validator implements ValidatorInterface
         'max_file_size' => '欄位 :field 檔案大小不能超過 :max KB',
     ];
 
-    public function validate(array $data, /** @var array<string, mixed> */ array $rules): ValidationResult
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function validate(array $data, /** @var array<string, mixed> */ array $rules/** @var array<string, mixed> */): ValidationResult
     {
         $errors = [];
         $failedRules = [];
@@ -69,7 +72,7 @@ class Validator implements ValidatorInterface
 
         foreach ($rules as $field => $ruleSet) {
             if (is_string($ruleSet)) {
-                $ruleSet = explode('|', $ruleSet);
+                $ruleSet = explode('|', is_string($ruleSet) ? $ruleSet : (string) $ruleSet);
             }
 
             $fieldValue = $data[$field] ?? null;
@@ -117,9 +120,9 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
-    public function validateOrFail(array $data, /** @var array<string, mixed> */ array $rules): array
+    public function validateOrFail(array $data, /** @var array<string, mixed> */ array $rules/** @var array<string, mixed> */): array
     {
         $result = $this->validate($data, $rules);
 
@@ -133,7 +136,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $allData
      */
-    public function checkRule(mixed $value, string $rule, /** @var array<string, mixed> */ array $parameters = [], /** @var array<string, mixed> */ array $allData = [], string $currentField = ''): bool
+    public function checkRule(mixed $value, string $rule, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */ = [], /** @var array<string, mixed> */ array $allData/** @var array<string, mixed> */ = [], string $currentField = ''): bool
     {
         // 檢查自訂規則
         if (isset($this->customRules[$rule])) {
@@ -212,7 +215,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function validateRequiredIf(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
+    private function validateRequiredIf(mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool
     {
         if (count($parameters) < 2) {
             return true;
@@ -314,7 +317,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function validateMin(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
+    private function validateMin(mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool
     {
         if (empty($parameters)) {
             return true;
@@ -340,7 +343,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function validateMax(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
+    private function validateMax(mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool
     {
         if (empty($parameters)) {
             return true;
@@ -366,7 +369,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function validateMinLength(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
+    private function validateMinLength(mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool
     {
         if (empty($parameters) || !is_string($value)) {
             return true;
@@ -380,7 +383,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function validateMaxLength(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
+    private function validateMaxLength(mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool
     {
         if (empty($parameters) || !is_string($value)) {
             return true;
@@ -394,7 +397,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function validateLength(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
+    private function validateLength(mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool
     {
         if (empty($parameters) || !is_string($value)) {
             return true;
@@ -408,7 +411,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function validateBetween(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
+    private function validateBetween(mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool
     {
         if (count($parameters) < 2) {
             return true;
@@ -441,7 +444,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function validateIn(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
+    private function validateIn(mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool
     {
         return in_array($value, $parameters, true);
     }
@@ -449,7 +452,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function validateNotIn(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
+    private function validateNotIn(mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool
     {
         return !in_array($value, $parameters, true);
     }
@@ -457,7 +460,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function validateRegex(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
+    private function validateRegex(mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool
     {
         if (empty($parameters) || !is_string($value)) {
             return true;
@@ -500,9 +503,8 @@ class Validator implements ValidatorInterface
 
     /**
      * @param array<string, mixed> $parameters
-     * @param array<string, mixed> $allData
      */
-    private function validateConfirmed(mixed $value, array $parameters, array $allData = [], string $currentField = ''): bool
+    private function validateConfirmed(mixed $value, array $parameters/** @var array<string, mixed> */, array $allData/** @var array<string, mixed> */ = [], string $currentField = ''): bool
     {
         // 預設確認欄位名稱為 field_confirmation
         $confirmationField = $currentField . '_confirmation';
@@ -525,9 +527,8 @@ class Validator implements ValidatorInterface
 
     /**
      * @param array<string, mixed> $parameters
-     * @param array<string, mixed> $allData
      */
-    private function validateDifferent(mixed $value, array $parameters, array $allData = []): bool
+    private function validateDifferent(mixed $value, array $parameters/** @var array<string, mixed> */, array $allData/** @var array<string, mixed> */ = []): bool
     {
         if (empty($parameters)) {
             return true;
@@ -546,9 +547,8 @@ class Validator implements ValidatorInterface
 
     /**
      * @param array<string, mixed> $parameters
-     * @param array<string, mixed> $allData
      */
-    private function validateSame(mixed $value, array $parameters, array $allData = []): bool
+    private function validateSame(mixed $value, array $parameters/** @var array<string, mixed> */, array $allData/** @var array<string, mixed> */ = []): bool
     {
         if (empty($parameters)) {
             return true;
@@ -566,7 +566,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function getErrorMessage(string $field, string $rule, /** @var array<string, mixed> */ array $parameters, mixed $value): string
+    private function getErrorMessage(string $field, string $rule, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */, mixed $value): string
     {
         // 檢查自訂訊息
         $customKey = "{$field}.{$rule}";
@@ -587,7 +587,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    private function replacePlaceholders(string $message, string $field, /** @var array<string, mixed> */ array $parameters, mixed $value): string
+    private function replacePlaceholders(string $message, string $field, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */, mixed $value): string
     {
         $replacements = [
             ':field' => $field,

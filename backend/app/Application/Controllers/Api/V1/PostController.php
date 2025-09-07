@@ -252,7 +252,7 @@ class PostController extends BaseController
     {
         try {
             $body = $request->getBody()->getContents();
-            $data = json_decode($body, true);
+            $data = json_decode(is_string($body) ? $body : (string) $body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // 記錄 JSON 格式錯誤
@@ -278,6 +278,7 @@ class PostController extends BaseController
             $data['user_id'] = $userId;
             $data['user_ip'] = $this->getUserIp($request);
 
+            /** @var array<string, mixed> $data */
             $dto = new CreatePostDTO($this->validator, $data);
             $post = $this->postService->createPost($dto);
 
@@ -369,7 +370,7 @@ class PostController extends BaseController
     /**
      * 顯示單一貼文.
      */
-    public function show(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
+    public function show(Request $request, Response $response, /** @var array<string, mixed> */ array $args/** @var array<string, mixed> */): Response
     {
         try {
             $idValue = $args['id'] ?? 0;
@@ -522,7 +523,7 @@ class PostController extends BaseController
     /**
      * 更新貼文.
      */
-    public function update(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
+    public function update(Request $request, Response $response, /** @var array<string, mixed> */ array $args/** @var array<string, mixed> */): Response
     {
         try {
             $idValue = $args['id'] ?? 0;
@@ -545,7 +546,7 @@ class PostController extends BaseController
             }
 
             $body = $request->getBody()->getContents();
-            $data = json_decode($body, true);
+            $data = json_decode(is_string($body) ? $body : (string) $body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // 記錄 JSON 格式錯誤
@@ -570,6 +571,7 @@ class PostController extends BaseController
                 throw new Exception('Invalid data format');
             }
 
+            /** @var array<string, mixed> $data */
             $dto = new UpdatePostDTO($this->validator, $data);
             $post = $this->postService->updatePost($id, $dto);
 
@@ -698,7 +700,7 @@ class PostController extends BaseController
     /**
      * 刪除貼文.
      */
-    public function delete(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
+    public function delete(Request $request, Response $response, /** @var array<string, mixed> */ array $args/** @var array<string, mixed> */): Response
     {
         try {
             $idValue = $args['id'] ?? 0;
@@ -894,7 +896,7 @@ class PostController extends BaseController
     /**
      * 切換貼文置頂狀態.
      */
-    public function togglePin(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
+    public function togglePin(Request $request, Response $response, /** @var array<string, mixed> */ array $args/** @var array<string, mixed> */): Response
     {
         try {
             $idValue = $args['id'] ?? 0;
@@ -917,7 +919,7 @@ class PostController extends BaseController
             }
 
             $body = $request->getBody()->getContents();
-            $data = json_decode($body, true);
+            $data = json_decode(is_string($body) ? $body : (string) $body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // 記錄 JSON 格式錯誤
@@ -1091,10 +1093,9 @@ class PostController extends BaseController
 
     /**
      * 刪除貼文.
-     *
      * @param array<string, mixed> $args 路由參數
      */
-    public function destroy(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
+    public function destroy(Request $request, Response $response, /** @var array<string, mixed> */ array $args/** @var array<string, mixed> */): Response
     {
         try {
             $id = $args['id'] ?? 0;

@@ -71,7 +71,6 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     /**
      * 建立 HTTP 請求
      * @param array<string, mixed> $body
-     * @param array<string, mixed> $headers
      */
     private function createRequest(string $method, string $path, ?array $body = null, array $headers = []): ResponseInterface
     {
@@ -254,7 +253,6 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
 
     /**
      * 取得測試登入資料.
-     *
      * @return array{email: string, password: string}
      */
     private function getTestLoginData(): array
@@ -300,7 +298,6 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
 
     /**
      * 處理登入伺服器錯誤.
-     *
      * @param mixed $data
      */
     private function handleLoginServerError($data): void
@@ -312,7 +309,6 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
 
     /**
      * 處理登入認證錯誤.
-     *
      * @param mixed $data
      */
     private function handleLoginAuthError($data): void
@@ -325,7 +321,6 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
 
     /**
      * 斷言登入成功
-     *
      * @param mixed $data
      */
     private function assertLoginSuccess(ResponseInterface $response, $data): void
@@ -342,7 +337,6 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
 
     /**
      * 取得測試刷新 token 資料.
-     *
      * @return array{refresh_token: string}
      */
     private function getTestRefreshData(): array
@@ -381,7 +375,6 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
 
     /**
      * 取得測試登出資料.
-     *
      * @return array{access_token: string, refresh_token: string}
      */
     private function getTestLogoutData(): array

@@ -25,7 +25,7 @@ interface MiddlewareDispatcherInterface
     public function dispatch(
         ServerRequestInterface $request,
         /** @var array<string, mixed> */
-        array $middlewares,
+        array $middlewares/** @var array<string, mixed> */,
         RequestHandlerInterface $finalHandler,
     ): ResponseInterface;
 
@@ -38,7 +38,7 @@ interface MiddlewareDispatcherInterface
      */
     public function buildChain(
         /** @var array<string, mixed> */
-        array $middlewares,
+        array $middlewares/** @var array<string, mixed> */,
         RequestHandlerInterface $finalHandler,
     ): RequestHandlerInterface;
 }

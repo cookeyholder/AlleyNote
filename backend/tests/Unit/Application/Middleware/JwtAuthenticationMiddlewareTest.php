@@ -472,7 +472,6 @@ class JwtAuthenticationMiddlewareTest extends TestCase
 
     /**
      * 建立有效的 JWT payload.
-     *
      * @param array<string, mixed> $customClaims 自訂宣告
      */
     private function createValidPayload(array $customClaims = []): JwtPayload

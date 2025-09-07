@@ -35,7 +35,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
         private readonly JwtConfig $config,
     ) {}
 
-    public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, /** @var array<string, mixed> */ array $customClaims = []): TokenPair
+    /**
+     * @param array<string, mixed> $customClaims
+     */
+    public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, /** @var array<string, mixed> */ array $customClaims/** @var array<string, mixed> */ = []): TokenPair
     {
         try {
             $now = new DateTimeImmutable();
@@ -78,7 +81,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 將 refresh token 儲存到資料庫
             $refreshTokenExpiresAt = $now->modify('+' . $this->config->getRefreshTokenTtl() . ' seconds');
             $this->refreshTokenRepository->create(
-                jti: $jti,
+                jti: (string) $jti,
                 userId: $userId,
                 tokenHash: hash('sha256', $refreshToken),
                 deviceInfo: $deviceInfo,
@@ -187,7 +190,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 將 token 加入黑名單
             $blacklistEntry = new TokenBlacklistEntry(
                 jti: $payload->getJti(),
-                tokenType: $payload->getCustomClaim('type') ?? 'unknown',
+                tokenType: (string) ($payload->getCustomClaim('type') ?? 'unknown'),
                 expiresAt: $payload->getExpiresAt(),
                 blacklistedAt: new DateTimeImmutable(),
                 reason: $reason,
@@ -285,9 +288,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
     /**
      * 從陣列建立 JwtPayload 物件.
-     *
      * @param array<string, mixed> $payload 原始 payload 資料
-     *
      * @return JwtPayload JwtPayload 物件
      *
      * @throws InvalidTokenException 當 payload 資料無效時
@@ -306,31 +307,31 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 安全地建立 DateTimeImmutable 物件
             $iat = DateTimeImmutable::createFromFormat('U', (string) $payload['iat']);
             if ($iat === false) {
-                throw new InvalidArgumentException("Invalid iat timestamp: {$payload['iat']}");
+                throw new InvalidArgumentException('Invalid iat timestamp: ' . (string) $payload['iat']);
             }
 
             $exp = DateTimeImmutable::createFromFormat('U', (string) $payload['exp']);
             if ($exp === false) {
-                throw new InvalidArgumentException("Invalid exp timestamp: {$payload['exp']}");
+                throw new InvalidArgumentException('Invalid exp timestamp: ' . (string) $payload['exp']);
             }
 
             $nbf = null;
             if (isset($payload['nbf'])) {
                 $nbf = DateTimeImmutable::createFromFormat('U', (string) $payload['nbf']);
                 if ($nbf === false) {
-                    throw new InvalidArgumentException("Invalid nbf timestamp: {$payload['nbf']}");
+                    throw new InvalidArgumentException('Invalid nbf timestamp: ' . (string) $payload['nbf']);
                 }
             }
 
             return new JwtPayload(
-                jti: $payload['jti'],
-                sub: $payload['sub'],
-                iss: $payload['iss'],
-                aud: [$payload['aud']],
+                jti: (string) $payload['jti'],
+                sub: (string) $payload['sub'],
+                iss: (string) $payload['iss'],
+                aud: $this->normalizeAudience($payload['aud']),
                 iat: $iat,
                 exp: $exp,
                 nbf: $nbf,
-                customClaims: array_filter($payload, fn($key): array => !in_array($key, [
+                customClaims: array_filter($payload, fn($key): bool => !in_array($key, [
                     'jti',
                     'sub',
                     'iss',
@@ -347,5 +348,29 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 'Invalid token payload: ' . $e->getMessage(),
             );
         }
+    }
+
+    /**
+     * 標準化受眾參數為 array<string, mixed> 格式.
+     * @param mixed $aud 受眾參數
+     * @return array<string, mixed><string, mixed>
+     */
+    private function normalizeAudience(mixed $aud): array
+    {
+        if (is_array($aud)) {
+            // 確保是關聯陣列格式
+            $result = [];
+            foreach ($aud as $key => $value) {
+                $stringKey = is_string($key) ? $key : (string) $value;
+                $result[$stringKey] = $value;
+            }
+
+            return $result;
+        }
+
+        // 單一值轉換為關聯陣列
+        $stringAud = (string) $aud;
+
+        return [$stringAud => $stringAud];
     }
 }

@@ -43,8 +43,7 @@ final class StatisticsQueryService
      * 查詢統計快照清單.
      *
      * 支援分頁和篩選條件的統計快照查詢。
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getStatisticsSnapshots(
         ?DateTimeInterface $startDate = null,
@@ -159,8 +158,7 @@ final class StatisticsQueryService
      * 查詢文章統計趨勢.
      *
      * 分析指定週期內的文章統計趨勢資料。
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getPostStatisticsTrends(
         StatisticsPeriod $period,
@@ -227,8 +225,7 @@ final class StatisticsQueryService
      * 查詢使用者活動統計.
      *
      * 取得指定週期內的使用者活動統計資訊。
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getUserActivityStatistics(
         StatisticsPeriod $period,
@@ -294,8 +291,7 @@ final class StatisticsQueryService
      * 查詢系統效能統計.
      *
      * 取得系統效能相關的統計資訊。
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getSystemPerformanceStatistics(
         StatisticsPeriod $period,
@@ -346,9 +342,8 @@ final class StatisticsQueryService
      * 自訂統計查詢.
      *
      * 提供彈性的自訂統計查詢功能。
-     *
      * @param array<string, mixed> $queryParams
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function customStatisticsQuery(array $queryParams): array
     {
@@ -449,9 +444,8 @@ final class StatisticsQueryService
 
     /**
      * 分析趨勢資料.
-     *
      * @param array<string, mixed> $trends
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function analyzeTrends(array $trends): array
     {
@@ -475,7 +469,6 @@ final class StatisticsQueryService
 
     /**
      * 計算趨勢方向.
-     *
      * @param array<mixed> $values
      */
     private function calculateTrendDirection(array $values): string
@@ -504,7 +497,6 @@ final class StatisticsQueryService
 
     /**
      * 計算波動性.
-     *
      * @param array<mixed> $values
      */
     private function calculateVolatility(array $values): float
@@ -531,7 +523,6 @@ final class StatisticsQueryService
 
     /**
      * 驗證自訂查詢參數.
-     *
      * @param array<string, mixed> $params
      */
     private function validateCustomQueryParams(array $params): void
@@ -546,7 +537,6 @@ final class StatisticsQueryService
 
     /**
      * 解析查詢週期
-     *
      * @param array<string, mixed> $params
      */
     private function parseQueryPeriod(array $params): StatisticsPeriod
@@ -565,18 +555,16 @@ final class StatisticsQueryService
 
     /**
      * 執行自訂查詢.
-     *
      * @param array<string> $metrics
-     * @param array<string, mixed> $filters
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function executeCustomQuery(
         StatisticsPeriod $period,
         /** @var array<string, mixed> */
-        array $metrics,
+        array $metrics/** @var array<string, mixed> */,
         ?string $groupBy,
         /** @var array<string, mixed> */
-        array $filters,
+        array $filters/** @var array<string, mixed> */,
     ): array {
         // 基本查詢實作
         return [

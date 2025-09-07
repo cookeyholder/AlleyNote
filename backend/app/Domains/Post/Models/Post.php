@@ -41,18 +41,18 @@ class Post implements JsonSerializable
     public function __construct(array $data)
     {
         $this->id = (int) ($data['id'] ?? 0);
-        $this->uuid = $data['uuid'] ?? generate_uuid();
+        $this->uuid = (string) ($data['uuid'] ?? generate_uuid());
         $this->seqNumber = isset($data['seq_number']) ? (string) $data['seq_number'] : null;
-        $this->title = $data['title'] ?? '';
-        $this->content = $data['content'] ?? '';
+        $this->title = (string) ($data['title'] ?? '');
+        $this->content = (string) ($data['content'] ?? '');
         $this->userId = (int) ($data['user_id'] ?? 0);
-        $this->userIp = $data['user_ip'] ?? null;
+        $this->userIp = isset($data['user_ip']) ? (string) $data['user_ip'] : null;
         $this->isPinned = filter_var($data['is_pinned'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $this->status = $data['status'] ?? 'draft';
-        $this->publishDate = $data['publish_date'] ?? null;
+        $this->status = (string) ($data['status'] ?? 'draft');
+        $this->publishDate = isset($data['publish_date']) ? (string) $data['publish_date'] : null;
         $this->views = (int) ($data['views'] ?? 0);
-        $this->createdAt = $data['created_at'] ?? format_datetime();
-        $this->updatedAt = $data['updated_at'] ?? format_datetime();
+        $this->createdAt = (string) ($data['created_at'] ?? format_datetime());
+        $this->updatedAt = (string) ($data['updated_at'] ?? format_datetime());
     }
 
     public function getId(): int
@@ -138,7 +138,7 @@ class Post implements JsonSerializable
     }
 
     /**
-     * @return array<mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {
@@ -162,21 +162,21 @@ class Post implements JsonSerializable
     /**
      * 取得清理過的資料陣列，適用於前端顯示.
      * @param OutputSanitizerInterface $sanitizer 清理服務
-     * @return array<mixed>
+     * @return array<string, mixed><string, mixed>
      */
-    public function toSafeArray(OutputSanitizerInterface $sanitizer): mixed
+    public function toSafeArray(OutputSanitizerInterface $sanitizer): array
     {
         $data = $this->toArray();
 
         // 清理可能包含 HTML 的欄位
-        // // $data ? $data->title : null)) = $sanitizer->sanitizeHtml((is_array($data) && isset($data ? $data->title : null)))) ? $data ? $data->title : null)) : null); // 語法錯誤已註解 // isset 語法錯誤已註解
-        // // $data ? $data->content : null)) = $sanitizer->sanitizeHtml((is_array($data) && isset($data ? $data->content : null)))) ? $data ? $data->content : null)) : null); // 語法錯誤已註解 // isset 語法錯誤已註解
+        $data['title'] = $sanitizer->sanitizeHtml((string) $data['title']);
+        $data['content'] = $sanitizer->sanitizeHtml((string) $data['content']);
 
         return $data;
     }
 
     /**
-     * @return array<mixed>
+     * @return array<string, mixed><mixed>
      */
     public function jsonSerialize(): mixed
     {

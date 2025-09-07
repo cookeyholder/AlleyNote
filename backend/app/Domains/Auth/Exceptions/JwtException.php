@@ -31,18 +31,15 @@ abstract class JwtException extends Exception
 
     /**
      * 建構 JWT 例外.
-     *
      * @param string $message 錯誤訊息
-     * @param int $code 錯誤碼
      * @param Exception|null $previous 前一個例外
-     * @param array<string, mixed> $context 錯誤上下文
      */
     public function __construct(
         string $message = '',
         int $code = 0,
         ?Exception $previous = null,
         /** @var array<string, mixed> */
-        array $context = [],
+        array $context/** @var array<string, mixed> */ = [],
     ) {
         parent::__construct($message, $code, $previous);
         $this->context = $context;
@@ -50,8 +47,7 @@ abstract class JwtException extends Exception
 
     /**
      * 取得錯誤上下文資訊.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getContext(): array
     {
@@ -60,7 +56,6 @@ abstract class JwtException extends Exception
 
     /**
      * 設定錯誤上下文資訊.
-     *
      * @param array<string, mixed> $context 上下文資訊
      */
     public function setContext(array $context): self
@@ -72,9 +67,7 @@ abstract class JwtException extends Exception
 
     /**
      * 加入上下文資訊.
-     *
      * @param string $key 鍵名
-     * @param mixed $value 值
      */
     public function addContext(string $key, mixed $value): self
     {
@@ -93,8 +86,7 @@ abstract class JwtException extends Exception
 
     /**
      * 取得錯誤詳細資訊（用於 API 回應）.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getErrorDetails(): array
     {
@@ -120,7 +112,6 @@ abstract class JwtException extends Exception
 
     /**
      * 檢查是否為特定類型的錯誤.
-     *
      * @param string $type 錯誤類型
      */
     public function isType(string $type): bool
@@ -130,8 +121,7 @@ abstract class JwtException extends Exception
 
     /**
      * 轉換為陣列格式（用於日誌記錄）.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {

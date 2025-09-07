@@ -17,7 +17,6 @@ readonly class StatisticsPeriod
 {
     /**
      * @param DateTimeImmutable $startDate 開始日期
-     * @param DateTimeImmutable $endDate 結束日期
      * @param PeriodType $type 週期類型
      */
     private function __construct(
@@ -307,8 +306,7 @@ readonly class StatisticsPeriod
 
     /**
      * 轉換為陣列.
-     *
-     * @return array{
+     * @return array<string, mixed>{
      *     start_date: string,
      *     end_date: string,
      *     type: string,

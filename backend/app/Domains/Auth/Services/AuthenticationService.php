@@ -70,8 +70,8 @@ final class AuthenticationService implements AuthenticationServiceInterface
             if (count($userTokens) >= self::MAX_REFRESH_TOKENS_PER_USER) {
                 // 撤銷最舊的活躍 token 來騰出空間
                 $oldestToken = reset($userTokens);
-                if ($oldestToken !== false) {
-                    $this->refreshTokenRepository->revoke($oldestToken['jti'], 'max_tokens_exceeded');
+                if ($oldestToken !== false && isset($oldestToken['jti'])) {
+                    $this->refreshTokenRepository->revoke((string) $oldestToken['jti'], 'max_tokens_exceeded');
                 }
             }
 
@@ -90,10 +90,10 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return new LoginResponseDTO(
                 tokens: $tokenPair,
                 userId: $userId,
-                userEmail: $userEmail,
+                userEmail: (string) $userEmail,
                 expiresAt: $payload->getExpiresAt()->getTimestamp(),
                 sessionId: $payload->getJti(),
-                permissions: $request->scopes,
+                permissions: $request->scopes ?? null,
             );
         } catch (AuthenticationException $e) {
             throw $e;
@@ -120,7 +120,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 userId: $oldPayload->getUserId(),
                 expiresAt: $newPayload->getExpiresAt()->getTimestamp(),
                 sessionId: $newPayload->getJti(),
-                permissions: $request->scopes,
+                permissions: $request->scopes ?? null,
             );
         } catch (InvalidTokenException|TokenExpiredException $e) {
             throw new AuthenticationException(
@@ -212,10 +212,20 @@ final class AuthenticationService implements AuthenticationServiceInterface
         }
     }
 
+    /**
+     * @return array<string, mixed><string, int>
+     */
     public function getUserTokenStats(int $userId): array
     {
         try {
-            return $this->refreshTokenRepository->getUserTokenStats($userId);
+            $stats = $this->refreshTokenRepository->getUserTokenStats($userId);
+
+            return [
+                'total' => (int) ($stats['total'] ?? 0),
+                'active' => (int) ($stats['active'] ?? 0),
+                'expired' => (int) ($stats['expired'] ?? 0),
+                'revoked' => (int) ($stats['revoked'] ?? 0),
+            ];
         } catch (Throwable) {
             return [
                 'total' => 0,
@@ -246,7 +256,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
 
     /**
      * 從 access token 取得使用者資訊.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getUserFromToken(string $accessToken): ?array
     {

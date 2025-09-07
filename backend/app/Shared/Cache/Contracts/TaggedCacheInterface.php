@@ -43,29 +43,25 @@ interface TaggedCacheInterface
 
     /**
      * 增加新標籤到快取管理器.
-     *
      * @param string|array<string> $tags 標籤
      */
     public function addTags(string|array $tags): TaggedCacheInterface;
 
     /**
      * 取得當前快取管理器的所有標籤.
-     *
-     * @return array<string> 標籤陣列
+     * @return array<string, mixed><string> 標籤陣列
      */
     public function getTags(): array;
 
     /**
      * 按標籤清空快取.
-     *
      * @param string|array<string> $tags 要清空的標籤
      */
     public function flushByTags(string|array $tags): int;
 
     /**
      * 取得標籤下的所有快取鍵.
-     *
-     * @return array<string> 快取鍵陣列
+     * @return array<string, mixed><string> 快取鍵陣列
      */
     public function getTaggedKeys(): array;
 
@@ -73,82 +69,67 @@ interface TaggedCacheInterface
 
     /**
      * 使用指定標籤存放快取項目.
-     *
      * @param string $key 快取鍵
-     * @param mixed $value 快取值
      * @param array<string> $tags 標籤陣列
-     * @param int $ttl 存活時間（秒）
      * @return bool 是否成功
      */
-    public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): bool;
+    public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */, int $ttl = 3600): bool;
 
     /**
      * 取得指定標籤的所有快取鍵.
-     *
      * @param string $tag 標籤
-     * @return array<string> 快取鍵陣列
+     * @return array<string, mixed><string> 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array;
 
     /**
      * 取得快取項目的所有標籤.
-     *
      * @param string $key 快取鍵
-     * @return array<string> 標籤陣列
+     * @return array<string, mixed><string> 標籤陣列
      */
     public function getTagsByKey(string $key): array;
 
     /**
      * 為現有快取項目添加標籤.
-     *
      * @param string $key 快取鍵
-     * @param string|array<string> $tags 標籤或標籤陣列
      * @return bool 是否成功
      */
     public function addTagsToKey(string $key, string|array $tags): bool;
 
     /**
      * 從快取項目移除標籤.
-     *
      * @param string $key 快取鍵
-     * @param string|array<string> $tags 標籤或標籤陣列
      * @return bool 是否成功
      */
     public function removeTagsFromKey(string $key, string|array $tags): bool;
 
     /**
      * 檢查快取項目是否包含指定標籤.
-     *
      * @param string $key 快取鍵
-     * @param string $tag 標籤
      * @return bool 是否包含
      */
     public function hasTag(string $key, string $tag): bool;
 
     /**
      * 取得所有系統標籤.
-     *
-     * @return array<string> 所有標籤
+     * @return array<string, mixed><string> 所有標籤
      */
     public function getAllTags(): array;
 
     /**
      * 清除未使用的標籤.
-     *
      * @return int 清除的標籤數量
      */
     public function cleanupUnusedTags(): int;
 
     /**
      * 取得標籤統計資訊.
-     *
-     * @return array<string, int> 標籤名稱 => 快取項目數量
+     * @return array<string, mixed><string, int> 標籤名稱 => 快取項目數量
      */
     public function getTagStatistics(): array;
 
     /**
      * 檢查標籤是否存在.
-     *
      * @param string $tag 標籤名稱
      * @return bool 是否存在
      */
@@ -156,7 +137,6 @@ interface TaggedCacheInterface
 
     /**
      * 建立新的標籤化快取實例.
-     *
      * @param string|array<string> $tags 標籤或標籤陣列
      * @return TaggedCacheInterface 新的標籤化快取實例
      */

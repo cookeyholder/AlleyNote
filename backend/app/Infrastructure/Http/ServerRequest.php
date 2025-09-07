@@ -42,11 +42,11 @@ class ServerRequest implements ServerRequestInterface
         string $method,
         UriInterface $uri,
         /** @var array<string, mixed> */
-        array $headers = [],
+        array $headers/** @var array<string, mixed> */ = [],
         $body = null,
         string $version = '1.1',
         /** @var array<string, mixed> */
-        array $serverParams = [],
+        array $serverParams/** @var array<string, mixed> */ = [],
     ) {
         $this->method = $method;
         $this->uri = $uri;
@@ -96,7 +96,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getServerParams(): array
     {
@@ -104,7 +104,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getCookieParams(): array
     {
@@ -123,7 +123,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getQueryParams(): array
     {
@@ -142,7 +142,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getUploadedFiles(): array
     {
@@ -160,7 +160,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getParsedBody()
     {
@@ -179,7 +179,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getAttributes(): array
     {

@@ -18,6 +18,7 @@ class PwnedPasswordService
 
     private Client $httpClient;
 
+    /** @var array<string, mixed>|null */
     private ?array $cache = null;
 
     public function __construct()
@@ -33,9 +34,8 @@ class PwnedPasswordService
 
     /**
      * 檢查密碼是否在已知的洩露資料庫中.
-     *
      * @param string $password 要檢查的密碼
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function isPasswordPwned(string $password): array
     {
@@ -115,10 +115,10 @@ class PwnedPasswordService
     private function findHashInList(string $suffix, string $hashList): int
     {
         $lines = explode("\r
-", $hashList);
+", is_string($hashList) ? $hashList : (string) $hashList);
 
         foreach ($lines as $line) {
-            $parts = explode(':', $line);
+            $parts = explode(':', is_string($line) ? $line : (string) $line);
             if (count($parts) === 2 && $parts[0] === $suffix) {
                 return (int) $parts[1];
             }
@@ -133,12 +133,12 @@ class PwnedPasswordService
     private function isInCache(string $key): bool
     {
         return isset($this->cache[$key])
-            && time() - $this->cache[$key]['timestamp'] < self::CACHE_TTL;
+            && time() - (int) $this->cache[$key]['timestamp'] < self::CACHE_TTL;
     }
 
     private function getFromCache(string $key): ?string
     {
-        return $this->cache[$key]['data'] ?? null;
+        return isset($this->cache[$key]['data']) ? (string) $this->cache[$key]['data'] : null;
     }
 
     private function setCache(string $key, string $data): void
@@ -159,7 +159,7 @@ class PwnedPasswordService
 
     /**
      * 取得 API 狀態.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getApiStatus(): array
     {
@@ -182,12 +182,16 @@ class PwnedPasswordService
      * 批次檢查多個密碼
      * @param array<string, mixed> $passwords
      */
+    /**
+     * @param array<string> $passwords
+     * @return array<string, mixed><string, array<string, mixed>>
+     */
     public function checkMultiplePasswords(array $passwords): array
     {
         $results = [];
 
         foreach ($passwords as $index => $password) {
-            $results[$index] = $this->isPasswordPwned($password);
+            $results[$password] = $this->isPasswordPwned((string) $password);
 
             // 加入小延遲避免 API 限制
             if (count($passwords) > 1) {

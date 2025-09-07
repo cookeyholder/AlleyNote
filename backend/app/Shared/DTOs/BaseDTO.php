@@ -19,7 +19,6 @@ abstract class BaseDTO implements JsonSerializable
 
     /**
      * 建構函式.
-     *
      * @param ValidatorInterface $validator 驗證器實例
      */
     public function __construct(ValidatorInterface $validator)
@@ -29,19 +28,19 @@ abstract class BaseDTO implements JsonSerializable
 
     /**
      * 將 DTO 轉換為陣列.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     abstract public function toArray(): array;
 
     /**
      * 取得驗證規則.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     abstract protected function getValidationRules(): array;
 
     /**
      * 實作 JsonSerializable 介面.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -50,10 +49,9 @@ abstract class BaseDTO implements JsonSerializable
 
     /**
      * 驗證資料.
-     *
      * @param array<string, mixed> $data 輸入資料
      * @throws ValidationException 當驗證失敗時
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     protected function validate(array $data): array
     {

@@ -47,6 +47,9 @@ class MiddlewareManager implements MiddlewareManagerInterface
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $middlewares
+     */
     public function addMultiple(array $middlewares): self
     {
         foreach ($middlewares as $middleware) {

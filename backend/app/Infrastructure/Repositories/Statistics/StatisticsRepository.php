@@ -539,7 +539,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
         if (!is_string($snapshotDataRaw)) {
             $snapshotDataRaw = '{}';
         }
-        $snapshotData = json_decode($snapshotDataRaw, true);
+        $snapshotData = json_decode(is_string($snapshotDataRaw) ? $snapshotDataRaw : (string) $snapshotDataRaw, true);
         if (!is_array($snapshotData)) {
             $snapshotData = [];
         }
@@ -587,7 +587,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
 
     /**
      * 序列化快照資料.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function serializeSnapshotData(StatisticsSnapshot $snapshot): array
     {
@@ -638,9 +638,8 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
      */
     /**
      * 反序列化指標資料.
-     *
      * @param array<string, mixed> $data
-     * @return array<string, StatisticsMetric>
+     * @return array<string, mixed><string, StatisticsMetric>
      */
     private function deserializeMetrics(array $data): array
     {

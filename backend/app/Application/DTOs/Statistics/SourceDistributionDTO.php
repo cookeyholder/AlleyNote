@@ -28,9 +28,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 {
     /**
      * @param StatisticsPeriod $period 統計週期
-     * @param array<SourceStatistics> $sourceStatistics 來源統計清單
      * @param int $totalCount 總數量
-     * @param array<string, mixed> $distributionAnalysis 分佈分析
      * @param DateTimeImmutable $generatedAt 產生時間
      */
     public function __construct(
@@ -48,13 +46,12 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 從來源統計資料建立 DTO.
-     *
      * @param array<SourceStatistics> $sourceStatistics
      */
     public static function fromSourceStatistics(
         StatisticsPeriod $period,
         /** @var array<string, mixed> */
-        array $sourceStatistics,
+        array $sourceStatistics/** @var array<string, mixed> */,
         int $totalCount,
     ): self {
         /** @var array<string, mixed> $analysis */
@@ -71,7 +68,6 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
-     *
      * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
@@ -235,8 +231,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得前 N 個來源.
-     *
-     * @return array<int, SourceStatistics>
+     * @return array<string, mixed><int, SourceStatistics>
      */
     public function getTopSources(int $limit = 3): array
     {
@@ -249,8 +244,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得來源排名.
-     *
-     * @return array<int, array<string, mixed>>
+     * @return array<string, mixed><int, array<string, mixed>>
      */
     public function getSourceRanking(): array
     {
@@ -273,8 +267,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得分佈摘要
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getDistributionSummary(): array
     {
@@ -303,8 +296,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得格式化的分佈資訊.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getFormattedDistribution(): array
     {
@@ -343,8 +335,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 比較與另一個分佈的差異.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function compareWith(SourceDistributionDTO $other): array
     {
@@ -405,8 +396,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {
@@ -435,8 +425,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -460,9 +449,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 計算分佈分析.
-     *
      * @param array<SourceStatistics> $sourceStatistics
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private static function calculateDistributionAnalysis(array $sourceStatistics, int $totalCount): array
     {
@@ -495,7 +483,6 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 驗證來源統計資料.
-     *
      * @param array<SourceStatistics> $sourceStatistics
      */
     private function validateSourceStatistics(array $sourceStatistics): void

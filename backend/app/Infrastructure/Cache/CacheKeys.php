@@ -212,8 +212,8 @@ class CacheKeys
     {
         // 過濾空值並轉換為字串
         $cleanParts = array_filter(
-            array_map('strval', $parts),
-            fn($part): array => $part !== '',
+            array_map(fn($item) => is_scalar($item) ? (string) $item : '', $parts),
+            fn($part): bool => $part !== '',
         );
 
         return self::PREFIX . self::SEPARATOR . implode(self::SEPARATOR, $cleanParts);
@@ -245,7 +245,7 @@ class CacheKeys
 
     /**
      * 解析快取鍵取得各部分.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public static function parseKey(string $key): array
     {
@@ -255,7 +255,7 @@ class CacheKeys
 
         $withoutPrefix = substr($key, strlen(self::PREFIX . self::SEPARATOR));
 
-        return explode(self::SEPARATOR, $withoutPrefix);
+        return explode(self::SEPARATOR, is_string($withoutPrefix) ? $withoutPrefix : (string) $withoutPrefix);
     }
 
     /**

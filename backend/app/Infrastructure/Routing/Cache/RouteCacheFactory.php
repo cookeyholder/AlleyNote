@@ -25,7 +25,6 @@ class RouteCacheFactory
 
     /**
      * 建立路由快取實例.
-     *
      * @param array<string, mixed> $config
      */
     public function create(array $config): RouteCacheInterface
@@ -48,7 +47,6 @@ class RouteCacheFactory
 
     /**
      * 建立檔案快取實例.
-     *
      * @param array{path?: string, ttl?: int} $config
      */
     private function createFileCache(array $config): FileRouteCache
@@ -65,7 +63,6 @@ class RouteCacheFactory
 
     /**
      * 建立記憶體快取實例.
-     *
      * @param array{ttl?: int} $config
      */
     private function createMemoryCache(array $config): MemoryRouteCache
@@ -81,7 +78,6 @@ class RouteCacheFactory
 
     /**
      * 取得支援的快取驅動程式列表.
-     *
      * @return string[]
      */
     public static function getSupportedDrivers(): array
@@ -115,7 +111,6 @@ class RouteCacheFactory
 
     /**
      * 驗證快取配置.
-     *
      * @param array{driver: string, path?: string, ttl?: int} $config
      * @return string[] 驗證錯誤訊息
      */

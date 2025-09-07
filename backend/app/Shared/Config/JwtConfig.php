@@ -278,7 +278,7 @@ final class JwtConfig
 
     /**
      * 取得基本 JWT payload 結構.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getBasePayload(): array
     {
@@ -305,7 +305,7 @@ final class JwtConfig
 
     /**
      * 取得配置摘要（用於日誌記錄，不包含敏感資訊）.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getConfigSummary(): array
     {

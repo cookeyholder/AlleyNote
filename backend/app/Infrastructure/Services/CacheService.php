@@ -46,7 +46,7 @@ class CacheService implements CacheServiceInterface
             return null;
         }
 
-        $cacheData = json_decode($data, true);
+        $cacheData = json_decode(is_string($data) ? $data : (string) $data, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry']) || !isset($cacheData['data'])) {
             $this->stats['misses']++;
 
@@ -152,7 +152,7 @@ class CacheService implements CacheServiceInterface
             return false;
         }
 
-        $cacheData = json_decode($data, true);
+        $cacheData = json_decode(is_string($data) ? $data : (string) $data, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry'])) {
             return false;
         }
@@ -167,7 +167,7 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getMultiple(array $keys): array
     {
@@ -179,6 +179,9 @@ class CacheService implements CacheServiceInterface
         return $result;
     }
 
+    /**
+     * @param array<string, mixed> $values
+     */
     public function setMultiple(array $values, int $ttl = 3600): bool
     {
         $success = true;
@@ -191,6 +194,9 @@ class CacheService implements CacheServiceInterface
         return $success;
     }
 
+    /**
+     * @param array<string, mixed> $keys
+     */
     public function deleteMultiple(array $keys): bool
     {
         $success = true;
@@ -225,7 +231,7 @@ class CacheService implements CacheServiceInterface
 
     /**
      * 取得快取統計資訊.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getStats(): array
     {
@@ -258,7 +264,7 @@ class CacheService implements CacheServiceInterface
             foreach ($files as $file) {
                 $data = file_get_contents($file);
                 if ($data !== false) {
-                    $cacheData = json_decode($data, true);
+                    $cacheData = json_decode(is_string($data) ? $data : (string) $data, true);
                     if (is_array($cacheData) && isset($cacheData['expiry'])) {
                         if (time() > $cacheData['expiry']) {
                             unlink($file);

@@ -41,11 +41,9 @@ readonly class StatisticsCalculationCommand
 
     /**
      * 執行統計計算任務。
-     *
      * @param string[] $periods 要計算的週期類型 ['daily', 'weekly', 'monthly']
-     * @param bool $force 是否強制執行（忽略鎖定）
      * @param bool $skipCache 是否跳過快取檢查
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function execute(array $periods = ['daily', 'weekly', 'monthly'], bool $force = false, bool $skipCache = false): array
     {
@@ -122,7 +120,7 @@ readonly class StatisticsCalculationCommand
 
     /**
      * 計算單一週期的統計資料。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function calculatePeriodStatistics(PeriodType $periodType, string $periodName, string $lockFile, bool $skipCache): array
     {
@@ -406,7 +404,7 @@ readonly class StatisticsCalculationCommand
 
     /**
      * 取得任務狀態。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getStatus(): array
     {

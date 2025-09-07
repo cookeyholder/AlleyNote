@@ -13,7 +13,6 @@ use App\Domains\Post\Models\Post;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
-use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
 use RuntimeException;
@@ -29,8 +28,7 @@ class PostService implements PostServiceInterface
         // DTO 已經在建構時驗證過資料，這裡直接轉換為陣列
         $data = $dto->toArray();
 
-        // 設定建立時間
-        // // $data ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+        // 時間戳由 Repository 層處理
 
         return $this->repository->create($data);
     }
@@ -66,8 +64,7 @@ class PostService implements PostServiceInterface
             }
         }
 
-        // 設定更新時間
-        // // $data ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+        // 時間戳由 Repository 層處理
 
         return $this->repository->update($id, $data);
     }
@@ -98,11 +95,10 @@ class PostService implements PostServiceInterface
     /**
      * 取得文章列表.
      * @param int $page 頁碼
-     * @param int $perPage 每頁筆數
      * @param array<string, mixed> $filters
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
-    public function listPosts(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters = []): array
+    public function listPosts(int $page = 1, int $perPage = 10, array $filters/** @var array<string, mixed> */ = []): array
     {
         $result = $this->repository->paginate($page, $perPage, $filters);
 
@@ -119,7 +115,7 @@ class PostService implements PostServiceInterface
     /**
      * 取得置頂文章列表.
      * @param int $limit 取得筆數
-     * @return Post[]
+     * @return array<string, mixed><Post>
      */
     public function getPinnedPosts(int $limit = 5): array
     {
@@ -142,9 +138,8 @@ class PostService implements PostServiceInterface
     /**
      * 設定文章標籤.
      * @param int $id 文章 ID
-     * @param array<string, mixed> $tagIds
      */
-    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool
+    public function setTags(int $id, array $tagIds/** @var array<string, mixed> */): bool
     {
         $post = $this->repository->find($id);
         if (!$post) {

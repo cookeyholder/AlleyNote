@@ -23,9 +23,7 @@ class PasswordManagementService
 
     /**
      * 變更使用者密碼
-     *
      * @param int $userId 使用者 ID
-     * @param string $currentPassword 目前密碼
      * @param string $newPassword 新密碼
      * @throws ValidationException 當密碼驗證失敗時
      * @throws InvalidArgumentException 當使用者不存在或目前密碼錯誤時
@@ -33,13 +31,13 @@ class PasswordManagementService
     public function changePassword(int $userId, string $currentPassword, string $newPassword): bool
     {
         // 驗證使用者身分
-        $user = $this->userRepository->findById((string) $userId);
+        $user = $this->userRepository->findById($userId);
         if (!$user) {
             throw new InvalidArgumentException('找不到指定的使用者');
         }
 
         // 驗證目前密碼
-        if (!$this->passwordService->verifyPassword($currentPassword, $user['password'])) {
+        if (!$this->passwordService->verifyPassword($currentPassword, (string) $user['password'])) {
             throw new InvalidArgumentException('目前密碼不正確');
         }
 
@@ -52,9 +50,7 @@ class PasswordManagementService
 
     /**
      * 重設密碼（管理員或忘記密碼功能）.
-     *
      * @param int $userId 使用者 ID
-     * @param string $newPassword 新密碼
      * @throws ValidationException 當密碼驗證失敗時
      */
     public function resetPassword(int $userId, string $newPassword): bool
@@ -68,9 +64,8 @@ class PasswordManagementService
 
     /**
      * 檢查密碼強度並提供建議.
-     *
      * @param string $password 要檢查的密碼
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function checkPasswordStrength(string $password): array
     {
@@ -79,7 +74,6 @@ class PasswordManagementService
 
     /**
      * 生成安全密碼
-     *
      * @param int $length 密碼長度
      * @return string 生成的安全密碼
      */
@@ -90,7 +84,6 @@ class PasswordManagementService
 
     /**
      * 檢查密碼是否需要重新雜湊.
-     *
      * @param string $hash 現有的密碼雜湊
      * @return bool 是否需要重新雜湊
      */
@@ -101,22 +94,20 @@ class PasswordManagementService
 
     /**
      * 升級密碼雜湊（如果需要）.
-     *
      * @param int $userId 使用者 ID
-     * @param string $plainPassword 明文密碼（用於驗證）
      * @return bool 是否進行了升級
      */
     public function upgradePasswordHash(int $userId, string $plainPassword): bool
     {
-        $user = $this->userRepository->findById((string) $userId);
+        $user = $this->userRepository->findById($userId);
         if (!$user) {
             return false;
         }
 
         // 檢查密碼是否正確且需要升級
         if (
-            $this->passwordService->verifyPassword($plainPassword, $user['password'])
-            && $this->passwordService->needsRehash($user['password'])
+            $this->passwordService->verifyPassword($plainPassword, (string) $user['password'])
+            && $this->passwordService->needsRehash((string) $user['password'])
         ) {
             // 重新雜湊密碼並透過 updatePassword 方法更新
             return $this->userRepository->updatePassword($userId, $plainPassword);

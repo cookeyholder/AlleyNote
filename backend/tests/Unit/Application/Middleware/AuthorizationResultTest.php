@@ -21,7 +21,7 @@ class AuthorizationResultTest extends TestCase
             allowed: true,
             reason: '測試允許',
             code: 'TEST_ALLOW',
-            appliedRules: ['test_rule'],
+            appliedRules: ['test_rule' => true],
             metadata: ['test' => 'value'],
         );
 
@@ -29,7 +29,7 @@ class AuthorizationResultTest extends TestCase
         $this->assertFalse($result->isDenied());
         $this->assertSame('測試允許', $result->getReason());
         $this->assertSame('TEST_ALLOW', $result->getCode());
-        $this->assertSame(['test_rule'], $result->getAppliedRules());
+        $this->assertSame(['test_rule' => true], $result->getAppliedRules());
         $this->assertSame(['test' => 'value'], $result->getMetadata());
         $this->assertSame('value', $result->getMetadataValue('test'));
         $this->assertNull($result->getMetadataValue('nonexistent'));
@@ -57,13 +57,13 @@ class AuthorizationResultTest extends TestCase
         $result = AuthorizationResult::allow(
             reason: '靜態允許',
             code: 'STATIC_ALLOW',
-            appliedRules: ['static_rule'],
+            appliedRules: ['static_rule' => true],
         );
 
         $this->assertTrue($result->isAllowed());
         $this->assertSame('靜態允許', $result->getReason());
         $this->assertSame('STATIC_ALLOW', $result->getCode());
-        $this->assertSame(['static_rule'], $result->getAppliedRules());
+        $this->assertSame(['static_rule' => true], $result->getAppliedRules());
     }
 
     public function testStaticDenyMethod(): void
@@ -71,13 +71,13 @@ class AuthorizationResultTest extends TestCase
         $result = AuthorizationResult::deny(
             reason: '靜態拒絕',
             code: 'STATIC_DENY',
-            appliedRules: ['static_rule'],
+            appliedRules: ['static_rule' => true],
         );
 
         $this->assertFalse($result->isAllowed());
         $this->assertSame('靜態拒絕', $result->getReason());
         $this->assertSame('STATIC_DENY', $result->getCode());
-        $this->assertSame(['static_rule'], $result->getAppliedRules());
+        $this->assertSame(['static_rule' => true], $result->getAppliedRules());
     }
 
     public function testStaticAllowSuperAdminMethod(): void
@@ -87,7 +87,7 @@ class AuthorizationResultTest extends TestCase
         $this->assertTrue($result->isAllowed());
         $this->assertSame('超級管理員擁有所有權限', $result->getReason());
         $this->assertSame('SUPER_ADMIN_ACCESS', $result->getCode());
-        $this->assertSame(['super_admin'], $result->getAppliedRules());
+        $this->assertSame(['super_admin' => true], $result->getAppliedRules());
     }
 
     public function testStaticDenyInsufficientPermissionsMethod(): void
@@ -97,7 +97,7 @@ class AuthorizationResultTest extends TestCase
         $this->assertFalse($result->isAllowed());
         $this->assertSame('使用者無權限執行操作：delete on posts', $result->getReason());
         $this->assertSame('INSUFFICIENT_PERMISSIONS', $result->getCode());
-        $this->assertSame(['permission_check'], $result->getAppliedRules());
+        $this->assertSame(['permission_check' => true], $result->getAppliedRules());
     }
 
     public function testStaticDenyNotAuthenticatedMethod(): void
@@ -107,7 +107,7 @@ class AuthorizationResultTest extends TestCase
         $this->assertFalse($result->isAllowed());
         $this->assertSame('使用者未認證', $result->getReason());
         $this->assertSame('NOT_AUTHENTICATED', $result->getCode());
-        $this->assertSame(['authentication_check'], $result->getAppliedRules());
+        $this->assertSame(['authentication_check' => true], $result->getAppliedRules());
     }
 
     public function testStaticDenyIpRestrictionMethod(): void
@@ -117,7 +117,7 @@ class AuthorizationResultTest extends TestCase
         $this->assertFalse($result->isAllowed());
         $this->assertSame('IP 位址 192.168.1.100 被限制存取', $result->getReason());
         $this->assertSame('IP_RESTRICTION', $result->getCode());
-        $this->assertSame(['ip_restriction'], $result->getAppliedRules());
+        $this->assertSame(['ip_restriction' => true], $result->getAppliedRules());
     }
 
     public function testStaticDenyTimeRestrictionMethod(): void
@@ -127,7 +127,7 @@ class AuthorizationResultTest extends TestCase
         $this->assertFalse($result->isAllowed());
         $this->assertSame('操作 delete 在當前時間不被允許', $result->getReason());
         $this->assertSame('TIME_RESTRICTION', $result->getCode());
-        $this->assertSame(['time_restriction'], $result->getAppliedRules());
+        $this->assertSame(['time_restriction' => true], $result->getAppliedRules());
     }
 
     public function testHasRuleMethod(): void
@@ -136,7 +136,7 @@ class AuthorizationResultTest extends TestCase
             allowed: true,
             reason: '測試',
             code: 'TEST',
-            appliedRules: ['rule1', 'rule2', 'rule3'],
+            appliedRules: ['rule1' => true, 'rule2' => true, 'rule3' => true],
         );
 
         $this->assertTrue($result->hasRule('rule1'));
@@ -150,7 +150,7 @@ class AuthorizationResultTest extends TestCase
             allowed: true,
             reason: '測試轉換',
             code: 'TEST_ARRAY',
-            appliedRules: ['test_rule'],
+            appliedRules: ['test_rule' => true],
             metadata: ['key' => 'value'],
         );
 
@@ -158,7 +158,7 @@ class AuthorizationResultTest extends TestCase
             'allowed' => true,
             'reason' => '測試轉換',
             'code' => 'TEST_ARRAY',
-            'applied_rules' => ['test_rule'],
+            'applied_rules' => ['test_rule' => true],
             'metadata' => ['key' => 'value'],
         ];
 
@@ -171,7 +171,7 @@ class AuthorizationResultTest extends TestCase
             allowed: false,
             reason: '測試 JSON',
             code: 'TEST_JSON',
-            appliedRules: ['json_rule'],
+            appliedRules: ['json_rule' => true],
         );
 
         $jsonString = json_encode($result);
@@ -180,7 +180,7 @@ class AuthorizationResultTest extends TestCase
         $this->assertSame(false, $decodedData['allowed']);
         $this->assertSame('測試 JSON', $decodedData['reason']);
         $this->assertSame('TEST_JSON', $decodedData['code']);
-        $this->assertSame(['json_rule'], $decodedData['applied_rules']);
+        $this->assertSame(['json_rule' => true], $decodedData['applied_rules']);
     }
 
     public function testEqualsMethod(): void
@@ -189,7 +189,7 @@ class AuthorizationResultTest extends TestCase
             allowed: true,
             reason: '測試相等',
             code: 'TEST_EQUALS',
-            appliedRules: ['rule1'],
+            appliedRules: ['rule1' => true],
             metadata: ['key' => 'value'],
         );
 
@@ -197,7 +197,7 @@ class AuthorizationResultTest extends TestCase
             allowed: true,
             reason: '測試相等',
             code: 'TEST_EQUALS',
-            appliedRules: ['rule1'],
+            appliedRules: ['rule1' => true],
             metadata: ['key' => 'value'],
         );
 
@@ -205,7 +205,7 @@ class AuthorizationResultTest extends TestCase
             allowed: false,
             reason: '不同結果',
             code: 'DIFFERENT',
-            appliedRules: ['rule2'],
+            appliedRules: ['rule2' => true],
         );
 
         $this->assertTrue($result1->equals($result2));
@@ -218,7 +218,7 @@ class AuthorizationResultTest extends TestCase
             allowed: true,
             reason: '測試字串',
             code: 'TEST_STRING',
-            appliedRules: ['rule1', 'rule2'],
+            appliedRules: ['rule1' => true, 'rule2' => true],
             metadata: ['key1' => 'value1', 'key2' => 'value2'],
         );
 

@@ -45,19 +45,12 @@ class RefreshToken implements JsonSerializable
 
     /**
      * RefreshToken Entity 建構子.
-     *
      * @param int|null $id 資料庫 ID（新建時為 null）
-     * @param string $jti JWT ID（唯一識別碼）
      * @param int $userId 使用者 ID
-     * @param string $tokenHash token 的 SHA256 雜湊值
      * @param DateTime $expiresAt 過期時間
-     * @param DeviceInfo $deviceInfo 裝置資訊
      * @param string $status token 狀態
-     * @param string|null $revokedReason 撤銷原因
      * @param DateTime|null $revokedAt 撤銷時間
-     * @param DateTime|null $lastUsedAt 最後使用時間
      * @param string|null $parentTokenJti 父 token JTI（用於 token 輪轉）
-     * @param DateTime|null $createdAt 建立時間
      * @param DateTime|null $updatedAt 更新時間
      *
      * @throws InvalidArgumentException 當參數無效時
@@ -225,10 +218,7 @@ class RefreshToken implements JsonSerializable
 
     /**
      * 撤銷 token.
-     *
      * @param string $reason 撤銷原因
-     * @param DateTime|null $revokedAt 撤銷時間（null 時使用當前時間）
-     *
      * @return self 新的 RefreshToken 實例
      */
     public function markAsRevoked(string $reason, ?DateTime $revokedAt = null): self
@@ -258,9 +248,7 @@ class RefreshToken implements JsonSerializable
 
     /**
      * 標記 token 為已使用.
-     *
      * @param DateTime|null $usedAt 使用時間（null 時使用當前時間）
-     *
      * @return self 新的 RefreshToken 實例
      */
     public function markAsUsed(?DateTime $usedAt = null): self
@@ -286,9 +274,7 @@ class RefreshToken implements JsonSerializable
 
     /**
      * 更新最後使用時間.
-     *
      * @param DateTime|null $lastUsedAt 最後使用時間（null 時使用當前時間）
-     *
      * @return self 新的 RefreshToken 實例
      */
     public function updateLastUsed(?DateTime $lastUsedAt = null): self
@@ -352,9 +338,7 @@ class RefreshToken implements JsonSerializable
 
     /**
      * 檢查 token 是否接近過期.
-     *
      * @param int $thresholdSeconds 臨界秒數（預設 3600 秒 = 1 小時）
-     * @param DateTime|null $now 當前時間
      */
     public function isNearExpiry(int $thresholdSeconds = 3600, ?DateTime $now = null): bool
     {
@@ -363,8 +347,7 @@ class RefreshToken implements JsonSerializable
 
     /**
      * 實作 JsonSerializable 介面.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -386,8 +369,7 @@ class RefreshToken implements JsonSerializable
 
     /**
      * 轉換為陣列（包含敏感資料）.
-     *
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array
     {

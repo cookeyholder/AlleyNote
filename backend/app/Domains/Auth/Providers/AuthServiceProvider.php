@@ -7,9 +7,11 @@ namespace App\Domains\Auth\Providers;
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Application\Middleware\JwtAuthorizationMiddleware;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use App\Domains\Auth\Contracts\JwtProviderInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\Services\AuthenticationService;
 use App\Domains\Auth\Services\JwtTokenService;
 use App\Domains\Auth\Services\RefreshTokenService;
@@ -29,7 +31,7 @@ class AuthServiceProvider
 {
     /**
      * 取得所有認證服務定義.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public static function getDefinitions(): array
     {
@@ -39,6 +41,7 @@ class AuthServiceProvider
 
             // JWT Provider
             FirebaseJwtProvider::class => \DI\factory([self::class, 'createFirebaseJwtProvider']),
+            JwtProviderInterface::class => \DI\get(FirebaseJwtProvider::class),
 
             // Repository 層
             RefreshTokenRepositoryInterface::class => \DI\create(RefreshTokenRepository::class),
@@ -82,6 +85,7 @@ class AuthServiceProvider
     public static function createFirebaseJwtProvider(ContainerInterface $container): FirebaseJwtProvider
     {
         $config = $container->get(JwtConfig::class);
+        assert($config instanceof JwtConfig);
 
         return new FirebaseJwtProvider($config);
     }
@@ -91,10 +95,17 @@ class AuthServiceProvider
      */
     public static function createJwtTokenService(ContainerInterface $container): JwtTokenService
     {
-        $jwtProvider = $container->get(FirebaseJwtProvider::class);
+        $jwtProvider = $container->get(JwtProviderInterface::class);
+        assert($jwtProvider instanceof JwtProviderInterface);
+
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
+
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($blacklistRepository instanceof TokenBlacklistRepositoryInterface);
+
         $config = $container->get(JwtConfig::class);
+        assert($config instanceof JwtConfig);
 
         return new JwtTokenService($jwtProvider, $refreshTokenRepository, $blacklistRepository, $config);
     }
@@ -105,11 +116,17 @@ class AuthServiceProvider
     public static function createAuthenticationService(ContainerInterface $container): AuthenticationService
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
-        $refreshTokenService = $container->get(RefreshTokenService::class);
+        assert($jwtTokenService instanceof JwtTokenServiceInterface);
+
+        $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
 
         // 注意：這裡需要 UserRepository，但由於還沒有實作，暫時傳 null
         // 實際實作時需要從容器中取得 UserRepository
-        return new AuthenticationService($jwtTokenService, $refreshTokenService, null);
+        $userRepository = $container->get(UserRepositoryInterface::class);
+        assert($userRepository instanceof UserRepositoryInterface);
+
+        return new AuthenticationService($jwtTokenService, $refreshTokenRepository, $userRepository);
     }
 
     /**
@@ -118,10 +135,15 @@ class AuthServiceProvider
     public static function createRefreshTokenService(ContainerInterface $container): RefreshTokenService
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
-        $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
-        $blacklistService = $container->get(TokenBlacklistService::class);
+        assert($jwtTokenService instanceof JwtTokenServiceInterface);
 
-        return new RefreshTokenService($jwtTokenService, $refreshTokenRepository, $blacklistService);
+        $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
+
+        $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($blacklistRepository instanceof TokenBlacklistRepositoryInterface);
+
+        return new RefreshTokenService($jwtTokenService, $refreshTokenRepository, $blacklistRepository);
     }
 
     /**
@@ -129,9 +151,10 @@ class AuthServiceProvider
      */
     public static function createTokenBlacklistService(ContainerInterface $container): TokenBlacklistService
     {
-        $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        $repository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($repository instanceof TokenBlacklistRepositoryInterface);
 
-        return new TokenBlacklistService($blacklistRepository);
+        return new TokenBlacklistService($repository);
     }
 
     /**
@@ -140,9 +163,12 @@ class AuthServiceProvider
     public static function createJwtAuthenticationMiddleware(ContainerInterface $container): JwtAuthenticationMiddleware
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
-        $blacklistService = $container->get(TokenBlacklistService::class);
+        assert($jwtTokenService instanceof JwtTokenServiceInterface);
 
-        return new JwtAuthenticationMiddleware($jwtTokenService, $blacklistService);
+        $priority = $container->get('middleware.priority.jwt_auth');
+        assert(is_int($priority));
+
+        return new JwtAuthenticationMiddleware($jwtTokenService, $priority);
     }
 
     /**
@@ -155,7 +181,7 @@ class AuthServiceProvider
 
     /**
      * 取得中介軟體別名映射.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public static function getMiddlewareAliases(): array
     {

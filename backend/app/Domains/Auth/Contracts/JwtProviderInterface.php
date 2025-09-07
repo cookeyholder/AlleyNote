@@ -21,9 +21,7 @@ interface JwtProviderInterface
 {
     /**
      * 生成 access token.
-     *
      * @param array<string, mixed> $payload Token payload
-     * @param int|null $ttl Token 有效期（秒）
      * @return string JWT token
      *
      * @throws TokenGenerationException 當token生成失敗時
@@ -32,9 +30,7 @@ interface JwtProviderInterface
 
     /**
      * 生成 refresh token.
-     *
      * @param array<string, mixed> $payload Token payload
-     * @param int|null $ttl Token 有效期（秒）
      * @return string JWT token
      *
      * @throws TokenGenerationException 當token生成失敗時
@@ -43,10 +39,8 @@ interface JwtProviderInterface
 
     /**
      * 驗證 token.
-     *
      * @param string $token JWT token
-     * @param string|null $expectedType 期望的token類型
-     * @return array<string, mixed> 解析後的payload
+     * @return array<string, mixed><string, mixed> 解析後的payload
      *
      * @throws TokenExpiredException 當token過期時
      * @throws InvalidTokenException 當token無效時
@@ -56,9 +50,8 @@ interface JwtProviderInterface
 
     /**
      * 解析 token payload（不進行驗證）.
-     *
      * @param string $token JWT token
-     * @return array<string, mixed> 解析後的payload
+     * @return array<string, mixed><string, mixed> 解析後的payload
      *
      * @throws TokenParsingException 當token解析失敗時
      */
@@ -66,7 +59,6 @@ interface JwtProviderInterface
 
     /**
      * 取得 token 過期時間戳記.
-     *
      * @param string $token JWT token
      * @return DateTimeImmutable|null 過期時間，如果無法取得則回傳null
      */
@@ -74,7 +66,6 @@ interface JwtProviderInterface
 
     /**
      * 檢查 token 是否已過期.
-     *
      * @param string $token JWT token
      * @return bool true表示已過期，false表示未過期
      */

@@ -90,9 +90,8 @@ class CacheTag
 
     /**
      * 從字串陣列建立標籤陣列.
-     *
      * @param array<string> $names 標籤名稱陣列
-     * @return array<CacheTag> 標籤陣列
+     * @return array<string, mixed><CacheTag> 標籤陣列
      */
     public static function fromArray(array $names): array
     {
@@ -101,9 +100,8 @@ class CacheTag
 
     /**
      * 將標籤陣列轉換為字串陣列.
-     *
      * @param array<CacheTag> $tags 標籤陣列
-     * @return array<string> 字串陣列
+     * @return array<string, mixed><string> 字串陣列
      */
     public static function toArray(array $tags): array
     {
@@ -126,7 +124,6 @@ class CacheTag
 
     /**
      * 建立標籤群組標籤.
-     *
      * @param string $group 群組名稱
      * @return self 群組標籤
      */
@@ -137,7 +134,6 @@ class CacheTag
 
     /**
      * 建立使用者相關標籤.
-     *
      * @param int $userId 使用者 ID
      * @return self 使用者標籤
      */
@@ -148,7 +144,6 @@ class CacheTag
 
     /**
      * 建立模組相關標籤.
-     *
      * @param string $module 模組名稱
      * @return self 模組標籤
      */
@@ -159,7 +154,6 @@ class CacheTag
 
     /**
      * 建立時間相關標籤.
-     *
      * @param string $period 時間週期 (daily, weekly, monthly)
      * @return self 時間標籤
      */

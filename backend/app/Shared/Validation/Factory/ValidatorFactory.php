@@ -32,7 +32,6 @@ class ValidatorFactory
 
     /**
      * 建立具有自訂配置的驗證器實例.
-     *
      * @param array<string, mixed> $config 自訂配置
      */
     public function createWithConfig(array $config): ValidatorInterface
@@ -102,7 +101,7 @@ class ValidatorFactory
     private function addCustomRules(ValidatorInterface $validator): void
     {
         // 使用者名稱驗證規則
-        $validator->addRule('username', function ($value, /** @var array<string, mixed> */ array $parameters) {
+        $validator->addRule('username', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
             if (!is_string($value)) {
                 return false;
             }
@@ -131,7 +130,7 @@ class ValidatorFactory
         });
 
         // 密碼強度驗證規則
-        $validator->addRule('password_strength', function ($value, /** @var array<string, mixed> */ array $parameters) {
+        $validator->addRule('password_strength', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
             if (!is_string($value)) {
                 return false;
             }
@@ -179,7 +178,7 @@ class ValidatorFactory
             }
 
             // 檢查域名部分
-            $parts = explode('@', $email);
+            $parts = explode('@', is_string($email) ? $email : (string) $email);
             if (count($parts) !== 2) {
                 return false;
             }
@@ -209,7 +208,7 @@ class ValidatorFactory
 
             // 檢查是否為 CIDR 格式
             if (strpos($ip, '/') !== false) {
-                $parts = explode('/', $ip);
+                $parts = explode('/', is_string($ip) ? $ip : (string) $ip);
                 if (count($parts) !== 2) {
                     return false;
                 }
@@ -244,7 +243,7 @@ class ValidatorFactory
         });
 
         // 檔案名稱驗證規則
-        $validator->addRule('filename', function ($value, /** @var array<string, mixed> */ array $parameters) {
+        $validator->addRule('filename', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
             if (!is_string($value)) {
                 return false;
             }
@@ -308,7 +307,7 @@ class ValidatorFactory
         // 例如：跨欄位驗證、複雜的業務邏輯驗證等
 
         // 密碼確認驗證（用於註冊 DTO）
-        $validator->addRule('password_confirmed', function ($value, /** @var array<string, mixed> */ array $parameters, /** @var array<string, mixed> */ array $allData = []) {
+        $validator->addRule('password_confirmed', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */, /** @var array<string, mixed> */ array $allData/** @var array<string, mixed> */ = []) {
             if (!is_string($value)) {
                 return false;
             }

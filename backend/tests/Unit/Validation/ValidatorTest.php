@@ -600,9 +600,7 @@ class ValidatorTest extends TestCase
 
     /**
      * 驗證資料並計算錯誤數量的助手方法.
-     *
      * @param array<string, mixed> $data 要驗證的資料
-     * @param array<string, mixed> $rules 驗證規則
      * @param bool $stopOnFirst 是否在第一個錯誤處停止
      */
     private function validateAndCountErrors(array $data, array $rules, bool $stopOnFirst): int
@@ -641,7 +639,6 @@ class ValidatorTest extends TestCase
 
     /**
      * 生成效能測試資料的助手方法.
-     *
      * @param int $count 生成資料的數量
      * @return array<int, array<string, mixed>>
      */
@@ -662,7 +659,6 @@ class ValidatorTest extends TestCase
 
     /**
      * 取得效能測試規則的助手方法.
-     *
      * @return array<string, mixed>
      */
     private function getPerformanceTestRules(): array
@@ -677,9 +673,7 @@ class ValidatorTest extends TestCase
 
     /**
      * 執行效能驗證測試的助手方法.
-     *
      * @param array<int, array<string, mixed>> $testData 測試資料陣列
-     * @param array<string, mixed> $rules 驗證規則
      */
     private function runPerformanceValidations(array $testData, array $rules): void
     {
@@ -708,7 +702,6 @@ class ValidatorTest extends TestCase
 
     /**
      * 執行記憶體洩漏測試的助手方法.
-     *
      * @param int $iterations 迭代次數
      */
     private function runMemoryLeakTest(int $iterations): void
@@ -725,9 +718,7 @@ class ValidatorTest extends TestCase
 
     /**
      * 測試有效值的助手方法.
-     *
      * @param array<string, mixed> $validValues
-     * @param string $rule 驗證規則
      * @param string $field 欄位名稱
      */
     private function assertValidValues(array $validValues, string $rule, string $field = 'test'): void
@@ -743,9 +734,7 @@ class ValidatorTest extends TestCase
 
     /**
      * 測試無效值的助手方法.
-     *
      * @param array<string, mixed> $invalidValues
-     * @param string $rule 驗證規則
      * @param string $field 欄位名稱
      */
     private function assertInvalidValues(array $invalidValues, string $rule, string $field = 'test'): void
@@ -761,7 +750,6 @@ class ValidatorTest extends TestCase
 
     /**
      * 將值轉換為可讀字串的助手方法.
-     *
      * @param mixed $value 要轉換的值
      */
     private function valueToString(mixed $value): string
@@ -795,9 +783,7 @@ class ValidatorTest extends TestCase
 
     /**
      * 測試單一值是否通過規則驗證.
-     *
      * @param mixed $value 測試值
-     * @param string $rule 驗證規則
      * @param string $field 欄位名稱
      */
     private function assertRulePasses(mixed $value, string $rule, string $field = 'test'): void
@@ -811,9 +797,7 @@ class ValidatorTest extends TestCase
 
     /**
      * 驗證特定欄位有錯誤訊息的助手方法.
-     *
      * @param mixed $value 測試值
-     * @param string $rule 驗證規則
      * @param string $field 欄位名稱
      */
     private function assertRuleFailsWithError(mixed $value, string $rule, string $field = 'test'): void

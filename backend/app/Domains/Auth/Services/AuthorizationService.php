@@ -42,7 +42,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $this->getUserRoles($userId);
         }, self::CACHE_TTL);
 
-        return in_array($roleName, array_column($roles, 'name'), true);
+        return in_array($roleName, array_column((array) $roles, 'name'), true);
     }
 
     public function can(int $userId, string $resource, string $action): bool
@@ -169,7 +169,7 @@ class AuthorizationService implements AuthorizationServiceInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getUserRoles(int $userId): array
     {
@@ -181,11 +181,14 @@ class AuthorizationService implements AuthorizationServiceInterface
         ');
         $stmt->execute([$userId]);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        /** @var array<string, mixed> $result */
+        return $result;
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getUserPermissions(int $userId): array
     {
@@ -211,7 +214,16 @@ class AuthorizationService implements AuthorizationServiceInterface
         $directPermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         // 合併並去重
-        return array_unique(array_merge($rolePermissions, $directPermissions));
+
+        $permissions = array_unique(array_merge($rolePermissions, $directPermissions));
+
+        /** @var array<string, mixed> $result */
+        $result = [];
+        foreach ($permissions as $permission) {
+            $result[(string) $permission] = $permission;
+        }
+
+        return $result;
     }
 
     public function isSuperAdmin(int $userId): bool

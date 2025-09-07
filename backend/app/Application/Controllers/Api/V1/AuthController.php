@@ -221,6 +221,7 @@ class AuthController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
+            /** @var array<string, mixed> $data */
             $dto = new RegisterUserDTO($this->validator, $data);
             $user = $this->authService->register($dto);
 

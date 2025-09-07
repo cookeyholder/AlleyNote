@@ -55,7 +55,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 執行單一批次插入測試.
-     *
      * @return array{duration: float, throughput: float, avg_per_record: float}
      */
     private function executeBatchInsertTest(int $batchSize): array
@@ -112,7 +111,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 建立批次插入參數.
-     *
      * @return array<int, mixed>
      */
     private function createBatchInsertParams(int $index, int $batchSize): array
@@ -197,7 +195,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 取得查詢測試場景.
-     *
      * @return array<string, string>
      */
     private function getQueryTestScenarios(): array
@@ -280,7 +277,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 執行分頁測試.
-     *
      * @return array<int, array{duration: float, count: int}>
      */
     private function executePaginationTests(int $pageSize, int $totalPages): array
@@ -296,7 +292,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 執行單頁測試.
-     *
      * @return array{duration: float, count: int}
      */
     private function executeSinglePageTest(int $page, int $pageSize): array
@@ -320,7 +315,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 執行分頁查詢.
-     *
      * @return array<int, array<string, mixed>>
      */
     private function executePaginationQuery(int $pageSize, int $offset): array
@@ -336,7 +330,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 輸出分頁效能報告.
-     *
      * @param array<int, array{duration: float, count: int}> $results
      */
     private function outputPaginationReport(array $results, int $totalPages): void
@@ -396,7 +389,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 建立測試資料參數.
-     *
      * @return array<int, mixed>
      */
     private function createTestDataParams(int $index, int $count): array
@@ -481,7 +473,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 輸出效能報告.
-     *
      * @param array<int, array{duration: float, throughput: float, avg_per_record: float}> $results
      */
     private function outputPerformanceReport(string $title, array $results): void

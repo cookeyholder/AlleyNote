@@ -135,7 +135,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         // 檢查是否為常見弱密碼
         $commonPasswordResult = $this->isCommonPassword($password);
         if ($commonPasswordResult['is_common']) {
-            throw ValidationException::fromSingleError('password', $commonPasswordResult['message']);
+            throw ValidationException::fromSingleError('password', (string) $commonPasswordResult['message']);
         }
 
         // 檢查重複字元
@@ -182,7 +182,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function calculatePasswordStrength(string $password): array
     {
@@ -235,7 +235,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if ($commonPasswordResult['is_common']) {
             $score -= 30;
             $feedback[] = $commonPasswordResult['source'] === 'hibp_api'
-                ? sprintf('此密碼已在 %d 次資料外洩中被發現', $commonPasswordResult['breach_count'])
+                ? sprintf('此密碼已在 %d 次資料外洩中被發現', (int) $commonPasswordResult['breach_count'])
                 : '這是常見的弱密碼';
         }
 
@@ -304,7 +304,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function isCommonPassword(string $password): array
     {
@@ -317,7 +317,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
                     'is_common' => true,
                     'message' => sprintf(
                         '此密碼已在 %d 次資料外洩中被發現，請選擇一個更安全的密碼',
-                        $pwnedResult['count'],
+                        (int) $pwnedResult['count'],
                     ),
                     'source' => 'hibp_api',
                     'breach_count' => $pwnedResult['count'],

@@ -62,12 +62,12 @@ class AttachmentService implements AttachmentServiceInterface
         $filename = $file->getClientFilename();
 
         // 檢查檔案名稱是否包含路徑遍歷嘗試
-        if (strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
+        if ($filename !== null && (strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, '\\') !== false)) {
             throw ValidationException::fromSingleError('file', '不支援的檔案類型');
         }
 
         // 檢查是否有多重副檔名
-        $extensions = explode('.', $filename);
+        $extensions = explode('.', $filename ?? '');
         array_shift($extensions); // 移除檔案名稱部分
         foreach ($extensions as $ext) {
             if (in_array(strtolower($ext), self::FORBIDDEN_EXTENSIONS, true)) {
@@ -188,7 +188,9 @@ class AttachmentService implements AttachmentServiceInterface
                 imagealphablending($cleanImage, false);
                 imagesavealpha($cleanImage, true);
                 $transparent = imagecolorallocatealpha($cleanImage, 255, 255, 255, 127);
-                imagefill($cleanImage, 0, 0, $transparent);
+                if ($transparent !== false) {
+                    imagefill($cleanImage, 0, 0, $transparent);
+                }
                 imagealphablending($cleanImage, true);
             }
 
@@ -250,13 +252,13 @@ class AttachmentService implements AttachmentServiceInterface
 
     /**
      * 改善的檔案驗證流程（減緩 TOCTOU 風險）.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function secureFileValidation(UploadedFileInterface $file): array
     {
         $originalFilename = $file->getClientFilename();
-        $extension = pathinfo($originalFilename, PATHINFO_EXTENSION);
-        $safeExtension = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $extension));
+        $extension = pathinfo($originalFilename ?? '', PATHINFO_EXTENSION);
+        $safeExtension = strtolower((string) preg_replace('/[^a-zA-Z0-9]/', '', $extension));
         $newFilename = bin2hex(random_bytes(16)) . '.' . $safeExtension;
 
         // 建立安全的臨時目錄
@@ -276,8 +278,12 @@ class AttachmentService implements AttachmentServiceInterface
 
             // 重新驗證檔案類型（基於實際內容）
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $actualMimeType = finfo_file($finfo, $tempPath);
-            finfo_close($finfo);
+            if ($finfo !== false) {
+                $actualMimeType = finfo_file($finfo, $tempPath);
+                finfo_close($finfo);
+            } else {
+                throw ValidationException::fromSingleError('file', '無法檢測檔案類型');
+            }
 
             if (!in_array($actualMimeType, self::ALLOWED_MIME_TYPES, true)) {
                 throw ValidationException::fromSingleError('file', '檔案類型不符合預期');
@@ -380,20 +386,28 @@ class AttachmentService implements AttachmentServiceInterface
             $fileInfo = $this->secureFileValidation($file);
         } catch (ValidationException $e) {
             // 記錄不同類型的驗證失敗
-            $error = $e->getErrors()[0] ?? ['message' => $e->getMessage()];
-            $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED; // 預設
+            $errors = $e->getErrors();
+            $errorMessage = $e->getMessage();
 
-            // 根據錯誤訊息判斷具體的失敗類型
-            if (str_contains($error['message'], '病毒') || str_contains($error['message'], '惡意程式碼')) {
+            // 從錯誤陣列中提取第一個錯誤訊息
+            if (!empty($errors)) {
+                $firstFieldErrors = reset($errors);
+                if ($firstFieldErrors !== false && !empty($firstFieldErrors)) {
+                    $errorMessage = $firstFieldErrors[0];
+                }
+            }
+
+            $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED; // 預設
+            if (str_contains($errorMessage, '病毒') || str_contains($errorMessage, '惡意程式碼')) {
                 $activityType = ActivityType::ATTACHMENT_VIRUS_DETECTED;
-            } elseif (str_contains($error['message'], '大小超過')) {
+            } elseif (str_contains($errorMessage, '大小超過')) {
                 $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED;
             }
 
             $this->activityLogger->logFailure(
                 $activityType,
                 $currentUserId,
-                reason: $error['message'],
+                reason: $errorMessage,
                 metadata: [
                     'post_id' => $postId,
                     'filename' => $file->getClientFilename(),
@@ -412,13 +426,19 @@ class AttachmentService implements AttachmentServiceInterface
             }
 
             // 移動檔案到最終位置
-            $finalPath = $this->uploadDir . '/' . $fileInfo['filename'];
-            if (!rename($fileInfo['temp_path'], $finalPath)) {
+            $filename = (string) ($fileInfo['filename'] ?? '');
+            $tempPath = (string) ($fileInfo['temp_path'] ?? '');
+            $tempDir = (string) ($fileInfo['temp_dir'] ?? '');
+
+            $finalPath = $this->uploadDir . '/' . $filename;
+            if (!rename($tempPath, $finalPath)) {
                 throw ValidationException::fromSingleError('file', '檔案移動失敗');
             }
 
             // 清理臨時目錄
-            rmdir($fileInfo['temp_dir']);
+            if (!empty($tempDir) && is_dir($tempDir)) {
+                rmdir($tempDir);
+            }
 
             // 儲存到資料庫
             $attachmentData = [
@@ -449,11 +469,13 @@ class AttachmentService implements AttachmentServiceInterface
             return $attachment;
         } catch (Exception $e) {
             // 清理失敗時的檔案
-            if (file_exists($fileInfo['temp_path'])) {
-                unlink($fileInfo['temp_path']);
+            $tempPath = (string) ($fileInfo['temp_path'] ?? '');
+            if (!empty($tempPath) && file_exists($tempPath)) {
+                unlink($tempPath);
             }
-            if (is_dir($fileInfo['temp_dir'])) {
-                rmdir($fileInfo['temp_dir']);
+            $tempDir = (string) ($fileInfo['temp_dir'] ?? '');
+            if (!empty($tempDir) && is_dir($tempDir)) {
+                rmdir($tempDir);
             }
             if (isset($finalPath) && file_exists($finalPath)) {
                 unlink($finalPath);
@@ -464,7 +486,7 @@ class AttachmentService implements AttachmentServiceInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function download(string $uuid, int $currentUserId): array
     {
@@ -495,7 +517,7 @@ class AttachmentService implements AttachmentServiceInterface
         $realPath = realpath($filePath);
         $uploadDirReal = realpath($this->uploadDir);
 
-        if ($realPath === false || strpos($realPath, $uploadDirReal) !== 0) {
+        if ($realPath === false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
             throw ValidationException::fromSingleError('path', '無效的檔案路徑');
         }
 
@@ -550,14 +572,17 @@ class AttachmentService implements AttachmentServiceInterface
             $realPath = realpath($path);
             $uploadDirReal = realpath($this->uploadDir);
 
-            if ($realPath === false || strpos($realPath, $uploadDirReal) !== 0) {
+            if ($realPath === false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
                 throw ValidationException::fromSingleError('path', '無效的檔案路徑');
             }
 
             unlink($path);
         }
 
-        $this->attachmentRepo->delete($attachment->getId());
+        $attachmentId = $attachment->getId();
+        if ($attachmentId !== null) {
+            $this->attachmentRepo->delete($attachmentId);
+        }
 
         // 記錄成功刪除
         $this->activityLogger->logSuccess(
@@ -573,7 +598,7 @@ class AttachmentService implements AttachmentServiceInterface
     }
 
     /**
-     * @return array<int, Attachment>
+     * @return array<string, mixed><int, Attachment>
      */
     public function getByPostId(int $postId): array
     {

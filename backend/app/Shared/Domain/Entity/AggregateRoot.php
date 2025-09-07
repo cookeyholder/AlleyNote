@@ -23,8 +23,7 @@ abstract class AggregateRoot
 
     /**
      * 取得所有領域事件.
-     *
-     * @return array<object>
+     * @return array<string, mixed><object>
      */
     public function releaseEvents(): array
     {

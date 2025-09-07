@@ -54,7 +54,8 @@ class AttachmentRepository
 
     public function find(int $id): ?Attachment
     {
-        return $this->cache->remember("attachment:{$id}", function () use ($id) {
+        /** @var ?Attachment $result */
+        $result = $this->cache->remember("attachment:{$id}", function () use ($id) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -66,13 +67,21 @@ class AttachmentRepository
 
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $data ? new Attachment($data) : null;
+            if ($data !== false && is_array($data)) {
+                /** @var array<string, mixed> $data */
+                return new Attachment($data);
+            }
+
+            return null;
         });
+
+        return $result;
     }
 
     public function findByUuid(string $uuid): ?Attachment
     {
-        return $this->cache->remember("attachment:uuid:{$uuid}", function () use ($uuid) {
+        /** @var ?Attachment $result */
+        $result = $this->cache->remember("attachment:uuid:{$uuid}", function () use ($uuid) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -84,16 +93,24 @@ class AttachmentRepository
 
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $data ? new Attachment($data) : null;
+            if ($data !== false && is_array($data)) {
+                /** @var array<string, mixed> $data */
+                return new Attachment($data);
+            }
+
+            return null;
         });
+
+        return $result;
     }
 
     /**
-     * @return array<int, Attachment>
+     * @return array<string, mixed><int, Attachment>
      */
     public function getByPostId(int $postId): array
     {
-        return $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
+        /** @var array<int, Attachment> $result */
+        $result = $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -106,12 +123,17 @@ class AttachmentRepository
             $stmt->execute(['post_id' => $postId]);
 
             $attachments = [];
-            while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $attachments[] = new Attachment($data);
+            while (($data = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
+                if (is_array($data)) {
+                    /** @var array<string, mixed> $data */
+                    $attachments[] = new Attachment($data);
+                }
             }
 
             return $attachments;
         });
+
+        return $result;
     }
 
     public function delete(int $id): bool

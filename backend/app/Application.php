@@ -250,7 +250,7 @@ class Application
             }
 
             /**
-             * @return array<mixed>
+             * @return array<string, mixed><mixed>
              */
             public function getMetadata(?string $key = null): mixed
             {
@@ -306,7 +306,7 @@ class Application
             }
 
             /**
-             * @return array<string, array<string>>
+             * @return array<string, mixed><string, array<string>>
              */
             public function getHeaders(): mixed
             {
@@ -319,7 +319,7 @@ class Application
             }
 
             /**
-             * @return array<mixed>
+             * @return array<string, mixed><mixed>
              */
             public function getHeader(string $name): mixed
             {

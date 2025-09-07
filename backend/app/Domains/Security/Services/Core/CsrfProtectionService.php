@@ -216,7 +216,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
     /**
      * 取得權杖池狀態（用於除錯）.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getTokenPoolStatus(): array
     {
@@ -251,7 +251,6 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
     /**
      * 從請求中取得 CSRF token.
-     *
      * @return string|null 如果找到 token 則返回，否則返回 null
      */
     public function getTokenFromRequest(): ?string

@@ -33,10 +33,8 @@ final class PostStatisticsService
 
     /**
      * 分析熱門文章.
-     *
      * @param StatisticsPeriod $period 統計週期
-     * @param int $limit 回傳數量限制
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularPosts(StatisticsPeriod $period, int $limit = 10): array
@@ -86,9 +84,8 @@ final class PostStatisticsService
 
     /**
      * 分析文章來源分佈.
-     *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function analyzeSourceDistribution(StatisticsPeriod $period): array
     {
@@ -140,10 +137,8 @@ final class PostStatisticsService
 
     /**
      * 計算文章品質評分.
-     *
      * @param int $postId 文章ID
-     * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function calculatePostQualityScore(int $postId, StatisticsPeriod $period): array
     {
@@ -202,9 +197,8 @@ final class PostStatisticsService
 
     /**
      * 分析文章趨勢.
-     *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function analyzeTrends(StatisticsPeriod $period): array
     {
@@ -257,11 +251,9 @@ final class PostStatisticsService
 
     /**
      * 計算文章投資報酬率 (ROI).
-     *
      * @param int $postId 文章ID
-     * @param StatisticsPeriod $period 統計週期
      * @param float $contentCost 內容製作成本
-     * @return array{roi: float, revenue: float, cost: float, profit: float} ROI分析結果
+     * @return array<string, mixed>{roi: float, revenue: float, cost: float, profit: float} ROI分析結果
      */
     public function calculatePostROI(int $postId, StatisticsPeriod $period, float $contentCost): array
     {
@@ -294,9 +286,8 @@ final class PostStatisticsService
 
     /**
      * 取得最佳發布時間建議.
-     *
      * @param StatisticsPeriod $period 分析週期
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getBestPublishingTimes(StatisticsPeriod $period): array
     {
@@ -369,7 +360,6 @@ final class PostStatisticsService
 
     /**
      * 計算香農熵（多樣性指標）.
-     *
      * @param array<string, int> $distribution 分佈資料
      * @return float 香農熵值
      */
@@ -395,7 +385,6 @@ final class PostStatisticsService
 
     /**
      * 計算來源品質評分.
-     *
      * @param string $source 來源類型
      * @return float 品質評分 (0-15)
      */
@@ -418,9 +407,7 @@ final class PostStatisticsService
 
     /**
      * 計算一致性評分.
-     *
      * @param int $postId 文章ID
-     * @param StatisticsPeriod $period 統計週期
      * @return float 一致性評分 (0-10)
      */
     private function calculateConsistencyScore(int $postId, StatisticsPeriod $period): float
@@ -454,10 +441,8 @@ final class PostStatisticsService
 
     /**
      * 分析熱門內容.
-     *
      * @param StatisticsPeriod $period 統計週期
-     * @param int $limit 回傳數量限制
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 10): array
@@ -467,10 +452,8 @@ final class PostStatisticsService
 
     /**
      * 取得週期內的熱門文章.
-     *
      * @param StatisticsPeriod $period 統計週期
-     * @param int $limit 回傳數量限制
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array
@@ -480,7 +463,6 @@ final class PostStatisticsService
 
     /**
      * 取得品質等級.
-     *
      * @param float $score 評分
      * @return string 品質等級
      */

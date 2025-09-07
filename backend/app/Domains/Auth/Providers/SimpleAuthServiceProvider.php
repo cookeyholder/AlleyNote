@@ -7,6 +7,7 @@ namespace App\Domains\Auth\Providers;
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Application\Middleware\JwtAuthorizationMiddleware;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use App\Domains\Auth\Contracts\JwtProviderInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
@@ -34,7 +35,7 @@ class SimpleAuthServiceProvider
 {
     /**
      * 取得中介軟體和基本服務定義.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public static function getDefinitions(): array
     {
@@ -42,6 +43,7 @@ class SimpleAuthServiceProvider
             // 基本配置和服務
             JwtConfig::class => \DI\factory([self::class, 'createJwtConfig']),
             FirebaseJwtProvider::class => \DI\factory([self::class, 'createFirebaseJwtProvider']),
+            JwtProviderInterface::class => \DI\get(FirebaseJwtProvider::class),
 
             // Repository (明確建立並注入依賴)
             RefreshTokenRepositoryInterface::class => \DI\factory([self::class, 'createRefreshTokenRepository']),
@@ -84,6 +86,7 @@ class SimpleAuthServiceProvider
     public static function createRefreshTokenRepository(ContainerInterface $container): RefreshTokenRepository
     {
         $pdo = $container->get(PDO::class);
+        assert($pdo instanceof PDO);
 
         return new RefreshTokenRepository($pdo);
     }
@@ -94,6 +97,7 @@ class SimpleAuthServiceProvider
     public static function createTokenBlacklistRepository(ContainerInterface $container): TokenBlacklistRepository
     {
         $pdo = $container->get(PDO::class);
+        assert($pdo instanceof PDO);
 
         return new TokenBlacklistRepository($pdo);
     }
@@ -104,6 +108,7 @@ class SimpleAuthServiceProvider
     public static function createFirebaseJwtProvider(ContainerInterface $container): FirebaseJwtProvider
     {
         $config = $container->get(JwtConfig::class);
+        assert($config instanceof JwtConfig);
 
         return new FirebaseJwtProvider($config);
     }
@@ -113,10 +118,17 @@ class SimpleAuthServiceProvider
      */
     public static function createJwtTokenService(ContainerInterface $container): JwtTokenService
     {
-        $jwtProvider = $container->get(FirebaseJwtProvider::class);
+        $jwtProvider = $container->get(JwtProviderInterface::class);
+        assert($jwtProvider instanceof JwtProviderInterface);
+
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
+
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($blacklistRepository instanceof TokenBlacklistRepositoryInterface);
+
         $config = $container->get(JwtConfig::class);
+        assert($config instanceof JwtConfig);
 
         return new JwtTokenService($jwtProvider, $refreshTokenRepository, $blacklistRepository, $config);
     }
@@ -126,9 +138,10 @@ class SimpleAuthServiceProvider
      */
     public static function createTokenBlacklistService(ContainerInterface $container): TokenBlacklistService
     {
-        $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        $repository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($repository instanceof TokenBlacklistRepositoryInterface);
 
-        return new TokenBlacklistService($blacklistRepository);
+        return new TokenBlacklistService($repository);
     }
 
     /**
@@ -167,6 +180,7 @@ class SimpleAuthServiceProvider
     public static function createJwtAuthenticationMiddleware(ContainerInterface $container): JwtAuthenticationMiddleware
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
+        assert($jwtTokenService instanceof JwtTokenServiceInterface);
 
         return new JwtAuthenticationMiddleware($jwtTokenService);
     }

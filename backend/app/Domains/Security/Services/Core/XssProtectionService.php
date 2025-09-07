@@ -57,9 +57,9 @@ class XssProtectionService implements XssProtectionServiceInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
-    public function cleanArray(array $data, /** @var array<string, mixed> */ array $keys = []): array
+    public function cleanArray(array $data, /** @var array<string, mixed> */ array $keys/** @var array<string, mixed> */ = []): array
     {
         if (empty($keys)) {
             return $this->cleanArrayRecursive($data);

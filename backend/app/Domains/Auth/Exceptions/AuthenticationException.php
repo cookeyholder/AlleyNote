@@ -65,7 +65,7 @@ class AuthenticationException extends JwtException
         string $reason = self::REASON_INVALID_CREDENTIALS,
         string $customMessage = '',
         /** @var array<string, mixed> */
-        array $additionalContext = [],
+        array $additionalContext/** @var array<string, mixed> */ = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason);
 
@@ -133,7 +133,7 @@ class AuthenticationException extends JwtException
      */
     public function getReason(): string
     {
-        return $this->context['reason'] ?? self::REASON_INVALID_CREDENTIALS;
+        return (string) ($this->context['reason'] ?? self::REASON_INVALID_CREDENTIALS);
     }
 
     /**
@@ -141,7 +141,9 @@ class AuthenticationException extends JwtException
      */
     public function getAttemptId(): ?string
     {
-        return $this->context['attempt_id'] ?? null;
+        $attemptId = $this->context['attempt_id'] ?? null;
+
+        return $attemptId !== null ? (string) $attemptId : null;
     }
 
     /**
@@ -149,7 +151,9 @@ class AuthenticationException extends JwtException
      */
     public function getUserId(): ?int
     {
-        return $this->context['user_id'] ?? null;
+        $userId = $this->context['user_id'] ?? null;
+
+        return $userId !== null ? (int) $userId : null;
     }
 
     /**
@@ -157,7 +161,9 @@ class AuthenticationException extends JwtException
      */
     public function getUsername(): ?string
     {
-        return $this->context['username'] ?? null;
+        $username = $this->context['username'] ?? null;
+
+        return $username !== null ? (string) $username : null;
     }
 
     /**
@@ -165,7 +171,9 @@ class AuthenticationException extends JwtException
      */
     public function getIpAddress(): ?string
     {
-        return $this->context['ip_address'] ?? null;
+        $ipAddress = $this->context['ip_address'] ?? null;
+
+        return $ipAddress !== null ? (string) $ipAddress : null;
     }
 
     /**
@@ -173,7 +181,9 @@ class AuthenticationException extends JwtException
      */
     public function getAttemptCount(): ?int
     {
-        return $this->context['attempt_count'] ?? null;
+        $attemptCount = $this->context['attempt_count'] ?? null;
+
+        return $attemptCount !== null ? (int) $attemptCount : null;
     }
 
     /**
@@ -181,7 +191,9 @@ class AuthenticationException extends JwtException
      */
     public function getLockoutUntil(): ?int
     {
-        return $this->context['lockout_until'] ?? null;
+        $lockoutUntil = $this->context['lockout_until'] ?? null;
+
+        return $lockoutUntil !== null ? (int) $lockoutUntil : null;
     }
 
     /**
@@ -435,7 +447,7 @@ class AuthenticationException extends JwtException
     public static function insufficientPrivileges(
         string $requiredPrivilege,
         /** @var array<string, mixed> */
-        array $userPrivileges = [],
+        array $userPrivileges/** @var array<string, mixed> */ = [],
         ?int $userId = null,
     ): self {
         $context = [

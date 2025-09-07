@@ -22,7 +22,7 @@ class AuthService
     ) {}
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): array
     {
@@ -31,7 +31,7 @@ class AuthService
 
         // 轉換為陣列並雜湊密碼
         $data = $dto->toArray();
-        $data['password'] = $this->passwordService->hashPassword($data['password']);
+        $data['password'] = $this->passwordService->hashPassword((string) $data['password']);
 
         $user = $this->userRepository->create($data);
 
@@ -76,10 +76,11 @@ class AuthService
 
     /**
      * @param array<string, mixed> $credentials
+     * @return array<string, mixed><string, mixed>
      */
     public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
     {
-        $user = $this->userRepository->findByEmail($credentials['email']);
+        $user = $this->userRepository->findByEmail((string) $credentials['email']);
 
         if (!$user) {
             return [
@@ -95,7 +96,7 @@ class AuthService
             ];
         }
 
-        if (!password_verify($credentials['password'], $user['password'])) {
+        if (!password_verify((string) $credentials['password'], (string) $user['password'])) {
             return [
                 'success' => false,
                 'message' => '無效的認證資訊',
@@ -147,7 +148,7 @@ class AuthService
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): array
     {

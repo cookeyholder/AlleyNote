@@ -25,7 +25,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得系統基本資訊。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getSystemInfo(): array
     {
@@ -46,7 +46,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得記憶體使用統計。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getMemoryUsage(): array
     {
@@ -69,7 +69,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得 CPU 使用率（簡化版本）。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getCpuUsage(): array
     {
@@ -88,7 +88,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得磁碟使用統計。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getDiskUsage(string $path = '/'): array
     {
@@ -114,7 +114,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得資料庫連線狀態和統計。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getDatabaseStatus(): array
     {
@@ -157,7 +157,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得應用程式健康狀態。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getHealthCheck(): array
     {
@@ -304,7 +304,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得所有系統指標。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function getAllMetrics(): array
     {
@@ -322,7 +322,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得載入的 PHP 擴充功能。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function getLoadedExtensions(): array
     {
@@ -375,7 +375,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得 SQLite 統計資訊。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function getSqliteStats(): array
     {
@@ -407,7 +407,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 檢查資料庫健康狀態。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function checkDatabaseHealth(): array
     {
@@ -430,7 +430,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 檢查記憶體健康狀態。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function checkMemoryHealth(): array
     {
@@ -448,7 +448,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 檢查磁碟健康狀態。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function checkDiskHealth(): array
     {
@@ -466,7 +466,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 檢查環境配置健康狀態。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function checkEnvironmentHealth(): array
     {
@@ -485,7 +485,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 檢查日誌健康狀態。
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     private function checkLogHealth(): array
     {

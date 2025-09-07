@@ -15,7 +15,7 @@ abstract class BaseController
      *
      * @param array<string, mixed> $data
      */
-    protected function json(ResponseInterface $response, /** @var array<string, mixed> */ array $data, int $status = 200): ResponseInterface
+    protected function json(ResponseInterface $response, /** @var array<string, mixed> */ array $data/** @var array<string, mixed> */, int $status = 200): ResponseInterface
     {
         $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         if ($json === false) {

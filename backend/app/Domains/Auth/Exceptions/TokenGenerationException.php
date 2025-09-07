@@ -64,7 +64,7 @@ class TokenGenerationException extends JwtException
         string $tokenType = self::ACCESS_TOKEN,
         string $customMessage = '',
         /** @var array<string, mixed> */
-        array $additionalContext = [],
+        array $additionalContext/** @var array<string, mixed> */ = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
 
@@ -124,7 +124,7 @@ class TokenGenerationException extends JwtException
      */
     public function getReason(): string
     {
-        return $this->context['reason'] ?? self::REASON_ENCODING_FAILED;
+        return (string) ($this->context['reason'] ?? self::REASON_ENCODING_FAILED);
     }
 
     /**
@@ -132,7 +132,7 @@ class TokenGenerationException extends JwtException
      */
     public function getTokenType(): string
     {
-        return $this->context['token_type'] ?? self::ACCESS_TOKEN;
+        return (string) ($this->context['token_type'] ?? self::ACCESS_TOKEN);
     }
 
     /**
@@ -140,7 +140,9 @@ class TokenGenerationException extends JwtException
      */
     public function getGenerationAttemptId(): ?string
     {
-        return $this->context['generation_attempt_id'] ?? null;
+        $attemptId = $this->context['generation_attempt_id'] ?? null;
+
+        return $attemptId !== null ? (string) $attemptId : null;
     }
 
     /**

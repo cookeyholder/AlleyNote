@@ -24,7 +24,7 @@ class RoutingServiceProvider
 {
     /**
      * 取得所有路由服務定義.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public static function getDefinitions(): array
     {
@@ -100,7 +100,7 @@ class RoutingServiceProvider
 
     /**
      * 取得路由配置檔案清單.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public static function getRouteFiles(): array
     {
@@ -147,7 +147,7 @@ class RoutingServiceProvider
 
     /**
      * 取得路由系統統計資訊.
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public static function getRoutingStats(ContainerInterface $container): array
     {

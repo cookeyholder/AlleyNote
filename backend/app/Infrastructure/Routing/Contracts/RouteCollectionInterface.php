@@ -20,7 +20,6 @@ interface RouteCollectionInterface
 
     /**
      * 新增多個路由.
-     *
      * @param RouteInterface[] $routes
      */
     public function addRoutes(array $routes): void;
@@ -32,14 +31,12 @@ interface RouteCollectionInterface
 
     /**
      * 取得所有路由.
-     *
      * @return RouteInterface[]
      */
     public function all(): array;
 
     /**
      * 根據 HTTP 方法取得路由.
-     *
      * @return RouteInterface[]
      */
     public function getByMethod(string $method): array;
@@ -71,7 +68,7 @@ interface RouteCollectionInterface
 
     /**
      * 轉換為陣列格式 (用於快取).
-     * @return array<string, mixed>
+     * @return array<string, mixed><string, mixed>
      */
     public function toArray(): array;
 
