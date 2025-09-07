@@ -31,6 +31,10 @@ class SwaggerController
             // 清除任何輸出的警告訊息
             ob_end_clean();
 
+            if ($openapi === null) {
+                throw new Exception('Failed to generate OpenAPI documentation');
+            }
+
             $json = $openapi->toJson();
 
             $response->getBody()->write(($json ?: ''));
@@ -55,7 +59,8 @@ class SwaggerController
                 'trace' => $e->getTraceAsString(),
             ];
 
-            $response->getBody()->write(((json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?? '') ?: ''));
+            $errorJson = json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            $response->getBody()->write(($errorJson ?: ''));
 
             return $response
                 ->withStatus(500)
@@ -141,7 +146,8 @@ class SwaggerController
             ],
         ];
 
-        $response->getBody()->write(((json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?? '') ?: ''));
+        $infoJson = json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $response->getBody()->write(($infoJson ?: ''));
 
         return $response
             ->withStatus(200)
