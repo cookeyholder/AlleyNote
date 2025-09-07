@@ -162,14 +162,14 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 取得最近的錯誤記錄。
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
      */
     public function getRecentErrors(int $limit = 50): array
     {
         $errors = $this->errorRecords;
 
         // 按時間戳排序（最新的在前）
-        usort($errors, fn($a, $b): array => $b['timestamp'] <=> $a['timestamp']);
+        usort($errors, fn($a, $b): int => $b['timestamp'] <=> $a['timestamp']);
 
 
 
@@ -185,7 +185,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $cutoffTime = microtime(true) - ($days * 24 * 3600);
         $recentErrors = array_filter(
             $this->errorRecords,
-            fn($record): array => $record['timestamp'] > $cutoffTime,
+            fn($record): bool => $record['timestamp'] > $cutoffTime,
         );
 
         $trends = [
@@ -326,7 +326,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         $this->errorRecords = array_filter(
             $this->errorRecords,
-            fn($record): array => $record['timestamp'] > $cutoffTime,
+            fn($record): bool => $record['timestamp'] > $cutoffTime,
         );
 
         $cleanedCount = $originalCount - count($this->errorRecords);
@@ -410,6 +410,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     /**
      * 清理上下文資料，移除敏感資訊。
      * @param array<string, mixed> $context
+     * @return array<string, mixed>
      */
     private function sanitizeContext(array $context): array
     {
@@ -453,7 +454,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 計算錯誤趨勢（每小時）。
-     * @param array<string, mixed> $errors
+     * @param array<int, array<string, mixed>> $errors
+     * @return array<string, int>
      */
     private function calculateErrorTrend(array $errors, int $hours): array
     {
@@ -484,6 +486,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     /**
      * 填充遺漏的日期。
      * @param array<string, mixed> $trends
+     * @return array<string, mixed>
      */
     private function fillMissingDates(array $trends, int $days): array
     {
@@ -550,6 +553,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     /**
      * 判斷健康狀態。
      * @param array<string, mixed> $stats
+     * @return array<string, mixed>
      */
     private function determineHealthStatus(array $stats): array
     {

@@ -15,12 +15,15 @@ use DateTime;
  */
 class Validator implements ValidatorInterface
 {
+    /** @var array<string, callable> */
     private array $customRules = [];
 
+    /** @var array<string, string> */
     private array $customMessages = [];
 
     private bool $stopOnFirstFailure = false;
 
+    /** @var array<string, string> */
     private array $defaultMessages = [
         'required' => '欄位 :field 為必填項目',
         'required_if' => '當 :other 為 :value 時，欄位 :field 為必填項目',
@@ -473,8 +476,9 @@ class Validator implements ValidatorInterface
 
     /**
      * @param array<string, mixed> $parameters
-      */
-    private function validateConfirmed(mixed $value, /** @var array<string, mixed> */ array $parameters, /** @var array<string, mixed> */ array $allData = [], string $currentField = ''): bool
+     * @param array<string, mixed> $allData
+     */
+    private function validateConfirmed(mixed $value, array $parameters, array $allData = [], string $currentField = ''): bool
     {
         // 預設確認欄位名稱為 field_confirmation
         $confirmationField = $currentField . '_confirmation';
@@ -497,8 +501,9 @@ class Validator implements ValidatorInterface
 
     /**
      * @param array<string, mixed> $parameters
-      */
-    private function validateDifferent(mixed $value, /** @var array<string, mixed> */ array $parameters, /** @var array<string, mixed> */ array $allData = []): bool
+     * @param array<string, mixed> $allData
+     */
+    private function validateDifferent(mixed $value, array $parameters, array $allData = []): bool
     {
         if (empty($parameters)) {
             return true;
@@ -517,8 +522,9 @@ class Validator implements ValidatorInterface
 
     /**
      * @param array<string, mixed> $parameters
-      */
-    private function validateSame(mixed $value, /** @var array<string, mixed> */ array $parameters, /** @var array<string, mixed> */ array $allData = []): bool
+     * @param array<string, mixed> $allData
+     */
+    private function validateSame(mixed $value, array $parameters, array $allData = []): bool
     {
         if (empty($parameters)) {
             return true;
