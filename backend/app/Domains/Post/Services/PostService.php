@@ -100,7 +100,9 @@ class PostService implements PostServiceInterface
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
      * @param array<string, mixed> $filters
+     * @phpstan-param array<string, mixed> $args
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {
@@ -143,6 +145,7 @@ class PostService implements PostServiceInterface
      * 設定文章標籤.
      * @param int $id 文章 ID
      * @param array<string, mixed> $tagIds
+     * @phpstan-param array<string, mixed> $args
      */
     public function setTags(int $id, array $tagIds): bool
     {

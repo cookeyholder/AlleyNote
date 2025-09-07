@@ -66,7 +66,7 @@ class IpRepository implements IpRepositoryInterface
             return $ip === $cidr;
         }
 
-        [$subnet, $bits] = explode('/', $cidr);
+        [$subnet, $bits] = explode('/', is_string($cidr) ? $cidr : (string)$cidr);
         $ip = ip2long($ip);
         $subnet = ip2long($subnet);
         $mask = -1 << (32 - (int) $bits);
@@ -76,6 +76,7 @@ class IpRepository implements IpRepositoryInterface
     }
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     private function createIpListFromData(array $data): IpList
     {
@@ -93,6 +94,7 @@ class IpRepository implements IpRepositoryInterface
     }
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public function create(array $data): IpList
     {
@@ -195,6 +197,7 @@ class IpRepository implements IpRepositoryInterface
     }
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public function update(int $id, array $data): IpList
     {
@@ -268,6 +271,7 @@ class IpRepository implements IpRepositoryInterface
     }
 
     /**\n      * @param array<string, mixed> $conditions
+     * @phpstan-param array<string, mixed> $args
      */
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {

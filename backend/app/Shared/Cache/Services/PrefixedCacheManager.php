@@ -50,6 +50,9 @@ class PrefixedCacheManager implements CacheManagerInterface
         return $this->manager->remember($this->prefixKey($key), $callback, $ttl);
     }
 
+    /**
+     * @param array<string, mixed> $tags
+     */
     public function tags(string|array $tags): TaggedCacheInterface
     {
         return $this->manager->tags($tags);

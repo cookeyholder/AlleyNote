@@ -275,7 +275,7 @@ class XssProtectionExtensionService
     private function protectJsonData(string $input, array $options): array
     {
         // 嘗試解析 JSON
-        $decoded = json_decode($input, true);
+        $decoded = json_decode(is_string($input) ? $input : (string)$input, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             return [

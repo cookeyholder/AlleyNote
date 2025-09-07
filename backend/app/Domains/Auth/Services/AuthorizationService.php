@@ -169,6 +169,7 @@ class AuthorizationService implements AuthorizationServiceInterface
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function getUserRoles(int $userId): array
     {
@@ -184,6 +185,7 @@ class AuthorizationService implements AuthorizationServiceInterface
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function getUserPermissions(int $userId): array
     {

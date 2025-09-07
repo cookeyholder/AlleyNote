@@ -282,7 +282,7 @@ final readonly class TokenPair implements JsonSerializable
         }
 
         // 基本的 JWT 格式檢查（三個部分用點分隔）
-        $parts = explode('.', $accessToken);
+        $parts = explode('.', is_string($accessToken) ? $accessToken : (string)$accessToken);
         if (count($parts) !== 3) {
             throw new InvalidArgumentException('Access token must be a valid JWT format (header.payload.signature)');
         }

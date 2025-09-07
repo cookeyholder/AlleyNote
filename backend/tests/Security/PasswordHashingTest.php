@@ -115,7 +115,7 @@ class PasswordHashingTest extends TestCase
         $userId = $this->extractUserIdFromResult($result);
         $hashedPassword = $this->getHashedPasswordFromDatabase($userId);
 
-        $this->assertArgon2idHash($hashedPassword, $userData['password']);
+        $this->assertArgon2idHash($hashedPassword, (is_array($userData) && array_key_exists('password', $userData) ? (is_array($userData) && array_key_exists('password', $userData) ? $userData['password'] : null) : null));
     }
 
     #[Test]
@@ -157,7 +157,7 @@ class PasswordHashingTest extends TestCase
         $this->assertValidUserId($userId);
 
         $this->expectPasswordReuseException();
-        $this->userRepository->updatePassword($userId, $userData['password']);
+        $this->userRepository->updatePassword($userId, (is_array($userData) && array_key_exists('password', $userData) ? (is_array($userData) && array_key_exists('password', $userData) ? $userData['password'] : null) : null));
     }
 
     protected function tearDown(): void
@@ -202,11 +202,11 @@ class PasswordHashingTest extends TestCase
     private function extractUserIdFromResult($result): int
     {
         $this->assertIsArray($result, '註冊結果應該是陣列');
-        $user = $result['user'];
+        $user = (is_array($result) && array_key_exists('user', $result) ? (is_array($result) && array_key_exists('user', $result) ? $result['user'] : null) : null);
 
         $userId = null;
-        if (is_array($user) && isset($user['id'])) {
-            $userId = $user['id'];
+        if (is_array($user) && isset((is_array($user) && array_key_exists('id', $user) ? (is_array($user) && array_key_exists('id', $user) ? $user['id'] : null) : null))) {
+            $userId = (is_array($user) && array_key_exists('id', $user) ? (is_array($user) && array_key_exists('id', $user) ? $user['id'] : null) : null);
         } elseif (is_object($user) && method_exists($user, 'getId')) {
             $userId = $user->getId();
         } elseif (is_object($user) && isset($user->id)) {
@@ -250,7 +250,7 @@ class PasswordHashingTest extends TestCase
     {
         $info = password_get_info($hashedPassword);
 
-        $this->assertEquals(PASSWORD_ARGON2ID, $info['algo']);
+        $this->assertEquals(PASSWORD_ARGON2ID, (is_array($info) && array_key_exists('algo', $info) ? (is_array($info) && array_key_exists('algo', $info) ? $info['algo'] : null) : null));
         $this->assertGreaterThan(50, strlen($hashedPassword));
     }
 

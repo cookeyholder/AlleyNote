@@ -138,7 +138,8 @@ final class TokenBlacklistService
      * 批次檢查 token 是否在黑名單中.
      *
      * @param array<int, string> $jtis JTI 陣列
-     * @return array<string, bool> JTI 為 key，是否在黑名單為值的陣列
+     * @return array<string, bool>
+     * @phpstan-return array<string, mixed> JTI 為 key，是否在黑名單為值的陣列
      */
     public function batchCheckBlacklist(array $jtis): array
     {
@@ -312,7 +313,8 @@ final class TokenBlacklistService
      * 自動清理過期的黑名單項目.
      *
      * @param int $batchSize 批次大小
-     * @return array<string, mixed> 清理結果統計
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed> 清理結果統計
      */
     public function autoCleanup(int $batchSize = self::DEFAULT_CLEANUP_BATCH_SIZE): array
     {
@@ -360,7 +362,8 @@ final class TokenBlacklistService
     /**
      * 取得黑名單統計資訊.
      *
-     * @return array<string, mixed> 統計資訊
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed> 統計資訊
      */
     public function getStatistics(): array
     {
@@ -389,7 +392,8 @@ final class TokenBlacklistService
      * 取得使用者的黑名單統計.
      *
      * @param int $userId 使用者 ID
-     * @return array<string, mixed> 使用者統計資訊
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed> 使用者統計資訊
      */
     public function getUserStatistics(int $userId): array
     {
@@ -415,10 +419,12 @@ final class TokenBlacklistService
     /**
      * 搜尋黑名單項目.
      *
-     * @param array<string, mixed> $criteria 搜尋條件
+     * @param array<string, mixed> $criteria
+     * @phpstan-param array<string, mixed> $args 搜尋條件
      * @param int|null $limit 限制數量
      * @param int $offset 偏移量
-     * @return array<string, mixed> 搜尋結果
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed> 搜尋結果
      */
     public function searchBlacklistEntries(
         array $criteria,
@@ -462,7 +468,8 @@ final class TokenBlacklistService
      * 取得最近的高優先級黑名單項目.
      *
      * @param int $limit 限制數量
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry>
+     * @phpstan-return array<string, mixed> 黑名單項目陣列
      */
     public function getRecentHighPriorityEntries(int $limit = 50): array
     {
@@ -481,7 +488,8 @@ final class TokenBlacklistService
     /**
      * 最佳化黑名單儲存.
      *
-     * @return array<string, mixed> 最佳化結果
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed> 最佳化結果
      */
     public function optimize(): array
     {
@@ -506,7 +514,8 @@ final class TokenBlacklistService
     /**
      * 檢查黑名單健康狀態.
      *
-     * @return array<string, mixed> 健康狀態資訊
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed> 健康狀態資訊
      */
     public function getHealthStatus(): array
     {

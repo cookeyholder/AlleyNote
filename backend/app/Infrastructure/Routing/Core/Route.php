@@ -64,6 +64,9 @@ class Route implements RouteInterface
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $middlewares
+     */
     public function addMiddlewares(array $middlewares): self
     {
         foreach ($middlewares as $middleware) {
@@ -122,6 +125,10 @@ class Route implements RouteInterface
         return $this->matchesPath($path);
     }
 
+    /**
+     * @param array<string, mixed> $parameters
+     * @param array<string, mixed> $queryParams
+     */
     public function generateUrl(array $parameters = [], array $queryParams = []): string
     {
         $url = $this->pattern;
@@ -151,6 +158,9 @@ class Route implements RouteInterface
         return $url;
     }
 
+    /**
+     * @param array<string, mixed> $attributes
+     */
     public function withAttributes(array $attributes): self
     {
         $clone = clone $this;

@@ -15,12 +15,15 @@ use DateTime;
  */
 class Validator implements ValidatorInterface
 {
+    /** @var array<string, callable> */
     private array $customRules = [];
 
+    /** @var array<string, string> */
     private array $customMessages = [];
 
     private bool $stopOnFirstFailure = false;
 
+    /** @var array<string, string> */
     private array $defaultMessages = [
         'required' => '欄位 :field 為必填項目',
         'required_if' => '當 :other 為 :value 時，欄位 :field 為必填項目',
@@ -74,6 +77,11 @@ class Validator implements ValidatorInterface
             $fieldFailedRules = [];
 
             foreach ($ruleSet as $rule) {
+                // 確保 rule 是字串型別
+                if (!is_string($rule)) {
+                    continue;
+                }
+
                 $ruleName = $rule;
                 $parameters = [];
 
@@ -126,7 +134,9 @@ class Validator implements ValidatorInterface
         return $result->getValidatedData();
     }
 
-    /**\n      * @param array<string, mixed> $allData
+    /**
+     * @param list<string> $parameters
+     * @param array<string, mixed> $allData
      */
     public function checkRule(mixed $value, string $rule, array $parameters = [], array $allData = [], string $currentField = ''): bool
     {

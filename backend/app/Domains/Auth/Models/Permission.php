@@ -74,6 +74,7 @@ class Permission
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -89,6 +90,7 @@ class Permission
     }
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public static function fromArray(array $data): self
     {

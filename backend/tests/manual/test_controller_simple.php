@@ -385,7 +385,7 @@ try {
     if ($data && $data['success'] === true) {
         echo '   ✓ 回應內容正確
 ';
-        echo '   ✓ 貼文 ID: ' . $data['data']['id'] . '
+        echo '   ✓ 貼文 ID: ' . (is_array($data) && array_key_exists('data', $data) ? (is_array($data) && array_key_exists('data', $data) ? $data['data'] : null) : null)['id'] . '
 ';
     } else {
         echo '   ✗ 回應內容格式錯誤

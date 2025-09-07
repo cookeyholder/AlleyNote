@@ -141,6 +141,9 @@ class LayeredCacheDriver implements CacheDriverInterface
         return $success;
     }
 
+    /**
+     * @param array<string, mixed> $keys
+     */
     public function many(array $keys): array
     {
         $result = [];
@@ -174,6 +177,9 @@ class LayeredCacheDriver implements CacheDriverInterface
         return $result;
     }
 
+    /**
+     * @param array<string, mixed> $values
+     */
     public function putMany(array $values, int $ttl = 3600): bool
     {
         $success = true;
@@ -195,6 +201,9 @@ class LayeredCacheDriver implements CacheDriverInterface
         return $success;
     }
 
+    /**
+     * @param array<string, mixed> $keys
+     */
     public function forgetMany(array $keys): bool
     {
         $success = true;

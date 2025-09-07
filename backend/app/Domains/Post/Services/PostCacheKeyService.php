@@ -23,7 +23,7 @@ class PostCacheKeyService
     {
         // 過濾空值並轉換為字串
         $cleanParts = array_filter(
-            array_map('strval', $parts),
+            array_map(fn($item) => is_scalar($item) ? (string)$item : '', $parts),
             fn($part) => $part !== '',
         );
 

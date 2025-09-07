@@ -29,9 +29,11 @@ final readonly class UserActivityDTO implements JsonSerializable
      * @param StatisticsMetric $totalActiveUsers 總活躍使用者數
      * @param StatisticsMetric $newUsers 新使用者數
      * @param StatisticsMetric $returningUsers 回訪使用者數
-     * @param array<string, mixed> $topActiveUsers
-     * @param array<string, mixed> $activityPatterns 活動模式分析
-     * @param array<string, mixed> $engagementMetrics 參與度指標
+     * @param array<array<string, mixed>> $topActiveUsers
+     * @param array<string, mixed> $activityPatterns
+     * @phpstan-param array<string, mixed> $args 活動模式分析
+     * @param array<string, mixed> $engagementMetrics
+     * @phpstan-param array<string, mixed> $args 參與度指標
      * @param DateTimeImmutable $generatedAt 產生時間
      */
     public function __construct(
@@ -39,7 +41,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         public StatisticsMetric $totalActiveUsers,
         public StatisticsMetric $newUsers,
         public StatisticsMetric $returningUsers,
-        /** @var array<string, mixed> */
+        /** @var array<array<string, mixed>> */
         public array $topActiveUsers,
         /** @var array<string, mixed> */
         public array $activityPatterns,
@@ -58,8 +60,10 @@ final readonly class UserActivityDTO implements JsonSerializable
      * 從統計資料建立 DTO.
      *
      * @param array<string, mixed> $userStats
+     * @phpstan-param array<string, mixed> $args
      * @param array<array<string, mixed>> $topUsers
      * @param array<string, mixed> $patterns
+     * @phpstan-param array<string, mixed> $args
      */
     public static function fromStatistics(
         StatisticsPeriod $period,
@@ -103,12 +107,13 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 從陣列資料建立 DTO.
      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public static function fromArray(array $data): self
     {
         // 使用型別安全的方式存取期間資料
         /** @var array<string, mixed> $periodData */
-        $periodData = is_array($data['period'] ?? []) ? $data['period'] : [];
+        $periodData = is_array(self::extractValue($data, 'period', []) ? $data['period'] : []);
 
         $periodStartDate = $periodData['start_date'] ?? null;
         $startDate = is_string($periodStartDate) ? $periodStartDate : 'now';
@@ -126,37 +131,37 @@ final readonly class UserActivityDTO implements JsonSerializable
         );
 
         // 安全地提取統計指標
-        $activeUsersValue = $data['active_users'] ?? null;
+        $activeUsersValue = self::extractValue($data, 'active_users', null);
         $activeUsers = StatisticsMetric::count(
             is_numeric($activeUsersValue) ? (int) $activeUsersValue : 0,
             '活躍用戶數',
         );
 
-        $newUsersValue = $data['new_users'] ?? null;
+        $newUsersValue = self::extractValue($data, 'new_users', null);
         $newUsers = StatisticsMetric::count(
             is_numeric($newUsersValue) ? (int) $newUsersValue : 0,
             '新用戶數',
         );
 
-        $returningUsersValue = $data['returning_users'] ?? null;
+        $returningUsersValue = self::extractValue($data, 'returning_users', null);
         $returningUsers = StatisticsMetric::count(
             is_numeric($returningUsersValue) ? (int) $returningUsersValue : 0,
             '回訪用戶數',
         );
 
-        $topActiveUsersRaw = $data['top_active_users'] ?? [];
+        $topActiveUsersRaw = self::extractValue($data, 'top_active_users', []);
         /** @var array<array<string, mixed>> $topActiveUsers */
         $topActiveUsers = is_array($topActiveUsersRaw) ? array_filter($topActiveUsersRaw, 'is_array') : [];
 
-        $activityPatternsRaw = $data['activity_patterns'] ?? [];
+        $activityPatternsRaw = self::extractValue($data, 'activity_patterns', []);
         /** @var array<string, mixed> $activityPatterns */
         $activityPatterns = is_array($activityPatternsRaw) ? $activityPatternsRaw : [];
 
-        $engagementMetricsRaw = $data['engagement_metrics'] ?? [];
+        $engagementMetricsRaw = self::extractValue($data, 'engagement_metrics', []);
         /** @var array<string, mixed> $engagementMetrics */
         $engagementMetrics = is_array($engagementMetricsRaw) ? $engagementMetricsRaw : [];
 
-        $generatedAtValue = $data['generated_at'] ?? null;
+        $generatedAtValue = self::extractValue($data, 'generated_at', null);
         $generatedAt = is_string($generatedAtValue) ? $generatedAtValue : 'now';
 
         return new self(
@@ -261,7 +266,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得最活躍使用者資訊.
-     * @return array<int, mixed>
+     * @return list<array<string, mixed>>
      */
     public function getTopActiveUsersSummary(): array
     {
@@ -285,6 +290,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 取得活動時段分析.
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function getActivityTimeAnalysis(): array
     {
@@ -296,6 +302,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 取得最熱門活動時段.
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function getPeakActivityHours(): array
     {
@@ -319,6 +326,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 取得使用者活動摘要
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function getActivitySummary(): array
     {
@@ -348,6 +356,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 取得格式化的活動資訊.
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function getFormattedActivity(): array
     {
@@ -386,6 +395,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 比較與另一個週期的活動差異.
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function compareWith(UserActivityDTO $other): array
     {
@@ -433,6 +443,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 轉換為陣列.
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -467,6 +478,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * JSON 序列化.
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -493,7 +505,9 @@ final readonly class UserActivityDTO implements JsonSerializable
      * 計算參與度指標.
      *
      * @param array<string, mixed> $userStats
+     * @phpstan-param array<string, mixed> $args
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     private static function calculateEngagementMetrics(array $userStats): array
     {
@@ -515,7 +529,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 驗證最活躍使用者資料.
-     * @param array<string, mixed> $topUsers
+     * @param array<array<string, mixed>> $topUsers
+     * @phpstan-param array<array<string, mixed>> $topUsers
      */
     private function validateTopActiveUsers(array $topUsers): void
     {
@@ -537,9 +552,55 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * 驗證活動模式資料.
      * @param array<string, mixed> $patterns
+     * @phpstan-param array<string, mixed> $args
      */
     private function validateActivityPatterns(array $patterns): void
     {
         // 活動模式陣列格式已通過型別檢查確認
     }
+
+    /**
+     * 安全地從陣列中提取字串值
+     */
+    private static function extractString(array $data, string $key, string $default = ''): string
+    {
+        $value = $data[$key] ?? $default;
+        return is_string($value) ? $value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取整數值
+     */
+    private static function extractInteger(array $data, string $key, int $default = 0): int
+    {
+        $value = $data[$key] ?? $default;
+        return is_numeric($value) ? (int)$value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取浮點數值
+     */
+    private static function extractFloat(array $data, string $key, float $default = 0.0): float
+    {
+        $value = $data[$key] ?? $default;
+        return is_numeric($value) ? (float)$value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取陣列值
+     */
+    private static function extractArray(array $data, string $key, array $default = []): array
+    {
+        $value = $data[$key] ?? $default;
+        return is_array($value) ? $value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取混合值
+     */
+    private static function extractValue(array $data, string $key, mixed $default = null): mixed
+    {
+        return $data[$key] ?? $default;
+    }
+
 }

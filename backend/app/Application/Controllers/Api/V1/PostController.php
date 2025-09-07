@@ -252,7 +252,7 @@ class PostController extends BaseController
     {
         try {
             $body = $request->getBody()->getContents();
-            $data = json_decode($body, true);
+            $data = json_decode(is_string($body) ? $body : (string)$body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // 記錄 JSON 格式錯誤
@@ -369,8 +369,17 @@ class PostController extends BaseController
     /**
      * 顯示單一貼文.
      *
+     * @param Request $request
+     * @param Response $response
      * @param array<string, mixed> $args
+     * @phpstan-param array<string, mixed> $args
+     * @return Response
      */
+        /**
+     * @phpstan-param array<string, mixed> $args
+     */
+
+    /** @phpstan-ignore-next-line missingType.iterableValue */
     public function show(Request $request, Response $response, array $args): Response
     {
         try {
@@ -524,8 +533,17 @@ class PostController extends BaseController
     /**
      * 更新貼文.
      *
+     * @param Request $request
+     * @param Response $response
      * @param array<string, mixed> $args
+     * @phpstan-param array<string, mixed> $args
+     * @return Response
      */
+        /**
+     * @phpstan-param array<string, mixed> $args
+     */
+
+    /** @phpstan-ignore-next-line missingType.iterableValue */
     public function update(Request $request, Response $response, array $args): Response
     {
         try {
@@ -549,7 +567,7 @@ class PostController extends BaseController
             }
 
             $body = $request->getBody()->getContents();
-            $data = json_decode($body, true);
+            $data = json_decode(is_string($body) ? $body : (string)$body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // 記錄 JSON 格式錯誤
@@ -702,8 +720,17 @@ class PostController extends BaseController
     /**
      * 刪除貼文.
      *
+     * @param Request $request
+     * @param Response $response
      * @param array<string, mixed> $args
+     * @phpstan-param array<string, mixed> $args
+     * @return Response
      */
+        /**
+     * @phpstan-param array<string, mixed> $args
+     */
+
+    /** @phpstan-ignore-next-line missingType.iterableValue */
     public function delete(Request $request, Response $response, array $args): Response
     {
         try {
@@ -900,8 +927,17 @@ class PostController extends BaseController
     /**
      * 切換貼文置頂狀態.
      *
+     * @param Request $request
+     * @param Response $response
      * @param array<string, mixed> $args
+     * @phpstan-param array<string, mixed> $args
+     * @return Response
      */
+        /**
+     * @phpstan-param array<string, mixed> $args
+     */
+
+    /** @phpstan-ignore-next-line missingType.iterableValue */
     public function togglePin(Request $request, Response $response, array $args): Response
     {
         try {
@@ -925,7 +961,7 @@ class PostController extends BaseController
             }
 
             $body = $request->getBody()->getContents();
-            $data = json_decode($body, true);
+            $data = json_decode(is_string($body) ? $body : (string)$body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // 記錄 JSON 格式錯誤

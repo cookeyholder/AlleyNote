@@ -17,6 +17,7 @@ class UserRepository
     ) {}
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public function create(array $data): array
     {
@@ -46,6 +47,7 @@ class UserRepository
     }
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public function update(string $id, array $data): array
     {
@@ -82,6 +84,7 @@ class UserRepository
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function findById(int $id): ?array
     {
@@ -94,6 +97,7 @@ class UserRepository
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function findByUuid(string $uuid): ?array
     {
@@ -106,6 +110,7 @@ class UserRepository
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function findByUsername(string $username): ?array
     {
@@ -118,6 +123,7 @@ class UserRepository
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function findByEmail(string $email): ?array
     {

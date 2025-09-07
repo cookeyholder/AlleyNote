@@ -422,7 +422,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         $data = $userAgent . $ipAddress . date('Y-m-d');
 
-        return 'dev_' . substr(hash('sha256', $data), 0, 32);
+        return 'dev_' . substr(hash('sha256', is_string($data) ? $data : (string)$data), 0, 32);
     }
 
     /**

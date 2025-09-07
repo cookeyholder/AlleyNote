@@ -10,6 +10,7 @@ namespace App\Domains\Auth\DTOs;
  * 封裝使用者 Token 刷新請求的資料。
  */
 final readonly class RefreshRequestDTO /**\n      * @param array<string, mixed> $scopes
+     * @phpstan-param array<string, mixed> $args
      */
 {
     public function __construct(
@@ -20,6 +21,7 @@ final readonly class RefreshRequestDTO /**\n      * @param array<string, mixed> 
     /**
      * 從陣列建立 RefreshRequestDTO.
      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public static function fromArray(array $data): self
     {
@@ -32,6 +34,7 @@ final readonly class RefreshRequestDTO /**\n      * @param array<string, mixed> 
     /**
      * 轉換為陣列.
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {

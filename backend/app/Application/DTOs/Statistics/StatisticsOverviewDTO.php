@@ -31,7 +31,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      * @param StatisticsMetric $totalPosts 總文章數
      * @param StatisticsMetric $totalViews 總瀏覽數
      * @param array<SourceStatistics> $sourceStatistics 來源統計
-     * @param array<string, mixed> $additionalMetrics 額外指標
+     * @param array<string, mixed> $additionalMetrics
+     * @phpstan-param array<string, mixed> $args 額外指標
      * @param DateTimeImmutable $generatedAt 產生時間
      */
     public function __construct(
@@ -41,7 +42,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         /** @var array<SourceStatistics> */
         public array $sourceStatistics,
         /** @var array<string, mixed> */
-        public array $additionalMetrics,
+        public array $additionalMetrics = [],
         public DateTimeImmutable $generatedAt,
     ) {
         $this->validateSourceStatistics($sourceStatistics);
@@ -52,6 +53,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      *
      * @param array<SourceStatistics> $sourceStatistics
      * @param array<string, mixed> $additionalMetrics
+     * @phpstan-param array<string, mixed> $args
      */
     public static function fromSnapshot(
         StatisticsPeriod $period,
@@ -74,12 +76,13 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      * 從陣列資料建立 DTO.
      *
      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public static function fromArray(array $data): self
     {
         // 使用型別安全的方式存取期間資料
         /** @var array<string, mixed> $periodData */
-        $periodData = is_array($data['period'] ?? []) ? $data['period'] : [];
+        $periodData = is_array(self::extractValue($data, 'period', []) ? $data['period'] : []);
 
         $periodStartDate = $periodData['start_date'] ?? null;
         $startDate = is_string($periodStartDate) ? $periodStartDate : 'now';
@@ -98,7 +101,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
         // 安全地提取統計指標
         /** @var array<string, mixed> $totalViewsData */
-        $totalViewsData = is_array($data['total_views'] ?? []) ? $data['total_views'] : [];
+        $totalViewsData = is_array(self::extractValue($data, 'total_views', []) ? $data['total_views'] : []);
         $totalViewsValue = $totalViewsData['value'] ?? null;
         $totalViewsDescription = $totalViewsData['description'] ?? null;
 
@@ -108,7 +111,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         );
 
         /** @var array<string, mixed> $totalPostsData */
-        $totalPostsData = is_array($data['total_posts'] ?? []) ? $data['total_posts'] : [];
+        $totalPostsData = is_array(self::extractValue($data, 'total_posts', []) ? $data['total_posts'] : []);
         $totalPostsValue = $totalPostsData['value'] ?? null;
         $totalPostsDescription = $totalPostsData['description'] ?? null;
 
@@ -118,7 +121,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         );
 
         // 來源統計資料
-        $sourceStatsDataRaw = $data['source_statistics'] ?? [];
+        $sourceStatsDataRaw = self::extractValue($data, 'source_statistics', []);
         /** @var array<array<string, mixed>> $sourceStatsData */
         $sourceStatsData = is_array($sourceStatsDataRaw) ? array_filter($sourceStatsDataRaw, 'is_array') : [];
 
@@ -144,11 +147,11 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         );
 
         /** @var array<string, mixed> $additionalMetricsRaw */
-        $additionalMetricsRaw = $data['additional_metrics'] ?? [];
+        $additionalMetricsRaw = self::extractValue($data, 'additional_metrics', []);
         /** @var array<string, mixed> $additionalMetrics */
         $additionalMetrics = is_array($additionalMetricsRaw) ? $additionalMetricsRaw : [];
 
-        $generatedAtValue = $data['generated_at'] ?? null;
+        $generatedAtValue = self::extractValue($data, 'generated_at', null);
         $generatedAt = is_string($generatedAtValue) ? $generatedAtValue : 'now';
 
         // 確保型別安全
@@ -169,6 +172,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      * 取得格式化的統計概覽.
      *
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function getFormattedOverview(): array
     {
@@ -216,6 +220,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      * 取得摘要資訊.
      *
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function getSummary(): array
     {
@@ -232,6 +237,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
     /**
      * 取得主要來源.
      * @return array<int, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function getTopSource(): ?array
     {
@@ -281,6 +287,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      * 轉換為陣列.
      *
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -334,6 +341,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      * JSON 序列化.
      *
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -368,4 +376,49 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
             }
         }
     }
+
+    /**
+     * 安全地從陣列中提取字串值
+     */
+    private static function extractString(array $data, string $key, string $default = ''): string
+    {
+        $value = $data[$key] ?? $default;
+        return is_string($value) ? $value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取整數值
+     */
+    private static function extractInteger(array $data, string $key, int $default = 0): int
+    {
+        $value = $data[$key] ?? $default;
+        return is_numeric($value) ? (int)$value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取浮點數值
+     */
+    private static function extractFloat(array $data, string $key, float $default = 0.0): float
+    {
+        $value = $data[$key] ?? $default;
+        return is_numeric($value) ? (float)$value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取陣列值
+     */
+    private static function extractArray(array $data, string $key, array $default = []): array
+    {
+        $value = $data[$key] ?? $default;
+        return is_array($value) ? $value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取混合值
+     */
+    private static function extractValue(array $data, string $key, mixed $default = null): mixed
+    {
+        return $data[$key] ?? $default;
+    }
+
 }

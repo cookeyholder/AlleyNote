@@ -58,7 +58,7 @@ class StatisticsAdminController extends BaseController
                 'body' => (string) $request->getBody(),
             ]);
 
-            $body = json_decode((string) $request->getBody(), true);
+            $body = json_decode(is_string((string) $request->getBody()) ? (string) $request->getBody() : (string)(string) $request->getBody(), true);
             if (!is_array($body)) {
                 $body = [];
             }

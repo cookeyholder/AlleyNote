@@ -10,6 +10,9 @@ class PostValidationException extends ValidationException
     /**\n      * @param array<string, mixed> $errors
      */
 {
+    /**
+     * @param array<string, mixed> $errors
+     */
     public function __construct(string $message = '', array $errors = [])
     {
         if (empty($message) && !empty($errors)) {

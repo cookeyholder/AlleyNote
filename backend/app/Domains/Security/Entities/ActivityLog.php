@@ -157,7 +157,7 @@ class ActivityLog
             return null;
         }
 
-        $decoded = json_decode($this->metadata, true);
+        $decoded = json_decode(is_string($this->metadata) ? $this->metadata : (string)$this->metadata, true);
 
         return is_array($decoded) ? $decoded : null;
     }
@@ -313,7 +313,7 @@ class ActivityLog
             targetType: $data['target_type'],
             targetId: $data['target_id'],
             description: $data['description'],
-            metadata: $data['metadata'] ? json_decode($data['metadata'], true) : null,
+            metadata: $data['metadata'] ? json_decode(is_string($data['metadata']) ? $data['metadata'] : (string)$data['metadata'], true) : null,
             ipAddress: $data['ip_address'],
             userAgent: $data['user_agent'],
             requestMethod: $data['request_method'],

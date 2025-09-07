@@ -38,7 +38,7 @@ interface ValidatorInterface
      *
      * @param mixed $value 要檢查的值
      * @param string $rule 驗證規則
-     * @param array<string, mixed> $parameters 規則參數
+     * @param list<string> $parameters 規則參數
      * @return bool 是否通過驗證
      */
     public function checkRule(mixed $value, string $rule, array $parameters = []): bool;

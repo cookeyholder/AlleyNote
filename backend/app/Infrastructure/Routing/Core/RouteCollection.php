@@ -43,6 +43,9 @@ class RouteCollection implements RouteCollectionInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $routes
+     */
     public function addRoutes(array $routes): void
     {
         foreach ($routes as $route) {

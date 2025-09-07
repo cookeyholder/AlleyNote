@@ -78,7 +78,7 @@ try {
 ';
 
     $routingStats = RoutingServiceProvider::getRoutingStats($container);
-    if (isset($routingStats['error'])) {
+    if (isset((is_array($routingStats) && array_key_exists('error', $routingStats) ? (is_array($routingStats) && array_key_exists('error', $routingStats) ? $routingStats['error'] : null) : null))) {
         echo "⚠️  路由統計暫時無法取得: {(string)routingStats['error']}
 ";
     } else {
@@ -88,10 +88,10 @@ try {
 ";
         echo "   - 載入檔案數: {(string)routingStats['files_loaded']}
 ";
-        echo '   - 路由群組: ' . implode(', ', array_keys($routingStats['groups'])) . '
+        echo '   - 路由群組: ' . implode(', ', array_keys((is_array($routingStats) && array_key_exists('groups', $routingStats) ? (is_array($routingStats) && array_key_exists('groups', $routingStats) ? $routingStats['groups'] : null) : null))) . '
 ';
 
-        foreach ($routingStats['groups'] as $group => $count) {
+        foreach ((is_array($routingStats) && array_key_exists('groups', $routingStats) ? (is_array($routingStats) && array_key_exists('groups', $routingStats) ? $routingStats['groups'] : null) : null) as $group => $count) {
             echo '     * {(string)group}: {(string)count} 條路由
 ';
         }

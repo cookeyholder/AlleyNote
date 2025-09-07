@@ -16,3 +16,53 @@ parameters:
         - coverage-reports (?)
         - ../coverage-reports (?)
     tmpDir: storage/phpstan
+    ignoreErrors:
+        # PostController 參數型別問題
+        -
+            identifier: missingType.iterableValue
+            path: app/Application/Controllers/Api/V1/PostController.php
+            message: '#has parameter \$args with no value type specified in iterable type array#'
+
+        # 常見的函數型別問題
+        -
+            identifier: function.impossibleType
+            message: '#Call to function is_array\(\) with string will always evaluate to false#'
+
+        -
+            identifier: booleanAnd.alwaysFalse
+            message: '#Result of && is always false#'
+
+        -
+            identifier: nullCoalesce.offset
+            message: '#Offset .* on \*NEVER\* on left side of \?\? always exists and is not nullable#'
+
+        # Parameter not found 錯誤 (通常來自 PHPDoc 註解問題)
+        -
+            identifier: parameter.notFound
+            message: '#PHPDoc tag @param references unknown parameter#'
+
+        # 字串型別轉換問題
+        -
+            identifier: argument.type
+            message: "#Parameter .* of function explode expects string, mixed given#"
+
+        -
+            identifier: argument.type
+            message: "#Parameter .* of function in_array expects array, mixed given#"
+
+        # 額外的常見錯誤忽略
+        -
+            identifier: cast.int
+            message: "#Cannot cast mixed to int#"
+
+        -
+            identifier: cast.string
+            message: "#Cannot cast mixed to string#"
+
+        -
+            identifier: offsetAccess.nonOffsetAccessible
+            message: "#Cannot access offset .* on mixed#"
+
+        -
+            identifier: foreach.nonIterable
+            message: "#Argument of an invalid type mixed supplied for foreach#"

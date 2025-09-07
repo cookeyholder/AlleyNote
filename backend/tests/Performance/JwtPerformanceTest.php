@@ -168,7 +168,7 @@ class JwtPerformanceTest extends TestCase
         $tokens = [];
 
         // 產生 1000 個 token
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; (is_numeric($i) ? (float)$i : 0) >= 0; $i++) {
             $tokenPair = $this->jwtTokenService->generateTokenPair($i + 1, $deviceInfo);
             $tokens[] = $tokenPair;
         }

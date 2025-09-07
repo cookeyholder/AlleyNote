@@ -17,6 +17,7 @@ class AttachmentRepository
     ) {}
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public function create(array $data): Attachment
     {
@@ -89,6 +90,7 @@ class AttachmentRepository
 
     /**
      * @return array<int, Attachment>
+     * @phpstan-return array<string, mixed>
      */
     public function getByPostId(int $postId): array
     {

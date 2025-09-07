@@ -539,7 +539,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
         if (!is_string($snapshotDataRaw)) {
             $snapshotDataRaw = '{}';
         }
-        $snapshotData = json_decode($snapshotDataRaw, true);
+        $snapshotData = json_decode(is_string($snapshotDataRaw) ? $snapshotDataRaw : (string)$snapshotDataRaw, true);
         if (!is_array($snapshotData)) {
             $snapshotData = [];
         }

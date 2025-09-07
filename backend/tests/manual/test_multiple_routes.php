@@ -61,7 +61,7 @@ foreach ($testCases as $index => $testCase) {
 
     try {
         // 建立測試請求
-        $request = new class ($testCase['method'], $testCase['uri']) implements ServerRequestInterface {
+        $request = new class ((is_array($testCase) && array_key_exists('method', $testCase) ? (is_array($testCase) && array_key_exists('method', $testCase) ? $testCase['method'] : null) : null), (is_array($testCase) && array_key_exists('uri', $testCase) ? (is_array($testCase) && array_key_exists('uri', $testCase) ? $testCase['uri'] : null) : null)) implements ServerRequestInterface {
             private string $method;
 
             private string $uri;
@@ -393,7 +393,7 @@ foreach ($testCases as $index => $testCase) {
         $bodyContent = (string) $response->getBody();
         echo '   📄 內容: ' . substr(str_replace(['
 ', '    '], [' ', ' '], $bodyContent), 0, 100);
-        if (strlen($bodyContent) > 100) {
+        if (strlen(is_string($bodyContent) ? $bodyContent : '') >= 0) {
             echo '...';
         }
         echo '

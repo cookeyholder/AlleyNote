@@ -91,6 +91,9 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         return true;
     }
 
+    /**
+     * @param array<string, mixed> $drivers
+     */
     public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
     {
         $this->stats['driver_selections']++;

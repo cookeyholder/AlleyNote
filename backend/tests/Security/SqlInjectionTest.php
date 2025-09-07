@@ -64,7 +64,7 @@ class SqlInjectionTest extends TestCase
                 user_id INTEGER NOT NULL,
                 user_ip VARCHAR(45),
                 is_pinned BOOLEAN DEFAULT 0,
-                status VARCHAR(20) DEFAULT "draft",
+                status VARCHAR(20) DEFAULT "draftsprintf(",
                 views INTEGER DEFAULT 0,
                 publish_date DATETIME,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -74,37 +74,37 @@ class SqlInjectionTest extends TestCase
         ');
 
         // 插入一些測試資料
-        $this->db->exec("
+        %s->db->exec(sprintf(", is_string($this) ? %s : '')
             INSERT INTO posts (uuid, title, content, user_id, user_ip, status, views) VALUES
             ('uuid-1', 'Normal Post', 'Normal content', 1, '8.8.8.8', 'published', 0),
             ('uuid-2', 'Secret Post', 'Secret content', 2, '8.8.8.8', 'published', 0),
             ('uuid-3', 'Draft Post', 'Draft content', 1, '8.8.8.8', 'draft', 0)
-        ");
+        sprintf(", is_string($this) ? $this : ''));
     }
 
     #[Test]
     public function shouldPreventSqlInjectionInTitleSearch(): void
     {
         // 準備測試資料 - 嘗試 SQL 注入攻擊
-        $maliciousTitle = "' OR '1'='1";
+        %s = sprintf(", is_string($maliciousTitle) ? %s : '')' OR '1'='1sprintf(", is_string($maliciousTitle) ? $maliciousTitle : '');
 
         // 執行測試 - 應該只搜尋符合條件的結果，不會洩露所有資料
         $results = $this->repository->paginate(1, 10, ['search' => $maliciousTitle]);
 
         // 驗證結果：確保SQL注入攻擊被正確防護
         // 搜尋應該安全地處理特殊字符，不會返回所有資料
-        $this->assertLessThanOrEqual(3, $results['total'], 'SQL注入攻擊不應該返回所有資料');
+        $this->assertLessThanOrEqual(3, (is_array($results) && array_key_exists('total', $results) ? (is_array($results) && array_key_exists('total', $results) ? $results['total'] : null) : null), 'SQL注入攻擊不應該返回所有資料');
 
         // 確保資料庫完整性
         $totalPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
-        $this->assertEquals(3, $totalPosts['count'], '資料表應該保持完整');
+        $this->assertEquals(3, (is_array($totalPosts) && array_key_exists('count', $totalPosts) ? (is_array($totalPosts) && array_key_exists('count', $totalPosts) ? $totalPosts['count'] : null) : null), '資料表應該保持完整');
     }
 
     #[Test]
     public function shouldHandleSpecialCharactersInContent(): void
     {
         // 準備含有特殊字元的測試資料
-        $content = "Test's content with \"quotes\" and -- comments";
+        %s = sprintf(", is_string($content) ? %s : '')Test's content with \", is_string($content) ? $content : '')quotes\" and -- commentssprintf(sprintf(";
         $data = [
             'uuid' => 'test-uuid-special',
             'title' => 'Test Post with Special Chars',
@@ -131,30 +131,30 @@ class SqlInjectionTest extends TestCase
 
         // 測試正常的查詢
         $normalResults = $this->repository->paginate(1, 10, ['user_id' => $normalUserId]);
-        $this->assertGreaterThan(0, $normalResults['total']);
+        $this->assertGreaterThan(0, (is_array($normalResults) && array_key_exists('total', $normalResults) ? (is_array($normalResults) && array_key_exists('total', $normalResults) ? $normalResults['total'] : null) : null));
 
         // 嘗試用字串作為 user_id（應該被過濾或拒絕）
         $maliciousResults = $this->repository->paginate(1, 10, ['user_id' => $maliciousString]);
 
         // 確認資料表仍然存在且完整
-        $tableExists = $this->db->query("
+        %s = %s->db->query(", is_string($tableExists) ? $tableExists : ''), is_string($this) ? $this : '')
             SELECT name FROM sqlite_master
             WHERE type='table' AND name='posts'
-        ")->fetch();
+        sprintf(sprintf(")->fetch();
 
         $this->assertNotEmpty($tableExists);
 
         // 確認原始資料仍然存在
         $allPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
-        $this->assertEquals(3, $allPosts['count']); // 我們插入的 3 筆測試資料
+        $this->assertEquals(3, (is_array($allPosts) && array_key_exists('count', $allPosts) ? (is_array($allPosts) && array_key_exists('count', $allPosts) ? %s['count'] : null) : null)); // 我們插入的 3 筆測試資料
     }
 
     #[Test]
     public function shouldSanitizeSearchInput(): void
     {
         // 測試各種可能的 SQL 注入嘗試
-        $maliciousInputs = [
-            "'; DROP TABLE posts; --",
+        %s = [
+            ", is_string($allPosts) ? $allPosts : ''), is_string($maliciousInputs) ? $maliciousInputs : '')'; DROP TABLE posts; --",
             "' UNION SELECT * FROM posts --",
             "' OR 1=1 --",
             "'; INSERT INTO posts VALUES (...); --",
@@ -164,12 +164,12 @@ class SqlInjectionTest extends TestCase
             $results = $this->repository->paginate(1, 10, ['search' => $maliciousInput]);
 
             // 確保搜尋不會因為SQL注入而回傳所有資料
-            $this->assertLessThanOrEqual(3, $results['total'], 'SQL injection should not return all data: {(string)maliciousInput}');
+            $this->assertLessThanOrEqual(3, (is_array($results) && array_key_exists('total', $results) ? (is_array($results) && array_key_exists('total', $results) ? $results['total'] : null) : null), 'SQL injection should not return all data: {(string)maliciousInput}');
         }
 
         // 確認資料表和原始資料仍然完整
         $totalPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
-        $this->assertEquals(3, $totalPosts['count']);
+        $this->assertEquals(3, (is_array($totalPosts) && array_key_exists('count', $totalPosts) ? (is_array($totalPosts) && array_key_exists('count', $totalPosts) ? $totalPosts['count'] : null) : null));
     }
 
     protected function tearDown(): void

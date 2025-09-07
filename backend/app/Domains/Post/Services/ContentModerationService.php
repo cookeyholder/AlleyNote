@@ -20,6 +20,7 @@ class ContentModerationService
     private array $config;
 
     /**\n      * @param array<string, mixed> $config
+     * @phpstan-param array<string, mixed> $args
      */
     public function __construct(
         XssProtectionService $xssProtection,
@@ -34,6 +35,7 @@ class ContentModerationService
     /**
      * 審核內容.
      * @param array<string, mixed> $metadata
+     * @phpstan-param array<string, mixed> $args
      */
     public function moderateContent(string $content, array $metadata = []): mixed
     {
@@ -122,6 +124,7 @@ class ContentModerationService
     /**
      * 品質檢查.
      * @param array<string, mixed> $metadata
+     * @phpstan-param array<string, mixed> $args
      */
     private function checkQuality(string $content, array $metadata): mixed
     {
@@ -198,6 +201,7 @@ class ContentModerationService
     /**
      * 計算垃圾內容分數.
      * @param array<string, mixed> $metadata
+     * @phpstan-param array<string, mixed> $args
      */
     private function calculateSpamScore(string $content, array $metadata): float
     {
@@ -238,6 +242,7 @@ class ContentModerationService
     /**
      * 決定最終審核狀態.
      * @param array<string, mixed> $result
+     * @phpstan-param array<string, mixed> $args
      */
     private function determineFinalStatus(array &$result): void
     {

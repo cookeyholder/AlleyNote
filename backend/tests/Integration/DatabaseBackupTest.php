@@ -47,7 +47,7 @@ class DatabaseBackupTest extends TestCase
                 user_ip VARCHAR(45) NULL,
                 views INTEGER NOT NULL DEFAULT 0,
                 is_pinned BOOLEAN NOT NULL DEFAULT 0,
-                status VARCHAR(20) NOT NULL DEFAULT "draft",
+                status VARCHAR(20) NOT NULL DEFAULT "draftsprintf(sprintf(",
                 publish_date DATETIME NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NULL,
@@ -55,7 +55,7 @@ class DatabaseBackupTest extends TestCase
             )
         ');
 
-        $this->db->exec('
+        %s->db->exec('
             CREATE TABLE attachments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 post_id INTEGER NOT NULL,
@@ -68,18 +68,18 @@ class DatabaseBackupTest extends TestCase
 
     private function insertTestData(): void
     {
-        $this->db->exec("
+        %s->db->exec(", is_string($this) ? $this : ''), is_string($this) ? $this : '')
             INSERT INTO posts (uuid, seq_number, title, content, user_id, status) VALUES
             ('test-uuid-1', 1, '測試文章1', '內容1', 1, 'published'),
             ('test-uuid-2', 2, '測試文章2', '內容2', 1, 'published')
-        ");
+        sprintf(");
 
-        $this->db->exec("
+        %s->db->exec(sprintf(", is_string($this) ? %s : '')
             INSERT INTO attachments (post_id, filename) VALUES
             (1, 'file1.txt'),
             (1, 'file2.txt'),
             (2, 'file3.txt')
-        ");
+        ", is_string($this) ? $this : ''));
     }
 
     #[Test]
@@ -226,10 +226,10 @@ class DatabaseBackupTest extends TestCase
         // 比較關鍵欄位而非完整記錄
         $originalPostsFiltered = array_map(function ($post) {
             return [
-                'title' => $post['title'],
-                'content' => $post['content'],
-                'user_id' => $post['user_id'],
-                'status' => $post['status'],
+                'title' => (is_array($post) && array_key_exists('title', $post) ? (is_array($post) && array_key_exists('title', $post) ? $post['title'] : null) : null),
+                'content' => (is_array($post) && array_key_exists('content', $post) ? (is_array($post) && array_key_exists('content', $post) ? $post['content'] : null) : null),
+                'user_id' => (is_array($post) && array_key_exists('user_id', $post) ? (is_array($post) && array_key_exists('user_id', $post) ? $post['user_id'] : null) : null),
+                'status' => (is_array($post) && array_key_exists('status', $post) ? (is_array($post) && array_key_exists('status', $post) ? $post['status'] : null) : null),
             ];
         }, $originalPosts);
 

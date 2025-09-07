@@ -253,7 +253,7 @@ kwIDAQAB
         // 驗證黑名單功能（檢查是否有黑名單項目）
         $stats = $this->tokenBlacklistRepository->getUserBlacklistStats(1);
         $this->assertArrayHasKey('total_blacklisted', $stats);
-        $this->assertGreaterThan(0, $stats['total_blacklisted']);
+        $this->assertGreaterThan(0, (is_array($stats) && array_key_exists('total_blacklisted', $stats) ? (is_array($stats) && array_key_exists('total_blacklisted', $stats) ? $stats['total_blacklisted'] : null) : null));
     }
 
     /**
@@ -378,7 +378,7 @@ kwIDAQAB
 
         // 執行清理
         $cleanupResult = $this->tokenBlacklistService->autoCleanup();
-        $cleanedCount = $cleanupResult['expired_cleaned'] ?? 0;
+        $cleanedCount = (is_array($cleanupResult) && array_key_exists('expired_cleaned', $cleanupResult) ? (is_array($cleanupResult) && array_key_exists('expired_cleaned', $cleanupResult) ? $cleanupResult['expired_cleaned'] : null) : null) ?? 0;
 
         // 驗證過期條目被清理，活躍條目保留
         $this->assertEquals(1, $cleanedCount);
@@ -420,7 +420,7 @@ kwIDAQAB
         $this->assertArrayHasKey('active_entries', $healthStatus);
         $this->assertArrayHasKey('healthy', $healthStatus);
 
-        $this->assertGreaterThanOrEqual(1, $healthStatus['total_entries']);
+        $this->assertGreaterThanOrEqual(1, (is_array($healthStatus) && array_key_exists('total_entries', $healthStatus) ? (is_array($healthStatus) && array_key_exists('total_entries', $healthStatus) ? $healthStatus['total_entries'] : null) : null));
     }
 
     /**

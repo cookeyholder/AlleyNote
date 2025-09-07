@@ -22,6 +22,7 @@ class AuthService
     ) {}
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): array
     {
@@ -74,6 +75,7 @@ class AuthService
     }
 
     /**\n      * @param array<string, mixed> $credentials
+     * @phpstan-param array<string, mixed> $args
      */
     public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
     {
@@ -145,6 +147,7 @@ class AuthService
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): array
     {

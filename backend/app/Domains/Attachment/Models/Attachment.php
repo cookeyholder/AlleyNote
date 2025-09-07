@@ -29,6 +29,7 @@ class Attachment
     private ?string $deletedAt = null;
 
     /**\n      * @param array<string, mixed> $attributes
+     * @phpstan-param array<string, mixed> $args
      */
     public function __construct(array $attributes = [])
     {
@@ -101,6 +102,7 @@ class Attachment
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {

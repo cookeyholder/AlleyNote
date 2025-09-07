@@ -190,7 +190,7 @@ class RedisRouteCache implements RouteCacheInterface
         try {
             $content = $this->redis->get(self::STATS_KEY);
             if ($content !== false) {
-                $stats = json_decode($content, true);
+                $stats = json_decode(is_string($content) ? $content : (string)$content, true);
                 if (is_array($stats)) {
                     $this->stats = array_merge($this->stats, $stats);
                 }

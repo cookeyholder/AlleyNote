@@ -219,7 +219,7 @@ final class EnvironmentConfig
         }
 
         $lines = explode('
-', $content);
+', is_string($content) ? $content : (string)$content);
 
         foreach ($lines as $line) {
             $line = trim($line);

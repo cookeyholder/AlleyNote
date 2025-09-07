@@ -41,6 +41,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public static function fromArray(array $data): self
     {
@@ -170,7 +171,8 @@ final class CreateActivityLogDTO implements JsonSerializable
         return $this->description;
     }
 
-    /**\n      * @return array<string, mixed>|null
+    /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>|null
      */
     public function getMetadata(): ?array
     {
@@ -239,6 +241,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**\n      * @param array<string, mixed> $metadata
+     * @phpstan-param array<string, mixed> $args
      */
     public function withMetadata(array $metadata): self
     {
@@ -263,6 +266,7 @@ final class CreateActivityLogDTO implements JsonSerializable
      * 轉換為資料庫儲存格式.
      *
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -286,6 +290,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -296,6 +301,7 @@ final class CreateActivityLogDTO implements JsonSerializable
      * 驗證 metadata 是否可序列化.
      *
      * @param array<string, mixed> $metadata
+     * @phpstan-param array<string, mixed> $args
      */
     private function validateMetadata(array $metadata): void
     {

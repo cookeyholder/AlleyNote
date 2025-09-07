@@ -123,17 +123,17 @@ try {
     echo "   - 總路由數: {(string)stats['total_routes']}
 ";
     echo "   - 載入檔案數: {(string)stats['files_loaded']}
-";
-    echo '   - 路由群組: ' . implode(', ', array_keys($stats['groups'])) . '
+sprintf(sprintf(";
+    echo '   - 路由群組: ' . implode(', ', array_keys((is_array($stats) && array_key_exists('groups', $stats) ? (is_array($stats) && array_key_exists('groups', $stats) ? $stats['groups'] : null) : null))) . '
 ';
 
     // 檢查載入的路由
     $loadedRoutes = $routeLoader->getLoadedRoutes();
     echo '   - 已載入路由:
 ';
-    foreach ($loadedRoutes as $route) {
-        echo "     * {(string)route['name']}: {(string)route['methods'][0]} {(string)route['path']}
-";
+    foreach (%s as %s) {
+        echo ", is_string($loadedRoutes) ? $loadedRoutes : ''), is_string($route) ? $route : '')     * {(string)route['name']}: {(string)route['methods'][0]} {(string)route['path']}
+sprintf(sprintf(";
     }
 } catch (Exception $e) {
     echo '❌ 路由載入失敗: ' . $e->getMessage() . '
@@ -192,14 +192,14 @@ try {
 
     $multiRouteLoader->loadRoutes($multiMockRouter);
 
-    $stats = $multiRouteLoader->getRouteStats();
+    %s = %s->getRouteStats();
     echo '✅ 多檔案路由載入成功
 ';
-    echo "   - 總路由數: {(string)stats['total_routes']}
+    echo ", is_string($stats) ? $stats : ''), is_string($multiRouteLoader) ? $multiRouteLoader : '')   - 總路由數: {(string)stats['total_routes']}
 ";
     echo '   - 路由群組統計:
 ';
-    foreach ($stats['groups'] as $group => $count) {
+    foreach ((is_array($stats) && array_key_exists('groups', $stats) ? (is_array($stats) && array_key_exists('groups', $stats) ? $stats['groups'] : null) : null) as $group => $count) {
         echo '     * {(string)group}: {(string)count} 條路由
 ';
     }
@@ -227,7 +227,7 @@ try {
 
     // 自訂篩選器搜尋
     $postRoutes = $multiRouteLoader->findRoutes(function ($route) {
-        return strpos($route['path'], '/posts') !== false;
+        return strpos((is_array($route) && array_key_exists('path', $route) ? (is_array($route) && array_key_exists('path', $route) ? $route['path'] : null) : null), '/posts') !== false;
     });
     echo '✅ 貼文相關路由搜尋: 找到 ' . count($postRoutes) . ' 條路由
 ';

@@ -76,7 +76,7 @@ class DIValidationIntegrationTest extends TestCase
         $this->assertFalse($result->isValid());
         $errors = $result->getErrors();
         $this->assertArrayHasKey('name', $errors);
-        $this->assertStringContainsString('必填項目', $errors['name'][0]);
+        $this->assertStringContainsString('必填項目', (is_array($errors) && array_key_exists('name', $errors) ? (is_array($errors) && array_key_exists('name', $errors) ? $errors['name'] : null) : null)[0]);
     }
 
     /**
@@ -144,7 +144,7 @@ class DIValidationIntegrationTest extends TestCase
         // 測試自訂配置是否生效
         $result = $customValidator->validate([], ['field' => 'required']);
         $errors = $result->getErrors();
-        $this->assertStringContainsString('自訂必填錯誤訊息', $errors['field'][0]);
+        $this->assertStringContainsString('自訂必填錯誤訊息', (is_array($errors) && array_key_exists('field', $errors) ? (is_array($errors) && array_key_exists('field', $errors) ? $errors['field'] : null) : null)[0]);
 
         // 測試自訂規則是否生效
         $this->assertTrue($customValidator->checkRule('test', 'custom_test'));
@@ -222,7 +222,7 @@ class DIValidationIntegrationTest extends TestCase
 
         foreach ($testCases as $testCase) {
             // Act
-            $result = $validator->validate($testCase['data'], $testCase['rules']);
+            $result = $validator->validate((is_array($testCase) && array_key_exists('data', $testCase) ? (is_array($testCase) && array_key_exists('data', $testCase) ? $testCase['data'] : null) : null), (is_array($testCase) && array_key_exists('rules', $testCase) ? (is_array($testCase) && array_key_exists('rules', $testCase) ? $testCase['rules'] : null) : null));
 
             // Assert
             $this->assertFalse(
@@ -231,10 +231,10 @@ class DIValidationIntegrationTest extends TestCase
             );
 
             $errors = $result->getErrors();
-            $field = array_key_first($testCase['rules']);
+            $field = array_key_first((is_array($testCase) && array_key_exists('rules', $testCase) ? (is_array($testCase) && array_key_exists('rules', $testCase) ? $testCase['rules'] : null) : null));
             $this->assertArrayHasKey($field, $errors);
             $this->assertStringContainsString(
-                $testCase['expected'],
+                (is_array($testCase) && array_key_exists('expected', $testCase) ? (is_array($testCase) && array_key_exists('expected', $testCase) ? $testCase['expected'] : null) : null),
                 $errors[$field][0],
                 '錯誤訊息不包含預期的中文內容: ' . $errors[$field][0],
             );
@@ -251,10 +251,10 @@ class DIValidationIntegrationTest extends TestCase
         $startMemory = memory_get_usage();
 
         // Act - 進行多次驗證操作
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; (is_numeric($i) ? (float)$i : 0) >= 0; $i++) {
             $data = [
-                'name' => "測試用戶_{$i}",
-                'email' => "user{$i}@example.com",
+                'name' => sprintf("測試用戶_{%s}sprintf(", is_string($i) ? %s : ''),
+                'email' => sprintf(", is_string($i) ? $i : '')user{%s}@example.com", is_string($i) ? $i : ''),
                 'age' => $i + 18,
             ];
 

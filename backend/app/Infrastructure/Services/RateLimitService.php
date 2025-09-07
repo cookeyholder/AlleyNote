@@ -12,7 +12,8 @@ class RateLimitService
         private readonly CacheService $cache,
     ) {}
 
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array{count: int, reset: int, allowed: bool}
      */
     public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
     {
@@ -20,21 +21,26 @@ class RateLimitService
 
         try {
             $data = $this->cache->get($key);
-            if ($data === null) {
+            if ($data === null || !is_array($data)) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
             }
 
             // 檢查是否需要重置計數器
-            if (time() > $data['reset']) {
+            if (!isset($data['reset']) || !is_int($data['reset']) || time() > $data['reset']) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
+            }
+
+            // 確保 count 是整數
+            if (!isset($data['count']) || !is_int($data['count'])) {
+                $data['count'] = 0;
             }
 
             // 如果已經超過限制，直接回傳結果
             if ($data['count'] >= $maxRequests) {
                 return [
+                    'count' => $data['count'],
+                    'reset' => (int) $data['reset'],
                     'allowed' => false,
-                    'remaining' => 0,
-                    'reset' => $data['reset'],
                 ];
             }
 
@@ -45,18 +51,18 @@ class RateLimitService
             $this->cache->set($key, $data, $timeWindow);
 
             return [
+                'count' => $data['count'],
+                'reset' => (int) $data['reset'],
                 'allowed' => $data['count'] <= $maxRequests,
-                'remaining' => max(0, $maxRequests - $data['count']),
-                'reset' => $data['reset'],
             ];
         } catch (Exception $e) {
             // 如果快取服務不可用，預設允許請求
             error_log('速率限制檢查失敗: ' . $e->getMessage());
 
             return [
-                'allowed' => true,
-                'remaining' => $maxRequests,
+                'count' => 0,
                 'reset' => time() + $timeWindow,
+                'allowed' => true,
             ];
         }
     }

@@ -36,6 +36,7 @@ class Post implements JsonSerializable
     private string $updatedAt;
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public function __construct(array $data)
     {
@@ -137,6 +138,7 @@ class Post implements JsonSerializable
     }
 
     /**\n      * @return array<mixed>
+     * @phpstan-return array<string, mixed>
       */
     public function toArray(): array
     {
@@ -161,6 +163,7 @@ class Post implements JsonSerializable
      * 取得清理過的資料陣列，適用於前端顯示.
      * @param OutputSanitizerInterface $sanitizer 清理服務
      * @return array<mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function toSafeArray(OutputSanitizerInterface $sanitizer): mixed
     {
@@ -174,6 +177,7 @@ class Post implements JsonSerializable
     }
 
     /**\n      * @return array<mixed>
+     * @phpstan-return array<string, mixed>
       */
     public function jsonSerialize(): mixed
     {
@@ -181,6 +185,7 @@ class Post implements JsonSerializable
     }
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public static function fromArray(array $data): self
     {

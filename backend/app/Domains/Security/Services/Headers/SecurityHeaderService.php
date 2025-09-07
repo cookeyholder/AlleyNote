@@ -126,7 +126,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         }
 
         $input = file_get_contents('php://input');
-        $report = json_decode($input, true);
+        $report = json_decode(is_string($input) ? $input : (string)$input, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             http_response_code(400);

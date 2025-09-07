@@ -52,7 +52,8 @@ final class StatisticsCalculationService
      *
      * @param StatisticsSnapshot $previousSnapshot 前一個快照
      * @param StatisticsSnapshot $currentSnapshot 當前快照
-     * @return array{posts: float, views: float, users: float} 成長率資料
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>{posts: float, views: float, users: float} 成長率資料
      * @throws StatisticsCalculationException 當計算失敗時
      */
     public function calculateGrowthRate(
@@ -193,7 +194,8 @@ final class StatisticsCalculationService
      *
      * @param array<StatisticsSnapshot> $historicalSnapshots 歷史快照資料
      * @param int $forecastDays 預測天數
-     * @return array{posts: int, views: int, confidence: float} 預測結果
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>{posts: int, views: int, confidence: float} 預測結果
      * @throws StatisticsCalculationException 當歷史資料不足時
      */
     public function calculateForecast(array $historicalSnapshots, int $forecastDays = 7): array
@@ -260,7 +262,8 @@ final class StatisticsCalculationService
      * 計算季節性指數.
      *
      * @param array<StatisticsSnapshot> $snapshots 一年內的快照資料
-     * @return array<string, float> 季節性指數（按月份）
+     * @return array<string, float>
+     * @phpstan-return array<string, mixed> 季節性指數（按月份）
      */
     public function calculateSeasonalityIndex(array $snapshots): array
     {
@@ -394,7 +397,9 @@ final class StatisticsCalculationService
      * 計算趨勢分析.
      *
      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function calculateTrends(array $data): array
     {
@@ -407,7 +412,7 @@ final class StatisticsCalculationService
         }
 
         // 簡單趨勢計算
-        $values = array_values($data);
+        $values = array_values(array_filter(array_map('strval', $data), fn($item) => !empty($item)));
         $count = count($values);
 
         if ($count < 2) {

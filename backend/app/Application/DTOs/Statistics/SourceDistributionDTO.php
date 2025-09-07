@@ -29,7 +29,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     /**\n      * @param StatisticsPeriod $period 統計週期
      * @param array<SourceStatistics> $sourceStatistics 來源統計清單
      * @param int $totalCount 總數量
-     * @param array<string, mixed> $distributionAnalysis 分佈分析
+     * @param array<string, mixed> $distributionAnalysis
+     * @phpstan-param array<string, mixed> $args 分佈分析
      * @param DateTimeImmutable $generatedAt 產生時間
      */
     public function __construct(
@@ -71,12 +72,13 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * 從陣列資料建立 DTO.
      *
      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public static function fromArray(array $data): self
     {
         // 使用型別安全的方式存取期間資料
         /** @var array<string, mixed> $periodData */
-        $periodData = is_array($data['period'] ?? []) ? $data['period'] : [];
+        $periodData = is_array(self::extractValue($data, 'period', []) ? $data['period'] : []);
 
         // 型別安全地取得日期字串
         $periodStartDate = $periodData['start_date'] ?? null;
@@ -95,7 +97,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         );
 
         // 確保來源統計資料是陣列
-        $sourceStatsDataRaw = $data['source_statistics'] ?? [];
+        $sourceStatsDataRaw = self::extractValue($data, 'source_statistics', []);
         /** @var array<array<string, mixed>> $sourceStatsData */
         $sourceStatsData = is_array($sourceStatsDataRaw) ? array_filter($sourceStatsDataRaw, 'is_array') : [];
 
@@ -120,15 +122,15 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             $sourceStatsData,
         );
 
-        $totalCountValue = $data['total_count'] ?? null;
+        $totalCountValue = self::extractValue($data, 'total_count', null);
         $totalCount = is_numeric($totalCountValue) ? (int) $totalCountValue : 0;
 
         /** @var array<string, mixed> $distributionAnalysisRaw */
-        $distributionAnalysisRaw = $data['distribution_analysis'] ?? [];
+        $distributionAnalysisRaw = self::extractValue($data, 'distribution_analysis', []);
         /** @var array<string, mixed> $distributionAnalysis */
         $distributionAnalysis = is_array($distributionAnalysisRaw) ? $distributionAnalysisRaw : [];
 
-        $generatedAtValue = $data['generated_at'] ?? null;
+        $generatedAtValue = self::extractValue($data, 'generated_at', null);
         $generatedAt = is_string($generatedAtValue) ? $generatedAtValue : 'now';
 
         // 確保型別安全
@@ -236,6 +238,13 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * 取得前 N 個來源.
      *
      * @return array<int, SourceStatistics>
+     * @phpstan-return array<string, mixed>
+     */
+    /**
+     * 取得前 N 個來源.
+     *
+     * @return array<int, SourceStatistics>
+     * @phpstan-return array<string, mixed>
      */
     public function getTopSources(int $limit = 3): array
     {
@@ -248,7 +257,13 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     /**
      * 取得來源排名.
      *
-     * @return array<int, array<string, mixed>>
+     * @return array<int, array<string, mixed>
+     * @phpstan-return array<string, mixed>>
+     */
+    /**
+     * 取得來源排名.
+     *
+     * @return list<array<string, mixed>>
      */
     public function getSourceRanking(): array
     {
@@ -271,7 +286,14 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     /**
      * 取得分佈摘要
      *
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
+     */
+    /**
+     * 取得分佈摘要.
+     *
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
      */
     public function getDistributionSummary(): array
     {
@@ -301,7 +323,14 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     /**
      * 取得格式化的分佈資訊.
      *
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
+     */
+    /**
+     * 取得格式化的分佈資料.
+     *
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
      */
     public function getFormattedDistribution(): array
     {
@@ -341,7 +370,14 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     /**
      * 比較與另一個分佈的差異.
      *
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
+     */
+    /**
+     * 與其他分佈比較.
+     *
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
      */
     public function compareWith(SourceDistributionDTO $other): array
     {
@@ -403,7 +439,14 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     /**
      * 轉換為陣列.
      *
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
+     */
+    /**
+     * 轉換為陣列.
+     *
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -433,7 +476,14 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     /**
      * JSON 序列化.
      *
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
+     */
+    /**
+     * JSON 序列化.
+     *
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -459,7 +509,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * 計算分佈分析.
      *
      * @param array<SourceStatistics> $sourceStatistics
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
+     * @phpstan-return array<string, mixed>
      */
     private static function calculateDistributionAnalysis(array $sourceStatistics, int $totalCount): array
     {
@@ -518,4 +569,61 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             throw new InvalidArgumentException('總數量不能為負數');
         }
     }
+
+    /**
+     * 安全地從陣列中提取字串值
+     * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
+     */
+    private static function extractString(array $data, string $key, string $default = ''): string
+    {
+        $value = $data[$key] ?? $default;
+        return is_string($value) ? $value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取整數值
+     * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
+     */
+    private static function extractInteger(array $data, string $key, int $default = 0): int
+    {
+        $value = $data[$key] ?? $default;
+        return is_numeric($value) ? (int)$value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取浮點數值
+     * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
+     */
+    private static function extractFloat(array $data, string $key, float $default = 0.0): float
+    {
+        $value = $data[$key] ?? $default;
+        return is_numeric($value) ? (float)$value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取陣列值
+     * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
+     * @param array<string, mixed> $default
+     * @phpstan-param array<string, mixed> $args
+     * @return array<mixed>
+     * @phpstan-return array<string, mixed>
+     */
+    private static function extractArray(array $data, string $key, array $default = []): array
+    {
+        $value = $data[$key] ?? $default;
+        return is_array($value) ? $value : $default;
+    }
+
+    /**
+     * 安全地從陣列中提取混合值
+     */
+    private static function extractValue(array $data, string $key, mixed $default = null): mixed
+    {
+        return $data[$key] ?? $default;
+    }
+
 }

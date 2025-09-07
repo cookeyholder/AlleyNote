@@ -143,6 +143,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $keys
+     */
     public function many(array $keys): array
     {
         $result = [];
@@ -171,6 +174,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return $result;
     }
 
+    /**
+     * @param array<string, mixed> $values
+     */
     public function putMany(array $values, int $ttl = self::DEFAULT_TTL): bool
     {
         try {
@@ -215,6 +221,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $keys
+     */
     public function forgetMany(array $keys): bool
     {
         try {

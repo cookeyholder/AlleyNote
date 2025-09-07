@@ -677,6 +677,9 @@ class CacheManager implements CacheManagerInterface
         return $results;
     }
 
+    /**
+     * @param array<string, mixed> $tags
+     */
     public function tags(string|array $tags): TaggedCacheInterface
     {
         // 標準化為陣列

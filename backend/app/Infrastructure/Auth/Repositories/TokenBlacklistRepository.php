@@ -185,7 +185,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      *
      * @param int $userId 使用者 ID
      * @param int|null $limit 限制數量，null 時不限制
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry>
+     * @phpstan-return array<string, mixed> 黑名單項目陣列
      */
     public function findByUserId(int $userId, ?int $limit = null): array
     {
@@ -226,7 +227,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      *
      * @param string $deviceId 裝置 ID
      * @param int|null $limit 限制數量，null 時不限制
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry>
+     * @phpstan-return array<string, mixed> 黑名單項目陣列
      */
     public function findByDeviceId(string $deviceId, ?int $limit = null): array
     {
@@ -267,7 +269,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      *
      * @param string $tokenType token 類型
      * @param int|null $limit 限制數量，null 時不限制
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry>
+     * @phpstan-return array<string, mixed> 黑名單項目陣列
      */
     public function findByTokenType(string $tokenType, ?int $limit = null): array
     {
@@ -308,7 +311,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      *
      * @param string $reason 黑名單原因
      * @param int|null $limit 限制數量，null 時不限制
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry>
+     * @phpstan-return array<string, mixed> 黑名單項目陣列
      */
     public function findByReason(string $reason, ?int $limit = null): array
     {
@@ -407,7 +411,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      * 批次檢查 token 是否在黑名單中.
      *
      * @param array<int, string> $jtis JTI 陣列
-     * @return array<string, bool> JTI 為 key，是否在黑名單為值的陣列
+     * @return array<string, bool>
+     * @phpstan-return array<string, mixed> JTI 為 key，是否在黑名單為值的陣列
      */
     public function batchIsBlacklisted(array $jtis): array
     {
@@ -652,7 +657,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 取得黑名單統計資訊.
      *
-     * @return array<string, mixed> 統計資訊
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed> 統計資訊
      */
     public function getBlacklistStats(): array
     {
@@ -725,7 +731,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      * 取得特定使用者的黑名單統計.
      *
      * @param int $userId 使用者 ID
-     * @return array<string, mixed> 使用者統計資訊
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed> 使用者統計資訊
      */
     public function getUserBlacklistStats(int $userId): array
     {
@@ -767,7 +774,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      *
      * @param int $limit 限制數量，預設 100
      * @param DateTime|null $since 起始時間，null 時不限制
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry>
+     * @phpstan-return array<string, mixed> 黑名單項目陣列
      */
     public function getRecentBlacklistEntries(int $limit = 100, ?DateTime $since = null): array
     {
@@ -807,7 +815,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      * 取得高優先級的黑名單項目.
      *
      * @param int $limit 限制數量，預設 50
-     * @return array<int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<int, TokenBlacklistEntry>
+     * @phpstan-return array<string, mixed> 黑名單項目陣列
      */
     public function getHighPriorityEntries(int $limit = 50): array
     {
@@ -839,10 +848,12 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 搜尋黑名單項目.
      *
-     * @param array<string, mixed> $criteria 搜尋條件
+     * @param array<string, mixed> $criteria
+     * @phpstan-param array<string, mixed> $args 搜尋條件
      * @param int|null $limit 限制數量，null 時不限制
      * @param int $offset 偏移量，預設 0
-     * @return array<int, TokenBlacklistEntry> 搜尋結果
+     * @return array<int, TokenBlacklistEntry>
+     * @phpstan-return array<string, mixed> 搜尋結果
      */
     public function search(array $criteria, ?int $limit = null, int $offset = 0): array
     {
@@ -919,7 +930,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 計算搜尋結果總數.
      *
-     * @param array<string, mixed> $criteria 搜尋條件
+     * @param array<string, mixed> $criteria
+     * @phpstan-param array<string, mixed> $args 搜尋條件
      * @return int 總數
      */
     public function countSearch(array $criteria): int
@@ -998,7 +1010,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 取得黑名單大小資訊.
      *
-     * @return array<string, mixed> 大小資訊
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed> 大小資訊
      */
     public function getSizeInfo(): array
     {
@@ -1049,7 +1062,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 最佳化黑名單儲存.
      *
-     * @return array<string, mixed> 最佳化結果
+     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed> 最佳化結果
      */
     public function optimize(): array
     {
@@ -1104,14 +1118,15 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 從資料庫記錄建立 TokenBlacklistEntry.
      *
-     * @param array<string, mixed> $row 資料庫記錄
+     * @param array<string, mixed> $row
+     * @phpstan-param array<string, mixed> $args 資料庫記錄
      * @return TokenBlacklistEntry 黑名單項目
      */
     private function createEntryFromRow(array $row): TokenBlacklistEntry
     {
         $metadata = [];
         if (!empty($row['metadata'])) {
-            $decoded = json_decode($row['metadata'], true);
+            $decoded = json_decode(is_string($row['metadata']) ? $row['metadata'] : (string)$row['metadata'], true);
             if (is_array($decoded)) {
                 $metadata = $decoded;
             }

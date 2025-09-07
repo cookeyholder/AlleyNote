@@ -222,6 +222,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 分析使用者活動.
      * @param array<string, mixed> $activities
+     * @phpstan-param array<string, mixed> $args
      */
     private function analyzeUserActivities(array $activities, int $timeWindowMinutes): SuspiciousActivityAnalysisDTO
     {
@@ -317,6 +318,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 分析IP活動.
      * @param array<string, mixed> $activities
+     * @phpstan-param array<string, mixed> $args
      */
     private function analyzeIpActivities(array $activities, string $ipAddress, int $timeWindowMinutes): SuspiciousActivityAnalysisDTO
     {
@@ -413,6 +415,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 分析全域模式.
      * @param array<string, mixed> $statistics
+     * @phpstan-param array<string, mixed> $args
      */
     private function analyzeGlobalPatterns(array $statistics, int $timeWindowMinutes): array
     {
@@ -456,7 +459,9 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 檢測失敗率異常.
      * @param array<string, mixed> $activityCounts
+     * @phpstan-param array<string, mixed> $args
      * @param array<string, mixed> $failureCounts
+     * @phpstan-param array<string, mixed> $args
      */
     private function detectFailureRateAnomalies(array $activityCounts, array $failureCounts, int $timeWindowMinutes): array
     {
@@ -496,6 +501,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 檢測頻率異常.
      * @param array<string, mixed> $activityCounts
+     * @phpstan-param array<string, mixed> $args
      */
     private function detectFrequencyAnomalies(array $activityCounts, int $timeWindowMinutes): array
     {
@@ -530,6 +536,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 檢測模式異常.
      * @param array<string, mixed> $activities
+     * @phpstan-param array<string, mixed> $args
      */
     private function detectPatternAnomalies(array $activities): array
     {
@@ -563,6 +570,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 檢測IP信譽問題.
      * @param array<string, mixed> $activities
+     * @phpstan-param array<string, mixed> $args
      */
     private function detectIpReputationIssues(array $activities, string $ipAddress): array
     {
@@ -660,6 +668,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /**
      * 產生建議動作.
      * @param array<string, mixed> $rules
+     * @phpstan-param array<string, mixed> $args
      */
     private function generateRecommendedAction(bool $isSuspicious, ActivitySeverity $severity, array $rules): ?string
     {

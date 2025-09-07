@@ -91,6 +91,9 @@ class SecretsManager implements SecretsManagerInterface
         return (string) $value;
     }
 
+    /**
+     * @param array<string, mixed> $requiredKeys
+     */
     public function validateRequiredSecrets(array $requiredKeys): void
     {
         $missing = [];
@@ -187,7 +190,7 @@ class SecretsManager implements SecretsManagerInterface
         // 檢查檔案內容
         $content = file_get_contents($filePath);
         $lines = explode('
-', $content);
+', is_string($content) ? $content : (string)$content);
 
         foreach ($lines as $lineNumber => $line) {
             $line = trim($line);
@@ -247,7 +250,7 @@ class SecretsManager implements SecretsManagerInterface
 
         $content = file_get_contents($filePath);
         $lines = explode('
-', $content);
+', is_string($content) ? $content : (string)$content);
 
         foreach ($lines as $line) {
             $line = trim($line);

@@ -199,6 +199,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
     /**
      * 全面的 Session 安全檢查.
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function performSecurityCheck(string $currentIp, string $currentUserAgent): array
     {

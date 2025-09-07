@@ -26,6 +26,7 @@ class IpList implements JsonSerializable
     private string $updatedAt;
 
     /**\n      * @param array<string, mixed> $attributes
+     * @phpstan-param array<string, mixed> $args
      */
     public function __construct(array $attributes)
     {
@@ -40,6 +41,7 @@ class IpList implements JsonSerializable
     }
 
     /**\n      * @param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $args
      */
     public static function fromArray(array $data): self
     {
@@ -97,6 +99,7 @@ class IpList implements JsonSerializable
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -116,6 +119,7 @@ class IpList implements JsonSerializable
      * 取得清理過的資料陣列，適用於前端顯示.
      * @param OutputSanitizerInterface $sanitizer 清理服務
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function toSafeArray(OutputSanitizerInterface $sanitizer): array
     {
@@ -130,6 +134,7 @@ class IpList implements JsonSerializable
     }
 
     /**\n      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

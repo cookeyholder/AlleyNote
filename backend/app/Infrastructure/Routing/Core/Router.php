@@ -110,6 +110,9 @@ class Router implements RouterInterface
         return $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $pattern, $handler);
     }
 
+    /**
+     * @param array<string, mixed> $attributes
+     */
     public function group(array $attributes, callable $callback): void
     {
         $previousAttributes = $this->currentGroupAttributes;
@@ -152,6 +155,9 @@ class Router implements RouterInterface
         return $this->routes;
     }
 
+    /**
+     * @param array<string, mixed> $parameters
+     */
     public function url(string $name, array $parameters = []): string
     {
         $route = $this->routes->getByName($name);
@@ -214,6 +220,9 @@ class Router implements RouterInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $middlewares
+     */
     public function addGlobalMiddlewares(array $middlewares): void
     {
         if ($this->middlewareManager !== null) {

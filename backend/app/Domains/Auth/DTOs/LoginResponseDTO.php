@@ -12,6 +12,7 @@ use App\Domains\Auth\ValueObjects\TokenPair;
  * 封裝使用者登入成功後的回應資料，包括令牌、使用者資訊和相關中繼資料。
  */
 final readonly class LoginResponseDTO /**\n      * @param array<string, mixed> $permissions
+     * @phpstan-param array<string, mixed> $args
      */
 {
     public function __construct(
@@ -26,6 +27,7 @@ final readonly class LoginResponseDTO /**\n      * @param array<string, mixed> $
     /**
      * 轉換為陣列.
      * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {
