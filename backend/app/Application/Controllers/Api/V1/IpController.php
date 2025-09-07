@@ -21,7 +21,10 @@ class IpController
         private OutputSanitizerInterface $sanitizer,
     ) {}
 
-    /**\n      * @param array<string, mixed> $request
+    /**
+     * 建立IP規則.
+     *
+     * @param array<string, mixed> $request
      * @return array<string, mixed>
      */
     public function create(array $request): array
@@ -52,7 +55,10 @@ class IpController
         }
     }
 
-    /**\n      * @param array<string, mixed> $request
+    /**
+     * 根據類型取得IP規則.
+     *
+     * @param array<string, mixed> $request
      * @return array<string, mixed>
      */
     public function getByType(array $request): array
@@ -62,7 +68,8 @@ class IpController
                 throw new InvalidArgumentException('必須指定名單類型');
             }
 
-            $rules = $this->service->getRulesByType((int) $request['type']);
+            $type = is_numeric($request['type']) ? (int) $request['type'] : 0;
+            $rules = $this->service->getRulesByType($type);
 
             return [
                 'status' => 200,
@@ -84,7 +91,10 @@ class IpController
         }
     }
 
-    /**\n      * @param array<string, mixed> $request
+    /**
+     * 檢查IP存取權限.
+     *
+     * @param array<string, mixed> $request
      * @return array<string, mixed>
      */
     public function checkAccess(array $request): array
@@ -94,7 +104,8 @@ class IpController
                 throw new InvalidArgumentException('必須提供 IP 位址');
             }
 
-            $isAllowed = $this->service->isIpAllowed($request['ip']);
+            $ip = is_string($request['ip']) ? $request['ip'] : '';
+            $isAllowed = $this->service->isIpAllowed($ip);
 
             return [
                 'status' => 200,
