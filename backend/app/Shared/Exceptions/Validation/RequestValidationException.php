@@ -7,10 +7,11 @@ namespace App\Shared\Exceptions\Validation;
 use App\Shared\Exceptions\ValidationException;
 
 class RequestValidationException extends ValidationException
+{
     /**
      * @param array<string, mixed> $errors
      */
-{    public function __construct(string $message = '', /** @var array<string, mixed> */ array $errors = [])
+    public function __construct(string $message = '', array $errors = [])
     {
         if (empty($message) && !empty($errors)) {
             $message = '請求資料驗證失敗';

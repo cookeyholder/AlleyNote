@@ -437,7 +437,9 @@ class CacheManager implements CacheManagerInterface
     }
     /**
      * @param array<string, mixed> $keys
-     */    public function many(array $keys): array
+     * @return array<string, mixed>
+     */    
+    public function many(array $keys): array
     {
         $result = [];
 

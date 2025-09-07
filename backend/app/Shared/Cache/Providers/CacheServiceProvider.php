@@ -303,8 +303,10 @@ class CacheServiceProvider
                 if (!is_array($config)) {
                     $config = [];
                 }
+                /** @var array<string, mixed> $typedConfig */
+                $typedConfig = $config;
 
-                return new RedisCacheDriver($config);
+                return new RedisCacheDriver($typedConfig);
             }),
 
             MemoryCacheDriver::class => \DI\get('cache.driver.memory'),
@@ -376,6 +378,8 @@ class CacheServiceProvider
                 if (!is_array($config)) {
                     $config = [];
                 }
+                /** @var array<string, mixed> $typedConfig */
+                $typedConfig = $config;
                 $tagRepository = null;
 
                 try {
@@ -394,7 +398,7 @@ class CacheServiceProvider
                     }
                 } catch (Exception) {
                 }
-                $manager = new CacheManager($strategy, $logger, $config, $monitor, $tagRepository);
+                $manager = new CacheManager($strategy, $logger, $typedConfig, $monitor, $tagRepository);
                 // 新增記憶體驅動
                 $memoryDriver = $c->get('cache.driver.memory');
                 if ($memoryDriver instanceof CacheDriverInterface) {
