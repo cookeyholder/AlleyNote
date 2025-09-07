@@ -105,7 +105,7 @@ class PostController extends BaseController
             // 安全地獲取page參數
             $pageParam = $queryParams['page'] ?? '1';
             $page = max(1, is_numeric($pageParam) ? (int) $pageParam : 1);
-            
+
             // 安全地獲取limit參數
             $limitParam = $queryParams['limit'] ?? '10';
             $limit = min(100, max(1, is_numeric($limitParam) ? (int) $limitParam : 10));
@@ -124,21 +124,21 @@ class PostController extends BaseController
             $result = $this->postService->listPosts($page, $limit, $filters);
 
             // 確保 result 是正確的數組類型且包含必要的鍵
-            if (!is_array($result) || 
-                !array_key_exists('items', $result) || 
-                !array_key_exists('total', $result) || 
-                !array_key_exists('page', $result) || 
+            if (!is_array($result) ||
+                !array_key_exists('items', $result) ||
+                !array_key_exists('total', $result) ||
+                !array_key_exists('page', $result) ||
                 !array_key_exists('per_page', $result)) {
                 throw new Exception('Invalid service response format');
             }
 
-            // 確保數據類型正確
-            $items = is_array($result['items']) ? $result['items'] : [];
-            $total = is_int($result['total']) ? $result['total'] : 0;
-            $currentPage = is_int($result['page']) ? $result['page'] : $page;
-            $perPage = is_int($result['per_page']) ? $result['per_page'] : $limit;
-
-            $responseData = $this->paginatedResponse($items, $total, $currentPage, $perPage);
+            // 由於我們已經驗證了 $result 是數組且包含所需鍵，可以安全地使用
+            $responseData = $this->paginatedResponse(
+                (array) $result['items'],
+                (int) $result['total'],
+                (int) $result['page'],
+                (int) $result['per_page']
+            );
 
             // 記錄成功的文章列表查看活動
             $userId = $request->getAttribute('user_id');
@@ -924,9 +924,10 @@ class PostController extends BaseController
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // 記錄 JSON 格式錯誤
+                $userId = $request->getAttribute('user_id');
                 $this->activityLogger->logFailure(
                     actionType: ActivityType::POST_PINNED,
-                    userId: $request->getAttribute('user_id'),
+                    userId: is_int($userId) ? $userId : null,
                     reason: 'Invalid JSON format',
                     metadata: [
                         'post_id' => $id,
@@ -940,11 +941,12 @@ class PostController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
-            if (!isset($data['pinned']) || !is_bool($data['pinned'])) {
+            if (!is_array($data) || !isset($data['pinned']) || !is_bool($data['pinned'])) {
                 // 記錄參數錯誤
+                $userId = $request->getAttribute('user_id');
                 $this->activityLogger->logFailure(
                     actionType: ActivityType::POST_PINNED,
-                    userId: $request->getAttribute('user_id'),
+                    userId: is_int($userId) ? $userId : null,
                     reason: 'Missing or invalid pinned parameter',
                     metadata: [
                         'post_id' => $id,
