@@ -37,7 +37,6 @@ final class PostStatisticsService
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 回傳數量限制
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularPosts(StatisticsPeriod $period, int $limit = 10): array
@@ -90,7 +89,6 @@ final class PostStatisticsService
      *
      * @param StatisticsPeriod $period 統計週期
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function analyzeSourceDistribution(StatisticsPeriod $period): array
     {
@@ -146,7 +144,6 @@ final class PostStatisticsService
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function calculatePostQualityScore(int $postId, StatisticsPeriod $period): array
     {
@@ -208,7 +205,6 @@ final class PostStatisticsService
      *
      * @param StatisticsPeriod $period 統計週期
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function analyzeTrends(StatisticsPeriod $period): array
     {
@@ -265,8 +261,7 @@ final class PostStatisticsService
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
      * @param float $contentCost 內容製作成本
-     * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>{roi: float, revenue: float, cost: float, profit: float} ROI分析結果
+     * @return array{roi: float, revenue: float, cost: float, profit: float} ROI分析結果
      */
     public function calculatePostROI(int $postId, StatisticsPeriod $period, float $contentCost): array
     {
@@ -302,7 +297,6 @@ final class PostStatisticsService
      *
      * @param StatisticsPeriod $period 分析週期
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function getBestPublishingTimes(StatisticsPeriod $period): array
     {
@@ -464,7 +458,6 @@ final class PostStatisticsService
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 回傳數量限制
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 10): array
@@ -478,7 +471,6 @@ final class PostStatisticsService
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 回傳數量限制
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array

@@ -471,10 +471,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    /**
-     * @param array<string, mixed> $tokens
-     * @phpstan-param array<string, mixed> $args
-     */
     public function batchCreate(array $tokens): int
     {
         try {
@@ -509,10 +505,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    /**
-     * @param array<string, mixed> $jtis
-     * @phpstan-param array<string, mixed> $args
-     */
     public function batchRevoke(array $jtis, string $reason = 'batch_revocation'): int
     {
         try {
@@ -618,7 +610,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     /**
      * 簡化版的 Token 家族查詢（不使用 CTE）.
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     private function getTokenFamilySimple(string $rootJti): array
     {

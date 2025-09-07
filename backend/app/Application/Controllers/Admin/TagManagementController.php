@@ -124,7 +124,6 @@ class TagManagementController extends BaseController
      * GET /admin/cache/tags/{tag}
      *
      * @param array<string, mixed> $args
-     * @phpstan-param array<string, mixed> $args
      */
     public function getTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -190,7 +189,6 @@ class TagManagementController extends BaseController
      * DELETE /admin/cache/tags/{tag}
      *
      * @param array<string, mixed> $args
-     * @phpstan-param array<string, mixed> $args
      */
     public function deleteTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -356,7 +354,6 @@ class TagManagementController extends BaseController
      * DELETE /admin/cache/groups/{group}
      *
      * @param array<string, mixed> $args
-     * @phpstan-param array<string, mixed> $args
      */
     public function deleteGroup(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -424,7 +421,6 @@ class TagManagementController extends BaseController
      * POST /admin/cache/tags/{tag}/flush
      *
      * @param array<string, mixed> $args
-     * @phpstan-param array<string, mixed> $args
      */
     public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -496,7 +492,7 @@ class TagManagementController extends BaseController
     public function flushTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-            $body = json_decode(is_string((string) $request->getBody()) ? (string) $request->getBody() : (string)(string) $request->getBody(), true);
+            $body = json_decode((string) $request->getBody(), true);
             if (!is_array($body)) {
                 throw new InvalidArgumentException('請求主體必須是有效的 JSON 格式');
             }
@@ -644,7 +640,7 @@ class TagManagementController extends BaseController
     public function createGroup(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-            $body = json_decode(is_string((string) $request->getBody()) ? (string) $request->getBody() : (string)(string) $request->getBody(), true);
+            $body = json_decode((string) $request->getBody(), true);
             if (!is_array($body)) {
                 throw new InvalidArgumentException('請求內容必須是有效的 JSON');
             }
@@ -707,7 +703,6 @@ class TagManagementController extends BaseController
      * POST /admin/cache/groups/{group}/flush
      *
      * @param array<string, mixed> $args
-     * @phpstan-param array<string, mixed> $args
      */
     public function flushGroup(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {

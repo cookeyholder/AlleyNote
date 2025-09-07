@@ -15,11 +15,8 @@ class UserRepository
         private PDO $db,
         private ?PasswordSecurityServiceInterface $passwordService = null,
     ) {}
-
     /**\n      * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
-    public function create(array $data): array
+     */    public function create(array $data): array
     {
         $sql = 'INSERT INTO users (uuid, username, email, password) VALUES (:uuid, :username, :email, :password)';
         $stmt = $this->db->prepare($sql);
@@ -45,11 +42,8 @@ class UserRepository
 
         return $this->findById((int) $this->db->lastInsertId());
     }
-
     /**\n      * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
-    public function update(string $id, array $data): array
+     */    public function update(string $id, array $data): array
     {
         $fields = [];
         $params = ['id' => $id];
@@ -82,11 +76,8 @@ class UserRepository
 
         return $stmt->execute(['id' => $id]);
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function findById(int $id): ?array
+     */    public function findById(int $id): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
         $stmt->execute(['id' => $id]);
@@ -95,11 +86,8 @@ class UserRepository
 
         return $result ?: null;
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function findByUuid(string $uuid): ?array
+     */    public function findByUuid(string $uuid): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE uuid = :uuid');
         $stmt->execute(['uuid' => $uuid]);
@@ -108,11 +96,8 @@ class UserRepository
 
         return $result ?: null;
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function findByUsername(string $username): ?array
+     */    public function findByUsername(string $username): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE username = :username');
         $stmt->execute(['username' => $username]);
@@ -121,11 +106,8 @@ class UserRepository
 
         return $result ?: null;
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function findByEmail(string $email): ?array
+     */    public function findByEmail(string $email): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE email = :email');
         $stmt->execute(['email' => $email]);

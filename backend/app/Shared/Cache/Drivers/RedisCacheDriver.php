@@ -40,10 +40,8 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /** @var string 標籤索引前綴 */
     private const TAG_INDEX_PREFIX = 'tag_index:';
-
     /**\n      * @param array<string, mixed> $config
-     */
-    public function __construct(array $config = [])
+     */    public function __construct(array $config = [])
     {
         $this->redis = new Redis();
         $prefix = $config['prefix'] ?? 'alleynote_cache:';
@@ -143,9 +141,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
     }
 
-    /**
-     * @param array<string, mixed> $keys
-     */
     public function many(array $keys): array
     {
         $result = [];
@@ -174,9 +169,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return $result;
     }
 
-    /**
-     * @param array<string, mixed> $values
-     */
     public function putMany(array $values, int $ttl = self::DEFAULT_TTL): bool
     {
         try {
@@ -221,9 +213,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
     }
 
-    /**
-     * @param array<string, mixed> $keys
-     */
     public function forgetMany(array $keys): bool
     {
         try {
@@ -327,10 +316,8 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return $this->remember($key, $callback, 0);
     }
-
     /**\n      * @return array<string, mixed>
-     */
-    public function getStats(): array
+     */    public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
         $hitRate = $totalRequests > 0 ? ($this->stats['hits'] / $totalRequests) * 100 : 0;

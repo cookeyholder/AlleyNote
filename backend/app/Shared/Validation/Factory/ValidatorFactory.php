@@ -179,7 +179,7 @@ class ValidatorFactory
             }
 
             // 檢查域名部分
-            $parts = explode('@', is_string($email) ? $email : (string)$email);
+            $parts = explode('@', $email);
             if (count($parts) !== 2) {
                 return false;
             }
@@ -209,7 +209,7 @@ class ValidatorFactory
 
             // 檢查是否為 CIDR 格式
             if (strpos($ip, '/') !== false) {
-                $parts = explode('/', is_string($ip) ? $ip : (string)$ip);
+                $parts = explode('/', $ip);
                 if (count($parts) !== 2) {
                     return false;
                 }

@@ -182,19 +182,11 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         }
     }
 
-    /**
-     * @param array<string, mixed> $tags
-     * @phpstan-param array<string, mixed> $args
-     */
     public function tags(array $tags): TaggedCacheInterface
     {
         return $this->cacheManager->tags($tags);
     }
 
-    /**
-     * @param array<string, mixed> $tags
-     * @phpstan-param array<string, mixed> $args
-     */
     public function invalidateByTags(array $tags): bool
     {
         try {
@@ -217,10 +209,6 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         }
     }
 
-    /**
-     * @param array<string, mixed> $callbacks
-     * @phpstan-param array<string, mixed> $args
-     */
     public function warmup(array $callbacks): array
     {
         $results = [];
@@ -382,11 +370,8 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             return false;
         }
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function getStats(): array
+     */    public function getStats(): array
     {
         try {
             $managerStats = $this->cacheManager->getStats();
@@ -437,7 +422,6 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
     }
 
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
       */
     public function cleanup(): array
     {
@@ -492,7 +476,6 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
     /**
      * 取得快取鍵統計資訊。
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     private function getCacheKeyStats(): array
     {

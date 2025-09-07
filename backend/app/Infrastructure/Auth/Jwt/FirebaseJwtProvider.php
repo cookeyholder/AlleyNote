@@ -185,7 +185,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
         try {
             // 分割 JWT token
-            $parts = explode('.', is_string($token) ? $token : (string)$token);
+            $parts = explode('.', $token);
             if (count($parts) !== 3) {
                 throw TokenParsingException::invalidFormat('Token 格式無效，必須包含三個部分');
             }

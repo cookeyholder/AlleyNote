@@ -34,8 +34,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      * @param StatisticsMetric $commentCount 評論次數
      * @param StatisticsMetric $shareCount 分享次數
      * @param StatisticsPeriod $period 統計週期
-     * @param array<string, mixed> $additionalMetrics
-     * @phpstan-param array<string, mixed> $args 額外統計指標
+     * @param array<string, mixed> $additionalMetrics 額外統計指標
      * @param DateTimeImmutable $publishedAt 發布時間
      * @param DateTimeImmutable $updatedAt 更新時間
      */
@@ -48,8 +47,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         public StatisticsMetric $commentCount,
         public StatisticsMetric $shareCount,
         public StatisticsPeriod $period,
-        /** @var array<string, mixed> */
-        public array $additionalMetrics = [],
+        public array $additionalMetrics,
         public DateTimeImmutable $publishedAt,
         public DateTimeImmutable $updatedAt,
     ) {
@@ -60,7 +58,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * 從文章資料建立 DTO.
      * @param array<string, mixed> $postData
-     * @phpstan-param array<string, mixed> $args
      */
     public static function fromPostData(array $postData, StatisticsPeriod $period): self
     {
@@ -113,7 +110,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * 建立帶有統計分析的 DTO.
      * @param array<string, mixed> $rawMetrics
-     * @phpstan-param array<string, mixed> $args
      */
     public static function withAnalysis(
         Uuid $postId,
@@ -235,7 +231,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      * 取得格式化的統計資訊.
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function getFormattedStatistics(): array
     {
@@ -285,7 +280,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      * 比較與另一篇文章的效能.
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function compareWith(PostStatisticsDTO $other): array
     {
@@ -306,7 +300,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      * 轉換為陣列.
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -347,7 +340,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      * JSON 序列化.
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -371,7 +363,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      * 計算互動率.
      *
      * @param array<string, mixed> $metrics
-     * @phpstan-param array<string, mixed> $args
      */
     private static function calculateEngagementRate(array $metrics): float
     {
@@ -393,7 +384,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      * 計算效能評分.
      *
      * @param array<string, mixed> $metrics
-     * @phpstan-param array<string, mixed> $args
      */
     private static function calculatePerformanceScore(array $metrics): float
     {
@@ -438,7 +428,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      * 驗證額外指標.
      *
      * @param array<string, mixed> $metrics
-     * @phpstan-param array<string, mixed> $args
      */
     private function validateAdditionalMetrics(array $metrics): void
     {
@@ -449,63 +438,4 @@ final readonly class PostStatisticsDTO implements JsonSerializable
             }
         }
     }
-
-    /**
-     * 安全地從陣列中提取字串值
-     * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
-    private static function extractString(array $data, string $key, string $default = ''): string
-    {
-        $value = $data[$key] ?? $default;
-        return is_string($value) ? $value : $default;
-    }
-
-    /**
-     * 安全地從陣列中提取整數值
-     * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
-    private static function extractInteger(array $data, string $key, int $default = 0): int
-    {
-        $value = $data[$key] ?? $default;
-        return is_numeric($value) ? (int)$value : $default;
-    }
-
-    /**
-     * 安全地從陣列中提取浮點數值
-     * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
-    private static function extractFloat(array $data, string $key, float $default = 0.0): float
-    {
-        $value = $data[$key] ?? $default;
-        return is_numeric($value) ? (float)$value : $default;
-    }
-
-    /**
-     * 安全地從陣列中提取陣列值
-     * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     * @param array<string, mixed> $default
-     * @phpstan-param array<string, mixed> $args
-     * @return array<mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    private static function extractArray(array $data, string $key, array $default = []): array
-    {
-        $value = $data[$key] ?? $default;
-        return is_array($value) ? $value : $default;
-    }
-
-    /**
-     * 安全地從陣列中提取混合值
-     * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
-    private static function extractValue(array $data, string $key, mixed $default = null): mixed
-    {
-        return $data[$key] ?? $default;
-    }
-
 }

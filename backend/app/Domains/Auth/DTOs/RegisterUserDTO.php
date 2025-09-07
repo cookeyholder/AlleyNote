@@ -26,8 +26,7 @@ class RegisterUserDTO extends BaseDTO
     public readonly string $userIp;
 
     /**\n      * @param ValidatorInterface $validator 驗證器實例
-     * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args 輸入資料
+     * @param array<string, mixed> $data 輸入資料
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -180,7 +179,7 @@ class RegisterUserDTO extends BaseDTO
             }
 
             // 檢查 @ 符號數量
-            $parts = explode('@', is_string($email) ? $email : (string)$email);
+            $parts = explode('@', $email);
             if (count($parts) !== 2) {
                 return false;
             }
@@ -221,7 +220,6 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 取得驗證規則.
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     protected function getValidationRules(): array
     {
@@ -237,10 +235,8 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 覆寫驗證方法以支援跨欄位驗證.
      *
-     * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args 輸入資料
+     * @param array<string, mixed> $data 輸入資料
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      * @throws ValidationException 當驗證失敗時
      */
     protected function validate(array $data): array
@@ -262,7 +258,6 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Service 使用）.
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -278,7 +273,6 @@ class RegisterUserDTO extends BaseDTO
      * 取得用於密碼雜湊的資料.
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function getPasswordData(): array
     {

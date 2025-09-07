@@ -66,7 +66,7 @@ class IpRepository implements IpRepositoryInterface
             return $ip === $cidr;
         }
 
-        [$subnet, $bits] = explode('/', is_string($cidr) ? $cidr : (string)$cidr);
+        [$subnet, $bits] = explode('/', $cidr);
         $ip = ip2long($ip);
         $subnet = ip2long($subnet);
         $mask = -1 << (32 - (int) $bits);
@@ -74,11 +74,8 @@ class IpRepository implements IpRepositoryInterface
 
         return ($ip & $mask) === $subnet;
     }
-
     /**\n      * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
-    private function createIpListFromData(array $data): IpList
+     */    private function createIpListFromData(array $data): IpList
     {
         // 確保資料欄位型別正確
         return new IpList([
@@ -92,11 +89,8 @@ class IpRepository implements IpRepositoryInterface
             'updated_at' => (string) $data['updated_at'],
         ]);
     }
-
     /**\n      * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
-    public function create(array $data): IpList
+     */    public function create(array $data): IpList
     {
         $this->validateIpAddress($data['ip_address']);
 
@@ -195,11 +189,8 @@ class IpRepository implements IpRepositoryInterface
             return $this->createIpListFromData($result);
         }, self::CACHE_TTL);
     }
-
     /**\n      * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
-    public function update(int $id, array $data): IpList
+     */    public function update(int $id, array $data): IpList
     {
         if (isset($data['ip_address'])) {
             $this->validateIpAddress($data['ip_address']);
@@ -269,11 +260,8 @@ class IpRepository implements IpRepositoryInterface
             $results,
         );
     }
-
     /**\n      * @param array<string, mixed> $conditions
-     * @phpstan-param array<string, mixed> $args
-     */
-    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
+     */    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         $offset = ($page - 1) * $perPage;
         $where = [];

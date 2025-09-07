@@ -15,11 +15,8 @@ class AttachmentRepository
         private PDO $db,
         private CacheServiceInterface $cache,
     ) {}
-
     /**\n      * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
-    public function create(array $data): Attachment
+     */    public function create(array $data): Attachment
     {
         $uuid = Uuid::uuid4()->toString();
 
@@ -87,10 +84,8 @@ class AttachmentRepository
             return $data ? new Attachment($data) : null;
         });
     }
-
     /**
-     * @return array<int, Attachment>
-     * @phpstan-return array<string, mixed>
+     * @return array<int, \App\Domains\Attachment\Models\Attachment>
      */
     public function getByPostId(int $postId): array
     {

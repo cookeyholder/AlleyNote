@@ -90,84 +90,64 @@ class ServerRequest implements ServerRequestInterface
 
         return $new;
     }
-
     /**\n      * @return array<string, mixed>
-     */
-    public function getServerParams(): array
+     */    public function getServerParams(): array
     {
         return $this->serverParams;
     }
-
     /**\n      * @return array<string, mixed>
-     */
-    public function getCookieParams(): array
+     */    public function getCookieParams(): array
     {
         return $this->cookieParams;
     }
-
     /**\n      * @param array<string, mixed> $cookies
-     */
-    public function withCookieParams(array $cookies): self
+     */    public function withCookieParams(array $cookies): self
     {
         $new = clone $this;
         $new->cookieParams = $cookies;
 
         return $new;
     }
-
     /**\n      * @return array<string, mixed>
-     */
-    public function getQueryParams(): array
+     */    public function getQueryParams(): array
     {
         return $this->queryParams;
     }
-
     /**\n      * @param array<string, mixed> $query
-     */
-    public function withQueryParams(array $query): self
+     */    public function withQueryParams(array $query): self
     {
         $new = clone $this;
         $new->queryParams = $query;
 
         return $new;
     }
-
     /**\n      * @return array<string, mixed>
-     */
-    public function getUploadedFiles(): array
+     */    public function getUploadedFiles(): array
     {
         return [];
     }
-
     /**\n      * @param array<string, mixed> $uploadedFiles
-     */
-    public function withUploadedFiles(array $uploadedFiles): self
+     */    public function withUploadedFiles(array $uploadedFiles): self
     {
         $new = clone $this;
 
         return $new;
     }
-
     /**\n      * @return array<string, mixed>
-     */
-    public function getParsedBody()
+     */    public function getParsedBody()
     {
         return $this->parsedBody;
     }
-
     /**\n      * @param array<string, mixed> $data
-     */
-    public function withParsedBody(mixed $data): self
+     */    public function withParsedBody(mixed $data): self
     {
         $new = clone $this;
         $new->parsedBody = $data;
 
         return $new;
     }
-
     /**\n      * @return array<string, mixed>
-     */
-    public function getAttributes(): array
+     */    public function getAttributes(): array
     {
         return $this->attributes;
     }

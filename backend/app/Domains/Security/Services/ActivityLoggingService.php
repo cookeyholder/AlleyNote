@@ -145,7 +145,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * @param string|null $targetType 目標類型 (如: 'post', 'user', 'file')
      * @param string|null $targetId 目標ID
      * @param array<string, mixed> $metadata
-     * @phpstan-param array<string, mixed> $args
      * @return bool 記錄是否成功
      *
      * @example
@@ -199,7 +198,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * @param int|null $userId 使用者ID
      * @param string $reason 失敗原因描述
      * @param array<string, mixed> $metadata
-     * @phpstan-param array<string, mixed> $args
      * @return bool 記錄是否成功
      *
      * @example
@@ -246,7 +244,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * @param ActivityType $actionType 活動類型（必須是安全相關類型）
      * @param string $description 安全事件的詳細描述
      * @param array<string, mixed> $metadata
-     * @phpstan-param array<string, mixed> $args
      * @return bool 記錄是否成功
      *
      * @example
@@ -294,7 +291,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
     /**
      * 批次記錄多個活動.
      * @param array<string, mixed> $dtos
-     * @phpstan-param array<string, mixed> $args
      */
     public function logBatch(array $dtos): int
     {

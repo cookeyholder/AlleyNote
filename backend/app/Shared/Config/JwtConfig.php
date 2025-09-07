@@ -9,7 +9,7 @@ use InvalidArgumentException;
 
 /**
  * JWT 配置管理類別.
- * 負責載入和驗證 JWT 相關的配置參數，包括 RS256 金鑰對管理.
+ * 負責載入和驗證 JWT 相關的配置參數，包括 RS256 金鑰對管理
  */
 final class JwtConfig
 {

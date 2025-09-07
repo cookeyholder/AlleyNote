@@ -28,22 +28,22 @@ class Attachment
 
     private ?string $deletedAt = null;
 
-    /**\n      * @param array<string, mixed> $attributes
-     * @phpstan-param array<string, mixed> $args
+    /**
+     * @param array<string, mixed> $attributes
      */
     public function __construct(array $attributes = [])
     {
-        $this->id = $attributes['id'] ?? null;
-        $this->uuid = $attributes['uuid'] ?? null;
-        $this->postId = $attributes['post_id'];
-        $this->filename = $attributes['filename'];
-        $this->originalName = $attributes['original_name'];
-        $this->mimeType = $attributes['mime_type'];
-        $this->fileSize = $attributes['file_size'];
-        $this->storagePath = $attributes['storage_path'];
-        $this->createdAt = $attributes['created_at'] ?? null;
-        $this->updatedAt = $attributes['updated_at'] ?? null;
-        $this->deletedAt = $attributes['deleted_at'] ?? null;
+        $this->id = isset($attributes['id']) ? (int) $attributes['id'] : null;
+        $this->uuid = isset($attributes['uuid']) && is_string($attributes['uuid']) ? $attributes['uuid'] : null;
+        $this->postId = (int) ($attributes['post_id'] ?? 0);
+        $this->filename = isset($attributes['filename']) && is_string($attributes['filename']) ? $attributes['filename'] : '';
+        $this->originalName = isset($attributes['original_name']) && is_string($attributes['original_name']) ? $attributes['original_name'] : '';
+        $this->mimeType = isset($attributes['mime_type']) && is_string($attributes['mime_type']) ? $attributes['mime_type'] : '';
+        $this->fileSize = (int) ($attributes['file_size'] ?? 0);
+        $this->storagePath = isset($attributes['storage_path']) && is_string($attributes['storage_path']) ? $attributes['storage_path'] : '';
+        $this->createdAt = isset($attributes['created_at']) && is_string($attributes['created_at']) ? $attributes['created_at'] : null;
+        $this->updatedAt = isset($attributes['updated_at']) && is_string($attributes['updated_at']) ? $attributes['updated_at'] : null;
+        $this->deletedAt = isset($attributes['deleted_at']) && is_string($attributes['deleted_at']) ? $attributes['deleted_at'] : null;
     }
 
     public function getId(): ?int
@@ -101,8 +101,8 @@ class Attachment
         return $this->deletedAt;
     }
 
-    /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

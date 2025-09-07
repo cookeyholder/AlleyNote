@@ -74,7 +74,7 @@ class CacheService implements CacheServiceInterface
             'data' => $value,
         ];
 
-        $result = file_put_contents($filename, json_encode($cacheData)) !== false;
+        $result = file_put_contents($filename, (json_encode($cacheData) ?? '')) !== false;
         if ($result) {
             $this->updateCacheSize();
         }
@@ -167,8 +167,6 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-     * 批量取得快取
-     * @param array<string> $keys 快取鍵陣列
      * @return array<string, mixed>
      */
     public function getMultiple(array $keys): array
@@ -181,9 +179,6 @@ class CacheService implements CacheServiceInterface
         return $result;
     }
 
-    /**
-     * @param array<string, mixed> $values
-     */
     public function setMultiple(array $values, int $ttl = 3600): bool
     {
         $success = true;
@@ -196,9 +191,6 @@ class CacheService implements CacheServiceInterface
         return $success;
     }
 
-    /**
-     * @param array<string> $keys
-     */
     public function deleteMultiple(array $keys): bool
     {
         $success = true;
@@ -223,12 +215,9 @@ class CacheService implements CacheServiceInterface
     {
         $size = 0;
         $files = glob($this->cachePath . '/*.cache');
-        if ($files !== false) {
+        if ($files) {
             foreach ($files as $file) {
-                $fileSize = filesize($file);
-                if ($fileSize !== false) {
-                    $size += $fileSize;
-                }
+                $size += filesize($file);
             }
         }
         $this->stats['size'] = $size;
@@ -252,7 +241,7 @@ class CacheService implements CacheServiceInterface
                 ? round($this->stats['hits'] / ($this->stats['hits'] + $this->stats['misses']) * 100, 2)
                 : 0,
             'total_size' => $this->stats['size'],
-            'file_count' => $files !== false ? count($files) : 0,
+            'file_count' => is_array($files) ? count($files) : 0,
             'cache_path' => $this->cachePath,
         ];
     }
@@ -265,12 +254,12 @@ class CacheService implements CacheServiceInterface
         $cleaned = 0;
         $files = glob($this->cachePath . '/*.cache');
 
-        if ($files !== false) {
+        if ($files) {
             foreach ($files as $file) {
                 $data = file_get_contents($file);
                 if ($data !== false) {
                     $cacheData = json_decode($data, true);
-                    if (is_array($cacheData) && isset($cacheData['expiry']) && is_int($cacheData['expiry'])) {
+                    if (is_array($cacheData) && isset($cacheData['expiry'])) {
                         if (time() > $cacheData['expiry']) {
                             unlink($file);
                             $cleaned++;

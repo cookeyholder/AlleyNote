@@ -172,7 +172,7 @@ class FileSecurityService implements FileSecurityServiceInterface
         }
 
         // 檢查多重副檔名
-        $parts = explode('.', is_string($fileName) ? $fileName : (string)$fileName);
+        $parts = explode('.', $fileName);
         if (count($parts) > 3) { // 允許最多兩個副檔名，如 file.tar.gz
             throw ValidationException::fromSingleError('filename', '檔案名稱包含過多副檔名');
         }

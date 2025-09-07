@@ -179,7 +179,7 @@ class FileRouteCache implements RouteCacheInterface
         if (file_exists($statsFile)) {
             $content = file_get_contents($statsFile);
             if ($content !== false) {
-                $stats = json_decode(is_string($content) ? $content : (string)$content, true);
+                $stats = json_decode($content, true);
                 if (is_array($stats)) {
                     $this->stats = array_merge($this->stats, $stats);
                 }

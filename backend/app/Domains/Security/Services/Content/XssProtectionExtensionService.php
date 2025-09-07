@@ -22,10 +22,8 @@ class XssProtectionExtensionService
     private ContentModerationService $contentModerator;
 
     private array $config;
-
     /**\n      * @param array<string, mixed> $config
-     */
-    public function __construct(
+     */    public function __construct(
         XssProtectionService $baseXssProtection,
         RichTextProcessorService $richTextProcessor,
         ContentModerationService $contentModerator,
@@ -275,7 +273,7 @@ class XssProtectionExtensionService
     private function protectJsonData(string $input, array $options): array
     {
         // 嘗試解析 JSON
-        $decoded = json_decode(is_string($input) ? $input : (string)$input, true);
+        $decoded = json_decode($input, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             return [

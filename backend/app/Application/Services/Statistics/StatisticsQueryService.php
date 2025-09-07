@@ -45,7 +45,6 @@ final class StatisticsQueryService
      * 支援分頁和篩選條件的統計快照查詢。
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function getStatisticsSnapshots(
         ?DateTimeInterface $startDate = null,
@@ -162,7 +161,6 @@ final class StatisticsQueryService
      * 分析指定週期內的文章統計趨勢資料。
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function getPostStatisticsTrends(
         StatisticsPeriod $period,
@@ -231,7 +229,6 @@ final class StatisticsQueryService
      * 取得指定週期內的使用者活動統計資訊。
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function getUserActivityStatistics(
         StatisticsPeriod $period,
@@ -299,7 +296,6 @@ final class StatisticsQueryService
      * 取得系統效能相關的統計資訊。
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function getSystemPerformanceStatistics(
         StatisticsPeriod $period,
@@ -352,9 +348,7 @@ final class StatisticsQueryService
      * 提供彈性的自訂統計查詢功能。
      *
      * @param array<string, mixed> $queryParams
-     * @phpstan-param array<string, mixed> $args
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function customStatisticsQuery(array $queryParams): array
     {
@@ -457,9 +451,7 @@ final class StatisticsQueryService
      * 分析趨勢資料.
      *
      * @param array<string, mixed> $trends
-     * @phpstan-param array<string, mixed> $args
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     private function analyzeTrends(array $trends): array
     {
@@ -540,7 +532,6 @@ final class StatisticsQueryService
      * 驗證自訂查詢參數.
      *
      * @param array<string, mixed> $params
-     * @phpstan-param array<string, mixed> $args
      */
     private function validateCustomQueryParams(array $params): void
     {
@@ -556,7 +547,6 @@ final class StatisticsQueryService
      * 解析查詢週期
      *
      * @param array<string, mixed> $params
-     * @phpstan-param array<string, mixed> $args
      */
     private function parseQueryPeriod(array $params): StatisticsPeriod
     {
@@ -577,9 +567,7 @@ final class StatisticsQueryService
      *
      * @param array<string> $metrics
      * @param array<string, mixed> $filters
-     * @phpstan-param array<string, mixed> $args
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     private function executeCustomQuery(
         StatisticsPeriod $period,

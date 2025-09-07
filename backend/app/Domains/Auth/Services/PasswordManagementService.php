@@ -71,7 +71,6 @@ class PasswordManagementService
      *
      * @param string $password 要檢查的密碼
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function checkPasswordStrength(string $password): array
     {

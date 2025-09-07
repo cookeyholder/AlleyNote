@@ -212,7 +212,7 @@ class CacheKeys
     {
         // 過濾空值並轉換為字串
         $cleanParts = array_filter(
-            array_map(fn($item) => is_scalar($item) ? (string)$item : '', $parts),
+            array_map('strval', $parts),
             fn($part) => $part !== '',
         );
 
@@ -255,7 +255,7 @@ class CacheKeys
 
         $withoutPrefix = substr($key, strlen(self::PREFIX . self::SEPARATOR));
 
-        return explode(self::SEPARATOR, is_string($withoutPrefix) ? $withoutPrefix : (string)$withoutPrefix);
+        return explode(self::SEPARATOR, $withoutPrefix);
     }
 
     /**

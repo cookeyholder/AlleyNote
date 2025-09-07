@@ -40,9 +40,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * 工廠方法：建立使用者分析結果.
      * @param array<string, mixed> $activityCounts
-     * @phpstan-param array<string, mixed> $args
      * @param array<string, mixed> $metadata
-     * @phpstan-param array<string, mixed> $args
      */
     public static function forUser(
         int $userId,
@@ -78,9 +76,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * 工廠方法：建立 IP 分析結果.
      * @param array<string, mixed> $activityCounts
-     * @phpstan-param array<string, mixed> $args
      * @param array<string, mixed> $metadata
-     * @phpstan-param array<string, mixed> $args
      */
     public static function forIpAddress(
         string $ipAddress,
@@ -116,9 +112,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * 工廠方法：建立全域分析結果.
      * @param array<string, mixed> $activityCounts
-     * @phpstan-param array<string, mixed> $args
      * @param array<string, mixed> $metadata
-     * @phpstan-param array<string, mixed> $args
      */
     public static function forGlobalPattern(
         int $timeWindowMinutes,
@@ -185,43 +179,28 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     {
         return $this->severityLevel;
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function getActivityCounts(): array
+     */    public function getActivityCounts(): array
     {
         return $this->activityCounts;
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function getFailureCounts(): array
+     */    public function getFailureCounts(): array
     {
         return $this->failureCounts;
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function getAnomalyScores(): array
+     */    public function getAnomalyScores(): array
     {
         return $this->anomalyScores;
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function getDetectionRules(): array
+     */    public function getDetectionRules(): array
     {
         return $this->detectionRules;
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function getMetadata(): array
+     */    public function getMetadata(): array
     {
         return $this->metadata;
     }
@@ -323,7 +302,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * 轉換為陣列.
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -355,7 +333,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * JSON 序列化.
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

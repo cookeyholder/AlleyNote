@@ -11,11 +11,10 @@ use App\Domains\Auth\ValueObjects\TokenPair;
  *
  * 封裝使用者 Token 刷新成功後的回應資料。
  */
-final readonly class RefreshResponseDTO /**\n      * @param array<string, mixed> $permissions
-     * @phpstan-param array<string, mixed> $args
+final readonly class RefreshResponseDTO
+    /**\n      * @param array<string, mixed> $permissions
      */
-{
-    public function __construct(
+{    public function __construct(
         public TokenPair $tokens,
         public int $userId,
         public int $expiresAt,
@@ -26,7 +25,6 @@ final readonly class RefreshResponseDTO /**\n      * @param array<string, mixed>
     /**
      * 轉換為陣列.
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {

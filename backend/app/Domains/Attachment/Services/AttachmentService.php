@@ -67,7 +67,7 @@ class AttachmentService implements AttachmentServiceInterface
         }
 
         // 檢查是否有多重副檔名
-        $extensions = explode('.', is_string($filename) ? $filename : (string)$filename);
+        $extensions = explode('.', $filename);
         array_shift($extensions); // 移除檔案名稱部分
         foreach ($extensions as $ext) {
             if (in_array(strtolower($ext), self::FORBIDDEN_EXTENSIONS, true)) {
@@ -251,7 +251,6 @@ class AttachmentService implements AttachmentServiceInterface
     /**
      * 改善的檔案驗證流程（減緩 TOCTOU 風險）.
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     private function secureFileValidation(UploadedFileInterface $file): array
     {
@@ -463,11 +462,8 @@ class AttachmentService implements AttachmentServiceInterface
             throw $e;
         }
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function download(string $uuid, int $currentUserId): array
+     */    public function download(string $uuid, int $currentUserId): array
     {
         $attachment = $this->attachmentRepo->findByUuid($uuid);
         if (!$attachment) {
@@ -572,10 +568,8 @@ class AttachmentService implements AttachmentServiceInterface
             ],
         );
     }
-
     /**
-     * @return array<int, Attachment>
-     * @phpstan-return array<string, mixed>
+     * @return array<int, \App\Domains\Attachment\Models\Attachment>
      */
     public function getByPostId(int $postId): array
     {

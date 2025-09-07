@@ -11,36 +11,28 @@ class RateLimitService
     public function __construct(
         private readonly CacheService $cache,
     ) {}
-
-    /**
-     * @return array{count: int, reset: int, allowed: bool}
-     */
-    public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
+    /**\n      * @return array<string, mixed>
+     */    public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
     {
         $key = "rate_limit:{$ip}";
 
         try {
             $data = $this->cache->get($key);
-            if ($data === null || !is_array($data)) {
+            if ($data === null) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
             }
 
             // 檢查是否需要重置計數器
-            if (!isset($data['reset']) || !is_int($data['reset']) || time() > $data['reset']) {
+            if (time() > $data['reset']) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
-            }
-
-            // 確保 count 是整數
-            if (!isset($data['count']) || !is_int($data['count'])) {
-                $data['count'] = 0;
             }
 
             // 如果已經超過限制，直接回傳結果
             if ($data['count'] >= $maxRequests) {
                 return [
-                    'count' => $data['count'],
-                    'reset' => (int) $data['reset'],
                     'allowed' => false,
+                    'remaining' => 0,
+                    'reset' => $data['reset'],
                 ];
             }
 
@@ -51,18 +43,18 @@ class RateLimitService
             $this->cache->set($key, $data, $timeWindow);
 
             return [
-                'count' => $data['count'],
-                'reset' => (int) $data['reset'],
                 'allowed' => $data['count'] <= $maxRequests,
+                'remaining' => max(0, $maxRequests - $data['count']),
+                'reset' => $data['reset'],
             ];
         } catch (Exception $e) {
             // 如果快取服務不可用，預設允許請求
             error_log('速率限制檢查失敗: ' . $e->getMessage());
 
             return [
-                'count' => 0,
-                'reset' => time() + $timeWindow,
                 'allowed' => true,
+                'remaining' => $maxRequests,
+                'reset' => time() + $timeWindow,
             ];
         }
     }

@@ -142,12 +142,12 @@ interface StatisticsCacheServiceInterface
      * 取得快取統計資訊。
      *
      * @return array<string, mixed>
-     *                              manager_stats: array,
-     *                              cache_keys: array,
-     *                              ttl_config: array,
-     *                              tag_config: array,
-     *                              health_status: array
-     *                              }
+     *     manager_stats: array,
+     *     cache_keys: array,
+     *     ttl_config: array,
+     *     tag_config: array,
+     *     health_status: array
+     * }
      */
     public function getStats(): array;
 

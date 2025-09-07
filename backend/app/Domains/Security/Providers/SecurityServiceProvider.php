@@ -62,73 +62,46 @@ class SecurityServiceProvider
 
         // 使用簡單的 error_log 作為 logger（暫時解決方案）
         $logger = new class implements LoggerInterface {
-            /**
-             * @param array<string, mixed> $context
-             */
             public function emergency(Stringable|string $message, array $context = []): void
             {
                 error_log("[EMERGENCY] $message");
             }
 
-            /**
-             * @param array<string, mixed> $context
-             */
             public function alert(Stringable|string $message, array $context = []): void
             {
                 error_log("[ALERT] $message");
             }
 
-            /**
-             * @param array<string, mixed> $context
-             */
             public function critical(Stringable|string $message, array $context = []): void
             {
                 error_log("[CRITICAL] $message");
             }
 
-            /**
-             * @param array<string, mixed> $context
-             */
             public function error(Stringable|string $message, array $context = []): void
             {
                 error_log("[ERROR] $message");
             }
 
-            /**
-             * @param array<string, mixed> $context
-             */
             public function warning(Stringable|string $message, array $context = []): void
             {
                 error_log("[WARNING] $message");
             }
 
-            /**
-             * @param array<string, mixed> $context
-             */
             public function notice(Stringable|string $message, array $context = []): void
             {
                 error_log("[NOTICE] $message");
             }
 
-            /**
-             * @param array<string, mixed> $context
-             */
             public function info(Stringable|string $message, array $context = []): void
             {
                 error_log("[INFO] $message");
             }
 
-            /**
-             * @param array<string, mixed> $context
-             */
             public function debug(Stringable|string $message, array $context = []): void
             {
                 error_log("[DEBUG] $message");
             }
 
-            /**
-             * @param array<string, mixed> $context
-             */
             public function log($level, Stringable|string $message, array $context = []): void
             {
                 error_log("[$level] $message");

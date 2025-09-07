@@ -43,9 +43,6 @@ class RouteCollection implements RouteCollectionInterface
         }
     }
 
-    /**
-     * @param array<string, mixed> $routes
-     */
     public function addRoutes(array $routes): void
     {
         foreach ($routes as $route) {
@@ -129,10 +126,8 @@ class RouteCollection implements RouteCollectionInterface
     {
         return count($this->routes);
     }
-
     /**\n      * @return array<string, mixed>
-     */
-    public function toArray(): array
+     */    public function toArray(): array
     {
         $data = [];
 
@@ -148,10 +143,8 @@ class RouteCollection implements RouteCollectionInterface
 
         return $data;
     }
-
     /**\n      * @param array<string, mixed> $data
-     */
-    public static function fromArray(array $data): RouteCollectionInterface
+     */    public static function fromArray(array $data): RouteCollectionInterface
     {
         $collection = new self();
 

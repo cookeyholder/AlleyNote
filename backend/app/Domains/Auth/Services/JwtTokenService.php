@@ -35,10 +35,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
         private readonly JwtConfig $config,
     ) {}
 
-    /**
-     * @param array<string, mixed> $customClaims
-     * @phpstan-param array<string, mixed> $args
-     */
     public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, array $customClaims = []): TokenPair
     {
         try {
@@ -290,8 +286,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
     /**
      * 從陣列建立 JwtPayload 物件.
      *
-     * @param array<string, mixed> $payload
-     * @phpstan-param array<string, mixed> $args 原始 payload 資料
+     * @param array<string, mixed> $payload 原始 payload 資料
      *
      * @return JwtPayload JwtPayload 物件
      *

@@ -40,7 +40,7 @@ class CSPReportController
 
             // 解析報告資料
             $body = $request->getBody()->getContents();
-            $report = json_decode(is_string($body) ? $body : (string)$body, true);
+            $report = json_decode($body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return $response->withStatus(400);
@@ -81,7 +81,6 @@ class CSPReportController
      * 驗證 CSP 報告格式.
      *
      * @param array<string, mixed> $report
-     * @phpstan-param array<string, mixed> $args
      */
     private function isValidCSPReport(array $report): bool
     {
@@ -112,7 +111,6 @@ class CSPReportController
      * 記錄 CSP 違規.
      *
      * @param array<string, mixed> $report
-     * @phpstan-param array<string, mixed> $args
      */
     private function logViolation(array $report, Request $request): void
     {
@@ -191,7 +189,6 @@ class CSPReportController
         }
 
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? 'unknown';
-
         return is_string($remoteAddr) ? $remoteAddr : 'unknown';
     }
 
@@ -199,7 +196,6 @@ class CSPReportController
      * 計算違規嚴重程度.
      *
      * @param array<string, mixed> $cspReport
-     * @phpstan-param array<string, mixed> $args
      */
     private function calculateSeverity(array $cspReport): string
     {
@@ -242,7 +238,6 @@ class CSPReportController
      * 檢查是否需要發送警報.
      *
      * @param array<string, mixed> $logData
-     * @phpstan-param array<string, mixed> $args
      */
     private function checkForAlert(array $logData): void
     {
@@ -270,7 +265,6 @@ class CSPReportController
      * 取得最近的違規記錄.
      *
      * @return array<int, mixed>
-     * @phpstan-return array<string, mixed>
      */
     private function getRecentViolations(string $ip, int $seconds): array
     {
@@ -288,13 +282,13 @@ class CSPReportController
         $cutoffTime = time() - $seconds;
 
         foreach (array_reverse($lines) as $line) {
-            $data = json_decode(is_string($line) ? $line : (string)$line, true);
+            $data = json_decode($line, true);
             if (!is_array($data)) {
                 continue;
             }
 
-            $timestamp = isset($data['timestamp']) && is_scalar($data['timestamp'])
-                ? strtotime((string) $data['timestamp']) : false;
+            $timestamp = isset($data['timestamp']) && is_scalar($data['timestamp']) ?
+                strtotime((string) $data['timestamp']) : false;
             if ($timestamp === false || $timestamp < $cutoffTime) {
                 if ($timestamp !== false && $timestamp < $cutoffTime) {
                     break; // 已經超過時間範圍
@@ -315,7 +309,6 @@ class CSPReportController
      * 發送警報.
      *
      * @param array<string, mixed> $alertData
-     * @phpstan-param array<string, mixed> $args
      */
     private function sendAlert(array $alertData): void
     {

@@ -32,8 +32,7 @@ class CreatePostDTO extends BaseDTO
     public readonly ?string $publishDate;
 
     /**\n      * @param ValidatorInterface $validator 驗證器實例
-     * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args 輸入資料
+     * @param array<string, mixed> $data 輸入資料
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -185,7 +184,6 @@ class CreatePostDTO extends BaseDTO
      * 取得驗證規則.
      *
      * @return array<string, string>
-     * @phpstan-return array<string, mixed>
      */
     protected function getValidationRules(): array
     {
@@ -204,7 +202,6 @@ class CreatePostDTO extends BaseDTO
      * 轉換為陣列格式（供 Repository 使用）.
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {

@@ -33,7 +33,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      *
      * @param int $postId 貼文 ID
      * @param bool $includeDeleted 是否包含已刪除的附件
-     * @return array<int, Attachment>
+     * @return array<int, \App\Domains\Attachment\Models\Attachment>
      */
     public function getByPostId(int $postId, bool $includeDeleted = false): array;
 

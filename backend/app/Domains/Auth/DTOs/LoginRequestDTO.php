@@ -9,11 +9,10 @@ namespace App\Domains\Auth\DTOs;
  *
  * 封裝使用者登入請求的資料，包括使用者憑證和相關選項。
  */
-final readonly class LoginRequestDTO /**\n      * @param array<string, mixed> $scopes
-     * @phpstan-param array<string, mixed> $args
+final readonly class LoginRequestDTO
+    /**\n      * @param array<string, mixed> $scopes
      */
-{
-    public function __construct(
+{    public function __construct(
         public string $email,
         public string $password,
         public bool $rememberMe = false,
@@ -23,7 +22,6 @@ final readonly class LoginRequestDTO /**\n      * @param array<string, mixed> $s
     /**
      * 從陣列建立 LoginRequestDTO.
      * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
      */
     public static function fromArray(array $data): self
     {
@@ -38,7 +36,6 @@ final readonly class LoginRequestDTO /**\n      * @param array<string, mixed> $s
     /**
      * 轉換為陣列.
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {

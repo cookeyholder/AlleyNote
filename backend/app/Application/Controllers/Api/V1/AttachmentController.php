@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
-use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\UploadedFileInterface;
 
 class AttachmentController
 {
@@ -143,7 +141,6 @@ class AttachmentController
                 $response->getBody()->write((json_encode([
                     'error' => '無效的貼文 ID',
                 ]) ?: ''));
-
                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
             $postId = (int) $postIdAttr;
@@ -160,7 +157,7 @@ class AttachmentController
             }
 
             $file = $files['file'];
-            if (!$file instanceof UploadedFileInterface) {
+            if (!$file instanceof \Psr\Http\Message\UploadedFileInterface) {
                 $response->getBody()->write((json_encode([
                     'error' => '無效的上傳檔案格式',
                 ]) ?: ''));
@@ -281,9 +278,13 @@ class AttachmentController
         ],
     )]
     /**
-     * 下載附件.
+     * 下載附件
      *
+     * @param Request $request
+     * @param Response $response
      * @param array<string, mixed> $args 路由參數
+     *
+     * @return Response
      */
     public function download(Request $request, Response $response, array $args): Response
     {
@@ -387,7 +388,7 @@ class AttachmentController
         $response->getBody()->write((json_encode([
             'data' => array_map(
                 /**
-                 * @param Attachment $attachment
+                 * @param \App\Domains\Attachment\Models\Attachment $attachment
                  */
                 fn($attachment) => $attachment->toArray(),
                 $attachments,

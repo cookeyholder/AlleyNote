@@ -153,7 +153,8 @@ class ValidationResult implements JsonSerializable
 
     /**
      * 取得驗證通過的資料.
-     * @return array<string, mixed>
+     */
+    /**\n      * @return array<string, mixed>
      */
     public function getValidatedData(): array
     {

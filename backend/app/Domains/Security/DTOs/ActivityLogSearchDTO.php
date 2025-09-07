@@ -498,7 +498,6 @@ class ActivityLogSearchDTO
      * 轉換為陣列格式.
      *
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
      */
     public function toArray(): array
     {

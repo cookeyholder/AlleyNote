@@ -180,11 +180,8 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         // 打亂字元順序
         return str_shuffle($password);
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function calculatePasswordStrength(string $password): array
+     */    public function calculatePasswordStrength(string $password): array
     {
         $score = 0;
         $feedback = [];
@@ -302,11 +299,8 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             throw ValidationException::fromErrors(['password' => $errors], '密碼必須' . implode('、', $errors));
         }
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    private function isCommonPassword(string $password): array
+     */    private function isCommonPassword(string $password): array
     {
         // 首先使用 HIBP API 檢查
         $pwnedResult = $this->pwnedPasswordService->isPasswordPwned($password);

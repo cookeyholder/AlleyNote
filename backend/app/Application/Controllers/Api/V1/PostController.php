@@ -124,10 +124,10 @@ class PostController extends BaseController
             $result = $this->postService->listPosts($page, $limit, $filters);
 
             // 確保 result 包含必要的鍵
-            if (!array_key_exists('items', $result)
-                || !array_key_exists('total', $result)
-                || !array_key_exists('page', $result)
-                || !array_key_exists('per_page', $result)) {
+            if (!array_key_exists('items', $result) ||
+                !array_key_exists('total', $result) ||
+                !array_key_exists('page', $result) ||
+                !array_key_exists('per_page', $result)) {
                 throw new Exception('Invalid service response format');
             }
 
@@ -252,7 +252,7 @@ class PostController extends BaseController
     {
         try {
             $body = $request->getBody()->getContents();
-            $data = json_decode(is_string($body) ? $body : (string)$body, true);
+            $data = json_decode($body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // 記錄 JSON 格式錯誤
@@ -368,18 +368,7 @@ class PostController extends BaseController
     )]
     /**
      * 顯示單一貼文.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param array<string, mixed> $args
-     * @phpstan-param array<string, mixed> $args
-     * @return Response
      */
-        /**
-     * @phpstan-param array<string, mixed> $args
-     */
-
-    /** @phpstan-ignore-next-line missingType.iterableValue */
     public function show(Request $request, Response $response, array $args): Response
     {
         try {
@@ -532,18 +521,7 @@ class PostController extends BaseController
     )]
     /**
      * 更新貼文.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param array<string, mixed> $args
-     * @phpstan-param array<string, mixed> $args
-     * @return Response
      */
-        /**
-     * @phpstan-param array<string, mixed> $args
-     */
-
-    /** @phpstan-ignore-next-line missingType.iterableValue */
     public function update(Request $request, Response $response, array $args): Response
     {
         try {
@@ -567,7 +545,7 @@ class PostController extends BaseController
             }
 
             $body = $request->getBody()->getContents();
-            $data = json_decode(is_string($body) ? $body : (string)$body, true);
+            $data = json_decode($body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // 記錄 JSON 格式錯誤
@@ -719,18 +697,7 @@ class PostController extends BaseController
     )]
     /**
      * 刪除貼文.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param array<string, mixed> $args
-     * @phpstan-param array<string, mixed> $args
-     * @return Response
      */
-        /**
-     * @phpstan-param array<string, mixed> $args
-     */
-
-    /** @phpstan-ignore-next-line missingType.iterableValue */
     public function delete(Request $request, Response $response, array $args): Response
     {
         try {
@@ -926,18 +893,7 @@ class PostController extends BaseController
     )]
     /**
      * 切換貼文置頂狀態.
-     *
-     * @param Request $request
-     * @param Response $response
-     * @param array<string, mixed> $args
-     * @phpstan-param array<string, mixed> $args
-     * @return Response
      */
-        /**
-     * @phpstan-param array<string, mixed> $args
-     */
-
-    /** @phpstan-ignore-next-line missingType.iterableValue */
     public function togglePin(Request $request, Response $response, array $args): Response
     {
         try {
@@ -961,7 +917,7 @@ class PostController extends BaseController
             }
 
             $body = $request->getBody()->getContents();
-            $data = json_decode(is_string($body) ? $body : (string)$body, true);
+            $data = json_decode($body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // 記錄 JSON 格式錯誤
@@ -1129,7 +1085,6 @@ class PostController extends BaseController
         } elseif (is_numeric($remoteAddr) || is_scalar($remoteAddr)) {
             return (string) $remoteAddr;
         }
-
         return '127.0.0.1';
     }
 
@@ -1147,7 +1102,6 @@ class PostController extends BaseController
             if ($postId <= 0) {
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
-
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 

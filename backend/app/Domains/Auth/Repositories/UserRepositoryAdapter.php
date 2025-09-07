@@ -18,8 +18,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         private readonly UserRepository $userRepository,
     ) {}
 
-    /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>|null
+    /**\n      * @return array<string, mixed>|null
       */
     public function findByUsername(string $username): ?array
     {
@@ -30,8 +29,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return is_array($result) ? $result : null;
     }
 
-    /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>|null
+    /**\n      * @return array<string, mixed>|null
       */
     public function findByEmail(string $email): ?array
     {
@@ -42,8 +40,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return is_array($result) ? $result : null;
     }
 
-    /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>|null
+    /**\n      * @return array<string, mixed>|null
       */
     public function findByUuid(string $uuid): ?array
     {
@@ -54,8 +51,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return is_array($result) ? $result : null;
     }
 
-    /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>|null
+    /**\n      * @return array<string, mixed>|null
       */
     public function validateCredentials(string $username, string $password): ?array
     {
@@ -84,20 +80,15 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         // 委託給原始 repository，但需要轉換參數類型
         return $this->userRepository->updateLastLogin((string) $userId);
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function findById(int $id): ?array
+     */    public function findById(int $id): ?array
     {
         // 委託給原始 repository
         return $this->userRepository->findById($id);
     }
 
     /**\n      * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
       */
     public function create(array $data): array
     {
@@ -107,10 +98,6 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return $result;
     }
 
-    /**
-     * @param array<string, mixed> $data
-     * @phpstan-param array<string, mixed> $args
-     */
     public function update(int $id, array $data): bool
     {
         // 暫時實作 - 返回 true
@@ -142,37 +129,26 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     {
         return true;
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array
+     */    public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array
     {
         return [];
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function getTrashed(int $page = 1, int $perPage = 10): array
+     */    public function getTrashed(int $page = 1, int $perPage = 10): array
     {
         return [];
     }
 
     /**\n      * @param array<string, mixed> $fields
-     * @phpstan-param array<string, mixed> $args
      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
       */
     public function search(string $keyword, array $fields = [], int $limit = 10): array
     {
         return [];
     }
-
     /**\n      * @return array<string, mixed>
-     * @phpstan-return array<string, mixed>
-     */
-    public function getStats(array $conditions = []): array
+     */    public function getStats(array $conditions = []): array
     {
         return [];
     }

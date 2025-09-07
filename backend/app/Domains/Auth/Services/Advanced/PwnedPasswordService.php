@@ -115,10 +115,10 @@ class PwnedPasswordService
     private function findHashInList(string $suffix, string $hashList): int
     {
         $lines = explode("\r
-", is_string($hashList) ? $hashList : (string)$hashList);
+", $hashList);
 
         foreach ($lines as $line) {
-            $parts = explode(':', is_string($line) ? $line : (string)$line);
+            $parts = explode(':', $line);
             if (count($parts) === 2 && $parts[0] === $suffix) {
                 return (int) $parts[1];
             }

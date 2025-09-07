@@ -15,13 +15,9 @@ class RateLimitMiddleware implements MiddlewareInterface
 {
     private RateLimitService $rateLimitService;
 
-    /** @var array<string, mixed> */
     private array $config;
-
-    /**
-     * @param array<string, mixed> $config
-     */
-    public function __construct(RateLimitService $rateLimitService, array $config = [])
+    /**\n      * @param array<string, mixed> $config
+     */    public function __construct(RateLimitService $rateLimitService, array $config = [])
     {
         $this->rateLimitService = $rateLimitService;
         $this->config = array_merge($this->getDefaultConfig(), $config);
@@ -37,10 +33,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
 
         // 取得真實客戶端 IP
-        $serverParams = $request->getServerParams();
-        /** @var array<string, mixed> $serverParams */
-        $serverParams = is_array($serverParams) ? $serverParams : [];
-        $ip = $this->getRealClientIP($serverParams);
+        $ip = $this->getRealClientIP($request->getServerParams());
 
         // 判斷操作類型
         $action = $this->determineAction($request);
@@ -49,14 +42,11 @@ class RateLimitMiddleware implements MiddlewareInterface
         $userId = $this->getUserId($request);
 
         // 檢查速率限制
-        $maxRequests = is_numeric($this->config['max_requests'] ?? 60) ? (int)($this->config['max_requests']) : 60;
-        $timeWindow = is_numeric($this->config['time_window'] ?? 60) ? (int)($this->config['time_window']) : 60;
+        $maxRequests = $this->config['max_requests'] ?? 60;
+        $timeWindow = $this->config['time_window'] ?? 60;
         $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
 
         if (!$result['allowed']) {
-            // 確保 $result 是正確的陣列類型
-            /** @var array<string, mixed> $result */
-            $result = is_array($result) ? $result : ['allowed' => false];
             return $this->createRateLimitResponse($result, $request);
         }
 
