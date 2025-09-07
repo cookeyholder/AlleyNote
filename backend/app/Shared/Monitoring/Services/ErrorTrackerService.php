@@ -17,7 +17,7 @@ use Throwable;
  */
 class ErrorTrackerService implements ErrorTrackerInterface
 {
-    /** @var array<array> 錯誤記錄暫存 */
+    /** @var array<array<string, mixed>> 錯誤記錄暫存 */
     private array $errorRecords = [];
 
     /** @var array<callable> 錯誤過濾器 */
@@ -95,7 +95,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $cutoffTime = microtime(true) - ($hours * 3600);
         $recentErrors = array_filter(
             $this->errorRecords,
-            fn($record): array => $record['timestamp'] > $cutoffTime,
+            fn($record): bool => $record['timestamp'] > $cutoffTime,
         );
 
         $stats = [
@@ -171,7 +171,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         // 按時間戳排序（最新的在前）
         usort($errors, fn($a, $b): array => $b['timestamp'] <=> $a['timestamp']);
 
-        
+
 
         return array_slice($errors, 0, $limit);
     }

@@ -125,7 +125,7 @@ class CacheManager implements CacheManagerInterface
      */
     public function getAvailableDrivers(): array
     {
-        return array_filter($this->drivers, fn($driver): array => $driver->isAvailable());
+        return array_filter($this->drivers, fn($driver): bool => $driver->isAvailable());
     }
 
     public function setDefaultDriver(string $name): void
@@ -824,7 +824,7 @@ class CacheManager implements CacheManagerInterface
         // 使用策略處理失敗
         $availableDrivers = array_filter(
             $this->drivers,
-            fn($driver, $name): array => $name !== $driverName && $driver->isAvailable(),
+            fn($driver, $name): bool => $name !== $driverName && $driver->isAvailable(),
             ARRAY_FILTER_USE_BOTH,
         );
 

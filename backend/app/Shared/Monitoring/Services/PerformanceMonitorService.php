@@ -15,7 +15,7 @@ use Ramsey\Uuid\Uuid;
  */
 class PerformanceMonitorService implements PerformanceMonitorInterface
 {
-    /** @var array<string, array> 進行中的監控會話 */
+    /** @var array<string, array<string, mixed>> 進行中的監控會話 */
     private array $activeMonitoringSessions = [];
 
     /** @var array<string, array<int, array<string, mixed>>> 效能指標暫存 */
@@ -24,10 +24,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     /** @var array<string, int> 計數器暫存 */
     private array $counters = [];
 
-    /** @var array<string, array> 直方圖資料暫存 */
+    /** @var array<string, array<int, array<string, mixed>>> 直方圖資料暫存 */
     private array $histograms = [];
 
-    /** @var array<array> 慢查詢記錄 */
+    /** @var array<array<string, mixed>> 慢查詢記錄 */
     private array $slowQueries = [];
 
     /** @var float 慢查詢閾值（毫秒） */
@@ -124,6 +124,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         // 檢查是否為慢操作
         if ($duration > $this->slowQueryThreshold) {
             $sessionContext = is_array($session['context'] ?? null) ? $session['context'] : [];
+            /** @var array<string, mixed> $mergedContext */
             $mergedContext = array_merge($sessionContext, $context);
             $this->recordSlowOperation($operation, $duration, $mergedContext);
         }
@@ -250,22 +251,22 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得慢查詢記錄。
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
      */
     public function getSlowQueries(int $limit = 10): array
     {
         // 按持續時間排序
         $sorted = $this->slowQueries;
-        usort($sorted, fn($a, $b): array => $b['duration'] <=> $a['duration']);
+        usort($sorted, fn($a, $b): int => $b['duration'] <=> $a['duration']);
 
-        
+
 
         return array_slice($sorted, 0, $limit);
     }
 
     /**
      * 取得效能警告。
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
      */
     public function getPerformanceWarnings(): array
     {
@@ -330,7 +331,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $originalCount = count($this->slowQueries);
         $this->slowQueries = array_filter(
             $this->slowQueries,
-            fn($query): array => $query['timestamp'] > $cutoffTime,
+            fn($query): bool => $query['timestamp'] > $cutoffTime,
         );
         $cleanedCount += $originalCount - count($this->slowQueries);
 
@@ -339,7 +340,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $originalMetricCount = count($metricData);
             $this->metrics[$key] = array_filter(
                 $metricData,
-                fn($metric): array => $metric['timestamp'] > $cutoffTime,
+                fn($metric): bool => $metric['timestamp'] > $cutoffTime,
             );
             $cleanedCount += $originalMetricCount - count($this->metrics[$key]);
 
@@ -352,10 +353,11 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         // 清除舊的直方圖資料
         foreach ($this->histograms as $key => $histogramData) {
             $originalHistogramCount = count($histogramData);
-            $this->histograms[$key] = array_filter(
+            $filteredData = array_filter(
                 $histogramData,
-                fn($histogram): array => is_array($histogram) && is_numeric($histogram['timestamp']) && $histogram['timestamp'] > $cutoffTime,
+                fn($histogram): bool => is_array($histogram) && is_numeric($histogram['timestamp']) && $histogram['timestamp'] > $cutoffTime,
             );
+            $this->histograms[$key] = array_values($filteredData);
             $cleanedCount += $originalHistogramCount - count($this->histograms[$key]);
 
             // 如果直方圖陣列為空，移除整個鍵
@@ -386,7 +388,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
         ksort($tags);
         $tagString = implode(',', array_map(
-            fn($k, $v): array => $k . '=' . (is_scalar($v) ? (string) $v : 'complex'),
+            fn($k, $v): string => $k . '=' . (is_scalar($v) ? (string) $v : 'complex'),
             array_keys($tags),
             array_values($tags),
         ));
@@ -452,6 +454,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     /**
      * 計算指標摘要。
      * @param array<string, mixed> $metricsSubset
+     * @return array<string, mixed>
      */
     private function calculateMetricsSummary(?array $metricsSubset = null): array
     {
@@ -510,7 +513,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 計算百分位數。
-     * @param array<string, mixed> $values
+     * @param list<mixed> $values
      */
     private function percentile(array $values, int $percentile): float
     {

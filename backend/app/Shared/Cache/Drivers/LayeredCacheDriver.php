@@ -162,7 +162,7 @@ class LayeredCacheDriver implements CacheDriverInterface
                     $this->promoteToHigherLayers($key, $value, $index);
 
                     // 從待查找列表中移除
-                    $missingKeys = array_filter($missingKeys, fn($k): array => $k !== $key);
+                    $missingKeys = array_filter($missingKeys, fn($k): bool => $k !== $key);
                 }
             }
         }
@@ -373,7 +373,7 @@ class LayeredCacheDriver implements CacheDriverInterface
 
     /**
      * 取得所有層級。
-     * @return array<string, mixed>
+     * @return array<CacheDriverInterface>
      */
     public function getLayers(): array
     {

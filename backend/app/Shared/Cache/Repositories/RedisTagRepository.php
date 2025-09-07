@@ -411,7 +411,7 @@ class RedisTagRepository implements TagRepositoryInterface
      */
     private function normalizeTags(array $tags): array
     {
-        return array_unique(array_map('trim', array_filter($tags, static fn($tag): array => !empty($tag))));
+        return array_unique(array_map('trim', array_filter($tags, static fn($tag): bool => !empty($tag))));
     }
 
     /**

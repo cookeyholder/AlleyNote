@@ -70,8 +70,10 @@ class CacheServiceProvider
         $this->container->set(CacheStrategyInterface::class, function (Container $container) {
             $strategyConfig = $this->config['strategy'] ?? [];
             assert(is_array($strategyConfig), 'Strategy config must be an array');
+            /** @var array<string, mixed> $typedConfig */
+            $typedConfig = $strategyConfig;
 
-            return new DefaultCacheStrategy($strategyConfig);
+            return new DefaultCacheStrategy($typedConfig);
         });
     }
 
@@ -163,8 +165,10 @@ class CacheServiceProvider
 
             $managerConfig = $this->config['manager'] ?? [];
             assert(is_array($managerConfig), 'Manager config must be an array');
+            /** @var array<string, mixed> $typedManagerConfig */
+            $typedManagerConfig = $managerConfig;
 
-            $manager = new CacheManager($strategy, $logger, $managerConfig);
+            $manager = new CacheManager($strategy, $logger, $typedManagerConfig);
 
             // 新增驅動
             $this->addDriversToManager($manager, $container);

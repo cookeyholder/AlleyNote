@@ -55,13 +55,13 @@ interface PerformanceMonitorInterface
 
     /**
      * 取得慢查詢記錄。
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
      */
     public function getSlowQueries(int $limit = 10): array;
 
     /**
      * 取得效能警告。
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
      */
     public function getPerformanceWarnings(): array;
 

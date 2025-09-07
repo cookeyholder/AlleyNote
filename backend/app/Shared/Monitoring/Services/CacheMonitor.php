@@ -373,7 +373,7 @@ class CacheMonitor implements CacheMonitorInterface
         }
 
         // 排序：按照平均響應時間排序
-        uasort($comparison, fn($a, $b): array => $a['avg_duration'] <=> $b['avg_duration']);
+        uasort($comparison, fn($a, $b): int => $a['avg_duration'] <=> $b['avg_duration']);
 
         return $comparison;
     }
@@ -382,10 +382,10 @@ class CacheMonitor implements CacheMonitorInterface
      */
     public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array
     {
-        $slowOps = array_filter($this->operationHistory, fn($op): array => $op['duration'] >= $thresholdMs);
+        $slowOps = array_filter($this->operationHistory, fn($op): bool => $op['duration'] >= $thresholdMs);
 
         // 按持續時間降序排序
-        usort($slowOps, fn($a, $b): array => $b['duration'] <=> $a['duration']);
+        usort($slowOps, fn($a, $b): int => $b['duration'] <=> $a['duration']);
 
 
 
@@ -493,7 +493,7 @@ class CacheMonitor implements CacheMonitorInterface
         $originalCount = count($this->operationHistory);
         $this->operationHistory = array_filter(
             $this->operationHistory,
-            fn($op): array => $op['timestamp'] > $cutoffTime,
+            fn($op): bool => $op['timestamp'] > $cutoffTime,
         );
         $cleaned += $originalCount - count($this->operationHistory);
 
@@ -502,7 +502,7 @@ class CacheMonitor implements CacheMonitorInterface
             $originalErrorCount = is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0;
             $errorData['recent_errors'] = is_array($errorData['recent_errors']) ? array_filter(
                 $errorData['recent_errors'],
-                fn($error): array => is_array($error) && $error['timestamp'] > $cutoffTime,
+                fn($error): bool => is_array($error) && $error['timestamp'] > $cutoffTime,
             ) : [];
             $cleaned += $originalErrorCount - (is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0);
         }
@@ -727,7 +727,7 @@ class CacheMonitor implements CacheMonitorInterface
             return 0.0;
         }
 
-        $driverOps = array_filter($this->operationHistory, fn($op): array => $op['driver'] === $driver);
+        $driverOps = array_filter($this->operationHistory, fn($op): bool => $op['driver'] === $driver);
 
         if (empty($driverOps)) {
             return 0.0;

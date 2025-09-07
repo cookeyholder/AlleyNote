@@ -18,6 +18,7 @@ final class EnvironmentConfig
 
     private string $configPath;
 
+    /** @var array<string, mixed> */
     private array $config = [];
 
     private bool $loaded = false;
@@ -151,7 +152,7 @@ final class EnvironmentConfig
 
     /**
      * 驗證環境配置的完整性.
-     * @return array<string, mixed>
+     * @return list<string>
      */
     public function validate(): array
     {
@@ -364,7 +365,7 @@ final class EnvironmentConfig
 
     /**
      * 驗證生產環境配置.
-     * @return array<string, mixed>
+     * @return list<string>
      */
     private function validateProductionConfig(): array
     {
@@ -401,7 +402,7 @@ final class EnvironmentConfig
 
     /**
      * 驗證測試環境配置.
-     * @return array<string, mixed>
+     * @return list<string>
      */
     private function validateTestingConfig(): array
     {
@@ -418,7 +419,7 @@ final class EnvironmentConfig
 
     /**
      * 驗證開發環境配置.
-     * @return array<string, mixed>
+     * @return list<string>
      */
     private function validateDevelopmentConfig(): array
     {

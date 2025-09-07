@@ -621,12 +621,15 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     /**
      * 將快取鍵添加到標籤索引.
      * @param string $key 快取鍵
+     * @param array<string> $tags 標籤陣列
      */
-    private function addKeyToTags(string $key, /** @var array<string, mixed> */ array $tags): void
+    private function addKeyToTags(string $key, array $tags): void
     {
         foreach ($tags as $tag) {
             if (!isset($this->tagIndex[$tag])) {
-                $this->tagIndex[$tag] = [];
+                /** @var array<string> $emptyArray */
+                $emptyArray = [];
+                $this->tagIndex[$tag] = $emptyArray;
             }
 
             if (!in_array($key, $this->tagIndex[$tag], true)) {
