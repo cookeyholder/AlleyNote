@@ -22,7 +22,7 @@ readonly class SourceStatistics
         public SourceType $sourceType,
         public StatisticsMetric $count,
         public StatisticsMetric $percentage,
-        public array $additionalMetrics = [],
+        public /** @var array<string, mixed> */ array $additionalMetrics = [],
     ) {}
 
     /**
@@ -34,7 +34,7 @@ readonly class SourceStatistics
         SourceType $sourceType,
         int $count,
         float $percentage,
-        array $additionalMetrics = [],
+        /** @var array<string, mixed> */ array $additionalMetrics = [],
     ): self {
         if ($count < 0) {
             throw new InvalidSourceStatisticsException(

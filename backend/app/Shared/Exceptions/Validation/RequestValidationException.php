@@ -9,7 +9,7 @@ use App\Shared\Exceptions\ValidationException;
 class RequestValidationException extends ValidationException
     /**\n      * @param array<string, mixed> $errors
      */
-{    public function __construct(string $message = '', array $errors = [])
+{    public function __construct(string $message = '', /** @var array<string, mixed> */ array $errors = [])
     {
         if (empty($message) && !empty($errors)) {
             $message = '請求資料驗證失敗';
@@ -76,7 +76,7 @@ class RequestValidationException extends ValidationException
         return new self('日期格式錯誤', $errors);
     }
     /**\n      * @param array<string, mixed> $allowedValues
-     */    public static function valueNotInList(string $field, $value, array $allowedValues): self
+     */    public static function valueNotInList(string $field, $value, /** @var array<string, mixed> */ array $allowedValues): self
     {
         $allowedList = implode(', ', $allowedValues);
         $errors = [$field => "'{$value}' 不在允許的值清單中：{$allowedList}"];
@@ -108,7 +108,7 @@ class RequestValidationException extends ValidationException
         return new self('值重複', $errors);
     }
     /**\n      * @param array<string, mixed> $allowedTypes
-     */    public static function invalidFileType(string $field, string $actualType, array $allowedTypes): self
+     */    public static function invalidFileType(string $field, string $actualType, /** @var array<string, mixed> */ array $allowedTypes): self
     {
         $allowedList = implode(', ', $allowedTypes);
         $errors = [$field => "檔案類型 '{$actualType}' 不被支援，允許的類型：{$allowedList}"];

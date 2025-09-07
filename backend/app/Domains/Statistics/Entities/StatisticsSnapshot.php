@@ -52,8 +52,8 @@ class StatisticsSnapshot extends AggregateRoot
         StatisticsPeriod $period,
         int $totalPosts = 0,
         int $totalViews = 0,
-        array $sourceStats = [],
-        array $additionalMetrics = [],
+        /** @var array<string, mixed> */ array $sourceStats = [],
+        /** @var array<string, mixed> */ array $additionalMetrics = [],
     ): self {
         // 驗證來源統計
         foreach ($sourceStats as $sourceStatistics) {
@@ -123,8 +123,8 @@ class StatisticsSnapshot extends AggregateRoot
         StatisticsPeriod $period,
         StatisticsMetric $totalPosts,
         StatisticsMetric $totalViews,
-        array $sourceStats,
-        array $additionalMetrics,
+        /** @var array<string, mixed> */ array $sourceStats,
+        /** @var array<string, mixed> */ array $additionalMetrics,
         DateTimeImmutable $createdAt,
         ?DateTimeImmutable $updatedAt = null,
     ): self {
@@ -380,7 +380,7 @@ class StatisticsSnapshot extends AggregateRoot
 
         $this->sourceStats = array_filter(
             $this->sourceStats,
-            fn(SourceStatistics $stats) => $stats->sourceType !== $sourceType,
+            fn(SourceStatistics $stats): array => $stats->sourceType !== $sourceType,
         );
 
         // 重新索引陣列
@@ -488,7 +488,7 @@ class StatisticsSnapshot extends AggregateRoot
 
         usort(
             $sortedStats,
-            fn(SourceStatistics $a, SourceStatistics $b) => $a->compareTo($b),
+            fn(SourceStatistics $a, SourceStatistics $b): array => $a->compareTo($b),
         );
 
         return $sortedStats;

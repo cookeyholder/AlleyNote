@@ -64,7 +64,7 @@ class AuthenticationException extends JwtException
     public function __construct(
         string $reason = self::REASON_INVALID_CREDENTIALS,
         string $customMessage = '',
-        array $additionalContext = [],
+        /** @var array<string, mixed> */ array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason);
 
@@ -433,7 +433,7 @@ class AuthenticationException extends JwtException
      */
     public static function insufficientPrivileges(
         string $requiredPrivilege,
-        array $userPrivileges = [],
+        /** @var array<string, mixed> */ array $userPrivileges = [],
         ?int $userId = null,
     ): self {
         $context = [

@@ -24,7 +24,7 @@ class PostCacheKeyService
         // 過濾空值並轉換為字串
         $cleanParts = array_filter(
             array_map('strval', $parts),
-            fn($part) => $part !== '',
+            fn($part): array => $part !== '',
         );
 
         return self::PREFIX . self::SEPARATOR . implode(self::SEPARATOR, $cleanParts);

@@ -35,7 +35,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
         private readonly JwtConfig $config,
     ) {}
 
-    public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, array $customClaims = []): TokenPair
+    public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, /** @var array<string, mixed> */ array $customClaims = []): TokenPair
     {
         try {
             $now = new DateTimeImmutable();
@@ -330,7 +330,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 iat: $iat,
                 exp: $exp,
                 nbf: $nbf,
-                customClaims: array_filter($payload, fn($key) => !in_array($key, [
+                customClaims: array_filter($payload, fn($key): array => !in_array($key, [
                     'jti',
                     'sub',
                     'iss',

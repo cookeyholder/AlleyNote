@@ -17,25 +17,25 @@ interface ErrorTrackerInterface
      * 記錄一個錯誤。
      * @param array<string, mixed> $context
      */
-    public function recordError(Throwable $error, array $context = []): string;
+    public function recordError(Throwable $error, /** @var array<string, mixed> */ array $context = []): string;
 
     /**
      * 記錄一個警告。
      * @param array<string, mixed> $context
      */
-    public function recordWarning(string $message, array $context = []): string;
+    public function recordWarning(string $message, /** @var array<string, mixed> */ array $context = []): string;
 
     /**
      * 記錄一個訊息。
      * @param array<string, mixed> $context
      */
-    public function recordInfo(string $message, array $context = []): string;
+    public function recordInfo(string $message, /** @var array<string, mixed> */ array $context = []): string;
 
     /**
      * 記錄關鍵錯誤（需要立即注意）。
      * @param array<string, mixed> $context
      */
-    public function recordCriticalError(Throwable $error, array $context = []): string;
+    public function recordCriticalError(Throwable $error, /** @var array<string, mixed> */ array $context = []): string;
 
     /**
      * 取得錯誤統計資料。

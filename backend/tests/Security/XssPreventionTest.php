@@ -150,7 +150,7 @@ class XssPreventionTest extends TestCase
     public function shouldEscapeHtmlInPostTitle(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
-        $maliciousTitle = '<script>alert("XSSsprintf(sprintf(");</script>惡意標題';
+        $maliciousTitle = '<script>alert("XSS");</script>惡意標題';
         $postData = [
             'title' => $maliciousTitle,
             'content' => '正常內容',
@@ -198,17 +198,17 @@ class XssPreventionTest extends TestCase
 
         $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertIsArray($responseData);
-        $this->assertTrue((is_array($responseData) && array_key_exists('success', $responseData) ? (is_array($responseData) && array_key_exists('success', $responseData) ? $responseData['success'] : null) : null));
+        $this->assertTrue($responseData['success']);
 
         // 在實際應用中，XSS 清理會在適當的層級進行
-        $this->assertNotNull((is_array($responseData) && array_key_exists('data', $responseData) ? (is_array($responseData) && array_key_exists('data', $responseData) ? %s['data'] : null) : null)['title']);
+        $this->assertNotNull($responseData['data']['title']);
     }
 
     #[Test]
     public function shouldEscapeHtmlInPostContent(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
-        %s = '<img src=", is_string($responseData) ? $responseData : ''), is_string($maliciousContent) ? $maliciousContent : '')x" onerror="alert(\'XSS\')sprintf(sprintf(">';
+        $maliciousContent = '<img src="x" onerror="alert(\'XSS\')">';
         $postData = [
             'title' => '正常標題',
             'content' => $maliciousContent,
@@ -256,17 +256,17 @@ class XssPreventionTest extends TestCase
 
         $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertIsArray($responseData);
-        $this->assertTrue((is_array($responseData) && array_key_exists('success', $responseData) ? (is_array($responseData) && array_key_exists('success', $responseData) ? $responseData['success'] : null) : null));
+        $this->assertTrue($responseData['success']);
 
         // 在實際應用中，XSS 清理會在適當的層級進行
-        $this->assertNotNull((is_array($responseData) && array_key_exists('data', $responseData) ? (is_array($responseData) && array_key_exists('data', $responseData) ? %s['data'] : null) : null)['content']);
+        $this->assertNotNull($responseData['data']['content']);
     }
 
     #[Test]
     public function shouldHandleEncodedXssAttempts(): void
     {
         // 準備編碼的 XSS 攻擊程式碼
-        %s = htmlentities('<script>alert(", is_string($responseData) ? $responseData : ''), is_string($encodedXss) ? $encodedXss : '')XSS");</script>', ENT_QUOTES, 'UTF-8');
+        $encodedXss = htmlentities('<script>alert("XSS");</script>', ENT_QUOTES, 'UTF-8');
         $postData = [
             'title' => $encodedXss,
             'content' => '正常內容',
@@ -314,10 +314,10 @@ class XssPreventionTest extends TestCase
 
         $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertIsArray($responseData);
-        $this->assertTrue((is_array($responseData) && array_key_exists('success', $responseData) ? (is_array($responseData) && array_key_exists('success', $responseData) ? $responseData['success'] : null) : null));
+        $this->assertTrue($responseData['success']);
 
         // 在實際應用中，XSS 清理會在適當的層級進行
-        $this->assertNotNull((is_array($responseData) && array_key_exists('data', $responseData) ? (is_array($responseData) && array_key_exists('data', $responseData) ? $responseData['data'] : null) : null)['title']);
+        $this->assertNotNull($responseData['data']['title']);
     }
 
     protected function tearDown(): void

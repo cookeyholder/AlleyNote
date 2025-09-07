@@ -106,7 +106,7 @@ class RouteLoader
      * 處理陣列格式的路由定義.
      * @param array<string, mixed> $routes
      */
-    private function processArrayRoutes(RouterInterface $router, array $routes, string $group, string $filePath): void
+    private function processArrayRoutes(RouterInterface $router, /** @var array<string, mixed> */ array $routes, string $group, string $filePath): void
     {
         foreach ($routes as $routeName => $routeConfig) {
             // 確保路由配置是陣列
@@ -141,7 +141,7 @@ class RouteLoader
      * 註冊路由到路由器.
      * @param array<string, mixed> $routeConfig
      */
-    private function registerRoute(RouterInterface $router, array $routeConfig): void
+    private function registerRoute(RouterInterface $router, /** @var array<string, mixed> */ array $routeConfig): void
     {
         $methods = (array) $routeConfig['methods'];
         $path = $routeConfig['path'];

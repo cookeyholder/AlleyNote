@@ -45,7 +45,7 @@ class CacheGroupManager
      * @param array<string> $tags 分組標籤
      * @return TaggedCacheInterface 標籤化快取實例
      */
-    public function group(string $groupName, array $tags = []): TaggedCacheInterface
+    public function group(string $groupName, /** @var array<string, mixed> */ array $tags = []): TaggedCacheInterface
     {
         // 添加分組標籤
         $groupTag = CacheTag::group($groupName);
@@ -280,7 +280,7 @@ class CacheGroupManager
      * @param array<string> $additionalTags 額外標籤
      * @return TaggedCacheInterface 使用者快取分組
      */
-    public function userGroup(int $userId, array $additionalTags = []): TaggedCacheInterface
+    public function userGroup(int $userId, /** @var array<string, mixed> */ array $additionalTags = []): TaggedCacheInterface
     {
         $userTag = CacheTag::user($userId);
         $groupName = "user_{$userId}";
@@ -296,7 +296,7 @@ class CacheGroupManager
      * @param array<string> $additionalTags 額外標籤
      * @return TaggedCacheInterface 模組快取分組
      */
-    public function moduleGroup(string $moduleName, array $additionalTags = []): TaggedCacheInterface
+    public function moduleGroup(string $moduleName, /** @var array<string, mixed> */ array $additionalTags = []): TaggedCacheInterface
     {
         $moduleTag = CacheTag::module($moduleName);
         $groupName = "module_{$moduleName}";
@@ -312,7 +312,7 @@ class CacheGroupManager
      * @param array<string> $additionalTags 額外標籤
      * @return TaggedCacheInterface 時間快取分組
      */
-    public function temporalGroup(string $period, array $additionalTags = []): TaggedCacheInterface
+    public function temporalGroup(string $period, /** @var array<string, mixed> */ array $additionalTags = []): TaggedCacheInterface
     {
         $temporalTag = CacheTag::temporal($period);
         $groupName = "temporal_{$period}";
@@ -365,7 +365,7 @@ class CacheGroupManager
      * @param string $groupName 分組名稱
      * @param array<string, mixed> $rules 失效規則
      */
-    public function setInvalidationRules(string $groupName, array $rules): void
+    public function setInvalidationRules(string $groupName, /** @var array<string, mixed> */ array $rules): void
     {
         $this->invalidationRules[$groupName] = $rules;
 

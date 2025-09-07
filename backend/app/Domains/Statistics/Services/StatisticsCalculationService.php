@@ -135,13 +135,13 @@ final class StatisticsCalculationService
         }
 
         $values = array_map(
-            fn(StatisticsSnapshot $snapshot) => $snapshot->getTotalViews()->value,
+            fn(StatisticsSnapshot $snapshot): array => $snapshot->getTotalViews()->value,
             $snapshots,
         );
 
         $mean = array_sum($values) / count($values);
         $variance = array_sum(
-            array_map(fn($value) => ((float) $value - $mean) ** 2, $values),
+            array_map(fn($value): array => ((float) $value - $mean) ** 2, $values),
         ) / count($values);
 
         $standardDeviation = sqrt($variance);
@@ -203,8 +203,8 @@ final class StatisticsCalculationService
         }
 
         // 使用簡單線性回歸進行預測
-        $posts = array_map(fn($s) => $s->getTotalPosts()->value, $historicalSnapshots);
-        $views = array_map(fn($s) => $s->getTotalViews()->value, $historicalSnapshots);
+        $posts = array_map(fn($s): array => $s->getTotalPosts()->value, $historicalSnapshots);
+        $views = array_map(fn($s): array => $s->getTotalViews()->value, $historicalSnapshots);
 
         $postsGrowthRate = $this->calculateLinearGrowthRate($posts);
         $viewsGrowthRate = $this->calculateLinearGrowthRate($views);
@@ -233,7 +233,7 @@ final class StatisticsCalculationService
      * @return float 相關性係數（-1到1之間）
      * @throws StatisticsCalculationException 當資料長度不一致時
      */
-    public function calculateCorrelation(array $x, array $y): float
+    public function calculateCorrelation(array $x, /** @var array<string, mixed> */ array $y): float
     {
         if (count($x) !== count($y) || count($x) < 2) {
             throw new StatisticsCalculationException('計算相關性需要相同長度且至少2個資料點');
@@ -242,9 +242,9 @@ final class StatisticsCalculationService
         $n = count($x);
         $sumX = array_sum($x);
         $sumY = array_sum($y);
-        $sumXY = array_sum(array_map(fn($i) => $x[$i] * $y[$i], array_keys($x)));
-        $sumX2 = array_sum(array_map(fn($val) => $val ** 2, $x));
-        $sumY2 = array_sum(array_map(fn($val) => $val ** 2, $y));
+        $sumXY = array_sum(array_map(fn($i): array => $x[$i] * $y[$i], array_keys($x)));
+        $sumX2 = array_sum(array_map(fn($val): array => $val ** 2, $x));
+        $sumY2 = array_sum(array_map(fn($val): array => $val ** 2, $y));
 
         $numerator = ($n * $sumXY) - ($sumX * $sumY);
         $denominator = sqrt((($n * $sumX2) - ($sumX ** 2)) * (($n * $sumY2) - ($sumY ** 2)));
@@ -382,8 +382,8 @@ final class StatisticsCalculationService
         // 計算線性回歸的斜率
         $sumX = array_sum($x);
         $sumY = array_sum($values);
-        $sumXY = array_sum(array_map(fn($i) => $x[$i] * $values[$i], array_keys($x)));
-        $sumX2 = array_sum(array_map(fn($val) => $val ** 2, $x));
+        $sumXY = array_sum(array_map(fn($i): array => $x[$i] * $values[$i], array_keys($x)));
+        $sumX2 = array_sum(array_map(fn($val): array => $val ** 2, $x));
 
         $slope = (($n * $sumXY) - ($sumX * $sumY)) / (($n * $sumX2) - ($sumX ** 2));
 
@@ -453,7 +453,7 @@ final class StatisticsCalculationService
         }
 
         // 基於數據一致性計算信心度
-        $views = array_map(fn($s) => $s->getTotalViews()->value, $snapshots);
+        $views = array_map(fn($s): array => $s->getTotalViews()->value, $snapshots);
         $volatility = $this->calculateVolatility($snapshots);
 
         // 信心度與波動性成反比

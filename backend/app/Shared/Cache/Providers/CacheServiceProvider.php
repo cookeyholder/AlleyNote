@@ -37,12 +37,13 @@ class CacheServiceProvider
     private Container $container;
 
     /** @var array<string, mixed> 設定 */
+    private /** @var array<string, mixed> */\n
     private array $config;
 
     /**
      * @param array<string, mixed> $config
      */
-    public function __construct(Container $container, array $config = [])
+    public function __construct(Container $container, /** @var array<string, mixed> */ array $config = [])
     {
         $this->container = $container;
         $defaultConfig = $this->getDefaultConfig();
@@ -550,7 +551,7 @@ class CacheConfigBuilder
      * 設定檔案驅動。
      * @param array<string, mixed> $config
      */
-    public function fileDriver(?string $path = null, array $config = []): self
+    public function fileDriver(?string $path = null, /** @var array<string, mixed> */ array $config = []): self
     {
         $defaultConfig = [
             'enabled' => true,

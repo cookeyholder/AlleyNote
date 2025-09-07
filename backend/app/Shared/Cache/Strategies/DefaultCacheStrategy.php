@@ -34,6 +34,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     private int $maxTtl;
 
     /** @var array<string> 不快取的鍵模式 */
+    private /** @var array<string, mixed> */\n
     private array $excludePatterns;
 
     /** @var int 最大值大小（位元組） */
@@ -195,9 +196,9 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     /**\n      * @param array<string, mixed> $params
      */    public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
-        array $availableDrivers,
+        /** @var array<string, mixed> */ array $availableDrivers,
         string $operation,
-        array $params,
+        /** @var array<string, mixed> */ array $params,
     ): mixed {
         $this->stats['failure_handles']++;
 

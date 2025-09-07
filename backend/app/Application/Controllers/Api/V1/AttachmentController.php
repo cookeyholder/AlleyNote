@@ -286,7 +286,7 @@ class AttachmentController
      *
      * @return Response
      */
-    public function download(Request $request, Response $response, array $args): Response
+    public function download(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
     {
         // 這個方法需要實作檔案下載邏輯
         try {
@@ -390,7 +390,7 @@ class AttachmentController
                 /**
                  * @param \App\Domains\Attachment\Models\Attachment $attachment
                  */
-                fn($attachment) => $attachment->toArray(),
+                fn($attachment): array => $attachment->toArray(),
                 $attachments,
             ),
         ]) ?: '{"error": "JSON encoding failed"}'));

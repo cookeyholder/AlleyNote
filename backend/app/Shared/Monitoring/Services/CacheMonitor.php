@@ -35,12 +35,13 @@ class CacheMonitor implements CacheMonitorInterface
     private LoggerInterface $logger;
 
     /** @var array<string, mixed> 設定 */
+    private /** @var array<string, mixed> */\n
     private array $config;
 
     /**
      * @param array<string, mixed> $config
      */
-    public function __construct(?LoggerInterface $logger = null, array $config = [])
+    public function __construct(?LoggerInterface $logger = null, /** @var array<string, mixed> */ array $config = [])
     {
         $this->logger = $logger ?? new NullLogger();
         /** @var array<string, mixed> $mergedConfig */
@@ -54,7 +55,7 @@ class CacheMonitor implements CacheMonitorInterface
         string $driver,
         bool $success,
         float $duration,
-        array $context = [],
+        /** @var array<string, mixed> */ array $context = [],
     ): void {
         $timestamp = microtime(true);
 
@@ -199,7 +200,7 @@ class CacheMonitor implements CacheMonitorInterface
         $this->recordOperation('get', $driver, true, $duration, ['result' => 'miss', 'key' => $key]);
     }
     /**\n      * @param array<string, mixed> $context
-     */    public function recordError(string $driver, string $operation, string $error, array $context = []): void
+     */    public function recordError(string $driver, string $operation, string $error, /** @var array<string, mixed> */ array $context = []): void
     {
         $timestamp = microtime(true);
 
@@ -246,7 +247,7 @@ class CacheMonitor implements CacheMonitorInterface
         ]);
     }
     /**\n      * @param array<string, mixed> $details
-     */    public function recordHealthStatus(string $driver, bool $healthy, array $details = []): void
+     */    public function recordHealthStatus(string $driver, bool $healthy, /** @var array<string, mixed> */ array $details = []): void
     {
         $timestamp = microtime(true);
 
@@ -355,7 +356,7 @@ class CacheMonitor implements CacheMonitorInterface
         }
 
         // 排序：按照平均響應時間排序
-        uasort($comparison, fn($a, $b) => $a['avg_duration'] <=> $b['avg_duration']);
+        uasort($comparison, fn($a, $b): array => $a['avg_duration'] <=> $b['avg_duration']);
 
         return $comparison;
     }
@@ -364,10 +365,12 @@ class CacheMonitor implements CacheMonitorInterface
      */
     public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array
     {
-        $slowOps = array_filter($this->operationHistory, fn($op) => $op['duration'] >= $thresholdMs);
+        $slowOps = array_filter($this->operationHistory, fn($op): array => $op['duration'] >= $thresholdMs);
 
         // 按持續時間降序排序
-        usort($slowOps, fn($a, $b) => $b['duration'] <=> $a['duration']);
+        usort($slowOps, fn($a, $b): array => $b['duration'] <=> $a['duration']);
+
+        
 
         return array_slice($slowOps, 0, $limit);
     }
@@ -464,7 +467,7 @@ class CacheMonitor implements CacheMonitorInterface
         $originalCount = count($this->operationHistory);
         $this->operationHistory = array_filter(
             $this->operationHistory,
-            fn($op) => $op['timestamp'] > $cutoffTime,
+            fn($op): array => $op['timestamp'] > $cutoffTime,
         );
         $cleaned += $originalCount - count($this->operationHistory);
 
@@ -473,7 +476,7 @@ class CacheMonitor implements CacheMonitorInterface
             $originalErrorCount = is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0;
             $errorData['recent_errors'] = is_array($errorData['recent_errors']) ? array_filter(
                 $errorData['recent_errors'],
-                fn($error) => is_array($error) && $error['timestamp'] > $cutoffTime,
+                fn($error): array => is_array($error) && $error['timestamp'] > $cutoffTime,
             ) : [];
             $cleaned += $originalErrorCount - (is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0);
         }
@@ -698,7 +701,7 @@ class CacheMonitor implements CacheMonitorInterface
             return 0.0;
         }
 
-        $driverOps = array_filter($this->operationHistory, fn($op) => $op['driver'] === $driver);
+        $driverOps = array_filter($this->operationHistory, fn($op): array => $op['driver'] === $driver);
 
         if (empty($driverOps)) {
             return 0.0;

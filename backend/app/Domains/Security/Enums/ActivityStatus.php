@@ -69,6 +69,6 @@ enum ActivityStatus: string
      */
     public static function getAvailableStatuses(): array
     {
-        return array_map(fn($case) => $case->value, self::cases());
+        return array_map(fn($case): array => $case->value, self::cases());
     }
 }

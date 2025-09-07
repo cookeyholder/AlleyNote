@@ -102,7 +102,7 @@ interface RouteInterface
      * @return string 生成的 URL
      * @throws InvalidArgumentException 當參數無效時
      */
-    public function generateUrl(array $parameters = [], array $queryParams = []): string;
+    public function generateUrl(array $parameters = [], /** @var array<string, mixed> */ array $queryParams = []): string;
 
     /**
      * 從路徑中提取參數.

@@ -220,7 +220,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     /**
      * 使用指定標籤存放快取項目.
      */
-    public function putWithTags(string $key, mixed $value, array $tags, int $ttl = 3600): bool
+    public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): bool
     {
         // 驗證所有標籤
         foreach ($tags as $tag) {
@@ -364,7 +364,7 @@ class TaggedCacheManager implements TaggedCacheInterface
      * @param int $ttl 存活時間
      * @return array<string, bool> 設定結果 key => success
      */
-    public function putMany(array $items, array $tags, int $ttl = 3600): array
+    public function putMany(array $items, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): array
     {
         $results = [];
 
@@ -420,7 +420,7 @@ class TaggedCacheManager implements TaggedCacheInterface
      * @param string $key 快取鍵
      * @param array<string> $tags 標籤陣列
      */
-    private function logTaggedAccess(string $operation, string $key, array $tags): void
+    private function logTaggedAccess(string $operation, string $key, /** @var array<string, mixed> */ array $tags): void
     {
         if ($this->monitor) {
             $this->monitor->recordOperation($operation, 'tagged', true, 0, [

@@ -41,7 +41,7 @@ abstract class JwtException extends Exception
         string $message = '',
         int $code = 0,
         ?Exception $previous = null,
-        array $context = [],
+        /** @var array<string, mixed> */ array $context = [],
     ) {
         parent::__construct($message, $code, $previous);
         $this->context = $context;

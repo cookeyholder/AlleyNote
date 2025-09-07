@@ -26,7 +26,7 @@ class Response implements ResponseInterface
     /**\n      * @param array<string, mixed> $headers
      */    public function __construct(
         int $statusCode = 200,
-        array $headers = [],
+        /** @var array<string, mixed> */ array $headers = [],
         StreamInterface|string|null $body = null,
         string $protocolVersion = '1.1',
         string $reasonPhrase = '',

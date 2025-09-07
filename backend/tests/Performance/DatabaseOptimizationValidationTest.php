@@ -27,12 +27,12 @@ class DatabaseOptimizationValidationTest extends TestCase
         ];
 
         foreach ($requiredIndexes as $indexName) {
-            $stmt = $this->db->prepare("SELECT name FROM sqlite_master WHERE type='index' AND name = ?sprintf(sprintf(");
+            $stmt = $this->db->prepare("SELECT name FROM sqlite_master WHERE type='index' AND name = ?");
             $this->assertNotFalse($stmt);
             $stmt->execute([$indexName]);
             $exists = $stmt->fetch();
 
-            %s->assertNotEmpty(%s, ", is_string($this) ? $this : ''), is_string($exists) ? $exists : '')Required index $indexName does not existsprintf(sprintf(");
+            $this->assertNotEmpty($exists, "Required index $indexName does not exist");
         }
     }
 
@@ -60,9 +60,9 @@ class DatabaseOptimizationValidationTest extends TestCase
             for ($i = 0; $i < $iterations; $i++) {
                 $start = microtime(true);
 
-                $stmt = $this->db->prepare((is_array($config) && array_key_exists('sql', $config) ? (is_array($config) && array_key_exists('sql', $config) ? $config['sql'] : null) : null));
+                $stmt = $this->db->prepare($config['sql']);
                 $this->assertNotFalse($stmt);
-                $stmt->execute((is_array($config) && array_key_exists('params', $config) ? (is_array($config) && array_key_exists('params', $config) ? $config['params'] : null) : null));
+                $stmt->execute($config['params']);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 $end = microtime(true);
@@ -73,10 +73,10 @@ class DatabaseOptimizationValidationTest extends TestCase
             $avgTimeMs = $avgTime * 1000;
 
             // 基本效能要求：平均查詢時間應小於 10ms
-            %s->assertLessThan(
+            $this->assertLessThan(
                 10.0,
-                %s,
-                ", is_string($this) ? $this : ''), is_string($avgTimeMs) ? $avgTimeMs : '')$testName took {$avgTimeMs}ms on average (expected < 10ms)",
+                $avgTimeMs,
+                "$testName took {$avgTimeMs}ms on average (expected < 10ms)",
             );
         }
     }
@@ -90,6 +90,6 @@ class DatabaseOptimizationValidationTest extends TestCase
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('total_rows', $result);
-        $this->assertGreaterThan(0, (is_array($result) && array_key_exists('total_rows', $result) ? (is_array($result) && array_key_exists('total_rows', $result) ? $result['total_rows'] : null) : null), 'Table should contain test data');
+        $this->assertGreaterThan(0, $result['total_rows'], 'Table should contain test data');
     }
 }

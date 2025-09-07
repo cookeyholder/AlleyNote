@@ -67,7 +67,7 @@ class InvalidTokenException extends JwtException
         string $reason = self::REASON_DECODE_FAILED,
         string $tokenType = self::ACCESS_TOKEN,
         string $customMessage = '',
-        array $additionalContext = [],
+        /** @var array<string, mixed> */ array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
 
@@ -209,7 +209,7 @@ class InvalidTokenException extends JwtException
      * @param string $tokenType Token 類型
      * @param array<string, mixed> $context 上下文資訊
      */
-    public static function malformed(string $tokenType = self::ACCESS_TOKEN, array $context = []): self
+    public static function malformed(string $tokenType = self::ACCESS_TOKEN, /** @var array<string, mixed> */ array $context = []): self
     {
         return new self(self::REASON_MALFORMED, $tokenType, '', $context);
     }
@@ -220,7 +220,7 @@ class InvalidTokenException extends JwtException
      * @param string $tokenType Token 類型
      * @param array<string, mixed> $context 上下文資訊
      */
-    public static function signatureInvalid(string $tokenType = self::ACCESS_TOKEN, array $context = []): self
+    public static function signatureInvalid(string $tokenType = self::ACCESS_TOKEN, /** @var array<string, mixed> */ array $context = []): self
     {
         return new self(self::REASON_SIGNATURE_INVALID, $tokenType, '', $context);
     }

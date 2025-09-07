@@ -15,7 +15,7 @@ class RouteMatchResult
 {    public function __construct(
         private readonly bool $isMatched,
         private readonly ?RouteInterface $route = null,
-        private readonly array $parameters = [],
+        private readonly /** @var array<string, mixed> */ array $parameters = [],
         private readonly ?string $error = null,
     ) {}
 
@@ -64,7 +64,7 @@ class RouteMatchResult
      * 建立成功匹配的結果.
      * @param array<string, string> $parameters
      */
-    public static function success(RouteInterface $route, array $parameters = []): self
+    public static function success(RouteInterface $route, /** @var array<string, mixed> */ array $parameters = []): self
     {
         return new self(true, $route, $parameters);
     }

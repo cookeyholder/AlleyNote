@@ -347,7 +347,7 @@ class PostRepository implements PostRepositoryInterface
      * @throws PDOException 當標籤不存在時拋出異常
      * @param array<string, mixed> $data
      */
-    public function create(array $data, array $tagIds = []): Post
+    public function create(array $data, /** @var array<string, mixed> */ array $tagIds = []): Post
     {
         return $this->executeInTransaction(function () use ($data, $tagIds) {
             // 資料已在 DTO 層級完成驗證，這裡直接處理
@@ -388,7 +388,7 @@ class PostRepository implements PostRepositoryInterface
      * @throws PDOException 當標籤不存在時拋出異常
      * @param array<string, mixed> $tagIds
      */
-    private function assignTags(int $postId, array $tagIds): void
+    private function assignTags(int $postId, /** @var array<string, mixed> */ array $tagIds): void
     {
         // 驗證標籤是否存在
         if (!$this->tagsExist($tagIds)) {
@@ -403,7 +403,7 @@ class PostRepository implements PostRepositoryInterface
         }
     }
     /**\n      * @param array<string, mixed> $data
-     */    public function update(int $id, array $data): Post
+     */    public function update(int $id, /** @var array<string, mixed> */ array $data): Post
     {
         // 檢查文章是否存在
         $post = $this->find($id);
@@ -465,7 +465,7 @@ class PostRepository implements PostRepositoryInterface
         return $stmt->execute([$id]);
     }
     /**\n      * @param array<string, mixed> $conditions
-     */    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
+     */    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $conditions = []): array
     {
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
@@ -530,7 +530,7 @@ class PostRepository implements PostRepositoryInterface
 
             $stmt->execute();
             $items = array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
+                fn($row): array => Post::fromArray($this->preparePostData($row)),
                 $stmt->fetchAll(PDO::FETCH_ASSOC),
             );
 
@@ -557,7 +557,7 @@ class PostRepository implements PostRepositoryInterface
             $stmt->execute();
 
             return array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
+                fn($row): array => Post::fromArray($this->preparePostData($row)),
                 $stmt->fetchAll(PDO::FETCH_ASSOC),
             );
         }, self::CACHE_TTL);
@@ -593,7 +593,7 @@ class PostRepository implements PostRepositoryInterface
             $stmt->execute();
 
             $items = array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
+                fn($row): array => Post::fromArray($this->preparePostData($row)),
                 $stmt->fetchAll(PDO::FETCH_ASSOC),
             );
 
@@ -676,7 +676,7 @@ class PostRepository implements PostRepositoryInterface
         return $result;
     }
     /**\n      * @param array<string, mixed> $tagIds
-     */    public function setTags(int $id, array $tagIds): bool
+     */    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool
     {
         $this->db->beginTransaction();
 
@@ -721,7 +721,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
 
         return array_map(
-            fn($row) => Post::fromArray($this->preparePostData($row)),
+            fn($row): array => Post::fromArray($this->preparePostData($row)),
             $stmt->fetchAll(PDO::FETCH_ASSOC),
         );
     }
@@ -750,7 +750,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
 
         return array_map(
-            fn($row) => Post::fromArray($this->preparePostData($row)),
+            fn($row): array => Post::fromArray($this->preparePostData($row)),
             $stmt->fetchAll(PDO::FETCH_ASSOC),
         );
     }

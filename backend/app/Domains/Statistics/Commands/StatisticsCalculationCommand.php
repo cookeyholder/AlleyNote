@@ -101,7 +101,7 @@ readonly class StatisticsCalculationCommand
         }
 
         $totalDuration = microtime(true) - $startTime;
-        $successCount = count(array_filter($results, fn($r) => $r['success'] === true));
+        $successCount = count(array_filter($results, fn($r): array => $r['success'] === true));
 
         $this->logger->info('統計計算任務完成', [
             'total_duration' => $totalDuration,

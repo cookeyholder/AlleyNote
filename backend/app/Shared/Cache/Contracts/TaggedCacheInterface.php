@@ -80,7 +80,7 @@ interface TaggedCacheInterface
      * @param int $ttl 存活時間（秒）
      * @return bool 是否成功
      */
-    public function putWithTags(string $key, mixed $value, array $tags, int $ttl = 3600): bool;
+    public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): bool;
 
     /**
      * 取得指定標籤的所有快取鍵.

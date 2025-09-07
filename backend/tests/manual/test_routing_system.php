@@ -44,75 +44,75 @@ class MockUri
     }
 }
 
-echo '=== AlleyNote 路由系統測試 ===
+echo "=== AlleyNote 路由系統測試 ===
 
-';
+";
 
 try {
     // 1. 測試基本路由建立
-    echo '1. 測試基本路由建立...
-';
+    echo "1. 測試基本路由建立...
+";
     $route = Route::get('/api/posts', 'PostController@index');
     $route->setName('posts.index');
 
-    echo '   ✓ 路由建立成功
-';
-    echo '   ✓ HTTP 方法: ' . implode(', ', $route->getMethods()) . '
-';
-    echo '   ✓ 路由模式: ' . $route->getPattern() . '
-';
-    echo '   ✓ 路由名稱: ' . ($route->getName() ?? '無') . '
+    echo "   ✓ 路由建立成功
+";
+    echo '   ✓ HTTP 方法: ' . implode(', ', $route->getMethods()) . "
+";
+    echo '   ✓ 路由模式: ' . $route->getPattern() . "
+";
+    echo '   ✓ 路由名稱: ' . ($route->getName() ?? '無') . "
 
-';
+";
 
     // 2. 測試參數路由
-    echo '2. 測試參數路由...
-';
+    echo "2. 測試參數路由...
+";
     $paramRoute = Route::get('/api/posts/{id}', 'PostController@show');
     $paramRoute->setName('posts.show');
 
     // 測試路由是否匹配
     $methodMatches = $paramRoute->matchesMethod('GET');
     $pathMatch = $paramRoute->matchesPath('/api/posts/123');
-    echo '   ✓ HTTP 方法匹配: ' . ($methodMatches ? '成功' : '失敗') . '
-';
-    echo '   ✓ 路徑匹配: ' . ($pathMatch->isMatched() ? '成功' : '失敗') . '
-';
+    echo '   ✓ HTTP 方法匹配: ' . ($methodMatches ? '成功' : '失敗') . "
+";
+    echo '   ✓ 路徑匹配: ' . ($pathMatch->isMatched() ? '成功' : '失敗') . "
+";
 
     if ($pathMatch->isMatched()) {
         $parameters = $pathMatch->getParameters();
-        echo '   ✓ 擷取參數: ' . json_encode($parameters) . '
-';
+        echo '   ✓ 擷取參數: ' . json_encode($parameters) . "
+";
     }
-    echo '
-';
+    echo "
+";
 
     // 3. 測試 Router
-    echo '3. 測試 Router...
-';
+    echo "3. 測試 Router...
+";
     $router = new Router();
     $router->get('/api/posts', 'PostController@index')->setName('posts.index');
     $router->post('/api/posts', 'PostController@store')->setName('posts.store');
     $router->get('/api/posts/{id}', 'PostController@show')->setName('posts.show');
 
     // 4. 測試路由收集器
-    echo '4. 測試路由收集器...
-';
+    echo "4. 測試路由收集器...
+";
     $collection = new RouteCollection();
     $collection->add($route);
     $collection->add($paramRoute);
 
-    echo '   ✓ 路由總數: ' . $collection->count() . '
-';
-    echo '   ✓ 根據名稱查找: ' . ($collection->getByName('posts.index') !== null ? '成功' : '失敗') . '
-';
-    echo '   ✓ 根據方法查找: ' . count($collection->getByMethod('GET')) . ' 個 GET 路由
+    echo '   ✓ 路由總數: ' . $collection->count() . "
+";
+    echo '   ✓ 根據名稱查找: ' . ($collection->getByName('posts.index') !== null ? '成功' : '失敗') . "
+";
+    echo '   ✓ 根據方法查找: ' . count($collection->getByMethod('GET')) . " 個 GET 路由
 
-';
+";
 
     // 5. 測試路由器
-    echo '5. 測試路由器...
-';
+    echo "5. 測試路由器...
+";
     $router = new Router();
 
     // 註冊路由
@@ -120,15 +120,15 @@ try {
     $router->post('/api/posts', ['PostController', 'store'])->setName('posts.store');
     $router->get('/api/posts/{id}', ['PostController', 'show'])->setName('posts.show');
 
-    echo '   ✓ 註冊了 3 個路由
-';
-    echo '   ✓ 路由總數: ' . $router->getRoutes()->count() . '
+    echo "   ✓ 註冊了 3 個路由
+";
+    echo '   ✓ 路由總數: ' . $router->getRoutes()->count() . "
 
-';
+";
 
     // 6. 測試路由匹配功能
-    echo '6. 測試路由匹配功能...
-';
+    echo "6. 測試路由匹配功能...
+";
 
     // 測試路由匹配而不是完整分派
     $testCases = [
@@ -161,35 +161,35 @@ try {
             if (!empty($parameters)) {
                 echo ', 參數: ' . json_encode($parameters);
             }
-            echo '
-';
+            echo "
+";
         } else {
-            echo '   ✗ {(string)method} {(string)path}: 未找到匹配的路由
-';
+            echo "   ✗ {(string)method} {(string)path}: 未找到匹配的路由
+";
         }
     }
 
     // 7. 測試 URL 產生
-    echo '
+    echo "
 7. 測試 URL 產生...
-';
+";
 
     try {
         $url = $router->url('posts.show', ['id' => '456']);
-        echo '   ✓ 產生 URL: {(string)url}
-';
+        echo "   ✓ 產生 URL: {(string)url}
+";
     } catch (Exception $e) {
-        echo '   ✗ URL 產生失敗: ' . $e->getMessage() . '
-';
+        echo '   ✗ URL 產生失敗: ' . $e->getMessage() . "
+";
     }
 
-    echo '
+    echo "
 === 所有測試完成 ===
-';
+";
 } catch (Exception $e) {
-    echo '測試失敗: ' . $e->getMessage() . '
-';
-    echo '堆疊追蹤:
-' . $e->getTraceAsString() . '
-';
+    echo '測試失敗: ' . $e->getMessage() . "
+";
+    echo "堆疊追蹤:
+" . $e->getTraceAsString() . "
+";
 }

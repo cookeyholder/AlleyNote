@@ -161,8 +161,8 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode()); // 成功註冊狀態碼
         $responseBody = (string) $response->getBody();
         $responseData = json_decode($responseBody, true);
-        $this->assertTrue((is_array($responseData) && array_key_exists('success', $responseData) ? (is_array($responseData) && array_key_exists('success', $responseData) ? $responseData['success'] : null) : null));
-        $this->assertEquals('註冊成功', (is_array($responseData) && array_key_exists('message', $responseData) ? (is_array($responseData) && array_key_exists('message', $responseData) ? $responseData['message'] : null) : null));
+        $this->assertTrue($responseData['success']);
+        $this->assertEquals('註冊成功', $responseData['message']);
     }
 
     #[Test]
@@ -281,7 +281,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $responseBody = (string) $response->getBody();
         $responseData = json_decode($responseBody, true);
-        $this->assertTrue((is_array($responseData) && array_key_exists('success', $responseData) ? (is_array($responseData) && array_key_exists('success', $responseData) ? $responseData['success'] : null) : null));
+        $this->assertTrue($responseData['success']);
     }
 
     #[Test]
@@ -322,7 +322,7 @@ class AuthControllerTest extends TestCase
         $this->request->shouldReceive('getParsedBody')->andReturn($logoutData);
         $this->request->shouldReceive('getHeaderLine')
             ->with('Authorization')
-            ->andReturn('Bearer ' . (is_array($logoutData) && array_key_exists('access_token', $logoutData) ? (is_array($logoutData) && array_key_exists('access_token', $logoutData) ? $logoutData['access_token'] : null) : null));
+            ->andReturn('Bearer ' . $logoutData['access_token']);
 
         // Mock AuthenticationService 的 logout 方法
         $this->authenticationService->shouldReceive('logout')
@@ -342,7 +342,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $responseBody = (string) $response->getBody();
         $responseData = json_decode($responseBody, true);
-        $this->assertTrue((is_array($responseData) && array_key_exists('success', $responseData) ? (is_array($responseData) && array_key_exists('success', $responseData) ? $responseData['success'] : null) : null));
-        $this->assertEquals('登出成功', (is_array($responseData) && array_key_exists('message', $responseData) ? (is_array($responseData) && array_key_exists('message', $responseData) ? $responseData['message'] : null) : null));
+        $this->assertTrue($responseData['success']);
+        $this->assertEquals('登出成功', $responseData['message']);
     }
 }

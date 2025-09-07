@@ -98,7 +98,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return $result;
     }
 
-    public function update(int $id, array $data): bool
+    public function update(int $id, /** @var array<string, mixed> */ array $data): bool
     {
         // 暫時實作 - 返回 true
         return true;
@@ -130,7 +130,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         return true;
     }
     /**\n      * @return array<string, mixed>
-     */    public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array
+     */    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters = []): array
     {
         return [];
     }
@@ -143,7 +143,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     /**\n      * @param array<string, mixed> $fields
      * @return array<string, mixed>
       */
-    public function search(string $keyword, array $fields = [], int $limit = 10): array
+    public function search(string $keyword, /** @var array<string, mixed> */ array $fields = [], int $limit = 10): array
     {
         return [];
     }

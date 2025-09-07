@@ -30,8 +30,8 @@ final readonly class AuthorizationResult implements JsonSerializable
         private bool $allowed,
         private string $reason,
         private string $code,
-        private array $appliedRules = [],
-        private array $metadata = [],
+        private /** @var array<string, mixed> */ array $appliedRules = [],
+        private /** @var array<string, mixed> */ array $metadata = [],
     ) {}
 
     /**
@@ -128,8 +128,8 @@ final readonly class AuthorizationResult implements JsonSerializable
     public static function allow(
         string $reason = '存取被允許',
         string $code = 'ALLOWED',
-        array $appliedRules = [],
-        array $metadata = [],
+        /** @var array<string, mixed> */ array $appliedRules = [],
+        /** @var array<string, mixed> */ array $metadata = [],
     ): self {
         return new self(
             allowed: true,
@@ -151,8 +151,8 @@ final readonly class AuthorizationResult implements JsonSerializable
     public static function deny(
         string $reason = '存取被拒絕',
         string $code = 'DENIED',
-        array $appliedRules = [],
-        array $metadata = [],
+        /** @var array<string, mixed> */ array $appliedRules = [],
+        /** @var array<string, mixed> */ array $metadata = [],
     ): self {
         return new self(
             allowed: false,

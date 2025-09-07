@@ -173,7 +173,7 @@ final class StatisticsApplicationService
                     ],
                 ],
                 'source_statistics' => array_map(
-                    fn(SourceStatistics $stats) => [
+                    fn(SourceStatistics $stats): array => [
                         'source_type' => $stats->sourceType->value,
                         'count' => [
                             'value' => $stats->count->getValue(),
@@ -260,7 +260,7 @@ final class StatisticsApplicationService
      * @param array<string, mixed> $options
      * @return array<string, mixed>
      */
-    public function generateStatisticsReport(StatisticsPeriod $period, array $options = []): array
+    public function generateStatisticsReport(StatisticsPeriod $period, /** @var array<string, mixed> */ array $options = []): array
     {
         $cacheKey = self::CACHE_PREFIX . ':report:' . $this->getPeriodCacheKey($period) . ':' . md5(serialize($options));
 
@@ -285,7 +285,7 @@ final class StatisticsApplicationService
                 $period->startDate,
                 $period->endDate,
             );
-            $trendValues = array_map(fn($snapshot) => $snapshot->getTotalViews()->value, $historicalData);
+            $trendValues = array_map(fn($snapshot): array => $snapshot->getTotalViews()->value, $historicalData);
             $trends = $this->calculationService->calculateTrends($trendValues);
 
             // 組合報告
@@ -384,7 +384,7 @@ final class StatisticsApplicationService
             // 判斷整體狀態
             $allHealthy = array_reduce(
                 $status['checks'],
-                fn(bool $carry, array $check) => $carry && $check['status'] === 'ok',
+                fn(bool $carry, /** @var array<string, mixed> */ array $check): array => $carry && $check['status'] === 'ok',
                 true,
             );
 

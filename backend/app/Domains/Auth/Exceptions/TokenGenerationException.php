@@ -63,7 +63,7 @@ class TokenGenerationException extends JwtException
         string $reason = self::REASON_ENCODING_FAILED,
         string $tokenType = self::ACCESS_TOKEN,
         string $customMessage = '',
-        array $additionalContext = [],
+        /** @var array<string, mixed> */ array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
 

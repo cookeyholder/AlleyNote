@@ -432,9 +432,9 @@ class MockRequest implements ServerRequestInterface
     }
 }
 
-echo '=== 控制器整合測試 ===
+echo "=== 控制器整合測試 ===
 
-';
+";
 
 try {
     // 1. 建立 DI 容器
@@ -457,8 +457,8 @@ try {
     $controllerResolver = new ControllerResolver($container);
 
     // 4. 測試控制器解析
-    echo '1. 測試控制器解析...
-';
+    echo "1. 測試控制器解析...
+";
 
     // 建立測試路由
     $route = Route::get('/api/posts/{id}', 'PostController@show');
@@ -471,33 +471,33 @@ try {
     // 測試控制器解析
     $result = $controllerResolver->resolve($route, $request, ['id' => '123']);
 
-    echo '   ✓ 控制器解析成功
-';
-    echo '   ✓ 回應狀態碼: ' . $result->getStatusCode() . '
-';
-    echo '   ✓ 內容類型: ' . $result->getHeaderLine('Content-Type') . '
-';
+    echo "   ✓ 控制器解析成功
+";
+    echo '   ✓ 回應狀態碼: ' . $result->getStatusCode() . "
+";
+    echo '   ✓ 內容類型: ' . $result->getHeaderLine('Content-Type') . "
+";
 
     $body = $result->getBody()->getContents();
     $data = json_decode($body, true);
     if ($data && $data['status'] === 'success') {
-        echo '   ✓ 回應內容正確
-';
-        echo '   ✓ 貼文 ID: ' . (is_array($data) && array_key_exists('data', $data) ? (is_array($data) && array_key_exists('data', $data) ? $data['data'] : null) : null)['id'] . '
-';
+        echo "   ✓ 回應內容正確
+";
+        echo '   ✓ 貼文 ID: ' . $data['data']['id'] . "
+";
     } else {
-        echo '   ✗ 回應內容格式錯誤
-';
-        echo '   回應內容: ' . $body . '
-';
+        echo "   ✗ 回應內容格式錯誤
+";
+        echo '   回應內容: ' . $body . "
+";
     }
 
-    echo '
-';
+    echo "
+";
 
     // 6. 測試不同的控制器方法
-    echo '2. 測試不同控制器方法...
-';
+    echo "2. 測試不同控制器方法...
+";
 
     $testCases = [
         ['GET', '/api/posts', 'PostController@index', [], '取得貼文列表'],
@@ -511,38 +511,38 @@ try {
 
         try {
             $result = $controllerResolver->resolve($route, $request, $params);
-            echo '   ✓ {(string)description}: ' . $result->getStatusCode() . '
-';
+            echo '   ✓ {(string)description}: ' . $result->getStatusCode() . "
+";
         } catch (Exception $e) {
-            echo '   ✗ {(string)description}: 錯誤 - ' . $e->getMessage() . '
-';
+            echo '   ✗ {(string)description}: 錯誤 - ' . $e->getMessage() . "
+";
         }
     }
 
-    echo '
-';
+    echo "
+";
 
     // 7. 測試字串格式處理器
-    echo '3. 測試字串格式處理器...
-';
+    echo "3. 測試字串格式處理器...
+";
 
     $stringRoute = Route::get('/api/test', 'PostController@index');
 
     try {
         $result = $controllerResolver->resolve($stringRoute, $request, []);
-        echo '   ✓ 字串格式處理器解析成功
-';
+        echo "   ✓ 字串格式處理器解析成功
+";
     } catch (Exception $e) {
-        echo '   ✗ 字串格式處理器失敗: ' . $e->getMessage() . '
-';
+        echo '   ✗ 字串格式處理器失敗: ' . $e->getMessage() . "
+";
     }
 
-    echo '
-';
+    echo "
+";
 
     // 8. 測試閉包處理器
-    echo '4. 測試閉包處理器...
-';
+    echo "4. 測試閉包處理器...
+";
 
     $closureRoute = Route::get('/api/closure', function (ServerRequestInterface $request) {
         $response = new MockResponse();
@@ -553,24 +553,24 @@ try {
 
     try {
         $result = $controllerResolver->resolve($closureRoute, $request, []);
-        echo '   ✓ 閉包處理器解析成功
-';
-        echo '   ✓ 回應狀態碼: ' . $result->getStatusCode() . '
-';
+        echo "   ✓ 閉包處理器解析成功
+";
+        echo '   ✓ 回應狀態碼: ' . $result->getStatusCode() . "
+";
     } catch (Exception $e) {
-        echo '   ✗ 閉包處理器失敗: ' . $e->getMessage() . '
-';
+        echo '   ✗ 閉包處理器失敗: ' . $e->getMessage() . "
+";
     }
 
-    echo '
+    echo "
 === 測試完成 ===
-';
+";
 } catch (Exception $e) {
-    echo '測試失敗: ' . $e->getMessage() . '
-';
-    echo '檔案: ' . $e->getFile() . ':' . $e->getLine() . '
-';
-    echo '堆疊追蹤:
-' . $e->getTraceAsString() . '
-';
+    echo '測試失敗: ' . $e->getMessage() . "
+";
+    echo '檔案: ' . $e->getFile() . ':' . $e->getLine() . "
+";
+    echo "堆疊追蹤:
+" . $e->getTraceAsString() . "
+";
 }

@@ -17,12 +17,14 @@ class ContentModerationService
 
     private RichTextProcessorService $richTextProcessor;
 
+    private /** @var array<string, mixed> */\n
+
     private array $config;
     /**\n      * @param array<string, mixed> $config
      */    public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
-        array $config = [],
+        /** @var array<string, mixed> */ array $config = [],
     ) {
         $this->xssProtection = $xssProtection;
         $this->richTextProcessor = $richTextProcessor;
@@ -33,7 +35,7 @@ class ContentModerationService
      * 審核內容.
      * @param array<string, mixed> $metadata
      */
-    public function moderateContent(string $content, array $metadata = []): mixed
+    public function moderateContent(string $content, /** @var array<string, mixed> */ array $metadata = []): mixed
     {
         $result = [
             'status' => 'approved',
@@ -121,7 +123,7 @@ class ContentModerationService
      * 品質檢查.
      * @param array<string, mixed> $metadata
      */
-    private function checkQuality(string $content, array $metadata): mixed
+    private function checkQuality(string $content, /** @var array<string, mixed> */ array $metadata): mixed
     {
         $issues = [];
         $textContent = strip_tags($content);
@@ -197,7 +199,7 @@ class ContentModerationService
      * 計算垃圾內容分數.
      * @param array<string, mixed> $metadata
      */
-    private function calculateSpamScore(string $content, array $metadata): float
+    private function calculateSpamScore(string $content, /** @var array<string, mixed> */ array $metadata): float
     {
         $score = 0;
         $textContent = strip_tags($content);
@@ -239,9 +241,9 @@ class ContentModerationService
      */
     private function determineFinalStatus(array &$result): void
     {
-        // $criticalIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === 'critical'); // isset 語法錯誤已註解
-        // $highIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === 'high'); // isset 語法錯誤已註解
-        // $mediumIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === 'medium'); // isset 語法錯誤已註解
+        // $criticalIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue): array => $data ? $issue->severity : null)) === 'critical'); // isset 語法錯誤已註解
+        // $highIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue): array => $data ? $issue->severity : null)) === 'high'); // isset 語法錯誤已註解
+        // $mediumIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue): array => $data ? $issue->severity : null)) === 'medium'); // isset 語法錯誤已註解
         $criticalIssues = [];
         $highIssues = [];
         $mediumIssues = [];

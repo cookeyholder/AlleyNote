@@ -55,5 +55,5 @@ interface PostRepositoryInterface extends RepositoryInterface
      * 設定文章標籤.
      * @param array<string, mixed> $tagIds
      */
-    public function setTags(int $id, array $tagIds): bool;
+    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool;
 }

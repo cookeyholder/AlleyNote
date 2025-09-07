@@ -16,12 +16,15 @@ class ValidationResult implements JsonSerializable
     private bool $isValid;
 
     /** @var array<string, array<string>> */
+    private /** @var array<string, mixed> */\n
     private array $errors;
 
     /** @var array<string, mixed> */
+    private /** @var array<string, mixed> */\n
     private array $validatedData;
 
     /** @var array<string, array<string>> */
+    private /** @var array<string, mixed> */\n
     private array $failedRules;
 
     /**\n      * @param bool $isValid 是否驗證通過
@@ -31,9 +34,9 @@ class ValidationResult implements JsonSerializable
      */
     public function __construct(
         bool $isValid,
-        array $errors = [],
-        array $validatedData = [],
-        array $failedRules = [],
+        /** @var array<string, mixed> */ array $errors = [],
+        /** @var array<string, mixed> */ array $validatedData = [],
+        /** @var array<string, mixed> */ array $failedRules = [],
     ) {
         $this->isValid = $isValid;
         $this->errors = $errors;
@@ -57,7 +60,7 @@ class ValidationResult implements JsonSerializable
      * @param array<string, array<string>> $errors 錯誤訊息
      * @param array<string, array<string>> $failedRules 失敗的規則
      */
-    public static function failure(array $errors, array $failedRules = []): self
+    public static function failure(array $errors, /** @var array<string, mixed> */ array $failedRules = []): self
     {
         return new self(false, $errors, [], $failedRules);
     }

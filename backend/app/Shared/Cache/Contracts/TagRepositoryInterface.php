@@ -19,7 +19,7 @@ interface TagRepositoryInterface
      * @param int $ttl 存活時間（秒）
      * @return bool 是否成功
      */
-    public function setTags(string $key, array $tags, int $ttl = 3600): bool;
+    public function setTags(string $key, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): bool;
 
     /**
      * 取得快取鍵的所有標籤.
@@ -36,7 +36,7 @@ interface TagRepositoryInterface
      * @param array<string> $tags 要添加的標籤
      * @return bool 是否成功
      */
-    public function addTags(string $key, array $tags): bool;
+    public function addTags(string $key, /** @var array<string, mixed> */ array $tags): bool;
 
     /**
      * 從快取鍵移除標籤.
@@ -45,7 +45,7 @@ interface TagRepositoryInterface
      * @param array<string> $tags 要移除的標籤
      * @return bool 是否成功
      */
-    public function removeTags(string $key, array $tags): bool;
+    public function removeTags(string $key, /** @var array<string, mixed> */ array $tags): bool;
 
     /**
      * 檢查快取鍵是否包含指定標籤.

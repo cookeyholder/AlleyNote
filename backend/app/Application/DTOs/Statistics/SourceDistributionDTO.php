@@ -26,7 +26,8 @@ use JsonSerializable;
  */
 final readonly class SourceDistributionDTO implements JsonSerializable
 {
-    /**\n      * @param StatisticsPeriod $period 統計週期
+    /**
+     * @param StatisticsPeriod $period 統計週期
      * @param array<SourceStatistics> $sourceStatistics 來源統計清單
      * @param int $totalCount 總數量
      * @param array<string, mixed> $distributionAnalysis 分佈分析
@@ -34,8 +35,10 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      */
     public function __construct(
         public StatisticsPeriod $period,
+        /** @var array<SourceStatistics> */
         public array $sourceStatistics,
         public int $totalCount,
+        /** @var array<string, mixed> */
         public array $distributionAnalysis,
         public DateTimeImmutable $generatedAt,
     ) {
@@ -50,7 +53,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      */
     public static function fromSourceStatistics(
         StatisticsPeriod $period,
-        array $sourceStatistics,
+        /** @var array<string, mixed> */ array $sourceStatistics,
         int $totalCount,
     ): self {
         /** @var array<string, mixed> $analysis */
@@ -151,9 +154,11 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             return null;
         }
 
+        /** @var SourceStatistics|null */
         return array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source) => $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
+            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => 
+                $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
         );
     }
 
@@ -166,9 +171,11 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             return null;
         }
 
+        /** @var SourceStatistics|null */
         return array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source) => $carry === null || $source->count->value < $carry->count->value ? $source : $carry,
+            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => 
+                $carry === null || $source->count->value < $carry->count->value ? $source : $carry,
         );
     }
 
@@ -238,8 +245,9 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     public function getTopSources(int $limit = 3): array
     {
         $sorted = $this->sourceStatistics;
-        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b) => $b->count->value <=> $a->count->value);
+        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b): int => $b->count->value <=> $a->count->value);
 
+        /** @var array<int, SourceStatistics> $sorted */
         return array_slice($sorted, 0, $limit);
     }
 
@@ -251,10 +259,11 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     public function getSourceRanking(): array
     {
         $sorted = $this->sourceStatistics;
-        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b) => $b->count->value <=> $a->count->value);
+        usort($sorted, fn(SourceStatistics $a, SourceStatistics $b): int => $b->count->value <=> $a->count->value);
 
+        /** @var array<int, array<string, mixed>> */
         return array_map(
-            fn(SourceStatistics $source, int $index) => [
+            fn(SourceStatistics $source, int $index): array => [
                 'rank' => $index + 1,
                 'source_type' => $source->sourceType->value,
                 'count' => $source->count->value,
@@ -317,7 +326,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 'concentration_index' => $this->getConcentrationIndex(),
             ],
             'sources' => array_map(
-                fn(SourceStatistics $source) => [
+                fn(SourceStatistics $source): array => [
                     'source_type' => $source->sourceType->value,
                     'count' => [
                         'value' => $source->count->value,
@@ -393,7 +402,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             'source_changes' => $changes,
             'significant_changes' => array_filter(
                 $changes,
-                fn(array $change) => abs($change['percentage_change']) >= 10,
+                fn(array $change): bool => abs($change['percentage_change']) >= 10,
             ),
         ];
     }
@@ -414,7 +423,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             ],
             'total_count' => $this->totalCount,
             'source_statistics' => array_map(
-                fn(SourceStatistics $source) => [
+                fn(SourceStatistics $source): array => [
                     'source_type' => $source->sourceType->value,
                     'count' => $source->count->value,
                     'percentage' => $source->percentage->value,

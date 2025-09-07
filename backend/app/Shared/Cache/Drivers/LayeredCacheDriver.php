@@ -16,6 +16,7 @@ use RuntimeException;
 class LayeredCacheDriver implements CacheDriverInterface
 {
     /** @var array<CacheDriverInterface> 快取層級 */
+    private /** @var array<string, mixed> */\n
     private array $layers;
 
     /** @var array<string, int> 統計資料 */
@@ -161,7 +162,7 @@ class LayeredCacheDriver implements CacheDriverInterface
                     $this->promoteToHigherLayers($key, $value, $index);
 
                     // 從待查找列表中移除
-                    $missingKeys = array_filter($missingKeys, fn($k) => $k !== $key);
+                    $missingKeys = array_filter($missingKeys, fn($k): array => $k !== $key);
                 }
             }
         }

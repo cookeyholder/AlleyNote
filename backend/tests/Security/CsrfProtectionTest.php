@@ -178,8 +178,8 @@ class CsrfProtectionTest extends TestCase
         // 模擬 PostService 創建成功
         $post = new Post([
             'id' => 1,
-            'title' => (is_array($postData) && array_key_exists('title', $postData) ? (is_array($postData) && array_key_exists('title', $postData) ? $postData['title'] : null) : null),
-            'content' => (is_array($postData) && array_key_exists('content', $postData) ? (is_array($postData) && array_key_exists('content', $postData) ? $postData['content'] : null) : null),
+            'title' => $postData['title'],
+            'content' => $postData['content'],
             'user_id' => 1,
         ]);
 
@@ -227,8 +227,8 @@ class CsrfProtectionTest extends TestCase
         // 模擬 PostService 創建成功
         $post = new Post([
             'id' => 1,
-            'title' => (is_array($postData) && array_key_exists('title', $postData) ? (is_array($postData) && array_key_exists('title', $postData) ? $postData['title'] : null) : null),
-            'content' => (is_array($postData) && array_key_exists('content', $postData) ? (is_array($postData) && array_key_exists('content', $postData) ? $postData['content'] : null) : null),
+            'title' => $postData['title'],
+            'content' => $postData['content'],
             'user_id' => 1,
         ]);
 
@@ -276,8 +276,8 @@ class CsrfProtectionTest extends TestCase
         // 模擬 PostService 創建成功
         $post = new Post([
             'id' => 1,
-            'title' => (is_array($postData) && array_key_exists('title', $postData) ? (is_array($postData) && array_key_exists('title', $postData) ? $postData['title'] : null) : null),
-            'content' => (is_array($postData) && array_key_exists('content', $postData) ? (is_array($postData) && array_key_exists('content', $postData) ? $postData['content'] : null) : null),
+            'title' => $postData['title'],
+            'content' => $postData['content'],
             'user_id' => 1,
         ]);
 
@@ -293,7 +293,7 @@ class CsrfProtectionTest extends TestCase
 
         $responseData = json_decode($this->lastWrittenContent, true);
         $this->assertIsArray($responseData);
-        $this->assertTrue((is_array($responseData) && array_key_exists('success', $responseData) ? (is_array($responseData) && array_key_exists('success', $responseData) ? $responseData['success'] : null) : null));
+        $this->assertTrue($responseData['success']);
     }
 
     protected function tearDown(): void

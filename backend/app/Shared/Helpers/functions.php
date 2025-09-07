@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Post;
 use Ramsey\Uuid\Uuid;
 
 if (!function_exists('generate_uuid')) {
@@ -23,6 +24,7 @@ if (!function_exists('format_datetime')) {
     function format_datetime(?string $datetime = null): string
     {
         $dt = $datetime ? new DateTime($datetime) : new DateTime();
+
         return $dt->format(DateTime::RFC3339);
     }
 }
@@ -36,6 +38,7 @@ if (!function_exists('normalize_path')) {
     function normalize_path(string $path): string
     {
         $path = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
+
         return rtrim($path, DIRECTORY_SEPARATOR);
     }
 }
@@ -47,6 +50,7 @@ if (!function_exists('storage_path')) {
     function storage_path(string $path = ''): string
     {
         $basePath = dirname(__DIR__, 2) . '/storage';
+
         return $path ? $basePath . '/' . $path : $basePath;
     }
 }
@@ -58,6 +62,7 @@ if (!function_exists('public_path')) {
     function public_path(string $path = ''): string
     {
         $basePath = dirname(__DIR__, 2) . '/public';
+
         return $path ? $basePath . '/' . $path : $basePath;
     }
 }
@@ -80,7 +85,6 @@ if (!function_exists('sanitize_filename')) {
     {
         // 移除非法字元
         $filename = preg_replace('/[^\p{L}\p{N}\s\-\_\.]/u', '', $filename);
-
         // 將多個空格替換為單一底線
         $filename = preg_replace('/\s+/', '_', $filename);
 
@@ -109,8 +113,8 @@ if (!function_exists('get_file_mime_type')) {
 if (!function_exists('sanitize_post_array')) {
     /**
      * 清理 Post 陣列中的 HTML 內容，適用於 API 輸出.
-     * @param array<mixed> $posts Post 資料陣列
-     * @return array<mixed> 清理過的陣列
+     * @param array<string, mixed> $posts Post 資料陣列
+     * @return array<string, mixed> 清理過的陣列
      */
     function sanitize_post_array(array $posts): array
     {
@@ -118,14 +122,16 @@ if (!function_exists('sanitize_post_array')) {
             // 如果是陣列，手動清理
             if (is_array($post)) {
                 $sanitized = $post;
-                if (isset($sanitized['title']) && is_string($sanitized['title'])) {
+                if (isset($sanitized['title'])) {
                     $sanitized['title'] = htmlspecialchars($sanitized['title'], ENT_QUOTES, 'UTF-8');
                 }
-                if (isset($sanitized['content']) && is_string($sanitized['content'])) {
+                if (isset($sanitized['content'])) {
                     $sanitized['content'] = htmlspecialchars($sanitized['content'], ENT_QUOTES, 'UTF-8');
                 }
+
                 return $sanitized;
             }
+
             return $post;
         }, $posts);
     }

@@ -37,7 +37,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      * 記錄一個錯誤。
      * @param array<string, mixed> $context
      */
-    public function recordError(Throwable $error, array $context = []): string
+    public function recordError(Throwable $error, /** @var array<string, mixed> */ array $context = []): string
     {
         return $this->recordErrorWithLevel('error', $error->getMessage(), array_merge($context, [
             'exception_class' => get_class($error),
@@ -52,7 +52,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      * 記錄一個警告。
      * @param array<string, mixed> $context
      */
-    public function recordWarning(string $message, array $context = []): string
+    public function recordWarning(string $message, /** @var array<string, mixed> */ array $context = []): string
     {
         return $this->recordErrorWithLevel('warning', $message, $context);
     }
@@ -61,7 +61,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      * 記錄一個訊息。
      * @param array<string, mixed> $context
      */
-    public function recordInfo(string $message, array $context = []): string
+    public function recordInfo(string $message, /** @var array<string, mixed> */ array $context = []): string
     {
         return $this->recordErrorWithLevel('info', $message, $context);
     }
@@ -70,7 +70,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      * 記錄關鍵錯誤（需要立即注意）。
      * @param array<string, mixed> $context
      */
-    public function recordCriticalError(Throwable $error, array $context = []): string
+    public function recordCriticalError(Throwable $error, /** @var array<string, mixed> */ array $context = []): string
     {
         $errorId = $this->recordErrorWithLevel('critical', $error->getMessage(), array_merge($context, [
             'exception_class' => get_class($error),
@@ -95,7 +95,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $cutoffTime = microtime(true) - ($hours * 3600);
         $recentErrors = array_filter(
             $this->errorRecords,
-            fn($record) => $record['timestamp'] > $cutoffTime,
+            fn($record): array => $record['timestamp'] > $cutoffTime,
         );
 
         $stats = [
@@ -169,7 +169,9 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $errors = $this->errorRecords;
 
         // 按時間戳排序（最新的在前）
-        usort($errors, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+        usort($errors, fn($a, $b): array => $b['timestamp'] <=> $a['timestamp']);
+
+        
 
         return array_slice($errors, 0, $limit);
     }
@@ -183,7 +185,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $cutoffTime = microtime(true) - ($days * 24 * 3600);
         $recentErrors = array_filter(
             $this->errorRecords,
-            fn($record) => $record['timestamp'] > $cutoffTime,
+            fn($record): array => $record['timestamp'] > $cutoffTime,
         );
 
         $trends = [
@@ -324,7 +326,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         $this->errorRecords = array_filter(
             $this->errorRecords,
-            fn($record) => $record['timestamp'] > $cutoffTime,
+            fn($record): array => $record['timestamp'] > $cutoffTime,
         );
 
         $cleanedCount = $originalCount - count($this->errorRecords);
@@ -360,7 +362,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      * 記錄錯誤並分配等級。
      * @param array<string, mixed> $context
      */
-    private function recordErrorWithLevel(string $level, string $message, array $context = [], ?Throwable $exception = null): string
+    private function recordErrorWithLevel(string $level, string $message, /** @var array<string, mixed> */ array $context = [], ?Throwable $exception = null): string
     {
         // 應用過濾器
         foreach ($this->errorFilters as $filter) {
@@ -434,7 +436,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      * 觸發通知處理器。
      * @param array<string, mixed> $context
      */
-    private function triggerNotifications(string $level, string $message, array $context, ?Throwable $exception = null): void
+    private function triggerNotifications(string $level, string $message, /** @var array<string, mixed> */ array $context, ?Throwable $exception = null): void
     {
         foreach ($this->notificationHandlers as $handler) {
             try {

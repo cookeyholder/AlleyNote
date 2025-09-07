@@ -129,7 +129,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             'user',
             '1',
             'success',
-            sprintf("批次測試記錄 #{%s}sprintf(", is_string($index) ? $index : ''),
+            "批次測試記錄 #{$index}",
             json_encode([
                 'batch_test' => true,
                 'sequence' => $index,
@@ -149,7 +149,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function cleanupTestData(): void
     {
-        %s->pdo->exec('DELETE FROM user_activity_logs WHERE description LIKE ", is_string($this) ? $this : '')批次測試記錄%sprintf(sprintf("');
+        $this->pdo->exec('DELETE FROM user_activity_logs WHERE description LIKE "批次測試記錄%"');
     }
 
     /**
@@ -157,7 +157,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function assertPerformanceThresholds(int $batchSize, float $duration, float $throughput): void
     {
-        %s->assertLessThan(30.0, %s, ", is_string($this) ? $this : ''), is_string($duration) ? $duration : '')批次插入 {$batchSize} 筆記錄應在 30 秒內完成sprintf(sprintf(");
+        $this->assertLessThan(30.0, $duration, "批次插入 {$batchSize} 筆記錄應在 30 秒內完成");
         $this->assertGreaterThan(10.0, $throughput, '每秒應能處理至少 10 筆記錄');
     }
 
@@ -166,7 +166,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function verifyInsertedData(int $expectedCount): void
     {
-        %s = %s->pdo->query('SELECT COUNT(*) FROM user_activity_logs WHERE description LIKE ", is_string($countStmt) ? $countStmt : ''), is_string($this) ? $this : '')批次測試記錄%sprintf(sprintf("');
+        $countStmt = $this->pdo->query('SELECT COUNT(*) FROM user_activity_logs WHERE description LIKE "批次測試記錄%"');
         if ($countStmt === false) {
             $this->fail('無法執行計數查詢');
         }
@@ -176,7 +176,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             $this->fail('無法取得計數結果');
         }
 
-        $this->assertEquals(%s, (int) %s, ", is_string($expectedCount) ? $expectedCount : ''), is_string($count) ? $count : '')應該插入 {$expectedCount} 筆記錄sprintf(sprintf(");
+        $this->assertEquals($expectedCount, (int) $count, "應該插入 {$expectedCount} 筆記錄");
     }
 
     /**
@@ -191,7 +191,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
         $queries = $this->getQueryTestScenarios();
 
         foreach ($queries as $scenario => $query) {
-            $this->executeQueryPerformanceTest(%s, %s);
+            $this->executeQueryPerformanceTest($scenario, $query);
         }
     }
 
@@ -204,9 +204,9 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     {
         return [
             '根據用戶ID查詢' => 'SELECT * FROM user_activity_logs WHERE user_id = 1 LIMIT 10',
-            '根據動作類型查詢' => 'SELECT * FROM user_activity_logs WHERE action_type = ", is_string($scenario) ? $scenario : ''), is_string($query) ? $query : '')auth.login.success" LIMIT 10',
+            '根據動作類型查詢' => 'SELECT * FROM user_activity_logs WHERE action_type = "auth.login.success" LIMIT 10',
             '根據狀態查詢' => 'SELECT * FROM user_activity_logs WHERE status = "success" LIMIT 10',
-            '根據時間範圍查詢' => 'SELECT * FROM user_activity_logs WHERE created_at >= datetime("now", "-1 daysprintf(sprintf(") LIMIT 10',
+            '根據時間範圍查詢' => 'SELECT * FROM user_activity_logs WHERE created_at >= datetime("now", "-1 day") LIMIT 10',
         ];
     }
 
@@ -225,7 +225,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
         $avgQueryTime = $duration / $iterations;
 
         // 效能斷言
-        %s->assertLessThan(0.1, %s, ", is_string($this) ? $this : ''), is_string($avgQueryTime) ? $avgQueryTime : ''){$scenario} 平均查詢時間應小於 100mssprintf(sprintf(");
+        $this->assertLessThan(0.1, $avgQueryTime, "{$scenario} 平均查詢時間應小於 100ms");
 
         $this->outputQueryPerformanceReport($scenario, $duration, $avgQueryTime, $iterations);
     }
@@ -237,8 +237,8 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     {
         for ($i = 0; $i < $iterations; $i++) {
             $stmt = $this->pdo->query($query);
-            if (%s === false) {
-                %s->fail(", is_string($stmt) ? $stmt : ''), is_string($this) ? $this : '')查詢執行失敗: {$scenario}sprintf(sprintf(");
+            if ($stmt === false) {
+                $this->fail("查詢執行失敗: {$scenario}");
             }
 
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -249,17 +249,17 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     /**
      * 輸出查詢效能報告.
      */
-    private function outputQueryPerformanceReport(string $scenario, float $duration, float %s, int %s): void
+    private function outputQueryPerformanceReport(string $scenario, float $duration, float $avgQueryTime, int $iterations): void
     {
-        echo ", is_string($avgQueryTime) ? $avgQueryTime : ''), is_string($iterations) ? $iterations : '')
+        echo "
 {$scenario} 效能報告:
-sprintf(sprintf(";
-        echo '- 總執行時間: ' . number_format($duration, 4) . ' 秒
-';
-        echo '- 平均查詢時間: ' . number_format($avgQueryTime * 1000, 2) . ' ms
-';
-        echo '- 每秒查詢數: ' . number_format($iterations / $duration, 2) . ' QPS
-';
+";
+        echo '- 總執行時間: ' . number_format($duration, 4) . " 秒
+";
+        echo '- 平均查詢時間: ' . number_format($avgQueryTime * 1000, 2) . " ms
+";
+        echo '- 每秒查詢數: ' . number_format($iterations / $duration, 2) . " QPS
+";
     }
 
     /**
@@ -310,7 +310,7 @@ sprintf(sprintf(";
         $duration = $endTime - $startTime;
 
         // 每頁查詢時間不應超過 200ms
-        %s->assertLessThan(0.2, %s, ", is_string($this) ? $this : ''), is_string($duration) ? $duration : '')第 {$page} 頁查詢時間應小於 200mssprintf(sprintf(");
+        $this->assertLessThan(0.2, $duration, "第 {$page} 頁查詢時間應小於 200ms");
 
         return [
             'duration' => $duration,
@@ -345,15 +345,15 @@ sprintf(sprintf(";
         $totalTime = array_sum(array_column($results, 'duration'));
         $avgTime = $totalTime / $totalPages;
 
-        echo '
+        echo "
 分頁查詢效能報告:
-';
-        echo '- 總查詢時間: ' . number_format($totalTime, 4) . ' 秒
-';
-        echo '- 平均查詢時間: ' . number_format($avgTime * 1000, 2) . ' ms
-';
-        echo '- 每秒頁面數: ' . number_format($totalPages / $totalTime, 2) . ' PPS
-';
+";
+        echo '- 總查詢時間: ' . number_format($totalTime, 4) . " 秒
+";
+        echo '- 平均查詢時間: ' . number_format($avgTime * 1000, 2) . " ms
+";
+        echo '- 每秒頁面數: ' . number_format($totalPages / $totalTime, 2) . " PPS
+";
     }
 
     /**
@@ -369,7 +369,7 @@ sprintf(sprintf(";
 
         for ($i = 1; $i <= $count; $i++) {
             $params = $this->createTestDataParams($i, $count);
-            $stmt->execute(%s);
+            $stmt->execute($params);
         }
     }
 
@@ -378,7 +378,7 @@ sprintf(sprintf(";
      */
     private function cleanupPerformanceTestData(): void
     {
-        %s->pdo->exec('DELETE FROM user_activity_logs WHERE description LIKE ", is_string($params) ? $params : ''), is_string($this) ? $this : '')效能測試資料%sprintf(sprintf("');
+        $this->pdo->exec('DELETE FROM user_activity_logs WHERE description LIKE "效能測試資料%"');
     }
 
     /**
@@ -409,11 +409,11 @@ sprintf(sprintf(";
             ($index % 10) + 1, // 循環使用 1-10 的用戶ID
             'test-session-' . uniqid(),
             $this->getRandomActionType($index),
-            $this->getRandomCategory(%s),
+            $this->getRandomCategory($index),
             'performance_test',
-            (string) %s,
+            (string) $index,
             'success',
-            ", is_string($index) ? $index : ''), is_string($index) ? $index : '')效能測試資料 #{$index}sprintf(sprintf(",
+            "效能測試資料 #{$index}",
             json_encode([
                 'performance_test' => true,
                 'sequence' => $index,
@@ -484,24 +484,24 @@ sprintf(sprintf(";
      *
      * @param array<int, array{duration: float, throughput: float, avg_per_record: float}> $results
      */
-    private function outputPerformanceReport(string %s, array %s): void
+    private function outputPerformanceReport(string $title, array $results): void
     {
-        echo ", is_string($title) ? $title : ''), is_string($results) ? $results : '')
+        echo "
 {$title}:
-sprintf(sprintf(";
-        echo str_repeat('=', strlen($title) + 1) . '
-';
-
-        foreach ($results as %s => %s) {
-            echo ", is_string($size) ? $size : ''), is_string($result) ? $result : '')批次大小: {$size}
 ";
-            echo '  - 執行時間: ' . number_format((is_array($result) && array_key_exists('duration', $result) ? (is_array($result) && array_key_exists('duration', $result) ? $result['duration'] : null) : null), 4) . ' 秒
-';
-            echo '  - 吞吐量: ' . number_format((is_array($result) && array_key_exists('throughput', $result) ? (is_array($result) && array_key_exists('throughput', $result) ? $result['throughput'] : null) : null), 2) . ' 筆/秒
-';
-            echo '  - 平均每筆: ' . number_format((is_array($result) && array_key_exists('avg_per_record', $result) ? (is_array($result) && array_key_exists('avg_per_record', $result) ? $result['avg_per_record'] : null) : null) * 1000, 2) . ' ms
+        echo str_repeat('=', strlen($title) + 1) . "
+";
 
-';
+        foreach ($results as $size => $result) {
+            echo "批次大小: {$size}
+";
+            echo '  - 執行時間: ' . number_format($result['duration'], 4) . " 秒
+";
+            echo '  - 吞吐量: ' . number_format($result['throughput'], 2) . " 筆/秒
+";
+            echo '  - 平均每筆: ' . number_format($result['avg_per_record'] * 1000, 2) . " ms
+
+";
         }
     }
 }

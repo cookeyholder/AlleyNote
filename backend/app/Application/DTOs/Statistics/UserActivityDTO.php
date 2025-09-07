@@ -39,8 +39,11 @@ final readonly class UserActivityDTO implements JsonSerializable
         public StatisticsMetric $totalActiveUsers,
         public StatisticsMetric $newUsers,
         public StatisticsMetric $returningUsers,
+        /** @var array<string, mixed> */
         public array $topActiveUsers,
+        /** @var array<string, mixed> */
         public array $activityPatterns,
+        /** @var array<string, mixed> */
         public array $engagementMetrics,
         public DateTimeImmutable $generatedAt,
     ) {
@@ -60,9 +63,9 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     public static function fromStatistics(
         StatisticsPeriod $period,
-        array $userStats,
-        array $topUsers = [],
-        array $patterns = [],
+        /** @var array<string, mixed> */ array $userStats,
+        /** @var array<string, mixed> */ array $topUsers = [],
+        /** @var array<string, mixed> */ array $patterns = [],
     ): self {
         $totalActiveValue = $userStats['total_active'] ?? null;
         $totalActive = StatisticsMetric::count(
@@ -267,7 +270,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         }
 
         return array_map(
-            fn(array $user) => [
+            fn(array $user): array => [
                 'user_id' => $user['user_id'],
                 'username' => $user['username'] ?? 'Unknown',
                 'activity_score' => $user['activity_score'] ?? 0,
@@ -310,6 +313,7 @@ final readonly class UserActivityDTO implements JsonSerializable
                 ? ((int) $countB <=> (int) $countA) : 0;
         });
 
+        /** @var array<int, array<string, mixed>> $timeAnalysis */
         return array_slice($timeAnalysis, 0, 3, true);
     }
 

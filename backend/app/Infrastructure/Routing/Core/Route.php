@@ -30,7 +30,7 @@ class Route implements RouteInterface
     /**\n      * @param string[] $methods HTTP 方法列表
       */
     public function __construct(
-        private readonly array $methods,
+        private readonly /** @var array<string, mixed> */ array $methods,
         private readonly string $pattern,
         private readonly mixed $handler,
     ) {
@@ -122,7 +122,7 @@ class Route implements RouteInterface
         return $this->matchesPath($path);
     }
 
-    public function generateUrl(array $parameters = [], array $queryParams = []): string
+    public function generateUrl(array $parameters = [], /** @var array<string, mixed> */ array $queryParams = []): string
     {
         $url = $this->pattern;
 

@@ -102,7 +102,7 @@ class PostService implements PostServiceInterface
      * @param array<string, mixed> $filters
      * @return array<string, mixed>
      */
-    public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
+    public function listPosts(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters = []): array
     {
         $result = $this->repository->paginate($page, $perPage, $filters);
 
@@ -144,7 +144,7 @@ class PostService implements PostServiceInterface
      * @param int $id 文章 ID
      * @param array<string, mixed> $tagIds
      */
-    public function setTags(int $id, array $tagIds): bool
+    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool
     {
         $post = $this->repository->find($id);
         if (!$post) {

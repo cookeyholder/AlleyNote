@@ -27,7 +27,8 @@ use JsonSerializable;
  */
 final readonly class StatisticsOverviewDTO implements JsonSerializable
 {
-    /**\n      * @param StatisticsPeriod $period 統計週期
+    /**
+     * @param StatisticsPeriod $period 統計週期
      * @param StatisticsMetric $totalPosts 總文章數
      * @param StatisticsMetric $totalViews 總瀏覽數
      * @param array<SourceStatistics> $sourceStatistics 來源統計
@@ -38,7 +39,9 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         public StatisticsPeriod $period,
         public StatisticsMetric $totalPosts,
         public StatisticsMetric $totalViews,
+        /** @var array<SourceStatistics> */
         public array $sourceStatistics,
+        /** @var array<string, mixed> */
         public array $additionalMetrics,
         public DateTimeImmutable $generatedAt,
     ) {
@@ -55,8 +58,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         StatisticsPeriod $period,
         StatisticsMetric $totalPosts,
         StatisticsMetric $totalViews,
-        array $sourceStatistics,
-        array $additionalMetrics = [],
+        /** @var array<string, mixed> */ array $sourceStatistics,
+        /** @var array<string, mixed> */ array $additionalMetrics = [],
     ): self {
         return new self(
             $period,
@@ -192,7 +195,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
                 'avg_views_per_post' => $this->calculateAverageViewsPerPost(),
             ],
             'source_distribution' => array_map(
-                fn(SourceStatistics $source) => [
+                fn(SourceStatistics $source): array => [
                     'source_type' => $source->sourceType->value,
                     'count' => [
                         'value' => $source->count->value,
@@ -229,7 +232,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得主要來源.
-     * @return array<int, mixed>
+     * @return array<string, mixed>|null
      */
     public function getTopSource(): ?array
     {
@@ -237,9 +240,11 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
             return null;
         }
 
+        /** @var SourceStatistics|null */
         $topSource = array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source) => $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
+            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => 
+                $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
         );
 
         return $topSource ? [
@@ -303,7 +308,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
                 'formatted' => $this->totalViews->getFormattedValueWithUnit(),
             ],
             'source_statistics' => array_map(
-                fn(SourceStatistics $source) => [
+                fn(SourceStatistics $source): array => [
                     'source_type' => $source->sourceType->value,
                     'count' => [
                         'value' => $source->count->value,

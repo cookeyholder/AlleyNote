@@ -9,7 +9,7 @@ use App\Shared\Exceptions\ValidationException;
 class PostValidationException extends ValidationException
     /**\n      * @param array<string, mixed> $errors
      */
-{    public function __construct(string $message = '', array $errors = [])
+{    public function __construct(string $message = '', /** @var array<string, mixed> */ array $errors = [])
     {
         if (empty($message) && !empty($errors)) {
             $message = '貼文資料驗證失敗';

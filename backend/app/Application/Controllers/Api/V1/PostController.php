@@ -369,7 +369,7 @@ class PostController extends BaseController
     /**
      * 顯示單一貼文.
      */
-    public function show(Request $request, Response $response, array $args): Response
+    public function show(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
     {
         try {
             $idValue = $args['id'] ?? 0;
@@ -522,7 +522,7 @@ class PostController extends BaseController
     /**
      * 更新貼文.
      */
-    public function update(Request $request, Response $response, array $args): Response
+    public function update(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
     {
         try {
             $idValue = $args['id'] ?? 0;
@@ -698,7 +698,7 @@ class PostController extends BaseController
     /**
      * 刪除貼文.
      */
-    public function delete(Request $request, Response $response, array $args): Response
+    public function delete(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
     {
         try {
             $idValue = $args['id'] ?? 0;
@@ -894,7 +894,7 @@ class PostController extends BaseController
     /**
      * 切換貼文置頂狀態.
      */
-    public function togglePin(Request $request, Response $response, array $args): Response
+    public function togglePin(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
     {
         try {
             $idValue = $args['id'] ?? 0;
@@ -1093,7 +1093,7 @@ class PostController extends BaseController
      *
      * @param array<string, mixed> $args 路由參數
      */
-    public function destroy(Request $request, Response $response, array $args): Response
+    public function destroy(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
     {
         try {
             $id = $args['id'] ?? 0;

@@ -136,7 +136,7 @@ class Router implements RouterInterface
         return $this->routes;
     }
 
-    public function url(string $name, array $parameters = []): string
+    public function url(string $name, /** @var array<string, mixed> */ array $parameters = []): string
     {
         $route = $this->routes->getByName($name);
 
@@ -229,7 +229,7 @@ class Router implements RouterInterface
      * @param array<string, mixed> $previous
      * @return array<string, mixed>
      */
-    private function mergeGroupAttributes(array $previous, array $new): array
+    private function mergeGroupAttributes(array $previous, /** @var array<string, mixed> */ array $new): array
     {
         $merged = $previous;
 

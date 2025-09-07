@@ -29,7 +29,7 @@ interface JwtTokenServiceInterface
      *
      * @throws TokenGenerationException 當token產生失敗時
      */
-    public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, array $customClaims = []): TokenPair;
+    public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, /** @var array<string, mixed> */ array $customClaims = []): TokenPair;
 
     /**
      * 驗證access token的有效性.

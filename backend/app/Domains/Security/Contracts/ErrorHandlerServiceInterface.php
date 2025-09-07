@@ -18,19 +18,19 @@ interface ErrorHandlerServiceInterface
      * 記錄安全事件.
      * @param array<string, mixed> $context
      */
-    public function logSecurityEvent(string $event, array $context = []): void;
+    public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void;
 
     /**
      * 記錄登入嘗試.
      * @param array<string, mixed> $context
      */
-    public function logAuthenticationAttempt(bool $success, string $username, array $context = []): void;
+    public function logAuthenticationAttempt(bool $success, string $username, /** @var array<string, mixed> */ array $context = []): void;
 
     /**
      * 記錄可疑活動.
      * @param array<string, mixed> $context
      */
-    public function logSuspiciousActivity(string $activity, array $context = []): void;
+    public function logSuspiciousActivity(string $activity, /** @var array<string, mixed> */ array $context = []): void;
 
     /**
      * 清理敏感資料以便安全記錄.

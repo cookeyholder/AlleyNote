@@ -37,11 +37,11 @@ final readonly class JwtPayload implements JsonSerializable
         private string $jti,
         private string $sub,
         private string $iss,
-        private array $aud,
+        private /** @var array<string, mixed> */ array $aud,
         private DateTimeImmutable $iat,
         private DateTimeImmutable $exp,
         private ?DateTimeImmutable $nbf = null,
-        private array $customClaims = [],
+        private /** @var array<string, mixed> */ array $customClaims = [],
     ) {
         $this->validateJti($jti);
         $this->validateSub($sub);

@@ -245,8 +245,8 @@ final class PostStatisticsService
         }
 
         // 按成長率排序
-        usort($trendingUp, fn($a, $b) => $b['growth_rate'] <=> $a['growth_rate']);
-        usort($trendingDown, fn($a, $b) => $a['growth_rate'] <=> $b['growth_rate']);
+        usort($trendingUp, fn($a, $b): array => $b['growth_rate'] <=> $a['growth_rate']);
+        usort($trendingDown, fn($a, $b): array => $a['growth_rate'] <=> $b['growth_rate']);
 
         return [
             'trending_up' => array_slice($trendingUp, 0, 10),
@@ -441,7 +441,7 @@ final class PostStatisticsService
         }
 
         $variance = array_sum(
-            array_map(fn($value) => ((float) $value - $mean) ** 2, $performances),
+            array_map(fn($value): array => ((float) $value - $mean) ** 2, $performances),
         ) / count($performances);
 
         $coefficientOfVariation = sqrt($variance) / $mean;

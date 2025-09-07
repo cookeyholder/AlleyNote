@@ -9,6 +9,7 @@ use Exception;
 
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
+    private /** @var array<string, mixed> */\n
     private array $config;
 
     private ?string $currentNonce = null;

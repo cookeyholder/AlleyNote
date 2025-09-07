@@ -70,10 +70,8 @@ class TaggedCacheIntegrationTest extends TestCase
             {
                 return $callback();
             }
-
             /**\n      * @param array<string, mixed> $params
-             */
-            public function handleDriverFailure(
+             */            public function handleDriverFailure(
                 CacheDriverInterface $failedDriver,
                 array $availableDrivers,
                 string $operation,
@@ -81,10 +79,8 @@ class TaggedCacheIntegrationTest extends TestCase
             ): mixed {
                 return null;
             }
-
             /**\n      * @return array<string, mixed>
-             */
-            public function getStats(): array
+             */            public function getStats(): array
             {
                 return [];
             }
@@ -212,10 +208,8 @@ class TaggedCacheIntegrationTest extends TestCase
             );
         }
     }
-
     /**\n      * @param array<string, mixed> $stats
-     */
-    private function verifyTagStatisticsResults(array $stats): void
+     */    private function verifyTagStatisticsResults(array $stats): void
     {
         // 修正：TaggedCacheManager.getTagStatistics() 回傳的是簡單的標籤統計
         $expectedStats = [

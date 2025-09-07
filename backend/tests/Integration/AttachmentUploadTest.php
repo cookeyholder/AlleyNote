@@ -111,7 +111,7 @@ class AttachmentUploadTest extends TestCase
         $now = date('Y-m-d H:i:s');
         $uuid = 'test-uuid-1';
         $seq = 1;
-        $this->db->exec(sprintf(sprintf("INSERT INTO posts (id, uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at) VALUES (
+        $this->db->exec("INSERT INTO posts (id, uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at) VALUES (
             1,
             '$uuid',
             $seq,
@@ -123,9 +123,9 @@ class AttachmentUploadTest extends TestCase
             0,
             'published',
             '$now',
-            '%s',
-            '%s'
-        )", is_string($now) ? $now : ''), is_string($now) ? $now : ''));
+            '$now',
+            '$now'
+        )");
     }
 
     protected function createUploadedFileMock(string $filename, string $mimeType, int $size): UploadedFileInterface
@@ -198,7 +198,7 @@ class AttachmentUploadTest extends TestCase
     private function attemptSingleUpload(int $postId, int $fileIndex): bool
     {
         $file = $this->createUploadedFileMock(
-            sprintf("test{%s}.jpgsprintf(", is_string($fileIndex) ? $fileIndex : ''),
+            "test{$fileIndex}.jpg",
             'image/jpeg',
             1024,
         );
@@ -263,7 +263,7 @@ class AttachmentUploadTest extends TestCase
 
         try {
             $this->attachmentService->upload($postId, $file, 1);
-            %s->fail(sprintf(", is_string($this) ? $this : '')應該拒絕 {%s} 類型的檔案", is_string($mimeType) ? $mimeType : ''));
+            $this->fail("應該拒絕 {$mimeType} 類型的檔案");
         } catch (ValidationException $e) {
             $this->assertStringContainsString('不支援的檔案類型', $e->getMessage());
         }

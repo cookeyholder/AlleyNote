@@ -45,6 +45,7 @@ class CacheManager implements CacheManagerInterface
     private ?TagRepositoryInterface $tagRepository;
 
     /** @var array<string, mixed> 設定 */
+    private /** @var array<string, mixed> */\n
     private array $config;
 
     /** @var array<string, int> 統計資料 */
@@ -62,7 +63,7 @@ class CacheManager implements CacheManagerInterface
      */    public function __construct(
         CacheStrategyInterface $strategy,
         ?LoggerInterface $logger = null,
-        array $config = [],
+        /** @var array<string, mixed> */ array $config = [],
         ?CacheMonitorInterface $monitor = null,
         ?TagRepositoryInterface $tagRepository = null,
     ) {
@@ -117,7 +118,7 @@ class CacheManager implements CacheManagerInterface
     /**\n      * @return array<string, mixed>
      */    public function getAvailableDrivers(): array
     {
-        return array_filter($this->drivers, fn($driver) => $driver->isAvailable());
+        return array_filter($this->drivers, fn($driver): array => $driver->isAvailable());
     }
 
     public function setDefaultDriver(string $name): void
@@ -796,7 +797,7 @@ class CacheManager implements CacheManagerInterface
      * 處理驅動錯誤。
      * @param array<string, mixed> $params
      */
-    private function handleDriverError(string $driverName, Exception $error, string $operation, array $params): mixed
+    private function handleDriverError(string $driverName, Exception $error, string $operation, /** @var array<string, mixed> */ array $params): mixed
     {
         $this->stats['driver_failures']++;
 
@@ -810,7 +811,7 @@ class CacheManager implements CacheManagerInterface
         // 使用策略處理失敗
         $availableDrivers = array_filter(
             $this->drivers,
-            fn($driver, $name) => $name !== $driverName && $driver->isAvailable(),
+            fn($driver, $name): array => $name !== $driverName && $driver->isAvailable(),
             ARRAY_FILTER_USE_BOTH,
         );
 

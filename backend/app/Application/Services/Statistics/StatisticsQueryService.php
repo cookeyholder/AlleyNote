@@ -83,7 +83,7 @@ final class StatisticsQueryService
             if ($periodType !== null) {
                 $snapshots = array_filter(
                     $snapshots,
-                    fn($snapshot) => $snapshot->getPeriod()->type === $periodType,
+                    fn($snapshot): array => $snapshot->getPeriod()->type === $periodType,
                 );
             }
 
@@ -95,7 +95,7 @@ final class StatisticsQueryService
 
             $result = [
                 'data' => array_map(
-                    fn($snapshot) => [
+                    fn($snapshot): array => [
                         'id' => $snapshot->getId()->toString(),
                         'period' => [
                             'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H:i:s'),
@@ -522,7 +522,7 @@ final class StatisticsQueryService
         }
 
         $mean = array_sum($numericValues) / count($numericValues);
-        $squaredDiffs = array_map(fn(float $value) => pow($value - $mean, 2), $numericValues);
+        $squaredDiffs = array_map(fn(float $value): array => pow($value - $mean, 2), $numericValues);
         $variance = array_sum($squaredDiffs) / (count($numericValues) - 1);
 
         return round(sqrt($variance), 2);
@@ -571,9 +571,9 @@ final class StatisticsQueryService
      */
     private function executeCustomQuery(
         StatisticsPeriod $period,
-        array $metrics,
+        /** @var array<string, mixed> */ array $metrics,
         ?string $groupBy,
-        array $filters,
+        /** @var array<string, mixed> */ array $filters,
     ): array {
         // 基本查詢實作
         return [

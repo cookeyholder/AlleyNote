@@ -467,9 +467,9 @@ class StatisticsAdminController extends BaseController
             'components' => $components,
             'summary' => [
                 'total_components' => count($components),
-                'healthy_components' => count(array_filter($components, fn($c) => $c['status'] === 'healthy')),
-                'unhealthy_components' => count(array_filter($components, fn($c) => $c['status'] === 'unhealthy')),
-                'error_components' => count(array_filter($components, fn($c) => $c['status'] === 'error')),
+                'healthy_components' => count(array_filter($components, fn($c): array => $c['status'] === 'healthy')),
+                'unhealthy_components' => count(array_filter($components, fn($c): array => $c['status'] === 'unhealthy')),
+                'error_components' => count(array_filter($components, fn($c): array => $c['status'] === 'error')),
             ],
         ];
     }

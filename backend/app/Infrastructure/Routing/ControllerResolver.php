@@ -33,7 +33,7 @@ class ControllerResolver
     public function resolve(
         RouteInterface $route,
         ServerRequestInterface $request,
-        array $parameters = [],
+        /** @var array<string, mixed> */ array $parameters = [],
     ): ResponseInterface {
         $handler = $route->getHandler();
 
@@ -59,7 +59,7 @@ class ControllerResolver
      * 處理閉包函式處理器.
      * @param array<string, mixed> $parameters
      */
-    private function handleCallable(callable $handler, ServerRequestInterface $request, array $parameters): ResponseInterface
+    private function handleCallable(callable $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
         // 將路由參數注入到請求屬性中
         foreach ($parameters as $key => $value) {
@@ -360,7 +360,7 @@ class ControllerResolver
      * 處理字串格式處理器 "ControllerClass@method".
      * @param array<string, mixed> $parameters
      */
-    private function handleStringHandler(string $handler, ServerRequestInterface $request, array $parameters): ResponseInterface
+    private function handleStringHandler(string $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
         if (!str_contains($handler, '@')) {
             throw new RuntimeException("處理器格式錯誤: {$handler}，預期格式: ControllerClass@method");
@@ -376,7 +376,7 @@ class ControllerResolver
      * @param array<string, mixed> $handler
      * @param array<string, mixed> $parameters
      */
-    private function handleArrayHandler(array $handler, ServerRequestInterface $request, array $parameters): ResponseInterface
+    private function handleArrayHandler(array $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
         [$controllerClass, $method] = $handler;
 
@@ -482,7 +482,7 @@ class ControllerResolver
         object $controller,
         string $methodName,
         ServerRequestInterface $request,
-        array $routeParameters,
+        /** @var array<string, mixed> */ array $routeParameters,
     ): array {
         try {
             $reflection = new ReflectionMethod($controller, $methodName);

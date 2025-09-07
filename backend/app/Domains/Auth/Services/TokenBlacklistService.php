@@ -146,7 +146,7 @@ final class TokenBlacklistService
             return [];
         }
 
-        $validJtis = array_filter($jtis, fn($jti) => !empty($jti));
+        $validJtis = array_filter($jtis, fn($jti): array => !empty($jti));
 
         if (empty($validJtis)) {
             return [];
@@ -283,7 +283,7 @@ final class TokenBlacklistService
             return 0;
         }
 
-        $validJtis = array_filter($jtis, fn($jti) => !empty($jti));
+        $validJtis = array_filter($jtis, fn($jti): array => !empty($jti));
 
         if (empty($validJtis)) {
             return 0;
@@ -421,7 +421,7 @@ final class TokenBlacklistService
      * @return array<string, mixed> 搜尋結果
      */
     public function searchBlacklistEntries(
-        array $criteria,
+        /** @var array<string, mixed> */ array $criteria,
         ?int $limit = null,
         int $offset = 0,
     ): array {

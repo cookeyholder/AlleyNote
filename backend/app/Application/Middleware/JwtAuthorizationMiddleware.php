@@ -51,11 +51,14 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @var array<string, mixed>
      */
     private array $config;
-    /**\n      * @param array<string, mixed> $config
-     */    public function __construct(
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
-        array $config = [],
+        /** @var array<string, mixed> $config */
+        /** @var array<string, mixed> */ array $config = [],
     ) {
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
@@ -118,12 +121,14 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 執行授權檢查.
      * @param int $userId 使用者 ID
      * @param string $action 操作名稱
+     * @param array<string> $userPermissions 使用者權限陣列
      * @return AuthorizationResult 授權結果
      */
     private function authorize(
         int $userId,
         ?string $userRole,
-        array $userPermissions,
+        /** @var array<string> */
+        /** @var array<string, mixed> */ array $userPermissions,
         string $resource,
         string $action,
         ServerRequestInterface $request,
@@ -294,12 +299,14 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 自訂授權策略.
      * @param int $userId 使用者 ID
      * @param string $action 操作名稱
+     * @param array<string> $userPermissions 使用者權限陣列
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByCustomRules(
         int $userId,
         ?string $userRole,
-        array $userPermissions,
+        /** @var array<string> */
+        /** @var array<string, mixed> */ array $userPermissions,
         string $resource,
         string $action,
         ServerRequestInterface $request,
@@ -348,7 +355,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         $currentHour = (int) date('H');
-        $currentDay = date('w'); // 0 (Sunday) to 6 (Saturday)
+        $currentDay = (int) date('w'); // 0 (Sunday) to 6 (Saturday)
 
         foreach ($timeRestrictions as $restriction) {
             if (!$this->matchesTimeRestriction($restriction, $userRole, $action, $currentHour, $currentDay)) {
@@ -628,8 +635,9 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 檢查 IP 是否在指定清單中.
      * @param string $ip 要檢查的 IP 位址
+     * @param array<string> $ipList IP 清單
      */
-    private function isIpInList(string $ip, array $ipList): bool
+    private function isIpInList(string $ip, /** @var array<string> */ /** @var array<string, mixed> */ array $ipList): bool
     {
         foreach ($ipList as $ipPattern) {
             if ($this->ipMatches($ip, $ipPattern)) {
@@ -768,13 +776,16 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 執行自訂規則.
      * @param array<string, mixed> $ruleConfig
+     * @param array<string> $userPermissions 使用者權限陣列
      */
     private function executeCustomRule(
         string $ruleName,
-        array $ruleConfig,
+        /** @var array<string, mixed> */
+        /** @var array<string, mixed> */ array $ruleConfig,
         int $userId,
         ?string $userRole,
-        array $userPermissions,
+        /** @var array<string> */
+        /** @var array<string, mixed> */ array $userPermissions,
         ServerRequestInterface $request,
     ): ?AuthorizationResult {
         $ruleType = $ruleConfig['type'] ?? 'allow';
@@ -811,7 +822,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param array<string, mixed> $ruleConfig
      */
     private function evaluateConditionalRule(
-        array $ruleConfig,
+        /** @var array<string, mixed> */ array $ruleConfig,
         int $userId,
         ?string $userRole,
         ServerRequestInterface $request,

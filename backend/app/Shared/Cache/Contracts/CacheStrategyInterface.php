@@ -41,9 +41,9 @@ interface CacheStrategyInterface
      */
     public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
-        array $availableDrivers,
+        /** @var array<string, mixed> */ array $availableDrivers,
         string $operation,
-        array $params,
+        /** @var array<string, mixed> */ array $params,
     ): mixed;
 
     /**

@@ -72,7 +72,7 @@ class RefreshTokenException extends JwtException
     public function __construct(
         string $reason = self::REASON_NOT_FOUND,
         string $customMessage = '',
-        array $additionalContext = [],
+        /** @var array<string, mixed> */ array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason);
 
@@ -322,7 +322,7 @@ class RefreshTokenException extends JwtException
      * @param string $error 錯誤詳情
      * @param array<string, mixed> $tokenData Token 資料
      */
-    public static function storageFailed(string $error, array $tokenData = []): self
+    public static function storageFailed(string $error, /** @var array<string, mixed> */ array $tokenData = []): self
     {
         return new self(self::REASON_STORAGE_FAILED, '', [
             'storage_error' => $error,

@@ -102,7 +102,7 @@ class ValidatorFactory
     private function addCustomRules(ValidatorInterface $validator): void
     {
         // 使用者名稱驗證規則
-        $validator->addRule('username', function ($value, array $parameters) {
+        $validator->addRule('username', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
@@ -131,7 +131,7 @@ class ValidatorFactory
         });
 
         // 密碼強度驗證規則
-        $validator->addRule('password_strength', function ($value, array $parameters) {
+        $validator->addRule('password_strength', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
@@ -244,7 +244,7 @@ class ValidatorFactory
         });
 
         // 檔案名稱驗證規則
-        $validator->addRule('filename', function ($value, array $parameters) {
+        $validator->addRule('filename', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
@@ -308,7 +308,7 @@ class ValidatorFactory
         // 例如：跨欄位驗證、複雜的業務邏輯驗證等
 
         // 密碼確認驗證（用於註冊 DTO）
-        $validator->addRule('password_confirmed', function ($value, array $parameters, array $allData = []) {
+        $validator->addRule('password_confirmed', function ($value, /** @var array<string, mixed> */ array $parameters, /** @var array<string, mixed> */ array $allData = []) {
             if (!is_string($value)) {
                 return false;
             }

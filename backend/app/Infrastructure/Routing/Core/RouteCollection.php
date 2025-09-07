@@ -99,7 +99,7 @@ class RouteCollection implements RouteCollectionInterface
         unset($this->namedRoutes[$name]);
 
         // 從主要路由列表中移除
-        $this->routes = array_filter($this->routes, static fn($r) => $r !== $route);
+        $this->routes = array_filter($this->routes, static fn($r): array => $r !== $route);
 
         // 從方法索引中移除
         foreach ($route->getMethods() as $method) {
@@ -107,7 +107,7 @@ class RouteCollection implements RouteCollectionInterface
             if (isset($this->routesByMethod[$method])) {
                 $this->routesByMethod[$method] = array_filter(
                     $this->routesByMethod[$method],
-                    static fn($r) => $r !== $route,
+                    static fn($r): array => $r !== $route,
                 );
             }
         }

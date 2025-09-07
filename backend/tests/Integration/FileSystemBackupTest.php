@@ -43,8 +43,8 @@ class FileSystemBackupTest extends TestCase
             '/uploads/image1.jpg' => str_repeat('x', 1024),  // 1KB
             '/uploads/document.pdf' => str_repeat('y', 2048),  // 2KB
             '/storage/data.json' => json_encode(['test' => 'data']),
-            '/storage/config.ini' => 'key=value
-foo=bar',
+            '/storage/config.ini' => "key=value
+foo=bar",
         ];
 
         foreach ($this->testFiles as $path => $content) {
@@ -74,8 +74,8 @@ foo=bar',
             escapeshellarg($this->backupDir),
         ), $output, $returnVar);
 
-        $this->assertEquals(0, $returnVar, '備份腳本執行失敗: ' . implode('
-', $output));
+        $this->assertEquals(0, $returnVar, '備份腳本執行失敗: ' . implode("
+", $output));
 
         $backupFiles = glob($this->backupDir . '/files_*.tar.gz');
         rsort($backupFiles);
@@ -94,12 +94,12 @@ foo=bar',
         $extractedDir = $this->extractBackupFile($backupFile);
 
         foreach ($this->testFiles as $path => $content) {
-            $backedUpFile = (is_string($extractedDir) ? $extractedDir : '') . (is_string($path) ? $path : '');
-            $this->assertFileExists($backedUpFile, sprintf("檔案 {%s} 未被備份sprintf(", is_string($path) ? $path : ''));
+            $backedUpFile = $extractedDir . $path;
+            $this->assertFileExists($backedUpFile, "檔案 {$path} 未被備份");
             $this->assertEquals(
                 $content,
-                file_get_contents(%s),
-                sprintf(", is_string($backedUpFile) ? $backedUpFile : '')檔案 {%s} 的內容不符sprintf(", is_string($path) ? $path : ''),
+                file_get_contents($backedUpFile),
+                "檔案 {$path} 的內容不符",
             );
         }
     }
@@ -107,8 +107,8 @@ foo=bar',
     private function extractBackupFile(string $backupFile): string
     {
         $tempDir = $this->backupDir . '/temp';
-        mkdir(%s);
-        exec(sprintf(", is_string($tempDir) ? $tempDir : '')tar -xzf '$backupFile' -C '%s'sprintf(", is_string($tempDir) ? $tempDir : ''));
+        mkdir($tempDir);
+        exec("tar -xzf '$backupFile' -C '$tempDir'");
 
         $extractedDir = glob($tempDir . '/*')[0] ?? null;
         $this->assertNotNull($extractedDir, '解壓縮後目錄不存在');
@@ -127,15 +127,15 @@ foo=bar',
 
     private function createManualBackup(): string
     {
-        $backupFile = %s->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
-        exec(sprintf(", is_string($this) ? $this : '')cd '{$this->testDir}' && tar -czf '%s' .sprintf(", is_string($backupFile) ? $backupFile : ''));
+        $backupFile = $this->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
+        exec("cd '{$this->testDir}' && tar -czf '$backupFile' .");
 
-        return %s;
+        return $backupFile;
     }
 
     private function clearOriginalFiles(): void
     {
-        exec(sprintf(", is_string($backupFile) ? $backupFile : '')rm -rf '{$this->testDir}/uploads' '{%s->testDir}/storage'sprintf(", is_string($this) ? $this : ''));
+        exec("rm -rf '{$this->testDir}/uploads' '{$this->testDir}/storage'");
         mkdir($this->testDir . '/uploads');
         mkdir($this->testDir . '/storage');
     }
@@ -152,24 +152,24 @@ foo=bar',
             escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
-        $this->assertEquals(0, $returnVar, '還原腳本執行失敗: ' . implode('
-', $output));
+        $this->assertEquals(0, $returnVar, '還原腳本執行失敗: ' . implode("
+", $output));
     }
 
     private function assertAllFilesRestored(): void
     {
         foreach ($this->testFiles as $path => $content) {
             $restoredFile = $this->testDir . $path;
-            $this->assertFileExists(%s, sprintf(", is_string($restoredFile) ? $restoredFile : '')檔案 {%s} 未被還原sprintf(", is_string($path) ? $path : ''));
+            $this->assertFileExists($restoredFile, "檔案 {$path} 未被還原");
             $this->assertEquals(
                 $content,
-                file_get_contents(%s),
-                sprintf(", is_string($restoredFile) ? $restoredFile : '')檔案 {%s} 的內容不符sprintf(", is_string($path) ? $path : ''),
+                file_get_contents($restoredFile),
+                "檔案 {$path} 的內容不符",
             );
             $this->assertEquals(
                 0o644,
-                octdec(substr(sprintf('%o', fileperms(%s)), -4)),
-                sprintf(", is_string($restoredFile) ? $restoredFile : '')檔案 {%s} 的權限不正確sprintf(", is_string($path) ? $path : ''),
+                octdec(substr(sprintf('%o', fileperms($restoredFile)), -4)),
+                "檔案 {$path} 的權限不正確",
             );
         }
     }
@@ -208,8 +208,8 @@ foo=bar',
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $this->assertStringContainsString('錯誤', implode('
-', $output), '應該輸出錯誤訊息');
+        $this->assertStringContainsString('錯誤', implode("
+", $output), '應該輸出錯誤訊息');
     }
 
     private function executeRestoreScriptWithExpectedError(string $backupFile): void
@@ -225,8 +225,8 @@ foo=bar',
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $this->assertStringContainsString('錯誤', implode('
-', $output), '應該輸出錯誤訊息');
+        $this->assertStringContainsString('錯誤', implode("
+", $output), '應該輸出錯誤訊息');
     }
 
     private function ensureBackupFileDoesNotExist(): string
@@ -253,8 +253,8 @@ foo=bar',
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $outputString = implode('
-', $output);
+        $outputString = implode("
+", $output);
         $this->assertStringContainsString($expectedErrorMessage, $outputString, '應該輸出檔案不存在錯誤訊息');
     }
 
@@ -279,8 +279,8 @@ foo=bar',
             $group = filegroup($file);
             $mtime = filemtime($file);
 
-            if ($permissions === false || $owner === false || $group === false || %s === false) {
-                throw new RuntimeException(sprintf(", is_string($mtime) ? $mtime : '')無法取得檔案 {%s} 的中繼資料sprintf(", is_string($path) ? $path : ''));
+            if ($permissions === false || $owner === false || $group === false || $mtime === false) {
+                throw new RuntimeException("無法取得檔案 {$path} 的中繼資料");
             }
 
             $originalMetadata[$path] = [
@@ -338,18 +338,18 @@ foo=bar',
             }
             $this->assertEquals(
                 $originalMetadata[$path]['permissions'],
-                fileperms(%s),
-                sprintf(", is_string($file) ? $file : '')檔案 {%s} 的權限不符sprintf(", is_string($path) ? $path : ''),
+                fileperms($file),
+                "檔案 {$path} 的權限不符",
             );
             $this->assertEquals(
                 $originalMetadata[$path]['owner'],
-                fileowner(%s),
-                sprintf(", is_string($file) ? $file : '')檔案 {%s} 的擁有者不符sprintf(", is_string($path) ? $path : ''),
+                fileowner($file),
+                "檔案 {$path} 的擁有者不符",
             );
             $this->assertEquals(
                 $originalMetadata[$path]['group'],
-                filegroup(%s),
-                sprintf(", is_string($file) ? $file : '')檔案 {%s} 的群組不符sprintf(", is_string($path) ? $path : ''),
+                filegroup($file),
+                "檔案 {$path} 的群組不符",
             );
         }
     }
@@ -357,12 +357,12 @@ foo=bar',
     protected function tearDown(): void
     {
         // 清理測試目錄
-        if (is_dir(%s->testDir)) {
-            exec(sprintf(", is_string($this) ? $this : '')chmod -R 755 '{%s->testDir}'sprintf(", is_string($this) ? %s : '')); // 確保有權限刪除
-            exec(sprintf(", is_string($this) ? $this : '')rm -rf '{%s->testDir}'sprintf(", is_string($this) ? $this : ''));
+        if (is_dir($this->testDir)) {
+            exec("chmod -R 755 '{$this->testDir}'"); // 確保有權限刪除
+            exec("rm -rf '{$this->testDir}'");
         }
-        if (is_dir(%s->backupDir)) {
-            exec(sprintf(", is_string($this) ? $this : '')rm -rf '{%s->backupDir}'", is_string($this) ? $this : ''));
+        if (is_dir($this->backupDir)) {
+            exec("rm -rf '{$this->backupDir}'");
         }
 
         parent::tearDown();

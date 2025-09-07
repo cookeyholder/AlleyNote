@@ -43,7 +43,7 @@ class UserRepository
         return $this->findById((int) $this->db->lastInsertId());
     }
     /**\n      * @param array<string, mixed> $data
-     */    public function update(string $id, array $data): array
+     */    public function update(string $id, /** @var array<string, mixed> */ array $data): array
     {
         $fields = [];
         $params = ['id' => $id];

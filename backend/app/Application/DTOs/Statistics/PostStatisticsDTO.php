@@ -47,6 +47,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         public StatisticsMetric $commentCount,
         public StatisticsMetric $shareCount,
         public StatisticsPeriod $period,
+        /** @var array<string, mixed> */
         public array $additionalMetrics,
         public DateTimeImmutable $publishedAt,
         public DateTimeImmutable $updatedAt,
@@ -115,7 +116,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         Uuid $postId,
         string $title,
         SourceType $sourceType,
-        array $rawMetrics,
+        /** @var array<string, mixed> */ array $rawMetrics,
         StatisticsPeriod $period,
         DateTimeImmutable $publishedAt,
     ): self {

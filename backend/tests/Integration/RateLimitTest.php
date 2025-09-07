@@ -47,16 +47,16 @@ class RateLimitTest extends TestCase
 
         // 模擬正常請求
         $this->cacheService->shouldReceive('get')
-            ->with(sprintf("rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''))
+            ->with("rate_limit:{$ip}")
             ->andReturn(null);
 
-        %s->cacheService->shouldReceive('increment')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''))
+        $this->cacheService->shouldReceive('increment')
+            ->with("rate_limit:{$ip}")
             ->andReturn(1);
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue((is_array($result) && array_key_exists('allowed', $result) ? (is_array($result) && array_key_exists('allowed', $result) ? $result['allowed'] : null) : null), '正常請求應該被允許');
+        $this->assertTrue($result['allowed'], '正常請求應該被允許');
     }
 
     #[Test]
@@ -65,33 +65,33 @@ class RateLimitTest extends TestCase
         $ip = '192.168.1.2';
 
         // 第一次請求 - 模擬達到限制
-        %s->cacheService->shouldReceive('get')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''))
+        $this->cacheService->shouldReceive('get')
+            ->with("rate_limit:{$ip}")
             ->once()
             ->andReturn(['count' => 60, 'reset' => time() + 60]);
 
-        %s->cacheService->shouldReceive('set')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''), Mockery::any(), 60)
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip}", Mockery::any(), 60)
             ->once()
             ->andReturn(true);
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertFalse((is_array($result) && array_key_exists('allowed', $result) ? (is_array($result) && array_key_exists('allowed', $result) ? $result['allowed'] : null) : null), '超過限制的請求應該被拒絕');
+        $this->assertFalse($result['allowed'], '超過限制的請求應該被拒絕');
 
         // 第二次請求 - 模擬時間窗口重置
-        %s->cacheService->shouldReceive('get')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''))
+        $this->cacheService->shouldReceive('get')
+            ->with("rate_limit:{$ip}")
             ->once()
             ->andReturn(['count' => 60, 'reset' => time() - 10]); // 已過期
 
-        %s->cacheService->shouldReceive('set')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''), Mockery::any(), 60)
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip}", Mockery::any(), 60)
             ->andReturn(true);
 
         $resetResult = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue((is_array($resetResult) && array_key_exists('allowed', $resetResult) ? (is_array($resetResult) && array_key_exists('allowed', $resetResult) ? $resetResult['allowed'] : null) : null), '重置後的請求應該被允許');
+        $this->assertTrue($resetResult['allowed'], '重置後的請求應該被允許');
     }
 
     #[Test]
@@ -101,29 +101,29 @@ class RateLimitTest extends TestCase
         $ip2 = '192.168.1.4';
 
         // IP1 正常
-        %s->cacheService->shouldReceive('get')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip1) ? $ip1 : ''))
+        $this->cacheService->shouldReceive('get')
+            ->with("rate_limit:{$ip1}")
             ->andReturn(['count' => 30, 'reset' => time() + 60]);
 
-        %s->cacheService->shouldReceive('set')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip1) ? $ip1 : ''), Mockery::any(), 60)
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip1}", Mockery::any(), 60)
             ->andReturn(true);
 
         $result1 = $this->rateLimitService->checkLimit($ip1);
 
         // IP2 正常
-        %s->cacheService->shouldReceive('get')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip2) ? $ip2 : ''))
+        $this->cacheService->shouldReceive('get')
+            ->with("rate_limit:{$ip2}")
             ->andReturn(['count' => 10, 'reset' => time() + 60]);
 
-        %s->cacheService->shouldReceive('set')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip2) ? $ip2 : ''), Mockery::any(), 60)
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip2}", Mockery::any(), 60)
             ->andReturn(true);
 
         $result2 = $this->rateLimitService->checkLimit($ip2);
 
-        $this->assertTrue((is_array($result1) && array_key_exists('allowed', $result1) ? (is_array($result1) && array_key_exists('allowed', $result1) ? $result1['allowed'] : null) : null), 'IP1 應該被允許');
-        $this->assertTrue((is_array($result2) && array_key_exists('allowed', $result2) ? (is_array($result2) && array_key_exists('allowed', $result2) ? $result2['allowed'] : null) : null), 'IP2 應該被允許');
+        $this->assertTrue($result1['allowed'], 'IP1 應該被允許');
+        $this->assertTrue($result2['allowed'], 'IP2 應該被允許');
     }
 
     #[Test]
@@ -132,14 +132,14 @@ class RateLimitTest extends TestCase
         $ip = '192.168.1.5';
 
         // 模擬快取服務錯誤
-        %s->cacheService->shouldReceive('get')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''))
+        $this->cacheService->shouldReceive('get')
+            ->with("rate_limit:{$ip}")
             ->andThrow(new Exception('快取錯誤'));
 
         // 當快取服務不可用時，應該允許請求以確保服務可用性
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue((is_array($result) && array_key_exists('allowed', $result) ? (is_array($result) && array_key_exists('allowed', $result) ? $result['allowed'] : null) : null), '快取服務錯誤時應該允許請求');
+        $this->assertTrue($result['allowed'], '快取服務錯誤時應該允許請求');
     }
 
     #[Test]
@@ -148,28 +148,28 @@ class RateLimitTest extends TestCase
         $ip = '192.168.1.6';
 
         // 第一次請求
-        %s->cacheService->shouldReceive('get')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''))
+        $this->cacheService->shouldReceive('get')
+            ->with("rate_limit:{$ip}")
             ->andReturn(null);
 
-        %s->cacheService->shouldReceive('set')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''), Mockery::any(), 60)
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip}", Mockery::any(), 60)
             ->andReturn(true);
 
         $this->rateLimitService->checkLimit($ip);
 
         // 第二次請求
-        %s->cacheService->shouldReceive('get')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''))
+        $this->cacheService->shouldReceive('get')
+            ->with("rate_limit:{$ip}")
             ->andReturn(['count' => 1, 'reset' => time() + 60]);
 
-        %s->cacheService->shouldReceive('set')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}sprintf(", is_string($ip) ? $ip : ''), Mockery::any(), 60)
+        $this->cacheService->shouldReceive('set')
+            ->with("rate_limit:{$ip}", Mockery::any(), 60)
             ->andReturn(true);
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue((is_array($result) && array_key_exists('allowed', $result) ? (is_array($result) && array_key_exists('allowed', $result) ? $result['allowed'] : null) : null), '計數器應該正確遞增');
+        $this->assertTrue($result['allowed'], '計數器應該正確遞增');
     }
 
     #[Test]
@@ -179,13 +179,13 @@ class RateLimitTest extends TestCase
         $maxAttempts = 60;
 
         // 模擬達到最大嘗試次數
-        %s->cacheService->shouldReceive('get')
-            ->with(sprintf(", is_string($this) ? $this : '')rate_limit:{%s}", is_string($ip) ? $ip : ''))
+        $this->cacheService->shouldReceive('get')
+            ->with("rate_limit:{$ip}")
             ->andReturn(['count' => $maxAttempts, 'reset' => time() + 60]);
 
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertFalse((is_array($result) && array_key_exists('allowed', $result) ? (is_array($result) && array_key_exists('allowed', $result) ? $result['allowed'] : null) : null), '達到最大嘗試次數時應該被拒絕');
+        $this->assertFalse($result['allowed'], '達到最大嘗試次數時應該被拒絕');
     }
 
     protected function tearDown(): void

@@ -371,7 +371,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      * @param string $key 快取鍵
      * @return bool 是否成功
      */
-    public function putWithTags(string $key, mixed $value, array $tags, int $ttl = 3600): bool
+    public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): bool
     {
         $oldTags = $this->tags;
         $this->tags = $tags;
@@ -621,7 +621,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      * 將快取鍵添加到標籤索引.
      * @param string $key 快取鍵
      */
-    private function addKeyToTags(string $key, array $tags): void
+    private function addKeyToTags(string $key, /** @var array<string, mixed> */ array $tags): void
     {
         foreach ($tags as $tag) {
             if (!isset($this->tagIndex[$tag])) {

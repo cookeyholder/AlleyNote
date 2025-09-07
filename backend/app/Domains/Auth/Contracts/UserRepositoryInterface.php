@@ -81,7 +81,7 @@ interface UserRepositoryInterface
      * @param int $id 使用者 ID
      * @param array<string, mixed> $data 更新的資料
      */
-    public function update(int $id, array $data): bool;
+    public function update(int $id, /** @var array<string, mixed> */ array $data): bool;
 
     /**
      * 軟刪除使用者.
@@ -112,7 +112,7 @@ interface UserRepositoryInterface
      * @param array<string, mixed> $filters 篩選條件
      * @return array<string, mixed>
      */
-    public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array;
+    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters = []): array;
 
     /**
      * 取得已軟刪除的使用者列表.

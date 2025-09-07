@@ -19,12 +19,14 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
     private bool $isDevelopment;
 
+    private /** @var array<string, mixed> */\n
+
     private array $sensitiveKeys;
     /**\n      * @param array<string, mixed> $sensitiveKeys
      */    public function __construct(
         string $logPath = '',
         bool $isDevelopment = false,
-        array $sensitiveKeys = [],
+        /** @var array<string, mixed> */ array $sensitiveKeys = [],
     ) {
         $this->isDevelopment = $isDevelopment;
         $this->sensitiveKeys = array_merge([
@@ -72,7 +74,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         ];
     }
     /**\n      * @param array<string, mixed> $context
-     */    public function logSecurityEvent(string $event, array $context = []): void
+     */    public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeLogData($context);
 
@@ -85,7 +87,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         ], $sanitizedContext));
     }
     /**\n      * @param array<string, mixed> $context
-     */    public function logAuthenticationAttempt(bool $success, string $username, array $context = []): void
+     */    public function logAuthenticationAttempt(bool $success, string $username, /** @var array<string, mixed> */ array $context = []): void
     {
         $event = $success ? 'Authentication Success' : 'Authentication Failed';
 
@@ -95,7 +97,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         ], $context));
     }
     /**\n      * @param array<string, mixed> $context
-     */    public function logSuspiciousActivity(string $activity, array $context = []): void
+     */    public function logSuspiciousActivity(string $activity, /** @var array<string, mixed> */ array $context = []): void
     {
         $this->logger->error('Suspicious Activity: ' . $activity, array_merge([
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',

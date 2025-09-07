@@ -190,7 +190,7 @@ class IpRepository implements IpRepositoryInterface
         }, self::CACHE_TTL);
     }
     /**\n      * @param array<string, mixed> $data
-     */    public function update(int $id, array $data): IpList
+     */    public function update(int $id, /** @var array<string, mixed> */ array $data): IpList
     {
         if (isset($data['ip_address'])) {
             $this->validateIpAddress($data['ip_address']);
@@ -256,12 +256,12 @@ class IpRepository implements IpRepositoryInterface
         }, self::CACHE_TTL);
 
         return empty($results) ? [] : array_map(
-            fn($row) => $this->createIpListFromData($row),
+            fn($row): array => $this->createIpListFromData($row),
             $results,
         );
     }
     /**\n      * @param array<string, mixed> $conditions
-     */    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
+     */    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $conditions = []): array
     {
         $offset = ($page - 1) * $perPage;
         $where = [];
@@ -298,7 +298,7 @@ class IpRepository implements IpRepositoryInterface
         $stmt->execute($params);
 
         $items = array_map(
-            fn($row) => $this->createIpListFromData($row),
+            fn($row): array => $this->createIpListFromData($row),
             $stmt->fetchAll(PDO::FETCH_ASSOC),
         );
 

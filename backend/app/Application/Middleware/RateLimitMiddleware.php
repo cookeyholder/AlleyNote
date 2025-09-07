@@ -15,9 +15,13 @@ class RateLimitMiddleware implements MiddlewareInterface
 {
     private RateLimitService $rateLimitService;
 
+    /** @var array<string, mixed> */
     private array $config;
-    /**\n      * @param array<string, mixed> $config
-     */    public function __construct(RateLimitService $rateLimitService, array $config = [])
+    
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function __construct(RateLimitService $rateLimitService, array $config = [])
     {
         $this->rateLimitService = $rateLimitService;
         $this->config = array_merge($this->getDefaultConfig(), $config);
@@ -140,7 +144,7 @@ class RateLimitMiddleware implements MiddlewareInterface
      * 添加速率限制標頭.
      * @param array<string, mixed> $result
      */
-    private function addRateLimitHeaders(ResponseInterface $response, array $result): ResponseInterface
+    private function addRateLimitHeaders(ResponseInterface $response, /** @var array<string, mixed> */ array $result): ResponseInterface
     {
         return $response
             ->withHeader('X-RateLimit-Limit', (string) $result['limit'])

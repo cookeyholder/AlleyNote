@@ -29,7 +29,7 @@ class RegisterUserDTO extends BaseDTO
      * @param array<string, mixed> $data 輸入資料
      * @throws ValidationException 當驗證失敗時
      */
-    public function __construct(ValidatorInterface $validator, array $data)
+    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
     {
         parent::__construct($validator);
 
@@ -53,7 +53,7 @@ class RegisterUserDTO extends BaseDTO
     private function addUserValidationRules(): void
     {
         // 使用者名稱驗證規則
-        $this->validator->addRule('username', function ($value, array $parameters) {
+        $this->validator->addRule('username', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
@@ -87,7 +87,7 @@ class RegisterUserDTO extends BaseDTO
         });
 
         // 密碼強度驗證規則
-        $this->validator->addRule('password_strength', function ($value, array $parameters) {
+        $this->validator->addRule('password_strength', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
@@ -130,7 +130,7 @@ class RegisterUserDTO extends BaseDTO
         });
 
         // 密碼確認驗證規則
-        $this->validator->addRule('password_confirmed', function ($value, array $parameters, array $allData = []) {
+        $this->validator->addRule('password_confirmed', function ($value, /** @var array<string, mixed> */ array $parameters, /** @var array<string, mixed> */ array $allData = []) {
             if (!is_string($value)) {
                 return false;
             }
@@ -242,7 +242,7 @@ class RegisterUserDTO extends BaseDTO
     protected function validate(array $data): array
     {
         // 為跨欄位驗證規則提供完整資料
-        $this->validator->addRule('password_confirmed', function ($value, array $parameters) use ($data) {
+        $this->validator->addRule('password_confirmed', function ($value, /** @var array<string, mixed> */ array $parameters) use ($data) {
             if (!is_string($value)) {
                 return false;
             }

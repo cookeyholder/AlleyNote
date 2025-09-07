@@ -125,7 +125,7 @@ class TagManagementController extends BaseController
      *
      * @param array<string, mixed> $args
      */
-    public function getTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function getTag(ServerRequestInterface $request, ResponseInterface $response, /** @var array<string, mixed> */ array $args): ResponseInterface
     {
         try {
             $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
@@ -190,7 +190,7 @@ class TagManagementController extends BaseController
      *
      * @param array<string, mixed> $args
      */
-    public function deleteTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function deleteTag(ServerRequestInterface $request, ResponseInterface $response, /** @var array<string, mixed> */ array $args): ResponseInterface
     {
         try {
             $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
@@ -355,7 +355,7 @@ class TagManagementController extends BaseController
      *
      * @param array<string, mixed> $args
      */
-    public function deleteGroup(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function deleteGroup(ServerRequestInterface $request, ResponseInterface $response, /** @var array<string, mixed> */ array $args): ResponseInterface
     {
         try {
             $groupName = is_string($args['group']) ? urldecode($args['group']) : '';
@@ -422,7 +422,7 @@ class TagManagementController extends BaseController
      *
      * @param array<string, mixed> $args
      */
-    public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function flushTag(ServerRequestInterface $request, ResponseInterface $response, /** @var array<string, mixed> */ array $args): ResponseInterface
     {
         try {
             $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
@@ -704,7 +704,7 @@ class TagManagementController extends BaseController
      *
      * @param array<string, mixed> $args
      */
-    public function flushGroup(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function flushGroup(ServerRequestInterface $request, ResponseInterface $response, /** @var array<string, mixed> */ array $args): ResponseInterface
     {
         try {
             $groupName = is_string($args['group']) ? urldecode($args['group']) : '';

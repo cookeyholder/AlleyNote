@@ -32,7 +32,7 @@ class UpdatePostDTO extends BaseDTO
      * @param array<string, mixed> $data
      * @throws ValidationException 當驗證失敗時
      */
-    public function __construct(ValidatorInterface $validator, array $data)
+    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
     {
         parent::__construct($validator);
 
@@ -93,7 +93,7 @@ class UpdatePostDTO extends BaseDTO
     private function addPostValidationRules(): void
     {
         // 文章標題驗證規則（更新版本，允許空值）
-        $this->validator->addRule('post_title_update', function ($value, array $parameters) {
+        $this->validator->addRule('post_title_update', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if ($value === null || $value === '') {
                 return true; // 更新時允許空值
             }
@@ -121,7 +121,7 @@ class UpdatePostDTO extends BaseDTO
         });
 
         // 文章內容驗證規則（更新版本，允許空值）
-        $this->validator->addRule('post_content_update', function ($value, array $parameters) {
+        $this->validator->addRule('post_content_update', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if ($value === null || $value === '') {
                 return true; // 更新時允許空值
             }
@@ -157,7 +157,7 @@ class UpdatePostDTO extends BaseDTO
                 return false;
             }
 
-            $validStatuses = array_map(fn($status) => $status->value, PostStatus::cases());
+            $validStatuses = array_map(fn($status): array => $status->value, PostStatus::cases());
 
             return in_array($value, $validStatuses, true);
         });

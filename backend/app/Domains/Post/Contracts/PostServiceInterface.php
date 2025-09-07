@@ -55,7 +55,7 @@ interface PostServiceInterface
      *     last_page: int
      * }
      */
-    public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array;
+    public function listPosts(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters = []): array;
 
     /**
      * 取得置頂文章.
@@ -78,7 +78,7 @@ interface PostServiceInterface
      * @param array<string, mixed> $tagIds
      * @throws NotFoundException
      */
-    public function setTags(int $id, array $tagIds): bool;
+    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool;
 
     /**
      * 記錄文章觀看.

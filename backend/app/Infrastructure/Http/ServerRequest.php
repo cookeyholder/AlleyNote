@@ -39,10 +39,10 @@ class ServerRequest implements ServerRequestInterface
     public function __construct(
         string $method,
         UriInterface $uri,
-        array $headers = [],
+        /** @var array<string, mixed> */ array $headers = [],
         $body = null,
         string $version = '1.1',
-        array $serverParams = [],
+        /** @var array<string, mixed> */ array $serverParams = [],
     ) {
         $this->method = $method;
         $this->uri = $uri;

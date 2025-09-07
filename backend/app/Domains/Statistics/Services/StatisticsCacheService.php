@@ -257,7 +257,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         }
 
         $totalDuration = microtime(true) - $startTime;
-        $successCount = count(array_filter($results, fn($r) => $r['success']));
+        $successCount = count(array_filter($results, fn($r): array => $r['success']));
 
         $this->logger->info('快取預熱完成', [
             'total_duration' => $totalDuration,

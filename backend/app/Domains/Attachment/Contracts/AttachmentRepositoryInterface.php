@@ -59,7 +59,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param int $id 附件 ID
      * @param array<string, mixed> $data 更新的資料
      */
-    public function update(int $id, array $data): object;
+    public function update(int $id, /** @var array<string, mixed> */ array $data): object;
 
     /**
      * 軟刪除附件.
@@ -90,7 +90,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param array<string, mixed> $filters 篩選條件
      * @return array<string, mixed>
      */
-    public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array;
+    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters = []): array;
 
     /**
      * 取得已軟刪除的附件列表.

@@ -25,7 +25,7 @@ interface CacheMonitorInterface
         string $driver,
         bool $success,
         float $duration,
-        array $context = [],
+        /** @var array<string, mixed> */ array $context = [],
     ): void;
 
     /**
@@ -54,7 +54,7 @@ interface CacheMonitorInterface
      * @param string $error 錯誤訊息
      * @param array<string, mixed> $context
      */
-    public function recordError(string $driver, string $operation, string $error, array $context = []): void;
+    public function recordError(string $driver, string $operation, string $error, /** @var array<string, mixed> */ array $context = []): void;
 
     /**
      * 記錄驅動健康狀態。
@@ -63,7 +63,7 @@ interface CacheMonitorInterface
      * @param bool $healthy 是否健康
      * @param array<string, mixed> $details
      */
-    public function recordHealthStatus(string $driver, bool $healthy, array $details = []): void;
+    public function recordHealthStatus(string $driver, bool $healthy, /** @var array<string, mixed> */ array $details = []): void;
 
     /**
      * 取得快取統計資料。

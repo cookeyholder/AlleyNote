@@ -74,7 +74,7 @@ class IpController
             return [
                 'status' => 200,
                 'data' => array_map(
-                    fn(IpList $rule) => $rule->toSafeArray($this->sanitizer),
+                    fn(IpList $rule): array => $rule->toSafeArray($this->sanitizer),
                     $rules,
                 ),
             ];

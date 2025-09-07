@@ -96,7 +96,7 @@ class CacheTag
      */
     public static function fromArray(array $names): array
     {
-        return array_map(static fn(string $name) => new self($name), $names);
+        return array_map(static fn(string $name): array => new self($name), $names);
     }
 
     /**
@@ -107,7 +107,7 @@ class CacheTag
      */
     public static function toArray(array $tags): array
     {
-        return array_map(static fn(CacheTag $tag) => $tag->getName(), $tags);
+        return array_map(static fn(CacheTag $tag): array => $tag->getName(), $tags);
     }
 
     /**
