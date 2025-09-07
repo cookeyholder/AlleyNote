@@ -9,7 +9,8 @@ use App\Shared\Exceptions\ValidationException;
 class PostValidationException extends ValidationException
     /**\n      * @param array<string, mixed> $errors
      */
-{    public function __construct(string $message = '', array $errors = [])
+{
+    public function __construct(string $message = '', array $errors = [])
     {
         if (empty($message) && !empty($errors)) {
             $message = '貼文資料驗證失敗';
@@ -52,8 +53,10 @@ class PostValidationException extends ValidationException
     {
         return new self('無效的發布日期', ['publish_date' => '發布日期格式不正確或為過去時間']);
     }
+
     /**\n      * @param array<string, mixed> $errors
-     */    public static function multipleErrors(array $errors): self
+     */
+    public static function multipleErrors(array $errors): self
     {
         $message = '貼文資料包含多個錯誤';
 

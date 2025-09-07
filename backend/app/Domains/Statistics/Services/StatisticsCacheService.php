@@ -370,8 +370,10 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             return false;
         }
     }
+
     /**\n      * @return array<string, mixed>
-     */    public function getStats(): array
+     */
+    public function getStats(): array
     {
         try {
             $managerStats = $this->cacheManager->getStats();

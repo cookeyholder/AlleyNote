@@ -9,10 +9,10 @@ namespace App\Infrastructure\Routing\Contracts;
  *
  * 包含路由匹配的所有相關資訊
  */
-class RouteMatchResult
-    /**\n      * @param array<string, mixed> $parameters
+class RouteMatchResult /**\n      * @param array<string, mixed> $parameters
      */
-{    public function __construct(
+{
+    public function __construct(
         private readonly bool $isMatched,
         private readonly ?RouteInterface $route = null,
         private readonly array $parameters = [],

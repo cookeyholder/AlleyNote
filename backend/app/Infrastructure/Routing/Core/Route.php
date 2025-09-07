@@ -268,8 +268,10 @@ class Route implements RouteInterface
     {
         return new self(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'], $pattern, $handler);
     }
+
     /**\n      * @param array<string, mixed> $methods
-     */    public static function match(array $methods, string $pattern, callable|string $handler): self
+     */
+    public static function match(array $methods, string $pattern, callable|string $handler): self
     {
         return new self($methods, $pattern, $handler);
     }

@@ -124,10 +124,10 @@ class PostController extends BaseController
             $result = $this->postService->listPosts($page, $limit, $filters);
 
             // 確保 result 包含必要的鍵
-            if (!array_key_exists('items', $result) ||
-                !array_key_exists('total', $result) ||
-                !array_key_exists('page', $result) ||
-                !array_key_exists('per_page', $result)) {
+            if (!array_key_exists('items', $result)
+                || !array_key_exists('total', $result)
+                || !array_key_exists('page', $result)
+                || !array_key_exists('per_page', $result)) {
                 throw new Exception('Invalid service response format');
             }
 
@@ -368,6 +368,8 @@ class PostController extends BaseController
     )]
     /**
      * 顯示單一貼文.
+     *
+     * @param array<string, mixed> $args
      */
     public function show(Request $request, Response $response, array $args): Response
     {
@@ -521,6 +523,8 @@ class PostController extends BaseController
     )]
     /**
      * 更新貼文.
+     *
+     * @param array<string, mixed> $args
      */
     public function update(Request $request, Response $response, array $args): Response
     {
@@ -697,6 +701,8 @@ class PostController extends BaseController
     )]
     /**
      * 刪除貼文.
+     *
+     * @param array<string, mixed> $args
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
@@ -893,6 +899,8 @@ class PostController extends BaseController
     )]
     /**
      * 切換貼文置頂狀態.
+     *
+     * @param array<string, mixed> $args
      */
     public function togglePin(Request $request, Response $response, array $args): Response
     {
@@ -1085,6 +1093,7 @@ class PostController extends BaseController
         } elseif (is_numeric($remoteAddr) || is_scalar($remoteAddr)) {
             return (string) $remoteAddr;
         }
+
         return '127.0.0.1';
     }
 
@@ -1102,6 +1111,7 @@ class PostController extends BaseController
             if ($postId <= 0) {
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 

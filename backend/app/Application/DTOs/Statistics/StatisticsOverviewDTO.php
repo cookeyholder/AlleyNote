@@ -38,7 +38,9 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         public StatisticsPeriod $period,
         public StatisticsMetric $totalPosts,
         public StatisticsMetric $totalViews,
+        /** @var array<SourceStatistics> */
         public array $sourceStatistics,
+        /** @var array<string, mixed> */
         public array $additionalMetrics,
         public DateTimeImmutable $generatedAt,
     ) {

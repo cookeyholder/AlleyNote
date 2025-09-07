@@ -462,8 +462,10 @@ class AttachmentService implements AttachmentServiceInterface
             throw $e;
         }
     }
+
     /**\n      * @return array<string, mixed>
-     */    public function download(string $uuid, int $currentUserId): array
+     */
+    public function download(string $uuid, int $currentUserId): array
     {
         $attachment = $this->attachmentRepo->findByUuid($uuid);
         if (!$attachment) {
@@ -568,8 +570,9 @@ class AttachmentService implements AttachmentServiceInterface
             ],
         );
     }
+
     /**
-     * @return array<int, \App\Domains\Attachment\Models\Attachment>
+     * @return array<int, Attachment>
      */
     public function getByPostId(int $postId): array
     {

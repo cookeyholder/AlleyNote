@@ -20,8 +20,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     private bool $isDevelopment;
 
     private array $sensitiveKeys;
+
     /**\n      * @param array<string, mixed> $sensitiveKeys
-     */    public function __construct(
+     */
+    public function __construct(
         string $logPath = '',
         bool $isDevelopment = false,
         array $sensitiveKeys = [],
@@ -48,8 +50,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $this->initializeLogger($logPath ?: __DIR__ . '/../../../storage/logs');
         $this->registerErrorHandlers();
     }
+
     /**\n      * @return array<string, mixed>
-     */    public function handleException(Throwable $e, bool $isPublicError = false): array
+     */
+    public function handleException(Throwable $e, bool $isPublicError = false): array
     {
         // 記錄完整錯誤到日誌
         $this->logException($e);
@@ -71,8 +75,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
+
     /**\n      * @param array<string, mixed> $context
-     */    public function logSecurityEvent(string $event, array $context = []): void
+     */
+    public function logSecurityEvent(string $event, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeLogData($context);
 
@@ -84,8 +90,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'timestamp' => time(),
         ], $sanitizedContext));
     }
+
     /**\n      * @param array<string, mixed> $context
-     */    public function logAuthenticationAttempt(bool $success, string $username, array $context = []): void
+     */
+    public function logAuthenticationAttempt(bool $success, string $username, array $context = []): void
     {
         $event = $success ? 'Authentication Success' : 'Authentication Failed';
 
@@ -94,8 +102,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'success' => $success,
         ], $context));
     }
+
     /**\n      * @param array<string, mixed> $context
-     */    public function logSuspiciousActivity(string $activity, array $context = []): void
+     */
+    public function logSuspiciousActivity(string $activity, array $context = []): void
     {
         $this->logger->error('Suspicious Activity: ' . $activity, array_merge([
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
@@ -104,8 +114,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'timestamp' => time(),
         ], $this->sanitizeLogData($context)));
     }
+
     /**\n      * @param array<string, mixed> $data
-     */    public function sanitizeLogData(array $data): array
+     */
+    public function sanitizeLogData(array $data): array
     {
         $sanitized = [];
 
@@ -166,8 +178,8 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
         // 設定格式化器
         $formatter = new LineFormatter(
-            "[%datetime%] %channel%.%level_name%: %message% %context% %extra%
-",
+            '[%datetime%] %channel%.%level_name%: %message% %context% %extra%
+',
             'Y-m-d H:i:s',
             true,
             true,

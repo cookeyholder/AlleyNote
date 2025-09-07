@@ -254,12 +254,12 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
         echo "
 {$scenario} 效能報告:
 ";
-        echo '- 總執行時間: ' . number_format($duration, 4) . " 秒
-";
-        echo '- 平均查詢時間: ' . number_format($avgQueryTime * 1000, 2) . " ms
-";
-        echo '- 每秒查詢數: ' . number_format($iterations / $duration, 2) . " QPS
-";
+        echo '- 總執行時間: ' . number_format($duration, 4) . ' 秒
+';
+        echo '- 平均查詢時間: ' . number_format($avgQueryTime * 1000, 2) . ' ms
+';
+        echo '- 每秒查詢數: ' . number_format($iterations / $duration, 2) . ' QPS
+';
     }
 
     /**
@@ -345,15 +345,15 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
         $totalTime = array_sum(array_column($results, 'duration'));
         $avgTime = $totalTime / $totalPages;
 
-        echo "
+        echo '
 分頁查詢效能報告:
-";
-        echo '- 總查詢時間: ' . number_format($totalTime, 4) . " 秒
-";
-        echo '- 平均查詢時間: ' . number_format($avgTime * 1000, 2) . " ms
-";
-        echo '- 每秒頁面數: ' . number_format($totalPages / $totalTime, 2) . " PPS
-";
+';
+        echo '- 總查詢時間: ' . number_format($totalTime, 4) . ' 秒
+';
+        echo '- 平均查詢時間: ' . number_format($avgTime * 1000, 2) . ' ms
+';
+        echo '- 每秒頁面數: ' . number_format($totalPages / $totalTime, 2) . ' PPS
+';
     }
 
     /**
@@ -489,19 +489,19 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
         echo "
 {$title}:
 ";
-        echo str_repeat('=', strlen($title) + 1) . "
-";
+        echo str_repeat('=', strlen($title) + 1) . '
+';
 
         foreach ($results as $size => $result) {
             echo "批次大小: {$size}
 ";
-            echo '  - 執行時間: ' . number_format($result['duration'], 4) . " 秒
-";
-            echo '  - 吞吐量: ' . number_format($result['throughput'], 2) . " 筆/秒
-";
-            echo '  - 平均每筆: ' . number_format($result['avg_per_record'] * 1000, 2) . " ms
+            echo '  - 執行時間: ' . number_format($result['duration'], 4) . ' 秒
+';
+            echo '  - 吞吐量: ' . number_format($result['throughput'], 2) . ' 筆/秒
+';
+            echo '  - 平均每筆: ' . number_format($result['avg_per_record'] * 1000, 2) . ' ms
 
-";
+';
         }
     }
 }

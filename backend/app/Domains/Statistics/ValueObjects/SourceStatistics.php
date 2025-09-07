@@ -294,17 +294,17 @@ readonly class SourceStatistics
      * 轉換為陣列.
      *
      * @return array<string, mixed>
-     *     source_type: string,
-     *     source_name: string,
-     *     source_description: string,
-     *     count: array,
-     *     percentage: array,
-     *     additional_metrics: array,
-     *     has_data: bool,
-     *     is_primary_source: bool,
-     *     is_programmatic_access: bool,
-     *     is_external_source: bool
-     * }
+     *                              source_type: string,
+     *                              source_name: string,
+     *                              source_description: string,
+     *                              count: array,
+     *                              percentage: array,
+     *                              additional_metrics: array,
+     *                              has_data: bool,
+     *                              is_primary_source: bool,
+     *                              is_programmatic_access: bool,
+     *                              is_external_source: bool
+     *                              }
      */
     public function toArray(): array
     {

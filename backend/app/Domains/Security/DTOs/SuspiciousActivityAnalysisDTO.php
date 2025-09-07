@@ -179,28 +179,38 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     {
         return $this->severityLevel;
     }
+
     /**\n      * @return array<string, mixed>
-     */    public function getActivityCounts(): array
+     */
+    public function getActivityCounts(): array
     {
         return $this->activityCounts;
     }
+
     /**\n      * @return array<string, mixed>
-     */    public function getFailureCounts(): array
+     */
+    public function getFailureCounts(): array
     {
         return $this->failureCounts;
     }
+
     /**\n      * @return array<string, mixed>
-     */    public function getAnomalyScores(): array
+     */
+    public function getAnomalyScores(): array
     {
         return $this->anomalyScores;
     }
+
     /**\n      * @return array<string, mixed>
-     */    public function getDetectionRules(): array
+     */
+    public function getDetectionRules(): array
     {
         return $this->detectionRules;
     }
+
     /**\n      * @return array<string, mixed>
-     */    public function getMetadata(): array
+     */
+    public function getMetadata(): array
     {
         return $this->metadata;
     }

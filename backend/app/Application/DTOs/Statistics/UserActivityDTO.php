@@ -39,8 +39,11 @@ final readonly class UserActivityDTO implements JsonSerializable
         public StatisticsMetric $totalActiveUsers,
         public StatisticsMetric $newUsers,
         public StatisticsMetric $returningUsers,
+        /** @var array<string, mixed> */
         public array $topActiveUsers,
+        /** @var array<string, mixed> */
         public array $activityPatterns,
+        /** @var array<string, mixed> */
         public array $engagementMetrics,
         public DateTimeImmutable $generatedAt,
     ) {

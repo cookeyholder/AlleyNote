@@ -15,9 +15,13 @@ class RateLimitMiddleware implements MiddlewareInterface
 {
     private RateLimitService $rateLimitService;
 
+    /** @var array<string, mixed> */
     private array $config;
-    /**\n      * @param array<string, mixed> $config
-     */    public function __construct(RateLimitService $rateLimitService, array $config = [])
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function __construct(RateLimitService $rateLimitService, array $config = [])
     {
         $this->rateLimitService = $rateLimitService;
         $this->config = array_merge($this->getDefaultConfig(), $config);

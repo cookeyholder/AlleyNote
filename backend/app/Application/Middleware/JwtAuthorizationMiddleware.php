@@ -51,10 +51,14 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @var array<string, mixed>
      */
     private array $config;
-    /**\n      * @param array<string, mixed> $config
-     */    public function __construct(
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
+        /** @var array<string, mixed> */
         array $config = [],
     ) {
         $this->config = array_merge($this->getDefaultConfig(), $config);
@@ -348,7 +352,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         $currentHour = (int) date('H');
-        $currentDay = date('w'); // 0 (Sunday) to 6 (Saturday)
+        $currentDay = (int) date('w'); // 0 (Sunday) to 6 (Saturday)
 
         foreach ($timeRestrictions as $restriction) {
             if (!$this->matchesTimeRestriction($restriction, $userRole, $action, $currentHour, $currentDay)) {

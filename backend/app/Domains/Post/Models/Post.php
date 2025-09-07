@@ -34,8 +34,10 @@ class Post implements JsonSerializable
     private string $createdAt;
 
     private string $updatedAt;
+
     /**\n      * @param array<string, mixed> $data
-     */    public function __construct(array $data)
+     */
+    public function __construct(array $data)
     {
         $this->id = (int) ($data['id'] ?? 0);
         $this->uuid = $data['uuid'] ?? generate_uuid();
@@ -177,8 +179,10 @@ class Post implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**\n      * @param array<string, mixed> $data
-     */    public static function fromArray(array $data): self
+     */
+    public static function fromArray(array $data): self
     {
         return new self($data);
     }

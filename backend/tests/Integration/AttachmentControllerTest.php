@@ -48,6 +48,7 @@ class AttachmentControllerTest extends TestCase
                 if (is_scalar($content)) {
                     return strlen((string) $content);
                 }
+
                 return 0;
             });
 

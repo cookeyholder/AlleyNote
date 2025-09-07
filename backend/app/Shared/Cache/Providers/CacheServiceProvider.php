@@ -29,7 +29,7 @@ use RuntimeException;
 
 /**
  * 快取服務提供者。
- * 負責註冊快取系統的所有組件到 DI 容器中
+ * 負責註冊快取系統的所有組件到 DI 容器中.
  */
 class CacheServiceProvider
 {
@@ -510,7 +510,7 @@ class CacheServiceProvider
 
 /**
  * 快取設定建構器。
- * 提供流暢的介面來建構快取設定
+ * 提供流暢的介面來建構快取設定.
  */
 class CacheConfigBuilder
 {

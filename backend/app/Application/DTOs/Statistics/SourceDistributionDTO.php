@@ -34,8 +34,10 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      */
     public function __construct(
         public StatisticsPeriod $period,
+        /** @var array<SourceStatistics> */
         public array $sourceStatistics,
         public int $totalCount,
+        /** @var array<string, mixed> */
         public array $distributionAnalysis,
         public DateTimeImmutable $generatedAt,
     ) {

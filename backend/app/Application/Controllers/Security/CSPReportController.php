@@ -189,6 +189,7 @@ class CSPReportController
         }
 
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? 'unknown';
+
         return is_string($remoteAddr) ? $remoteAddr : 'unknown';
     }
 
@@ -287,8 +288,8 @@ class CSPReportController
                 continue;
             }
 
-            $timestamp = isset($data['timestamp']) && is_scalar($data['timestamp']) ?
-                strtotime((string) $data['timestamp']) : false;
+            $timestamp = isset($data['timestamp']) && is_scalar($data['timestamp'])
+                ? strtotime((string) $data['timestamp']) : false;
             if ($timestamp === false || $timestamp < $cutoffTime) {
                 if ($timestamp !== false && $timestamp < $cutoffTime) {
                     break; // 已經超過時間範圍

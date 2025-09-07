@@ -43,8 +43,8 @@ class FileSystemBackupTest extends TestCase
             '/uploads/image1.jpg' => str_repeat('x', 1024),  // 1KB
             '/uploads/document.pdf' => str_repeat('y', 2048),  // 2KB
             '/storage/data.json' => json_encode(['test' => 'data']),
-            '/storage/config.ini' => "key=value
-foo=bar",
+            '/storage/config.ini' => 'key=value
+foo=bar',
         ];
 
         foreach ($this->testFiles as $path => $content) {
@@ -74,8 +74,8 @@ foo=bar",
             escapeshellarg($this->backupDir),
         ), $output, $returnVar);
 
-        $this->assertEquals(0, $returnVar, '備份腳本執行失敗: ' . implode("
-", $output));
+        $this->assertEquals(0, $returnVar, '備份腳本執行失敗: ' . implode('
+', $output));
 
         $backupFiles = glob($this->backupDir . '/files_*.tar.gz');
         rsort($backupFiles);
@@ -152,8 +152,8 @@ foo=bar",
             escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
-        $this->assertEquals(0, $returnVar, '還原腳本執行失敗: ' . implode("
-", $output));
+        $this->assertEquals(0, $returnVar, '還原腳本執行失敗: ' . implode('
+', $output));
     }
 
     private function assertAllFilesRestored(): void
@@ -208,8 +208,8 @@ foo=bar",
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $this->assertStringContainsString('錯誤', implode("
-", $output), '應該輸出錯誤訊息');
+        $this->assertStringContainsString('錯誤', implode('
+', $output), '應該輸出錯誤訊息');
     }
 
     private function executeRestoreScriptWithExpectedError(string $backupFile): void
@@ -225,8 +225,8 @@ foo=bar",
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $this->assertStringContainsString('錯誤', implode("
-", $output), '應該輸出錯誤訊息');
+        $this->assertStringContainsString('錯誤', implode('
+', $output), '應該輸出錯誤訊息');
     }
 
     private function ensureBackupFileDoesNotExist(): string
@@ -253,8 +253,8 @@ foo=bar",
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $outputString = implode("
-", $output);
+        $outputString = implode('
+', $output);
         $this->assertStringContainsString($expectedErrorMessage, $outputString, '應該輸出檔案不存在錯誤訊息');
     }
 

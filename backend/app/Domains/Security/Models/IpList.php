@@ -24,8 +24,10 @@ class IpList implements JsonSerializable
     private string $createdAt;
 
     private string $updatedAt;
+
     /**\n      * @param array<string, mixed> $attributes
-     */    public function __construct(array $attributes)
+     */
+    public function __construct(array $attributes)
     {
         $this->id = isset($attributes['id']) ? (int) $attributes['id'] : 0;
         $this->uuid = $attributes['uuid'] ?? '';
@@ -36,8 +38,10 @@ class IpList implements JsonSerializable
         $this->createdAt = $attributes['created_at'] ?? date('Y-m-d H:i:s');
         $this->updatedAt = $attributes['updated_at'] ?? date('Y-m-d H:i:s');
     }
+
     /**\n      * @param array<string, mixed> $data
-     */    public static function fromArray(array $data): self
+     */
+    public static function fromArray(array $data): self
     {
         return new self($data);
     }
@@ -91,8 +95,10 @@ class IpList implements JsonSerializable
     {
         return $this->type === 0;
     }
+
     /**\n      * @return array<string, mixed>
-     */    public function toArray(): array
+     */
+    public function toArray(): array
     {
         return [
             'id' => $this->id,
@@ -122,8 +128,10 @@ class IpList implements JsonSerializable
 
         return $data;
     }
+
     /**\n      * @return array<string, mixed>
-     */    public function jsonSerialize(): array
+     */
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

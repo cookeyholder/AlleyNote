@@ -218,8 +218,8 @@ final class EnvironmentConfig
             throw new Exception("無法讀取環境配置檔案: {$filePath}");
         }
 
-        $lines = explode("
-", $content);
+        $lines = explode('
+', $content);
 
         foreach ($lines as $line) {
             $line = trim($line);

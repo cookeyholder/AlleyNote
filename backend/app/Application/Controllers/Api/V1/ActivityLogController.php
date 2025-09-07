@@ -71,6 +71,7 @@ class ActivityLogController extends BaseController
             if (!is_string($actionType) && !is_int($actionType)) {
                 $errorResponse = json_encode(['error' => 'Invalid action_type format']);
                 $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
@@ -78,6 +79,7 @@ class ActivityLogController extends BaseController
             if (!is_numeric($userId)) {
                 $errorResponse = json_encode(['error' => 'Invalid user_id format']);
                 $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
@@ -85,6 +87,7 @@ class ActivityLogController extends BaseController
             if (!is_array($metadata)) {
                 $errorResponse = json_encode(['error' => 'Invalid metadata format']);
                 $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
