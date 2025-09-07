@@ -225,9 +225,10 @@ class AuthController extends BaseController
             $user = $this->authService->register($dto);
 
             // 記錄成功註冊活動
+            $userId = $user['id'] ?? null;
             $activityDto = CreateActivityLogDTO::success(
                 actionType: ActivityType::USER_REGISTERED,
-                userId: $user['id'],
+                userId: is_int($userId) ? $userId : (is_numeric($userId) ? (int) $userId : null),
                 metadata: [
                     'email' => $user['email'],
                     'username' => $user['username'],
@@ -246,7 +247,7 @@ class AuthController extends BaseController
                 'data' => $user,
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
 
             return $response
                 ->withStatus(201)
@@ -257,7 +258,7 @@ class AuthController extends BaseController
                 'error' => $e->getMessage(),
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
 
             return $response
                 ->withStatus(400)
@@ -267,7 +268,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -277,7 +278,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -288,7 +289,7 @@ class AuthController extends BaseController
                 'error' => '系統發生錯誤',
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(500)
@@ -371,16 +372,15 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少必要的登入資料',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
 
                 return $response
                     ->withStatus(400)
                     ->withHeader('Content-Type', 'application/json');
             }
 
-            // 確保 credentials 是正確的類型
+            // 確保credentials是陣列類型
             /** @var array<string, mixed> $credentials */
-            $credentials = is_array($credentials) ? $credentials : [];
 
             // 建立登入請求 DTO
             $loginRequest = LoginRequestDTO::fromArray($credentials);
@@ -416,14 +416,14 @@ class AuthController extends BaseController
                 ...$loginResponse->toArray(),
             ];
 
-            $response->getBody()->write((json_encode($result) ?? ''));
+            $response->getBody()->write((json_encode($result) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             // 記錄登入失敗 - 驗證錯誤
-            if (isset($credentials['email']) && is_string($credentials['email'])) {
+            if (is_array($credentials) && isset($credentials['email']) && is_string($credentials['email'])) {
                 $this->logLoginFailure($request, $credentials['email'], $e->getMessage());
             }
 
@@ -431,7 +431,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -446,7 +446,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -461,14 +461,14 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             // 記錄登入失敗 - 系統錯誤
-            if (isset($credentials['email']) && is_string($credentials['email'])) {
+            if (is_array($credentials) && isset($credentials['email']) && is_string($credentials['email'])) {
                 $this->logLoginFailure($request, $credentials['email'], '系統發生錯誤');
             }
 
@@ -477,7 +477,7 @@ class AuthController extends BaseController
                 'error' => '系統發生錯誤',
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(500)
@@ -520,6 +520,12 @@ class AuthController extends BaseController
         try {
             $requestData = $request->getParsedBody();
 
+            // 確保requestData是陣列類型
+            if (!is_array($requestData)) {
+                $requestData = [];
+            }
+            /** @var array<string, mixed> $requestData */
+
             // 從 Authorization header 或 request body 取得 access token
             $accessToken = null;
             $refreshToken = null;
@@ -531,10 +537,8 @@ class AuthController extends BaseController
             }
 
             // 如果在 body 中有提供 tokens，優先使用
-            if (is_array($requestData)) {
-                $accessToken = $requestData['access_token'] ?? $accessToken;
-                $refreshToken = $requestData['refresh_token'] ?? null;
-            }
+            $accessToken = $requestData['access_token'] ?? $accessToken;
+            $refreshToken = $requestData['refresh_token'] ?? null;
 
             // 建立登出請求 DTO
             $logoutAllDevices = $requestData['logout_all_devices'] ?? false;
@@ -577,7 +581,7 @@ class AuthController extends BaseController
                 'message' => '登出成功',
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(200)
@@ -587,7 +591,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -597,7 +601,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -607,7 +611,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -617,7 +621,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => '系統發生錯誤',
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(500)
@@ -665,7 +669,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少有效的 Authorization header',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
                 return $response
                     ->withStatus(401)
@@ -697,7 +701,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => 'Token 無效或使用者不存在',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
                 return $response
                     ->withStatus(401)
@@ -719,7 +723,7 @@ class AuthController extends BaseController
                 ],
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(200)
@@ -729,7 +733,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -739,7 +743,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -749,7 +753,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -759,7 +763,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => '系統發生錯誤',
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(500)
@@ -836,7 +840,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少必要的 refresh_token',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
                 return $response
                     ->withStatus(400)
@@ -845,7 +849,6 @@ class AuthController extends BaseController
 
             // 確保 requestData 是正確的類型
             /** @var array<string, mixed> $requestData */
-            $requestData = is_array($requestData) ? $requestData : [];
 
             // 建立刷新請求 DTO
             $refreshRequest = RefreshRequestDTO::fromArray($requestData);
@@ -867,7 +870,7 @@ class AuthController extends BaseController
                 ...$refreshResponse->toArray(),
             ];
 
-            $response->getBody()->write((json_encode($result) ?? ''));
+            $response->getBody()->write((json_encode($result) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(200)
@@ -877,7 +880,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -887,7 +890,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(404)
@@ -897,7 +900,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(400)
@@ -907,7 +910,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => '系統發生錯誤',
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
 
             return $response
                 ->withStatus(500)
