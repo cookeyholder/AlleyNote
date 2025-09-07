@@ -6,9 +6,8 @@
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.svg)](https://www.php.net)
 [![Node Version](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![測試覆蓋率](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)](docs/STATISTICS_PERFORMANCE_TEST_REPORT.md)
-[![架構版本](https://img.shields.io/badge/Architecture-DDD+Statistics-green.svg)](docs/ARCHITECTURE_AUDIT.md)
-[![統計功能](https://img.shields.io/badge/Statistics-100%25_Complete-brightgreen.svg)](docs/development/STATISTICS_FEATURE_TODO.md)
+[![架構評分](https://img.shields.io/badge/Architecture_Score-100/100-brightgreen.svg)](docs/ARCHITECTURE_AUDIT.md)
+[![統計功能](https://img.shields.io/badge/Statistics-Complete-brightgreen.svg)](docs/STATISTICS_USAGE_GUIDE.md)
 
 > **🔥 新版本特色：前後端分離架構！**
 > 採用 **PHP DDD 後端** + **Vite 前端** 的現代化架構，提供更好的開發體驗和使用者體驗。
@@ -36,7 +35,7 @@
 
 ## 專案簡介
 
-AlleyNote 是一個基於 Domain-Driven Design (DDD) 架構設計的個人筆記管理系統，具備完整的統計分析功能。本專案採用現代化的 **前後端分離架構**，後端使用 PHP 8.4.11 實現 DDD 設計原則，前端採用 Vite + JavaScript，並提供完整的 Docker 容器化部署解決方案。
+AlleyNote 是一個基於 Domain-Driven Design (DDD) 架構設計的現代化筆記管理系統。本專案採用前後端分離架構，後端使用 PHP 8.4.11 實現 DDD 設計原則，前端採用 Vite + JavaScript，並提供完整的 Docker 容器化部署解決方案。
 
 ### 🌟 核心特色
 
@@ -46,8 +45,8 @@ AlleyNote 是一個基於 Domain-Driven Design (DDD) 架構設計的個人筆記
 - 🔐 **JWT 身份驗證**：安全的 API 認證機制
 - 🏗️ **DDD 架構**：高內聚、低耦合的領域驅動設計
 - 📱 **前後端分離**：RESTful API 設計
-- 🎯 **快取系統**：多層次快取策略，90% 命中率
-- 🚀 **高效能**：平均回應時間 < 30ms，記憶體使用 < 6MB
+- 🎯 **快取系統**：多層次快取策略
+- 🚀 **高效能**：平均回應時間 < 30ms
 - 📋 **資料驗證**：統一的 DTO 驗證機制
 - 🔍 **靜態分析**：PHPStan Level 10 程式碼品質保證
 - 🐳 **容器化部署**：Docker 完整生產環境支援
@@ -60,13 +59,13 @@ AlleyNote 是一個基於 Domain-Driven Design (DDD) 架構設計的個人筆記
 - **即時儀表板**：視覺化統計報表和趨勢圖表
 
 #### 🏆 專案成熟度
-- **程式碼品質**：268 個 PHP 檔案，PHPStan Level 10 合規
-- **測試覆蓋率**：143 個測試檔案，100% 覆蓋率
-- **文件完整性**：60 個文件檔案，涵蓋架構、API、部署指南
-- **自動化腳本**：89 個腳本檔案，完整的開發與維運工具
-- **統計功能**：214/214 個 TODO 項目完成 (100%)
+- **程式碼品質**：592 個檔案，535 個 PHP 檔案
+- **架構完整性**：429 個類別，80 個介面
+- **DDD 領域模組**：5 個核心領域（Statistics、Post、Security、Auth、Attachment）
+- **設計模式**：29 個 Repository、84 個 Service、172 個依賴注入實例
+- **可維護性評分**：100/100 分
 
-本專案遵循企業級開發標準，具備完整的 CI/CD 流程、自動化測試、效能監控，適合生產環境部署。
+本專案遵循企業級開發標準，具備完整的測試覆蓋、自動化流程、效能監控，適合生產環境部署。
 
 ---
 
@@ -182,24 +181,68 @@ graph TB
     class Scripts,Tests,CI tools
 ```
 
-#### 📁 目錄結構
+### 📁 目錄結構
 ```
 AlleyNote/
-├── 🎨 frontend/          # 前端應用程式
+├── 🎨 frontend/          # 前端應用程式（Vite + JavaScript）
 │   ├── src/              # 源碼
 │   ├── public/           # 靜態檔案
 │   └── dist/             # 建構輸出
-├── ⚡ backend/           # 後端 API
+├── ⚡ backend/           # 後端 API（PHP DDD 架構）
 │   ├── app/              # DDD 架構程式碼
-│   ├── config/           # 配置檔案
+│   │   ├── Application/  # 應用服務層（32 個類別）
+│   │   ├── Domains/      # 領域層（122 個類別）
+│   │   ├── Infrastructure/ # 基礎設施層（48 個類別）
+│   │   └── Shared/       # 共用元件（51 個類別）
+│   ├── tests/            # 測試檔案
+│   ├── scripts/          # 維運腳本
 │   ├── database/         # 資料庫相關
-│   └── tests/            # 測試檔案
+│   └── config/           # 配置檔案
 └── 🐳 docker/            # 容器配置
 ```
 
-### 技術堆疊
+## 技術架構
 
-#### 🏗️ 後端技術
+### 🎯 核心技術棧
+- **後端語言**: PHP 8.4.11（強型別、現代語法）
+- **Web 伺服器**: NGINX（高效能、負載均衡）
+- **資料庫**: SQLite3（零設定、檔案型資料庫）
+- **快取系統**: File Cache + Memory Cache（支援分散式快取）
+- **前端**: Vite + JavaScript + CSS3
+- **容器**: Docker + Nginx + PHP-FPM
+- **建構工具**: Vite (前端) + Composer (後端)
+
+### 🏗️ DDD 架構組件
+
+#### 🔍 架構層級統計
+- **Application 層**: 32 個類別（控制器、中介軟體、應用服務）
+- **Domains 層**: 122 個類別（實體、值物件、領域服務）
+- **Infrastructure 層**: 48 個類別（資料庫、外部服務）
+- **Shared 層**: 51 個類別（共用元件、驗證器）
+
+#### � DDD 領域邊界
+- **Statistics 領域**: 27 個檔案（統計分析核心）
+- **Post 領域**: 15 個檔案（筆記管理）
+- **Security 領域**: 41 個檔案（安全防護）
+- **Auth 領域**: 67 個檔案（身份驗證）
+- **Attachment 領域**: 9 個檔案（附件管理）
+
+### 🛠️ 設計模式使用
+- **Repository pattern**: 29 個實例
+- **Service pattern**: 84 個實例
+- **Factory pattern**: 8 個實例
+- **Command pattern**: 3 個實例
+- **Dependency injection**: 172 個實例
+- **Singleton pattern**: 2 個實例
+- **MVC pattern**: 3 個實例
+
+### 🔒 安全與維運
+- **SSL 憑證**: Let's Encrypt 自動續簽
+- **靜態分析**: PHPStan Level 10
+- **程式碼品質**: 可維護性評分 100/100
+- **容器化**: Docker 完整部署方案
+
+---
 - **PHP 8.4.11**：現代化 PHP 語言特性
 - **DDD 架構**：領域驅動設計，高內聚、低耦合
 - **JWT 認證**：安全的無狀態身份驗證

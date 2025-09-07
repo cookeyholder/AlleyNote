@@ -1,9 +1,9 @@
 # AlleyNote 開發者指南
 
-**版本**: v4.0
-**日期**: 2025-01-20
+**版本**: v5.0
+**日期**: 2025-09-07
 **適用範圍**: AlleyNote 專案新手與進階開發者
-**更新**: 符合最新專案現況與語法標準
+**更新**: 基於最新 DDD 架構和統計功能完整版本
 
 ---
 
@@ -29,13 +29,14 @@
 
 ```bash
 # 系統需求
-- PHP 8.4.12 (已安裝 Xdebug 3.4.5、Zend OPcache v8.4.12)
-- Docker 28.3.3 & Docker Compose v2.39.2
+- PHP 8.4.11 (現代化語法特性)
+- Docker 24.0+ & Docker Compose v2.20+
+- Node.js 18.0+ (前端建構工具)
 - Git
 - Composer
 
 # 複製專案
-git clone https://github.com/your-org/alleynote.git
+git clone https://github.com/cookeyholder/alleynote.git
 cd alleynote
 
 # 環境設定
@@ -48,6 +49,12 @@ cp .env.example .env
 ```bash
 # 啟動 Docker 容器
 docker-compose up -d
+
+# 安裝前端依賴
+cd frontend && npm install && cd ..
+
+# 安裝後端依賴
+docker-compose exec web composer install
 
 # 安裝依賴套件
 docker-compose exec web composer install

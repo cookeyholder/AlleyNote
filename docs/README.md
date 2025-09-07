@@ -1,52 +1,79 @@
-# AlleyNote 專案文件目錄# AlleyNote 專案文件目錄
+# AlleyNote 技術文件
 
+本目錄包含 AlleyNote 專案的完整技術文件，基於 DDD 架構設計的現代化筆記管理系統。
 
+## 📋 快速導覽
 
-本目錄包含 AlleyNote 專案的所有技術文件、專案管理文件和詳細指南。清理後包含 37 個核心文件，涵蓋管理、開發、部署、維運等各個面向。本目錄包含 AlleyNote 專案的所有技術文件、專案管理文件和詳細指南。目前包含 30 個專業文件，涵蓋管理、開發、部署、維運等各個面向。
+### 👨‍💼 管理員文件
+- **[ADMIN_QUICK_START.md](ADMIN_QUICK_START.md)**: 30分鐘快速入門指南 ⭐
+- **[ADMIN_MANUAL.md](ADMIN_MANUAL.md)**: 完整管理員操作手冊
+- **[SYSTEM_REQUIREMENTS.md](SYSTEM_REQUIREMENTS.md)**: 系統需求和環境準備
+- **[DEPLOYMENT.md](DEPLOYMENT.md)**: 詳細部署說明
+- **[SSL_DEPLOYMENT_GUIDE.md](SSL_DEPLOYMENT_GUIDE.md)**: SSL 設定指南
+- **[TROUBLESHOOTING_GUIDE.md](TROUBLESHOOTING_GUIDE.md)**: 故障排除和維護指南
 
+### 👨‍💻 開發者文件
+- **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)**: 完整開發者指南
+- **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)**: API 文件和規格
+- **[ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md)**: 架構審查報告
 
+### 🏗️ 專案架構
+- **[architecture/AlleyNote公布欄網站規格書.md](architecture/AlleyNote公布欄網站規格書.md)**: 系統規格書
+- **[architecture/project-architecture-summary.md](architecture/project-architecture-summary.md)**: 架構快照摘要
 
-**最新更新**: 2025-08-31 - 清理臨時開發報告檔案，保留核心技術文檔**最新更新**: 2025-08-28 - 已將 8 個歷史完成文件歸檔到 `archive/` 目錄
+### � 統計功能
+- **[STATISTICS_USAGE_GUIDE.md](STATISTICS_USAGE_GUIDE.md)**: 統計功能使用指南
 
+### 🔐 安全系統
+- **[USER_ACTIVITY_LOGGING_ARCHITECTURE.md](USER_ACTIVITY_LOGGING_ARCHITECTURE.md)**: 使用者活動記錄架構
+- **[USER_ACTIVITY_LOGGING_GUIDE.md](USER_ACTIVITY_LOGGING_GUIDE.md)**: 活動記錄使用指南
+- **[USER_ACTIVITY_LOGGING_SPEC.md](USER_ACTIVITY_LOGGING_SPEC.md)**: 活動記錄規格
 
+### 🎯 快取系統
+- **[CACHE_TAGGING_SYSTEM_GUIDE.md](CACHE_TAGGING_SYSTEM_GUIDE.md)**: 快取標籤系統使用指南
 
-------
+### 📚 歷史記錄
+- **[archive/](archive/)**: 已完成的開發記錄和報告
+- **[development/](development/)**: 開發過程文件
+- **[migration/](migration/)**: 系統遷移記錄
+  - [前後端分離完成報告](migration/FRONTEND_BACKEND_SEPARATION_COMPLETION_REPORT.md)
+  - [前後端分離遷移指南](migration/FRONTEND_BACKEND_SEPARATION_MIGRATION_GUIDE.md)
+  - [前後端分離 PR 模板](migration/FRONTEND_BACKEND_SEPARATION_PR_TEMPLATE.md) 🆕
 
+## 🎯 專案統計
 
+### 架構概覽
+- **總檔案數**: 592 個
+- **PHP 檔案數**: 535 個
+- **總類別數**: 429 個
+- **總介面數**: 80 個
+- **可維護性評分**: 100/100
 
-## 📋 文檔類型分類## 🚀 統一腳本管理系統
+### DDD 領域劃分
+- **Statistics 領域**: 27 個檔案（統計分析）
+- **Post 領域**: 15 個檔案（筆記管理）
+- **Security 領域**: 41 個檔案（安全防護）
+- **Auth 領域**: 67 個檔案（身份驗證）
+- **Attachment 領域**: 9 個檔案（附件管理）
 
+### 設計模式使用
+- **Repository pattern**: 29 個實例
+- **Service pattern**: 84 個實例
+- **Factory pattern**: 8 個實例
+- **Dependency injection**: 172 個實例
 
+## � 快速開始
 
-### 🎯 核心功能文檔### 使用指南
+1. **新手管理員**: 閱讀 [ADMIN_QUICK_START.md](ADMIN_QUICK_START.md)
+2. **開發者**: 參考 [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)
+3. **API 使用**: 查看 [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
+4. **部署需求**: 確認 [SYSTEM_REQUIREMENTS.md](SYSTEM_REQUIREMENTS.md)
 
-- **使用者活動記錄系統** - 完整的活動追蹤與監控功能- 詳細說明請參考 **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)** 中的「統一腳本管理系統」章節
+## 📝 文件維護
 
-- **快取標籤系統** - 高效能分層快取與標籤群組管理  - 85% 程式碼精簡：從 58+ 獨立腳本整合為 9 個核心類別
+所有文件基於 `project-architecture-snapshot.json` 和 `project-architecture-summary.md` 的最新架構快照更新。文件結構和內容與實際專案狀態保持同步。
 
-- **JWT 認證系統** - 安全的身份驗證與授權機制- 支援測試、品質檢查、資料庫管理、API 文件產生、部署工具等功能
-
-- **路由系統** - 靈活的路由管理與API處理
-
----
-
-### 📚 技術指南文檔
-
-- **開發者指南** - 程式碼規範、架構設計、最佳實踐## 👨‍💼 管理員文件錄
-
-- **管理員手冊** - 系統設定、維護操作、故障排除
-
-- **API 文檔** - RESTful API 規格與使用說明本目錄包含 AlleyNote 專案的所有技術文件、專案管理文件和詳細指南。目前包含 37 個專業文件，涵蓋管理、開發、部署、維運等各個面向。
-
-- **部署指南** - 環境配置、SSL設定、生產部署
-
----
-
----
-
-## �️ 統一腳本管理系統
-
-## 👨‍💼 管理員文件
+最後更新：2025年9月7日
 
 ### 核心系統文件
 
