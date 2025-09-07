@@ -96,9 +96,9 @@ class PostService implements PostServiceInterface
      * 取得文章列表.
      * @param int $page 頁碼
      * @param array<string, mixed> $filters
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
-    public function listPosts(int $page = 1, int $perPage = 10, array $filters/** @var array<string, mixed> */ = []): array
+    public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {
         $result = $this->repository->paginate($page, $perPage, $filters);
 
@@ -115,7 +115,7 @@ class PostService implements PostServiceInterface
     /**
      * 取得置頂文章列表.
      * @param int $limit 取得筆數
-     * @return array<string, mixed><Post>
+     * @return array<string, mixed>
      */
     public function getPinnedPosts(int $limit = 5): array
     {
@@ -139,7 +139,7 @@ class PostService implements PostServiceInterface
      * 設定文章標籤.
      * @param int $id 文章 ID
      */
-    public function setTags(int $id, array $tagIds/** @var array<string, mixed> */): bool
+    public function setTags(int $id, array $tagIds): bool
     {
         $post = $this->repository->find($id);
         if (!$post) {

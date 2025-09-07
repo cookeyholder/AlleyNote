@@ -31,7 +31,7 @@ class AuthServiceProvider
 {
     /**
      * 取得所有認證服務定義.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public static function getDefinitions(): array
     {
@@ -181,7 +181,7 @@ class AuthServiceProvider
 
     /**
      * 取得中介軟體別名映射.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public static function getMiddlewareAliases(): array
     {

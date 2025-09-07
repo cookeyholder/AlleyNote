@@ -40,7 +40,7 @@ interface JwtProviderInterface
     /**
      * 驗證 token.
      * @param string $token JWT token
-     * @return array<string, mixed><string, mixed> 解析後的payload
+     * @return array<string, mixed> 解析後的payload
      *
      * @throws TokenExpiredException 當token過期時
      * @throws InvalidTokenException 當token無效時
@@ -51,7 +51,7 @@ interface JwtProviderInterface
     /**
      * 解析 token payload（不進行驗證）.
      * @param string $token JWT token
-     * @return array<string, mixed><string, mixed> 解析後的payload
+     * @return array<string, mixed> 解析後的payload
      *
      * @throws TokenParsingException 當token解析失敗時
      */

@@ -702,7 +702,7 @@ class StatisticsController extends BaseController
     /**
      * 驗證概覽參數。
      * @param array<string, mixed> $queryParams
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function validateOverviewParams(array $queryParams): array
     {
@@ -723,7 +723,7 @@ class StatisticsController extends BaseController
     /**
      * 驗證文章統計參數。
      * @param array<string, mixed> $queryParams
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function validatePostsParams(array $queryParams): array
     {
@@ -757,7 +757,7 @@ class StatisticsController extends BaseController
     /**
      * 驗證來源分佈參數。
      * @param array<string, mixed> $queryParams
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function validateSourcesParams(array $queryParams): array
     {
@@ -775,7 +775,7 @@ class StatisticsController extends BaseController
     /**
      * 驗證使用者統計參數。
      * @param array<string, mixed> $queryParams
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function validateUsersParams(array $queryParams): array
     {
@@ -799,7 +799,7 @@ class StatisticsController extends BaseController
     /**
      * 驗證熱門內容參數。
      * @param array<string, mixed> $queryParams
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function validatePopularParams(array $queryParams): array
     {
@@ -821,7 +821,7 @@ class StatisticsController extends BaseController
     /**
      * 驗證趨勢參數。
      * @param array<string, mixed> $queryParams
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function validateTrendsParams(array $queryParams): array
     {
@@ -864,7 +864,7 @@ class StatisticsController extends BaseController
     /**
      * 驗證日期範圍。
      * @param array<string, mixed> $queryParams
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function validateDateRange(array $queryParams): array
     {
@@ -979,7 +979,7 @@ class StatisticsController extends BaseController
     /**
      * 確保所有陣列鍵都是字串型態.
      * @param array<mixed, mixed> $params
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function ensureStringKeys(array $params): array
     {

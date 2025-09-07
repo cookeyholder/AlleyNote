@@ -54,9 +54,9 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         StatisticsMetric $totalPosts,
         StatisticsMetric $totalViews,
         /** @var array<string, mixed> */
-        array $sourceStatistics/** @var array<string, mixed> */,
+        array $sourceStatistics,
         /** @var array<string, mixed> */
-        array $additionalMetrics/** @var array<string, mixed> */ = [],
+        array $additionalMetrics = [],
     ): self {
         return new self(
             $period,
@@ -163,7 +163,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得格式化的統計概覽.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getFormattedOverview(): array
     {
@@ -209,7 +209,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得摘要資訊.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getSummary(): array
     {
@@ -225,7 +225,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得主要來源.
-     * @return array<string, mixed><string, mixed>|null
+     * @return array<string, mixed>|null
      */
     public function getTopSource(): ?array
     {
@@ -274,7 +274,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -326,7 +326,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

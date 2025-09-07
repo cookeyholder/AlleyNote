@@ -28,7 +28,7 @@ class SecurityServiceProvider
 {
     /**
      * 取得所有 Security 服務定義.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public static function getDefinitions(): array
     {
@@ -65,7 +65,7 @@ class SecurityServiceProvider
             /**
              * @param array<string, mixed> $context
              */
-            public function emergency(Stringable|string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+            public function emergency(Stringable|string $message, /** @var array<string, mixed> */ array $context = []): void
             {
                 error_log("[EMERGENCY] $message");
             }
@@ -73,7 +73,7 @@ class SecurityServiceProvider
             /**
              * @param array<string, mixed> $context
              */
-            public function alert(Stringable|string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+            public function alert(Stringable|string $message, /** @var array<string, mixed> */ array $context = []): void
             {
                 error_log("[ALERT] $message");
             }
@@ -81,7 +81,7 @@ class SecurityServiceProvider
             /**
              * @param array<string, mixed> $context
              */
-            public function critical(Stringable|string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+            public function critical(Stringable|string $message, /** @var array<string, mixed> */ array $context = []): void
             {
                 error_log("[CRITICAL] $message");
             }
@@ -89,7 +89,7 @@ class SecurityServiceProvider
             /**
              * @param array<string, mixed> $context
              */
-            public function error(Stringable|string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+            public function error(Stringable|string $message, /** @var array<string, mixed> */ array $context = []): void
             {
                 error_log("[ERROR] $message");
             }
@@ -97,7 +97,7 @@ class SecurityServiceProvider
             /**
              * @param array<string, mixed> $context
              */
-            public function warning(Stringable|string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+            public function warning(Stringable|string $message, /** @var array<string, mixed> */ array $context = []): void
             {
                 error_log("[WARNING] $message");
             }
@@ -105,7 +105,7 @@ class SecurityServiceProvider
             /**
              * @param array<string, mixed> $context
              */
-            public function notice(Stringable|string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+            public function notice(Stringable|string $message, /** @var array<string, mixed> */ array $context = []): void
             {
                 error_log("[NOTICE] $message");
             }
@@ -113,7 +113,7 @@ class SecurityServiceProvider
             /**
              * @param array<string, mixed> $context
              */
-            public function info(Stringable|string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+            public function info(Stringable|string $message, /** @var array<string, mixed> */ array $context = []): void
             {
                 error_log("[INFO] $message");
             }
@@ -121,7 +121,7 @@ class SecurityServiceProvider
             /**
              * @param array<string, mixed> $context
              */
-            public function debug(Stringable|string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+            public function debug(Stringable|string $message, /** @var array<string, mixed> */ array $context = []): void
             {
                 error_log("[DEBUG] $message");
             }
@@ -129,7 +129,7 @@ class SecurityServiceProvider
             /**
              * @param array<string, mixed> $context
              */
-            public function log($level, Stringable|string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+            public function log($level, Stringable|string $message, /** @var array<string, mixed> */ array $context = []): void
             {
                 error_log("[$level] $message");
             }

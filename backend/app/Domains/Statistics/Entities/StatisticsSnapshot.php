@@ -48,9 +48,9 @@ class StatisticsSnapshot extends AggregateRoot
         int $totalPosts = 0,
         int $totalViews = 0,
         /** @var array<string, mixed> */
-        array $sourceStats/** @var array<string, mixed> */ = [],
+        array $sourceStats = [],
         /** @var array<string, mixed> */
-        array $additionalMetrics/** @var array<string, mixed> */ = [],
+        array $additionalMetrics = [],
     ): self {
         // 驗證來源統計
         foreach ($sourceStats as $sourceStatistics) {
@@ -119,9 +119,9 @@ class StatisticsSnapshot extends AggregateRoot
         StatisticsMetric $totalPosts,
         StatisticsMetric $totalViews,
         /** @var array<string, mixed> */
-        array $sourceStats/** @var array<string, mixed> */,
+        array $sourceStats,
         /** @var array<string, mixed> */
-        array $additionalMetrics/** @var array<string, mixed> */,
+        array $additionalMetrics,
         DateTimeImmutable $createdAt,
         ?DateTimeImmutable $updatedAt = null,
     ): self {
@@ -184,7 +184,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得所有來源統計.
-     * @return array<string, mixed><SourceStatistics>
+     * @return array<string, mixed>
      */
     public function getSourceStats(): array
     {
@@ -215,7 +215,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得所有額外指標.
-     * @return array<string, mixed><string, StatisticsMetric>
+     * @return array<string, mixed>
      */
     public function getAdditionalMetrics(): array
     {
@@ -473,7 +473,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得排序後的來源統計（按計數降序）.
-     * @return array<string, mixed><SourceStatistics>
+     * @return array<string, mixed>
      */
     public function getSortedSourceStats(): array
     {
@@ -489,7 +489,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得統計摘要.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getSummary(): array
     {
@@ -509,7 +509,7 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

@@ -92,7 +92,7 @@ interface RouterInterface
      *
      * @param array<string, mixed> $parameters
      */
-    public function url(string $name, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */ = []): string;
+    public function url(string $name, /** @var array<string, mixed> */ array $parameters = []): string;
 
     /**
      * 設定路由快取.

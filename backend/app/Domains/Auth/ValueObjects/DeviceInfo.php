@@ -276,7 +276,7 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -299,7 +299,7 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * 轉換為摘要格式（隱藏敏感資訊）.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toSummary(): array
     {
@@ -315,7 +315,7 @@ final readonly class DeviceInfo implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -425,7 +425,7 @@ final readonly class DeviceInfo implements JsonSerializable
     /**
      * 解析使用者代理字串.
      * @param string $userAgent 使用者代理字串
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private static function parseUserAgent(string $userAgent): array
     {

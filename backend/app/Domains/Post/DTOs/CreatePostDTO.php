@@ -32,10 +32,12 @@ class CreatePostDTO extends BaseDTO
     public readonly ?string $publishDate;
 
     /**
+     * 建構函數.
      * @param ValidatorInterface $validator 驗證器實例
+     * @param array<string, mixed> $data 要驗證的資料
      * @throws ValidationException 當驗證失敗時
      */
-    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data/** @var array<string, mixed> */)
+    public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);
 
@@ -76,7 +78,7 @@ class CreatePostDTO extends BaseDTO
     private function addPostValidationRules(): void
     {
         // 文章標題驗證規則
-        $this->validator->addRule('post_title', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
+        $this->validator->addRule('post_title', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
@@ -100,7 +102,7 @@ class CreatePostDTO extends BaseDTO
         });
 
         // 文章內容驗證規則
-        $this->validator->addRule('post_content', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
+        $this->validator->addRule('post_content', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
@@ -182,7 +184,7 @@ class CreatePostDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
-     * @return array<string, mixed><string, string>
+     * @return array<string, mixed>
      */
     protected function getValidationRules(): array
     {
@@ -199,7 +201,7 @@ class CreatePostDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

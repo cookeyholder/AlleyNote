@@ -37,7 +37,7 @@ final readonly class RefreshRequestDTO
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

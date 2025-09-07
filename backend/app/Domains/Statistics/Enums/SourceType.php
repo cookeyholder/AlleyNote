@@ -117,7 +117,7 @@ enum SourceType: string
 
     /**
      * 取得所有來源類型.
-     * @return array<string, mixed><self>
+     * @return array<string, mixed>
      */
     public static function getAllTypes(): array
     {
@@ -126,7 +126,7 @@ enum SourceType: string
 
     /**
      * 取得主要來源類型.
-     * @return array<string, mixed><self>
+     * @return array<string, mixed>
      */
     public static function getPrimarySources(): array
     {

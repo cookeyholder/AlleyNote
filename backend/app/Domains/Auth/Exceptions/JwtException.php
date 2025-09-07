@@ -39,7 +39,7 @@ abstract class JwtException extends Exception
         int $code = 0,
         ?Exception $previous = null,
         /** @var array<string, mixed> */
-        array $context/** @var array<string, mixed> */ = [],
+        array $context = [],
     ) {
         parent::__construct($message, $code, $previous);
         $this->context = $context;
@@ -47,7 +47,7 @@ abstract class JwtException extends Exception
 
     /**
      * 取得錯誤上下文資訊.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getContext(): array
     {
@@ -86,7 +86,7 @@ abstract class JwtException extends Exception
 
     /**
      * 取得錯誤詳細資訊（用於 API 回應）.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getErrorDetails(): array
     {
@@ -121,7 +121,7 @@ abstract class JwtException extends Exception
 
     /**
      * 轉換為陣列格式（用於日誌記錄）.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

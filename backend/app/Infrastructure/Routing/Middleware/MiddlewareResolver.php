@@ -124,7 +124,7 @@ class MiddlewareResolver
 
     /**
      * 取得所有可用的中介軟體別名.
-     * @return array<string, mixed><string, string>
+     * @return array<string, mixed>
      */
     public function getAliases(): array
     {

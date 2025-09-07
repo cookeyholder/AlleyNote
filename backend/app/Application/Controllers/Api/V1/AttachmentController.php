@@ -284,7 +284,7 @@ class AttachmentController
      * 下載附件.
      * @param array<string, mixed> $args 路由參數
      */
-    public function download(Request $request, Response $response, /** @var array<string, mixed> */ array $args/** @var array<string, mixed> */): Response
+    public function download(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
     {
         // 這個方法需要實作檔案下載邏輯
         try {

@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-08 03:07:08",
+        "scan_time": "2025-09-08 03:14:26",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -164,7 +164,7 @@
                     "type": "file",
                     "path": "app\/Application.php",
                     "extension": "php",
-                    "size": 10412
+                    "size": 10457
                 },
                 "Domains": {
                     "type": "directory",
@@ -182,31 +182,31 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Contracts\/SystemStatisticsRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 6636
+                                            "size": 6951
                                         },
                                         "StatisticsRepositoryInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Contracts\/StatisticsRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 4488
+                                            "size": 4335
                                         },
                                         "PostStatisticsRepositoryInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Contracts\/PostStatisticsRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 7758
+                                            "size": 7968
                                         },
                                         "StatisticsCacheServiceInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Contracts\/StatisticsCacheServiceInterface.php",
                                             "extension": "php",
-                                            "size": 4273
+                                            "size": 4283
                                         },
                                         "UserStatisticsRepositoryInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Contracts\/UserStatisticsRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 7384
+                                            "size": 7639
                                         }
                                     }
                                 },
@@ -218,13 +218,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Enums\/PeriodType.php",
                                             "extension": "php",
-                                            "size": 2390
+                                            "size": 2398
                                         },
                                         "SourceType.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Enums\/SourceType.php",
                                             "extension": "php",
-                                            "size": 4268
+                                            "size": 4284
                                         }
                                     }
                                 },
@@ -284,7 +284,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Commands\/StatisticsCalculationCommand.php",
                                             "extension": "php",
-                                            "size": 14501
+                                            "size": 14476
                                         }
                                     }
                                 },
@@ -296,13 +296,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Events\/StatisticsSnapshotUpdated.php",
                                             "extension": "php",
-                                            "size": 1355
+                                            "size": 1370
                                         },
                                         "StatisticsSnapshotCreated.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Events\/StatisticsSnapshotCreated.php",
                                             "extension": "php",
-                                            "size": 1361
+                                            "size": 1376
                                         }
                                     }
                                 },
@@ -314,19 +314,19 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Services\/StatisticsCalculationService.php",
                                             "extension": "php",
-                                            "size": 14791
+                                            "size": 14524
                                         },
                                         "StatisticsCacheService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Services\/StatisticsCacheService.php",
                                             "extension": "php",
-                                            "size": 15386
+                                            "size": 15607
                                         },
                                         "PostStatisticsService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Services\/PostStatisticsService.php",
                                             "extension": "php",
-                                            "size": 15785
+                                            "size": 15533
                                         },
                                         "StatisticsCalculatorService.php": {
                                             "type": "file",
@@ -356,7 +356,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php",
                                             "extension": "php",
-                                            "size": 16205
+                                            "size": 15989
                                         }
                                     }
                                 },
@@ -368,19 +368,19 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php",
                                             "extension": "php",
-                                            "size": 9407
+                                            "size": 9357
                                         },
                                         "StatisticsMetric.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/ValueObjects\/StatisticsMetric.php",
                                             "extension": "php",
-                                            "size": 10056
+                                            "size": 9973
                                         },
                                         "StatisticsPeriod.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/ValueObjects\/StatisticsPeriod.php",
                                             "extension": "php",
-                                            "size": 10966
+                                            "size": 10920
                                         }
                                     }
                                 },
@@ -392,7 +392,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php",
                                             "extension": "php",
-                                            "size": 13353
+                                            "size": 13346
                                         }
                                     }
                                 }
@@ -410,13 +410,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Contracts\/PostRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 1487
+                                            "size": 1534
                                         },
                                         "PostServiceInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Contracts\/PostServiceInterface.php",
                                             "extension": "php",
-                                            "size": 2599
+                                            "size": 2465
                                         }
                                     }
                                 },
@@ -440,7 +440,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Repositories\/PostRepository.php",
                                             "extension": "php",
-                                            "size": 27639
+                                            "size": 27841
                                         }
                                     }
                                 },
@@ -452,7 +452,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Models\/Post.php",
                                             "extension": "php",
-                                            "size": 4590
+                                            "size": 4635
                                         }
                                     }
                                 },
@@ -470,7 +470,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Exceptions\/PostValidationException.php",
                                             "extension": "php",
-                                            "size": 2286
+                                            "size": 2318
                                         },
                                         "PostNotFoundException.php": {
                                             "type": "file",
@@ -488,13 +488,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/DTOs\/UpdatePostDTO.php",
                                             "extension": "php",
-                                            "size": 9501
+                                            "size": 9587
                                         },
                                         "CreatePostDTO.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/DTOs\/CreatePostDTO.php",
                                             "extension": "php",
-                                            "size": 7221
+                                            "size": 7279
                                         },
                                         "UpdatePostDTO.php.backup.2025-08-30_13-17-14": {
                                             "type": "file",
@@ -512,13 +512,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Services\/PostService.php",
                                             "extension": "php",
-                                            "size": 5265
+                                            "size": 5286
                                         },
                                         "ContentModerationService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Services\/ContentModerationService.php",
                                             "extension": "php",
-                                            "size": 13379
+                                            "size": 13522
                                         },
                                         "PostService.php.backup.2025-08-30_13-17-14": {
                                             "type": "file",
@@ -530,13 +530,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Services\/RichTextProcessorService.php",
                                             "extension": "php",
-                                            "size": 10236
+                                            "size": 10266
                                         },
                                         "PostCacheKeyService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Services\/PostCacheKeyService.php",
                                             "extension": "php",
-                                            "size": 2476
+                                            "size": 2519
                                         }
                                     }
                                 },
@@ -548,7 +548,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Validation\/PostValidator.php",
                                             "extension": "php",
-                                            "size": 8960
+                                            "size": 9119
                                         }
                                     }
                                 }
@@ -572,13 +572,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Contracts\/ErrorHandlerServiceInterface.php",
                                             "extension": "php",
-                                            "size": 1215
+                                            "size": 1341
                                         },
                                         "SecurityTestInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Contracts\/SecurityTestInterface.php",
                                             "extension": "php",
-                                            "size": 1492
+                                            "size": 1572
                                         },
                                         "SecurityHeaderServiceInterface.php": {
                                             "type": "file",
@@ -590,25 +590,25 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Contracts\/LoggingSecurityServiceInterface.php",
                                             "extension": "php",
-                                            "size": 2057
+                                            "size": 2311
                                         },
                                         "XssProtectionServiceInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Contracts\/XssProtectionServiceInterface.php",
                                             "extension": "php",
-                                            "size": 744
+                                            "size": 725
                                         },
                                         "IpServiceInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Contracts\/IpServiceInterface.php",
                                             "extension": "php",
-                                            "size": 852
+                                            "size": 846
                                         },
                                         "SecretsManagerInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Contracts\/SecretsManagerInterface.php",
                                             "extension": "php",
-                                            "size": 1975
+                                            "size": 1879
                                         },
                                         "ActivityLoggingServiceInterface.php": {
                                             "type": "file",
@@ -620,13 +620,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Contracts\/SuspiciousActivityDetectorInterface.php",
                                             "extension": "php",
-                                            "size": 3347
+                                            "size": 3377
                                         },
                                         "ActivityLogRepositoryInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Contracts\/ActivityLogRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 5229
+                                            "size": 5345
                                         },
                                         "CsrfProtectionServiceInterface.php": {
                                             "type": "file",
@@ -644,7 +644,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Providers\/SecurityServiceProvider.php",
                                             "extension": "php",
-                                            "size": 5766
+                                            "size": 6825
                                         }
                                     }
                                 },
@@ -662,13 +662,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Enums\/ActivitySeverity.php",
                                             "extension": "php",
-                                            "size": 2520
+                                            "size": 2528
                                         },
                                         "ActivityStatus.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Enums\/ActivityStatus.php",
                                             "extension": "php",
-                                            "size": 1539
+                                            "size": 1547
                                         },
                                         "ActivityType.php": {
                                             "type": "file",
@@ -686,13 +686,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Repositories\/IpRepository.php",
                                             "extension": "php",
-                                            "size": 11518
+                                            "size": 11618
                                         },
                                         "ActivityLogRepository.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Repositories\/ActivityLogRepository.php",
                                             "extension": "php",
-                                            "size": 30763
+                                            "size": 30989
                                         }
                                     }
                                 },
@@ -704,7 +704,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Models\/IpList.php",
                                             "extension": "php",
-                                            "size": 3236
+                                            "size": 3281
                                         }
                                     }
                                 },
@@ -716,25 +716,25 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/DTOs\/SuspiciousActivityAnalysisDTO.php",
                                             "extension": "php",
-                                            "size": 11126
+                                            "size": 11609
                                         },
                                         "CreateActivityLogDTO.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/DTOs\/CreateActivityLogDTO.php",
                                             "extension": "php",
-                                            "size": 9280
+                                            "size": 9290
                                         },
                                         "CreateIpRuleDTO.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/DTOs\/CreateIpRuleDTO.php",
                                             "extension": "php",
-                                            "size": 8360
+                                            "size": 8418
                                         },
                                         "ActivityLogSearchDTO.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/DTOs\/ActivityLogSearchDTO.php",
                                             "extension": "php",
-                                            "size": 16109
+                                            "size": 16117
                                         }
                                     }
                                 },
@@ -750,7 +750,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Advanced\/SecurityTestService.php",
                                                     "extension": "php",
-                                                    "size": 21080
+                                                    "size": 21230
                                                 }
                                             }
                                         },
@@ -762,13 +762,13 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Core\/XssProtectionService.php",
                                                     "extension": "php",
-                                                    "size": 5567
+                                                    "size": 5614
                                                 },
                                                 "CsrfProtectionService.php": {
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php",
                                                     "extension": "php",
-                                                    "size": 8860
+                                                    "size": 8868
                                                 }
                                             }
                                         },
@@ -776,7 +776,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Services\/SuspiciousActivityDetector.php",
                                             "extension": "php",
-                                            "size": 28515
+                                            "size": 28529
                                         },
                                         "Secrets": {
                                             "type": "directory",
@@ -786,7 +786,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php",
                                                     "extension": "php",
-                                                    "size": 8584
+                                                    "size": 8763
                                                 }
                                             }
                                         },
@@ -798,7 +798,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Content\/XssProtectionExtensionService.php",
                                                     "extension": "php",
-                                                    "size": 15512
+                                                    "size": 15949
                                                 }
                                             }
                                         },
@@ -822,7 +822,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php",
                                                     "extension": "php",
-                                                    "size": 10674
+                                                    "size": 10727
                                                 }
                                             }
                                         },
@@ -830,7 +830,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Services\/ActivityLoggingService.php",
                                             "extension": "php",
-                                            "size": 12580
+                                            "size": 12218
                                         },
                                         "Error": {
                                             "type": "directory",
@@ -840,7 +840,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Error\/ErrorHandlerService.php",
                                                     "extension": "php",
-                                                    "size": 10594
+                                                    "size": 10737
                                                 }
                                             }
                                         },
@@ -852,7 +852,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php",
                                                     "extension": "php",
-                                                    "size": 11541
+                                                    "size": 11795
                                                 }
                                             }
                                         }
@@ -866,7 +866,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Entities\/ActivityLog.php",
                                             "extension": "php",
-                                            "size": 10637
+                                            "size": 10813
                                         }
                                     }
                                 }
@@ -884,55 +884,55 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Contracts\/RefreshTokenRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 7149
+                                            "size": 6533
                                         },
                                         "AuthenticationServiceInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Contracts\/AuthenticationServiceInterface.php",
                                             "extension": "php",
-                                            "size": 4836
+                                            "size": 4526
                                         },
                                         "JwtProviderInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Contracts\/JwtProviderInterface.php",
                                             "extension": "php",
-                                            "size": 2542
+                                            "size": 2363
                                         },
                                         "UserRepositoryInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Contracts\/UserRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 3910
+                                            "size": 3599
                                         },
                                         "JwtTokenServiceInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Contracts\/JwtTokenServiceInterface.php",
                                             "extension": "php",
-                                            "size": 5797
+                                            "size": 5829
                                         },
                                         "SessionSecurityServiceInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Contracts\/SessionSecurityServiceInterface.php",
                                             "extension": "php",
-                                            "size": 1689
+                                            "size": 1704
                                         },
                                         "TokenBlacklistRepositoryInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Contracts\/TokenBlacklistRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 8141
+                                            "size": 7742
                                         },
                                         "AuthorizationServiceInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Contracts\/AuthorizationServiceInterface.php",
                                             "extension": "php",
-                                            "size": 1499
+                                            "size": 1529
                                         },
                                         "PasswordSecurityServiceInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Contracts\/PasswordSecurityServiceInterface.php",
                                             "extension": "php",
-                                            "size": 916
+                                            "size": 931
                                         }
                                     }
                                 },
@@ -944,13 +944,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Providers\/AuthServiceProvider.php",
                                             "extension": "php",
-                                            "size": 7662
+                                            "size": 7692
                                         },
                                         "SimpleAuthServiceProvider.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Providers\/SimpleAuthServiceProvider.php",
                                             "extension": "php",
-                                            "size": 7590
+                                            "size": 7605
                                         }
                                     }
                                 },
@@ -962,13 +962,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Repositories\/UserRepositoryAdapter.php",
                                             "extension": "php",
-                                            "size": 4413
+                                            "size": 4716
                                         },
                                         "UserRepository.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Repositories\/UserRepository.php",
                                             "extension": "php",
-                                            "size": 6050
+                                            "size": 6172
                                         }
                                     }
                                 },
@@ -980,13 +980,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Models\/Role.php",
                                             "extension": "php",
-                                            "size": 1778
+                                            "size": 1793
                                         },
                                         "Permission.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Models\/Permission.php",
                                             "extension": "php",
-                                            "size": 2310
+                                            "size": 2325
                                         }
                                     }
                                 },
@@ -1004,7 +1004,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Exceptions\/JwtException.php",
                                             "extension": "php",
-                                            "size": 3845
+                                            "size": 3748
                                         },
                                         "ForbiddenException.php": {
                                             "type": "file",
@@ -1016,19 +1016,19 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Exceptions\/InvalidTokenException.php",
                                             "extension": "php",
-                                            "size": 10448
+                                            "size": 10544
                                         },
                                         "RefreshTokenException.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Exceptions\/RefreshTokenException.php",
                                             "extension": "php",
-                                            "size": 12793
+                                            "size": 12231
                                         },
                                         "TokenValidationException.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Exceptions\/TokenValidationException.php",
                                             "extension": "php",
-                                            "size": 3631
+                                            "size": 3663
                                         },
                                         "UnauthorizedException.php": {
                                             "type": "file",
@@ -1040,25 +1040,25 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Exceptions\/AuthenticationException.php",
                                             "extension": "php",
-                                            "size": 14074
+                                            "size": 14138
                                         },
                                         "TokenParsingException.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Exceptions\/TokenParsingException.php",
                                             "extension": "php",
-                                            "size": 3409
+                                            "size": 3441
                                         },
                                         "TokenGenerationException.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Exceptions\/TokenGenerationException.php",
                                             "extension": "php",
-                                            "size": 9934
+                                            "size": 9966
                                         },
                                         "JwtConfigurationException.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Exceptions\/JwtConfigurationException.php",
                                             "extension": "php",
-                                            "size": 4418
+                                            "size": 4450
                                         }
                                     }
                                 },
@@ -1070,37 +1070,37 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/DTOs\/LoginRequestDTO.php",
                                             "extension": "php",
-                                            "size": 1535
+                                            "size": 1550
                                         },
                                         "LogoutRequestDTO.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/DTOs\/LogoutRequestDTO.php",
                                             "extension": "php",
-                                            "size": 1321
+                                            "size": 1336
                                         },
                                         "RefreshResponseDTO.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/DTOs\/RefreshResponseDTO.php",
                                             "extension": "php",
-                                            "size": 1114
+                                            "size": 1129
                                         },
                                         "LoginResponseDTO.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/DTOs\/LoginResponseDTO.php",
                                             "extension": "php",
-                                            "size": 1276
+                                            "size": 1291
                                         },
                                         "RegisterUserDTO.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/DTOs\/RegisterUserDTO.php",
                                             "extension": "php",
-                                            "size": 11071
+                                            "size": 11286
                                         },
                                         "RefreshRequestDTO.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/DTOs\/RefreshRequestDTO.php",
                                             "extension": "php",
-                                            "size": 1189
+                                            "size": 1204
                                         }
                                     }
                                 },
@@ -1116,7 +1116,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Auth\/Services\/Advanced\/PwnedPasswordService.php",
                                                     "extension": "php",
-                                                    "size": 5551
+                                                    "size": 5669
                                                 }
                                             }
                                         },
@@ -1124,55 +1124,55 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/SessionSecurityService.php",
                                             "extension": "php",
-                                            "size": 7498
+                                            "size": 7513
                                         },
                                         "AuthenticationService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/AuthenticationService.php",
                                             "extension": "php",
-                                            "size": 10562
+                                            "size": 10592
                                         },
                                         "AuthService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/AuthService.php",
                                             "extension": "php",
-                                            "size": 6557
+                                            "size": 6602
                                         },
                                         "PasswordManagementService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/PasswordManagementService.php",
                                             "extension": "php",
-                                            "size": 3928
+                                            "size": 3739
                                         },
                                         "PasswordSecurityService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/PasswordSecurityService.php",
                                             "extension": "php",
-                                            "size": 11775
+                                            "size": 11805
                                         },
                                         "RefreshTokenService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/RefreshTokenService.php",
                                             "extension": "php",
-                                            "size": 18781
+                                            "size": 18515
                                         },
                                         "AuthorizationService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/AuthorizationService.php",
                                             "extension": "php",
-                                            "size": 8618
+                                            "size": 8648
                                         },
                                         "TokenBlacklistService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/TokenBlacklistService.php",
                                             "extension": "php",
-                                            "size": 19600
+                                            "size": 19274
                                         },
                                         "JwtTokenService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/JwtTokenService.php",
                                             "extension": "php",
-                                            "size": 13352
+                                            "size": 13443
                                         }
                                     }
                                 },
@@ -1184,7 +1184,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Entities\/RefreshToken.php",
                                             "extension": "php",
-                                            "size": 14463
+                                            "size": 13965
                                         }
                                     }
                                 },
@@ -1196,25 +1196,25 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php",
                                             "extension": "php",
-                                            "size": 20625
+                                            "size": 19997
                                         },
                                         "TokenPair.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/ValueObjects\/TokenPair.php",
                                             "extension": "php",
-                                            "size": 11904
+                                            "size": 11601
                                         },
                                         "DeviceInfo.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/ValueObjects\/DeviceInfo.php",
                                             "extension": "php",
-                                            "size": 19852
+                                            "size": 19342
                                         },
                                         "JwtPayload.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/ValueObjects\/JwtPayload.php",
                                             "extension": "php",
-                                            "size": 12069
+                                            "size": 11789
                                         }
                                     }
                                 }
@@ -1238,13 +1238,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Attachment\/Contracts\/AttachmentRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 4682
+                                            "size": 4292
                                         },
                                         "AttachmentServiceInterface.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Attachment\/Contracts\/AttachmentServiceInterface.php",
                                             "extension": "php",
-                                            "size": 575
+                                            "size": 590
                                         }
                                     }
                                 },
@@ -1268,7 +1268,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Attachment\/Repositories\/AttachmentRepository.php",
                                             "extension": "php",
-                                            "size": 4582
+                                            "size": 4597
                                         }
                                     }
                                 },
@@ -1280,7 +1280,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Attachment\/Models\/Attachment.php",
                                             "extension": "php",
-                                            "size": 3424
+                                            "size": 3439
                                         }
                                     }
                                 },
@@ -1292,7 +1292,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Attachment\/DTOs\/CreateAttachmentDTO.php",
                                             "extension": "php",
-                                            "size": 9941
+                                            "size": 10077
                                         }
                                     }
                                 },
@@ -1304,13 +1304,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Attachment\/Services\/AttachmentService.php",
                                             "extension": "php",
-                                            "size": 20988
+                                            "size": 21033
                                         },
                                         "FileSecurityService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Attachment\/Services\/FileSecurityService.php",
                                             "extension": "php",
-                                            "size": 10067
+                                            "size": 10111
                                         }
                                     }
                                 }
@@ -1334,25 +1334,25 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Drivers\/MemoryCacheDriver.php",
                                             "extension": "php",
-                                            "size": 16993
+                                            "size": 17366
                                         },
                                         "FileCacheDriver.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Drivers\/FileCacheDriver.php",
                                             "extension": "php",
-                                            "size": 10697
+                                            "size": 10885
                                         },
                                         "RedisCacheDriver.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php",
                                             "extension": "php",
-                                            "size": 22387
+                                            "size": 22667
                                         },
                                         "LayeredCacheDriver.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Drivers\/LayeredCacheDriver.php",
                                             "extension": "php",
-                                            "size": 10210
+                                            "size": 10413
                                         }
                                     }
                                 },
@@ -1364,7 +1364,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Strategies\/DefaultCacheStrategy.php",
                                             "extension": "php",
-                                            "size": 9850
+                                            "size": 10004
                                         }
                                     }
                                 },
@@ -1376,31 +1376,31 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Contracts\/TagRepositoryInterface.php",
                                             "extension": "php",
-                                            "size": 3117
+                                            "size": 2953
                                         },
                                         "CacheStrategyInterface.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Contracts\/CacheStrategyInterface.php",
                                             "extension": "php",
-                                            "size": 1475
+                                            "size": 1497
                                         },
                                         "CacheDriverInterface.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Contracts\/CacheDriverInterface.php",
                                             "extension": "php",
-                                            "size": 2293
+                                            "size": 2302
                                         },
                                         "CacheManagerInterface.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Contracts\/CacheManagerInterface.php",
                                             "extension": "php",
-                                            "size": 2153
+                                            "size": 2214
                                         },
                                         "TaggedCacheInterface.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Contracts\/TaggedCacheInterface.php",
                                             "extension": "php",
-                                            "size": 4052
+                                            "size": 3828
                                         }
                                     }
                                 },
@@ -1412,7 +1412,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Providers\/CacheServiceProvider.php",
                                             "extension": "php",
-                                            "size": 23219
+                                            "size": 23343
                                         }
                                     }
                                 },
@@ -1424,13 +1424,13 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Repositories\/RedisTagRepository.php",
                                             "extension": "php",
-                                            "size": 12991
+                                            "size": 13095
                                         },
                                         "MemoryTagRepository.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Repositories\/MemoryTagRepository.php",
                                             "extension": "php",
-                                            "size": 10548
+                                            "size": 10652
                                         }
                                     }
                                 },
@@ -1442,31 +1442,31 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Services\/DefaultCacheStrategy.php",
                                             "extension": "php",
-                                            "size": 9811
+                                            "size": 9965
                                         },
                                         "CacheGroupManager.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Services\/CacheGroupManager.php",
                                             "extension": "php",
-                                            "size": 14466
+                                            "size": 13891
                                         },
                                         "TaggedCacheManager.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Services\/TaggedCacheManager.php",
                                             "extension": "php",
-                                            "size": 10925
+                                            "size": 10940
                                         },
                                         "CacheManager.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Services\/CacheManager.php",
                                             "extension": "php",
-                                            "size": 26808
+                                            "size": 27079
                                         },
                                         "PrefixedCacheManager.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Services\/PrefixedCacheManager.php",
                                             "extension": "php",
-                                            "size": 3071
+                                            "size": 3203
                                         }
                                     }
                                 },
@@ -1478,7 +1478,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/ValueObjects\/CacheTag.php",
                                             "extension": "php",
-                                            "size": 4748
+                                            "size": 4736
                                         }
                                     }
                                 }
@@ -1492,13 +1492,13 @@
                                     "type": "file",
                                     "path": "app\/Shared\/Config\/EnvironmentConfig.php",
                                     "extension": "php",
-                                    "size": 11419
+                                    "size": 11476
                                 },
                                 "JwtConfig.php": {
                                     "type": "file",
                                     "path": "app\/Shared\/Config\/JwtConfig.php",
                                     "extension": "php",
-                                    "size": 8927
+                                    "size": 8957
                                 }
                             }
                         },
@@ -1510,25 +1510,25 @@
                                     "type": "file",
                                     "path": "app\/Shared\/Contracts\/RepositoryInterface.php",
                                     "extension": "php",
-                                    "size": 840
+                                    "size": 919
                                 },
                                 "CacheServiceInterface.php": {
                                     "type": "file",
                                     "path": "app\/Shared\/Contracts\/CacheServiceInterface.php",
                                     "extension": "php",
-                                    "size": 2637
+                                    "size": 2453
                                 },
                                 "OutputSanitizerInterface.php": {
                                     "type": "file",
                                     "path": "app\/Shared\/Contracts\/OutputSanitizerInterface.php",
                                     "extension": "php",
-                                    "size": 917
+                                    "size": 932
                                 },
                                 "ValidatorInterface.php": {
                                     "type": "file",
                                     "path": "app\/Shared\/Contracts\/ValidatorInterface.php",
                                     "extension": "php",
-                                    "size": 1960
+                                    "size": 1784
                                 }
                             }
                         },
@@ -1570,13 +1570,13 @@
                                     "type": "file",
                                     "path": "app\/Shared\/Exceptions\/ValidationException.php",
                                     "extension": "php",
-                                    "size": 3427
+                                    "size": 3415
                                 },
                                 "DomainException.php": {
                                     "type": "file",
                                     "path": "app\/Shared\/Exceptions\/DomainException.php",
                                     "extension": "php",
-                                    "size": 1630
+                                    "size": 1580
                                 },
                                 "Validation": {
                                     "type": "directory",
@@ -1586,7 +1586,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Exceptions\/Validation\/RequestValidationException.php",
                                             "extension": "php",
-                                            "size": 5504
+                                            "size": 5600
                                         }
                                     }
                                 }
@@ -1624,7 +1624,7 @@
                                     "type": "file",
                                     "path": "app\/Shared\/DTOs\/BaseDTO.php",
                                     "extension": "php",
-                                    "size": 2710
+                                    "size": 2756
                                 }
                             }
                         },
@@ -1636,7 +1636,7 @@
                                     "type": "file",
                                     "path": "app\/Shared\/Http\/ApiResponse.php",
                                     "extension": "php",
-                                    "size": 1298
+                                    "size": 1343
                                 }
                             }
                         },
@@ -1652,25 +1652,25 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Contracts\/ErrorTrackerInterface.php",
                                             "extension": "php",
-                                            "size": 2160
+                                            "size": 2348
                                         },
                                         "PerformanceMonitorInterface.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Contracts\/PerformanceMonitorInterface.php",
                                             "extension": "php",
-                                            "size": 2347
+                                            "size": 2554
                                         },
                                         "SystemMonitorInterface.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Contracts\/SystemMonitorInterface.php",
                                             "extension": "php",
-                                            "size": 1418
+                                            "size": 1523
                                         },
                                         "CacheMonitorInterface.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Contracts\/CacheMonitorInterface.php",
                                             "extension": "php",
-                                            "size": 3872
+                                            "size": 3504
                                         }
                                     }
                                 },
@@ -1682,7 +1682,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Providers\/MonitoringServiceProvider.php",
                                             "extension": "php",
-                                            "size": 9059
+                                            "size": 9138
                                         }
                                     }
                                 },
@@ -1694,25 +1694,25 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Services\/SystemMonitorService.php",
                                             "extension": "php",
-                                            "size": 17333
+                                            "size": 17543
                                         },
                                         "CacheMonitor.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Services\/CacheMonitor.php",
                                             "extension": "php",
-                                            "size": 29350
+                                            "size": 29703
                                         },
                                         "PerformanceMonitorService.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Services\/PerformanceMonitorService.php",
                                             "extension": "php",
-                                            "size": 18219
+                                            "size": 18535
                                         },
                                         "ErrorTrackerService.php": {
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Services\/ErrorTrackerService.php",
                                             "extension": "php",
-                                            "size": 20436
+                                            "size": 20733
                                         }
                                     }
                                 }
@@ -1730,7 +1730,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Domain\/Entity\/AggregateRoot.php",
                                             "extension": "php",
-                                            "size": 1073
+                                            "size": 1081
                                         }
                                     }
                                 },
@@ -1756,7 +1756,7 @@
                                     "type": "file",
                                     "path": "app\/Shared\/Helpers\/functions.php",
                                     "extension": "php",
-                                    "size": 3881
+                                    "size": 3896
                                 }
                             }
                         },
@@ -1768,13 +1768,13 @@
                                     "type": "file",
                                     "path": "app\/Shared\/Validation\/Validator.php",
                                     "extension": "php",
-                                    "size": 18776
+                                    "size": 19462
                                 },
                                 "ValidationResult.php": {
                                     "type": "file",
                                     "path": "app\/Shared\/Validation\/ValidationResult.php",
                                     "extension": "php",
-                                    "size": 8141
+                                    "size": 7799
                                 },
                                 "Factory": {
                                     "type": "directory",
@@ -1784,7 +1784,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Validation\/Factory\/ValidatorFactory.php",
                                             "extension": "php",
-                                            "size": 11684
+                                            "size": 11907
                                         }
                                     }
                                 }
@@ -1856,19 +1856,19 @@
                                     "type": "file",
                                     "path": "app\/Application\/Middleware\/AuthorizationResult.php",
                                     "extension": "php",
-                                    "size": 7695
+                                    "size": 7423
                                 },
                                 "JwtAuthorizationMiddleware.php": {
                                     "type": "file",
                                     "path": "app\/Application\/Middleware\/JwtAuthorizationMiddleware.php",
                                     "extension": "php",
-                                    "size": 36593
+                                    "size": 36509
                                 },
                                 "RateLimitMiddleware.php": {
                                     "type": "file",
                                     "path": "app\/Application\/Middleware\/RateLimitMiddleware.php",
                                     "extension": "php",
-                                    "size": 11354
+                                    "size": 11433
                                 }
                             }
                         },
@@ -1884,25 +1884,25 @@
                                             "type": "file",
                                             "path": "app\/Application\/DTOs\/Statistics\/UserActivityDTO.php",
                                             "extension": "php",
-                                            "size": 19264
+                                            "size": 19162
                                         },
                                         "StatisticsOverviewDTO.php": {
                                             "type": "file",
                                             "path": "app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php",
                                             "extension": "php",
-                                            "size": 13497
+                                            "size": 13350
                                         },
                                         "SourceDistributionDTO.php": {
                                             "type": "file",
                                             "path": "app\/Application\/DTOs\/Statistics\/SourceDistributionDTO.php",
                                             "extension": "php",
-                                            "size": 17603
+                                            "size": 17533
                                         },
                                         "PostStatisticsDTO.php": {
                                             "type": "file",
                                             "path": "app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php",
                                             "extension": "php",
-                                            "size": 15591
+                                            "size": 15370
                                         }
                                     }
                                 }
@@ -1920,7 +1920,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Controllers\/Security\/CSPReportController.php",
                                             "extension": "php",
-                                            "size": 10490
+                                            "size": 10535
                                         }
                                     }
                                 },
@@ -1956,7 +1956,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Controllers\/Admin\/TagManagementController.php",
                                             "extension": "php",
-                                            "size": 25995
+                                            "size": 26284
                                         },
                                         "CacheMonitorController.php": {
                                             "type": "file",
@@ -1990,7 +1990,7 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/IpController.php",
                                                     "extension": "php",
-                                                    "size": 3654
+                                                    "size": 3678
                                                 },
                                                 "ActivityLogController.php": {
                                                     "type": "file",
@@ -2014,13 +2014,13 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/PostController.php",
                                                     "extension": "php",
-                                                    "size": 45444
+                                                    "size": 45705
                                                 },
                                                 "AttachmentController.php": {
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/AttachmentController.php",
                                                     "extension": "php",
-                                                    "size": 19433
+                                                    "size": 19458
                                                 },
                                                 "AttachmentController.php.backup.2025-08-30_08-53-31": {
                                                     "type": "file",
@@ -2038,13 +2038,13 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/Statistics\/StatisticsAdminController.php",
                                                     "extension": "php",
-                                                    "size": 17453
+                                                    "size": 17595
                                                 },
                                                 "StatisticsController.php": {
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/Statistics\/StatisticsController.php",
                                                     "extension": "php",
-                                                    "size": 41076
+                                                    "size": 41140
                                                 }
                                             }
                                         }
@@ -2054,7 +2054,7 @@
                                     "type": "file",
                                     "path": "app\/Application\/Controllers\/BaseController.php",
                                     "extension": "php",
-                                    "size": 3910
+                                    "size": 3942
                                 }
                             }
                         },
@@ -2070,13 +2070,13 @@
                                             "type": "file",
                                             "path": "app\/Application\/Services\/Statistics\/StatisticsQueryService.php",
                                             "extension": "php",
-                                            "size": 20217
+                                            "size": 20265
                                         },
                                         "StatisticsApplicationService.php": {
                                             "type": "file",
                                             "path": "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php",
                                             "extension": "php",
-                                            "size": 19419
+                                            "size": 19547
                                         }
                                     }
                                 }
@@ -2108,13 +2108,13 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Cache\/CacheManager.php",
                                     "extension": "php",
-                                    "size": 5394
+                                    "size": 5409
                                 },
                                 "CacheKeys.php": {
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Cache\/CacheKeys.php",
                                     "extension": "php",
-                                    "size": 7082
+                                    "size": 7194
                                 }
                             }
                         },
@@ -2148,7 +2148,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php",
                                             "extension": "php",
-                                            "size": 13918
+                                            "size": 13469
                                         }
                                     }
                                 },
@@ -2160,13 +2160,13 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepository.php",
                                             "extension": "php",
-                                            "size": 21508
+                                            "size": 21639
                                         },
                                         "TokenBlacklistRepository.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php",
                                             "extension": "php",
-                                            "size": 36463
+                                            "size": 36025
                                         }
                                     }
                                 }
@@ -2184,25 +2184,25 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php",
                                             "extension": "php",
-                                            "size": 24316
+                                            "size": 24397
                                         },
                                         "PostStatisticsRepository.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php",
                                             "extension": "php",
-                                            "size": 34918
+                                            "size": 34948
                                         },
                                         "UserStatisticsRepository.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php",
                                             "extension": "php",
-                                            "size": 45479
+                                            "size": 45569
                                         },
                                         "SystemStatisticsRepository.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Repositories\/Statistics\/SystemStatisticsRepository.php",
                                             "extension": "php",
-                                            "size": 29725
+                                            "size": 29830
                                         }
                                     }
                                 }
@@ -2228,7 +2228,7 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Http\/Response.php",
                                     "extension": "php",
-                                    "size": 4656
+                                    "size": 4688
                                 },
                                 "Stream.php": {
                                     "type": "file",
@@ -2246,13 +2246,13 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Http\/ServerRequest.php",
                                     "extension": "php",
-                                    "size": 5776
+                                    "size": 5930
                                 },
                                 "ServerRequestFactory.php": {
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Http\/ServerRequestFactory.php",
                                     "extension": "php",
-                                    "size": 2915
+                                    "size": 2951
                                 }
                             }
                         },
@@ -2274,31 +2274,31 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Middleware\/MiddlewareDispatcher.php",
                                             "extension": "php",
-                                            "size": 2218
+                                            "size": 2282
                                         },
                                         "RouteParametersMiddleware.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Middleware\/RouteParametersMiddleware.php",
                                             "extension": "php",
-                                            "size": 2461
+                                            "size": 2363
                                         },
                                         "MiddlewareResolver.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Middleware\/MiddlewareResolver.php",
                                             "extension": "php",
-                                            "size": 3879
+                                            "size": 3866
                                         },
                                         "RouteInfoMiddleware.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Middleware\/RouteInfoMiddleware.php",
                                             "extension": "php",
-                                            "size": 3978
+                                            "size": 4010
                                         },
                                         "MiddlewareManager.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Middleware\/MiddlewareManager.php",
                                             "extension": "php",
-                                            "size": 4222
+                                            "size": 4286
                                         }
                                     }
                                 },
@@ -2322,19 +2322,19 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Core\/RouteCollection.php",
                                             "extension": "php",
-                                            "size": 5370
+                                            "size": 5459
                                         },
                                         "Route.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Core\/Route.php",
                                             "extension": "php",
-                                            "size": 7693
+                                            "size": 7947
                                         },
                                         "Router.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Core\/Router.php",
                                             "extension": "php",
-                                            "size": 8365
+                                            "size": 8634
                                         }
                                     }
                                 },
@@ -2346,25 +2346,25 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php",
                                             "extension": "php",
-                                            "size": 3938
+                                            "size": 3968
                                         },
                                         "RouteCacheFactory.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Cache\/RouteCacheFactory.php",
                                             "extension": "php",
-                                            "size": 4159
+                                            "size": 4124
                                         },
                                         "RedisRouteCache.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Cache\/RedisRouteCache.php",
                                             "extension": "php",
-                                            "size": 5084
+                                            "size": 5126
                                         },
                                         "FileRouteCache.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Cache\/FileRouteCache.php",
                                             "extension": "php",
-                                            "size": 4429
+                                            "size": 4471
                                         }
                                     }
                                 },
@@ -2376,19 +2376,19 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Contracts\/RouteMatchResult.php",
                                             "extension": "php",
-                                            "size": 1741
+                                            "size": 1820
                                         },
                                         "RouteCollectionInterface.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Contracts\/RouteCollectionInterface.php",
                                             "extension": "php",
-                                            "size": 1660
+                                            "size": 1654
                                         },
                                         "RouteCacheInterface.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Contracts\/RouteCacheInterface.php",
                                             "extension": "php",
-                                            "size": 1080
+                                            "size": 1088
                                         },
                                         "MiddlewareInterface.php": {
                                             "type": "file",
@@ -2412,19 +2412,19 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Contracts\/RouterInterface.php",
                                             "extension": "php",
-                                            "size": 3313
+                                            "size": 3345
                                         },
                                         "RouteInterface.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Contracts\/RouteInterface.php",
                                             "extension": "php",
-                                            "size": 2994
+                                            "size": 2895
                                         },
                                         "MiddlewareDispatcherInterface.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Contracts\/MiddlewareDispatcherInterface.php",
                                             "extension": "php",
-                                            "size": 1282
+                                            "size": 1346
                                         }
                                     }
                                 },
@@ -2436,7 +2436,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Providers\/RoutingServiceProvider.php",
                                             "extension": "php",
-                                            "size": 5252
+                                            "size": 5297
                                         }
                                     }
                                 },
@@ -2456,19 +2456,19 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Routing\/RouteLoader.php",
                                     "extension": "php",
-                                    "size": 6650
+                                    "size": 6774
                                 },
                                 "ControllerResolver.php": {
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Routing\/ControllerResolver.php",
                                     "extension": "php",
-                                    "size": 17434
+                                    "size": 17562
                                 },
                                 "RouteValidator.php": {
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Routing\/RouteValidator.php",
                                     "extension": "php",
-                                    "size": 6125
+                                    "size": 6140
                                 }
                             }
                         },
@@ -2480,13 +2480,13 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Services\/RateLimitService.php",
                                     "extension": "php",
-                                    "size": 2057
+                                    "size": 2072
                                 },
                                 "CacheService.php": {
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Services\/CacheService.php",
                                     "extension": "php",
-                                    "size": 7119
+                                    "size": 7373
                                 },
                                 "OutputSanitizer.php": {
                                     "type": "file",
@@ -2636,7 +2636,7 @@
                                     "type": "file",
                                     "path": "tests\/Database\/Seeds\/UserActivityLogsSeederTest.php",
                                     "extension": "php",
-                                    "size": 12741
+                                    "size": 12692
                                 }
                             }
                         }
@@ -2986,7 +2986,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Shared\/Cache\/Repositories\/MemoryTagRepositoryTest.php",
                                                     "extension": "php",
-                                                    "size": 9852
+                                                    "size": 9831
                                                 }
                                             }
                                         },
@@ -2998,7 +2998,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Shared\/Cache\/Services\/CacheGroupManagerTest.php",
                                                     "extension": "php",
-                                                    "size": 12583
+                                                    "size": 12569
                                                 }
                                             }
                                         },
@@ -3168,7 +3168,7 @@
                                             "type": "file",
                                             "path": "tests\/Unit\/Application\/Middleware\/JwtAuthenticationMiddlewareTest.php",
                                             "extension": "php",
-                                            "size": 15962
+                                            "size": 15955
                                         },
                                         "JwtAuthorizationMiddlewareTest.php": {
                                             "type": "file",
@@ -3427,7 +3427,7 @@
                                     "type": "file",
                                     "path": "tests\/Unit\/Validation\/ValidatorTest.php",
                                     "extension": "php",
-                                    "size": 27841
+                                    "size": 27501
                                 },
                                 "ValidationResultTest.php": {
                                     "type": "file",
@@ -3471,7 +3471,7 @@
                             "type": "file",
                             "path": "tests\/Security\/PasswordHashingTest.php",
                             "extension": "php",
-                            "size": 9361
+                            "size": 9333
                         }
                     }
                 },
@@ -3665,7 +3665,7 @@
                                             "type": "file",
                                             "path": "tests\/Integration\/Api\/V1\/AuthEndpointTest.php",
                                             "extension": "php",
-                                            "size": 13079
+                                            "size": 12993
                                         }
                                     }
                                 }
@@ -3835,13 +3835,13 @@
                                     "type": "file",
                                     "path": "tests\/Support\/Traits\/CacheTestTrait.php",
                                     "extension": "php",
-                                    "size": 4315
+                                    "size": 4308
                                 },
                                 "HttpResponseTestTrait.php": {
                                     "type": "file",
                                     "path": "tests\/Support\/Traits\/HttpResponseTestTrait.php",
                                     "extension": "php",
-                                    "size": 6020
+                                    "size": 6013
                                 },
                                 "DatabaseTestTrait.php": {
                                     "type": "file",
@@ -3909,7 +3909,7 @@
                             "type": "file",
                             "path": "tests\/Performance\/SimpleUserActivityLogPerformanceTest.php",
                             "extension": "php",
-                            "size": 14354
+                            "size": 14291
                         }
                     }
                 },
@@ -4009,7 +4009,7 @@
             "type": "file",
             "path": "ci-simulation-report.md",
             "extension": "md",
-            "size": 10086
+            "size": 13250
         },
         "storage": {
             "type": "directory",
@@ -5049,7 +5049,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1629410
+            "size": 1629239
         },
         "test_private_key.pem": {
             "type": "file",
@@ -5095,7 +5095,7 @@
             "type": "file",
             "path": ".phpunit.result.cache",
             "extension": "cache",
-            "size": 168959
+            "size": 168840
         }
     },
     "file_statistics": {
@@ -5635,7 +5635,7 @@
                 "getSnapshotDateRange"
             ],
             "constants": [],
-            "lines_of_code": 148
+            "lines_of_code": 131
         },
         "app\/Domains\/Statistics\/Contracts\/PostStatisticsRepositoryInterface.php": {
             "path": "app\/Domains\/Statistics\/Contracts\/PostStatisticsRepositoryInterface.php",
@@ -5720,7 +5720,7 @@
                 "cleanup"
             ],
             "constants": [],
-            "lines_of_code": 166
+            "lines_of_code": 161
         },
         "app\/Domains\/Statistics\/Contracts\/UserStatisticsRepositoryInterface.php": {
             "path": "app\/Domains\/Statistics\/Contracts\/UserStatisticsRepositoryInterface.php",
@@ -5778,7 +5778,7 @@
                 "fromValue"
             ],
             "constants": [],
-            "lines_of_code": 97
+            "lines_of_code": 96
         },
         "app\/Domains\/Statistics\/Enums\/SourceType.php": {
             "path": "app\/Domains\/Statistics\/Enums\/SourceType.php",
@@ -5799,7 +5799,7 @@
                 "fromValue"
             ],
             "constants": [],
-            "lines_of_code": 155
+            "lines_of_code": 153
         },
         "app\/Domains\/Statistics\/Exceptions\/InvalidStatisticsMetricException.php": {
             "path": "app\/Domains\/Statistics\/Exceptions\/InvalidStatisticsMetricException.php",
@@ -5956,7 +5956,7 @@
                 "LOCK_PREFIX",
                 "LOCK_TIMEOUT"
             ],
-            "lines_of_code": 441
+            "lines_of_code": 439
         },
         "app\/Domains\/Statistics\/Events\/StatisticsSnapshotUpdated.php": {
             "path": "app\/Domains\/Statistics\/Events\/StatisticsSnapshotUpdated.php",
@@ -6038,7 +6038,7 @@
                 "calculateForecastConfidence"
             ],
             "constants": [],
-            "lines_of_code": 468
+            "lines_of_code": 448
         },
         "app\/Domains\/Statistics\/Services\/StatisticsCacheService.php": {
             "path": "app\/Domains\/Statistics\/Services\/StatisticsCacheService.php",
@@ -6095,7 +6095,7 @@
                 "DEFAULT_TTL",
                 "CACHE_TAGS"
             ],
-            "lines_of_code": 494
+            "lines_of_code": 503
         },
         "app\/Domains\/Statistics\/Services\/PostStatisticsService.php": {
             "path": "app\/Domains\/Statistics\/Services\/PostStatisticsService.php",
@@ -6128,7 +6128,7 @@
                 "getQualityGrade"
             ],
             "constants": [],
-            "lines_of_code": 501
+            "lines_of_code": 483
         },
         "app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php": {
             "path": "app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php",
@@ -6188,7 +6188,7 @@
                 "markAsUpdated"
             ],
             "constants": [],
-            "lines_of_code": 571
+            "lines_of_code": 559
         },
         "app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php": {
             "path": "app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php",
@@ -6228,7 +6228,7 @@
                 "__toString"
             ],
             "constants": [],
-            "lines_of_code": 346
+            "lines_of_code": 341
         },
         "app\/Domains\/Statistics\/ValueObjects\/StatisticsMetric.php": {
             "path": "app\/Domains\/Statistics\/ValueObjects\/StatisticsMetric.php",
@@ -6278,7 +6278,7 @@
                 "validateSameUnit"
             ],
             "constants": [],
-            "lines_of_code": 426
+            "lines_of_code": 423
         },
         "app\/Domains\/Statistics\/ValueObjects\/StatisticsPeriod.php": {
             "path": "app\/Domains\/Statistics\/ValueObjects\/StatisticsPeriod.php",
@@ -6324,7 +6324,7 @@
                 "validatePeriodLength"
             ],
             "constants": [],
-            "lines_of_code": 388
+            "lines_of_code": 386
         },
         "app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php": {
             "path": "app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php",
@@ -6358,7 +6358,7 @@
                 "printInfo"
             ],
             "constants": [],
-            "lines_of_code": 392
+            "lines_of_code": 391
         },
         "app\/Domains\/Post\/Contracts\/PostRepositoryInterface.php": {
             "path": "app\/Domains\/Post\/Contracts\/PostRepositoryInterface.php",
@@ -6413,7 +6413,7 @@
                 "recordView"
             ],
             "constants": [],
-            "lines_of_code": 92
+            "lines_of_code": 87
         },
         "app\/Domains\/Post\/Enums\/PostStatus.php": {
             "path": "app\/Domains\/Post\/Enums\/PostStatus.php",
@@ -6496,7 +6496,7 @@
                 "ALLOWED_UPDATE_FIELDS",
                 "ALLOWED_CONDITION_FIELDS"
             ],
-            "lines_of_code": 805
+            "lines_of_code": 804
         },
         "app\/Domains\/Post\/Models\/Post.php": {
             "path": "app\/Domains\/Post\/Models\/Post.php",
@@ -6628,7 +6628,7 @@
                 "hasUpdatedField"
             ],
             "constants": [],
-            "lines_of_code": 306
+            "lines_of_code": 303
         },
         "app\/Domains\/Post\/DTOs\/CreatePostDTO.php": {
             "path": "app\/Domains\/Post\/DTOs\/CreatePostDTO.php",
@@ -6652,7 +6652,7 @@
                 "toArray"
             ],
             "constants": [],
-            "lines_of_code": 220
+            "lines_of_code": 217
         },
         "app\/Domains\/Post\/Services\/PostService.php": {
             "path": "app\/Domains\/Post\/Services\/PostService.php",
@@ -6689,7 +6689,7 @@
                 "recordView"
             ],
             "constants": [],
-            "lines_of_code": 174
+            "lines_of_code": 172
         },
         "app\/Domains\/Post\/Services\/ContentModerationService.php": {
             "path": "app\/Domains\/Post\/Services\/ContentModerationService.php",
@@ -6803,7 +6803,7 @@
                 "validatePostData"
             ],
             "constants": [],
-            "lines_of_code": 280
+            "lines_of_code": 277
         },
         "app\/Domains\/Security\/Contracts\/IpRepositoryInterface.php": {
             "path": "app\/Domains\/Security\/Contracts\/IpRepositoryInterface.php",
@@ -6869,7 +6869,7 @@
                 "generateSecurityReport"
             ],
             "constants": [],
-            "lines_of_code": 79
+            "lines_of_code": 69
         },
         "app\/Domains\/Security\/Contracts\/SecurityHeaderServiceInterface.php": {
             "path": "app\/Domains\/Security\/Contracts\/SecurityHeaderServiceInterface.php",
@@ -6926,7 +6926,7 @@
                 "cleanArray"
             ],
             "constants": [],
-            "lines_of_code": 30
+            "lines_of_code": 28
         },
         "app\/Domains\/Security\/Contracts\/IpServiceInterface.php": {
             "path": "app\/Domains\/Security\/Contracts\/IpServiceInterface.php",
@@ -6946,7 +6946,7 @@
                 "getRulesByType"
             ],
             "constants": [],
-            "lines_of_code": 36
+            "lines_of_code": 33
         },
         "app\/Domains\/Security\/Contracts\/SecretsManagerInterface.php": {
             "path": "app\/Domains\/Security\/Contracts\/SecretsManagerInterface.php",
@@ -6973,7 +6973,7 @@
                 "validateEnvFile"
             ],
             "constants": [],
-            "lines_of_code": 87
+            "lines_of_code": 78
         },
         "app\/Domains\/Security\/Contracts\/ActivityLoggingServiceInterface.php": {
             "path": "app\/Domains\/Security\/Contracts\/ActivityLoggingServiceInterface.php",
@@ -7069,7 +7069,7 @@
                 "getSearchCount"
             ],
             "constants": [],
-            "lines_of_code": 200
+            "lines_of_code": 198
         },
         "app\/Domains\/Security\/Contracts\/CsrfProtectionServiceInterface.php": {
             "path": "app\/Domains\/Security\/Contracts\/CsrfProtectionServiceInterface.php",
@@ -7134,7 +7134,7 @@
                 "createIpService"
             ],
             "constants": [],
-            "lines_of_code": 149
+            "lines_of_code": 176
         },
         "app\/Domains\/Security\/Enums\/ActivityCategory.php": {
             "path": "app\/Domains\/Security\/Enums\/ActivityCategory.php",
@@ -7167,7 +7167,7 @@
                 "fromValue"
             ],
             "constants": [],
-            "lines_of_code": 103
+            "lines_of_code": 102
         },
         "app\/Domains\/Security\/Enums\/ActivityStatus.php": {
             "path": "app\/Domains\/Security\/Enums\/ActivityStatus.php",
@@ -7185,7 +7185,7 @@
                 "getAvailableStatuses"
             ],
             "constants": [],
-            "lines_of_code": 75
+            "lines_of_code": 74
         },
         "app\/Domains\/Security\/Enums\/ActivityType.php": {
             "path": "app\/Domains\/Security\/Enums\/ActivityType.php",
@@ -7301,7 +7301,7 @@
                 "TABLE_NAME",
                 "SELECT_FIELDS"
             ],
-            "lines_of_code": 940
+            "lines_of_code": 938
         },
         "app\/Domains\/Security\/Models\/IpList.php": {
             "path": "app\/Domains\/Security\/Models\/IpList.php",
@@ -7378,7 +7378,7 @@
                 "jsonSerialize"
             ],
             "constants": [],
-            "lines_of_code": 378
+            "lines_of_code": 373
         },
         "app\/Domains\/Security\/DTOs\/CreateActivityLogDTO.php": {
             "path": "app\/Domains\/Security\/DTOs\/CreateActivityLogDTO.php",
@@ -7426,7 +7426,7 @@
                 "validateMetadata"
             ],
             "constants": [],
-            "lines_of_code": 324
+            "lines_of_code": 319
         },
         "app\/Domains\/Security\/DTOs\/CreateIpRuleDTO.php": {
             "path": "app\/Domains\/Security\/DTOs\/CreateIpRuleDTO.php",
@@ -7457,7 +7457,7 @@
                 "getDetailedInfo"
             ],
             "constants": [],
-            "lines_of_code": 289
+            "lines_of_code": 288
         },
         "app\/Domains\/Security\/DTOs\/ActivityLogSearchDTO.php": {
             "path": "app\/Domains\/Security\/DTOs\/ActivityLogSearchDTO.php",
@@ -7518,7 +7518,7 @@
                 "DEFAULT_SORT_BY",
                 "DEFAULT_SORT_ORDER"
             ],
-            "lines_of_code": 542
+            "lines_of_code": 541
         },
         "app\/Domains\/Security\/Services\/Advanced\/SecurityTestService.php": {
             "path": "app\/Domains\/Security\/Services\/Advanced\/SecurityTestService.php",
@@ -7634,7 +7634,7 @@
                 "TOKEN_POOL_SIZE",
                 "TOKEN_POOL_KEY"
             ],
-            "lines_of_code": 297
+            "lines_of_code": 296
         },
         "app\/Domains\/Security\/Services\/SuspiciousActivityDetector.php": {
             "path": "app\/Domains\/Security\/Services\/SuspiciousActivityDetector.php",
@@ -7690,7 +7690,7 @@
                 "DEFAULT_FAILURE_THRESHOLDS",
                 "DEFAULT_FREQUENCY_THRESHOLDS"
             ],
-            "lines_of_code": 788
+            "lines_of_code": 787
         },
         "app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": {
             "path": "app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php",
@@ -7723,7 +7723,7 @@
                 "isSensitiveKey"
             ],
             "constants": [],
-            "lines_of_code": 328
+            "lines_of_code": 331
         },
         "app\/Domains\/Security\/Services\/Content\/XssProtectionExtensionService.php": {
             "path": "app\/Domains\/Security\/Services\/Content\/XssProtectionExtensionService.php",
@@ -7854,7 +7854,7 @@
             "constants": [
                 "DEFAULT_RETENTION_DAYS"
             ],
-            "lines_of_code": 415
+            "lines_of_code": 404
         },
         "app\/Domains\/Security\/Services\/Error\/ErrorHandlerService.php": {
             "path": "app\/Domains\/Security\/Services\/Error\/ErrorHandlerService.php",
@@ -8026,7 +8026,7 @@
                 "getSystemStats"
             ],
             "constants": [],
-            "lines_of_code": 225
+            "lines_of_code": 192
         },
         "app\/Domains\/Auth\/Contracts\/AuthenticationServiceInterface.php": {
             "path": "app\/Domains\/Auth\/Contracts\/AuthenticationServiceInterface.php",
@@ -8060,7 +8060,7 @@
                 "cleanupRevokedTokens"
             ],
             "constants": [],
-            "lines_of_code": 152
+            "lines_of_code": 136
         },
         "app\/Domains\/Auth\/Contracts\/JwtProviderInterface.php": {
             "path": "app\/Domains\/Auth\/Contracts\/JwtProviderInterface.php",
@@ -8087,7 +8087,7 @@
                 "isTokenExpired"
             ],
             "constants": [],
-            "lines_of_code": 83
+            "lines_of_code": 74
         },
         "app\/Domains\/Auth\/Contracts\/UserRepositoryInterface.php": {
             "path": "app\/Domains\/Auth\/Contracts\/UserRepositoryInterface.php",
@@ -8117,7 +8117,7 @@
                 "getStats"
             ],
             "constants": [],
-            "lines_of_code": 144
+            "lines_of_code": 121
         },
         "app\/Domains\/Auth\/Contracts\/JwtTokenServiceInterface.php": {
             "path": "app\/Domains\/Auth\/Contracts\/JwtTokenServiceInterface.php",
@@ -8222,7 +8222,7 @@
                 "optimize"
             ],
             "constants": [],
-            "lines_of_code": 243
+            "lines_of_code": 211
         },
         "app\/Domains\/Auth\/Contracts\/AuthorizationServiceInterface.php": {
             "path": "app\/Domains\/Auth\/Contracts\/AuthorizationServiceInterface.php",
@@ -8391,7 +8391,7 @@
                 "getStats"
             ],
             "constants": [],
-            "lines_of_code": 174
+            "lines_of_code": 177
         },
         "app\/Domains\/Auth\/Repositories\/UserRepository.php": {
             "path": "app\/Domains\/Auth\/Repositories\/UserRepository.php",
@@ -8522,7 +8522,7 @@
                 "__toString"
             ],
             "constants": [],
-            "lines_of_code": 168
+            "lines_of_code": 158
         },
         "app\/Domains\/Auth\/Exceptions\/ForbiddenException.php": {
             "path": "app\/Domains\/Auth\/Exceptions\/ForbiddenException.php",
@@ -8653,7 +8653,7 @@
                 "REASON_FAMILY_REVOCATION_FAILED",
                 "REASON_BATCH_OPERATION_FAILED"
             ],
-            "lines_of_code": 407
+            "lines_of_code": 382
         },
         "app\/Domains\/Auth\/Exceptions\/TokenValidationException.php": {
             "path": "app\/Domains\/Auth\/Exceptions\/TokenValidationException.php",
@@ -8979,7 +8979,7 @@
                 "isBusinessEmail"
             ],
             "constants": [],
-            "lines_of_code": 380
+            "lines_of_code": 376
         },
         "app\/Domains\/Auth\/DTOs\/RefreshRequestDTO.php": {
             "path": "app\/Domains\/Auth\/DTOs\/RefreshRequestDTO.php",
@@ -9028,7 +9028,7 @@
                 "REQUEST_TIMEOUT",
                 "CACHE_TTL"
             ],
-            "lines_of_code": 206
+            "lines_of_code": 205
         },
         "app\/Domains\/Auth\/Services\/SessionSecurityService.php": {
             "path": "app\/Domains\/Auth\/Services\/SessionSecurityService.php",
@@ -9154,7 +9154,7 @@
                 "upgradePasswordHash"
             ],
             "constants": [],
-            "lines_of_code": 128
+            "lines_of_code": 119
         },
         "app\/Domains\/Auth\/Services\/PasswordSecurityService.php": {
             "path": "app\/Domains\/Auth\/Services\/PasswordSecurityService.php",
@@ -9242,7 +9242,7 @@
                 "MIN_CLEANUP_INTERVAL",
                 "ROTATION_GRACE_PERIOD"
             ],
-            "lines_of_code": 571
+            "lines_of_code": 559
         },
         "app\/Domains\/Auth\/Services\/AuthorizationService.php": {
             "path": "app\/Domains\/Auth\/Services\/AuthorizationService.php",
@@ -9325,7 +9325,7 @@
                 "DEFAULT_MAX_BLACKLIST_SIZE",
                 "HIGH_PRIORITY_REASONS"
             ],
-            "lines_of_code": 647
+            "lines_of_code": 621
         },
         "app\/Domains\/Auth\/Services\/JwtTokenService.php": {
             "path": "app\/Domains\/Auth\/Services\/JwtTokenService.php",
@@ -9438,7 +9438,7 @@
                 "REVOKE_REASON_TOKEN_ROTATION",
                 "REVOKE_REASON_EXPIRED"
             ],
-            "lines_of_code": 521
+            "lines_of_code": 503
         },
         "app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php": {
             "path": "app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php",
@@ -9509,7 +9509,7 @@
                 "REASON_DEVICE_LOST",
                 "REASON_SUSPICIOUS_ACTIVITY"
             ],
-            "lines_of_code": 703
+            "lines_of_code": 668
         },
         "app\/Domains\/Auth\/ValueObjects\/TokenPair.php": {
             "path": "app\/Domains\/Auth\/ValueObjects\/TokenPair.php",
@@ -9551,7 +9551,7 @@
                 "validateExpirationTimes"
             ],
             "constants": [],
-            "lines_of_code": 375
+            "lines_of_code": 355
         },
         "app\/Domains\/Auth\/ValueObjects\/DeviceInfo.php": {
             "path": "app\/Domains\/Auth\/ValueObjects\/DeviceInfo.php",
@@ -9604,7 +9604,7 @@
                 "validateDeviceType"
             ],
             "constants": [],
-            "lines_of_code": 644
+            "lines_of_code": 618
         },
         "app\/Domains\/Auth\/ValueObjects\/JwtPayload.php": {
             "path": "app\/Domains\/Auth\/ValueObjects\/JwtPayload.php",
@@ -9650,7 +9650,7 @@
                 "normalizeAudience"
             ],
             "constants": [],
-            "lines_of_code": 442
+            "lines_of_code": 419
         },
         "app\/Domains\/Attachment\/Contracts\/FileSecurityServiceInterface.php": {
             "path": "app\/Domains\/Attachment\/Contracts\/FileSecurityServiceInterface.php",
@@ -9708,7 +9708,7 @@
                 "search"
             ],
             "constants": [],
-            "lines_of_code": 174
+            "lines_of_code": 145
         },
         "app\/Domains\/Attachment\/Contracts\/AttachmentServiceInterface.php": {
             "path": "app\/Domains\/Attachment\/Contracts\/AttachmentServiceInterface.php",
@@ -9829,7 +9829,7 @@
                 "getFileCategory"
             ],
             "constants": [],
-            "lines_of_code": 325
+            "lines_of_code": 324
         },
         "app\/Domains\/Attachment\/Services\/AttachmentService.php": {
             "path": "app\/Domains\/Attachment\/Services\/AttachmentService.php",
@@ -9969,7 +9969,7 @@
                 "tags"
             ],
             "constants": [],
-            "lines_of_code": 682
+            "lines_of_code": 690
         },
         "app\/Shared\/Cache\/Drivers\/FileCacheDriver.php": {
             "path": "app\/Shared\/Cache\/Drivers\/FileCacheDriver.php",
@@ -10016,7 +10016,7 @@
                 "CACHE_EXTENSION",
                 "DEFAULT_TTL"
             ],
-            "lines_of_code": 447
+            "lines_of_code": 456
         },
         "app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php": {
             "path": "app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php",
@@ -10082,7 +10082,7 @@
                 "DEFAULT_TTL",
                 "TAG_INDEX_PREFIX"
             ],
-            "lines_of_code": 829
+            "lines_of_code": 837
         },
         "app\/Shared\/Cache\/Drivers\/LayeredCacheDriver.php": {
             "path": "app\/Shared\/Cache\/Drivers\/LayeredCacheDriver.php",
@@ -10124,7 +10124,7 @@
                 "resetStats"
             ],
             "constants": [],
-            "lines_of_code": 429
+            "lines_of_code": 438
         },
         "app\/Shared\/Cache\/Strategies\/DefaultCacheStrategy.php": {
             "path": "app\/Shared\/Cache\/Strategies\/DefaultCacheStrategy.php",
@@ -10157,7 +10157,7 @@
                 "setMaxValueSize"
             ],
             "constants": [],
-            "lines_of_code": 346
+            "lines_of_code": 349
         },
         "app\/Shared\/Cache\/Contracts\/TagRepositoryInterface.php": {
             "path": "app\/Shared\/Cache\/Contracts\/TagRepositoryInterface.php",
@@ -10185,7 +10185,7 @@
                 "flush"
             ],
             "constants": [],
-            "lines_of_code": 128
+            "lines_of_code": 109
         },
         "app\/Shared\/Cache\/Contracts\/CacheStrategyInterface.php": {
             "path": "app\/Shared\/Cache\/Contracts\/CacheStrategyInterface.php",
@@ -10206,7 +10206,7 @@
                 "resetStats"
             ],
             "constants": [],
-            "lines_of_code": 62
+            "lines_of_code": 59
         },
         "app\/Shared\/Cache\/Contracts\/CacheDriverInterface.php": {
             "path": "app\/Shared\/Cache\/Contracts\/CacheDriverInterface.php",
@@ -10237,7 +10237,7 @@
                 "cleanup"
             ],
             "constants": [],
-            "lines_of_code": 107
+            "lines_of_code": 104
         },
         "app\/Shared\/Cache\/Contracts\/CacheManagerInterface.php": {
             "path": "app\/Shared\/Cache\/Contracts\/CacheManagerInterface.php",
@@ -10266,7 +10266,7 @@
                 "getDrivers"
             ],
             "constants": [],
-            "lines_of_code": 98
+            "lines_of_code": 96
         },
         "app\/Shared\/Cache\/Contracts\/TaggedCacheInterface.php": {
             "path": "app\/Shared\/Cache\/Contracts\/TaggedCacheInterface.php",
@@ -10301,7 +10301,7 @@
                 "tags"
             ],
             "constants": [],
-            "lines_of_code": 165
+            "lines_of_code": 145
         },
         "app\/Shared\/Cache\/Providers\/CacheServiceProvider.php": {
             "path": "app\/Shared\/Cache\/Providers\/CacheServiceProvider.php",
@@ -10404,7 +10404,7 @@
                 "TAG_PREFIX",
                 "KEY_TAG_PREFIX"
             ],
-            "lines_of_code": 501
+            "lines_of_code": 500
         },
         "app\/Shared\/Cache\/Repositories\/MemoryTagRepository.php": {
             "path": "app\/Shared\/Cache\/Repositories\/MemoryTagRepository.php",
@@ -10438,7 +10438,7 @@
                 "cleanupExpiredData"
             ],
             "constants": [],
-            "lines_of_code": 413
+            "lines_of_code": 412
         },
         "app\/Shared\/Cache\/Services\/DefaultCacheStrategy.php": {
             "path": "app\/Shared\/Cache\/Services\/DefaultCacheStrategy.php",
@@ -10471,7 +10471,7 @@
                 "setMaxValueSize"
             ],
             "constants": [],
-            "lines_of_code": 345
+            "lines_of_code": 348
         },
         "app\/Shared\/Cache\/Services\/CacheGroupManager.php": {
             "path": "app\/Shared\/Cache\/Services\/CacheGroupManager.php",
@@ -10512,7 +10512,7 @@
                 "matchPattern"
             ],
             "constants": [],
-            "lines_of_code": 487
+            "lines_of_code": 453
         },
         "app\/Shared\/Cache\/Services\/TaggedCacheManager.php": {
             "path": "app\/Shared\/Cache\/Services\/TaggedCacheManager.php",
@@ -10559,7 +10559,7 @@
                 "logTaggedAccess"
             ],
             "constants": [],
-            "lines_of_code": 434
+            "lines_of_code": 428
         },
         "app\/Shared\/Cache\/Services\/CacheManager.php": {
             "path": "app\/Shared\/Cache\/Services\/CacheManager.php",
@@ -10621,7 +10621,7 @@
                 "getConfig"
             ],
             "constants": [],
-            "lines_of_code": 886
+            "lines_of_code": 889
         },
         "app\/Shared\/Cache\/Services\/PrefixedCacheManager.php": {
             "path": "app\/Shared\/Cache\/Services\/PrefixedCacheManager.php",
@@ -10657,7 +10657,7 @@
                 "getPrefix"
             ],
             "constants": [],
-            "lines_of_code": 135
+            "lines_of_code": 138
         },
         "app\/Shared\/Cache\/ValueObjects\/CacheTag.php": {
             "path": "app\/Shared\/Cache\/ValueObjects\/CacheTag.php",
@@ -10690,7 +10690,7 @@
                 "isTemporalTag"
             ],
             "constants": [],
-            "lines_of_code": 203
+            "lines_of_code": 197
         },
         "app\/Shared\/Config\/EnvironmentConfig.php": {
             "path": "app\/Shared\/Config\/EnvironmentConfig.php",
@@ -10814,7 +10814,7 @@
                 "remember"
             ],
             "constants": [],
-            "lines_of_code": 105
+            "lines_of_code": 91
         },
         "app\/Shared\/Contracts\/OutputSanitizerInterface.php": {
             "path": "app\/Shared\/Contracts\/OutputSanitizerInterface.php",
@@ -10856,7 +10856,7 @@
                 "stopOnFirstFailure"
             ],
             "constants": [],
-            "lines_of_code": 69
+            "lines_of_code": 58
         },
         "app\/Shared\/OpenApi\/OpenApiConfig.php": {
             "path": "app\/Shared\/OpenApi\/OpenApiConfig.php",
@@ -10946,7 +10946,7 @@
                 "toDebugArray"
             ],
             "constants": [],
-            "lines_of_code": 116
+            "lines_of_code": 115
         },
         "app\/Shared\/Exceptions\/DomainException.php": {
             "path": "app\/Shared\/Exceptions\/DomainException.php",
@@ -10967,7 +10967,7 @@
                 "toArray"
             ],
             "constants": [],
-            "lines_of_code": 72
+            "lines_of_code": 67
         },
         "app\/Shared\/Exceptions\/Validation\/RequestValidationException.php": {
             "path": "app\/Shared\/Exceptions\/Validation\/RequestValidationException.php",
@@ -11071,7 +11071,7 @@
                 "getBool"
             ],
             "constants": [],
-            "lines_of_code": 112
+            "lines_of_code": 110
         },
         "app\/Shared\/Http\/ApiResponse.php": {
             "path": "app\/Shared\/Http\/ApiResponse.php",
@@ -11193,7 +11193,7 @@
                 "exportData"
             ],
             "constants": [],
-            "lines_of_code": 136
+            "lines_of_code": 115
         },
         "app\/Shared\/Monitoring\/Providers\/MonitoringServiceProvider.php": {
             "path": "app\/Shared\/Monitoring\/Providers\/MonitoringServiceProvider.php",
@@ -11413,7 +11413,7 @@
                 "getEventCount"
             ],
             "constants": [],
-            "lines_of_code": 61
+            "lines_of_code": 60
         },
         "app\/Shared\/Domain\/ValueObjects\/Uuid.php": {
             "path": "app\/Shared\/Domain\/ValueObjects\/Uuid.php",
@@ -11557,7 +11557,7 @@
                 "__toString"
             ],
             "constants": [],
-            "lines_of_code": 337
+            "lines_of_code": 312
         },
         "app\/Shared\/Validation\/Factory\/ValidatorFactory.php": {
             "path": "app\/Shared\/Validation\/Factory\/ValidatorFactory.php",
@@ -11580,7 +11580,7 @@
                 "addDTOSpecificRules"
             ],
             "constants": [],
-            "lines_of_code": 328
+            "lines_of_code": 327
         },
         "app\/Application\/Middleware\/JwtAuthenticationMiddleware.php": {
             "path": "app\/Application\/Middleware\/JwtAuthenticationMiddleware.php",
@@ -11684,7 +11684,7 @@
                 "__toString"
             ],
             "constants": [],
-            "lines_of_code": 307
+            "lines_of_code": 282
         },
         "app\/Application\/Middleware\/JwtAuthorizationMiddleware.php": {
             "path": "app\/Application\/Middleware\/JwtAuthorizationMiddleware.php",
@@ -11748,7 +11748,7 @@
                 "DEFAULT_POLICY",
                 "ADMIN_ROLES"
             ],
-            "lines_of_code": 1106
+            "lines_of_code": 1097
         },
         "app\/Application\/Middleware\/RateLimitMiddleware.php": {
             "path": "app\/Application\/Middleware\/RateLimitMiddleware.php",
@@ -11831,7 +11831,7 @@
                 "validateActivityPatterns"
             ],
             "constants": [],
-            "lines_of_code": 547
+            "lines_of_code": 540
         },
         "app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php": {
             "path": "app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php",
@@ -11866,7 +11866,7 @@
                 "validateSourceStatistics"
             ],
             "constants": [],
-            "lines_of_code": 376
+            "lines_of_code": 365
         },
         "app\/Application\/DTOs\/Statistics\/SourceDistributionDTO.php": {
             "path": "app\/Application\/DTOs\/Statistics\/SourceDistributionDTO.php",
@@ -11908,7 +11908,7 @@
                 "validateTotalCount"
             ],
             "constants": [],
-            "lines_of_code": 523
+            "lines_of_code": 510
         },
         "app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php": {
             "path": "app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php",
@@ -11950,7 +11950,7 @@
                 "validateAdditionalMetrics"
             ],
             "constants": [],
-            "lines_of_code": 445
+            "lines_of_code": 433
         },
         "app\/Application\/Controllers\/Security\/CSPReportController.php": {
             "path": "app\/Application\/Controllers\/Security\/CSPReportController.php",
@@ -11981,7 +11981,7 @@
                 "sendAlert"
             ],
             "constants": [],
-            "lines_of_code": 344
+            "lines_of_code": 338
         },
         "app\/Application\/Controllers\/Web\/SwaggerController.php": {
             "path": "app\/Application\/Controllers\/Web\/SwaggerController.php",
@@ -12070,7 +12070,7 @@
                 "getTagCreatedAt"
             ],
             "constants": [],
-            "lines_of_code": 760
+            "lines_of_code": 755
         },
         "app\/Application\/Controllers\/Admin\/CacheMonitorController.php": {
             "path": "app\/Application\/Controllers\/Admin\/CacheMonitorController.php",
@@ -12172,7 +12172,7 @@
                 "checkAccess"
             ],
             "constants": [],
-            "lines_of_code": 130
+            "lines_of_code": 127
         },
         "app\/Application\/Controllers\/Api\/V1\/ActivityLogController.php": {
             "path": "app\/Application\/Controllers\/Api\/V1\/ActivityLogController.php",
@@ -12292,7 +12292,7 @@
                 "destroy"
             ],
             "constants": [],
-            "lines_of_code": 1134
+            "lines_of_code": 1133
         },
         "app\/Application\/Controllers\/Api\/V1\/AttachmentController.php": {
             "path": "app\/Application\/Controllers\/Api\/V1\/AttachmentController.php",
@@ -12324,7 +12324,7 @@
                 "delete"
             ],
             "constants": [],
-            "lines_of_code": 490
+            "lines_of_code": 489
         },
         "app\/Application\/Controllers\/Api\/Statistics\/StatisticsAdminController.php": {
             "path": "app\/Application\/Controllers\/Api\/Statistics\/StatisticsAdminController.php",
@@ -12407,7 +12407,7 @@
                 "ensureStringKeys"
             ],
             "constants": [],
-            "lines_of_code": 1004
+            "lines_of_code": 996
         },
         "app\/Application\/Controllers\/BaseController.php": {
             "path": "app\/Application\/Controllers\/BaseController.php",
@@ -12475,7 +12475,7 @@
                 "executeCustomQuery"
             ],
             "constants": [],
-            "lines_of_code": 591
+            "lines_of_code": 579
         },
         "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php": {
             "path": "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php",
@@ -12522,7 +12522,7 @@
                 "CACHE_TTL",
                 "CACHE_PREFIX"
             ],
-            "lines_of_code": 544
+            "lines_of_code": 536
         },
         "app\/Infrastructure\/Database\/DatabaseConnection.php": {
             "path": "app\/Infrastructure\/Database\/DatabaseConnection.php",
@@ -12752,7 +12752,7 @@
                 "validateIssuerAndAudience"
             ],
             "constants": [],
-            "lines_of_code": 444
+            "lines_of_code": 417
         },
         "app\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepository.php": {
             "path": "app\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepository.php",
@@ -12800,7 +12800,7 @@
             "constants": [
                 "TABLE_NAME"
             ],
-            "lines_of_code": 635
+            "lines_of_code": 641
         },
         "app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": {
             "path": "app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php",
@@ -12851,7 +12851,7 @@
                 "isDuplicateKeyError"
             ],
             "constants": [],
-            "lines_of_code": 1144
+            "lines_of_code": 1107
         },
         "app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": {
             "path": "app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php",
@@ -12898,7 +12898,7 @@
                 "extractPrimarySource"
             ],
             "constants": [],
-            "lines_of_code": 728
+            "lines_of_code": 727
         },
         "app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php": {
             "path": "app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php",
@@ -13307,7 +13307,7 @@
                 "clearParameters"
             ],
             "constants": [],
-            "lines_of_code": 109
+            "lines_of_code": 102
         },
         "app\/Infrastructure\/Routing\/Middleware\/MiddlewareResolver.php": {
             "path": "app\/Infrastructure\/Routing\/Middleware\/MiddlewareResolver.php",
@@ -13334,7 +13334,7 @@
                 "registerAlias"
             ],
             "constants": [],
-            "lines_of_code": 146
+            "lines_of_code": 142
         },
         "app\/Infrastructure\/Routing\/Middleware\/RouteInfoMiddleware.php": {
             "path": "app\/Infrastructure\/Routing\/Middleware\/RouteInfoMiddleware.php",
@@ -13397,7 +13397,7 @@
                 "setStates"
             ],
             "constants": [],
-            "lines_of_code": 166
+            "lines_of_code": 169
         },
         "app\/Infrastructure\/Routing\/RouteDispatcher.php": {
             "path": "app\/Infrastructure\/Routing\/RouteDispatcher.php",
@@ -13476,7 +13476,7 @@
                 "serializeHandler"
             ],
             "constants": [],
-            "lines_of_code": 203
+            "lines_of_code": 206
         },
         "app\/Infrastructure\/Routing\/Core\/Route.php": {
             "path": "app\/Infrastructure\/Routing\/Core\/Route.php",
@@ -13521,7 +13521,7 @@
                 "match"
             ],
             "constants": [],
-            "lines_of_code": 282
+            "lines_of_code": 291
         },
         "app\/Infrastructure\/Routing\/Core\/Router.php": {
             "path": "app\/Infrastructure\/Routing\/Core\/Router.php",
@@ -13567,7 +13567,7 @@
                 "mergeGroupAttributes"
             ],
             "constants": [],
-            "lines_of_code": 291
+            "lines_of_code": 300
         },
         "app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": {
             "path": "app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php",
@@ -13624,7 +13624,7 @@
             "constants": [
                 "SUPPORTED_DRIVERS"
             ],
-            "lines_of_code": 154
+            "lines_of_code": 149
         },
         "app\/Infrastructure\/Routing\/Cache\/RedisRouteCache.php": {
             "path": "app\/Infrastructure\/Routing\/Cache\/RedisRouteCache.php",
@@ -13741,7 +13741,7 @@
                 "fromArray"
             ],
             "constants": [],
-            "lines_of_code": 84
+            "lines_of_code": 81
         },
         "app\/Infrastructure\/Routing\/Contracts\/RouteCacheInterface.php": {
             "path": "app\/Infrastructure\/Routing\/Contracts\/RouteCacheInterface.php",
@@ -13763,7 +13763,7 @@
                 "getStats"
             ],
             "constants": [],
-            "lines_of_code": 56
+            "lines_of_code": 55
         },
         "app\/Infrastructure\/Routing\/Contracts\/MiddlewareInterface.php": {
             "path": "app\/Infrastructure\/Routing\/Contracts\/MiddlewareInterface.php",
@@ -13898,7 +13898,7 @@
                 "withAttributes"
             ],
             "constants": [],
-            "lines_of_code": 122
+            "lines_of_code": 109
         },
         "app\/Infrastructure\/Routing\/Contracts\/MiddlewareDispatcherInterface.php": {
             "path": "app\/Infrastructure\/Routing\/Contracts\/MiddlewareDispatcherInterface.php",
@@ -14059,7 +14059,7 @@
                 "44": "convertParameter"
             },
             "constants": [],
-            "lines_of_code": 568
+            "lines_of_code": 567
         },
         "app\/Infrastructure\/Routing\/RouteValidator.php": {
             "path": "app\/Infrastructure\/Routing\/RouteValidator.php",
@@ -14138,7 +14138,7 @@
             "constants": [
                 "TTL"
             ],
-            "lines_of_code": 291
+            "lines_of_code": 297
         },
         "app\/Infrastructure\/Services\/OutputSanitizer.php": {
             "path": "app\/Infrastructure\/Services\/OutputSanitizer.php",
@@ -14518,7 +14518,7 @@
                 "hasBlockedSecurityEvent"
             ],
             "constants": [],
-            "lines_of_code": 377
+            "lines_of_code": 370
         },
         "tests\/Unit\/Database\/DatabaseConnectionTest.php": {
             "path": "tests\/Unit\/Database\/DatabaseConnectionTest.php",
@@ -16117,7 +16117,7 @@
                 "assertAllKeysTagsAreEmpty"
             ],
             "constants": [],
-            "lines_of_code": 337
+            "lines_of_code": 334
         },
         "tests\/Unit\/Shared\/Cache\/Services\/CacheGroupManagerTest.php": {
             "path": "tests\/Unit\/Shared\/Cache\/Services\/CacheGroupManagerTest.php",
@@ -16161,7 +16161,7 @@
                 "calculatePatternFlushResult"
             ],
             "constants": [],
-            "lines_of_code": 400
+            "lines_of_code": 398
         },
         "tests\/Unit\/Shared\/Cache\/ValueObjects\/CacheTagTest.php": {
             "path": "tests\/Unit\/Shared\/Cache\/ValueObjects\/CacheTagTest.php",
@@ -16707,7 +16707,7 @@
                 "createValidPayload"
             ],
             "constants": [],
-            "lines_of_code": 495
+            "lines_of_code": 494
         },
         "tests\/Unit\/Application\/Middleware\/JwtAuthorizationMiddlewareTest.php": {
             "path": "tests\/Unit\/Application\/Middleware\/JwtAuthorizationMiddlewareTest.php",
@@ -17667,7 +17667,7 @@
                 "assertRuleFailsWithError"
             ],
             "constants": [],
-            "lines_of_code": 826
+            "lines_of_code": 810
         },
         "tests\/Unit\/Validation\/ValidationResultTest.php": {
             "path": "tests\/Unit\/Validation\/ValidationResultTest.php",
@@ -17885,7 +17885,7 @@
                 "expectPasswordReuseException"
             ],
             "constants": [],
-            "lines_of_code": 287
+            "lines_of_code": 283
         },
         "tests\/Integration\/RateLimitTest.php": {
             "path": "tests\/Integration\/RateLimitTest.php",
@@ -18662,7 +18662,7 @@
                 "processLogoutResponse"
             ],
             "constants": [],
-            "lines_of_code": 421
+            "lines_of_code": 414
         },
         "tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php": {
             "path": "tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php",
@@ -19535,7 +19535,7 @@
                 "setCacheValue"
             ],
             "constants": [],
-            "lines_of_code": 160
+            "lines_of_code": 159
         },
         "tests\/Support\/Traits\/HttpResponseTestTrait.php": {
             "path": "tests\/Support\/Traits\/HttpResponseTestTrait.php",
@@ -19565,7 +19565,7 @@
                 "assertJsonResponseValue"
             ],
             "constants": [],
-            "lines_of_code": 199
+            "lines_of_code": 198
         },
         "tests\/Support\/Traits\/DatabaseTestTrait.php": {
             "path": "tests\/Support\/Traits\/DatabaseTestTrait.php",
@@ -19776,7 +19776,7 @@
                 "outputPerformanceReport"
             ],
             "constants": [],
-            "lines_of_code": 508
+            "lines_of_code": 499
         },
         "tests\/E2E\/Shared\/Cache\/CacheSystemE2ETest.php": {
             "path": "tests\/E2E\/Shared\/Cache\/CacheSystemE2ETest.php",

@@ -29,7 +29,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         string $logPath = '',
         bool $isDevelopment = false,
         /** @var array<string, mixed> */
-        array $sensitiveKeys/** @var array<string, mixed> */ = [],
+        array $sensitiveKeys = [],
     ) {
         $this->isDevelopment = $isDevelopment;
         $this->sensitiveKeys = array_merge([
@@ -55,7 +55,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function handleException(Throwable $e, bool $isPublicError = false): array
     {
@@ -83,7 +83,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     /**
      * @param array<string, mixed> $context
      */
-    public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeLogData($context);
 
@@ -99,7 +99,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     /**
      * @param array<string, mixed> $context
      */
-    public function logAuthenticationAttempt(bool $success, string $username, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function logAuthenticationAttempt(bool $success, string $username, /** @var array<string, mixed> */ array $context = []): void
     {
         $event = $success ? 'Authentication Success' : 'Authentication Failed';
 
@@ -112,7 +112,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     /**
      * @param array<string, mixed> $context
      */
-    public function logSuspiciousActivity(string $activity, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function logSuspiciousActivity(string $activity, /** @var array<string, mixed> */ array $context = []): void
     {
         $this->logger->error('Suspicious Activity: ' . $activity, array_merge([
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',

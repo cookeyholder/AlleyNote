@@ -64,7 +64,7 @@ class TokenGenerationException extends JwtException
         string $tokenType = self::ACCESS_TOKEN,
         string $customMessage = '',
         /** @var array<string, mixed> */
-        array $additionalContext/** @var array<string, mixed> */ = [],
+        array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
 

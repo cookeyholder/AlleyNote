@@ -113,7 +113,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         string $title,
         SourceType $sourceType,
         /** @var array<string, mixed> */
-        array $rawMetrics/** @var array<string, mixed> */,
+        array $rawMetrics,
         StatisticsPeriod $period,
         DateTimeImmutable $publishedAt,
     ): self {
@@ -227,7 +227,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 取得格式化的統計資訊.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getFormattedStatistics(): array
     {
@@ -275,7 +275,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 比較與另一篇文章的效能.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function compareWith(PostStatisticsDTO $other): array
     {
@@ -294,7 +294,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -333,7 +333,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

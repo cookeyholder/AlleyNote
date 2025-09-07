@@ -18,14 +18,14 @@ interface SystemStatisticsRepositoryInterface
      * 取得系統整體效能統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getSystemPerformanceStats(StatisticsPeriod $period): array;
 
     /**
      * 取得資料庫使用統計.
      *
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getDatabaseUsageStats(): array;
 
@@ -33,7 +33,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得系統活動熱圖資料.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, array<int, int>> 活動熱圖資料（日期 => 小時活動量）
+     * @return array<string, mixed>> 活動熱圖資料（日期 => 小時活動量）
      */
     public function getSystemActivityHeatmap(StatisticsPeriod $period): array;
 
@@ -49,7 +49,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得 API 使用統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getApiUsageStats(StatisticsPeriod $period): array;
 
@@ -57,7 +57,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得錯誤與異常統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getErrorAndExceptionStats(StatisticsPeriod $period): array;
 
@@ -94,7 +94,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得系統健康檢查統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getSystemHealthCheckStats(StatisticsPeriod $period): array;
 
@@ -172,7 +172,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得錯誤統計資料.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getErrorStatistics(StatisticsPeriod $period): array;
 
@@ -180,7 +180,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得資源使用統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getResourceUsageStatistics(StatisticsPeriod $period): array;
 }

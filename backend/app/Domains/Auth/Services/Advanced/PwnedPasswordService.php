@@ -35,7 +35,7 @@ class PwnedPasswordService
     /**
      * 檢查密碼是否在已知的洩露資料庫中.
      * @param string $password 要檢查的密碼
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function isPasswordPwned(string $password): array
     {
@@ -159,7 +159,7 @@ class PwnedPasswordService
 
     /**
      * 取得 API 狀態.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getApiStatus(): array
     {
@@ -184,7 +184,7 @@ class PwnedPasswordService
      */
     /**
      * @param array<string> $passwords
-     * @return array<string, mixed><string, array<string, mixed>>
+     * @return array<string, mixed>>
      */
     public function checkMultiplePasswords(array $passwords): array
     {

@@ -143,7 +143,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
      * 記錄一般應用日誌.
      * @param array<string, mixed> $context
      */
-    public function info(string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function info(string $message, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->info($message, $sanitizedContext);
@@ -152,7 +152,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * @param array<string, mixed> $context
      */
-    public function warning(string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function warning(string $message, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->warning($message, $sanitizedContext);
@@ -161,7 +161,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * @param array<string, mixed> $context
      */
-    public function error(string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function error(string $message, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->error($message, $sanitizedContext);
@@ -171,7 +171,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
      * 記錄安全事件.
      * @param array<string, mixed> $context
      */
-    public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
@@ -183,7 +183,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
      * 記錄高風險安全事件.
      * @param array<string, mixed> $context
      */
-    public function logCriticalSecurityEvent(string $event, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function logCriticalSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
@@ -210,7 +210,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
      * 記錄驗證失敗事件.
      * @param array<string, mixed> $context
      */
-    public function logAuthenticationFailure(string $reason, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function logAuthenticationFailure(string $reason, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
@@ -222,7 +222,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
      * 記錄授權失敗事件.
      * @param array<string, mixed> $context
      */
-    public function logAuthorizationFailure(string $resource, string $action, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function logAuthorizationFailure(string $resource, string $action, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
@@ -332,7 +332,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
 
     /**
      * 檢查並修正日誌檔案權限.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function verifyLogFilePermissions(): array
     {
@@ -370,7 +370,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
 
     /**
      * 取得日誌統計資訊.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getLogStatistics(): array
     {

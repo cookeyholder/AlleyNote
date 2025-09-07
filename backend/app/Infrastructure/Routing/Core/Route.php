@@ -32,7 +32,7 @@ class Route implements RouteInterface
      */
     public function __construct(
         /** @var array<string, mixed> */
-        private readonly array $methods/** @var array<string, mixed> */,
+        private readonly array $methods,
         private readonly string $pattern,
         private readonly mixed $handler,
     ) {
@@ -130,7 +130,7 @@ class Route implements RouteInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    public function generateUrl(array $parameters = [], /** @var array<string, mixed> */ array $queryParams/** @var array<string, mixed> */ = []): string
+    public function generateUrl(array $parameters = [], /** @var array<string, mixed> */ array $queryParams = []): string
     {
         $url = $this->pattern;
 

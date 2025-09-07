@@ -587,7 +587,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
 
     /**
      * 序列化快照資料.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function serializeSnapshotData(StatisticsSnapshot $snapshot): array
     {
@@ -639,7 +639,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
     /**
      * 反序列化指標資料.
      * @param array<string, mixed> $data
-     * @return array<string, mixed><string, StatisticsMetric>
+     * @return array<string, mixed>
      */
     private function deserializeMetrics(array $data): array
     {

@@ -71,7 +71,7 @@ class RouteParametersMiddleware extends AbstractMiddleware
 
     /**
      * 取得路由參數.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getParameters(): array
     {

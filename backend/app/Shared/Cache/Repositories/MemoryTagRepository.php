@@ -28,7 +28,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     /**
      * 為快取鍵設定標籤.
      */
-    public function setTags(string $key, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */, int $ttl = 3600): bool
+    public function setTags(string $key, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): bool
     {
         // 先清除舊的標籤關聯
         $this->deleteKey($key);
@@ -79,7 +79,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     /**
      * 為快取鍵添加標籤.
      */
-    public function addTags(string $key, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */): bool
+    public function addTags(string $key, /** @var array<string, mixed> */ array $tags): bool
     {
         $normalizedTags = $this->normalizeTags($tags);
         $currentTime = time();
@@ -113,7 +113,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     /**
      * 從快取鍵移除標籤.
      */
-    public function removeTags(string $key, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */): bool
+    public function removeTags(string $key, /** @var array<string, mixed> */ array $tags): bool
     {
         if (!isset($this->keyToTags[$key])) {
             return true;
@@ -317,7 +317,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     /**
      * 正規化標籤陣列.
      * @param array<string> $tags
-     * @return array<string, mixed><string>
+     * @return array<string, mixed>
      */
     private function normalizeTags(array $tags): array
     {

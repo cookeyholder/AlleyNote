@@ -50,7 +50,7 @@ class TokenParsingException extends JwtException
         string $reason = self::PARSING_FAILED,
         ?Throwable $previous = null,
         /** @var array<string, mixed> */
-        array $additionalContext/** @var array<string, mixed> */ = [],
+        array $additionalContext = [],
     ) {
         $context = array_merge([
             'reason' => $reason,

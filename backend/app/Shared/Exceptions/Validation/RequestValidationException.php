@@ -12,7 +12,7 @@ class RequestValidationException extends ValidationException
     /**
      * @param array<string, mixed> $errors
      */
-    public function __construct(string $message = '', array $errors/** @var array<string, mixed> */ = [])
+    public function __construct(string $message = '', array $errors = [])
     {
         if (empty($message) && !empty($errors)) {
             $message = '請求資料驗證失敗';
@@ -97,7 +97,7 @@ class RequestValidationException extends ValidationException
     /**
      * @param array<string, mixed> $allowedValues
      */
-    public static function valueNotInList(string $field, mixed $value, array $allowedValues/** @var array<string, mixed> */): self
+    public static function valueNotInList(string $field, mixed $value, array $allowedValues): self
     {
         $allowedList = implode(', ', $allowedValues);
         $errors = [$field => ["'" . (string) $value . "' 不在允許的值清單中：{$allowedList}"]];
@@ -132,7 +132,7 @@ class RequestValidationException extends ValidationException
     /**
      * @param array<string, mixed> $allowedTypes
      */
-    public static function invalidFileType(string $field, string $actualType, array $allowedTypes/** @var array<string, mixed> */): self
+    public static function invalidFileType(string $field, string $actualType, array $allowedTypes): self
     {
         $allowedList = implode(', ', $allowedTypes);
         $errors = [$field => ["檔案類型 '{$actualType}' 不被支援，允許的類型：{$allowedList}"]];

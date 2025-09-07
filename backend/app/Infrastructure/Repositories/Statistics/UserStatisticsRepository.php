@@ -224,7 +224,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
     /**
      * 取得最活躍的使用者列表 (應用層服務需要).
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getActiveUsersByPeriod(StatisticsPeriod $period, int $limit = 10): array
     {
@@ -456,7 +456,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
     /**
      * 取得使用者行為模式分析.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getUserBehaviorPatterns(StatisticsPeriod $period): array
     {
@@ -748,7 +748,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
     /**
      * 取得新使用者首次活動分析.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getNewUserFirstActivityAnalysis(StatisticsPeriod $period): array
     {
@@ -808,7 +808,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
     /**
      * 取得使用者互動網路分析.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getUserInteractionNetworkStats(StatisticsPeriod $period): array
     {
@@ -823,7 +823,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
     /**
      * 計算使用者生命週期價值分析.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getUserLifetimeValueAnalysis(StatisticsPeriod $period): array
     {
@@ -1092,7 +1092,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
     /**
      * 計算使用者參與度.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function calculateUserEngagement(StatisticsPeriod $period): array
     {

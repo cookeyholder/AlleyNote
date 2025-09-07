@@ -169,7 +169,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed><string, mixed>|null
+     * @return array<string, mixed>|null
      */
     public function getMetadata(): ?array
     {
@@ -261,7 +261,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 轉換為資料庫儲存格式.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -285,7 +285,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

@@ -29,7 +29,7 @@ class RegisterUserDTO extends BaseDTO
      * @param ValidatorInterface $validator 驗證器實例
      * @throws ValidationException 當驗證失敗時
      */
-    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data/** @var array<string, mixed> */)
+    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
     {
         parent::__construct($validator);
 
@@ -53,7 +53,7 @@ class RegisterUserDTO extends BaseDTO
     private function addUserValidationRules(): void
     {
         // 使用者名稱驗證規則
-        $this->validator->addRule('username', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
+        $this->validator->addRule('username', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
@@ -87,7 +87,7 @@ class RegisterUserDTO extends BaseDTO
         });
 
         // 密碼強度驗證規則
-        $this->validator->addRule('password_strength', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) {
+        $this->validator->addRule('password_strength', function ($value, /** @var array<string, mixed> */ array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
@@ -130,7 +130,7 @@ class RegisterUserDTO extends BaseDTO
         });
 
         // 密碼確認驗證規則
-        $this->validator->addRule('password_confirmed', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */, /** @var array<string, mixed> */ array $allData/** @var array<string, mixed> */ = []) {
+        $this->validator->addRule('password_confirmed', function ($value, /** @var array<string, mixed> */ array $parameters, /** @var array<string, mixed> */ array $allData = []) {
             if (!is_string($value)) {
                 return false;
             }
@@ -223,7 +223,7 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     protected function getValidationRules(): array
     {
@@ -239,13 +239,13 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 覆寫驗證方法以支援跨欄位驗證.
      * @param array<string, mixed> $data 輸入資料
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      * @throws ValidationException 當驗證失敗時
      */
     protected function validate(array $data): array
     {
         // 為跨欄位驗證規則提供完整資料
-        $this->validator->addRule('password_confirmed', function ($value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */) use ($data) {
+        $this->validator->addRule('password_confirmed', function ($value, /** @var array<string, mixed> */ array $parameters) use ($data) {
             if (!is_string($value)) {
                 return false;
             }
@@ -261,7 +261,7 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Service 使用）.
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -275,7 +275,7 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 取得用於密碼雜湊的資料.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getPasswordData(): array
     {

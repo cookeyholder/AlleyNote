@@ -99,7 +99,7 @@ class IpList implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -118,7 +118,7 @@ class IpList implements JsonSerializable
     /**
      * 取得清理過的資料陣列，適用於前端顯示.
      * @param OutputSanitizerInterface $sanitizer 清理服務
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toSafeArray(OutputSanitizerInterface $sanitizer): array
     {
@@ -133,7 +133,7 @@ class IpList implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

@@ -457,7 +457,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      * 檢測失敗率異常.
      * @param array<string, mixed> $activityCounts
      */
-    private function detectFailureRateAnomalies(array $activityCounts, /** @var array<string, mixed> */ array $failureCounts/** @var array<string, mixed> */, int $timeWindowMinutes): array
+    private function detectFailureRateAnomalies(array $activityCounts, /** @var array<string, mixed> */ array $failureCounts, int $timeWindowMinutes): array
     {
         foreach ($this->failureThresholds as $actionType => $config) {
             if ($config['timeWindow'] !== $timeWindowMinutes) {
@@ -660,7 +660,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      * 產生建議動作.
      * @param array<string, mixed> $rules
      */
-    private function generateRecommendedAction(bool $isSuspicious, ActivitySeverity $severity, /** @var array<string, mixed> */ array $rules/** @var array<string, mixed> */): ?string
+    private function generateRecommendedAction(bool $isSuspicious, ActivitySeverity $severity, /** @var array<string, mixed> */ array $rules): ?string
     {
         if (!$isSuspicious) {
             return null;

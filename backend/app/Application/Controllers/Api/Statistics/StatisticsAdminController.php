@@ -296,12 +296,12 @@ class StatisticsAdminController extends BaseController
      * 驗證重新整理參數。
      *
      * @param array<string, mixed> $body
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
 
     /**
      * @param array<string, mixed> $body
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function validateRefreshParams(array $body): array
     {
@@ -349,7 +349,7 @@ class StatisticsAdminController extends BaseController
      * 驗證快取清除參數。
      *
      * @param array<string, mixed> $queryParams
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function validateClearCacheParams(array $queryParams): array
     {
@@ -381,7 +381,7 @@ class StatisticsAdminController extends BaseController
     /**
      * 收集健康檢查資料。
      *
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function gatherHealthData(): array
     {

@@ -33,12 +33,12 @@ final readonly class JwtPayload implements JsonSerializable
         private string $sub,
         private string $iss,
         /** @var array<string, mixed> */
-        private array $aud/** @var array<string, mixed> */,
+        private array $aud,
         private DateTimeImmutable $iat,
         private DateTimeImmutable $exp,
         private ?DateTimeImmutable $nbf = null,
         /** @var array<string, mixed> */
-        private array $customClaims/** @var array<string, mixed> */ = [],
+        private array $customClaims = [],
     ) {
         $this->validateJti($jti);
         $this->validateSub($sub);
@@ -128,7 +128,7 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 取得受眾.
-     * @return array<string, mixed><string>
+     * @return array<string, mixed>
      */
     public function getAudience(): array
     {
@@ -161,7 +161,7 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 取得自訂宣告.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getCustomClaims(): array
     {
@@ -217,7 +217,7 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 轉換為陣列格式（用於 JWT 編碼）.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -240,7 +240,7 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -395,7 +395,7 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 標準化受眾參數為 array<string, mixed> 格式.
      * @param mixed $aud 受眾參數
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private static function normalizeAudience(mixed $aud): array
     {

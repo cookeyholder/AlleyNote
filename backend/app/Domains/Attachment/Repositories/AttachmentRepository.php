@@ -105,7 +105,7 @@ class AttachmentRepository
     }
 
     /**
-     * @return array<string, mixed><int, Attachment>
+     * @return array<string, mixed>
      */
     public function getByPostId(int $postId): array
     {

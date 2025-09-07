@@ -24,7 +24,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * 取得系統整體效能統計.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getSystemPerformanceStats(StatisticsPeriod $period): array
     {
@@ -163,7 +163,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * StatisticsQueryService 需要的方法.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getErrorStatistics(StatisticsPeriod $period): array
     {
@@ -180,7 +180,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * StatisticsQueryService 需要的方法.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getResourceUsageStatistics(StatisticsPeriod $period): array
     {
@@ -213,7 +213,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * 取得資料庫使用統計.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getDatabaseUsageStats(): array
     {
@@ -330,7 +330,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * 取得 API 使用統計.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getApiUsageStats(StatisticsPeriod $period): array
     {
@@ -382,7 +382,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * 取得錯誤與異常統計.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getErrorAndExceptionStats(StatisticsPeriod $period): array
     {
@@ -547,7 +547,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * 取得系統健康檢查統計.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getSystemHealthCheckStats(StatisticsPeriod $period): array
     {

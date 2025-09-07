@@ -216,7 +216,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
     /**
      * 取得權杖池狀態（用於除錯）.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getTokenPoolStatus(): array
     {

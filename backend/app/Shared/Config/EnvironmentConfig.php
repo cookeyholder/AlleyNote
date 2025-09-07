@@ -141,7 +141,7 @@ final class EnvironmentConfig
 
     /**
      * 取得所有已載入的配置.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function all(): array
     {

@@ -19,7 +19,7 @@ class UserRepository
 
     /**
      * @param array<string, mixed> $data
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function create(array $data): array
     {
@@ -55,9 +55,9 @@ class UserRepository
 
     /**
      * @param array<string, mixed> $data
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
-    public function update(string $id, array $data/** @var array<string, mixed> */): array
+    public function update(string $id, array $data): array
     {
         $fields = [];
         $params = ['id' => $id];
@@ -102,7 +102,7 @@ class UserRepository
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function findById(int $id): ?array
     {
@@ -116,7 +116,7 @@ class UserRepository
     }
 
     /**
-     * @return array<string, mixed><string, mixed>|null
+     * @return array<string, mixed>|null
      */
     public function findByUuid(string $uuid): ?array
     {
@@ -130,7 +130,7 @@ class UserRepository
     }
 
     /**
-     * @return array<string, mixed><string, mixed>|null
+     * @return array<string, mixed>|null
      */
     public function findByUsername(string $username): ?array
     {
@@ -144,7 +144,7 @@ class UserRepository
     }
 
     /**
-     * @return array<string, mixed><string, mixed>|null
+     * @return array<string, mixed>|null
      */
     public function findByEmail(string $email): ?array
     {

@@ -68,7 +68,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         private ?int $userId = null,
         private ?string $deviceId = null,
         /** @var array<string, mixed> */
-        private array $metadata/** @var array<string, mixed> */ = [],
+        private array $metadata = [],
     ) {
         $this->validateJti($jti);
         $this->validateTokenType($tokenType);
@@ -114,7 +114,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private static function sanitizeMetadata(mixed $metadata): array
     {
@@ -168,7 +168,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         string $securityReason,
         ?int $userId = null,
         /** @var array<string, mixed> */
-        array $metadata/** @var array<string, mixed> */ = [],
+        array $metadata = [],
     ): self {
         $validSecurityReasons = [
             self::REASON_SECURITY_BREACH,
@@ -281,7 +281,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得元資料.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getMetadata(): array
     {
@@ -425,7 +425,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -448,7 +448,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 轉換為資料庫儲存格式.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toDatabaseArray(): array
     {
@@ -466,7 +466,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -518,7 +518,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的 Token 類型.
-     * @return array<string, mixed><string>
+     * @return array<string, mixed>
      */
     public static function getValidTokenTypes(): array
     {
@@ -527,7 +527,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的黑名單原因.
-     * @return array<string, mixed><string>
+     * @return array<string, mixed>
      */
     public static function getValidReasons(): array
     {

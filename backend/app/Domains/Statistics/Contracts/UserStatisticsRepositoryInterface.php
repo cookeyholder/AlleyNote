@@ -43,7 +43,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者註冊趨勢資料（按日期分組）.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><array{date: string, new_users: int}> 註冊趨勢資料
+     * @return array<string, mixed> 註冊趨勢資料
      */
     public function getUserRegistrationTrends(StatisticsPeriod $period): array;
 
@@ -51,7 +51,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者活躍度統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><array{user_id: int, email: string, name: string, posts_count: int, activities_count: int, last_activity: string}> 活躍度統計
+     * @return array<string, mixed> 活躍度統計
      */
     public function getUserActivityStats(StatisticsPeriod $period): array;
 
@@ -60,7 +60,7 @@ interface UserStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 限制回傳數量，預設為 10
-     * @return array<string, mixed><array{user_id: int, email: string, name: string, posts_count: int, activities_count: int, total_views: int, last_activity: string}> 最活躍使用者
+     * @return array<string, mixed> 最活躍使用者
      */
     public function getMostActiveUsers(StatisticsPeriod $period, int $limit = 10): array;
 
@@ -68,7 +68,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者行為模式分析.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getUserBehaviorPatterns(StatisticsPeriod $period): array;
 
@@ -85,7 +85,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者分群統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><array{user_segment: string, user_count: int, avg_posts: float, segment_total_views: int, percentage: float}> 分群統計
+     * @return array<string, mixed> 分群統計
      */
     public function getUserSegmentationStats(StatisticsPeriod $period): array;
 
@@ -102,7 +102,7 @@ interface UserStatisticsRepositoryInterface
      * 取得新使用者首次活動分析.
      *
      * @param StatisticsPeriod $period 統計週期（註冊期間）
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getNewUserFirstActivityAnalysis(StatisticsPeriod $period): array;
 
@@ -110,7 +110,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者互動網路分析.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getUserInteractionNetworkStats(StatisticsPeriod $period): array;
 
@@ -118,7 +118,7 @@ interface UserStatisticsRepositoryInterface
      * 計算使用者生命週期價值分析.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getUserLifetimeValueAnalysis(StatisticsPeriod $period): array;
 
@@ -126,7 +126,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者地理分布統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><array{region: string, user_count: int, percentage: float}> 地理分布統計
+     * @return array<string, mixed> 地理分布統計
      */
     public function getUserGeographicDistribution(StatisticsPeriod $period): array;
 
@@ -135,7 +135,7 @@ interface UserStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 限制回傳數量，預設為 100
-     * @return array<string, mixed><array{user_id: int, email: string, name: string, posts_count: int, total_views: int, activities_count: int, active_days: int, engagement_score: float}> 參與度評分
+     * @return array<string, mixed> 參與度評分
      */
     public function getUserEngagementScores(StatisticsPeriod $period, int $limit = 100): array;
 
@@ -143,7 +143,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者活動時間分布.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><array{hour: int, activity_count: int, user_count: int}> 活動時間分布
+     * @return array<string, mixed> 活動時間分布
      */
     public function getUserActivityTimeDistribution(StatisticsPeriod $period): array;
 
@@ -151,7 +151,7 @@ interface UserStatisticsRepositoryInterface
      * 計算使用者活躍度變化趨勢.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><array{date: string, active_users: int, new_users: int, returning_users: int}> 活躍度趨勢
+     * @return array<string, mixed> 活躍度趨勢
      */
     public function getUserActivityTrends(StatisticsPeriod $period): array;
 
@@ -159,7 +159,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者裝置類型統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><array{device_type: string, user_count: int, session_count: int, percentage: float}> 裝置類型統計
+     * @return array<string, mixed> 裝置類型統計
      */
     public function getUserDeviceTypeStats(StatisticsPeriod $period): array;
 
@@ -184,7 +184,7 @@ interface UserStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 限制回傳數量，預設為 10
-     * @return array<string, mixed><array{user_id: int, username: string, activity_count: int, posts_count: int, last_activity: string}> 最活躍使用者清單
+     * @return array<string, mixed> 最活躍使用者清單
      */
     public function getTopActiveUsers(StatisticsPeriod $period, int $limit = 10): array;
 

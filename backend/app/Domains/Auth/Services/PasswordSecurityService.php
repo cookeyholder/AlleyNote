@@ -182,7 +182,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function calculatePasswordStrength(string $password): array
     {
@@ -304,7 +304,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function isCommonPassword(string $password): array
     {

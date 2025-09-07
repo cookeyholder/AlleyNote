@@ -157,7 +157,7 @@ class PostRepository implements PostRepositoryInterface
     /**
      * 準備資料庫查詢結果為 Post 物件的資料.
      * @param array<string, mixed> $result
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function preparePostData(array $result): array
     {
@@ -181,7 +181,7 @@ class PostRepository implements PostRepositoryInterface
     /**
      * 準備新文章的資料.
      * @param array<string, mixed> $data
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function prepareNewPostData(array $data): array
     {
@@ -351,7 +351,7 @@ class PostRepository implements PostRepositoryInterface
      * @throws PDOException 當標籤不存在時拋出異常
      * @param array<string, mixed> $data
      */
-    public function create(array $data, array $tagIds/** @var array<string, mixed> */ = []): Post
+    public function create(array $data, array $tagIds = []): Post
     {
         return $this->executeInTransaction(function () use ($data, $tagIds) {
             // 資料已在 DTO 層級完成驗證，這裡直接處理
@@ -391,7 +391,7 @@ class PostRepository implements PostRepositoryInterface
      * 指派標籤到文章.
      * @param array<int> $tagIds
      */
-    private function assignTags(int $postId, array $tagIds/** @var array<string, mixed> */): void
+    private function assignTags(int $postId, array $tagIds): void
     {
         // 驗證標籤是否存在
         if (!$this->tagsExist($tagIds)) {
@@ -409,7 +409,7 @@ class PostRepository implements PostRepositoryInterface
     /**
      * @param array<string, mixed> $data
      */
-    public function update(int $id, array $data/** @var array<string, mixed> */): Post
+    public function update(int $id, array $data): Post
     {
         // 檢查文章是否存在
         $post = $this->find($id);
@@ -478,9 +478,9 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * @param array<string, mixed> $conditions
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
-    public function paginate(int $page = 1, int $perPage = 10, array $conditions/** @var array<string, mixed> */ = []): array
+    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
@@ -565,7 +565,7 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed><Post>
+     * @return array<string, mixed>
      */
     public function getPinnedPosts(int $limit = 5): array
     {
@@ -593,7 +593,7 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
@@ -716,7 +716,7 @@ class PostRepository implements PostRepositoryInterface
     /**
      * @param array<string, mixed> $tagIds
      */
-    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds/** @var array<string, mixed> */): bool
+    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool
     {
         $this->db->beginTransaction();
 

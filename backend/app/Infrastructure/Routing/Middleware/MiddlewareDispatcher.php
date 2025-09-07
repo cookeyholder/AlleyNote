@@ -20,7 +20,7 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
     public function dispatch(
         ServerRequestInterface $request,
         /** @var array<string, mixed> */
-        array $middlewares/** @var array<string, mixed> */,
+        array $middlewares,
         RequestHandlerInterface $finalHandler,
     ): ResponseInterface {
         $chain = $this->buildChain($middlewares, $finalHandler);
@@ -30,7 +30,7 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
 
     public function buildChain(
         /** @var array<string, mixed> */
-        array $middlewares/** @var array<string, mixed> */,
+        array $middlewares,
         RequestHandlerInterface $finalHandler,
     ): RequestHandlerInterface {
         // 反向遍歷中介軟體，從最後一個開始建立鏈

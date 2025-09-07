@@ -131,7 +131,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -183,7 +183,7 @@ class RouteCollection implements RouteCollectionInterface
      *
      * 注意：這裡的實作是簡化版本，實際使用時可能需要更複雜的序列化邏輯
      * @param array<string, mixed> $handler
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function serializeHandler($handler): string|array
     {

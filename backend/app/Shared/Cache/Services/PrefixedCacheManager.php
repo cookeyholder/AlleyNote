@@ -74,7 +74,7 @@ class PrefixedCacheManager implements CacheManagerInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getDrivers(): array
     {
@@ -82,7 +82,7 @@ class PrefixedCacheManager implements CacheManagerInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {
@@ -90,7 +90,7 @@ class PrefixedCacheManager implements CacheManagerInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getHealthStatus(): array
     {
@@ -98,7 +98,7 @@ class PrefixedCacheManager implements CacheManagerInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function warmup(array $warmupCallbacks): array
     {
@@ -112,7 +112,7 @@ class PrefixedCacheManager implements CacheManagerInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function cleanup(): array
     {

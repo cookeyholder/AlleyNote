@@ -199,7 +199,7 @@ class IpRepository implements IpRepositoryInterface
     /**
      * @param array<string, mixed> $data
      */
-    public function update(int $id, /** @var array<string, mixed> */ array $data/** @var array<string, mixed> */): IpList
+    public function update(int $id, /** @var array<string, mixed> */ array $data): IpList
     {
         if (isset($data['ip_address'])) {
             $this->validateIpAddress($data['ip_address']);
@@ -273,7 +273,7 @@ class IpRepository implements IpRepositoryInterface
     /**
      * @param array<string, mixed> $conditions
      */
-    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $conditions/** @var array<string, mixed> */ = []): array
+    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $conditions = []): array
     {
         $offset = ($page - 1) * $perPage;
         $where = [];

@@ -39,7 +39,7 @@ interface CacheDriverInterface
     /**
      * 批次取得多個快取。
      * @param array<string> $keys 快取鍵陣列
-     * @return array<string, mixed><string, mixed> 快取資料
+     * @return array<string, mixed> 快取資料
      */
     public function many(array $keys): array;
 
@@ -82,7 +82,7 @@ interface CacheDriverInterface
 
     /**
      * 取得快取統計資訊。
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getStats(): array;
 

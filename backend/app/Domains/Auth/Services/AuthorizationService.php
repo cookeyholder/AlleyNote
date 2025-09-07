@@ -169,7 +169,7 @@ class AuthorizationService implements AuthorizationServiceInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getUserRoles(int $userId): array
     {
@@ -188,7 +188,7 @@ class AuthorizationService implements AuthorizationServiceInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getUserPermissions(int $userId): array
     {

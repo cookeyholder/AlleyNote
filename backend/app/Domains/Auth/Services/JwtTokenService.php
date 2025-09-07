@@ -38,7 +38,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
     /**
      * @param array<string, mixed> $customClaims
      */
-    public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, /** @var array<string, mixed> */ array $customClaims/** @var array<string, mixed> */ = []): TokenPair
+    public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, /** @var array<string, mixed> */ array $customClaims = []): TokenPair
     {
         try {
             $now = new DateTimeImmutable();
@@ -353,7 +353,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
     /**
      * 標準化受眾參數為 array<string, mixed> 格式.
      * @param mixed $aud 受眾參數
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function normalizeAudience(mixed $aud): array
     {

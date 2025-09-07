@@ -265,7 +265,7 @@ class FileCacheDriver implements CacheDriverInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {

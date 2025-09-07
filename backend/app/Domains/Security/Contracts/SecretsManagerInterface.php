@@ -58,7 +58,7 @@ interface SecretsManagerInterface
 
     /**
      * 取得秘密設定摘要（敏感資料會被遮蔽）.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getSecretsSummary(): array;
 
@@ -71,7 +71,7 @@ interface SecretsManagerInterface
     /**
      * 驗證 .env 檔案的安全性.
      * @param string $filePath .env 檔案路徑
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function validateEnvFile(string $filePath = ''): array;
 }

@@ -91,7 +91,7 @@ class CacheTag
     /**
      * 從字串陣列建立標籤陣列.
      * @param array<string> $names 標籤名稱陣列
-     * @return array<string, mixed><CacheTag> 標籤陣列
+     * @return array<string, mixed> 標籤陣列
      */
     public static function fromArray(array $names): array
     {
@@ -101,7 +101,7 @@ class CacheTag
     /**
      * 將標籤陣列轉換為字串陣列.
      * @param array<CacheTag> $tags 標籤陣列
-     * @return array<string, mixed><string> 字串陣列
+     * @return array<string, mixed> 字串陣列
      */
     public static function toArray(array $tags): array
     {

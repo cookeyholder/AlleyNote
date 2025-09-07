@@ -13,7 +13,7 @@ class RateLimitService
     ) {}
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
     {

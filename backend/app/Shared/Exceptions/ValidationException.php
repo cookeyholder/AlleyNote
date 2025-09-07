@@ -59,7 +59,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * @return array<string, mixed><string, array<string>>
+     * @return array<string, mixed>>
      */
     public function getErrors(): array
     {
@@ -67,7 +67,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * @return array<string, mixed><string, array<string>>
+     * @return array<string, mixed>>
      */
     public function getFailedRules(): array
     {
@@ -84,7 +84,7 @@ class ValidationException extends Exception
 
     /**
      * 轉換為 API 回應格式.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toApiResponse(): array
     {
@@ -98,7 +98,7 @@ class ValidationException extends Exception
 
     /**
      * 取得除錯資訊.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toDebugArray(): array
     {

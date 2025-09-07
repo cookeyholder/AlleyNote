@@ -22,7 +22,7 @@ readonly class SourceStatistics
         public StatisticsMetric $count,
         public StatisticsMetric $percentage,
         /** @var array<string, mixed> */
-        public array $additionalMetrics/** @var array<string, mixed> */ = [],
+        public array $additionalMetrics = [],
     ) {}
 
     /**
@@ -34,7 +34,7 @@ readonly class SourceStatistics
         int $count,
         float $percentage,
         /** @var array<string, mixed> */
-        array $additionalMetrics/** @var array<string, mixed> */ = [],
+        array $additionalMetrics = [],
     ): self {
         if ($count < 0) {
             throw new InvalidSourceStatisticsException(
@@ -157,7 +157,7 @@ readonly class SourceStatistics
 
     /**
      * 取得所有額外指標的鍵.
-     * @return array<string, mixed><string>
+     * @return array<string, mixed>
      */
     public function getAdditionalMetricKeys(): array
     {
@@ -291,7 +291,7 @@ readonly class SourceStatistics
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      *                              source_type: string,
      *                              source_name: string,
      *                              source_description: string,

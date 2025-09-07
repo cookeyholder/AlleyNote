@@ -57,7 +57,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 開始監控一個操作。
      * @param array<string, mixed> $context
      */
-    public function startMonitoring(string $operation, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): string
+    public function startMonitoring(string $operation, /** @var array<string, mixed> */ array $context = []): string
     {
         $monitoringId = Uuid::uuid4()->toString();
 
@@ -81,7 +81,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 結束監控一個操作。
      * @param array<string, mixed> $context
      */
-    public function endMonitoring(string $monitoringId, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void
+    public function endMonitoring(string $monitoringId, /** @var array<string, mixed> */ array $context = []): void
     {
         if (!isset($this->activeMonitoringSessions[$monitoringId])) {
             $this->logger->warning("Attempted to end non-existent monitoring session: {$monitoringId}");
@@ -143,7 +143,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 記錄一個性能指標。
      * @param array<string, mixed> $tags
      */
-    public function recordMetric(string $name, float $value, string $unit = 'ms', /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */ = []): void
+    public function recordMetric(string $name, float $value, string $unit = 'ms', /** @var array<string, mixed> */ array $tags = []): void
     {
         $metricKey = $this->buildMetricKey($name, $tags);
 
@@ -172,7 +172,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 記錄一個計數器指標。
      * @param array<string, mixed> $tags
      */
-    public function incrementCounter(string $name, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */ = []): void
+    public function incrementCounter(string $name, /** @var array<string, mixed> */ array $tags = []): void
     {
         $counterKey = $this->buildMetricKey($name, $tags);
 
@@ -194,7 +194,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 記錄一個計量表指標。
      * @param array<string, mixed> $tags
      */
-    public function recordGauge(string $name, float $value, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */ = []): void
+    public function recordGauge(string $name, float $value, /** @var array<string, mixed> */ array $tags = []): void
     {
         $this->recordMetric($name, $value, 'gauge', $tags);
     }
@@ -203,7 +203,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 記錄一個直方圖指標。
      * @param array<string, mixed> $tags
      */
-    public function recordHistogram(string $name, float $value, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */ = []): void
+    public function recordHistogram(string $name, float $value, /** @var array<string, mixed> */ array $tags = []): void
     {
         $histogramKey = $this->buildMetricKey($name, $tags);
 
@@ -224,7 +224,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得效能統計資料。
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getPerformanceStats(?string $operation = null): array
     {
@@ -378,7 +378,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 建立指標鍵名。
      * @param array<string, mixed> $tags
      */
-    private function buildMetricKey(string $name, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */): string
+    private function buildMetricKey(string $name, /** @var array<string, mixed> */ array $tags): string
     {
         if (empty($tags)) {
             return $name;
@@ -398,7 +398,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 記錄慢操作。
      * @param array<string, mixed> $context
      */
-    private function recordSlowOperation(string $operation, float $duration, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */): void
+    private function recordSlowOperation(string $operation, float $duration, /** @var array<string, mixed> */ array $context): void
     {
         $this->slowQueries[] = [
             'operation' => $operation,
@@ -416,7 +416,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得特定操作的統計。
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function getOperationStats(string $operation): array
     {
@@ -452,7 +452,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     /**
      * 計算指標摘要。
      * @param array<string, mixed> $metricsSubset
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function calculateMetricsSummary(?array $metricsSubset = null): array
     {
@@ -481,7 +481,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 計算直方圖摘要。
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function calculateHistogramSummary(): array
     {

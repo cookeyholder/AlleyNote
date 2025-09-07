@@ -381,7 +381,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {
@@ -434,7 +434,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function cleanup(): array
     {
@@ -488,7 +488,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     /**
      * 取得快取鍵統計資訊。
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function getCacheKeyStats(): array
     {

@@ -213,7 +213,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
     }
 
     /**
-     * @return array<string, mixed><string, int>
+     * @return array<string, mixed>
      */
     public function getUserTokenStats(int $userId): array
     {
@@ -256,7 +256,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
 
     /**
      * 從 access token 取得使用者資訊.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getUserFromToken(string $accessToken): ?array
     {

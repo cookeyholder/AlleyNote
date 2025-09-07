@@ -60,7 +60,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         private bool $enabled = true,
         /** @var array<string, mixed> $config */
         /** @var array<string, mixed> */
-        array $config/** @var array<string, mixed> */ = [],
+        array $config = [],
     ) {
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
@@ -141,7 +141,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         ?string $userRole,
         /** @var array<string> */
         /** @var array<string, mixed> */
-        array $userPermissions/** @var array<string, mixed> */,
+        array $userPermissions,
         string $resource,
         string $action,
         ServerRequestInterface $request,
@@ -317,7 +317,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function authorizeByCustomRules(
         int $userId,
         ?string $userRole,
-        array $userPermissions/** @var array<string, mixed> */,
+        array $userPermissions,
         string $resource,
         string $action,
         ServerRequestInterface $request,
@@ -682,7 +682,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 檢查 IP 是否在指定清單中.
      * @param string $ip 要檢查的 IP 位址
      */
-    private function isIpInList(string $ip, /** @var array<string> */ /** @var array<string, mixed> */ array $ipList/** @var array<string, mixed> */): bool
+    private function isIpInList(string $ip, /** @var array<string> */ /** @var array<string, mixed> */ array $ipList): bool
     {
         foreach ($ipList as $ipPattern) {
             if ($this->ipMatches($ip, $ipPattern)) {
@@ -827,10 +827,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      */
     private function executeCustomRule(
         string $ruleName,
-        array $ruleConfig/** @var array<string, mixed> */,
+        array $ruleConfig,
         int $userId,
         ?string $userRole,
-        array $userPermissions/** @var array<string, mixed> */,
+        array $userPermissions,
         ServerRequestInterface $request,
     ): ?AuthorizationResult {
         $ruleType = $ruleConfig['type'] ?? 'allow';
@@ -869,7 +869,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      */
     private function evaluateConditionalRule(
         /** @var array<string, mixed> */
-        array $ruleConfig/** @var array<string, mixed> */,
+        array $ruleConfig,
         int $userId,
         ?string $userRole,
         ServerRequestInterface $request,
@@ -1003,7 +1003,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得預設配置.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {
@@ -1076,7 +1076,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得授權配置.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getConfig(): array
     {

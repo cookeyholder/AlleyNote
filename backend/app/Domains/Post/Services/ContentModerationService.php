@@ -27,7 +27,7 @@ class ContentModerationService
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
         /** @var array<string, mixed> */
-        array $config/** @var array<string, mixed> */ = [],
+        array $config = [],
     ) {
         $this->xssProtection = $xssProtection;
         $this->richTextProcessor = $richTextProcessor;
@@ -38,7 +38,7 @@ class ContentModerationService
      * 審核內容.
      * @param array<string, mixed> $metadata
      */
-    public function moderateContent(string $content, /** @var array<string, mixed> */ array $metadata/** @var array<string, mixed> */ = []): mixed
+    public function moderateContent(string $content, /** @var array<string, mixed> */ array $metadata = []): mixed
     {
         $result = [
             'status' => 'approved',
@@ -126,7 +126,7 @@ class ContentModerationService
      * 品質檢查.
      * @param array<string, mixed> $metadata
      */
-    private function checkQuality(string $content, /** @var array<string, mixed> */ array $metadata/** @var array<string, mixed> */): mixed
+    private function checkQuality(string $content, /** @var array<string, mixed> */ array $metadata): mixed
     {
         $issues = [];
         $textContent = strip_tags($content);
@@ -211,7 +211,7 @@ class ContentModerationService
      * 計算垃圾內容分數.
      * @param array<string, mixed> $metadata
      */
-    private function calculateSpamScore(string $content, array $metadata/** @var array<string, mixed> */): float
+    private function calculateSpamScore(string $content, array $metadata): float
     {
         $score = 0;
         $textContent = strip_tags($content);
@@ -379,7 +379,7 @@ class ContentModerationService
 
     /**
      * 預設設定.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {

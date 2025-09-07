@@ -37,7 +37,7 @@ interface PostRepositoryInterface extends RepositoryInterface
 
     /**
      * 依標籤 ID 取得文章列表.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array;
 
@@ -55,5 +55,5 @@ interface PostRepositoryInterface extends RepositoryInterface
      * 設定文章標籤.
      * @param array<string, mixed> $tagIds
      */
-    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds/** @var array<string, mixed> */): bool;
+    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool;
 }

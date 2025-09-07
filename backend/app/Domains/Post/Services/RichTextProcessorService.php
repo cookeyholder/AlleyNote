@@ -165,7 +165,7 @@ class RichTextProcessorService
 
     /**
      * 取得允許的標籤和屬性清單.
-     * @return array<string, mixed><string, array<string>>
+     * @return array<string, mixed>>
      */
     public function getAllowedElements(string $userLevel = 'basic'): array
     {
@@ -201,7 +201,7 @@ class RichTextProcessorService
 
     /**
      * 生成內容統計資訊.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     private function generateStatistics(string $original, string $filtered): array
     {

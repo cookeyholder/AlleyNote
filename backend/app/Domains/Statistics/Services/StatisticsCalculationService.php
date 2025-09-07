@@ -221,7 +221,7 @@ final class StatisticsCalculationService
      * @return float 相關性係數（-1到1之間）
      * @throws StatisticsCalculationException 當資料長度不一致時
      */
-    public function calculateCorrelation(array $x, /** @var array<string, mixed> */ array $y/** @var array<string, mixed> */): float
+    public function calculateCorrelation(array $x, /** @var array<string, mixed> */ array $y): float
     {
         if (count($x) !== count($y) || count($x) < 2) {
             throw new StatisticsCalculationException('計算相關性需要相同長度且至少2個資料點');
@@ -247,7 +247,7 @@ final class StatisticsCalculationService
     /**
      * 計算季節性指數.
      * @param array<StatisticsSnapshot> $snapshots 一年內的快照資料
-     * @return array<string, mixed><string, float> 季節性指數（按月份）
+     * @return array<string, mixed> 季節性指數（按月份）
      */
     public function calculateSeasonalityIndex(array $snapshots): array
     {
@@ -375,7 +375,7 @@ final class StatisticsCalculationService
     /**
      * 計算趨勢分析.
      * @param array<string, mixed> $data
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function calculateTrends(array $data): array
     {

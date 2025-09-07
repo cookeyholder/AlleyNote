@@ -220,7 +220,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     /**
      * 使用指定標籤存放快取項目.
      */
-    public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */, int $ttl = 3600): bool
+    public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): bool
     {
         // 驗證所有標籤
         foreach ($tags as $tag) {
@@ -360,9 +360,9 @@ class TaggedCacheManager implements TaggedCacheInterface
      * 批量設定帶標籤的快取.
      * @param array<string, mixed> $items 快取項目 key => value
      * @param int $ttl 存活時間
-     * @return array<string, mixed><string, bool> 設定結果 key => success
+     * @return array<string, mixed> 設定結果 key => success
      */
-    public function putMany(array $items, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */, int $ttl = 3600): array
+    public function putMany(array $items, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): array
     {
         $results = [];
 
@@ -382,7 +382,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     /**
      * 按標籤批量獲取快取.
      * @param string $tag 標籤
-     * @return array<string, mixed><string, mixed> 快取項目 key => value
+     * @return array<string, mixed> 快取項目 key => value
      */
     public function getManyByTag(string $tag): array
     {
@@ -414,7 +414,7 @@ class TaggedCacheManager implements TaggedCacheInterface
      * @param string $operation 操作類型
      * @param array<string> $tags 標籤陣列
      */
-    private function logTaggedAccess(string $operation, string $key, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */): void
+    private function logTaggedAccess(string $operation, string $key, /** @var array<string, mixed> */ array $tags): void
     {
         if ($this->monitor) {
             $this->monitor->recordOperation($operation, 'tagged', true, 0, [

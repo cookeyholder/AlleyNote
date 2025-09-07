@@ -122,7 +122,7 @@ class SecretsManager implements SecretsManagerInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getSecretsSummary(): array
     {
@@ -170,7 +170,7 @@ class SecretsManager implements SecretsManagerInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function validateEnvFile(string $filePath = ''): array
     {

@@ -45,15 +45,15 @@ interface PostServiceInterface
      * 取得文章列表（含分頁）.
      * @param int $page 頁碼
      * @param array<string, mixed> $filters
-     * @return array<string, mixed><string, mixed>
-     *                              items: Post[],
-     *                              total: int,
-     *                              page: int,
-     *                              per_page: int,
-     *                              last_page: int
-     *                              }
+     * @return array{
+     *     items: array<Post>,
+     *     total: int,
+     *     page: int,
+     *     per_page: int,
+     *     last_page: int
+     * }
      */
-    public function listPosts(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters/** @var array<string, mixed> */ = []): array;
+    public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array;
 
     /**
      * 取得置頂文章.
@@ -74,7 +74,7 @@ interface PostServiceInterface
      * @param int $id 文章 ID
      * @throws NotFoundException
      */
-    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds/** @var array<string, mixed> */): bool;
+    public function setTags(int $id, array $tagIds): bool;
 
     /**
      * 記錄文章觀看.

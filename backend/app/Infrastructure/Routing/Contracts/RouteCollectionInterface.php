@@ -68,7 +68,7 @@ interface RouteCollectionInterface
 
     /**
      * 轉換為陣列格式 (用於快取).
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function toArray(): array;
 

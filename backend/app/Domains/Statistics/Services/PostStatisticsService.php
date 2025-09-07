@@ -34,7 +34,7 @@ final class PostStatisticsService
     /**
      * 分析熱門文章.
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularPosts(StatisticsPeriod $period, int $limit = 10): array
@@ -85,7 +85,7 @@ final class PostStatisticsService
     /**
      * 分析文章來源分佈.
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function analyzeSourceDistribution(StatisticsPeriod $period): array
     {
@@ -138,7 +138,7 @@ final class PostStatisticsService
     /**
      * 計算文章品質評分.
      * @param int $postId 文章ID
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function calculatePostQualityScore(int $postId, StatisticsPeriod $period): array
     {
@@ -198,7 +198,7 @@ final class PostStatisticsService
     /**
      * 分析文章趨勢.
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function analyzeTrends(StatisticsPeriod $period): array
     {
@@ -287,7 +287,7 @@ final class PostStatisticsService
     /**
      * 取得最佳發布時間建議.
      * @param StatisticsPeriod $period 分析週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getBestPublishingTimes(StatisticsPeriod $period): array
     {
@@ -442,7 +442,7 @@ final class PostStatisticsService
     /**
      * 分析熱門內容.
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 10): array
@@ -453,7 +453,7 @@ final class PostStatisticsService
     /**
      * 取得週期內的熱門文章.
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array

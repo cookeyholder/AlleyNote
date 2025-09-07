@@ -15,41 +15,41 @@ interface PerformanceMonitorInterface
      * 開始監控一個操作。
      * @param array<string, mixed> $context
      */
-    public function startMonitoring(string $operation, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): string;
+    public function startMonitoring(string $operation, /** @var array<string, mixed> */ array $context = []): string;
 
     /**
      * 結束監控一個操作。
      * @param array<string, mixed> $context
      */
-    public function endMonitoring(string $monitoringId, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */ = []): void;
+    public function endMonitoring(string $monitoringId, /** @var array<string, mixed> */ array $context = []): void;
 
     /**
      * 記錄一個性能指標。
      * @param array<string, mixed> $tags
      */
-    public function recordMetric(string $name, float $value, string $unit = 'ms', /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */ = []): void;
+    public function recordMetric(string $name, float $value, string $unit = 'ms', /** @var array<string, mixed> */ array $tags = []): void;
 
     /**
      * 記錄一個計數器指標。
      * @param array<string, mixed> $tags
      */
-    public function incrementCounter(string $name, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */ = []): void;
+    public function incrementCounter(string $name, /** @var array<string, mixed> */ array $tags = []): void;
 
     /**
      * 記錄一個計量表指標。
      * @param array<string, mixed> $tags
      */
-    public function recordGauge(string $name, float $value, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */ = []): void;
+    public function recordGauge(string $name, float $value, /** @var array<string, mixed> */ array $tags = []): void;
 
     /**
      * 記錄一個直方圖指標。
      * @param array<string, mixed> $tags
      */
-    public function recordHistogram(string $name, float $value, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */ = []): void;
+    public function recordHistogram(string $name, float $value, /** @var array<string, mixed> */ array $tags = []): void;
 
     /**
      * 取得效能統計資料。
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getPerformanceStats(?string $operation = null): array;
 

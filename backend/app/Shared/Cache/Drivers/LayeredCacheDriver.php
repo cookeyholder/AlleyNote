@@ -300,7 +300,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {
@@ -382,7 +382,7 @@ class LayeredCacheDriver implements CacheDriverInterface
 
     /**
      * 取得所有層級。
-     * @return array<string, mixed><CacheDriverInterface>
+     * @return array<string, mixed>
      */
     public function getLayers(): array
     {

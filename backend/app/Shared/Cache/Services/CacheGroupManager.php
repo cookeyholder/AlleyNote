@@ -43,7 +43,7 @@ class CacheGroupManager
      * @param string $groupName 分組名稱
      * @return TaggedCacheInterface 標籤化快取實例
      */
-    public function group(string $groupName, /** @var array<string, mixed> */ array $tags/** @var array<string, mixed> */ = []): TaggedCacheInterface
+    public function group(string $groupName, /** @var array<string, mixed> */ array $tags = []): TaggedCacheInterface
     {
         // 添加分組標籤
         $groupTag = CacheTag::group($groupName);
@@ -173,7 +173,7 @@ class CacheGroupManager
 
     /**
      * 取得分組統計資訊.
-     * @return array<string, mixed><string, mixed> 統計資訊
+     * @return array<string, mixed> 統計資訊
      */
     public function getGroupStatistics(): array
     {
@@ -201,7 +201,7 @@ class CacheGroupManager
 
     /**
      * 取得所有分組名稱.
-     * @return array<string, mixed><string> 分組名稱陣列
+     * @return array<string, mixed> 分組名稱陣列
      */
     public function getAllGroups(): array
     {
@@ -256,7 +256,7 @@ class CacheGroupManager
      * @param int $userId 使用者 ID
      * @return TaggedCacheInterface 使用者快取分組
      */
-    public function userGroup(int $userId, /** @var array<string, mixed> */ array $additionalTags/** @var array<string, mixed> */ = []): TaggedCacheInterface
+    public function userGroup(int $userId, /** @var array<string, mixed> */ array $additionalTags = []): TaggedCacheInterface
     {
         $userTag = CacheTag::user($userId);
         $groupName = "user_{$userId}";
@@ -270,7 +270,7 @@ class CacheGroupManager
      * @param string $moduleName 模組名稱
      * @return TaggedCacheInterface 模組快取分組
      */
-    public function moduleGroup(string $moduleName, /** @var array<string, mixed> */ array $additionalTags/** @var array<string, mixed> */ = []): TaggedCacheInterface
+    public function moduleGroup(string $moduleName, /** @var array<string, mixed> */ array $additionalTags = []): TaggedCacheInterface
     {
         $moduleTag = CacheTag::module($moduleName);
         $groupName = "module_{$moduleName}";
@@ -284,7 +284,7 @@ class CacheGroupManager
      * @param string $period 時間週期
      * @return TaggedCacheInterface 時間快取分組
      */
-    public function temporalGroup(string $period, /** @var array<string, mixed> */ array $additionalTags/** @var array<string, mixed> */ = []): TaggedCacheInterface
+    public function temporalGroup(string $period, /** @var array<string, mixed> */ array $additionalTags = []): TaggedCacheInterface
     {
         $temporalTag = CacheTag::temporal($period);
         $groupName = "temporal_{$period}";
@@ -332,7 +332,7 @@ class CacheGroupManager
      * 設定分組失效規則.
      * @param string $groupName 分組名稱
      */
-    public function setInvalidationRules(string $groupName, /** @var array<string, mixed> */ array $rules/** @var array<string, mixed> */): void
+    public function setInvalidationRules(string $groupName, /** @var array<string, mixed> */ array $rules): void
     {
         $this->invalidationRules[$groupName] = $rules;
 
@@ -345,7 +345,7 @@ class CacheGroupManager
     /**
      * 取得分組失效規則.
      * @param string $groupName 分組名稱
-     * @return array<string, mixed><string, mixed> 失效規則
+     * @return array<string, mixed> 失效規則
      */
     public function getInvalidationRules(string $groupName): array
     {
@@ -364,7 +364,7 @@ class CacheGroupManager
     /**
      * 取得分組依賴關係
      * @param string $groupName 分組名稱
-     * @return array<string, mixed><string> 依賴的子分組
+     * @return array<string, mixed> 依賴的子分組
      */
     public function getDependencies(string $groupName): array
     {
@@ -420,7 +420,7 @@ class CacheGroupManager
     /**
      * 批量清空多個分組.
      * @param array<string> $groupNames 分組名稱陣列
-     * @return array<string, mixed><string, int> 每個分組清空的項目數量
+     * @return array<string, mixed> 每個分組清空的項目數量
      */
     public function flushMultipleGroups(array $groupNames, bool $cascade = true): array
     {

@@ -28,7 +28,7 @@ class PostValidator extends Validator
     private function addPostSpecificRules(): void
     {
         // PostStatus 枚舉驗證
-        $this->addRule('post_status', function (mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool {
+        $this->addRule('post_status', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
             if ($value === null || $value === '') {
                 return true; // 允許空值，由 required 規則處理
             }
@@ -41,7 +41,7 @@ class PostValidator extends Validator
         });
 
         // RFC3339 日期時間格式驗證
-        $this->addRule('rfc3339_datetime', function (mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool {
+        $this->addRule('rfc3339_datetime', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
             if ($value === null || $value === '') {
                 return true; // 允許空值，由 required 規則處理
             }
@@ -71,7 +71,7 @@ class PostValidator extends Validator
         });
 
         // 文章標題驗證（去除 HTML 標籤，檢查實際內容長度）
-        $this->addRule('post_title', function (mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool {
+        $this->addRule('post_title', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
             if (!is_string($value)) {
                 return false;
             }
@@ -92,7 +92,7 @@ class PostValidator extends Validator
         });
 
         // 文章內容驗證（去除 HTML 標籤，檢查實際內容長度）
-        $this->addRule('post_content', function (mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool {
+        $this->addRule('post_content', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
             if (!is_string($value)) {
                 return false;
             }
@@ -121,7 +121,7 @@ class PostValidator extends Validator
         });
 
         // 使用者 ID 驗證（必須是正整數）
-        $this->addRule('user_id', function (mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool {
+        $this->addRule('user_id', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
             if ($value === null || $value === '') {
                 return false;
             }
@@ -136,7 +136,7 @@ class PostValidator extends Validator
         });
 
         // IP 地址驗證（支援 IPv4 和 IPv6）
-        $this->addRule('ip_address', function (mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool {
+        $this->addRule('ip_address', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
             if (!is_string($value)) {
                 return false;
             }
@@ -160,7 +160,7 @@ class PostValidator extends Validator
         });
 
         // 發布日期驗證（不能是過去的日期，除非是草稿）
-        $this->addRule('publish_date_future', function (mixed $value, /** @var array<string, mixed> */ array $parameters/** @var array<string, mixed> */): bool {
+        $this->addRule('publish_date_future', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
             if ($value === null || $value === '') {
                 return true; // 允許空值
             }

@@ -260,7 +260,7 @@ class CSPReportController
 
     /**
      * 取得最近的違規記錄.
-     * @return array<string, mixed><int, mixed>
+     * @return array<string, mixed>
      */
     private function getRecentViolations(string $ip, int $seconds): array
     {

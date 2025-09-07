@@ -26,7 +26,7 @@ interface IpServiceInterface
     /**
      * 根據類型取得 IP 規則清單.
      * @param int $type 規則類型
-     * @return array<string, mixed><IpList> IP 規則陣列
+     * @return array<string, mixed> IP 規則陣列
      */
     public function getRulesByType(int $type): array;
 }

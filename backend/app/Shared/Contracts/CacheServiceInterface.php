@@ -49,7 +49,7 @@ interface CacheServiceInterface
     /**
      * 批次取得多個快取.
      * @param array<string, mixed> $keys 快取鍵陣列
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getMultiple(array $keys): array;
 
@@ -76,7 +76,7 @@ interface CacheServiceInterface
 
     /**
      * 取得快取統計資訊.
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getStats(): array;
 

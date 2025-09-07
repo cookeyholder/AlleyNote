@@ -177,7 +177,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 取得使用者的所有黑名單項目.
      * @param int $userId 使用者 ID
-     * @return array<string, mixed><int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<string, mixed> 黑名單項目陣列
      */
     public function findByUserId(int $userId, ?int $limit = null): array
     {
@@ -216,7 +216,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 取得特定裝置的黑名單項目.
      * @param string $deviceId 裝置 ID
-     * @return array<string, mixed><int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<string, mixed> 黑名單項目陣列
      */
     public function findByDeviceId(string $deviceId, ?int $limit = null): array
     {
@@ -255,7 +255,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 根據 token 類型查找項目.
      * @param string $tokenType token 類型
-     * @return array<string, mixed><int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<string, mixed> 黑名單項目陣列
      */
     public function findByTokenType(string $tokenType, ?int $limit = null): array
     {
@@ -294,7 +294,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 根據黑名單原因查找項目.
      * @param string $reason 黑名單原因
-     * @return array<string, mixed><int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<string, mixed> 黑名單項目陣列
      */
     public function findByReason(string $reason, ?int $limit = null): array
     {
@@ -391,7 +391,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 批次檢查 token 是否在黑名單中.
      * @param array<int, string> $jtis JTI 陣列
-     * @return array<string, mixed><string, bool> JTI 為 key，是否在黑名單為值的陣列
+     * @return array<string, mixed> JTI 為 key，是否在黑名單為值的陣列
      */
     public function batchIsBlacklisted(array $jtis): array
     {
@@ -627,7 +627,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
     /**
      * 取得黑名單統計資訊.
-     * @return array<string, mixed><string, mixed> 統計資訊
+     * @return array<string, mixed> 統計資訊
      */
     public function getBlacklistStats(): array
     {
@@ -699,7 +699,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 取得特定使用者的黑名單統計.
      * @param int $userId 使用者 ID
-     * @return array<string, mixed><string, mixed> 使用者統計資訊
+     * @return array<string, mixed> 使用者統計資訊
      */
     public function getUserBlacklistStats(int $userId): array
     {
@@ -739,7 +739,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 取得最近的黑名單項目.
      * @param int $limit 限制數量，預設 100
-     * @return array<string, mixed><int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<string, mixed> 黑名單項目陣列
      */
     public function getRecentBlacklistEntries(int $limit = 100, ?DateTime $since = null): array
     {
@@ -778,7 +778,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     /**
      * 取得高優先級的黑名單項目.
      * @param int $limit 限制數量，預設 50
-     * @return array<string, mixed><int, TokenBlacklistEntry> 黑名單項目陣列
+     * @return array<string, mixed> 黑名單項目陣列
      */
     public function getHighPriorityEntries(int $limit = 50): array
     {
@@ -811,7 +811,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      * 搜尋黑名單項目.
      * @param array<string, mixed> $criteria 搜尋條件
      * @param int $offset 偏移量，預設 0
-     * @return array<string, mixed><int, TokenBlacklistEntry> 搜尋結果
+     * @return array<string, mixed> 搜尋結果
      */
     public function search(array $criteria, ?int $limit = null, int $offset = 0): array
     {
@@ -964,7 +964,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
     /**
      * 取得黑名單大小資訊.
-     * @return array<string, mixed><string, mixed> 大小資訊
+     * @return array<string, mixed> 大小資訊
      */
     public function getSizeInfo(): array
     {
@@ -1014,7 +1014,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
     /**
      * 最佳化黑名單儲存.
-     * @return array<string, mixed><string, mixed> 最佳化結果
+     * @return array<string, mixed> 最佳化結果
      */
     public function optimize(): array
     {

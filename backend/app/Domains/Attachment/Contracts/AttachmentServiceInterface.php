@@ -12,7 +12,7 @@ interface AttachmentServiceInterface
     public function upload(int $postId, UploadedFileInterface $file, int $currentUserId): Attachment;
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function download(string $uuid, int $currentUserId): array;
 

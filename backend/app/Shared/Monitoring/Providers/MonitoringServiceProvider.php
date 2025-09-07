@@ -27,7 +27,7 @@ class MonitoringServiceProvider
 {
     /**
      * 取得監控服務的 DI 定義。
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public static function getDefinitions(): array
     {
@@ -152,7 +152,7 @@ class MonitoringServiceProvider
         // TODO: 在解決測試隔離問題後重新啟用
 
         // 設置預設的錯誤過濾器
-        $errorTracker->setErrorFilter(function (string $level, string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */, ?Throwable $exception) {
+        $errorTracker->setErrorFilter(function (string $level, string $message, /** @var array<string, mixed> */ array $context, ?Throwable $exception) {
             // 過濾掉某些不重要的錯誤
             $ignoredMessages = [
                 'Undefined variable',
@@ -170,7 +170,7 @@ class MonitoringServiceProvider
         });
 
         // 設置預設的通知處理器（用於關鍵錯誤）
-        $errorTracker->addNotificationHandler(function (string $level, string $message, /** @var array<string, mixed> */ array $context/** @var array<string, mixed> */, ?Throwable $exception) {
+        $errorTracker->addNotificationHandler(function (string $level, string $message, /** @var array<string, mixed> */ array $context, ?Throwable $exception) {
             if ($level === 'critical') {
                 // 這裡可以整合電子郵件、Slack、Discord 等通知系統
                 error_log("CRITICAL ERROR: {$message}");

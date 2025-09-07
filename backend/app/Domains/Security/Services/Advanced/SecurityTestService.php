@@ -51,7 +51,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function runAllTests(): array
     {
@@ -71,7 +71,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function testSessionSecurity(): array
     {
@@ -136,7 +136,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function testAuthorization(): array
     {
@@ -189,7 +189,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function testFileSecurity(): array
     {
@@ -244,7 +244,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function testSecurityHeaders(): array
     {
@@ -310,7 +310,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function testErrorHandling(): array
     {
@@ -356,7 +356,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function testPasswordSecurity(): array
     {
@@ -434,7 +434,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function testSecretsManagement(): array
     {
@@ -492,7 +492,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function testSystemSecurity(): array
     {
@@ -561,7 +561,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function generateSecurityReport(): array
     {

@@ -204,10 +204,10 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
         /** @var array<string, mixed> */
-        array $availableDrivers/** @var array<string, mixed> */,
+        array $availableDrivers,
         string $operation,
         /** @var array<string, mixed> */
-        array $params/** @var array<string, mixed> */,
+        array $params,
     ): mixed {
         $this->stats['failure_handles']++;
 
@@ -245,7 +245,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     }
 
     /**
-     * @return array<string, mixed><string, mixed>
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {
@@ -313,7 +313,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     /**
      * 取得排除模式。
-     * @return array<string, mixed><string>
+     * @return array<string, mixed>
      */
     public function getExcludePatterns(): array
     {
