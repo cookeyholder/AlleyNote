@@ -77,9 +77,9 @@ class Application
         // 驗證配置的完整性
         $errors = $config->validate();
         if (!empty($errors)) {
-            $errorMessage = "環境配置錯誤:
-" . implode("
-", $errors);
+            $errorMessage = '環境配置錯誤:
+' . implode('
+', $errors);
 
             throw new Exception($errorMessage);
         }
@@ -250,9 +250,7 @@ class Application
             }
 
             /**
-     * @return array<mixed>
-
-
+             * @return array<mixed>
              */
             public function getMetadata(?string $key = null): mixed
             {
@@ -308,9 +306,7 @@ class Application
             }
 
             /**
-     * @return array<string, array<string>>
-
-
+             * @return array<string, array<string>>
              */
             public function getHeaders(): mixed
             {
@@ -323,9 +319,7 @@ class Application
             }
 
             /**
-     * @return array<mixed>
-
-
+             * @return array<mixed>
              */
             public function getHeader(string $name): mixed
             {

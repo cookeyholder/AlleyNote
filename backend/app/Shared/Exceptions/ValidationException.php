@@ -30,7 +30,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * Static factory method for creating from an array of errors
+     * Static factory method for creating from an array of errors.
      * @param array<string, array<string>> $errors
      * @param array<string, array<string>>|string $failedRulesOrMessage
      */

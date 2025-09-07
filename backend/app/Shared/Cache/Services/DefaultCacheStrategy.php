@@ -194,13 +194,17 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
         return null;
     }
+
     /**
      * @param array<string, mixed> $params
-     */    public function handleDriverFailure(
+     */
+    public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
-        /** @var array<string, mixed> */ array $availableDrivers,
+        /** @var array<string, mixed> */
+        array $availableDrivers,
         string $operation,
-        /** @var array<string, mixed> */ array $params,
+        /** @var array<string, mixed> */
+        array $params,
     ): mixed {
         $this->stats['failure_handles']++;
 
@@ -236,9 +240,11 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             default => null,
         };
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getStats(): array
+     */
+    public function getStats(): array
     {
         $totalDecisions = $this->stats['cache_decisions'];
         $allowRate = $totalDecisions > 0 ? ($this->stats['cache_allowed'] / $totalDecisions) * 100 : 0;

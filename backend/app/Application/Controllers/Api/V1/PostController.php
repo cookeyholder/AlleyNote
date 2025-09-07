@@ -124,10 +124,10 @@ class PostController extends BaseController
             $result = $this->postService->listPosts($page, $limit, $filters);
 
             // 確保 result 包含必要的鍵
-            if (!array_key_exists('items', $result) ||
-                !array_key_exists('total', $result) ||
-                !array_key_exists('page', $result) ||
-                !array_key_exists('per_page', $result)) {
+            if (!array_key_exists('items', $result)
+                || !array_key_exists('total', $result)
+                || !array_key_exists('page', $result)
+                || !array_key_exists('per_page', $result)) {
                 throw new Exception('Invalid service response format');
             }
 
@@ -1085,6 +1085,7 @@ class PostController extends BaseController
         } elseif (is_numeric($remoteAddr) || is_scalar($remoteAddr)) {
             return (string) $remoteAddr;
         }
+
         return '127.0.0.1';
     }
 
@@ -1102,6 +1103,7 @@ class PostController extends BaseController
             if ($postId <= 0) {
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 

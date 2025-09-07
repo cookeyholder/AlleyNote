@@ -127,8 +127,8 @@ class DatabaseBackupTest extends TestCase
         ), $output, $returnVar);
 
         // 驗證還原是否成功
-        $this->assertEquals(0, $returnVar, '還原腳本執行失敗: ' . implode("
-", $output));
+        $this->assertEquals(0, $returnVar, '還原腳本執行失敗: ' . implode('
+', $output));
 
         // 驗證資料是否正確還原
         $stmt = $this->db->query('SELECT COUNT(*) FROM posts');
@@ -157,8 +157,8 @@ class DatabaseBackupTest extends TestCase
 
         // 驗證錯誤處理
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $this->assertStringContainsString('錯誤', implode("
-", $output), '應該輸出錯誤訊息');
+        $this->assertStringContainsString('錯誤', implode('
+', $output), '應該輸出錯誤訊息');
     }
 
     #[Test]
@@ -179,8 +179,8 @@ class DatabaseBackupTest extends TestCase
 
         // 驗證錯誤處理
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $this->assertStringContainsString('錯誤', implode("
-", $output), '應該輸出錯誤訊息');
+        $this->assertStringContainsString('錯誤', implode('
+', $output), '應該輸出錯誤訊息');
     }
 
     #[Test]

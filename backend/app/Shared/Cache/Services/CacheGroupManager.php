@@ -147,14 +147,7 @@ class CacheGroupManager
         // 如果啟用級聯清空，清空依賴的子分組
         if ($cascade && isset($this->dependencies[$groupName])) {
             foreach ($this->dependencies[$groupName] as $childGroup) {
-                if (is_string($childGroup)) {
-                    $clearedCount += $this->flushGroup($childGroup, true);
-                } else {
-                    $this->logger->warning('Invalid child group type', [
-                        'group_name' => $groupName,
-                        'child_group' => $childGroup,
-                    ]);
-                }
+                $clearedCount += $this->flushGroup($childGroup, true);
             }
         }
 
@@ -172,7 +165,7 @@ class CacheGroupManager
     public function checkInvalidationRules(string $key): void
     {
         foreach ($this->invalidationRules as $pattern => $targetGroups) {
-            if ($this->matchPattern($key, $pattern) && is_array($targetGroups)) {
+            if ($this->matchPattern($key, $pattern)) {
                 foreach ($targetGroups as $group) {
                     if (is_string($group)) {
                         $this->flushGroup($group);
@@ -384,11 +377,6 @@ class CacheGroupManager
     public function getInvalidationRules(string $groupName): array
     {
         $rules = $this->invalidationRules[$groupName] ?? [];
-
-        // 確保返回的是 string-indexed array
-        if (!is_array($rules)) {
-            return [];
-        }
 
         $result = [];
         foreach ($rules as $key => $value) {

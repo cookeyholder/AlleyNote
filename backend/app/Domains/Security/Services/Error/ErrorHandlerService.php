@@ -28,7 +28,8 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     public function __construct(
         string $logPath = '',
         bool $isDevelopment = false,
-        /** @var array<string, mixed> */ array $sensitiveKeys = [],
+        /** @var array<string, mixed> */
+        array $sensitiveKeys = [],
     ) {
         $this->isDevelopment = $isDevelopment;
         $this->sensitiveKeys = array_merge([
@@ -185,8 +186,8 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
         // 設定格式化器
         $formatter = new LineFormatter(
-            "[%datetime%] %channel%.%level_name%: %message% %context% %extra%
-",
+            '[%datetime%] %channel%.%level_name%: %message% %context% %extra%
+',
             'Y-m-d H:i:s',
             true,
             true,

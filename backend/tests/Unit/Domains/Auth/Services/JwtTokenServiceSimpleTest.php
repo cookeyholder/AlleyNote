@@ -40,7 +40,7 @@ final class JwtTokenServiceSimpleTest extends TestCase
         parent::setUp();
 
         // 設定測試用的環境變數
-        $_ENV['JWT_PRIVATE_KEY'] = "-----BEGIN PRIVATE KEY-----
+        $_ENV['JWT_PRIVATE_KEY'] = '-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCEd1LvGZVBEKkp
 pJV2aGLBoTGvxSHhCQ3ZRGDwVUPv8w7Y0l/xBLhSbh2/iQGfX/bu7kA3kBvY2uH6
 HF1LPTbmF4EtWITExDkM/A3r6nuizYdVBNYM72yriDQPUveg6PAjataamKliexDF
@@ -67,8 +67,8 @@ NQOi9KIz3nfGEpbwZmjXA4SBR5o0bdcjdxyJhFT1AoGAQb3Kw59mlGkDRf6aAmUE
 Z9JBfelirgrQ69ZKCKCVvZG/4mEDmU9E+6kHrf9Hbk1xOuGhY0+tSokLZQVY0+YS
 TcRRp/F1/kf6XHPlpHsaRn0phSKHSXxxXZ23w4Jqc9cDhTpfYZMsAQGacxKg/nNy
 mo0TtZZCNgLlXOCjt0o4Fpc=
------END PRIVATE KEY-----";
-        $_ENV['JWT_PUBLIC_KEY'] = "-----BEGIN PUBLIC KEY-----
+-----END PRIVATE KEY-----';
+        $_ENV['JWT_PUBLIC_KEY'] = '-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhHdS7xmVQRCpKaSVdmhi
 waExr8Uh4QkN2URg8FVD7/MO2NJf8QS4Um4dv4kBn1/27u5AN5Ab2Nrh+hxdSz02
 5heBLViExMQ5DPwN6+p7os2HVQTWDO9sq4g0D1L3oOjwI2rWmpipYnsQxWgQFvHf
@@ -76,7 +76,7 @@ nrPXxQ4EbVo+KmzvllLNr7n34yOkj7h17daXYILvzRgQTEr/eluWOpZgPoOEIn+B
 gEJ/JykvuZ76f3vNEaumCiK+Zhco4KSAg7t0awAE5jyoSno+hYA2aevY92YkFnMs
 Alrd68DAtk8/Q33YSncA88Ci+IJ7dZOeR2bfcQHoFlK6BLV8zZxy+7SfSCNQslA2
 kwIDAQAB
------END PUBLIC KEY-----";
+-----END PUBLIC KEY-----';
         $_ENV['JWT_ISSUER'] = 'alleynote-api';
         $_ENV['JWT_AUDIENCE'] = 'alleynote-client';
         $_ENV['JWT_ACCESS_TOKEN_TTL'] = '3600';

@@ -259,8 +259,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $sorted = $this->slowQueries;
         usort($sorted, fn($a, $b): int => $b['duration'] <=> $a['duration']);
 
-
-
         return array_slice($sorted, 0, $limit);
     }
 

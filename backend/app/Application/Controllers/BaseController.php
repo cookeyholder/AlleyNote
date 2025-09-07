@@ -47,6 +47,7 @@ abstract class BaseController
     {
         /** @var array<string, mixed> $responseData */
         $responseData = ApiResponse::success($data, $message);
+
         return $this->jsonResponse($responseData);
     }
 
@@ -54,6 +55,7 @@ abstract class BaseController
     {
         /** @var array<string, mixed> $responseData */
         $responseData = ApiResponse::error($message, $httpCode, $errors);
+
         return $this->jsonResponse($responseData, $httpCode);
     }
 
@@ -66,6 +68,7 @@ abstract class BaseController
     {
         /** @var array<string, mixed> $responseData */
         $responseData = ApiResponse::paginated($data, $total, $page, $perPage);
+
         return $this->jsonResponse($responseData);
     }
 

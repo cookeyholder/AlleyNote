@@ -117,7 +117,8 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         Uuid $postId,
         string $title,
         SourceType $sourceType,
-        /** @var array<string, mixed> */ array $rawMetrics,
+        /** @var array<string, mixed> */
+        array $rawMetrics,
         StatisticsPeriod $period,
         DateTimeImmutable $publishedAt,
     ): self {

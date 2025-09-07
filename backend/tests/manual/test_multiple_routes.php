@@ -10,9 +10,9 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 use App\Application;
 use Psr\Http\Message\ServerRequestInterface;
 
-echo "=== 多種路由配置測試 ===
+echo '=== 多種路由配置測試 ===
 
-";
+';
 
 $app = new Application();
 
@@ -388,24 +388,24 @@ foreach ($testCases as $index => $testCase) {
 
         $response = $app->run($request);
 
-        echo "   ✅ 狀態: {(string)response->getStatusCode()}
-";
+        echo '   ✅ 狀態: {(string)response->getStatusCode()}
+';
         $bodyContent = (string) $response->getBody();
-        echo '   📄 內容: ' . substr(str_replace(["
-", '    '], [' ', ' '], $bodyContent), 0, 100);
+        echo '   📄 內容: ' . substr(str_replace(['
+', '    '], [' ', ' '], $bodyContent), 0, 100);
         if (strlen($bodyContent) > 100) {
             echo '...';
         }
-        echo "
-";
+        echo '
+';
     } catch (Exception $e) {
-        echo '   ❌ 錯誤: ' . $e->getMessage() . "
-";
+        echo '   ❌ 錯誤: ' . $e->getMessage() . '
+';
     }
 
-    echo "
-";
+    echo '
+';
 }
 
-echo "=== 測試完成 ===
-";
+echo '=== 測試完成 ===
+';

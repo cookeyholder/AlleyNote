@@ -72,6 +72,7 @@ class Permission
     {
         return $this->updatedAt;
     }
+
     /**
      * @return array<string, mixed>
      */

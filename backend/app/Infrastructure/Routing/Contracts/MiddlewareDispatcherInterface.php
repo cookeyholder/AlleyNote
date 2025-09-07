@@ -24,7 +24,8 @@ interface MiddlewareDispatcherInterface
      */
     public function dispatch(
         ServerRequestInterface $request,
-        /** @var array<string, mixed> */ array $middlewares,
+        /** @var array<string, mixed> */
+        array $middlewares,
         RequestHandlerInterface $finalHandler,
     ): ResponseInterface;
 
@@ -36,7 +37,8 @@ interface MiddlewareDispatcherInterface
      * @return RequestHandlerInterface 執行鏈處理器
      */
     public function buildChain(
-        /** @var array<string, mixed> */ array $middlewares,
+        /** @var array<string, mixed> */
+        array $middlewares,
         RequestHandlerInterface $finalHandler,
     ): RequestHandlerInterface;
 }

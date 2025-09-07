@@ -161,8 +161,10 @@ class PostRepositoryTest extends TestCase
         $this->pdo->exec('CREATE INDEX idx_posts_deleted_at ON posts(deleted_at)');
         $this->pdo->exec('CREATE INDEX idx_posts_is_pinned ON posts(is_pinned)');
     }
+
     /**\n      * @param array<string, mixed> $data
-     */    private function createTestPost(array $data = []): array
+     */
+    private function createTestPost(array $data = []): array
     {
         $defaultData = [
             'uuid' => 'test-uuid-' . uniqid(),

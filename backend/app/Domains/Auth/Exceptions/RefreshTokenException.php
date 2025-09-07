@@ -72,7 +72,8 @@ class RefreshTokenException extends JwtException
     public function __construct(
         string $reason = self::REASON_NOT_FOUND,
         string $customMessage = '',
-        /** @var array<string, mixed> */ array $additionalContext = [],
+        /** @var array<string, mixed> */
+        array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason);
 

@@ -216,9 +216,11 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return $this->remember($key, $callback, 0);
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getStats(): array
+     */
+    public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
         $hitRate = $totalRequests > 0 ? ($this->stats['hits'] / $totalRequests) * 100 : 0;

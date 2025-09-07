@@ -171,8 +171,6 @@ class ErrorTrackerService implements ErrorTrackerInterface
         // 按時間戳排序（最新的在前）
         usort($errors, fn($a, $b): int => $b['timestamp'] <=> $a['timestamp']);
 
-
-
         return array_slice($errors, 0, $limit);
     }
 

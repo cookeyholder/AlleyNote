@@ -37,14 +37,16 @@ class ServerRequest implements ServerRequestInterface
 
     /**
      * @param array<string, mixed> $serverParams
-      */
+     */
     public function __construct(
         string $method,
         UriInterface $uri,
-        /** @var array<string, mixed> */ array $headers = [],
+        /** @var array<string, mixed> */
+        array $headers = [],
         $body = null,
         string $version = '1.1',
-        /** @var array<string, mixed> */ array $serverParams = [],
+        /** @var array<string, mixed> */
+        array $serverParams = [],
     ) {
         $this->method = $method;
         $this->uri = $uri;
@@ -92,74 +94,94 @@ class ServerRequest implements ServerRequestInterface
 
         return $new;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getServerParams(): array
+     */
+    public function getServerParams(): array
     {
         return $this->serverParams;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getCookieParams(): array
+     */
+    public function getCookieParams(): array
     {
         return $this->cookieParams;
     }
+
     /**
      * @param array<string, mixed> $cookies
-     */    public function withCookieParams(array $cookies): self
+     */
+    public function withCookieParams(array $cookies): self
     {
         $new = clone $this;
         $new->cookieParams = $cookies;
 
         return $new;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getQueryParams(): array
+     */
+    public function getQueryParams(): array
     {
         return $this->queryParams;
     }
+
     /**
      * @param array<string, mixed> $query
-     */    public function withQueryParams(array $query): self
+     */
+    public function withQueryParams(array $query): self
     {
         $new = clone $this;
         $new->queryParams = $query;
 
         return $new;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getUploadedFiles(): array
+     */
+    public function getUploadedFiles(): array
     {
         return [];
     }
+
     /**
      * @param array<string, mixed> $uploadedFiles
-     */    public function withUploadedFiles(array $uploadedFiles): self
+     */
+    public function withUploadedFiles(array $uploadedFiles): self
     {
         $new = clone $this;
 
         return $new;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getParsedBody()
+     */
+    public function getParsedBody()
     {
         return $this->parsedBody;
     }
+
     /**
      * @param array<string, mixed> $data
-     */    public function withParsedBody(mixed $data): self
+     */
+    public function withParsedBody(mixed $data): self
     {
         $new = clone $this;
         $new->parsedBody = $data;
 
         return $new;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getAttributes(): array
+     */
+    public function getAttributes(): array
     {
         return $this->attributes;
     }

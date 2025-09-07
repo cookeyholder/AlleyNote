@@ -23,7 +23,8 @@ readonly class SourceStatistics
         public SourceType $sourceType,
         public StatisticsMetric $count,
         public StatisticsMetric $percentage,
-        public /** @var array<string, mixed> */ array $additionalMetrics = [],
+        /** @var array<string, mixed> */
+        public array $additionalMetrics = [],
     ) {}
 
     /**
@@ -35,7 +36,8 @@ readonly class SourceStatistics
         SourceType $sourceType,
         int $count,
         float $percentage,
-        /** @var array<string, mixed> */ array $additionalMetrics = [],
+        /** @var array<string, mixed> */
+        array $additionalMetrics = [],
     ): self {
         if ($count < 0) {
             throw new InvalidSourceStatisticsException(
@@ -295,17 +297,17 @@ readonly class SourceStatistics
      * 轉換為陣列.
      *
      * @return array<string, mixed>
-     *     source_type: string,
-     *     source_name: string,
-     *     source_description: string,
-     *     count: array,
-     *     percentage: array,
-     *     additional_metrics: array,
-     *     has_data: bool,
-     *     is_primary_source: bool,
-     *     is_programmatic_access: bool,
-     *     is_external_source: bool
-     * }
+     *                              source_type: string,
+     *                              source_name: string,
+     *                              source_description: string,
+     *                              count: array,
+     *                              percentage: array,
+     *                              additional_metrics: array,
+     *                              has_data: bool,
+     *                              is_primary_source: bool,
+     *                              is_programmatic_access: bool,
+     *                              is_external_source: bool
+     *                              }
      */
     public function toArray(): array
     {

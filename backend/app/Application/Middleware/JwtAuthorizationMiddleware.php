@@ -51,6 +51,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @var array<string, mixed>
      */
     private array $config;
+
     /**
      * @param array<string, mixed> $config
      */
@@ -58,7 +59,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
         /** @var array<string, mixed> $config */
-        /** @var array<string, mixed> */ array $config = [],
+        /** @var array<string, mixed> */
+        array $config = [],
     ) {
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
@@ -139,7 +141,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         int $userId,
         ?string $userRole,
         /** @var array<string> */
-        /** @var array<string, mixed> */ array $userPermissions,
+        /** @var array<string, mixed> */
+        array $userPermissions,
         string $resource,
         string $action,
         ServerRequestInterface $request,
@@ -516,6 +519,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         // 假設 API 路徑格式為 /api/v1/{resource}/{id?}
         if (count($segments) >= 3 && $segments[0] === 'api') {
             $resource = $segments[2];
+
             return $resource;
         }
 
@@ -873,7 +877,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param array<string, mixed> $ruleConfig
      */
     private function evaluateConditionalRule(
-        /** @var array<string, mixed> */ array $ruleConfig,
+        /** @var array<string, mixed> */
+        array $ruleConfig,
         int $userId,
         ?string $userRole,
         ServerRequestInterface $request,

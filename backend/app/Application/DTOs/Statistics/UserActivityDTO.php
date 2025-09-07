@@ -64,9 +64,12 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     public static function fromStatistics(
         StatisticsPeriod $period,
-        /** @var array<string, mixed> */ array $userStats,
-        /** @var array<array<string, mixed>> */ array $topUsers = [],
-        /** @var array<string, mixed> */ array $patterns = [],
+        /** @var array<string, mixed> */
+        array $userStats,
+        /** @var array<array<string, mixed>> */
+        array $topUsers = [],
+        /** @var array<string, mixed> */
+        array $patterns = [],
     ): self {
         $totalActiveValue = $userStats['total_active'] ?? null;
         $totalActive = StatisticsMetric::count(

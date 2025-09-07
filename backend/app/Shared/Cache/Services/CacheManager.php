@@ -65,7 +65,8 @@ class CacheManager implements CacheManagerInterface
     public function __construct(
         CacheStrategyInterface $strategy,
         ?LoggerInterface $logger = null,
-        /** @var array<string, mixed> */ array $config = [],
+        /** @var array<string, mixed> */
+        array $config = [],
         ?CacheMonitorInterface $monitor = null,
         ?TagRepositoryInterface $tagRepository = null,
     ) {
@@ -112,6 +113,7 @@ class CacheManager implements CacheManagerInterface
     {
         return $this->drivers[$name] ?? null;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -435,6 +437,7 @@ class CacheManager implements CacheManagerInterface
 
         return $success;
     }
+
     /**
      * @param array<string, mixed> $keys
      * @return array<string, mixed>
@@ -451,9 +454,11 @@ class CacheManager implements CacheManagerInterface
 
         return $result;
     }
+
     /**
      * @param array<string, mixed> $values
-     */    public function putMany(array $values, int $ttl = 3600): bool
+     */
+    public function putMany(array $values, int $ttl = 3600): bool
     {
         $success = true;
 
@@ -472,9 +477,7 @@ class CacheManager implements CacheManagerInterface
 
         foreach ($availableDrivers as $name => $driver) {
             try {
-                if (method_exists($driver, 'increment')) {
-                    return $driver->increment($key, $value);
-                }
+                return $driver->increment($key, $value);
             } catch (Exception $e) {
                 $this->handleDriverError($name, $e, 'increment', ['key' => $key, 'value' => $value]);
             }
@@ -489,9 +492,7 @@ class CacheManager implements CacheManagerInterface
 
         foreach ($availableDrivers as $name => $driver) {
             try {
-                if (method_exists($driver, 'decrement')) {
-                    return $driver->decrement($key, $value);
-                }
+                return $driver->decrement($key, $value);
             } catch (Exception $e) {
                 $this->handleDriverError($name, $e, 'decrement', ['key' => $key, 'value' => $value]);
             }
@@ -558,9 +559,11 @@ class CacheManager implements CacheManagerInterface
 
         return $driverInstance;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getHealthStatus(): array
+     */
+    public function getHealthStatus(): array
     {
         $healthStatus = [];
 
@@ -598,9 +601,11 @@ class CacheManager implements CacheManagerInterface
 
         return $healthStatus;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function warmup(array $warmupCallbacks): array
+     */
+    public function warmup(array $warmupCallbacks): array
     {
         $results = [];
 
@@ -637,9 +642,11 @@ class CacheManager implements CacheManagerInterface
 
         return $results;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function cleanup(): array
+     */
+    public function cleanup(): array
     {
         $results = [];
 
@@ -647,9 +654,7 @@ class CacheManager implements CacheManagerInterface
             try {
                 $cleaned = 0;
 
-                if (method_exists($driver, 'cleanup')) {
-                    $cleaned = $driver->cleanup();
-                }
+                $cleaned = $driver->cleanup();
 
                 $results[$name] = [
                     'success' => true,
@@ -704,9 +709,11 @@ class CacheManager implements CacheManagerInterface
         // 如果沒有支援標籤的驅動，拋出例外
         throw new RuntimeException('沒有可用的標籤快取驅動');
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getStats(): array
+     */
+    public function getStats(): array
     {
         $totalRequests = $this->stats['total_gets'];
         $hitRate = $totalRequests > 0 ? ($this->stats['total_hits'] / $totalRequests) * 100 : 0;
@@ -719,9 +726,7 @@ class CacheManager implements CacheManagerInterface
                 'priority' => $this->driverPriority[$name] ?? 0,
             ];
 
-            if (method_exists($driver, 'getStats')) {
-                $driverStats[$name]['stats'] = $driver->getStats();
-            }
+            $driverStats[$name]['stats'] = $driver->getStats();
         }
 
         return array_merge($this->stats, [

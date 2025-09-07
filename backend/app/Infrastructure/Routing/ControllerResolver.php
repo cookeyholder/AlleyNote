@@ -33,7 +33,8 @@ class ControllerResolver
     public function resolve(
         RouteInterface $route,
         ServerRequestInterface $request,
-        /** @var array<string, mixed> */ array $parameters = [],
+        /** @var array<string, mixed> */
+        array $parameters = [],
     ): ResponseInterface {
         $handler = $route->getHandler();
 
@@ -482,7 +483,8 @@ class ControllerResolver
         object $controller,
         string $methodName,
         ServerRequestInterface $request,
-        /** @var array<string, mixed> */ array $routeParameters,
+        /** @var array<string, mixed> */
+        array $routeParameters,
     ): array {
         try {
             $reflection = new ReflectionMethod($controller, $methodName);

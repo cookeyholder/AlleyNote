@@ -54,6 +54,7 @@ class Role
     {
         return $this->updatedAt;
     }
+
     /**
      * @return array<string, mixed>
      */

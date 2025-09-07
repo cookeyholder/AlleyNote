@@ -57,7 +57,8 @@ class CacheMonitor implements CacheMonitorInterface
         string $driver,
         bool $success,
         float $duration,
-        /** @var array<string, mixed> */ array $context = [],
+        /** @var array<string, mixed> */
+        array $context = [],
     ): void {
         $timestamp = microtime(true);
 
@@ -91,7 +92,7 @@ class CacheMonitor implements CacheMonitorInterface
         $totalDuration = $driverStats['total_duration'] ?? 0.0;
         $driverStats['total_duration'] = $totalDuration + $duration;
         /** @var int $totalOpsForAvg */
-        $totalOpsForAvg = $driverStats['total_operations'] ?? 1;
+        $totalOpsForAvg = $driverStats['total_operations'];
         $driverStats['avg_duration'] = $driverStats['total_duration'] / max(1, $totalOpsForAvg);
 
         $maxDuration = $driverStats['max_duration'] ?? 0.0;
@@ -169,7 +170,7 @@ class CacheMonitor implements CacheMonitorInterface
         $hitStats['total_hit_duration'] = $totalHitDuration + $duration;
 
         /** @var int $currentHits */
-        $currentHits = $hitStats['hits'] ?? 1;
+        $currentHits = $hitStats['hits'];
         $hitStats['avg_hit_duration'] = $hitStats['total_hit_duration'] / max(1, $currentHits);
 
         $this->updateHitRate($driver);
@@ -305,10 +306,6 @@ class CacheMonitor implements CacheMonitorInterface
         $totalHits = 0;
 
         foreach ($this->hitStats as $driver => $driverStats) {
-            if (!is_array($driverStats)) {
-                continue;
-            }
-
             /** @var array<string, mixed> $validStats */
             $validStats = $driverStats;
 
@@ -346,10 +343,6 @@ class CacheMonitor implements CacheMonitorInterface
         $comparison = [];
 
         foreach ($this->operationStats as $driver => $stats) {
-            if (!is_array($stats)) {
-                continue;
-            }
-
             /** @var array<string, mixed> $validStats */
             $validStats = $stats;
 
@@ -377,6 +370,7 @@ class CacheMonitor implements CacheMonitorInterface
 
         return $comparison;
     }
+
     /**
      * @return list<array<string, mixed>>
      */
@@ -386,8 +380,6 @@ class CacheMonitor implements CacheMonitorInterface
 
         // 按持續時間降序排序
         usort($slowOps, fn($a, $b): int => $b['duration'] <=> $a['duration']);
-
-
 
         return array_slice($slowOps, 0, $limit);
     }
@@ -414,10 +406,6 @@ class CacheMonitor implements CacheMonitorInterface
         $totalErrors = 0;
 
         foreach ($this->errorStats as $driver => $driverErrors) {
-            if (!is_array($driverErrors)) {
-                continue;
-            }
-
             /** @var array<string, mixed> $validErrors */
             $validErrors = $driverErrors;
 
@@ -452,10 +440,6 @@ class CacheMonitor implements CacheMonitorInterface
         $issues = [];
 
         foreach ($this->healthRecords as $driver => $health) {
-            if (!is_array($health)) {
-                continue;
-            }
-
             /** @var array<string, mixed> $validHealth */
             $validHealth = $health;
 
@@ -499,12 +483,12 @@ class CacheMonitor implements CacheMonitorInterface
 
         // 清理錯誤記錄
         foreach ($this->errorStats as $driver => &$errorData) {
-            $originalErrorCount = is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0;
-            $errorData['recent_errors'] = is_array($errorData['recent_errors']) ? array_filter(
+            $originalErrorCount = count($errorData['recent_errors']);
+            $errorData['recent_errors'] = array_filter(
                 $errorData['recent_errors'],
                 fn($error): bool => is_array($error) && $error['timestamp'] > $cutoffTime,
-            ) : [];
-            $cleaned += $originalErrorCount - (is_array($errorData['recent_errors']) ? count($errorData['recent_errors']) : 0);
+            );
+            $cleaned += $originalErrorCount - count($errorData['recent_errors']);
         }
 
         $this->logger->info('快取監控資料清理完成', [
@@ -514,6 +498,7 @@ class CacheMonitor implements CacheMonitorInterface
 
         return $cleaned;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -533,6 +518,7 @@ class CacheMonitor implements CacheMonitorInterface
             'hit_rate' => $stats['global_hit_rate'],
         ];
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -569,6 +555,7 @@ class CacheMonitor implements CacheMonitorInterface
 
         return $performance;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -638,7 +625,7 @@ class CacheMonitor implements CacheMonitorInterface
      */
     private function updateHitRate(string $driver): void
     {
-        if (!isset($this->hitStats[$driver]) || !is_array($this->hitStats[$driver])) {
+        if (!isset($this->hitStats[$driver])) {
             return;
         }
 
@@ -736,10 +723,6 @@ class CacheMonitor implements CacheMonitorInterface
         $firstOp = reset($driverOps);
         $lastOp = end($driverOps);
 
-        if (!is_array($firstOp) || !is_array($lastOp)) {
-            return 0.0;
-        }
-
         $firstTimestampValue = $firstOp['timestamp'] ?? 0;
         $lastTimestampValue = $lastOp['timestamp'] ?? 0;
 
@@ -771,8 +754,8 @@ class CacheMonitor implements CacheMonitorInterface
     private function convertToCsv(array $data): string
     {
         // 簡化的 CSV 實作
-        $csv = "快取監控報告
-";
+        $csv = '快取監控報告
+';
         $exportTimestamp = date('Y-m-d H:i:s');
         if (is_array($data['export_info'] ?? null) && isset($data['export_info']['timestamp'])) {
             $timestampValue = $data['export_info']['timestamp'];
@@ -780,13 +763,13 @@ class CacheMonitor implements CacheMonitorInterface
                 $exportTimestamp = (string) $timestampValue;
             }
         }
-        $csv .= '匯出時間,' . $exportTimestamp . "
+        $csv .= '匯出時間,' . $exportTimestamp . '
 
-";
+';
 
         // 可以根據需要擴展 CSV 格式
-        return $csv . "請使用 JSON 格式取得完整資料
-";
+        return $csv . '請使用 JSON 格式取得完整資料
+';
     }
 
     /**

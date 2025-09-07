@@ -29,11 +29,16 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         private readonly int $timeWindowMinutes,
         private readonly bool $isSuspicious,
         private readonly ActivitySeverity $severityLevel,
-        private readonly /** @var array<string, mixed> */ array $activityCounts,
-        private readonly /** @var array<string, mixed> */ array $failureCounts,
-        private readonly /** @var array<string, mixed> */ array $anomalyScores,
-        private readonly /** @var array<string, mixed> */ array $detectionRules,
-        private readonly /** @var array<string, mixed> */ array $metadata,
+        /** @var array<string, mixed> */
+        private readonly array $activityCounts,
+        /** @var array<string, mixed> */
+        private readonly array $failureCounts,
+        /** @var array<string, mixed> */
+        private readonly array $anomalyScores,
+        /** @var array<string, mixed> */
+        private readonly array $detectionRules,
+        /** @var array<string, mixed> */
+        private readonly array $metadata,
         private readonly ?string $recommendedAction,
         private readonly float $confidenceScore,
     ) {}
@@ -48,11 +53,16 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         int $timeWindowMinutes,
         bool $isSuspicious,
         ActivitySeverity $severityLevel,
-        /** @var array<string, mixed> */ array $activityCounts,
-        /** @var array<string, mixed> */ array $failureCounts,
-        /** @var array<string, mixed> */ array $anomalyScores,
-        /** @var array<string, mixed> */ array $detectionRules,
-        /** @var array<string, mixed> */ array $metadata = [],
+        /** @var array<string, mixed> */
+        array $activityCounts,
+        /** @var array<string, mixed> */
+        array $failureCounts,
+        /** @var array<string, mixed> */
+        array $anomalyScores,
+        /** @var array<string, mixed> */
+        array $detectionRules,
+        /** @var array<string, mixed> */
+        array $metadata = [],
         ?string $recommendedAction = null,
         float $confidenceScore = 0.0,
     ): self {
@@ -84,11 +94,16 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         int $timeWindowMinutes,
         bool $isSuspicious,
         ActivitySeverity $severityLevel,
-        /** @var array<string, mixed> */ array $activityCounts,
-        /** @var array<string, mixed> */ array $failureCounts,
-        /** @var array<string, mixed> */ array $anomalyScores,
-        /** @var array<string, mixed> */ array $detectionRules,
-        /** @var array<string, mixed> */ array $metadata = [],
+        /** @var array<string, mixed> */
+        array $activityCounts,
+        /** @var array<string, mixed> */
+        array $failureCounts,
+        /** @var array<string, mixed> */
+        array $anomalyScores,
+        /** @var array<string, mixed> */
+        array $detectionRules,
+        /** @var array<string, mixed> */
+        array $metadata = [],
         ?string $recommendedAction = null,
         float $confidenceScore = 0.0,
     ): self {
@@ -119,11 +134,16 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         int $timeWindowMinutes,
         bool $isSuspicious,
         ActivitySeverity $severityLevel,
-        /** @var array<string, mixed> */ array $activityCounts,
-        /** @var array<string, mixed> */ array $failureCounts,
-        /** @var array<string, mixed> */ array $anomalyScores,
-        /** @var array<string, mixed> */ array $detectionRules,
-        /** @var array<string, mixed> */ array $metadata = [],
+        /** @var array<string, mixed> */
+        array $activityCounts,
+        /** @var array<string, mixed> */
+        array $failureCounts,
+        /** @var array<string, mixed> */
+        array $anomalyScores,
+        /** @var array<string, mixed> */
+        array $detectionRules,
+        /** @var array<string, mixed> */
+        array $metadata = [],
         ?string $recommendedAction = null,
         float $confidenceScore = 0.0,
     ): self {
@@ -180,33 +200,43 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     {
         return $this->severityLevel;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getActivityCounts(): array
+     */
+    public function getActivityCounts(): array
     {
         return $this->activityCounts;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getFailureCounts(): array
+     */
+    public function getFailureCounts(): array
     {
         return $this->failureCounts;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getAnomalyScores(): array
+     */
+    public function getAnomalyScores(): array
     {
         return $this->anomalyScores;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getDetectionRules(): array
+     */
+    public function getDetectionRules(): array
     {
         return $this->detectionRules;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getMetadata(): array
+     */
+    public function getMetadata(): array
     {
         return $this->metadata;
     }

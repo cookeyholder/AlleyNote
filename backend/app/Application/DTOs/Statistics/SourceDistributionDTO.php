@@ -53,7 +53,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      */
     public static function fromSourceStatistics(
         StatisticsPeriod $period,
-        /** @var array<string, mixed> */ array $sourceStatistics,
+        /** @var array<string, mixed> */
+        array $sourceStatistics,
         int $totalCount,
     ): self {
         /** @var array<string, mixed> $analysis */
@@ -154,8 +155,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         /** @var SourceStatistics|null */
         return array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics =>
-                $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
+            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
         );
     }
 
@@ -171,8 +171,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         /** @var SourceStatistics|null */
         return array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics =>
-                $carry === null || $source->count->value < $carry->count->value ? $source : $carry,
+            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => $carry === null || $source->count->value < $carry->count->value ? $source : $carry,
         );
     }
 

@@ -286,11 +286,11 @@ class LoggingMiddleware extends AbstractMiddleware
 
     protected function execute(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        echo "執行中介軟體: {(string)this->message}
-";
+        echo '執行中介軟體: {(string)this->message}
+';
         $response = $handler->handle($request);
-        echo "完成中介軟體: {(string)this->message}
-";
+        echo '完成中介軟體: {(string)this->message}
+';
 
         return $response;
     }
@@ -305,8 +305,8 @@ class AuthMiddleware extends AbstractMiddleware
 
     protected function execute(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        echo "檢查認證...
-";
+        echo '檢查認證...
+';
         $request = $request->withAttribute('user_id', 123);
 
         return $handler->handle($request);
@@ -317,10 +317,10 @@ class AuthMiddleware extends AbstractMiddleware
 $finalHandler = new class implements RequestHandlerInterface {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        echo "執行最終處理器
-";
-        echo '請求屬性: ' . json_encode($request->getAttributes(), JSON_UNESCAPED_UNICODE) . "
-";
+        echo '執行最終處理器
+';
+        echo '請求屬性: ' . json_encode($request->getAttributes(), JSON_UNESCAPED_UNICODE) . '
+';
 
         return new class implements ResponseInterface {
             public function getBody()
@@ -402,15 +402,15 @@ $finalHandler = new class implements RequestHandlerInterface {
     }
 };
 
-echo "=== 路由中介軟體系統測試 ===
+echo '=== 路由中介軟體系統測試 ===
 
-";
+';
 
 // 1. 測試中介軟體基本功能
-echo "1. 測試中介軟體基本功能
-";
-echo "----------------------------
-";
+echo '1. 測試中介軟體基本功能
+';
+echo '----------------------------
+';
 
 $dispatcher = new MiddlewareDispatcher();
 $manager = new MiddlewareManager($dispatcher);
@@ -420,28 +420,28 @@ $manager->add(new LoggingMiddleware('第一個中介軟體', 0));
 $manager->add(new AuthMiddleware(10));
 $manager->add(new LoggingMiddleware('第二個中介軟體', 5));
 
-echo '中介軟體數量: ' . $manager->count() . "
-";
-echo '中介軟體名稱: ' . implode(', ', $manager->getNames()) . "
-";
-echo "
-";
+echo '中介軟體數量: ' . $manager->count() . '
+';
+echo '中介軟體名稱: ' . implode(', ', $manager->getNames()) . '
+';
+echo '
+';
 
 // 2. 測試中介軟體執行順序
-echo "2. 測試中介軟體執行順序 (按優先順序)
-";
-echo "---------------------------------------
-";
+echo '2. 測試中介軟體執行順序 (按優先順序)
+';
+echo '---------------------------------------
+';
 
 $response = $manager->process($request, $finalHandler);
-echo "
-";
+echo '
+';
 
 // 3. 測試路由參數中介軟體
-echo "3. 測試路由參數中介軟體
-";
-echo "--------------------------
-";
+echo '3. 測試路由參數中介軟體
+';
+echo '--------------------------
+';
 
 $routeParamsMiddleware = new RouteParametersMiddleware([
     'id' => '123',
@@ -452,14 +452,14 @@ $manager->clear();
 $manager->add($routeParamsMiddleware);
 
 $response = $manager->process($request, $finalHandler);
-echo "
-";
+echo '
+';
 
 // 4. 測試路由資訊中介軟體
-echo "4. 測試路由資訊中介軟體
-";
-echo "--------------------------
-";
+echo '4. 測試路由資訊中介軟體
+';
+echo '--------------------------
+';
 
 $routeInfoMiddleware = new RouteInfoMiddleware(
     'users.show',
@@ -472,14 +472,14 @@ $manager->clear();
 $manager->add($routeInfoMiddleware);
 
 $response = $manager->process($request, $finalHandler);
-echo "
-";
+echo '
+';
 
 // 5. 測試路由與中介軟體整合
-echo "5. 測試路由與中介軟體整合
-";
-echo "----------------------------
-";
+echo '5. 測試路由與中介軟體整合
+';
+echo '----------------------------
+';
 
 $route = new Route(['GET'], '/users/{id}', function () {
     return 'User handler';
@@ -488,29 +488,29 @@ $route = new Route(['GET'], '/users/{id}', function () {
 $route->addMiddleware(new LoggingMiddleware('路由中介軟體'));
 $route->setName('users.show');
 
-echo '路由模式: ' . $route->getPattern() . "
-";
-echo '路由名稱: ' . $route->getName() . "
-";
-echo '中介軟體數量: ' . count($route->getMiddlewares()) . "
-";
+echo '路由模式: ' . $route->getPattern() . '
+';
+echo '路由名稱: ' . $route->getName() . '
+';
+echo '中介軟體數量: ' . count($route->getMiddlewares()) . '
+';
 
 // 測試路由匹配
 $matchResult = $route->matches($request);
-echo '路由匹配: ' . ($matchResult->isMatched() ? '成功' : '失敗') . "
-";
+echo '路由匹配: ' . ($matchResult->isMatched() ? '成功' : '失敗') . '
+';
 if ($matchResult->isMatched()) {
-    echo '路由參數: ' . json_encode($matchResult->getParameters(), JSON_UNESCAPED_UNICODE) . "
-";
+    echo '路由參數: ' . json_encode($matchResult->getParameters(), JSON_UNESCAPED_UNICODE) . '
+';
 }
-echo "
-";
+echo '
+';
 
 // 6. 測試 URL 生成
-echo "6. 測試 URL 生成
-";
-echo "-----------------
-";
+echo '6. 測試 URL 生成
+';
+echo '-----------------
+';
 
 $route2 = new Route(['GET'], '/posts/{slug}/comments/{id}', 'handler');
 
@@ -519,28 +519,28 @@ try {
         'slug' => 'hello-world',
         'id' => 456,
     ], ['page' => 2, 'limit' => 10]);
-    echo "生成的 URL: {(string)url}
-";
+    echo '生成的 URL: {(string)url}
+';
 } catch (Exception $e) {
-    echo 'URL 生成錯誤: ' . $e->getMessage() . "
-";
+    echo 'URL 生成錯誤: ' . $e->getMessage() . '
+';
 }
 
 try {
     $url = $route2->generateUrl(['slug' => 'hello-world']); // 缺少 id 參數
 } catch (Exception $e) {
-    echo '預期錯誤 (缺少參數): ' . $e->getMessage() . "
-";
+    echo '預期錯誤 (缺少參數): ' . $e->getMessage() . '
+';
 }
 
-echo "
-";
+echo '
+';
 
 // 7. 測試中介軟體狀態管理
-echo "7. 測試中介軟體狀態管理
-";
-echo "--------------------------
-";
+echo '7. 測試中介軟體狀態管理
+';
+echo '--------------------------
+';
 
 $middleware1 = new LoggingMiddleware('可停用的中介軟體');
 $middleware1->disable();
@@ -551,18 +551,18 @@ $manager->clear();
 $manager->add($middleware1);
 $manager->add($middleware2);
 
-echo "執行前狀態:
-";
-echo '- 中介軟體1 啟用: ' . ($middleware1->isEnabled() ? '是' : '否') . "
-";
-echo '- 中介軟體2 啟用: ' . ($middleware2->isEnabled() ? '是' : '否') . "
-";
-echo "
+echo '執行前狀態:
+';
+echo '- 中介軟體1 啟用: ' . ($middleware1->isEnabled() ? '是' : '否') . '
+';
+echo '- 中介軟體2 啟用: ' . ($middleware2->isEnabled() ? '是' : '否') . '
+';
+echo '
 執行中介軟體鏈:
-";
+';
 
 $response = $manager->process($request, $finalHandler);
 
-echo "
+echo '
 === 測試完成 ===
-";
+';

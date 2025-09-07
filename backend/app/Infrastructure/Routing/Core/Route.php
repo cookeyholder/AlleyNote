@@ -29,9 +29,10 @@ class Route implements RouteInterface
 
     /**
      * @param string[] $methods HTTP 方法列表
-      */
+     */
     public function __construct(
-        private readonly /** @var array<string, mixed> */ array $methods,
+        /** @var array<string, mixed> */
+        private readonly array $methods,
         private readonly string $pattern,
         private readonly mixed $handler,
     ) {
@@ -269,9 +270,11 @@ class Route implements RouteInterface
     {
         return new self(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'], $pattern, $handler);
     }
+
     /**
      * @param array<string, mixed> $methods
-     */    public static function match(array $methods, string $pattern, callable|string $handler): self
+     */
+    public static function match(array $methods, string $pattern, callable|string $handler): self
     {
         return new self($methods, $pattern, $handler);
     }

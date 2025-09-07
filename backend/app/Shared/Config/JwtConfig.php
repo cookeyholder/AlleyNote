@@ -9,7 +9,7 @@ use InvalidArgumentException;
 
 /**
  * JWT 配置管理類別.
- * 負責載入和驗證 JWT 相關的配置參數，包括 RS256 金鑰對管理
+ * 負責載入和驗證 JWT 相關的配置參數，包括 RS256 金鑰對管理.
  */
 final class JwtConfig
 {
@@ -40,7 +40,11 @@ final class JwtConfig
      */
     private function loadFromEnvironment(): void
     {
-        $this->algorithm = $_ENV['JWT_ALGORITHM'] ?? 'RS256';
+        $algorithm = $_ENV['JWT_ALGORITHM'] ?? 'RS256';
+        if (!is_string($algorithm)) {
+            $algorithm = 'RS256';
+        }
+        $this->algorithm = $algorithm;
 
         // 先驗證算法是否支援
         if (!in_array($this->algorithm, ['RS256', 'RS384', 'RS512', 'HS256', 'HS384', 'HS512'])) {
@@ -55,8 +59,18 @@ final class JwtConfig
             $this->publicKey = $this->loadPublicKey();
         }
 
-        $this->issuer = $_ENV['JWT_ISSUER'] ?? 'alleynote-api';
-        $this->audience = $_ENV['JWT_AUDIENCE'] ?? 'alleynote-client';
+        $issuer = $_ENV['JWT_ISSUER'] ?? 'alleynote-api';
+        if (!is_string($issuer)) {
+            $issuer = 'alleynote-api';
+        }
+        $this->issuer = $issuer;
+
+        $audience = $_ENV['JWT_AUDIENCE'] ?? 'alleynote-client';
+        if (!is_string($audience)) {
+            $audience = 'alleynote-client';
+        }
+        $this->audience = $audience;
+
         $this->accessTokenTtl = (int) ($_ENV['JWT_ACCESS_TOKEN_TTL'] ?? 3600);
         $this->refreshTokenTtl = (int) ($_ENV['JWT_REFRESH_TOKEN_TTL'] ?? 2592000);
     }
@@ -98,8 +112,8 @@ final class JwtConfig
     {
         $privateKey = $_ENV['JWT_PRIVATE_KEY'] ?? '';
 
-        if (empty($privateKey)) {
-            throw new InvalidArgumentException('JWT_PRIVATE_KEY 環境變數未設定');
+        if (!is_string($privateKey) || empty($privateKey)) {
+            throw new InvalidArgumentException('JWT_PRIVATE_KEY 環境變數未設定或格式錯誤');
         }
 
         // 將環境變數中的 \n 轉換為實際的換行符
@@ -120,8 +134,8 @@ final class JwtConfig
     {
         $publicKey = $_ENV['JWT_PUBLIC_KEY'] ?? '';
 
-        if (empty($publicKey)) {
-            throw new InvalidArgumentException('JWT_PUBLIC_KEY 環境變數未設定');
+        if (!is_string($publicKey) || empty($publicKey)) {
+            throw new InvalidArgumentException('JWT_PUBLIC_KEY 環境變數未設定或格式錯誤');
         }
 
         // 將環境變數中的 \n 轉換為實際的換行符
@@ -190,6 +204,10 @@ final class JwtConfig
 
             if (!openssl_sign($testData, $signature, $privateKeyResource, OPENSSL_ALGO_SHA256)) {
                 throw new InvalidArgumentException('私鑰簽名測試失敗');
+            }
+
+            if (!is_string($signature)) {
+                throw new InvalidArgumentException('簽名產生失敗');
             }
 
             if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {

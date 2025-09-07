@@ -20,9 +20,11 @@ class AuthService
         private ?JwtTokenServiceInterface $jwtTokenService = null,
         private bool $jwtEnabled = false,
     ) {}
+
     /**
      * @return array<string, mixed>
-     */    public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): array
+     */
+    public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): array
     {
         // DTO 已經在建構時進行基本驗證，這裡進行密碼安全性檢查
         $this->passwordService->validatePassword($dto->password);
@@ -71,9 +73,11 @@ class AuthService
             'user' => $user,
         ];
     }
+
     /**
      * @param array<string, mixed> $credentials
-     */    public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
+     */
+    public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
     {
         $user = $this->userRepository->findByEmail($credentials['email']);
 
@@ -141,9 +145,11 @@ class AuthService
             'user' => $user,
         ];
     }
+
     /**
      * @return array<string, mixed>
-     */    public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): array
+     */
+    public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): array
     {
         // 如果啟用 JWT 且有提供 JWT 服務和 access token
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $accessToken !== null) {

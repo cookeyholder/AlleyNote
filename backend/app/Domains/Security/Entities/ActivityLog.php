@@ -55,9 +55,11 @@ class ActivityLog
     private DateTimeImmutable $occurredAt;
 
     private DateTimeImmutable $createdAt;
+
     /**
      * @param array<string, mixed> $metadata
-     */    public function __construct(
+     */
+    public function __construct(
         ActivityType $actionType,
         ?int $userId = null,
         ?string $sessionId = null,
@@ -147,9 +149,11 @@ class ActivityLog
     {
         return $this->description;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function getMetadata(): ?array
+     */
+    public function getMetadata(): ?array
     {
         if ($this->metadata === null) {
             return null;

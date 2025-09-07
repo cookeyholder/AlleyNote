@@ -50,7 +50,8 @@ class TokenValidationException extends JwtException
         string $message,
         string $reason = self::VALIDATION_FAILED,
         ?Throwable $previous = null,
-        /** @var array<string, mixed> */ array $additionalContext = [],
+        /** @var array<string, mixed> */
+        array $additionalContext = [],
     ) {
         $context = array_merge([
             'reason' => $reason,

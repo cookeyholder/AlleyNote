@@ -67,7 +67,8 @@ class InvalidTokenException extends JwtException
         string $reason = self::REASON_DECODE_FAILED,
         string $tokenType = self::ACCESS_TOKEN,
         string $customMessage = '',
-        /** @var array<string, mixed> */ array $additionalContext = [],
+        /** @var array<string, mixed> */
+        array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
 

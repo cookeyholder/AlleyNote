@@ -48,12 +48,12 @@ interface PostServiceInterface
      * @param int $perPage 每頁筆數
      * @param array<string, mixed> $filters
      * @return array<string, mixed>
-     *     items: Post[],
-     *     total: int,
-     *     page: int,
-     *     per_page: int,
-     *     last_page: int
-     * }
+     *                              items: Post[],
+     *                              total: int,
+     *                              page: int,
+     *                              per_page: int,
+     *                              last_page: int
+     *                              }
      */
     public function listPosts(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters = []): array;
 

@@ -49,7 +49,8 @@ class RouteInfoMiddleware extends AbstractMiddleware
     public function __construct(
         ?string $routeName = null,
         ?string $routePattern = null,
-        /** @var array<string, mixed> */ array $methods = [],
+        /** @var array<string, mixed> */
+        array $methods = [],
         mixed $handler = null,
         int $priority = -90,
     ) {

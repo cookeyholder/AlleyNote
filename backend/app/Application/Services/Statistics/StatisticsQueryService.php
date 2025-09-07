@@ -572,9 +572,11 @@ final class StatisticsQueryService
      */
     private function executeCustomQuery(
         StatisticsPeriod $period,
-        /** @var array<string, mixed> */ array $metrics,
+        /** @var array<string, mixed> */
+        array $metrics,
         ?string $groupBy,
-        /** @var array<string, mixed> */ array $filters,
+        /** @var array<string, mixed> */
+        array $filters,
     ): array {
         // 基本查詢實作
         return [

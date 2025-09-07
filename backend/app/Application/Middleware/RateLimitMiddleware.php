@@ -175,61 +175,61 @@ class RateLimitMiddleware implements MiddlewareInterface
         $retryTime = date('H:i:s', $resetTime);
 
         return <<<HTML
-            <!DOCTYPE html>
-            <html lang="zh-TW">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>請求過於頻繁</title>
-                <style>
-                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                           margin: 0; padding: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-                    .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                                max-width: 500px; text-align: center; }
-                    .icon { font-size: 64px; margin-bottom: 20px; }
-                    h1 { color: #2c3e50; margin-bottom: 20px; }
-                    .message { color: #7f8c8d; line-height: 1.6; margin-bottom: 30px; }
-                    .info { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;
-                            padding: 20px; margin: 20px 0; }
-                    .retry-info { text-align: center; margin-top: 30px; }
-                    .countdown { font-size: 24px; font-weight: bold; color: #e74c3c; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="icon">⏱️</div>
-                    <h1>請求過於頻繁</h1>
-                    <div class="message">
-                        您的請求過於頻繁，為了確保服務的穩定性，我們暫時限制了您的存取。<br>
-                        請稍候再試，感謝您的理解。
-                    </div>
-                    <div class="info">
-                        <strong>限制資訊：</strong><br>
-                        • 每分鐘最多 {$limit} 次請求<br>
-                        • 剩餘配額：{$remaining} 次<br>
-                        • 重置時間：{$retryTime}
-                    </div>
-                    <div class="retry-info">
-                        <div class="countdown" id="countdown">{$retryAfter}</div>
-                        <p>秒後自動重新整理</p>
-                    </div>
-                </div>
-                <script>
-                    let countdown = {$retryAfter};
-                    const element = document.getElementById('countdown');
-                    const timer = setInterval(() => {
-                        countdown--;
-                        element.textContent = countdown;
-                        if (countdown <= 0) {
-                            clearInterval(timer);
-                            location.reload();
-                        }
-                    }, 1000);
-                </script>
-            </body>
-            </html>
-HTML;
+                        <!DOCTYPE html>
+                        <html lang="zh-TW">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>請求過於頻繁</title>
+                            <style>
+                                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                       margin: 0; padding: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+                                .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                                            max-width: 500px; text-align: center; }
+                                .icon { font-size: 64px; margin-bottom: 20px; }
+                                h1 { color: #2c3e50; margin-bottom: 20px; }
+                                .message { color: #7f8c8d; line-height: 1.6; margin-bottom: 30px; }
+                                .info { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;
+                                        padding: 20px; margin: 20px 0; }
+                                .retry-info { text-align: center; margin-top: 30px; }
+                                .countdown { font-size: 24px; font-weight: bold; color: #e74c3c; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="container">
+                                <div class="icon">⏱️</div>
+                                <h1>請求過於頻繁</h1>
+                                <div class="message">
+                                    您的請求過於頻繁，為了確保服務的穩定性，我們暫時限制了您的存取。<br>
+                                    請稍候再試，感謝您的理解。
+                                </div>
+                                <div class="info">
+                                    <strong>限制資訊：</strong><br>
+                                    • 每分鐘最多 {$limit} 次請求<br>
+                                    • 剩餘配額：{$remaining} 次<br>
+                                    • 重置時間：{$retryTime}
+                                </div>
+                                <div class="retry-info">
+                                    <div class="countdown" id="countdown">{$retryAfter}</div>
+                                    <p>秒後自動重新整理</p>
+                                </div>
+                            </div>
+                            <script>
+                                let countdown = {$retryAfter};
+                                const element = document.getElementById('countdown');
+                                const timer = setInterval(() => {
+                                    countdown--;
+                                    element.textContent = countdown;
+                                    if (countdown <= 0) {
+                                        clearInterval(timer);
+                                        location.reload();
+                                    }
+                                }, 1000);
+                            </script>
+                        </body>
+                        </html>
+            HTML;
     }
 
     /**
@@ -276,6 +276,7 @@ HTML;
         }
 
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+
         return is_string($remoteAddr) ? $remoteAddr : '127.0.0.1';
     }
 

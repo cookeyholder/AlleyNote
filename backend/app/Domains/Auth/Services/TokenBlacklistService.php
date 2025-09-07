@@ -421,7 +421,8 @@ final class TokenBlacklistService
      * @return array<string, mixed> 搜尋結果
      */
     public function searchBlacklistEntries(
-        /** @var array<string, mixed> */ array $criteria,
+        /** @var array<string, mixed> */
+        array $criteria,
         ?int $limit = null,
         int $offset = 0,
     ): array {

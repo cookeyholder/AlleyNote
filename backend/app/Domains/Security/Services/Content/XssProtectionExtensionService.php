@@ -31,7 +31,8 @@ class XssProtectionExtensionService
         XssProtectionService $baseXssProtection,
         RichTextProcessorService $richTextProcessor,
         ContentModerationService $contentModerator,
-        /** @var array<string, mixed> */ array $config = [],
+        /** @var array<string, mixed> */
+        array $config = [],
     ) {
         $this->baseXssProtection = $baseXssProtection;
         $this->richTextProcessor = $richTextProcessor;

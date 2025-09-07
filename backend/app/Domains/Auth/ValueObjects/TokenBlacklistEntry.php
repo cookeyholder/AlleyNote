@@ -72,7 +72,8 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         private string $reason,
         private ?int $userId = null,
         private ?string $deviceId = null,
-        private /** @var array<string, mixed> */ array $metadata = [],
+        /** @var array<string, mixed> */
+        private array $metadata = [],
     ) {
         $this->validateJti($jti);
         $this->validateTokenType($tokenType);
@@ -161,7 +162,8 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         DateTimeImmutable $expiresAt,
         string $securityReason,
         ?int $userId = null,
-        /** @var array<string, mixed> */ array $metadata = [],
+        /** @var array<string, mixed> */
+        array $metadata = [],
     ): self {
         $validSecurityReasons = [
             self::REASON_SECURITY_BREACH,

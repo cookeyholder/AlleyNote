@@ -136,4 +136,8 @@ docker compose exec -T web composer ci
 
 ---
 
+## 備註
+
+-   這個專案使用的資料庫是 SQLite3，請不要再任何文件出現其他資料庫的名稱，尤其是 MySQL 和 MariaDB。
+
 如對本專案有任何實作、建模或架構相關的疑問，請先記錄在 `/docs/decision-log/` 中，再開啟 issue 或發起技術討論。

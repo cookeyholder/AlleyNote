@@ -58,8 +58,10 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         StatisticsPeriod $period,
         StatisticsMetric $totalPosts,
         StatisticsMetric $totalViews,
-        /** @var array<string, mixed> */ array $sourceStatistics,
-        /** @var array<string, mixed> */ array $additionalMetrics = [],
+        /** @var array<string, mixed> */
+        array $sourceStatistics,
+        /** @var array<string, mixed> */
+        array $additionalMetrics = [],
     ): self {
         return new self(
             $period,
@@ -242,8 +244,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         /** @var SourceStatistics|null */
         $topSource = array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics =>
-                $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
+            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
         );
 
         return $topSource ? [

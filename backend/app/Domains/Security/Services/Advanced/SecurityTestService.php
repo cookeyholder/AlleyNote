@@ -49,9 +49,11 @@ class SecurityTestService implements SecurityTestInterface
         $this->passwordService = $passwordService;
         $this->secretsManager = $secretsManager;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function runAllTests(): array
+     */
+    public function runAllTests(): array
     {
         $this->testResults = [];
 
@@ -67,9 +69,11 @@ class SecurityTestService implements SecurityTestInterface
 
         return $this->testResults;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function testSessionSecurity(): array
+     */
+    public function testSessionSecurity(): array
     {
         $results = [
             'test_name' => 'Session Security',
@@ -130,9 +134,11 @@ class SecurityTestService implements SecurityTestInterface
 
         return $results;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function testAuthorization(): array
+     */
+    public function testAuthorization(): array
     {
         $results = [
             'test_name' => 'Authorization System',
@@ -181,9 +187,11 @@ class SecurityTestService implements SecurityTestInterface
 
         return $results;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function testFileSecurity(): array
+     */
+    public function testFileSecurity(): array
     {
         $results = [
             'test_name' => 'File Security',
@@ -234,9 +242,11 @@ class SecurityTestService implements SecurityTestInterface
 
         return $results;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function testSecurityHeaders(): array
+     */
+    public function testSecurityHeaders(): array
     {
         $results = [
             'test_name' => 'Security Headers',
@@ -298,9 +308,11 @@ class SecurityTestService implements SecurityTestInterface
 
         return $results;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function testErrorHandling(): array
+     */
+    public function testErrorHandling(): array
     {
         $results = [
             'test_name' => 'Error Handling',
@@ -342,9 +354,11 @@ class SecurityTestService implements SecurityTestInterface
 
         return $results;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function testPasswordSecurity(): array
+     */
+    public function testPasswordSecurity(): array
     {
         $results = [
             'test_name' => 'Password Security',
@@ -418,9 +432,11 @@ class SecurityTestService implements SecurityTestInterface
 
         return $results;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function testSecretsManagement(): array
+     */
+    public function testSecretsManagement(): array
     {
         $results = [
             'test_name' => 'Secrets Management',
@@ -474,9 +490,11 @@ class SecurityTestService implements SecurityTestInterface
 
         return $results;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function testSystemSecurity(): array
+     */
+    public function testSystemSecurity(): array
     {
         $results = [
             'test_name' => 'System Security',
@@ -541,9 +559,11 @@ class SecurityTestService implements SecurityTestInterface
 
         return $results;
     }
+
     /**
      * @return array<string, mixed>
-     */    public function generateSecurityReport(): array
+     */
+    public function generateSecurityReport(): array
     {
         $allResults = $this->runAllTests();
 
@@ -627,9 +647,11 @@ class SecurityTestService implements SecurityTestInterface
             return '需要改善 (Needs Improvement)';
         }
     }
+
     /**
      * @param array<string, mixed> $criticalIssues
-     */    private function getRecommendations(array $criticalIssues): array
+     */
+    private function getRecommendations(array $criticalIssues): array
     {
         $recommendations = [];
 
