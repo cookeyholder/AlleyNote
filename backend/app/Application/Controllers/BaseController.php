@@ -28,7 +28,10 @@ abstract class BaseController
         return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
     }
 
-    /**\n      * @param array<string, mixed> $data
+    /**
+     * JSON響應輔助方法.
+     *
+     * @param array<string, mixed> $data
      */
     protected function jsonResponse(array $data, int $httpCode = 200): string
     {
@@ -42,22 +45,28 @@ abstract class BaseController
 
     protected function successResponse(mixed $data = null, string $message = 'Success'): string
     {
-        return $this->jsonResponse(ApiResponse::success($data, $message));
+        /** @var array<string, mixed> $responseData */
+        $responseData = ApiResponse::success($data, $message);
+        return $this->jsonResponse($responseData);
     }
 
     protected function errorResponse(string $message, int $httpCode = 400, mixed $errors = null): string
     {
-        return $this->jsonResponse(
-            ApiResponse::error($message, $httpCode, $errors),
-            $httpCode,
-        );
+        /** @var array<string, mixed> $responseData */
+        $responseData = ApiResponse::error($message, $httpCode, $errors);
+        return $this->jsonResponse($responseData, $httpCode);
     }
 
-    /**\n      * @param array<string, mixed> $data
+    /**
+     * 分頁響應輔助方法.
+     *
+     * @param array<string, mixed> $data
      */
     protected function paginatedResponse(array $data, int $total, int $page, int $perPage): string
     {
-        return $this->jsonResponse(ApiResponse::paginated($data, $total, $page, $perPage));
+        /** @var array<string, mixed> $responseData */
+        $responseData = ApiResponse::paginated($data, $total, $page, $perPage);
+        return $this->jsonResponse($responseData);
     }
 
     protected function handleException(Exception $e): string
