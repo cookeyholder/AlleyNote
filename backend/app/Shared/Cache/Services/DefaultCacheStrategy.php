@@ -304,7 +304,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     /**
      * 取得排除模式。
-     * @return array<string, mixed>
+     * @return array<string>
      */
     public function getExcludePatterns(): array
     {

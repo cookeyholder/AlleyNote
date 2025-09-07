@@ -80,7 +80,8 @@ class RequestValidationException extends ValidationException
     }
     /**
      * @param array<string, mixed> $allowedValues
-     */    public static function valueNotInList(string $field, $value, /** @var array<string, mixed> */ array $allowedValues): self
+     */    
+    public static function valueNotInList(string $field, mixed $value, array $allowedValues): self
     {
         $allowedList = implode(', ', $allowedValues);
         $errors = [$field => "'{$value}' 不在允許的值清單中：{$allowedList}"];
@@ -88,7 +89,7 @@ class RequestValidationException extends ValidationException
         return new self('欄位值不在允許範圍內', $errors);
     }
 
-    public static function numericRangeError(string $field, $value, $min = null, mixed $max = null): self
+    public static function numericRangeError(string $field, mixed $value, mixed $min = null, mixed $max = null): self
     {
         $message = "欄位 '{$field}' 的值 '{$value}' 超出允許範圍";
 

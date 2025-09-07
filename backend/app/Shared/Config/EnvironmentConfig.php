@@ -167,9 +167,10 @@ final class EnvironmentConfig
         }
 
         // 環境特定的驗證
-        $errors = array_merge($errors, $this->validateEnvironmentSpecific());
+        $envErrors = $this->validateEnvironmentSpecific();
+        $errors = array_merge($errors, $envErrors);
 
-        return $errors;
+        return array_values($errors);
     }
 
     /**
@@ -342,7 +343,7 @@ final class EnvironmentConfig
 
     /**
      * 環境特定的驗證.
-     * @return array<string, mixed>
+     * @return list<string>
      */
     private function validateEnvironmentSpecific(): array
     {
