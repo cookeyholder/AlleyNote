@@ -46,13 +46,24 @@ class CSPReportController
                 return $response->withStatus(400);
             }
 
+            // 確保 $report 是正確的陣列格式，並且key是字串
+            if (!is_array($report)) {
+                return $response->withStatus(400);
+            }
+
+            // 轉換為 array<string, mixed> 格式
+            $normalizedReport = [];
+            foreach ($report as $key => $value) {
+                $normalizedReport[(string) $key] = $value;
+            }
+
             // 驗證報告格式
-            if (!$this->isValidCSPReport($report)) {
+            if (!$this->isValidCSPReport($normalizedReport)) {
                 return $response->withStatus(400);
             }
 
             // 記錄違規
-            $this->logViolation($report, $request);
+            $this->logViolation($normalizedReport, $request);
 
             return $response->withStatus(204);
         } catch (Exception $e) {
@@ -80,6 +91,11 @@ class CSPReportController
 
         $cspReport = $report['csp-report'];
 
+        // 確保 csp-report 是陣列
+        if (!is_array($cspReport)) {
+            return false;
+        }
+
         // 基本欄位檢查
         $requiredFields = ['blocked-uri', 'document-uri', 'violated-directive'];
         foreach ($requiredFields as $field) {
@@ -98,12 +114,24 @@ class CSPReportController
      */
     private function logViolation(array $report, Request $request): void
     {
+        // 確保 csp-report 是陣列
+        $cspReport = $report['csp-report'] ?? [];
+        if (!is_array($cspReport)) {
+            $cspReport = [];
+        }
+
+        // 轉換為 array<string, mixed> 格式
+        $normalizedCspReport = [];
+        foreach ($cspReport as $key => $value) {
+            $normalizedCspReport[(string) $key] = $value;
+        }
+
         $logData = [
             'client_ip' => $this->getClientIP($request),
             'user_agent_hash' => hash('sha256', $request->getHeaderLine('User-Agent')),
             'referer' => $request->getHeaderLine('Referer'),
-            'csp_report' => $report['csp-report'],
-            'severity' => $this->calculateSeverity($report['csp-report']),
+            'csp_report' => $normalizedCspReport,
+            'severity' => $this->calculateSeverity($normalizedCspReport),
         ];
 
         // 使用安全日誌服務記錄 CSP 違規
@@ -140,6 +168,15 @@ class CSPReportController
             if (isset($serverParams[$header]) && !empty($serverParams[$header])) {
                 $ip = $serverParams[$header];
 
+                // 確保 IP 是字串類型
+                if (!is_string($ip)) {
+                    if (is_scalar($ip)) {
+                        $ip = (string) $ip;
+                    } else {
+                        continue;
+                    }
+                }
+
                 // X-Forwarded-For 可能包含多個 IP
                 if (strpos($ip, ',') !== false) {
                     $ip = trim(explode(',', $ip)[0]);
@@ -151,7 +188,8 @@ class CSPReportController
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? 'unknown';
+        $remoteAddr = $serverParams['REMOTE_ADDR'] ?? 'unknown';
+        return is_string($remoteAddr) ? $remoteAddr : 'unknown';
     }
 
     /**
@@ -163,6 +201,14 @@ class CSPReportController
     {
         $blockedUri = $cspReport['blocked-uri'] ?? '';
         $violatedDirective = $cspReport['violated-directive'] ?? '';
+
+        // 確保這些值是字串類型，避免直接cast mixed
+        if (!is_string($blockedUri)) {
+            $blockedUri = is_scalar($blockedUri) ? (string) $blockedUri : '';
+        }
+        if (!is_string($violatedDirective)) {
+            $violatedDirective = is_scalar($violatedDirective) ? (string) $violatedDirective : '';
+        }
 
         // 高風險情況
         if (strpos($violatedDirective, 'script-src') !== false) {
@@ -195,13 +241,19 @@ class CSPReportController
      */
     private function checkForAlert(array $logData): void
     {
+        // 確保 IP 是字串類型
+        $ip = $logData['ip'] ?? 'unknown';
+        if (!is_string($ip)) {
+            $ip = 'unknown';
+        }
+
         // 如果在短時間內有大量違規，可能是攻擊
-        $recentViolations = $this->getRecentViolations($logData['ip'], 300); // 5分鐘內
+        $recentViolations = $this->getRecentViolations($ip, 300); // 5分鐘內
 
         if (count($recentViolations) > 10) {
             $this->sendAlert([
                 'type' => 'multiple_csp_violations',
-                'ip' => $logData['ip'],
+                'ip' => $ip,
                 'count' => count($recentViolations),
                 'timeframe' => '5 minutes',
                 'latest_violation' => $logData,
@@ -222,21 +274,30 @@ class CSPReportController
         }
 
         $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($lines === false) {
+            return [];
+        }
+
         $recentViolations = [];
         $cutoffTime = time() - $seconds;
 
         foreach (array_reverse($lines) as $line) {
             $data = json_decode($line, true);
-            if (!$data) {
+            if (!is_array($data)) {
                 continue;
             }
 
-            $timestamp = strtotime($data['timestamp']);
-            if ($timestamp < $cutoffTime) {
-                break; // 已經超過時間範圍
+            $timestamp = isset($data['timestamp']) && is_scalar($data['timestamp']) ?
+                strtotime((string) $data['timestamp']) : false;
+            if ($timestamp === false || $timestamp < $cutoffTime) {
+                if ($timestamp !== false && $timestamp < $cutoffTime) {
+                    break; // 已經超過時間範圍
+                }
+                continue;
             }
 
-            if ($data['ip'] === $ip) {
+            $dataIp = $data['ip'] ?? '';
+            if (is_string($dataIp) && $dataIp === $ip) {
                 $recentViolations[] = $data;
             }
         }
@@ -254,14 +315,25 @@ class CSPReportController
         // 這裡可以整合不同的警報系統
         // 例如：Email、Slack、Discord、PagerDuty 等
 
+        $count = $alertData['count'] ?? 0;
+        $ip = $alertData['ip'] ?? 'unknown';
+        $timeframe = $alertData['timeframe'] ?? 'unknown';
+
+        // 確保參數是正確的類型
+        $count = is_scalar($count) ? (string) $count : '0';
+        $ip = is_scalar($ip) ? (string) $ip : 'unknown';
+        $timeframe = is_scalar($timeframe) ? (string) $timeframe : 'unknown';
+
         $message = sprintf(
-            'CSP Alert: %d violations from IP %s in %s',
-            $alertData['count'],
-            $alertData['ip'],
-            $alertData['timeframe'],
+            'CSP Alert: %s violations from IP %s in %s',
+            $count,
+            $ip,
+            $timeframe,
         );
 
-        error_log('CSP ALERT: ' . (json_encode($alertData) ?? ''));
+        $jsonData = json_encode($alertData);
+        $logMessage = 'CSP ALERT: ' . ($jsonData !== false ? $jsonData : 'JSON encoding failed');
+        error_log($logMessage);
 
         // 可以在這裡添加其他警報機制
         // $this->sendSlackAlert($message, $alertData);

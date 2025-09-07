@@ -123,22 +123,27 @@ class PostController extends BaseController
 
             $result = $this->postService->listPosts($page, $limit, $filters);
 
-            // 確保 result 是正確的數組類型且包含必要的鍵
-            if (!is_array($result) ||
-                !array_key_exists('items', $result) ||
+            // 確保 result 包含必要的鍵
+            if (!array_key_exists('items', $result) ||
                 !array_key_exists('total', $result) ||
                 !array_key_exists('page', $result) ||
                 !array_key_exists('per_page', $result)) {
                 throw new Exception('Invalid service response format');
             }
 
-            // 由於我們已經驗證了 $result 是數組且包含所需鍵，可以安全地使用
-            $responseData = $this->paginatedResponse(
-                (array) $result['items'],
-                (int) $result['total'],
-                (int) $result['page'],
-                (int) $result['per_page']
-            );
+            // 確保數據類型正確
+            $items = is_array($result['items']) ? $result['items'] : [];
+            $total = is_int($result['total']) ? $result['total'] : (is_numeric($result['total']) ? (int) $result['total'] : 0);
+            $currentPage = is_int($result['page']) ? $result['page'] : (is_numeric($result['page']) ? (int) $result['page'] : 1);
+            $perPage = is_int($result['per_page']) ? $result['per_page'] : (is_numeric($result['per_page']) ? (int) $result['per_page'] : 10);
+
+            // 確保 items 是正確的格式 array<string, mixed>
+            $formattedItems = [];
+            foreach ($items as $key => $value) {
+                $formattedItems[(string) $key] = $value;
+            }
+
+            $responseData = $this->paginatedResponse($formattedItems, $total, $currentPage, $perPage);
 
             // 記錄成功的文章列表查看活動
             $userId = $request->getAttribute('user_id');
@@ -363,14 +368,12 @@ class PostController extends BaseController
     )]
     /**
      * 顯示單一貼文.
-     *
-     * @param array<string, mixed> $args 路由參數
-     * @phpstan-ignore-next-line missingType.iterableValue
      */
     public function show(Request $request, Response $response, array $args): Response
     {
         try {
-            $id = is_numeric($args['id'] ?? 0) ? (int) $args['id'] : 0;
+            $idValue = $args['id'] ?? 0;
+            $id = is_numeric($idValue) ? (int) $idValue : 0;
 
             if ($id <= 0) {
                 // 記錄無效 ID 錯誤
@@ -518,14 +521,12 @@ class PostController extends BaseController
     )]
     /**
      * 更新貼文.
-     *
-     * @param array<string, mixed> $args 路由參數
-     * @phpstan-ignore-next-line missingType.iterableValue
      */
     public function update(Request $request, Response $response, array $args): Response
     {
         try {
-            $id = is_numeric($args['id'] ?? 0) ? (int) $args['id'] : 0;
+            $idValue = $args['id'] ?? 0;
+            $id = is_numeric($idValue) ? (int) $idValue : 0;
 
             if ($id <= 0) {
                 // 記錄無效 ID 錯誤
@@ -696,14 +697,12 @@ class PostController extends BaseController
     )]
     /**
      * 刪除貼文.
-     *
-     * @param array<string, mixed> $args 路由參數
-     * @phpstan-ignore-next-line missingType.iterableValue
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
         try {
-            $id = is_numeric($args['id'] ?? 0) ? (int) $args['id'] : 0;
+            $idValue = $args['id'] ?? 0;
+            $id = is_numeric($idValue) ? (int) $idValue : 0;
 
             if ($id <= 0) {
                 // 記錄無效 ID 錯誤
@@ -894,14 +893,12 @@ class PostController extends BaseController
     )]
     /**
      * 切換貼文置頂狀態.
-     *
-     * @param array<string, mixed> $args 路由參數
-     * @phpstan-ignore-next-line missingType.iterableValue
      */
     public function togglePin(Request $request, Response $response, array $args): Response
     {
         try {
-            $id = is_numeric($args['id'] ?? 0) ? (int) $args['id'] : 0;
+            $idValue = $args['id'] ?? 0;
+            $id = is_numeric($idValue) ? (int) $idValue : 0;
 
             if ($id <= 0) {
                 // 記錄無效 ID 錯誤
@@ -966,9 +963,10 @@ class PostController extends BaseController
 
             // 記錄置頂狀態變更活動
             $actionType = $data['pinned'] ? ActivityType::POST_PINNED : ActivityType::POST_UNPINNED;
+            $userId = $request->getAttribute('user_id');
             $this->activityLogger->logSuccess(
                 actionType: $actionType,
-                userId: $request->getAttribute('user_id'),
+                userId: is_int($userId) ? $userId : null,
                 targetType: 'post',
                 targetId: (string) $id,
                 metadata: [
@@ -985,9 +983,10 @@ class PostController extends BaseController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (PostNotFoundException $e) {
             // 記錄文章未找到錯誤
+            $userId = $request->getAttribute('user_id');
             $this->activityLogger->logFailure(
                 actionType: ActivityType::POST_PINNED,
-                userId: $request->getAttribute('user_id'),
+                userId: is_int($userId) ? $userId : null,
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
@@ -1001,9 +1000,10 @@ class PostController extends BaseController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (StateTransitionException $e) {
             // 記錄狀態轉換錯誤
+            $userId = $request->getAttribute('user_id');
             $this->activityLogger->logFailure(
                 actionType: ActivityType::POST_PINNED,
-                userId: $request->getAttribute('user_id'),
+                userId: is_int($userId) ? $userId : null,
                 reason: 'State transition error: ' . $e->getMessage(),
                 metadata: [
                     'post_id' => $args['id'] ?? 'unknown',
@@ -1017,9 +1017,10 @@ class PostController extends BaseController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         } catch (Exception $e) {
             // 記錄一般錯誤
+            $userId = $request->getAttribute('user_id');
             $this->activityLogger->logFailure(
                 actionType: ActivityType::POST_PINNED,
-                userId: $request->getAttribute('user_id'),
+                userId: is_int($userId) ? $userId : null,
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
                     'post_id' => $args['id'] ?? 'unknown',
@@ -1053,17 +1054,38 @@ class PostController extends BaseController
                 $ip = $serverParams[$source];
                 if ($source === 'HTTP_X_FORWARDED_FOR') {
                     // X-Forwarded-For 可能包含多個 IP，取第一個
-                    $ip = trim(explode(',', (string) $ip)[0]);
+                    $ipValue = $ip;
+                    if (is_string($ipValue)) {
+                        $ip = trim(explode(',', $ipValue)[0]);
+                    } elseif (is_numeric($ipValue) || is_scalar($ipValue)) {
+                        $ip = trim(explode(',', (string) $ipValue)[0]);
+                    } else {
+                        continue; // 跳過無效的IP類型
+                    }
                 }
 
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                    return $ip;
+                if (is_string($ip)) {
+                    $ipString = $ip;
+                } elseif (is_numeric($ip) || is_scalar($ip)) {
+                    $ipString = (string) $ip;
+                } else {
+                    continue; // 跳過無效的IP類型
+                }
+
+                if (filter_var($ipString, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return $ipString;
                 }
             }
         }
 
         // 如果無法取得有效 IP，使用 REMOTE_ADDR 或預設值
-        return (string) ($serverParams['REMOTE_ADDR'] ?? '127.0.0.1');
+        $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+        if (is_string($remoteAddr)) {
+            return $remoteAddr;
+        } elseif (is_numeric($remoteAddr) || is_scalar($remoteAddr)) {
+            return (string) $remoteAddr;
+        }
+        return '127.0.0.1';
     }
 
     /**
@@ -1074,7 +1096,15 @@ class PostController extends BaseController
     public function destroy(Request $request, Response $response, array $args): Response
     {
         try {
-            $postId = (int) $args['id'];
+            $id = $args['id'] ?? 0;
+            $postId = is_numeric($id) ? (int) $id : 0;
+
+            if ($postId <= 0) {
+                $errorResponse = $this->errorResponse('Invalid post ID', 400);
+                $response->getBody()->write(($errorResponse ?: ''));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
             $this->postService->deletePost($postId);
 
             $responseData = [

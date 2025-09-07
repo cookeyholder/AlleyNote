@@ -50,6 +50,11 @@ class PostController extends BaseController
     {
         $body = $request->getParsedBody();
 
+        // 確保 $body 是陣列格式
+        if (!is_array($body)) {
+            $body = [];
+        }
+
         $post = [
             'id' => rand(1000, 9999),
             'title' => $body['title'] ?? '未命名貼文',
@@ -68,6 +73,11 @@ class PostController extends BaseController
     public function update(ServerRequestInterface $request, ResponseInterface $response, int $id): ResponseInterface
     {
         $body = $request->getParsedBody();
+
+        // 確保 $body 是陣列格式
+        if (!is_array($body)) {
+            $body = [];
+        }
 
         $post = [
             'id' => $id,
