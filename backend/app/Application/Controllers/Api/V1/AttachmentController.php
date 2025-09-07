@@ -196,6 +196,7 @@ class AttachmentController
         }
     }
 
+    /** @phpstan-ignore-next-line */
     #[OA\Get(
         path: '/attachments/{id}/download',
         summary: '下載附件',
