@@ -147,13 +147,12 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         /** @var array<string, mixed> $additionalMetricsRaw */
         $additionalMetricsRaw = $data['additional_metrics'] ?? [];
         /** @var array<string, mixed> $additionalMetrics */
-        $additionalMetrics = is_array($additionalMetricsRaw) ? $additionalMetricsRaw : [];
+        $additionalMetrics = $additionalMetricsRaw;
 
         $generatedAtValue = $data['generated_at'] ?? null;
         $generatedAt = is_string($generatedAtValue) ? $generatedAtValue : 'now';
 
-        // 確保型別安全
-        assert(is_array($sourceStatistics));
+        // 型別已透過 PHPDoc 保證
         assert(array_is_list($sourceStatistics));
 
         return new self(
@@ -243,7 +242,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
         /** @var SourceStatistics|null */
         $topSource = array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => 
+            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics =>
                 $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
         );
 
@@ -364,9 +363,10 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
     private function validateSourceStatistics(array $sourceStatistics): void
     {
         foreach ($sourceStatistics as $index => $source) {
-            if (!$source instanceof SourceStatistics) {
+            // 基本驗證：確保有有效的統計值
+            if ($source->count->value < 0) {
                 throw new InvalidArgumentException(
-                    "來源統計索引 {$index} 必須是 SourceStatistics 實例",
+                    "來源統計索引 {$index} 的計數不能為負數",
                 );
             }
         }

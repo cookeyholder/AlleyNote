@@ -37,7 +37,6 @@ class CacheServiceProvider
     private Container $container;
 
     /** @var array<string, mixed> 設定 */
-    private /** @var array<string, mixed> */\n
     private array $config;
 
     /**

@@ -17,11 +17,13 @@ class ContentModerationService
 
     private RichTextProcessorService $richTextProcessor;
 
-    private /** @var array<string, mixed> */\n
-
+    /** @var array<string, mixed> */
     private array $config;
-    /**\n      * @param array<string, mixed> $config
-     */    public function __construct(
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
         /** @var array<string, mixed> */ array $config = [],

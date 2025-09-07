@@ -462,7 +462,8 @@ class AttachmentService implements AttachmentServiceInterface
             throw $e;
         }
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function download(string $uuid, int $currentUserId): array
     {
         $attachment = $this->attachmentRepo->findByUuid($uuid);

@@ -72,8 +72,10 @@ class Permission
     {
         return $this->updatedAt;
     }
-    /**\n      * @return array<string, mixed>
-     */    public function toArray(): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
     {
         return [
             'id' => $this->id,
@@ -85,17 +87,20 @@ class Permission
             'updated_at' => $this->updatedAt,
         ];
     }
-    /**\n      * @param array<string, mixed> $data
-     */    public static function fromArray(array $data): self
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function fromArray(array $data): self
     {
         return new self(
-            (int) $data['id'],
-            $data['name'],
-            $data['resource'],
-            $data['action'],
-            $data['description'] ?? null,
-            $data['created_at'] ?? '',
-            $data['updated_at'] ?? '',
+            (int) ($data['id'] ?? 0),
+            (string) ($data['name'] ?? ''),
+            (string) ($data['resource'] ?? ''),
+            (string) ($data['action'] ?? ''),
+            isset($data['description']) ? (string) $data['description'] : null,
+            (string) ($data['created_at'] ?? ''),
+            (string) ($data['updated_at'] ?? ''),
         );
     }
 }

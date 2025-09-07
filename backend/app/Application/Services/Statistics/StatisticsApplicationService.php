@@ -285,8 +285,13 @@ final class StatisticsApplicationService
                 $period->startDate,
                 $period->endDate,
             );
-            $trendValues = array_map(fn($snapshot): array => $snapshot->getTotalViews()->value, $historicalData);
-            $trends = $this->calculationService->calculateTrends($trendValues);
+            $trendValues = array_map(fn($snapshot): float|int => $snapshot->getTotalViews()->value, $historicalData);
+            // 轉換為符合期望格式的陣列
+            $indexedTrendValues = [];
+            foreach ($trendValues as $index => $value) {
+                $indexedTrendValues["period_{$index}"] = $value;
+            }
+            $trends = $this->calculationService->calculateTrends($indexedTrendValues);
 
             // 組合報告
             $report = [
@@ -384,7 +389,7 @@ final class StatisticsApplicationService
             // 判斷整體狀態
             $allHealthy = array_reduce(
                 $status['checks'],
-                fn(bool $carry, /** @var array<string, mixed> */ array $check): array => $carry && $check['status'] === 'ok',
+                fn(bool $carry, /** @var array<string, mixed> */ array $check): bool => $carry && $check['status'] === 'ok',
                 true,
             );
 
@@ -526,8 +531,8 @@ final class StatisticsApplicationService
     private function checkCalculationHealth(): array
     {
         try {
-            // 測試計算服務
-            $testData = [1, 2, 3, 4, 5]; // 測試資料
+            // 測試計算服務 - 提供正確的型別
+            $testData = ['period1' => 1, 'period2' => 2, 'period3' => 3]; // 測試資料
             $this->calculationService->calculateTrends($testData);
 
             return ['status' => 'ok', 'message' => 'Calculation service is working'];

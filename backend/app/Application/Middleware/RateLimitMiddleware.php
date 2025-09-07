@@ -17,7 +17,7 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /** @var array<string, mixed> */
     private array $config;
-    
+
     /**
      * @param array<string, mixed> $config
      */
@@ -37,7 +37,9 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
 
         // 取得真實客戶端 IP
-        $ip = $this->getRealClientIP($request->getServerParams());
+        $serverParams = $request->getServerParams();
+        /** @var array<string, mixed> $serverParams */
+        $ip = $this->getRealClientIP($serverParams);
 
         // 判斷操作類型
         $action = $this->determineAction($request);
@@ -46,10 +48,13 @@ class RateLimitMiddleware implements MiddlewareInterface
         $userId = $this->getUserId($request);
 
         // 檢查速率限制
-        $maxRequests = $this->config['max_requests'] ?? 60;
-        $timeWindow = $this->config['time_window'] ?? 60;
+        $maxRequestsConfig = $this->config['max_requests'] ?? 60;
+        $timeWindowConfig = $this->config['time_window'] ?? 60;
+        $maxRequests = is_int($maxRequestsConfig) ? $maxRequestsConfig : 60;
+        $timeWindow = is_int($timeWindowConfig) ? $timeWindowConfig : 60;
         $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
 
+        /** @var array<string, mixed> $result */
         if (!$result['allowed']) {
             return $this->createRateLimitResponse($result, $request);
         }
@@ -117,14 +122,19 @@ class RateLimitMiddleware implements MiddlewareInterface
         $isJsonRequest = strpos($acceptHeader, 'application/json') !== false
             || strpos($request->getUri()->getPath(), '/api/') === 0;
 
+        // 確保數值型別正確
+        $resetTime = is_int($result['reset']) ? $result['reset'] : time();
+        $limit = is_int($result['limit']) ? $result['limit'] : 0;
+        $remaining = is_int($result['remaining']) ? $result['remaining'] : 0;
+
         if ($isJsonRequest) {
             $body = json_encode([
                 'error' => 'Rate limit exceeded',
                 'message' => '請求過於頻繁，請稍後再試',
-                'limit' => $result['limit'],
-                'remaining' => $result['remaining'],
-                'reset' => $result['reset'],
-                'retry_after' => $result['reset'] - time(),
+                'limit' => $limit,
+                'remaining' => $remaining,
+                'reset' => $resetTime,
+                'retry_after' => $resetTime - time(),
             ]) ?: '';
 
             $response = new Response(429, ['Content-Type' => 'application/json'], $body);
@@ -134,10 +144,10 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
 
         return $response
-            ->withHeader('Retry-After', (string) ($result['reset'] - time()))
-            ->withHeader('X-RateLimit-Limit', (string) $result['limit'])
+            ->withHeader('Retry-After', (string) ($resetTime - time()))
+            ->withHeader('X-RateLimit-Limit', (string) $limit)
             ->withHeader('X-RateLimit-Remaining', '0')
-            ->withHeader('X-RateLimit-Reset', (string) $result['reset']);
+            ->withHeader('X-RateLimit-Reset', (string) $resetTime);
     }
 
     /**
@@ -158,8 +168,11 @@ class RateLimitMiddleware implements MiddlewareInterface
      */
     private function generateRateLimitHtml(array $result): string
     {
-        $retryAfter = $result['reset'] - time();
-        $retryTime = date('H:i:s', $result['reset']);
+        $resetTime = is_int($result['reset']) ? $result['reset'] : time();
+        $limit = is_int($result['limit']) ? $result['limit'] : 0;
+        $remaining = is_int($result['remaining']) ? $result['remaining'] : 0;
+        $retryAfter = $resetTime - time();
+        $retryTime = date('H:i:s', $resetTime);
 
         return <<<HTML
             <!DOCTYPE html>
@@ -167,15 +180,16 @@ class RateLimitMiddleware implements MiddlewareInterface
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>請求過於頻繁 - AlleyNote</title>
+                <title>請求過於頻繁</title>
                 <style>
                     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                           background: #f5f5f5; margin: 0; padding: 20px; }
-                    .container { max-width: 600px; margin: 50px auto; background: white;
-                                border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; }
-                    .icon { text-align: center; font-size: 64px; margin-bottom: 20px; }
-                    h1 { color: #e74c3c; text-align: center; margin-bottom: 20px; }
-                    .message { text-align: center; color: #666; margin-bottom: 30px; line-height: 1.6; }
+                           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                           margin: 0; padding: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+                    .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                                max-width: 500px; text-align: center; }
+                    .icon { font-size: 64px; margin-bottom: 20px; }
+                    h1 { color: #2c3e50; margin-bottom: 20px; }
+                    .message { color: #7f8c8d; line-height: 1.6; margin-bottom: 30px; }
                     .info { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;
                             padding: 20px; margin: 20px 0; }
                     .retry-info { text-align: center; margin-top: 30px; }
@@ -192,12 +206,13 @@ class RateLimitMiddleware implements MiddlewareInterface
                     </div>
                     <div class="info">
                         <strong>限制資訊：</strong><br>
-                        • 每分鐘最多 {$result['limit']} 次請求<br>
-                        • 剩餘配額：{$result['remaining']} 次<br>
+                        • 每分鐘最多 {$limit} 次請求<br>
+                        • 剩餘配額：{$remaining} 次<br>
                         • 重置時間：{$retryTime}
                     </div>
                     <div class="retry-info">
-                        <div>請在 <span class="countdown" id="countdown">{$retryAfter}</span> 秒後重試</div>
+                        <div class="countdown" id="countdown">{$retryAfter}</div>
+                        <p>秒後自動重新整理</p>
                     </div>
                 </div>
                 <script>
@@ -214,7 +229,7 @@ class RateLimitMiddleware implements MiddlewareInterface
                 </script>
             </body>
             </html>
-            HTML;
+HTML;
     }
 
     /**
@@ -250,8 +265,9 @@ class RateLimitMiddleware implements MiddlewareInterface
         ];
 
         foreach ($headers as $header) {
-            if (!empty($serverParams[$header])) {
-                $ips = explode(',', $serverParams[$header]);
+            $headerValue = $serverParams[$header] ?? null;
+            if (!empty($headerValue) && is_string($headerValue)) {
+                $ips = explode(',', $headerValue);
                 $ip = trim($ips[0]);
                 if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
                     return $ip;
@@ -259,7 +275,8 @@ class RateLimitMiddleware implements MiddlewareInterface
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+        $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+        return is_string($remoteAddr) ? $remoteAddr : '127.0.0.1';
     }
 
     public function getPriority(): int

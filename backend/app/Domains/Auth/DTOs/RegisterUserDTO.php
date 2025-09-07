@@ -25,7 +25,8 @@ class RegisterUserDTO extends BaseDTO
 
     public readonly string $userIp;
 
-    /**\n      * @param ValidatorInterface $validator 驗證器實例
+    /**
+     * @param ValidatorInterface $validator 驗證器實例
      * @param array<string, mixed> $data 輸入資料
      * @throws ValidationException 當驗證失敗時
      */
@@ -257,7 +258,8 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Service 使用）.
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

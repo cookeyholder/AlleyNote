@@ -26,7 +26,8 @@ use JsonSerializable;
  */
 final readonly class PostStatisticsDTO implements JsonSerializable
 {
-    /**\n      * @param Uuid $postId 文章識別碼
+    /**
+     * @param Uuid $postId 文章識別碼
      * @param string $title 文章標題
      * @param SourceType $sourceType 來源類型
      * @param StatisticsMetric $viewCount 瀏覽次數

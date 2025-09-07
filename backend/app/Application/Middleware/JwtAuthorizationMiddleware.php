@@ -87,6 +87,17 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $userPermissions = $request->getAttribute('permissions', []);
             $userId = $request->getAttribute('user_id');
 
+            // 型別檢查和轉換
+            if (!is_int($userId)) {
+                return $this->createForbiddenResponse('使用者 ID 格式錯誤', 'INVALID_USER_ID');
+            }
+
+            $userRoleString = is_string($userRole) ? $userRole : null;
+            $userPermissionsArray = is_array($userPermissions) ? $userPermissions : [];
+
+            // 確保權限陣列元素都是字串
+            $validPermissions = array_filter($userPermissionsArray, 'is_string');
+
             // 3. 判斷請求的資源和操作
             $resource = $this->extractResource($request);
             $action = $this->extractAction($request);
@@ -94,8 +105,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             // 4. 執行授權檢查
             $authorizationResult = $this->authorize(
                 userId: $userId,
-                userRole: $userRole,
-                userPermissions: $userPermissions,
+                userRole: $userRoleString,
+                userPermissions: $validPermissions,
                 resource: $resource,
                 action: $action,
                 request: $request,
@@ -298,15 +309,17 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 自訂授權策略.
      * @param int $userId 使用者 ID
-     * @param string $action 操作名稱
+     * @param string|null $userRole 使用者角色
      * @param array<string> $userPermissions 使用者權限陣列
+     * @param string $resource 資源名稱
+     * @param string $action 操作名稱
+     * @param ServerRequestInterface $request HTTP 請求物件
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByCustomRules(
         int $userId,
         ?string $userRole,
-        /** @var array<string> */
-        /** @var array<string, mixed> */ array $userPermissions,
+        array $userPermissions,
         string $resource,
         string $action,
         ServerRequestInterface $request,
@@ -314,11 +327,22 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $customRules = $this->config['custom_rules'] ?? [];
 
         foreach ($customRules as $ruleName => $ruleConfig) {
-            if (!$this->matchesRuleConditions($ruleConfig['conditions'] ?? [], $resource, $action, $userRole)) {
+            if (!is_string($ruleName) || !is_array($ruleConfig)) {
+                continue;
+            }
+
+            $conditions = $ruleConfig['conditions'] ?? [];
+            if (!is_array($conditions)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $conditions */
+            if (!$this->matchesRuleConditions($conditions, $resource, $action, $userRole)) {
                 continue;
             }
 
             // 執行自訂規則邏輯
+            /** @var array<string, mixed> $ruleConfig */
             $ruleResult = $this->executeCustomRule($ruleName, $ruleConfig, $userId, $userRole, $userPermissions, $request);
             if ($ruleResult !== null) {
                 return $ruleResult;
@@ -358,6 +382,11 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $currentDay = (int) date('w'); // 0 (Sunday) to 6 (Saturday)
 
         foreach ($timeRestrictions as $restriction) {
+            if (!is_array($restriction)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $restriction */
             if (!$this->matchesTimeRestriction($restriction, $userRole, $action, $currentHour, $currentDay)) {
                 continue;
             }
@@ -392,12 +421,29 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $clientIp = $this->getClientIpAddress($request);
 
         foreach ($ipRestrictions as $restriction) {
+            if (!is_array($restriction)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $restriction */
             if (!$this->matchesIpRestriction($restriction, $userRole, $resource, $action)) {
                 continue;
             }
 
             $allowedIps = $restriction['allowed_ips'] ?? [];
             $blockedIps = $restriction['blocked_ips'] ?? [];
+
+            // 確保 IP 列表是陣列且元素都是字串
+            if (!is_array($allowedIps)) {
+                $allowedIps = [];
+            }
+            if (!is_array($blockedIps)) {
+                $blockedIps = [];
+            }
+
+            // 過濾出字串類型的 IP
+            $allowedIps = array_filter($allowedIps, 'is_string');
+            $blockedIps = array_filter($blockedIps, 'is_string');
 
             // 檢查黑名單
             if (!empty($blockedIps) && $this->isIpInList($clientIp, $blockedIps)) {
@@ -469,12 +515,13 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
         // 假設 API 路徑格式為 /api/v1/{resource}/{id?}
         if (count($segments) >= 3 && $segments[0] === 'api') {
-            return $segments[2];
+            $resource = $segments[2];
+            return $resource;
         }
 
         // 從路由屬性中提取（如果有設定）
         $routeResource = $request->getAttribute('route_resource');
-        if ($routeResource !== null) {
+        if ($routeResource !== null && is_string($routeResource)) {
             return $routeResource;
         }
 
@@ -495,7 +542,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
         // 從路由屬性中提取（如果有設定）
         $routeAction = $request->getAttribute('route_action');
-        if ($routeAction !== null) {
+        if ($routeAction !== null && is_string($routeAction)) {
             return $routeAction;
         }
 
@@ -775,21 +822,25 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 執行自訂規則.
-     * @param array<string, mixed> $ruleConfig
+     * @param string $ruleName 規則名稱
+     * @param array<string, mixed> $ruleConfig 規則設定
+     * @param int $userId 使用者 ID
+     * @param string|null $userRole 使用者角色
      * @param array<string> $userPermissions 使用者權限陣列
+     * @param ServerRequestInterface $request HTTP 請求物件
+     * @return AuthorizationResult|null 授權結果
      */
     private function executeCustomRule(
         string $ruleName,
-        /** @var array<string, mixed> */
-        /** @var array<string, mixed> */ array $ruleConfig,
+        array $ruleConfig,
         int $userId,
         ?string $userRole,
-        /** @var array<string> */
-        /** @var array<string, mixed> */ array $userPermissions,
+        array $userPermissions,
         ServerRequestInterface $request,
     ): ?AuthorizationResult {
         $ruleType = $ruleConfig['type'] ?? 'allow';
-        $ruleMessage = $ruleConfig['message'] ?? "自訂規則 {$ruleName} 生效";
+        $configMessage = $ruleConfig['message'] ?? null;
+        $ruleMessage = is_string($configMessage) ? $configMessage : "自訂規則 {$ruleName} 生效";
 
         switch ($ruleType) {
             case 'allow':
@@ -837,10 +888,11 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         if (!empty($requiredParams)) {
             $queryParams = $request->getQueryParams();
             foreach ($requiredParams as $param) {
-                if (!isset($queryParams[$param])) {
+                $paramName = (string) $param;
+                if (!isset($queryParams[$paramName])) {
                     return new AuthorizationResult(
                         allowed: false,
-                        reason: "缺少必要參數：{$param}",
+                        reason: "缺少必要參數：{$paramName}",
                         code: 'MISSING_REQUIRED_PARAM',
                         appliedRules: ['conditional_rule'],
                     );
@@ -849,10 +901,11 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         $result = $ruleConfig['result'] ?? 'allow';
+        $message = $ruleConfig['message'] ?? '條件式規則評估完成';
 
         return new AuthorizationResult(
             allowed: $result === 'allow',
-            reason: $ruleConfig['message'] ?? '條件式規則評估完成',
+            reason: (string) $message,
             code: $result === 'allow' ? 'CONDITIONAL_ALLOW' : 'CONDITIONAL_DENY',
             appliedRules: ['conditional_rule'],
         );
@@ -890,6 +943,9 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         ];
 
         $body = json_encode($responseData, JSON_UNESCAPED_UNICODE);
+        if ($body === false) {
+            $body = '{"error": "JSON 編碼失敗"}';
+        }
 
         return new Response(
             status: 403,
@@ -912,6 +968,9 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 跳過不需要授權的路徑
+        $additionalSkipPaths = $this->config['skip_paths'] ?? [];
+        $additionalSkipPaths = is_array($additionalSkipPaths) ? $additionalSkipPaths : [];
+
         $skipPaths = array_merge(
             [
                 '/auth/login',
@@ -921,13 +980,14 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 '/status',
                 '/favicon.ico',
             ],
-            $this->config['skip_paths'] ?? [],
+            $additionalSkipPaths,
         );
 
         $path = $request->getUri()->getPath();
 
         foreach ($skipPaths as $skipPath) {
-            if (str_starts_with($path, $skipPath)) {
+            $skipPathStr = (string) $skipPath;
+            if (str_starts_with($path, $skipPathStr)) {
                 return false;
             }
         }
@@ -936,7 +996,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $authPaths = $this->config['auth_paths'] ?? ['/api/'];
 
         foreach ($authPaths as $authPath) {
-            if (str_starts_with($path, $authPath)) {
+            $authPathStr = (string) $authPath;
+            if (str_starts_with($path, $authPathStr)) {
                 return true;
             }
         }

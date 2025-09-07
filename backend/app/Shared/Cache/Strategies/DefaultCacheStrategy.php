@@ -34,13 +34,15 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     private int $maxTtl;
 
     /** @var array<string> 不快取的鍵模式 */
-    private /** @var array<string, mixed> */\n
     private array $excludePatterns;
 
     /** @var int 最大值大小（位元組） */
     private int $maxValueSize;
-    /**\n      * @param array<string, mixed> $config
-     */    public function __construct(array $config = [])
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function __construct(array $config = [])
     {
         $this->minTtl = is_int($config['min_ttl'] ?? null) ? $config['min_ttl'] : 60;
         $this->maxTtl = is_int($config['max_ttl'] ?? null) ? $config['max_ttl'] : 86400;
@@ -193,7 +195,8 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
         return null;
     }
-    /**\n      * @param array<string, mixed> $params
+    /**
+     * @param array<string, mixed> $params
      */    public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
         /** @var array<string, mixed> */ array $availableDrivers,
@@ -234,7 +237,8 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             default => null,
         };
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getStats(): array
     {
         $totalDecisions = $this->stats['cache_decisions'];

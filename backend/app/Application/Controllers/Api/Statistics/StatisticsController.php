@@ -885,7 +885,7 @@ class StatisticsController extends BaseController
                 }
                 $params['start_date'] = new DateTimeImmutable($startDate);
             } catch (Exception $e) {
-                $dateValue = is_string($queryParams['start_date'] ?? null) ? $queryParams['start_date'] : '(invalid)';
+                $dateValue = is_string($queryParams['start_date']) ? $queryParams['start_date'] : '(invalid)';
 
                 throw new InvalidArgumentException("無效的開始日期格式: {$dateValue}");
             }
@@ -899,7 +899,7 @@ class StatisticsController extends BaseController
                 }
                 $params['end_date'] = new DateTimeImmutable($endDate);
             } catch (Exception $e) {
-                $dateValue = is_string($queryParams['end_date'] ?? null) ? $queryParams['end_date'] : '(invalid)';
+                $dateValue = is_string($queryParams['end_date']) ? $queryParams['end_date'] : '(invalid)';
 
                 throw new InvalidArgumentException("無效的結束日期格式: {$dateValue}");
             }

@@ -10,9 +10,11 @@ namespace App\Domains\Auth\DTOs;
  * 封裝使用者登入請求的資料，包括使用者憑證和相關選項。
  */
 final readonly class LoginRequestDTO
-    /**\n      * @param array<string, mixed> $scopes
+{
+    /**
+     * @param array<string, mixed>|null $scopes
      */
-{    public function __construct(
+    public function __construct(
         public string $email,
         public string $password,
         public bool $rememberMe = false,
@@ -26,10 +28,10 @@ final readonly class LoginRequestDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            email: $data['email'] ?? '',
-            password: $data['password'] ?? '',
-            rememberMe: $data['remember_me'] ?? false,
-            scopes: $data['scopes'] ?? null,
+            email: (string) ($data['email'] ?? ''),
+            password: (string) ($data['password'] ?? ''),
+            rememberMe: (bool) ($data['remember_me'] ?? false),
+            scopes: isset($data['scopes']) && is_array($data['scopes']) ? $data['scopes'] : null,
         );
     }
 

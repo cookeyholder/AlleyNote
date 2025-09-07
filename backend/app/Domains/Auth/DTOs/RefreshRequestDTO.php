@@ -10,9 +10,11 @@ namespace App\Domains\Auth\DTOs;
  * 封裝使用者 Token 刷新請求的資料。
  */
 final readonly class RefreshRequestDTO
-    /**\n      * @param array<string, mixed> $scopes
+{
+    /**
+     * @param array<string, mixed>|null $scopes
      */
-{    public function __construct(
+    public function __construct(
         public string $refreshToken,
         public ?array $scopes = null,
     ) {}
@@ -24,8 +26,8 @@ final readonly class RefreshRequestDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            refreshToken: $data['refresh_token'] ?? '',
-            scopes: $data['scopes'] ?? null,
+            refreshToken: (string) ($data['refresh_token'] ?? ''),
+            scopes: isset($data['scopes']) && is_array($data['scopes']) ? $data['scopes'] : null,
         );
     }
 

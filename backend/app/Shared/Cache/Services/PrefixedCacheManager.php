@@ -69,22 +69,26 @@ class PrefixedCacheManager implements CacheManagerInterface
     {
         return $this->manager->getDriver($name);
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getDrivers(): array
     {
         return $this->manager->getDrivers();
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getStats(): array
     {
         return $this->manager->getStats();
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getHealthStatus(): array
     {
         return $this->manager->getHealthStatus();
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function warmup(array $warmupCallbacks): array
     {
         $prefixedCallbacks = [];
@@ -95,7 +99,8 @@ class PrefixedCacheManager implements CacheManagerInterface
 
         return $this->manager->warmup($prefixedCallbacks);
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function cleanup(): array
     {
         return $this->manager->cleanup();

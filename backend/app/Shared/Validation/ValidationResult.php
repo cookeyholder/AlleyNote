@@ -16,27 +16,25 @@ class ValidationResult implements JsonSerializable
     private bool $isValid;
 
     /** @var array<string, array<string>> */
-    private /** @var array<string, mixed> */\n
     private array $errors;
 
     /** @var array<string, mixed> */
-    private /** @var array<string, mixed> */\n
     private array $validatedData;
 
     /** @var array<string, array<string>> */
-    private /** @var array<string, mixed> */\n
     private array $failedRules;
 
-    /**\n      * @param bool $isValid 是否驗證通過
+    /**
+     * @param bool $isValid 是否驗證通過
      * @param array<string, array<string>> $errors 錯誤訊息陣列，格式為 ['field' => ['error1', 'error2']]
      * @param array<string, mixed> $validatedData 驗證通過的資料
      * @param array<string, array<string>> $failedRules 失敗的規則，格式為 ['field' => ['rule1', 'rule2']]
      */
     public function __construct(
         bool $isValid,
-        /** @var array<string, mixed> */ array $errors = [],
-        /** @var array<string, mixed> */ array $validatedData = [],
-        /** @var array<string, mixed> */ array $failedRules = [],
+        array $errors = [],
+        array $validatedData = [],
+        array $failedRules = [],
     ) {
         $this->isValid = $isValid;
         $this->errors = $errors;
@@ -60,7 +58,7 @@ class ValidationResult implements JsonSerializable
      * @param array<string, array<string>> $errors 錯誤訊息
      * @param array<string, array<string>> $failedRules 失敗的規則
      */
-    public static function failure(array $errors, /** @var array<string, mixed> */ array $failedRules = []): self
+    public static function failure(array $errors, array $failedRules = []): self
     {
         return new self(false, $errors, [], $failedRules);
     }
@@ -83,8 +81,8 @@ class ValidationResult implements JsonSerializable
 
     /**
      * 取得所有錯誤訊息.
-     */
-    /**\n      * @return array<string, array<string>>
+     *
+     * @return array<string, array<string>>
      */
     public function getErrors(): array
     {
@@ -95,8 +93,7 @@ class ValidationResult implements JsonSerializable
      * 取得特定欄位的錯誤訊息.
      *
      * @param string $field 欄位名稱
-     */
-    /**\n      * @return array<string>
+     * @return array<string>
      */
     public function getFieldErrors(string $field): array
     {
@@ -136,13 +133,13 @@ class ValidationResult implements JsonSerializable
     {
         $fieldErrors = $this->getFieldErrors($field);
 
-        return !empty($fieldErrors) ? $fieldErrors[0] : null;
+        return !empty($fieldErrors) ? (string) $fieldErrors[0] : null;
     }
 
     /**
      * 取得所有錯誤訊息的扁平陣列.
-     */
-    /**\n      * @return array<string>
+     *
+     * @return array<string>
      */
     public function getAllErrors(): array
     {
@@ -156,8 +153,8 @@ class ValidationResult implements JsonSerializable
 
     /**
      * 取得驗證通過的資料.
-     */
-    /**\n      * @return array<string, mixed>
+     *
+     * @return array<string, mixed>
      */
     public function getValidatedData(): array
     {
@@ -177,8 +174,8 @@ class ValidationResult implements JsonSerializable
 
     /**
      * 取得失敗的規則.
-     */
-    /**\n      * @return array<string, array<string>>
+     *
+     * @return array<string, array<string>>
      */
     public function getFailedRules(): array
     {
@@ -189,8 +186,7 @@ class ValidationResult implements JsonSerializable
      * 取得特定欄位失敗的規則.
      *
      * @param string $field 欄位名稱
-     */
-    /**\n      * @return array<string>
+     * @return array<string>
      */
     public function getFieldFailedRules(string $field): array
     {
@@ -241,13 +237,13 @@ class ValidationResult implements JsonSerializable
 
         foreach ($other->getErrors() as $field => $errors) {
             foreach ($errors as $error) {
-                $this->addError($field, $error);
+                $this->addError($field, (string) $error);
             }
         }
 
         foreach ($other->getFailedRules() as $field => $rules) {
             foreach ($rules as $rule) {
-                $this->addFailedRule($field, $rule);
+                $this->addFailedRule($field, (string) $rule);
             }
         }
 
@@ -301,8 +297,8 @@ class ValidationResult implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     */
-    /**\n      * @return array<string, mixed>
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -316,8 +312,8 @@ class ValidationResult implements JsonSerializable
 
     /**
      * 實作 JsonSerializable 介面.
-     */
-    /**\n      * @return array<string, mixed>
+     *
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

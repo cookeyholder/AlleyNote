@@ -13,7 +13,7 @@ git diff --name-only HEAD~3 | grep '\.php$' | while read -r file; do
         first_line=$(head -1 "$file")
         if [[ "$first_line" == *"declare(strict_types=1);"* && "$first_line" == *"namespace"* ]]; then
             echo "發現格式問題: $file"
-            
+
             # 嘗試從 git 歷史恢復
             if git show "HEAD~3:$file" > "/tmp/$(basename "$file").backup" 2>/dev/null; then
                 # 檢查備份檔案的第一行是否正常

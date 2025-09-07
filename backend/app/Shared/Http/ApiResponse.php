@@ -6,7 +6,8 @@ namespace App\Shared\Http;
 
 class ApiResponse
 {
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */
     public static function success(mixed $data = null, string $message = 'Success'): array
     {
@@ -18,7 +19,8 @@ class ApiResponse
         ];
     }
 
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */
     public static function error(string $message, int $code = 400, mixed $errors = null): array
     {
@@ -31,7 +33,8 @@ class ApiResponse
         ];
     }
 
-    /**\n      * @param array<string, mixed> $data
+    /**
+     * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
     public static function paginated(array $data, int $total, int $page, int $perPage): array

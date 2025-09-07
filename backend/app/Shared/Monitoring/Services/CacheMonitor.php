@@ -35,7 +35,6 @@ class CacheMonitor implements CacheMonitorInterface
     private LoggerInterface $logger;
 
     /** @var array<string, mixed> 設定 */
-    private /** @var array<string, mixed> */\n
     private array $config;
 
     /**
@@ -49,8 +48,11 @@ class CacheMonitor implements CacheMonitorInterface
         $this->config = $mergedConfig;
         $this->initializeStats();
     }
-    /**\n      * @param array<string, mixed> $context
-     */    public function recordOperation(
+
+    /**
+     * @param array<string, mixed> $context
+     */
+    public function recordOperation(
         string $operation,
         string $driver,
         bool $success,
@@ -199,8 +201,11 @@ class CacheMonitor implements CacheMonitorInterface
         $this->updateHitRate($driver);
         $this->recordOperation('get', $driver, true, $duration, ['result' => 'miss', 'key' => $key]);
     }
-    /**\n      * @param array<string, mixed> $context
-     */    public function recordError(string $driver, string $operation, string $error, /** @var array<string, mixed> */ array $context = []): void
+
+    /**
+     * @param array<string, mixed> $context
+     */
+    public function recordError(string $driver, string $operation, string $error, /** @var array<string, mixed> */ array $context = []): void
     {
         $timestamp = microtime(true);
 
@@ -246,8 +251,11 @@ class CacheMonitor implements CacheMonitorInterface
             'context' => $context,
         ]);
     }
-    /**\n      * @param array<string, mixed> $details
-     */    public function recordHealthStatus(string $driver, bool $healthy, /** @var array<string, mixed> */ array $details = []): void
+
+    /**
+     * @param array<string, mixed> $details
+     */
+    public function recordHealthStatus(string $driver, bool $healthy, /** @var array<string, mixed> */ array $details = []): void
     {
         $timestamp = microtime(true);
 
@@ -264,8 +272,11 @@ class CacheMonitor implements CacheMonitorInterface
             ]);
         }
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getCacheStats(?string $driver = null, ?string $timeRange = null): array
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getCacheStats(?string $driver = null, ?string $timeRange = null): array
     {
         if ($driver !== null) {
             return $this->getDriverStats($driver);
@@ -283,8 +294,11 @@ class CacheMonitor implements CacheMonitorInterface
             'time_range' => $timeRange,
         ];
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getHitRateStats(?string $timeRange = null): array
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getHitRateStats(?string $timeRange = null): array
     {
         $stats = [];
         $totalRequests = 0;
@@ -323,8 +337,11 @@ class CacheMonitor implements CacheMonitorInterface
             'time_range' => $timeRange,
         ];
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getDriverPerformanceComparison(): array
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getDriverPerformanceComparison(): array
     {
         $comparison = [];
 
@@ -370,12 +387,15 @@ class CacheMonitor implements CacheMonitorInterface
         // 按持續時間降序排序
         usort($slowOps, fn($a, $b): array => $b['duration'] <=> $a['duration']);
 
-        
+
 
         return array_slice($slowOps, 0, $limit);
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getCacheCapacityStats(): array
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getCacheCapacityStats(): array
     {
         // 這裡需要與具體的快取驅動整合來取得容量資訊
         // 目前返回模擬資料，實際實作需要整合驅動
@@ -384,8 +404,11 @@ class CacheMonitor implements CacheMonitorInterface
             'note' => '需要與快取驅動整合來取得實際容量資訊',
         ];
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getErrorStats(?string $timeRange = null): array
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getErrorStats(?string $timeRange = null): array
     {
         $stats = [];
         $totalErrors = 0;
@@ -418,8 +441,11 @@ class CacheMonitor implements CacheMonitorInterface
             'time_range' => $timeRange,
         ];
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getHealthOverview(): array
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getHealthOverview(): array
     {
         $healthySystems = 0;
         $totalSystems = count($this->healthRecords);

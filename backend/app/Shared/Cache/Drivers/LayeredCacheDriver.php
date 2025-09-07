@@ -16,7 +16,6 @@ use RuntimeException;
 class LayeredCacheDriver implements CacheDriverInterface
 {
     /** @var array<CacheDriverInterface> 快取層級 */
-    private /** @var array<string, mixed> */\n
     private array $layers;
 
     /** @var array<string, int> 統計資料 */
@@ -29,8 +28,9 @@ class LayeredCacheDriver implements CacheDriverInterface
         'layer_promotions' => 0,
     ];
 
-    /**\n      * @param array<CacheDriverInterface> $layers 快取層級，按優先順序排列
-      */
+    /**
+     * @param array<CacheDriverInterface> $layers 快取層級，按優先順序排列
+     */
     public function __construct(array $layers)
     {
         if (empty($layers)) {
@@ -289,8 +289,11 @@ class LayeredCacheDriver implements CacheDriverInterface
     {
         return $this->remember($key, $callback, 0);
     }
-    /**\n      * @return array<string, mixed>
-     */    public function getStats(): array
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
         $hitRate = $totalRequests > 0 ? ($this->stats['hits'] / $totalRequests) * 100 : 0;

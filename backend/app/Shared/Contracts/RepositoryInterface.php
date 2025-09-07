@@ -26,7 +26,7 @@ interface RepositoryInterface
      * 更新記錄.
      * @param array<string, mixed> $data
      */
-    public function update(int $id, /** @var array<string, mixed> */ array $data): object;
+    public function update(int $id, array $data): object;
 
     /**
      * 刪除記錄.
@@ -36,6 +36,7 @@ interface RepositoryInterface
     /**
      * 取得分頁資料.
      * @param array<string, mixed> $conditions
+     * @return array<string, mixed>
      */
-    public function paginate(int $page, int $perPage, /** @var array<string, mixed> */ array $conditions = []): array;
+    public function paginate(int $page, int $perPage, array $conditions = []): array;
 }

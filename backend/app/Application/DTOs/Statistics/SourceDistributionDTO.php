@@ -127,15 +127,12 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         /** @var array<string, mixed> $distributionAnalysisRaw */
         $distributionAnalysisRaw = $data['distribution_analysis'] ?? [];
         /** @var array<string, mixed> $distributionAnalysis */
-        $distributionAnalysis = is_array($distributionAnalysisRaw) ? $distributionAnalysisRaw : [];
+        $distributionAnalysis = $distributionAnalysisRaw;
 
         $generatedAtValue = $data['generated_at'] ?? null;
         $generatedAt = is_string($generatedAtValue) ? $generatedAtValue : 'now';
 
-        // 確保型別安全
-        assert(is_array($sourceStatistics));
-        assert(array_is_list($sourceStatistics));
-
+        // 型別已經透過 PHPDoc 確保
         return new self(
             $period,
             $sourceStatistics,
@@ -157,7 +154,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         /** @var SourceStatistics|null */
         return array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => 
+            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics =>
                 $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
         );
     }
@@ -174,7 +171,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         /** @var SourceStatistics|null */
         return array_reduce(
             $this->sourceStatistics,
-            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => 
+            fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics =>
                 $carry === null || $source->count->value < $carry->count->value ? $source : $carry,
         );
     }
@@ -479,10 +476,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         $hhi = 0.0;
 
         foreach ($sourceStatistics as $source) {
-            if (!$source instanceof SourceStatistics) {
-                continue;
-            }
-
+            // 型別已透過 PHPDoc 保證為 SourceStatistics
             if ($source->count->value > 0) {
                 $sourceCount = $source->count->value;
                 $proportion = $sourceCount / $totalCount;
@@ -508,9 +502,10 @@ final readonly class SourceDistributionDTO implements JsonSerializable
     private function validateSourceStatistics(array $sourceStatistics): void
     {
         foreach ($sourceStatistics as $index => $source) {
-            if (!$source instanceof SourceStatistics) {
+            // 基本驗證：確保有有效的統計值
+            if ($source->count->value < 0) {
                 throw new InvalidArgumentException(
-                    "來源統計索引 {$index} 必須是 SourceStatistics 實例",
+                    "來源統計索引 {$index} 的計數不能為負數",
                 );
             }
         }

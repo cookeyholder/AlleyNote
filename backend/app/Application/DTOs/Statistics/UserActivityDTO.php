@@ -25,11 +25,12 @@ use JsonSerializable;
  */
 final readonly class UserActivityDTO implements JsonSerializable
 {
-    /**\n      * @param StatisticsPeriod $period 統計週期
+    /**
+     * @param StatisticsPeriod $period 統計週期
      * @param StatisticsMetric $totalActiveUsers 總活躍使用者數
      * @param StatisticsMetric $newUsers 新使用者數
      * @param StatisticsMetric $returningUsers 回訪使用者數
-     * @param array<string, mixed> $topActiveUsers
+     * @param array<array<string, mixed>> $topActiveUsers
      * @param array<string, mixed> $activityPatterns 活動模式分析
      * @param array<string, mixed> $engagementMetrics 參與度指標
      * @param DateTimeImmutable $generatedAt 產生時間
@@ -39,7 +40,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         public StatisticsMetric $totalActiveUsers,
         public StatisticsMetric $newUsers,
         public StatisticsMetric $returningUsers,
-        /** @var array<string, mixed> */
+        /** @var array<array<string, mixed>> */
         public array $topActiveUsers,
         /** @var array<string, mixed> */
         public array $activityPatterns,
@@ -64,7 +65,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     public static function fromStatistics(
         StatisticsPeriod $period,
         /** @var array<string, mixed> */ array $userStats,
-        /** @var array<string, mixed> */ array $topUsers = [],
+        /** @var array<array<string, mixed>> */ array $topUsers = [],
         /** @var array<string, mixed> */ array $patterns = [],
     ): self {
         $totalActiveValue = $userStats['total_active'] ?? null;
@@ -93,7 +94,7 @@ final readonly class UserActivityDTO implements JsonSerializable
             $totalActive,
             $newUsers,
             $returningUsers,
-            $topUsers,
+            $topUsers, // 移除不必要的 null coalesce
             $patterns,
             $engagementMetrics,
             new DateTimeImmutable(),
@@ -261,7 +262,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得最活躍使用者資訊.
-     * @return array<int, mixed>
+     * @return array<array<string, mixed>>
      */
     public function getTopActiveUsersSummary(): array
     {
@@ -270,6 +271,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         }
 
         return array_map(
+            /** @param array<string, mixed> $user */
             fn(array $user): array => [
                 'user_id' => $user['user_id'],
                 'username' => $user['username'] ?? 'Unknown',
@@ -290,12 +292,13 @@ final readonly class UserActivityDTO implements JsonSerializable
     {
         $value = $this->activityPatterns['time_analysis'] ?? null;
 
+        /** @var array<string, mixed> */
         return is_array($value) ? $value : [];
     }
 
     /**
      * 取得最熱門活動時段.
-     * @return array<string, mixed>
+     * @return array<int, array<string, mixed>>
      */
     public function getPeakActivityHours(): array
     {
@@ -516,17 +519,11 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 驗證最活躍使用者資料.
-     * @param array<string, mixed> $topUsers
+     * @param array<array<string, mixed>> $topUsers
      */
     private function validateTopActiveUsers(array $topUsers): void
     {
         foreach ($topUsers as $index => $user) {
-            if (!is_array($user)) {
-                throw new InvalidArgumentException(
-                    "最活躍使用者索引 {$index} 必須是陣列",
-                );
-            }
-
             if (!isset($user['user_id'])) {
                 throw new InvalidArgumentException(
                     "最活躍使用者索引 {$index} 必須包含 user_id",

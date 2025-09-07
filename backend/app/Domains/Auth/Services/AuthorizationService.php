@@ -167,7 +167,8 @@ class AuthorizationService implements AuthorizationServiceInterface
             return false;
         }
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getUserRoles(int $userId): array
     {
         $stmt = $this->db->prepare('
@@ -180,7 +181,8 @@ class AuthorizationService implements AuthorizationServiceInterface
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getUserPermissions(int $userId): array
     {
         // 取得角色權限

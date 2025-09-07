@@ -28,7 +28,8 @@ class UpdatePostDTO extends BaseDTO
 
     public readonly ?string $publishDate;
 
-    /**\n      * @param ValidatorInterface $validator 驗證器實例
+    /**
+     * @param ValidatorInterface $validator 驗證器實例
      * @param array<string, mixed> $data
      * @throws ValidationException 當驗證失敗時
      */

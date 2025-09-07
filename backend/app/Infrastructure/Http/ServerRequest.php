@@ -31,10 +31,12 @@ class ServerRequest implements ServerRequestInterface
     private string $protocolVersion = '1.1';
 
     private $body;
-    /**\n      * @param array<string, mixed> $headers
+    /**
+     * @param array<string, mixed> $headers
      */
 
-    /**\n      * @param array<string, mixed> $serverParams
+    /**
+     * @param array<string, mixed> $serverParams
       */
     public function __construct(
         string $method,
@@ -90,17 +92,20 @@ class ServerRequest implements ServerRequestInterface
 
         return $new;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getServerParams(): array
     {
         return $this->serverParams;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getCookieParams(): array
     {
         return $this->cookieParams;
     }
-    /**\n      * @param array<string, mixed> $cookies
+    /**
+     * @param array<string, mixed> $cookies
      */    public function withCookieParams(array $cookies): self
     {
         $new = clone $this;
@@ -108,12 +113,14 @@ class ServerRequest implements ServerRequestInterface
 
         return $new;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getQueryParams(): array
     {
         return $this->queryParams;
     }
-    /**\n      * @param array<string, mixed> $query
+    /**
+     * @param array<string, mixed> $query
      */    public function withQueryParams(array $query): self
     {
         $new = clone $this;
@@ -121,24 +128,28 @@ class ServerRequest implements ServerRequestInterface
 
         return $new;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getUploadedFiles(): array
     {
         return [];
     }
-    /**\n      * @param array<string, mixed> $uploadedFiles
+    /**
+     * @param array<string, mixed> $uploadedFiles
      */    public function withUploadedFiles(array $uploadedFiles): self
     {
         $new = clone $this;
 
         return $new;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getParsedBody()
     {
         return $this->parsedBody;
     }
-    /**\n      * @param array<string, mixed> $data
+    /**
+     * @param array<string, mixed> $data
      */    public function withParsedBody(mixed $data): self
     {
         $new = clone $this;
@@ -146,7 +157,8 @@ class ServerRequest implements ServerRequestInterface
 
         return $new;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getAttributes(): array
     {
         return $this->attributes;

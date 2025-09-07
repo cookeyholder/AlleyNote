@@ -133,9 +133,6 @@ class StatisticsAdminController extends BaseController
             ]);
 
             $queryParams = $request->getQueryParams();
-            if (!is_array($queryParams)) {
-                $queryParams = [];
-            }
             // 確保所有查詢參數都是字串型態
             $stringParams = [];
             foreach ($queryParams as $key => $value) {
@@ -301,7 +298,9 @@ class StatisticsAdminController extends BaseController
      * @param array<string, mixed> $body
      * @return array<string, mixed>
      */
-    /**\n      * @param array<string, mixed> $body
+
+    /**
+     * @param array<string, mixed> $body
      * @return array<string, mixed>
      */
     private function validateRefreshParams(array $body): array
@@ -350,9 +349,6 @@ class StatisticsAdminController extends BaseController
      * 驗證快取清除參數。
      *
      * @param array<string, mixed> $queryParams
-     * @return array<string, mixed>
-     */
-    /**\n      * @param array<string, mixed> $queryParams
      * @return array<string, mixed>
      */
     private function validateClearCacheParams(array $queryParams): array
@@ -467,9 +463,9 @@ class StatisticsAdminController extends BaseController
             'components' => $components,
             'summary' => [
                 'total_components' => count($components),
-                'healthy_components' => count(array_filter($components, fn($c): array => $c['status'] === 'healthy')),
-                'unhealthy_components' => count(array_filter($components, fn($c): array => $c['status'] === 'unhealthy')),
-                'error_components' => count(array_filter($components, fn($c): array => $c['status'] === 'error')),
+                'healthy_components' => count(array_filter($components, fn($c): bool => $c['status'] === 'healthy')),
+                'unhealthy_components' => count(array_filter($components, fn($c): bool => $c['status'] === 'unhealthy')),
+                'error_components' => count(array_filter($components, fn($c): bool => $c['status'] === 'error')),
             ],
         ];
     }

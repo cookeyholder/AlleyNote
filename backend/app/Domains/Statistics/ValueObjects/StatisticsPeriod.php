@@ -15,7 +15,8 @@ use DateTimeInterface;
  */
 readonly class StatisticsPeriod
 {
-    /**\n      * @param DateTimeImmutable $startDate 開始日期
+    /**
+     * @param DateTimeImmutable $startDate 開始日期
      * @param DateTimeImmutable $endDate 結束日期
      * @param PeriodType $type 週期類型
      */

@@ -15,7 +15,8 @@ use JsonSerializable;
  */
 class SuspiciousActivityAnalysisDTO implements JsonSerializable
 {
-    /**\n      * @param string $analysisId 分析識別碼
+    /**
+     * @param string $analysisId 分析識別碼
      * @param int $timeWindowMinutes 分析時間窗口（分鐘）
      * @param array<string, int> $failureCounts 各活動類型失敗計數
      * @param float $confidenceScore 信心分數（0-1）
@@ -179,27 +180,32 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     {
         return $this->severityLevel;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getActivityCounts(): array
     {
         return $this->activityCounts;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getFailureCounts(): array
     {
         return $this->failureCounts;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getAnomalyScores(): array
     {
         return $this->anomalyScores;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getDetectionRules(): array
     {
         return $this->detectionRules;
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getMetadata(): array
     {
         return $this->metadata;

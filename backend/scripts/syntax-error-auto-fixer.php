@@ -17,13 +17,13 @@ function findPhpFiles(string $directory): array
     $iterator = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($directory)
     );
-    
+
     foreach ($iterator as $file) {
         if ($file->isFile() && $file->getExtension() === 'php') {
             $files[] = $file->getRealPath();
         }
     }
-    
+
     return $files;
 }
 
@@ -45,13 +45,13 @@ function fixSyntaxErrors(string $file): bool
     $patterns = [
         // 修復: public /** @var ... */\n public /** @var ... */ array $var
         '/public\s+\/\*\*\s*@var[^*]*\*\/\s*\\\\n\s*public\s+\/\*\*\s*@var[^*]*\*\/\s*array\s+(\$\w+)/m' => 'public array $1',
-        
+
         // 修復: /** @var array<int, \n\n > */\n
         '/\/\*\*\s*@var\s+array<[^>]*,\s*\n\s*>\s*\*\/\s*\\\\n/m' => '',
-        
+
         // 修復多餘的換行符和註釋
         '/\/\*\*\s*@var[^*]*\*\/\s*\\\\n\s*return/m' => 'return',
-        
+
         // 修復格式錯誤的註釋
         '/\/\*\*\s*@var[^*]*\n\s*>\s*\*\/\s*\\\\n/m' => '',
     ];
@@ -86,11 +86,11 @@ foreach ($files as $file) {
     if (!checkSyntax($file)) {
         $syntaxErrors[] = $file;
         echo "語法錯誤: $file\n";
-        
+
         // 嘗試修復
         if (fixSyntaxErrors($file)) {
             $fixedFiles[] = $file;
-            
+
             // 再次檢查是否修復成功
             if (checkSyntax($file)) {
                 echo "成功修復: $file\n";

@@ -254,7 +254,8 @@ class FileCacheDriver implements CacheDriverInterface
     {
         return $this->remember($key, $callback, 0);
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];

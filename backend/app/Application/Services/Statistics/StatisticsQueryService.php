@@ -83,7 +83,7 @@ final class StatisticsQueryService
             if ($periodType !== null) {
                 $snapshots = array_filter(
                     $snapshots,
-                    fn($snapshot): array => $snapshot->getPeriod()->type === $periodType,
+                    fn($snapshot): bool => $snapshot->getPeriod()->type === $periodType,
                 );
             }
 
@@ -521,9 +521,10 @@ final class StatisticsQueryService
             return 0.0;
         }
 
-        $mean = array_sum($numericValues) / count($numericValues);
-        $squaredDiffs = array_map(fn(float $value): array => pow($value - $mean, 2), $numericValues);
-        $variance = array_sum($squaredDiffs) / (count($numericValues) - 1);
+        $count = count($numericValues);
+        $mean = array_sum($numericValues) / $count;
+        $squaredDiffs = array_map(fn(float $value): float => pow($value - $mean, 2), $numericValues);
+        $variance = array_sum($squaredDiffs) / ($count - 1);
 
         return round(sqrt($variance), 2);
     }

@@ -370,7 +370,8 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             return false;
         }
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getStats(): array
     {
         try {
@@ -421,7 +422,8 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         }
     }
 
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
       */
     public function cleanup(): array
     {

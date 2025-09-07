@@ -7,7 +7,8 @@ namespace App\Shared\Exceptions\Validation;
 use App\Shared\Exceptions\ValidationException;
 
 class RequestValidationException extends ValidationException
-    /**\n      * @param array<string, mixed> $errors
+    /**
+     * @param array<string, mixed> $errors
      */
 {    public function __construct(string $message = '', /** @var array<string, mixed> */ array $errors = [])
     {
@@ -22,7 +23,8 @@ class RequestValidationException extends ValidationException
     {
         return new self('請求資料格式錯誤，必須為有效的 JSON 格式');
     }
-    /**\n      * @param array<string, mixed> $fields
+    /**
+     * @param array<string, mixed> $fields
      */    public static function missingRequiredFields(array $fields): self
     {
         $errors = [];
@@ -75,7 +77,8 @@ class RequestValidationException extends ValidationException
 
         return new self('日期格式錯誤', $errors);
     }
-    /**\n      * @param array<string, mixed> $allowedValues
+    /**
+     * @param array<string, mixed> $allowedValues
      */    public static function valueNotInList(string $field, $value, /** @var array<string, mixed> */ array $allowedValues): self
     {
         $allowedList = implode(', ', $allowedValues);
@@ -107,7 +110,8 @@ class RequestValidationException extends ValidationException
 
         return new self('值重複', $errors);
     }
-    /**\n      * @param array<string, mixed> $allowedTypes
+    /**
+     * @param array<string, mixed> $allowedTypes
      */    public static function invalidFileType(string $field, string $actualType, /** @var array<string, mixed> */ array $allowedTypes): self
     {
         $allowedList = implode(', ', $allowedTypes);
@@ -124,7 +128,8 @@ class RequestValidationException extends ValidationException
 
         return new self('檔案大小超出限制', $errors);
     }
-    /**\n      * @param array<string, mixed> $errors
+    /**
+     * @param array<string, mixed> $errors
      */    public static function customValidation(array $errors): self
     {
         return new self('自定義驗證失敗', $errors);

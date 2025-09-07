@@ -249,7 +249,8 @@ class Application
                 return substr($this->content, $this->position);
             }
 
-            /**\n              * @return array<mixed>
+            /**
+     * @return array<mixed>
 
 
              */
@@ -306,7 +307,8 @@ class Application
                 return $this;
             }
 
-            /**\n              * @return array<string, array<string>>
+            /**
+     * @return array<string, array<string>>
 
 
              */
@@ -320,7 +322,8 @@ class Application
                 return strtolower($name) === 'content-type';
             }
 
-            /**\n              * @return array<mixed>
+            /**
+     * @return array<mixed>
 
 
              */

@@ -9,12 +9,15 @@ use Exception;
 
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
-    private /** @var array<string, mixed> */\n
+    /** @var array<string, mixed> */
     private array $config;
 
     private ?string $currentNonce = null;
-    /**\n      * @param array<string, mixed> $config
-     */    public function __construct(array $config = [])
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function __construct(array $config = [])
     {
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
@@ -246,8 +249,11 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             || $_SERVER['SERVER_PORT'] == 443
             || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
     }
-    /**\n      * @return array<string, mixed>
-     */    private function getDefaultConfig(): array
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getDefaultConfig(): array
     {
         return [
             'csp' => [

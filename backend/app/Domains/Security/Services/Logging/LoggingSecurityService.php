@@ -148,13 +148,15 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->info($message, $sanitizedContext);
     }
-    /**\n      * @param array<string, mixed> $context
+    /**
+     * @param array<string, mixed> $context
      */    public function warning(string $message, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->warning($message, $sanitizedContext);
     }
-    /**\n      * @param array<string, mixed> $context
+    /**
+     * @param array<string, mixed> $context
      */    public function error(string $message, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);

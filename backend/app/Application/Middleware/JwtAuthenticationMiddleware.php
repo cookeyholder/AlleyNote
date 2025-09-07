@@ -109,13 +109,13 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
 
         // 2. 從 query 參數提取
         $queryParams = $request->getQueryParams();
-        if (!empty($queryParams['token'])) {
+        if (!empty($queryParams['token']) && is_string($queryParams['token'])) {
             return $queryParams['token'];
         }
 
         // 3. 從 cookie 提取
         $cookies = $request->getCookieParams();
-        if (!empty($cookies['access_token'])) {
+        if (!empty($cookies['access_token']) && is_string($cookies['access_token'])) {
             return $cookies['access_token'];
         }
 
@@ -192,7 +192,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             'timestamp' => date('c'),
         ];
 
-        $body = (json_encode($responseData, JSON_UNESCAPED_UNICODE) ?? '');
+        $body = json_encode($responseData, JSON_UNESCAPED_UNICODE) ?: '';
 
         return new Response(
             status: 401,

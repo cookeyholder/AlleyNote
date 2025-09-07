@@ -40,7 +40,8 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /** @var string 標籤索引前綴 */
     private const TAG_INDEX_PREFIX = 'tag_index:';
-    /**\n      * @param array<string, mixed> $config
+    /**
+     * @param array<string, mixed> $config
      */    public function __construct(array $config = [])
     {
         $this->redis = new Redis();
@@ -316,7 +317,8 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return $this->remember($key, $callback, 0);
     }
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];

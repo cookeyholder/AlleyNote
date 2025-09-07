@@ -31,8 +31,8 @@ class ValidationException extends Exception
 
     /**
      * Static factory method for creating from an array of errors
-     * @param array<string, mixed> $errors
-     * @param array<string, mixed>|string $failedRulesOrMessage
+     * @param array<string, array<string>> $errors
+     * @param array<string, array<string>>|string $failedRulesOrMessage
      */
     public static function fromErrors(array $errors, array|string $failedRulesOrMessage = '', string $message = ''): self
     {
@@ -42,7 +42,7 @@ class ValidationException extends Exception
             $validationResult = ValidationResult::failure($errors, $failedRules);
         } else {
             $message = $failedRulesOrMessage;
-            $validationResult = ValidationResult::failure($errors);
+            $validationResult = ValidationResult::failure($errors, []);
         }
 
         return new self($validationResult, $message);
@@ -60,7 +60,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, array<string>>
      */
     public function getErrors(): array
     {
@@ -68,7 +68,7 @@ class ValidationException extends Exception
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, array<string>>
      */
     public function getFailedRules(): array
     {

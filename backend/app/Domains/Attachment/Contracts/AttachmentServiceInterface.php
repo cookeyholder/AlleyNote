@@ -10,7 +10,8 @@ use Psr\Http\Message\UploadedFileInterface;
 interface AttachmentServiceInterface
 {
     public function upload(int $postId, UploadedFileInterface $file, int $currentUserId): Attachment;
-    /**\n      * @return array<string, mixed>
+    /**
+     * @return array<string, mixed>
      */    public function download(string $uuid, int $currentUserId): array;
 
     public function delete(string $uuid, int $currentUserId): void;

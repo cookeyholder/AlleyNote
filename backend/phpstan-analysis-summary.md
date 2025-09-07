@@ -20,7 +20,7 @@
 ```php
 // 錯誤示例
 array $data  // 缺少值型別
-// 正確示例  
+// 正確示例
 array<string, mixed> $data
 ```
 
@@ -35,7 +35,7 @@ array<string, mixed> $data
 #### 3. 回傳型別不匹配 (return.type) - 約 150+ 錯誤
 **影響檔案**:
 - `SourceDistributionDTO.php` (36 錯誤)
-- `StatisticsOverviewDTO.php` 
+- `StatisticsOverviewDTO.php`
 - Repository 層檔案
 
 ### 中優先級 (型別安全改善)
@@ -62,7 +62,7 @@ array<string, mixed> $data
 
 ### 最高優先級
 1. **Application/DTOs/Statistics/SourceDistributionDTO.php** (36 錯誤)
-2. **Application/Middleware/JwtAuthorizationMiddleware.php** (29 錯誤) 
+2. **Application/Middleware/JwtAuthorizationMiddleware.php** (29 錯誤)
 3. **Application/DTOs/Statistics/StatisticsOverviewDTO.php** (16 錯誤)
 
 ### 系統核心檔案
@@ -76,7 +76,7 @@ array<string, mixed> $data
 - 修復所有 `missingType.iterableValue` 錯誤
 - 專注於 DTO 類別的陣列型別規格
 
-### 階段 2: 參數型別對齊 (1-2 天)  
+### 階段 2: 參數型別對齊 (1-2 天)
 - 修復 `argument.type` 錯誤
 - 確保方法呼叫的型別一致性
 

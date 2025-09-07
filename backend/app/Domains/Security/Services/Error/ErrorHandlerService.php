@@ -19,11 +19,13 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
     private bool $isDevelopment;
 
-    private /** @var array<string, mixed> */\n
-
+    /** @var array<string, mixed> */
     private array $sensitiveKeys;
-    /**\n      * @param array<string, mixed> $sensitiveKeys
-     */    public function __construct(
+
+    /**
+     * @param array<string, mixed> $sensitiveKeys
+     */
+    public function __construct(
         string $logPath = '',
         bool $isDevelopment = false,
         /** @var array<string, mixed> */ array $sensitiveKeys = [],
@@ -50,8 +52,11 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $this->initializeLogger($logPath ?: __DIR__ . '/../../../storage/logs');
         $this->registerErrorHandlers();
     }
-    /**\n      * @return array<string, mixed>
-     */    public function handleException(Throwable $e, bool $isPublicError = false): array
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function handleException(Throwable $e, bool $isPublicError = false): array
     {
         // 記錄完整錯誤到日誌
         $this->logException($e);
@@ -73,8 +78,11 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
-    /**\n      * @param array<string, mixed> $context
-     */    public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void
+
+    /**
+     * @param array<string, mixed> $context
+     */
+    public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void
     {
         $sanitizedContext = $this->sanitizeLogData($context);
 
@@ -86,8 +94,11 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'timestamp' => time(),
         ], $sanitizedContext));
     }
-    /**\n      * @param array<string, mixed> $context
-     */    public function logAuthenticationAttempt(bool $success, string $username, /** @var array<string, mixed> */ array $context = []): void
+
+    /**
+     * @param array<string, mixed> $context
+     */
+    public function logAuthenticationAttempt(bool $success, string $username, /** @var array<string, mixed> */ array $context = []): void
     {
         $event = $success ? 'Authentication Success' : 'Authentication Failed';
 
@@ -96,8 +107,11 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'success' => $success,
         ], $context));
     }
-    /**\n      * @param array<string, mixed> $context
-     */    public function logSuspiciousActivity(string $activity, /** @var array<string, mixed> */ array $context = []): void
+
+    /**
+     * @param array<string, mixed> $context
+     */
+    public function logSuspiciousActivity(string $activity, /** @var array<string, mixed> */ array $context = []): void
     {
         $this->logger->error('Suspicious Activity: ' . $activity, array_merge([
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
@@ -106,8 +120,11 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'timestamp' => time(),
         ], $this->sanitizeLogData($context)));
     }
-    /**\n      * @param array<string, mixed> $data
-     */    public function sanitizeLogData(array $data): array
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function sanitizeLogData(array $data): array
     {
         $sanitized = [];
 
