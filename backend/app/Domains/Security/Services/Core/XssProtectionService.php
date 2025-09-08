@@ -8,23 +8,24 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
+use Exception;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 
+/**
+ * XSS 防護服務實作。
+ *
+ * 提供多層次的 XSS 防護功能，包含 HTML 清理、嚴格清理和攻擊檢測
+ */
 class XssProtectionService implements XssProtectionServiceInterface
-
-
-
 {
     private HTMLPurifier $purifier;
 
     private HTMLPurifier $strictPurifier;
 
-    private ActivityLoggingServiceInterface $activityLogger;
-
-    public function __construct(ActivityLoggingServiceInterface $activityLogger)
-    {
-        $this->activityLogger = $activityLogger;
+    public function __construct(
+        private ActivityLoggingServiceInterface $activityLogger,
+    ) {
         $this->initializePurifiers();
     }
 
@@ -58,7 +59,12 @@ class XssProtectionService implements XssProtectionServiceInterface
         return $cleaned;
     }
 
-    public function cleanArray(array $data, /** @var array<string, mixed> */ array $keys = []): array
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string> $keys
+     * @return array<string, mixed>
+     */
+    public function cleanArray(array $data, array $keys = []): array
     {
         if (empty($keys)) {
             return $this->cleanArrayRecursive($data);
@@ -68,15 +74,17 @@ class XssProtectionService implements XssProtectionServiceInterface
         $keysToClean = array_keys($keys) === range(0, count($keys) - 1) ? $keys : array_keys($keys);
 
         foreach ($keysToClean as $key) {
-            if (isset($data[$key] && is_string($data[$key] {
-                $data[$key] = $this->clean($data[$key];
+            if (isset($data[$key]) && is_string($data[$key])) {
+                $data[$key] = $this->clean($data[$key]);
             }
+        }
+
         return $data;
     }
 
     public function containsXss(string $input): bool
     {
-        if (empty($input]) {
+        if (empty($input)) {
             return false;
         }
 
@@ -90,13 +98,17 @@ class XssProtectionService implements XssProtectionServiceInterface
         return $this->clean($input);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
     public function sanitizeArray(array $data): array
     {
         return $this->cleanArrayRecursive($data);
     }
 
     /**
-     * 檢測 XSS 攻擊.
+     * 檢測 XSS 攻擊。
      */
     public function detectXss(string $input): bool
     {
@@ -104,7 +116,7 @@ class XssProtectionService implements XssProtectionServiceInterface
     }
 
     /**
-     * 清理 HTML（別名方法，對應舊的 cleanHtml）.
+     * 清理 HTML（別名方法，對應舊的 cleanHtml）。
      */
     public function cleanHtml(string $input): string
     {
@@ -112,15 +124,19 @@ class XssProtectionService implements XssProtectionServiceInterface
     }
 
     /**
-     * 清理用於 URL 的字串.
+     * 清理用於 URL 的字串。
      */
     public function cleanForUrl(string $input): string
     {
         return $this->strictClean($input);
     }
 
+    /**
+     * 初始化 HTML 清理器。
+     */
     private function initializePurifiers(): void
     {
+        // 一般清理器 - 允許基本 HTML 標籤
         $config = HTMLPurifier_Config::createDefault();
         $config->set('Core.Encoding', 'UTF-8');
         $config->set('HTML.Allowed', 'p,br,strong,em,u,ol,ul,li,a[href],blockquote,code,pre');
@@ -130,6 +146,7 @@ class XssProtectionService implements XssProtectionServiceInterface
         $config->set('AutoFormat.Linkify', false);
         $this->purifier = new HTMLPurifier($config);
 
+        // 嚴格清理器 - 移除所有 HTML 標籤
         $strictConfig = HTMLPurifier_Config::createDefault();
         $strictConfig->set('Core.Encoding', 'UTF-8');
         $strictConfig->set('HTML.Allowed', '');
@@ -137,6 +154,12 @@ class XssProtectionService implements XssProtectionServiceInterface
         $this->strictPurifier = new HTMLPurifier($strictConfig);
     }
 
+    /**
+     * 遞迴清理陣列中的字串值。
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
     private function cleanArrayRecursive(array $data): array
     {
         foreach ($data as $key => $value) {
@@ -145,32 +168,98 @@ class XssProtectionService implements XssProtectionServiceInterface
             } elseif (is_array($value)) {
                 $data[$key] = $this->cleanArrayRecursive($value);
             }
+        }
+
         return $data;
     }
 
+    /**
+     * 記錄 XSS 攻擊嘗試。
+     */
     private function logXssAttempt(string $originalInput, string $cleanedInput): void
     {
         try {
-        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
-        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+            $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
+            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
 
-        // 確保類型正確
-        $ipAddress = is_string($ipAddress) ? $ipAddress : null;
-        $userAgent = is_string($userAgent) ? $userAgent : null;
+            // 確保類型正確
+            $ipAddress = is_string($ipAddress) ? $ipAddress : null;
+            $userAgent = is_string($userAgent) ? $userAgent : null;
 
-        $dto = CreateActivityLogDTO::securityEvent(
-            actionType: ActivityType::XSS_ATTACK_BLOCKED,
-            ipAddress: $ipAddress,
-            userAgent: $userAgent,
-            description: 'XSS attack attempt detected and blocked',
-            metadata: [
-                'original_length' => strlen($originalInput),
-                'cleaned_length' => strlen($cleanedInput),
-                'original_sample' => substr($originalInput, 0, 100),
-                'referer' => $_SERVER['HTTP_REFERER'] ?? null,
-                'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
-            ],
-        );
+            $dto = CreateActivityLogDTO::securityEvent(
+                actionType: ActivityType::XSS_ATTACK_BLOCKED,
+                ipAddress: $ipAddress,
+                userAgent: $userAgent,
+                description: 'XSS attack attempt detected and blocked',
+                metadata: [
+                    'original_length' => strlen($originalInput),
+                    'cleaned_length' => strlen($cleanedInput),
+                    'original_sample' => substr($originalInput, 0, 100),
+                    'referer' => $_SERVER['HTTP_REFERER'] ?? null,
+                    'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
+                ],
+            );
 
-        $this->activityLogger->log($dto);
+            $this->activityLogger->log($dto);
+        } catch (Exception $e) {
+            // 記錄失敗不應該影響主要功能
+            error_log('Failed to log XSS attempt: ' . $e->getMessage());
+        }
     }
+
+    /**
+     * 驗證輸入是否包含危險模式。
+     */
+    private function containsDangerousPatterns(string $input): bool
+    {
+        $dangerousPatterns = [
+            '/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi',
+            '/javascript:/i',
+            '/on\w+\s*=/i',
+            '/<iframe\b[^>]*>/i',
+            '/<object\b[^>]*>/i',
+            '/<embed\b[^>]*>/i',
+            '/<form\b[^>]*>/i',
+        ];
+
+        foreach ($dangerousPatterns as $pattern) {
+            if (preg_match($pattern, $input)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 取得清理統計資訊。
+     *
+     * @return array<string, mixed>
+     */
+    public function getStats(): array
+    {
+        return [
+            'purifier_version' => HTMLPurifier::VERSION,
+            'allowed_tags' => 'p,br,strong,em,u,ol,ul,li,a[href],blockquote,code,pre',
+            'forbidden_elements' => 'script,iframe,object,embed,form,input,button',
+            'encoding' => 'UTF-8',
+        ];
+    }
+
+    /**
+     * 檢查服務健康狀態。
+     */
+    public function isHealthy(): bool
+    {
+        try {
+            // 測試基本清理功能
+            $testInput = '<p>Test</p><script>alert("xss")</script>';
+            $cleaned = $this->clean($testInput);
+
+            // 確保腳本被移除但合法標籤保留
+            return str_contains($cleaned, '<p>Test</p>') && !str_contains($cleaned, 'script');
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+}

@@ -5,7 +5,13 @@ declare(strict_types=1);
 namespace App\Domains\Security\Services\Headers;
 
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
+use Exception;
 
+/**
+ * 安全標頭服務實作。
+ *
+ * 提供完整的 HTTP 安全標頭管理，包含 CSP、HSTS、XSS 防護等
+ */
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
     /** @var array<string, mixed> */
@@ -13,6 +19,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     private ?string $currentNonce = null;
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(array $config = [])
     {
         $this->config = array_merge($this->getDefaultConfig(), $config);
@@ -21,7 +30,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     public function setSecurityHeaders(): void
     {
         // Content Security Policy
-        if ($this->config['csp']['enabled') {
+        if ($this->config['csp']['enabled']) {
             header('Content-Security-Policy: ' . $this->buildCSP());
         }
 
@@ -37,53 +46,53 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         }
 
         // X-Frame-Options
-        if ($this->config['frame_options']['enabled') {
+        if ($this->config['frame_options']['enabled']) {
             header('X-Frame-Options: ' . $this->config['frame_options']['value']);
         }
 
         // X-Content-Type-Options
-        if ($this->config['content_type_options']['enabled') {
+        if ($this->config['content_type_options']['enabled']) {
             header('X-Content-Type-Options: nosniff');
         }
 
         // X-XSS-Protection (雖然現代瀏覽器已棄用，但為了向後相容)
-        if ($this->config['xss_protection']['enabled') {
+        if ($this->config['xss_protection']['enabled']) {
             header('X-XSS-Protection: 1; mode=block');
         }
 
         // Referrer Policy
-        if ($this->config['referrer_policy']['enabled') {
+        if ($this->config['referrer_policy']['enabled']) {
             header('Referrer-Policy: ' . $this->config['referrer_policy']['value']);
         }
 
         // Permissions Policy
-        if ($this->config['permissions_policy']['enabled') {
+        if ($this->config['permissions_policy']['enabled']) {
             header('Permissions-Policy: ' . $this->buildPermissionsPolicy());
         }
 
         // Cross-Origin Embedder Policy
-        if ($this->config['coep']['enabled') {
+        if ($this->config['coep']['enabled']) {
             header('Cross-Origin-Embedder-Policy: ' . $this->config['coep']['value']);
         }
 
         // Cross-Origin Opener Policy
-        if ($this->config['coop']['enabled') {
+        if ($this->config['coop']['enabled']) {
             header('Cross-Origin-Opener-Policy: ' . $this->config['coop']['value']);
         }
 
         // Cross-Origin Resource Policy
-        if ($this->config['corp']['enabled') {
+        if ($this->config['corp']['enabled']) {
             header('Cross-Origin-Resource-Policy: ' . $this->config['corp']['value']);
         }
 
         // Cache Control for sensitive pages
-        if ($this->config['cache_control']['enabled') {
+        if ($this->config['cache_control']['enabled']) {
             header('Cache-Control: ' . $this->config['cache_control']['value']);
         }
     }
 
     /**
-     * 產生 CSP nonce 值
+     * 產生 CSP nonce 值。
      */
     public function generateNonce(): string
     {
@@ -95,7 +104,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     }
 
     /**
-     * 取得當前的 nonce 值
+     * 取得當前的 nonce 值。
      */
     public function getCurrentNonce(): ?string
     {
@@ -103,13 +112,12 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     }
 
     /**
-     * 建立 CSP 違規報告端點.
+     * 建立 CSP 違規報告端點。
      */
     public function handleCSPReport(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
-
             return;
         }
 
@@ -119,7 +127,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             && strpos($contentType, 'application/json') === false
         ) {
             http_response_code(400);
-
             return;
         }
 
@@ -128,23 +135,41 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             http_response_code(400);
-
             return;
         }
 
         // 記錄 CSP 違規
-        $this->logCSPViolation($report);
+        if (is_array($report)) {
+            $this->logCSPViolation($report);
+        }
 
         http_response_code(204);
     }
 
     /**
-     * 記錄 CSP 違規.
+     * 移除伺服器簽名。
+     */
+    public function removeServerSignature(): void
+    {
+        // 移除可能洩漏伺服器資訊的標頭
+        header_remove('Server');
+        header_remove('X-Powered-By');
+
+        // 設定通用的伺服器標識（可選）
+        if ($this->config['server_signature']['enabled']) {
+            header('Server: ' . $this->config['server_signature']['value']);
+        }
+    }
+
+    /**
+     * 記錄 CSP 違規。
+     *
+     * @param array<string, mixed> $report
      */
     private function logCSPViolation(array $report): void
     {
         $logData = [
-            'timestamp' => date('Y-m-d H => i:s'),
+            'timestamp' => date('Y-m-d H:i:s'),
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
             'report' => $report,
@@ -154,44 +179,42 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         error_log('CSP Violation: ' . (json_encode($logData) ?? ''));
 
         // 如果設定了監控服務，也可以發送到那裡
-        if (isset($this->config['csp']['monitoring_endpoint') {
+        if (isset($this->config['csp']['monitoring_endpoint'])) {
             $this->sendToMonitoring($logData);
         }
     }
 
     /**
-     * 發送到監控服務.
+     * 發送到監控服務。
+     *
+     * @param array<string, mixed> $data
      */
     private function sendToMonitoring(array $data): void
     {
         // 這裡可以整合 Sentry、DataDog 等監控服務
         // 目前僅作為範例實作
-        try { /* empty */
-        }
-        $context = stream_context_create([
-            'http' => [
-                'method' => 'POST',
-                'header' => 'Content-Type => application/json',
-                'content' => (json_encode($data) ?? ''),
-                'timeout' => 5,
-            ],
-        ]);
+        try {
+            $context = stream_context_create([
+                'http' => [
+                    'method' => 'POST',
+                    'header' => 'Content-Type: application/json',
+                    'content' => (json_encode($data) ?? ''),
+                    'timeout' => 5,
+                ],
+            ]);
 
-        file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
+            if (is_string($this->config['csp']['monitoring_endpoint'])) {
+                file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
+            }
+        } catch (Exception $e) {
+            // 監控服務失敗不應影響主要功能
+            error_log('Failed to send CSP violation to monitoring: ' . $e->getMessage());
+        }
     }
 
-    public function removeServerSignature(): void
-    {
-        // 移除可能洩漏伺服器資訊的標頭
-        header_remove('Server');
-        header_remove('X-Powered-By');
-
-        // 設定通用的伺服器標識（可選）
-        if ($this->config['server_signature']['enabled') {
-            header('Server: ' . $this->config['server_signature']['value']);
-        }
-
-    }
+    /**
+     * 建立 CSP 字串。
+     */
     private function buildCSP(): string
     {
         $directives = [];
@@ -213,13 +236,16 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         }
 
         // 添加 CSP 違規報告
-        if (isset($this->config['csp']['report_uri') {
+        if (isset($this->config['csp']['report_uri'])) {
             $directives[] = 'report-uri ' . $this->config['csp']['report_uri'];
         }
 
         return implode('; ', $directives);
     }
 
+    /**
+     * 建立 Permissions Policy 字串。
+     */
     private function buildPermissionsPolicy(): string
     {
         $policies = [];
@@ -235,6 +261,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         return implode(', ', $policies);
     }
 
+    /**
+     * 檢查是否為 HTTPS 連線。
+     */
     private function isHTTPS(): bool
     {
         return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
@@ -242,6 +271,11 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
     }
 
+    /**
+     * 取得預設設定。
+     *
+     * @return array<string, mixed>
+     */
     private function getDefaultConfig(): array
     {
         return [
@@ -253,7 +287,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                     'default-src' => ["'self'"],
                     'script-src' => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
                     'style-src' => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
-                    'img-src' => ["'self'", 'data => ', 'https:'],
+                    'img-src' => ["'self'", 'data:', 'https:'],
                     'font-src' => ["'self'"],
                     'connect-src' => ["'self'"],
                     'media-src' => ["'self'"],
@@ -314,5 +348,46 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                 'value' => 'AlleyNote/1.0',
             ],
         ];
+    }
+
+    /**
+     * 取得安全標頭統計資訊。
+     *
+     * @return array<string, mixed>
+     */
+    public function getStats(): array
+    {
+        return [
+            'enabled_headers' => array_keys(array_filter($this->config, fn($header) =>
+                is_array($header) && ($header['enabled'] ?? false)
+            )),
+            'current_nonce' => $this->currentNonce,
+            'https_enabled' => $this->isHTTPS(),
+            'total_directives' => count($this->config['csp']['directives']),
+        ];
+    }
+
+    /**
+     * 檢查服務健康狀態。
+     */
+    public function isHealthy(): bool
+    {
+        try {
+            // 測試 nonce 生成
+            $nonce = $this->generateNonce();
+            if (empty($nonce)) {
+                return false;
+            }
+
+            // 測試 CSP 建立
+            $csp = $this->buildCSP();
+            if (empty($csp)) {
+                return false;
+            }
+
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }

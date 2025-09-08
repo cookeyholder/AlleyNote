@@ -1,16 +1,13 @@
 {
-    "timestamp": "2025-09-09T04:34:31+08:00",
-    "total_syntax_errors": 577,
-    "affected_files": 117,
+    "timestamp": "2025-09-09T04:39:35+08:00",
+    "total_syntax_errors": 542,
+    "affected_files": 114,
     "error_type_stats": {
-        "syntax_general": 477,
-        "try_without_catch": 91,
+        "syntax_general": 443,
+        "try_without_catch": 90,
         "empty_array_elements": 9
     },
     "file_error_counts": {
-        "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/DeviceInfo.php": 14,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Core\/XssProtectionService.php": 14,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php": 14,
         "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/MemoryCacheDriver.php": 14,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Providers\/RoutingServiceProvider.php": 13,
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/UserActivityDTO.php": 12,
@@ -21,35 +18,35 @@
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/DefaultCacheStrategy.php": 11,
         "\/var\/www\/html\/app\/Shared\/Cache\/Strategies\/DefaultCacheStrategy.php": 11,
         "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/SystemMonitorService.php": 11,
+        "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/SuspiciousActivityDetectorTest.php": 11,
         "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthorizationMiddleware.php": 10,
         "\/var\/www\/html\/app\/Application\/Services\/Statistics\/StatisticsApplicationService.php": 10,
         "\/var\/www\/html\/app\/Shared\/Validation\/Validator.php": 10,
         "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": 9,
         "\/var\/www\/html\/tests\/Unit\/DTOs\/BaseDTOTest.php": 9,
-        "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/SuspiciousActivityDetectorTest.php": 9,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/IpController.php": 8,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/PostController.php": 8,
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php": 8,
         "\/var\/www\/html\/app\/Domains\/Auth\/Exceptions\/JwtException.php": 8,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/RichTextProcessorService.php": 8,
         "\/var\/www\/html\/app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": 8,
+        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/RouteCacheFactory.php": 8,
         "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/PerformanceMonitorService.php": 8,
         "\/var\/www\/html\/app\/Shared\/Schemas\/PostRequestSchema.php": 8,
         "\/var\/www\/html\/tests\/Integration\/FileSystemBackupTest.php": 8,
         "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/AttachmentService.php": 7,
         "\/var\/www\/html\/app\/Domains\/Post\/DTOs\/UpdatePostDTO.php": 7,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/SystemStatisticsRepository.php": 7,
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/RouteCacheFactory.php": 7,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/RouteCollection.php": 7,
         "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php": 7,
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheGroupManager.php": 7,
+        "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheManager.php": 7,
         "\/var\/www\/html\/tests\/Performance\/SimpleUserActivityLogPerformanceTest.php": 7,
         "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthenticationMiddleware.php": 6,
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthService.php": 6,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 6,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Commands\/StatisticsCalculationCommand.php": 6,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/RedisRouteCache.php": 6,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheManager.php": 6,
         "\/var\/www\/html\/app\/Shared\/Config\/EnvironmentConfig.php": 6,
         "\/var\/www\/html\/tests\/UI\/UITestCase.php": 6,
         "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/FileSecurityService.php": 5,
@@ -64,6 +61,7 @@
         "\/var\/www\/html\/app\/Domains\/Security\/DTOs\/CreateActivityLogDTO.php": 4,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php": 4,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/IpService.php": 4,
+        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": 4,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheKeys.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Response.php": 4,
@@ -72,11 +70,12 @@
         "\/var\/www\/html\/tests\/Security\/SqlInjectionTest.php": 4,
         "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": 3,
         "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/IpRepository.php": 3,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": 3,
         "\/var\/www\/html\/app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheManager.php": 3,
+        "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php": 3,
+        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/ControllerResolver.php": 3,
@@ -90,9 +89,7 @@
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/RefreshTokenService.php": 2,
         "\/var\/www\/html\/app\/Domains\/Post\/DTOs\/CreatePostDTO.php": 2,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/ContentModerationService.php": 2,
-        "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Uri.php": 2,
-        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/Route.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Middleware\/MiddlewareDispatcher.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/RouteLoader.php": 2,
@@ -746,78 +743,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/DeviceInfo.php": [
-            {
-                "line": 95,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 95",
-                "type": "syntax_general"
-            },
-            {
-                "line": 96,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 96",
-                "type": "syntax_general"
-            },
-            {
-                "line": 101,
-                "message": "Syntax error, unexpected ',' on line 101",
-                "type": "syntax_general"
-            },
-            {
-                "line": 101,
-                "message": "Syntax error, unexpected ']' on line 101",
-                "type": "syntax_general"
-            },
-            {
-                "line": 102,
-                "message": "Syntax error, unexpected ',' on line 102",
-                "type": "syntax_general"
-            },
-            {
-                "line": 103,
-                "message": "Syntax error, unexpected ',' on line 103",
-                "type": "syntax_general"
-            },
-            {
-                "line": 104,
-                "message": "Syntax error, unexpected ',' on line 104",
-                "type": "syntax_general"
-            },
-            {
-                "line": 105,
-                "message": "Syntax error, unexpected ',' on line 105",
-                "type": "syntax_general"
-            },
-            {
-                "line": 106,
-                "message": "Syntax error, unexpected ',' on line 106",
-                "type": "syntax_general"
-            },
-            {
-                "line": 107,
-                "message": "Syntax error, unexpected ',' on line 107",
-                "type": "syntax_general"
-            },
-            {
-                "line": 108,
-                "message": "Syntax error, unexpected ',' on line 108",
-                "type": "syntax_general"
-            },
-            {
-                "line": 109,
-                "message": "Syntax error, unexpected ',' on line 109",
-                "type": "syntax_general"
-            },
-            {
-                "line": 110,
-                "message": "Syntax error, unexpected ',' on line 110",
-                "type": "syntax_general"
-            },
-            {
-                "line": 111,
-                "message": "Syntax error, unexpected ',' on line 111",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php": [
             {
                 "line": 91,
@@ -1138,150 +1063,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Core\/XssProtectionService.php": [
-            {
-                "line": 71,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 71",
-                "type": "syntax_general"
-            },
-            {
-                "line": 72,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 72",
-                "type": "syntax_general"
-            },
-            {
-                "line": 77,
-                "message": "Syntax error, unexpected T_PUBLIC on line 77",
-                "type": "syntax_general"
-            },
-            {
-                "line": 79,
-                "message": "Syntax error, unexpected ']' on line 79",
-                "type": "syntax_general"
-            },
-            {
-                "line": 88,
-                "message": "Syntax error, unexpected T_PUBLIC on line 88",
-                "type": "syntax_general"
-            },
-            {
-                "line": 93,
-                "message": "Syntax error, unexpected T_PUBLIC on line 93",
-                "type": "syntax_general"
-            },
-            {
-                "line": 101,
-                "message": "Syntax error, unexpected T_PUBLIC on line 101",
-                "type": "syntax_general"
-            },
-            {
-                "line": 109,
-                "message": "Syntax error, unexpected T_PUBLIC on line 109",
-                "type": "syntax_general"
-            },
-            {
-                "line": 117,
-                "message": "Syntax error, unexpected T_PUBLIC on line 117",
-                "type": "syntax_general"
-            },
-            {
-                "line": 122,
-                "message": "Syntax error, unexpected T_PRIVATE on line 122",
-                "type": "syntax_general"
-            },
-            {
-                "line": 140,
-                "message": "Syntax error, unexpected T_PRIVATE on line 140",
-                "type": "syntax_general"
-            },
-            {
-                "line": 151,
-                "message": "Syntax error, unexpected T_PRIVATE on line 151",
-                "type": "syntax_general"
-            },
-            {
-                "line": 153,
-                "message": "Cannot use try without catch or finally on line 153",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 176,
-                "message": "Syntax error, unexpected EOF on line 176",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php": [
-            {
-                "line": 24,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 24",
-                "type": "syntax_general"
-            },
-            {
-                "line": 40,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 40",
-                "type": "syntax_general"
-            },
-            {
-                "line": 45,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 45",
-                "type": "syntax_general"
-            },
-            {
-                "line": 50,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 50",
-                "type": "syntax_general"
-            },
-            {
-                "line": 55,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 55",
-                "type": "syntax_general"
-            },
-            {
-                "line": 60,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 60",
-                "type": "syntax_general"
-            },
-            {
-                "line": 65,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 65",
-                "type": "syntax_general"
-            },
-            {
-                "line": 70,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 70",
-                "type": "syntax_general"
-            },
-            {
-                "line": 75,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 75",
-                "type": "syntax_general"
-            },
-            {
-                "line": 80,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 80",
-                "type": "syntax_general"
-            },
-            {
-                "line": 157,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 157",
-                "type": "syntax_general"
-            },
-            {
-                "line": 169,
-                "message": "Cannot use try without catch or finally on line 169",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 190,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 190",
-                "type": "syntax_general"
-            },
-            {
-                "line": 216,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 216",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/IpService.php": [
             {
                 "line": 83,
@@ -1340,6 +1121,11 @@
             {
                 "line": 60,
                 "message": "Syntax error, unexpected ';', expecting ')' on line 60",
+                "type": "syntax_general"
+            },
+            {
+                "line": 65,
+                "message": "Syntax error, unexpected ')', expecting ']' on line 65",
                 "type": "syntax_general"
             },
             {
@@ -1556,6 +1342,11 @@
                 "line": 71,
                 "message": "Syntax error, unexpected ';', expecting ')' on line 71",
                 "type": "syntax_general"
+            },
+            {
+                "line": 79,
+                "message": "Syntax error, unexpected ']' on line 79",
+                "type": "syntax_general"
             }
         ],
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Stream.php": [
@@ -1595,6 +1386,11 @@
             }
         ],
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": [
+            {
+                "line": 88,
+                "message": "Syntax error, unexpected T_PUBLIC on line 88",
+                "type": "syntax_general"
+            },
             {
                 "line": 90,
                 "message": "Cannot use try without catch or finally on line 90",
@@ -1733,6 +1529,11 @@
             {
                 "line": 69,
                 "message": "Syntax error, unexpected ']' on line 69",
+                "type": "syntax_general"
+            },
+            {
+                "line": 71,
+                "message": "Syntax error, unexpected '{', expecting ')' on line 71",
                 "type": "syntax_general"
             },
             {
@@ -2270,6 +2071,11 @@
                 "line": 133,
                 "message": "Syntax error, unexpected ')', expecting ']' on line 133",
                 "type": "syntax_general"
+            },
+            {
+                "line": 169,
+                "message": "Cannot use try without catch or finally on line 169",
+                "type": "try_without_catch"
             },
             {
                 "line": 202,
@@ -3167,7 +2973,17 @@
             },
             {
                 "line": 108,
+                "message": "Syntax error, unexpected ',' on line 108",
+                "type": "syntax_general"
+            },
+            {
+                "line": 108,
                 "message": "Syntax error, unexpected ']', expecting ')' on line 108",
+                "type": "syntax_general"
+            },
+            {
+                "line": 109,
+                "message": "Syntax error, unexpected ',' on line 109",
                 "type": "syntax_general"
             },
             {
@@ -3250,11 +3066,12 @@
     "quick_fixes": {
         "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": 3,
         "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/IpRepository.php": 3,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": 3,
         "\/var\/www\/html\/app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheManager.php": 3,
+        "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php": 3,
+        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/ControllerResolver.php": 3,
@@ -3268,9 +3085,7 @@
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/RefreshTokenService.php": 2,
         "\/var\/www\/html\/app\/Domains\/Post\/DTOs\/CreatePostDTO.php": 2,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/ContentModerationService.php": 2,
-        "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Uri.php": 2,
-        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/Route.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Middleware\/MiddlewareDispatcher.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/RouteLoader.php": 2,
@@ -3310,30 +3125,29 @@
         "\/var\/www\/html\/app\/Shared\/Validation\/Validator.php": 10,
         "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": 9,
         "\/var\/www\/html\/tests\/Unit\/DTOs\/BaseDTOTest.php": 9,
-        "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/SuspiciousActivityDetectorTest.php": 9,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/IpController.php": 8,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/PostController.php": 8,
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php": 8,
         "\/var\/www\/html\/app\/Domains\/Auth\/Exceptions\/JwtException.php": 8,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/RichTextProcessorService.php": 8,
         "\/var\/www\/html\/app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": 8,
+        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/RouteCacheFactory.php": 8,
         "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/PerformanceMonitorService.php": 8,
         "\/var\/www\/html\/app\/Shared\/Schemas\/PostRequestSchema.php": 8,
         "\/var\/www\/html\/tests\/Integration\/FileSystemBackupTest.php": 8,
         "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/AttachmentService.php": 7,
         "\/var\/www\/html\/app\/Domains\/Post\/DTOs\/UpdatePostDTO.php": 7,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/SystemStatisticsRepository.php": 7,
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/RouteCacheFactory.php": 7,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/RouteCollection.php": 7,
         "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php": 7,
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheGroupManager.php": 7,
+        "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheManager.php": 7,
         "\/var\/www\/html\/tests\/Performance\/SimpleUserActivityLogPerformanceTest.php": 7,
         "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthenticationMiddleware.php": 6,
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthService.php": 6,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 6,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Commands\/StatisticsCalculationCommand.php": 6,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/RedisRouteCache.php": 6,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheManager.php": 6,
         "\/var\/www\/html\/app\/Shared\/Config\/EnvironmentConfig.php": 6,
         "\/var\/www\/html\/tests\/UI\/UITestCase.php": 6,
         "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/FileSecurityService.php": 5,
@@ -3348,6 +3162,7 @@
         "\/var\/www\/html\/app\/Domains\/Security\/DTOs\/CreateActivityLogDTO.php": 4,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php": 4,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/IpService.php": 4,
+        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": 4,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheKeys.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Response.php": 4,
@@ -3356,9 +3171,6 @@
         "\/var\/www\/html\/tests\/Security\/SqlInjectionTest.php": 4
     },
     "complex_fixes": {
-        "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/DeviceInfo.php": 14,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Core\/XssProtectionService.php": 14,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php": 14,
         "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/MemoryCacheDriver.php": 14,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Providers\/RoutingServiceProvider.php": 13,
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/UserActivityDTO.php": 12,
@@ -3368,6 +3180,7 @@
         "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/FileCacheDriver.php": 11,
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/DefaultCacheStrategy.php": 11,
         "\/var\/www\/html\/app\/Shared\/Cache\/Strategies\/DefaultCacheStrategy.php": 11,
-        "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/SystemMonitorService.php": 11
+        "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/SystemMonitorService.php": 11,
+        "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/SuspiciousActivityDetectorTest.php": 11
     }
 }

@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 04:29:23",
+        "scan_time": "2025-09-09 04:36:33",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -356,7 +356,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Services\/StatisticsCacheService.php",
                                             "extension": "php",
-                                            "size": 12398
+                                            "size": 15319
                                         },
                                         "PostStatisticsService.php": {
                                             "type": "file",
@@ -1448,7 +1448,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Providers\/CacheServiceProvider.php",
                                             "extension": "php",
-                                            "size": 21557
+                                            "size": 23845
                                         }
                                     }
                                 },
@@ -1956,7 +1956,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Controllers\/Security\/CSPReportController.php",
                                             "extension": "php",
-                                            "size": 4413
+                                            "size": 8586
                                         }
                                     }
                                 },
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 144518
+            "size": 135991
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1678111
+            "size": 1678113
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -6384,7 +6384,7 @@
                 "DEFAULT_TTL",
                 "CACHE_TAGS"
             ],
-            "lines_of_code": 395
+            "lines_of_code": 496
         },
         "app\/Domains\/Statistics\/Services\/PostStatisticsService.php": {
             "path": "app\/Domains\/Statistics\/Services\/PostStatisticsService.php",
@@ -10563,9 +10563,7 @@
                 "CacheServiceProvider",
                 "CacheConfigBuilder"
             ],
-            "interfaces": [
-                "or"
-            ],
+            "interfaces": [],
             "traits": [],
             "uses": [
                 "App\\Shared\\Cache\\Contracts\\CacheDriverInterface",
@@ -10597,8 +10595,8 @@
                 "registerStrategy",
                 "registerDrivers",
                 "registerManager",
+                "configureDrivers",
                 "registerLegacyService",
-                "addDriversToManager",
                 "createConfigBuilder",
                 "getDefinitions",
                 "getDefaultConfig",
@@ -10614,7 +10612,7 @@
                 "build"
             ],
             "constants": [],
-            "lines_of_code": 618
+            "lines_of_code": 672
         },
         "app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": {
             "path": "app\/Shared\/Cache\/Repositories\/RedisTagRepository.php",
@@ -12217,14 +12215,20 @@
                 "Exception",
                 "Psr\\Http\\Message\\ResponseInterface as Response",
                 "Psr\\Http\\Message\\ServerRequestInterface as Request",
-                "const n"
+                "RuntimeException"
             ],
             "functions": [
                 "__construct",
-                "handleReport"
+                "handleReport",
+                "validateCspReport",
+                "processCspReport",
+                "calculateSeverity",
+                "isHighRiskViolation",
+                "getClientIp",
+                "createErrorResponse"
             ],
             "constants": [],
-            "lines_of_code": 109
+            "lines_of_code": 270
         },
         "app\/Application\/Controllers\/Web\/SwaggerController.php": {
             "path": "app\/Application\/Controllers\/Web\/SwaggerController.php",
@@ -26388,7 +26392,7 @@
         "code_complexity": {
             "total_files": 590,
             "total_classes": 466,
-            "total_interfaces": 79,
+            "total_interfaces": 78,
             "avg_classes_per_file": 0.79
         },
         "dependency_metrics": {
@@ -26907,7 +26911,6 @@
         "App\\Shared\\Cache\\Contracts\\CacheDriverInterface": "app\/Shared\/Cache\/Contracts\/CacheDriverInterface.php",
         "App\\Shared\\Cache\\Contracts\\CacheManagerInterface": "app\/Shared\/Cache\/Contracts\/CacheManagerInterface.php",
         "App\\Shared\\Cache\\Contracts\\TaggedCacheInterface": "app\/Shared\/Cache\/Contracts\/TaggedCacheInterface.php",
-        "App\\Shared\\Cache\\Providers\\or": "app\/Shared\/Cache\/Providers\/CacheServiceProvider.php",
         "App\\Shared\\Contracts\\RepositoryInterface": "app\/Shared\/Contracts\/RepositoryInterface.php",
         "App\\Shared\\Contracts\\CacheServiceInterface": "app\/Shared\/Contracts\/CacheServiceInterface.php",
         "App\\Shared\\Contracts\\OutputSanitizerInterface": "app\/Shared\/Contracts\/OutputSanitizerInterface.php",
@@ -30932,7 +30935,7 @@
             },
             {
                 "type": "use",
-                "target": "const n",
+                "target": "RuntimeException",
                 "file": null
             }
         ],
