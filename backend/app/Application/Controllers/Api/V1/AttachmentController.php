@@ -147,7 +147,7 @@ class AttachmentController
             $postId = (int) $postIdAttr;
             $files = $request->getUploadedFiles();
 
-            if (!isset($files['file'] {
+            if (!isset($files['file'])) {
                 $response->getBody()->write((json_encode(['error' => '缺少上傳檔案']) ? true : ''));
 
                 return $response
@@ -342,7 +342,7 @@ class AttachmentController
                 description: '檔案下載成功',
                 content: [
                     'application/octet-stream' => new OA\MediaType(
-                        mediatype: 'application/octet-stream',
+                        mediaType: 'application/octet-stream',
                         schema: new OA\Schema(
                             type: 'string',
                             format: 'binary',
@@ -358,7 +358,7 @@ class AttachmentController
                 ],
                 headers: [
                     'Content-Disposition' => new OA\Header(
-                        header => 'Content-Disposition',
+                        header: 'Content-Disposition',
                         description: '檔案下載標頭',
                         schema: new OA\Schema(type: 'string', example: 'attachment; filename="document.pdf"'),
                     ),
@@ -404,23 +404,25 @@ class AttachmentController
      * 下載附件.
      * @param array $args 路由參數
      */
-    public function download(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
+    public function download(Request $request, Response $response, array $args): Response
     {
         // 這個方法需要實作檔案下載邏輯
         try {
-
-
-
-
-
-
-
-
-
-
-
             $uuid = $args['id'] ?? null;
             if (!$uuid || !is_string($uuid)) {
-                throw ValidationException::fromSingleError('uuid', '無效的附件識別碼');}
+                throw ValidationException::fromSingleError('uuid', '無效的附件識別碼');
+            }
+
+            // TODO: 實作檔案下載邏輯
+            $response->getBody()->write(json_encode(['message' => '檔案下載功能待實作']));
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (ValidationException $e) {
+            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+        } catch (Throwable $e) {
+            $response->getBody()->write(json_encode(['error' => '檔案下載失敗']));
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
+}
