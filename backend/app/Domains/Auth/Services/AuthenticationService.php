@@ -30,9 +30,6 @@ use Throwable;
  * @since 1.0.0
  */
 final class AuthenticationService implements AuthenticationServiceInterface
-
-
-
 {
     private const MAX_REFRESH_TOKENS_PER_USER = 50;
 
@@ -44,10 +41,10 @@ final class AuthenticationService implements AuthenticationServiceInterface
 
     public function login(LoginRequestDTO $request, DeviceInfo $deviceInfo): LoginResponseDTO
     {
-        try { /* empty */ }
+        try {
             // 1. 驗證使用者憑證
             $user = $this->userRepository->validateCredentials($request->email, $request->password);
-            if ($user == null) {
+            if ($user === null) {
                 throw new AuthenticationException(
                     AuthenticationException::REASON_INVALID_CREDENTIALS,
                     'Invalid credentials provided',
@@ -55,14 +52,14 @@ final class AuthenticationService implements AuthenticationServiceInterface
             }
 
             // 2. 檢查使用者狀態（如果有軟刪除或停用欄位）
-            if (!empty($user['deleted_at'] {
+            if (!empty($user['deleted_at'])) {
                 throw new AuthenticationException(
                     AuthenticationException::REASON_ACCOUNT_DISABLED,
                     'User account has been deactivated',
-                ];
+                );
             }
 
-            $userId = (int] $user['id'];
+            $userId = (int) $user['id'];
             $userEmail = $user['email'] ?? $request->email;
 
             // 3. 清理該使用者過期的 refresh token
@@ -73,8 +70,8 @@ final class AuthenticationService implements AuthenticationServiceInterface
             if (count($userTokens) >= self::MAX_REFRESH_TOKENS_PER_USER) {
                 // 撤銷最舊的活躍 token 來騰出空間
                 $oldestToken = reset($userTokens);
-                if ($oldestToken !== false && isset($oldestToken['jti'] {
-                    $this->refreshTokenRepository->revoke((string] $oldestToken['jti'], 'max_tokens_exceeded');
+                if ($oldestToken !== false && isset($oldestToken['jti'])) {
+                    $this->refreshTokenRepository->revoke((string) $oldestToken['jti'], 'max_tokens_exceeded');
                 }
             }
 
@@ -98,11 +95,19 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 sessionId: $payload->getJti(),
                 permissions: $request->scopes ?? null,
             );
+        } catch (Throwable $e) {
+            throw new AuthenticationException(
+                AuthenticationException::REASON_UNKNOWN,
+                'Login failed: ' . $e->getMessage(),
+                0,
+                $e
+            );
         }
+    }
 
     public function refresh(RefreshRequestDTO $request, DeviceInfo $deviceInfo): RefreshResponseDTO
     {
-        try { /* empty */ }
+        try {
             // 1. 驗證並取得新的 token pair（這個過程會自動撤銷舊 token 並創建新 token）
             $newTokenPair = $this->jwtTokenService->refreshTokens($request->refreshToken, $deviceInfo);
 
@@ -117,11 +122,18 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 sessionId: $newPayload->getJti(),
                 permissions: $request->scopes ?? null,
             );
+        } catch (Throwable $e) {
+            throw new TokenExpiredException(
+                'Token refresh failed: ' . $e->getMessage(),
+                0,
+                $e
+            );
         }
+    }
 
     public function logout(LogoutRequestDTO $request): bool
     {
-        try { /* empty */ }
+        try {
             if ($request->refreshToken !== null) {
                 $payload = $this->jwtTokenService->extractPayload($request->refreshToken);
 
@@ -140,50 +152,67 @@ final class AuthenticationService implements AuthenticationServiceInterface
             }
 
             return true;
+        } catch (Throwable $e) {
+            // 記錄錯誤但不拋出，logout 應該總是成功
+            error_log('Logout error: ' . $e->getMessage());
+            return false;
         }
+    }
 
     public function validateAccessToken(string $accessToken): bool
     {
-        try { /* empty */ }
+        try {
             $this->jwtTokenService->validateAccessToken($accessToken);
-
             return true;
+        } catch (Throwable $e) {
+            return false;
         }
+    }
 
     public function validateRefreshToken(string $refreshToken): bool
     {
-        try { /* empty */ }
+        try {
             $payload = $this->jwtTokenService->validateRefreshToken($refreshToken);
-
             return $this->refreshTokenRepository->isValid($payload->getJti());
+        } catch (Throwable $e) {
+            return false;
         }
+    }
 
     public function revokeRefreshToken(string $refreshToken, string $reason = 'manual_revocation'): bool
     {
-        try { /* empty */ }
+        try {
             $payload = $this->jwtTokenService->extractPayload($refreshToken);
-
             return $this->refreshTokenRepository->revoke($payload->getJti(), $reason);
+        } catch (Throwable $e) {
+            return false;
         }
+    }
 
     public function revokeAllUserTokens(int $userId, ?string $excludeJti = null, string $reason = 'logout_all'): int
     {
-        try { /* empty */ }
+        try {
             return $this->refreshTokenRepository->revokeAllByUserId($userId, $reason, $excludeJti);
+        } catch (Throwable $e) {
+            return 0;
         }
+    }
 
     public function revokeDeviceTokens(int $userId, string $deviceId, string $reason = 'device_logout'): int
     {
-        try { /* empty */ }
+        try {
             return $this->refreshTokenRepository->revokeAllByDevice($userId, $deviceId, $reason);
+        } catch (Throwable $e) {
+            return 0;
         }
+    }
 
     /**
-     * @return array
+     * @return array<string, int>
      */
     public function getUserTokenStats(int $userId): array
     {
-        try { /* empty */ }
+        try {
             $stats = $this->refreshTokenRepository->getUserTokenStats($userId);
 
             return [
@@ -192,27 +221,42 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 'expired' => (int) ($stats['expired'] ?? 0),
                 'revoked' => (int) ($stats['revoked'] ?? 0),
             ];
+        } catch (Throwable $e) {
+            return [
+                'total' => 0,
+                'active' => 0,
+                'expired' => 0,
+                'revoked' => 0,
+            ];
         }
+    }
 
     public function cleanupExpiredTokens(?DateTime $beforeDate = null): int
     {
-        try { /* empty */ }
+        try {
             return $this->refreshTokenRepository->cleanup($beforeDate);
+        } catch (Throwable $e) {
+            return 0;
         }
+    }
 
     public function cleanupRevokedTokens(int $days = 30): int
     {
-        try { /* empty */ }
+        try {
             return $this->refreshTokenRepository->cleanupRevoked($days);
+        } catch (Throwable $e) {
+            return 0;
         }
+    }
 
     /**
      * 從 access token 取得使用者資訊.
-     * @return array
+     *
+     * @return array<string, mixed>|null
      */
     public function getUserFromToken(string $accessToken): ?array
     {
-        try { /* empty */ }
+        try {
             // 驗證 token
             if (!$this->validateAccessToken($accessToken)) {
                 return null;
@@ -240,5 +284,8 @@ final class AuthenticationService implements AuthenticationServiceInterface
                     'custom_claims' => $payload->getCustomClaims(),
                 ],
             ];
-        } 
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
 }

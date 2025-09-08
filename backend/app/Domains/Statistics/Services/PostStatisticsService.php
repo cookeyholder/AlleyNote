@@ -26,22 +26,20 @@ use Throwable;
  * - 遵循單一職責原則
  */
 final class PostStatisticsService
-
-
-
 {
     public function __construct(
-        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository) {}
+        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository
+    ) {}
 
     /**
      * 分析熱門文章.
-     * @param StatisticsPeriod $period 統計週期
-     * @return array
+     *
+     * @return array<string, mixed>
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularPosts(StatisticsPeriod $period, int $limit = 10): array
     {
-        try { /* empty */ }
+        try {
             $popularPosts = $this->postStatisticsRepository
                 ->getPopularPostsByPeriod($period, $limit);
 
@@ -75,13 +73,19 @@ final class PostStatisticsService
                     'top_source' => $topSource,
                 ],
             ];
-        } 
+        } catch (Throwable $e) {
+            throw new StatisticsCalculationException(
+                'Failed to analyze popular posts: ' . $e->getMessage(),
+                0,
+                $e
+            );
+        }
     }
 
     /**
      * 分析文章來源分佈.
-     * @param StatisticsPeriod $period 統計週期
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     public function analyzeSourceDistribution(StatisticsPeriod $period): array
     {
@@ -133,8 +137,8 @@ final class PostStatisticsService
 
     /**
      * 計算文章品質評分.
-     * @param int $postId 文章ID
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     public function calculatePostQualityScore(int $postId, StatisticsPeriod $period): array
     {
@@ -151,7 +155,6 @@ final class PostStatisticsService
 
         $factors = [];
         $totalScore = 0.0;
-        $maxScore = 100.0;
 
         // 觀看次數評分 (30%)
         $viewsScore = min(30, $postStats['views'] / 100);
@@ -193,8 +196,8 @@ final class PostStatisticsService
 
     /**
      * 分析文章趨勢.
-     * @param StatisticsPeriod $period 統計週期
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     public function analyzeTrends(StatisticsPeriod $period): array
     {
@@ -235,8 +238,8 @@ final class PostStatisticsService
         }
 
         // 按成長率排序
-        usort($trendingUp, fn($a, $b): array => $b['growth_rate'] <=> $a['growth_rate']);
-        usort($trendingDown, fn($a, $b): array => $a['growth_rate'] <=> $b['growth_rate']);
+        usort($trendingUp, fn($a, $b): int => $b['growth_rate'] <=> $a['growth_rate']);
+        usort($trendingDown, fn($a, $b): int => $a['growth_rate'] <=> $b['growth_rate']);
 
         return [
             'trending_up' => array_slice($trendingUp, 0, 10),
@@ -247,8 +250,7 @@ final class PostStatisticsService
 
     /**
      * 計算文章投資報酬率 (ROI).
-     * @param int $postId 文章ID
-     * @param float $contentCost 內容製作成本
+     *
      * @return array{roi: float, revenue: float, cost: float, profit: float} ROI分析結果
      */
     public function calculatePostROI(int $postId, StatisticsPeriod $period, float $contentCost): array
@@ -282,8 +284,8 @@ final class PostStatisticsService
 
     /**
      * 取得最佳發布時間建議.
-     * @param StatisticsPeriod $period 分析週期
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     public function getBestPublishingTimes(StatisticsPeriod $period): array
     {
@@ -311,10 +313,10 @@ final class PostStatisticsService
             $day = $post['publish_day'];
             $performance = $post['avg_views'];
 
-            if (!isset($hourlyStats[$hour] {
+            if (!isset($hourlyStats[$hour])) {
                 $hourlyStats[$hour] = [];
             }
-            if (!isset($dailyStats[$day] {
+            if (!isset($dailyStats[$day])) {
                 $dailyStats[$day] = [];
             }
 
@@ -349,21 +351,32 @@ final class PostStatisticsService
             'insights' => [
                 'peak_hour' => $peakHour,
                 'peak_day' => $peakDay,
-                'recommendation' => "建議在 {$peakDay} 的 {$peakHour} => 00 發布文章以獲得最佳表現",
+                'recommendation' => "建議在 {$peakDay} 的 {$peakHour}:00 發布文章以獲得最佳表現",
             ],
         ];
     }
 
     /**
+     * 分析熱門內容.
+     *
+     * @return array<string, mixed>
+     * @throws StatisticsCalculationException 當分析失敗時
+     */
+    public function analyzePopularContent(StatisticsPeriod $period, int $limit = 10): array
+    {
+        return $this->analyzePopularPosts($period, $limit);
+    }
+
+    /**
      * 計算香農熵（多樣性指標）.
-     * @param array $distribution 分佈資料
-     * @return float 香農熵值
+     *
+     * @param array<string, int> $distribution 分佈資料
      */
     private function calculateShannonEntropy(array $distribution): float
     {
         $total = array_sum($distribution);
 
-        if ($total == 0) {
+        if ($total === 0) {
             return 0.0;
         }
 
@@ -381,7 +394,7 @@ final class PostStatisticsService
 
     /**
      * 計算來源品質評分.
-     * @param string $source 來源類型
+     *
      * @return float 品質評分 (0-15)
      */
     private function calculateSourceQualityScore(string $source): float
@@ -403,7 +416,7 @@ final class PostStatisticsService
 
     /**
      * 計算一致性評分.
-     * @param int $postId 文章ID
+     *
      * @return float 一致性評分 (0-10)
      */
     private function calculateConsistencyScore(int $postId, StatisticsPeriod $period): float
@@ -419,12 +432,12 @@ final class PostStatisticsService
         $performances = array_column($historicalData, 'daily_views');
         $mean = array_sum($performances) / count($performances);
 
-        if ($mean == 0) {
+        if ($mean === 0) {
             return 0.0;
         }
 
         $variance = array_sum(
-            array_map(fn($value): array => ((float) $value - $mean) ** 2, $performances),
+            array_map(fn($value): float => ((float) $value - $mean) ** 2, $performances),
         ) / count($performances);
 
         $coefficientOfVariation = sqrt($variance) / $mean;
@@ -436,31 +449,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 分析熱門內容.
-     * @param StatisticsPeriod $period 統計週期
-     * @return array
-     * @throws StatisticsCalculationException 當分析失敗時
-     */
-    public function analyzePopularContent(StatisticsPeriod $period, int $limit = 10): array
-    {
-        return $this->analyzePopularPosts($period, $limit);
-    }
-
-    /**
-     * 取得週期內的熱門文章.
-     * @param StatisticsPeriod $period 統計週期
-     * @return array
-     * @throws StatisticsCalculationException 當分析失敗時
-     */
-    public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array
-    {
-        return $this->analyzePopularPosts($period, $limit);
-    }
-
-    /**
      * 取得品質等級.
-     * @param float $score 評分
-     * @return string 品質等級
      */
     private function getQualityGrade(float $score): string
     {
@@ -471,7 +460,8 @@ final class PostStatisticsService
             $score >= 60 => 'B',
             $score >= 50 => 'C+',
             $score >= 40 => 'C',
-            $score >= 30 => 'D',
+            $score >= 30 => 'D+',
+            $score >= 20 => 'D',
             default => 'F',
         };
     }

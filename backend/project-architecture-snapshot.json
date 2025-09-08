@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 04:09:49",
+        "scan_time": "2025-09-09 04:29:23",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -350,7 +350,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Services\/StatisticsCalculationService.php",
                                             "extension": "php",
-                                            "size": 14090
+                                            "size": 14251
                                         },
                                         "StatisticsCacheService.php": {
                                             "type": "file",
@@ -362,7 +362,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Services\/PostStatisticsService.php",
                                             "extension": "php",
-                                            "size": 15099
+                                            "size": 14555
                                         },
                                         "StatisticsCalculatorService.php": {
                                             "type": "file",
@@ -680,7 +680,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Providers\/SecurityServiceProvider.php",
                                             "extension": "php",
-                                            "size": 6362
+                                            "size": 10417
                                         }
                                     }
                                 },
@@ -876,7 +876,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Error\/ErrorHandlerService.php",
                                                     "extension": "php",
-                                                    "size": 10478
+                                                    "size": 10503
                                                 }
                                             }
                                         },
@@ -1166,7 +1166,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/AuthenticationService.php",
                                             "extension": "php",
-                                            "size": 9083
+                                            "size": 10296
                                         },
                                         "AuthService.php": {
                                             "type": "file",
@@ -1184,7 +1184,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/PasswordSecurityService.php",
                                             "extension": "php",
-                                            "size": 11694
+                                            "size": 11004
                                         },
                                         "RefreshTokenService.php": {
                                             "type": "file",
@@ -1196,13 +1196,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/AuthorizationService.php",
                                             "extension": "php",
-                                            "size": 7845
+                                            "size": 9365
                                         },
                                         "TokenBlacklistService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/TokenBlacklistService.php",
                                             "extension": "php",
-                                            "size": 14738
+                                            "size": 16945
                                         },
                                         "JwtTokenService.php": {
                                             "type": "file",
@@ -1466,7 +1466,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Repositories\/MemoryTagRepository.php",
                                             "extension": "php",
-                                            "size": 10458
+                                            "size": 10478
                                         }
                                     }
                                 },
@@ -1736,7 +1736,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Services\/CacheMonitor.php",
                                             "extension": "php",
-                                            "size": 29021
+                                            "size": 24860
                                         },
                                         "PerformanceMonitorService.php": {
                                             "type": "file",
@@ -1748,7 +1748,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Services\/ErrorTrackerService.php",
                                             "extension": "php",
-                                            "size": 20012
+                                            "size": 19528
                                         }
                                     }
                                 }
@@ -2106,7 +2106,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Services\/Statistics\/StatisticsQueryService.php",
                                             "extension": "php",
-                                            "size": 18413
+                                            "size": 17001
                                         },
                                         "StatisticsApplicationService.php": {
                                             "type": "file",
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 180978
+            "size": 144518
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1676900
+            "size": 1678111
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -6319,14 +6319,15 @@
                 "calculateForecast",
                 "calculateCorrelation",
                 "calculateSeasonalityIndex",
+                "calculateTrends",
                 "calculateMetricGrowthRate",
                 "calculateUserGrowthRate",
                 "calculateLinearGrowthRate",
-                "calculateTrends",
-                "calculateForecastConfidence"
+                "calculateForecastConfidence",
+                "calculateSimpleVolatility"
             ],
             "constants": [],
-            "lines_of_code": 441
+            "lines_of_code": 472
         },
         "app\/Domains\/Statistics\/Services\/StatisticsCacheService.php": {
             "path": "app\/Domains\/Statistics\/Services\/StatisticsCacheService.php",
@@ -6408,15 +6409,14 @@
                 "analyzeTrends",
                 "calculatePostROI",
                 "getBestPublishingTimes",
+                "analyzePopularContent",
                 "calculateShannonEntropy",
                 "calculateSourceQualityScore",
                 "calculateConsistencyScore",
-                "analyzePopularContent",
-                "getPopularPostsByPeriod",
                 "getQualityGrade"
             ],
             "constants": [],
-            "lines_of_code": 479
+            "lines_of_code": 469
         },
         "app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php": {
             "path": "app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php",
@@ -7382,47 +7382,44 @@
             "path": "app\/Domains\/Security\/Providers\/SecurityServiceProvider.php",
             "namespace": "App\\Domains\\Security\\Providers",
             "classes": [
-                "SecurityServiceProvider",
-                "implements"
+                "SecurityServiceProvider"
             ],
-            "interfaces": [
-                "ActivityLogRepositoryInterface"
-            ],
+            "interfaces": [],
             "traits": [],
             "uses": [
                 "App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface",
                 "App\\Domains\\Security\\Contracts\\ActivityLogRepositoryInterface",
                 "App\\Domains\\Security\\Contracts\\CsrfProtectionServiceInterface",
+                "App\\Domains\\Security\\Contracts\\ErrorHandlerServiceInterface",
                 "App\\Domains\\Security\\Contracts\\IpRepositoryInterface",
                 "App\\Domains\\Security\\Contracts\\IpServiceInterface",
+                "App\\Domains\\Security\\Contracts\\SecurityHeaderServiceInterface",
+                "App\\Domains\\Security\\Contracts\\SecretsManagerInterface",
                 "App\\Domains\\Security\\Contracts\\XssProtectionServiceInterface",
                 "App\\Domains\\Security\\Repositories\\ActivityLogRepository",
+                "App\\Domains\\Security\\Repositories\\IpRepository",
                 "App\\Domains\\Security\\Services\\ActivityLoggingService",
                 "App\\Domains\\Security\\Services\\Core\\CsrfProtectionService",
                 "App\\Domains\\Security\\Services\\Core\\XssProtectionService",
+                "App\\Domains\\Security\\Services\\Error\\ErrorHandlerService",
+                "App\\Domains\\Security\\Services\\Headers\\SecurityHeaderService",
                 "App\\Domains\\Security\\Services\\IpService",
+                "App\\Domains\\Security\\Services\\Secrets\\SecretsManager",
+                "PDO",
                 "Psr\\Container\\ContainerInterface",
-                "Psr\\Log\\LoggerInterface",
-                "Stringable"
+                "Psr\\Log\\LoggerInterface"
             ],
             "functions": [
                 "getDefinitions",
-                "createActivityLoggingService",
-                "emergency",
-                "alert",
-                "critical",
-                "error",
-                "warning",
-                "notice",
-                "info",
-                "debug",
-                "log",
-                "createCsrfProtectionService",
-                "createXssProtectionService",
-                "createIpService"
+                "getConfiguration",
+                "register",
+                "getBootableServices",
+                "boot",
+                "checkDependencies",
+                "getHealthCheck"
             ],
             "constants": [],
-            "lines_of_code": 179
+            "lines_of_code": 283
         },
         "app\/Domains\/Security\/Enums\/ActivityCategory.php": {
             "path": "app\/Domains\/Security\/Enums\/ActivityCategory.php",
@@ -8174,7 +8171,7 @@
                 "truncateString"
             ],
             "constants": [],
-            "lines_of_code": 340
+            "lines_of_code": 344
         },
         "app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php": {
             "path": "app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php",
@@ -9382,7 +9379,7 @@
             "constants": [
                 "MAX_REFRESH_TOKENS_PER_USER"
             ],
-            "lines_of_code": 245
+            "lines_of_code": 292
         },
         "app\/Domains\/Auth\/Services\/AuthService.php": {
             "path": "app\/Domains\/Auth\/Services\/AuthService.php",
@@ -9444,29 +9441,31 @@
             "traits": [],
             "uses": [
                 "App\\Domains\\Auth\\Contracts\\PasswordSecurityServiceInterface",
-                "App\\Domains\\Auth\\Services\\Advanced\\PwnedPasswordService",
-                "App\\Shared\\Exceptions\\ValidationException"
+                "App\\Shared\\Exceptions\\ValidationException",
+                "Throwable"
             ],
             "functions": [
-                "__construct",
                 "hashPassword",
                 "verifyPassword",
-                "needsRehash",
+                "isStrongPassword",
+                "calculatePasswordStrength",
                 "validatePassword",
                 "generateSecurePassword",
-                "calculatePasswordStrength",
-                "validatePasswordComplexity",
+                "needsRehash",
+                "getPasswordPolicy",
                 "isCommonPassword",
                 "hasExcessiveRepetition",
-                "hasSequentialChars"
+                "hasSequentialChars",
+                "containsSequence"
             ],
             "constants": [
                 "MIN_LENGTH",
                 "MAX_LENGTH",
                 "MIN_UNIQUE_CHARS",
-                "FALLBACK_COMMON_PASSWORDS"
+                "MAX_REPETITION",
+                "COMMON_PASSWORDS"
             ],
-            "lines_of_code": 376
+            "lines_of_code": 392
         },
         "app\/Domains\/Auth\/Services\/RefreshTokenService.php": {
             "path": "app\/Domains\/Auth\/Services\/RefreshTokenService.php",
@@ -9518,6 +9517,7 @@
                 "App\\Domains\\Auth\\Contracts\\AuthorizationServiceInterface",
                 "App\\Shared\\Contracts\\CacheServiceInterface",
                 "PDO",
+                "Throwable",
                 "($userId) {\n            return $this->getUserPermissions($userId)",
                 "($userId) {\n            return $this->getUserRoles($userId)"
             ],
@@ -9542,7 +9542,7 @@
             "constants": [
                 "CACHE_TTL"
             ],
-            "lines_of_code": 269
+            "lines_of_code": 302
         },
         "app\/Domains\/Auth\/Services\/TokenBlacklistService.php": {
             "path": "app\/Domains\/Auth\/Services\/TokenBlacklistService.php",
@@ -9586,7 +9586,7 @@
                 "DEFAULT_MAX_BLACKLIST_SIZE",
                 "HIGH_PRIORITY_REASONS"
             ],
-            "lines_of_code": 481
+            "lines_of_code": 563
         },
         "app\/Domains\/Auth\/Services\/JwtTokenService.php": {
             "path": "app\/Domains\/Auth\/Services\/JwtTokenService.php",
@@ -11558,18 +11558,15 @@
                 "updateHitRate",
                 "getDriverStats",
                 "calculateGlobalStats",
-                "calculateOperationsPerSecond",
                 "calculateErrorRate",
-                "convertToCsv",
-                "getEmptyDriverStats",
-                "getEmptyHitStats",
-                "getEmptyErrorStats",
+                "calculateOperationsPerSecond",
                 "getOperationCount",
+                "calculateSuccessRate",
                 "getDefaultConfig",
-                "calculateSuccessRate"
+                "convertToCsv"
             ],
             "constants": [],
-            "lines_of_code": 872
+            "lines_of_code": 731
         },
         "app\/Shared\/Monitoring\/Services\/PerformanceMonitorService.php": {
             "path": "app\/Shared\/Monitoring\/Services\/PerformanceMonitorService.php",
@@ -11646,7 +11643,7 @@
                 "determineHealthStatus"
             ],
             "constants": [],
-            "lines_of_code": 601
+            "lines_of_code": 588
         },
         "app\/Shared\/Domain\/Entity\/AggregateRoot.php": {
             "path": "app\/Shared\/Domain\/Entity\/AggregateRoot.php",
@@ -12659,24 +12656,18 @@
             ],
             "functions": [
                 "__construct",
-                "getStatisticsSnapshots",
-                "getPostStatisticsTrends",
-                "getUserActivityStatistics",
-                "getSystemPerformanceStatistics",
-                "customStatisticsQuery",
+                "getStatisticsList",
+                "getStatisticsById",
+                "getPostStatistics",
+                "getUserStatistics",
+                "getSystemStatistics",
+                "getStatisticsTrend",
                 "validatePaginationParams",
-                "validateDataPoints",
-                "validateLimit",
-                "calculateDataPointInterval",
-                "analyzeTrends",
-                "calculateTrendDirection",
-                "calculateVolatility",
-                "validateCustomQueryParams",
-                "parseQueryPeriod",
-                "executeCustomQuery"
+                "generateSystemStatisticsSummary",
+                "analyzeTrend"
             ],
             "constants": [],
-            "lines_of_code": 530
+            "lines_of_code": 508
         },
         "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php": {
             "path": "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php",
@@ -24068,10 +24059,6 @@
                     "file": "app\/Domains\/Security\/Providers\/SecurityServiceProvider.php"
                 },
                 {
-                    "class": "App\\Domains\\Security\\Providers\\implements",
-                    "file": "app\/Domains\/Security\/Providers\/SecurityServiceProvider.php"
-                },
-                {
                     "class": "App\\Domains\\Security\\Repositories\\IpRepository",
                     "file": "app\/Domains\/Security\/Repositories\/IpRepository.php"
                 },
@@ -25779,10 +25766,6 @@
                 "type": "constructor_injection"
             },
             {
-                "file": "app\/Domains\/Auth\/Services\/PasswordSecurityService.php",
-                "type": "constructor_injection"
-            },
-            {
                 "file": "app\/Domains\/Auth\/Services\/RefreshTokenService.php",
                 "type": "constructor_injection"
             },
@@ -26404,13 +26387,13 @@
     "metrics": {
         "code_complexity": {
             "total_files": 590,
-            "total_classes": 467,
-            "total_interfaces": 80,
+            "total_classes": 466,
+            "total_interfaces": 79,
             "avg_classes_per_file": 0.79
         },
         "dependency_metrics": {
-            "total_dependencies": 2316,
-            "avg_dependencies_per_file": 3.93
+            "total_dependencies": 2324,
+            "avg_dependencies_per_file": 3.94
         },
         "maintainability_score": 100,
         "test_coverage_estimate": {
@@ -26462,7 +26445,6 @@
         "App\\Domains\\Post\\Services\\PostCacheKeyService": "app\/Domains\/Post\/Services\/PostCacheKeyService.php",
         "App\\Domains\\Post\\Validation\\PostValidator": "app\/Domains\/Post\/Validation\/PostValidator.php",
         "App\\Domains\\Security\\Providers\\SecurityServiceProvider": "app\/Domains\/Security\/Providers\/SecurityServiceProvider.php",
-        "App\\Domains\\Security\\Providers\\implements": "app\/Domains\/Security\/Providers\/SecurityServiceProvider.php",
         "App\\Domains\\Security\\Repositories\\IpRepository": "app\/Domains\/Security\/Repositories\/IpRepository.php",
         "App\\Domains\\Security\\Repositories\\ActivityLogRepository": "app\/Domains\/Security\/Repositories\/ActivityLogRepository.php",
         "App\\Domains\\Security\\Models\\IpList": "app\/Domains\/Security\/Models\/IpList.php",
@@ -26908,7 +26890,6 @@
         "App\\Domains\\Security\\Contracts\\SuspiciousActivityDetectorInterface": "app\/Domains\/Security\/Contracts\/SuspiciousActivityDetectorInterface.php",
         "App\\Domains\\Security\\Contracts\\ActivityLogRepositoryInterface": "app\/Domains\/Security\/Contracts\/ActivityLogRepositoryInterface.php",
         "App\\Domains\\Security\\Contracts\\CsrfProtectionServiceInterface": "app\/Domains\/Security\/Contracts\/CsrfProtectionServiceInterface.php",
-        "App\\Domains\\Security\\Providers\\ActivityLogRepositoryInterface": "app\/Domains\/Security\/Providers\/SecurityServiceProvider.php",
         "App\\Domains\\Auth\\Contracts\\RefreshTokenRepositoryInterface": "app\/Domains\/Auth\/Contracts\/RefreshTokenRepositoryInterface.php",
         "App\\Domains\\Auth\\Contracts\\AuthenticationServiceInterface": "app\/Domains\/Auth\/Contracts\/AuthenticationServiceInterface.php",
         "App\\Domains\\Auth\\Contracts\\JwtProviderInterface": "app\/Domains\/Auth\/Contracts\/JwtProviderInterface.php",
@@ -28021,6 +28002,11 @@
             },
             {
                 "type": "use",
+                "target": "App\\Domains\\Security\\Contracts\\ErrorHandlerServiceInterface",
+                "file": "app\/Domains\/Security\/Contracts\/ErrorHandlerServiceInterface.php"
+            },
+            {
+                "type": "use",
                 "target": "App\\Domains\\Security\\Contracts\\IpRepositoryInterface",
                 "file": "app\/Domains\/Security\/Contracts\/IpRepositoryInterface.php"
             },
@@ -28031,6 +28017,16 @@
             },
             {
                 "type": "use",
+                "target": "App\\Domains\\Security\\Contracts\\SecurityHeaderServiceInterface",
+                "file": "app\/Domains\/Security\/Contracts\/SecurityHeaderServiceInterface.php"
+            },
+            {
+                "type": "use",
+                "target": "App\\Domains\\Security\\Contracts\\SecretsManagerInterface",
+                "file": "app\/Domains\/Security\/Contracts\/SecretsManagerInterface.php"
+            },
+            {
+                "type": "use",
                 "target": "App\\Domains\\Security\\Contracts\\XssProtectionServiceInterface",
                 "file": "app\/Domains\/Security\/Contracts\/XssProtectionServiceInterface.php"
             },
@@ -28038,6 +28034,11 @@
                 "type": "use",
                 "target": "App\\Domains\\Security\\Repositories\\ActivityLogRepository",
                 "file": "app\/Domains\/Security\/Repositories\/ActivityLogRepository.php"
+            },
+            {
+                "type": "use",
+                "target": "App\\Domains\\Security\\Repositories\\IpRepository",
+                "file": "app\/Domains\/Security\/Repositories\/IpRepository.php"
             },
             {
                 "type": "use",
@@ -28056,8 +28057,28 @@
             },
             {
                 "type": "use",
+                "target": "App\\Domains\\Security\\Services\\Error\\ErrorHandlerService",
+                "file": "app\/Domains\/Security\/Services\/Error\/ErrorHandlerService.php"
+            },
+            {
+                "type": "use",
+                "target": "App\\Domains\\Security\\Services\\Headers\\SecurityHeaderService",
+                "file": "app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php"
+            },
+            {
+                "type": "use",
                 "target": "App\\Domains\\Security\\Services\\IpService",
                 "file": "app\/Domains\/Security\/Services\/IpService.php"
+            },
+            {
+                "type": "use",
+                "target": "App\\Domains\\Security\\Services\\Secrets\\SecretsManager",
+                "file": "app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php"
+            },
+            {
+                "type": "use",
+                "target": "PDO",
+                "file": null
             },
             {
                 "type": "use",
@@ -28067,11 +28088,6 @@
             {
                 "type": "use",
                 "target": "Psr\\Log\\LoggerInterface",
-                "file": null
-            },
-            {
-                "type": "use",
-                "target": "Stringable",
                 "file": null
             }
         ],
@@ -29341,13 +29357,13 @@
             },
             {
                 "type": "use",
-                "target": "App\\Domains\\Auth\\Services\\Advanced\\PwnedPasswordService",
-                "file": "app\/Domains\/Auth\/Services\/Advanced\/PwnedPasswordService.php"
+                "target": "App\\Shared\\Exceptions\\ValidationException",
+                "file": "app\/Shared\/Exceptions\/ValidationException.php"
             },
             {
                 "type": "use",
-                "target": "App\\Shared\\Exceptions\\ValidationException",
-                "file": "app\/Shared\/Exceptions\/ValidationException.php"
+                "target": "Throwable",
+                "file": null
             }
         ],
         "app\/Domains\/Auth\/Services\/RefreshTokenService.php": [
@@ -29446,6 +29462,11 @@
             {
                 "type": "use",
                 "target": "PDO",
+                "file": null
+            },
+            {
+                "type": "use",
+                "target": "Throwable",
                 "file": null
             },
             {

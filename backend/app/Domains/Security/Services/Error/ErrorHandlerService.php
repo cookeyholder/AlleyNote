@@ -14,9 +14,6 @@ use Monolog\Processor\WebProcessor;
 use Throwable;
 
 class ErrorHandlerService implements ErrorHandlerServiceInterface
-
-
-
 {
     private Logger $logger;
 
@@ -26,12 +23,11 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     private array $sensitiveKeys;
 
     /**
-     * @param array $sensitiveKeys
+     * @param array<string, mixed> $sensitiveKeys
      */
     public function __construct(
         string $logPath = '',
         bool $isDevelopment = false,
-        /** @var array<string, mixed> */
         array $sensitiveKeys = [],
     ) {
         $this->isDevelopment = $isDevelopment;
@@ -53,12 +49,12 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'authorization',
         ], $sensitiveKeys);
 
-        $this->initializeLogger($logPath ? true : __DIR__ . '/./././storage/logs');
+        $this->initializeLogger($logPath ?: __DIR__ . '/../../../../../storage/logs');
         $this->registerErrorHandlers();
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function handleException(Throwable $e, bool $isPublicError = false): array
     {
@@ -79,14 +75,14 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         return [
             'error' => $this->getPublicErrorMessage($e),
             'code' => $this->getErrorCode($e),
-            'timestamp' => date('Y-m-d H => i:s'),
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
 
     /**
-     * @param array $context
+     * @param array<string, mixed> $context
      */
-    public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void
+    public function logSecurityEvent(string $event, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeLogData($context);
 
@@ -100,9 +96,9 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     }
 
     /**
-     * @param array $context
+     * @param array<string, mixed> $context
      */
-    public function logAuthenticationAttempt(bool $success, string $username, /** @var array<string, mixed> */ array $context = []): void
+    public function logAuthenticationAttempt(bool $success, string $username, array $context = []): void
     {
         $event = $success ? 'Authentication Success' : 'Authentication Failed';
 
@@ -113,9 +109,9 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     }
 
     /**
-     * @param array $context
+     * @param array<string, mixed> $context
      */
-    public function logSuspiciousActivity(string $activity, /** @var array<string, mixed> */ array $context = []): void
+    public function logSuspiciousActivity(string $activity, array $context = []): void
     {
         $this->logger->error('Suspicious Activity: ' . $activity, array_merge([
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
@@ -126,7 +122,8 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     }
 
     /**
-     * @param array $data
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     public function sanitizeLogData(array $data): array
     {
@@ -147,6 +144,8 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             } else {
                 $sanitized[$key] = $value;
             }
+        }
+
         return $sanitized;
     }
 
@@ -187,8 +186,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
         // 設定格式化器
         $formatter = new LineFormatter(
-            '[%datetime%] %channel%.%level_name%: %message% %context% %extra%
-',
+            "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
             'Y-m-d H:i:s',
             true,
             true,
@@ -229,7 +227,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             header('Content-Type: application/json');
         }
 
-        echo json_encode($errorData) ?? '';
+        echo json_encode($errorData) ?: '';
         exit;
     }
 
@@ -242,7 +240,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $exception = new ErrorException($message, 0, $severity, $file, $line);
         $this->logException($exception);
 
-        if ($severity == E_ERROR || $severity === E_CORE_ERROR || $severity === E_COMPILE_ERROR) {
+        if ($severity === E_ERROR || $severity === E_CORE_ERROR || $severity === E_COMPILE_ERROR) {
             $this->globalExceptionHandler($exception);
         }
 
@@ -253,7 +251,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     {
         $error = error_get_last();
 
-        if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE) {
+        if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE], true)) {
             $exception = new ErrorException(
                 $error['message'],
                 0,
@@ -264,6 +262,8 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
             $this->globalExceptionHandler($exception);
         }
+    }
+
     private function logException(Throwable $e): void
     {
         $context = [
@@ -271,7 +271,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'file' => $e->getFile(),
             'line' => $e->getLine(),
             'trace' => $e->getTraceAsString(),
-            'previous' => $e->getPrevious() ? get_class($e->getPrevious())  => null,
+            'previous' => $e->getPrevious() ? get_class($e->getPrevious()) : null,
         ];
 
         $this->logger->error($e->getMessage(), $this->sanitizeLogData($context));
@@ -307,6 +307,8 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             if (str_contains($key, strtolower($sensitiveKey))) {
                 return true;
             }
+        }
+
         return false;
     }
 
@@ -333,8 +335,9 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     private function truncateString(string $string, int $maxLength = 1000): string
     {
         if (strlen($string) > $maxLength) {
-            return substr($string, 0, $maxLength) . '. [truncated]';
+            return substr($string, 0, $maxLength) . '... [truncated]';
         }
 
         return $string;
     }
+}

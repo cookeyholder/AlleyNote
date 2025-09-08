@@ -7,11 +7,9 @@ namespace App\Domains\Auth\Services;
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Shared\Contracts\CacheServiceInterface;
 use PDO;
+use Throwable;
 
 class AuthorizationService implements AuthorizationServiceInterface
-
-
-
 {
     private PDO $db;
 
@@ -63,151 +61,176 @@ class AuthorizationService implements AuthorizationServiceInterface
     public function assignRole(int $userId, string $roleName): bool
     {
         try {
-        // 先檢查角色是否存在
-        $stmt = $this->db->prepare('SELECT id FROM roles WHERE name = ?');
-        $stmt->execute([$roleName]);
-        $role = $stmt->fetch(PDO::FETCH_ASSOC);
+            // 先檢查角色是否存在
+            $stmt = $this->db->prepare('SELECT id FROM roles WHERE name = ?');
+            $stmt->execute([$roleName]);
+            $role = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$role) {
+            if (!$role) {
+                return false;
+            }
+
+            // 檢查是否已經分配
+            $stmt = $this->db->prepare('SELECT COUNT(*) FROM user_roles WHERE user_id = ? AND role_id = ?');
+            $stmt->execute([$userId, $role['id']]);
+
+            if ($stmt->fetchColumn() > 0) {
+                return true; // 已經存在
+            }
+
+            // 分配角色
+            $stmt = $this->db->prepare('INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)');
+            $result = $stmt->execute([$userId, $role['id']]);
+
+            if ($result) {
+                $this->clearUserCache($userId);
+            }
+
+            return $result;
+        } catch (Throwable $e) {
+            error_log('AssignRole error: ' . $e->getMessage());
             return false;
         }
-
-        // 檢查是否已經分配
-        $stmt = $this->db->prepare('SELECT COUNT(*) FROM user_roles WHERE user_id = ? AND role_id = ?');
-        $stmt->execute([$userId, $role['id']]);
-
-        if ($stmt->fetchColumn() > 0) {
-            return true; // 已經存在
-        }
-
-        // 分配角色
-        $stmt = $this->db->prepare('INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)');
-        $result = $stmt->execute([$userId, $role['id']]);
-
-        if ($result) {
-            $this->clearUserCache($userId);
-        }
-
-        return $result;
     }
 
     public function removeRole(int $userId, string $roleName): bool
     {
         try {
-        $stmt = $this->db->prepare('
+            $stmt = $this->db->prepare('
                 DELETE FROM user_roles
                 WHERE user_id = ? AND role_id = (
                     SELECT id FROM roles WHERE name = ?
                 )
             ');
-        $result = $stmt->execute([$userId, $roleName]);
+            $result = $stmt->execute([$userId, $roleName]);
 
-        if ($result) {
-            $this->clearUserCache($userId);
+            if ($result) {
+                $this->clearUserCache($userId);
+            }
+
+            return $result;
+        } catch (Throwable $e) {
+            error_log('RemoveRole error: ' . $e->getMessage());
+            return false;
         }
-
-        return $result;
     }
 
     public function givePermission(int $userId, string $permission): bool
     {
         try {
-        // 先檢查權限是否存在
-        $stmt = $this->db->prepare('SELECT id FROM permissions WHERE name = ?');
-        $stmt->execute([$permission]);
-        $perm = $stmt->fetch(PDO::FETCH_ASSOC);
+            // 先檢查權限是否存在
+            $stmt = $this->db->prepare('SELECT id FROM permissions WHERE name = ?');
+            $stmt->execute([$permission]);
+            $perm = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$perm) {
+            if (!$perm) {
+                return false;
+            }
+
+            // 檢查是否已經分配
+            $stmt = $this->db->prepare('SELECT COUNT(*) FROM user_permissions WHERE user_id = ? AND permission_id = ?');
+            $stmt->execute([$userId, $perm['id']]);
+
+            if ($stmt->fetchColumn() > 0) {
+                return true; // 已經存在
+            }
+
+            // 分配權限
+            $stmt = $this->db->prepare('INSERT INTO user_permissions (user_id, permission_id) VALUES (?, ?)');
+            $result = $stmt->execute([$userId, $perm['id']]);
+
+            if ($result) {
+                $this->clearUserCache($userId);
+            }
+
+            return $result;
+        } catch (Throwable $e) {
+            error_log('GivePermission error: ' . $e->getMessage());
             return false;
         }
-
-        // 檢查是否已經分配
-        $stmt = $this->db->prepare('SELECT COUNT(*) FROM user_permissions WHERE user_id = ? AND permission_id = ?');
-        $stmt->execute([$userId, $perm['id']]);
-
-        if ($stmt->fetchColumn() > 0) {
-            return true; // 已經存在
-        }
-
-        // 分配權限
-        $stmt = $this->db->prepare('INSERT INTO user_permissions (user_id, permission_id) VALUES (?, ?)');
-        $result = $stmt->execute([$userId, $perm['id']]);
-
-        if ($result) {
-            $this->clearUserCache($userId);
-        }
-
-        return $result;
     }
 
     public function revokePermission(int $userId, string $permission): bool
     {
         try {
-        $stmt = $this->db->prepare('
+            $stmt = $this->db->prepare('
                 DELETE FROM user_permissions
                 WHERE user_id = ? AND permission_id = (
                     SELECT id FROM permissions WHERE name = ?
                 )
             ');
-        $result = $stmt->execute([$userId, $permission]);
+            $result = $stmt->execute([$userId, $permission]);
 
-        if ($result) {
-            $this->clearUserCache($userId);
+            if ($result) {
+                $this->clearUserCache($userId);
+            }
+
+            return $result;
+        } catch (Throwable $e) {
+            error_log('RevokePermission error: ' . $e->getMessage());
+            return false;
         }
-
-        return $result;
     }
 
     public function getUserRoles(int $userId): array
     {
-        $stmt = $this->db->prepare('
-            SELECT r.id, r.name, r.description, r.created_at, r.updated_at
-            FROM roles r
-            INNER JOIN user_roles ur ON r.id = ur.role_id
-            WHERE ur.user_id = ?
-        ');
-        $stmt->execute([$userId]);
+        try {
+            $stmt = $this->db->prepare('
+                SELECT r.id, r.name, r.description, r.created_at, r.updated_at
+                FROM roles r
+                INNER JOIN user_roles ur ON r.id = ur.role_id
+                WHERE ur.user_id = ?
+            ');
+            $stmt->execute([$userId]);
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        /** @var array<string, mixed> $result */
-        return $result;
+            /** @var array<string, mixed> $result */
+            return $result;
+        } catch (Throwable $e) {
+            error_log('GetUserRoles error: ' . $e->getMessage());
+            return [];
+        }
     }
 
     public function getUserPermissions(int $userId): array
     {
-        // 取得角色權限
-        $stmt = $this->db->prepare('
-            SELECT DISTINCT p.name
-            FROM permissions p
-            INNER JOIN role_permissions rp ON p.id = rp.permission_id
-            INNER JOIN user_roles ur ON rp.role_id = ur.role_id
-            WHERE ur.user_id = ?
-        ');
-        $stmt->execute([$userId]);
-        $rolePermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        try {
+            // 取得角色權限
+            $stmt = $this->db->prepare('
+                SELECT DISTINCT p.name
+                FROM permissions p
+                INNER JOIN role_permissions rp ON p.id = rp.permission_id
+                INNER JOIN user_roles ur ON rp.role_id = ur.role_id
+                WHERE ur.user_id = ?
+            ');
+            $stmt->execute([$userId]);
+            $rolePermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        // 取得直接權限
-        $stmt = $this->db->prepare('
-            SELECT DISTINCT p.name
-            FROM permissions p
-            INNER JOIN user_permissions up ON p.id = up.permission_id
-            WHERE up.user_id = ?
-        ');
-        $stmt->execute([$userId]);
-        $directPermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            // 取得直接權限
+            $stmt = $this->db->prepare('
+                SELECT DISTINCT p.name
+                FROM permissions p
+                INNER JOIN user_permissions up ON p.id = up.permission_id
+                WHERE up.user_id = ?
+            ');
+            $stmt->execute([$userId]);
+            $directPermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        // 合併並去重
+            // 合併並去重
+            $permissions = array_unique(array_merge($rolePermissions, $directPermissions));
 
-        $permissions = array_unique(array_merge($rolePermissions, $directPermissions));
+            /** @var array<string, mixed> $result */
+            $result = [];
+            foreach ($permissions as $permission) {
+                $result[(string) $permission] = $permission;
+            }
 
-        /** @var array<string, mixed> $result */
-        $result = [];
-        foreach ($permissions as $permission) {
-            $result[(string) $permission] = $permission;
+            return $result;
+        } catch (Throwable $e) {
+            error_log('GetUserPermissions error: ' . $e->getMessage());
+            return [];
         }
-
-        return $result;
     }
 
     public function isSuperAdmin(int $userId): bool
@@ -240,26 +263,34 @@ class AuthorizationService implements AuthorizationServiceInterface
     private function canAccessPost(int $userId, int $postId): bool
     {
         try {
-        $stmt = $this->db->prepare('SELECT user_id FROM posts WHERE id = ? AND deleted_at IS NULL');
-        $stmt->execute([$postId]);
-        $post = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt = $this->db->prepare('SELECT user_id FROM posts WHERE id = ? AND deleted_at IS NULL');
+            $stmt->execute([$postId]);
+            $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $post && (int) $post['user_id'] === $userId;
+            return $post && (int) $post['user_id'] === $userId;
+        } catch (Throwable $e) {
+            error_log('CanAccessPost error: ' . $e->getMessage());
+            return false;
+        }
     }
 
     private function canAccessAttachment(int $userId, string $attachmentUuid): bool
     {
         try {
-        $stmt = $this->db->prepare('
+            $stmt = $this->db->prepare('
                 SELECT p.user_id
                 FROM posts p
                 INNER JOIN attachments a ON p.id = a.post_id
                 WHERE a.uuid = ? AND p.deleted_at IS NULL
             ');
-        $stmt->execute([$attachmentUuid]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->execute([$attachmentUuid]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $result && (int) $result['user_id'] === $userId;
+            return $result && (int) $result['user_id'] === $userId;
+        } catch (Throwable $e) {
+            error_log('CanAccessAttachment error: ' . $e->getMessage());
+            return false;
+        }
     }
 
     private function clearUserCache(int $userId): void
@@ -267,3 +298,4 @@ class AuthorizationService implements AuthorizationServiceInterface
         $this->cache->delete("user_permissions:{$userId}");
         $this->cache->delete("user_roles:{$userId}");
     }
+}

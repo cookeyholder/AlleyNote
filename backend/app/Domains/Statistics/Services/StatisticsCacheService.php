@@ -59,7 +59,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function get(string $key, mixed $default = null): mixed
     {
-        try { /* empty */ }
+        try {
             $normalizedKey = $this->normalizeKey($key);
             $cached = $this->cacheManager->get($normalizedKey, $default);
 
@@ -68,7 +68,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                     'key' => $key,
                     'normalized_key' => $normalizedKey,
                     'data_type' => gettype($cached),
-                    'data_size' => is_string($cached) ? strlen($cached])  => 'N/A',
+                    'data_size' => is_string($cached) ? strlen($cached) : 'N/A',
                 ]);
             } else {
                 $this->logger->debug('快取未命中', [
@@ -78,11 +78,19 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return $cached;
+        } catch (Exception $e) {
+            $this->logger->error('快取讀取失敗', [
+                'key' => $key,
+                'error' => $e->getMessage(),
+            ]);
+
+            return $default;
         }
+    }
 
     public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
-        try { /* empty */ }
+        try {
             $normalizedKey = $this->normalizeKey($key);
             $finalTtl = $ttl ?? $this->getTtlForKey($key);
 
@@ -94,7 +102,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                     'normalized_key' => $normalizedKey,
                     'ttl' => $finalTtl,
                     'data_type' => gettype($value),
-                    'data_size' => is_string($value) ? strlen($value])  => 'N/A',
+                    'data_size' => is_string($value) ? strlen($value) : 'N/A',
                 ]);
             } else {
                 $this->logger->warning('快取設定失敗', [
@@ -105,11 +113,19 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return $result;
+        } catch (Exception $e) {
+            $this->logger->error('快取寫入失敗', [
+                'key' => $key,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
         }
+    }
 
     public function delete(string $key): bool
     {
-        try { /* empty */ }
+        try {
             $normalizedKey = $this->normalizeKey($key);
             $result = $this->cacheManager->delete($normalizedKey);
 
@@ -120,27 +136,52 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $result;
+        } catch (Exception $e) {
+            $this->logger->error('快取刪除失敗', [
+                'key' => $key,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
         }
+    }
 
     public function has(string $key): bool
     {
-        try { /* empty */ }
+        try {
             $normalizedKey = $this->normalizeKey($key);
 
             return $this->cacheManager->has($normalizedKey);
+        } catch (Exception $e) {
+            $this->logger->error('快取檢查失敗', [
+                'key' => $key,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
         }
+    }
 
     public function remember(string $key, callable $callback, ?int $ttl = null): mixed
     {
-        try { /* empty */ }
+        try {
             $normalizedKey = $this->normalizeKey($key);
             $finalTtl = $ttl ?? $this->getTtlForKey($key);
 
             return $this->cacheManager->remember($normalizedKey, $callback, $finalTtl);
+        } catch (Exception $e) {
+            $this->logger->error('快取記憶失敗', [
+                'key' => $key,
+                'error' => $e->getMessage(),
+            ]);
+
+            // 如果快取失敗，直接執行回調
+            return $callback();
         }
+    }
 
     /**
-     * @param array $tags
+     * @param array<string> $tags
      */
     public function tags(array $tags): TaggedCacheInterface
     {
@@ -148,11 +189,11 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
     }
 
     /**
-     * @param array $tags
+     * @param array<string> $tags
      */
     public function invalidateByTags(array $tags): bool
     {
-        try { /* empty */ }
+        try {
             $taggedCache = $this->cacheManager->tags($tags);
             $result = $taggedCache->flush();
 
@@ -162,10 +203,19 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $result;
+        } catch (Exception $e) {
+            $this->logger->error('按標籤清除快取失敗', [
+                'tags' => $tags,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
         }
+    }
 
     /**
-     * @param array $callbacks
+     * @param array<string, callable> $callbacks
+     * @return array<string, mixed>
      */
     public function warmup(array $callbacks): array
     {
@@ -173,13 +223,13 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         $startTime = microtime(true);
 
         $this->logger->info('開始快取預熱', [
-            'callbacks_count' => count($callbacks]),
+            'callbacks_count' => count($callbacks),
         ]);
 
         foreach ($callbacks as $key => $callback) {
-            try { /* empty */ }
-                $itemStartTime = microtime(true);
+            $itemStartTime = microtime(true);
 
+            try {
                 if (!is_callable($callback)) {
                     throw new InvalidArgumentException("預熱回調 '{$key}' 不可呼叫");
                 }
@@ -197,16 +247,31 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                     'key' => $key,
                     'duration' => $itemDuration,
                 ]);
-            } 
+            } catch (Exception $e) {
+                $itemDuration = microtime(true) - $itemStartTime;
+
+                $results[$key] = [
+                    'success' => false,
+                    'duration' => $itemDuration,
+                    'error' => $e->getMessage(),
+                ];
+
+                $this->logger->error('快取預熱項目失敗', [
+                    'key' => $key,
+                    'duration' => $itemDuration,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
 
         $totalDuration = microtime(true) - $startTime;
-        $successCount = count(array_filter($results, fn($r): array => $r['success']));
+        $successCount = count(array_filter($results, fn(array $r): bool => $r['success']));
 
         $this->logger->info('快取預熱完成', [
             'total_duration' => $totalDuration,
             'total_items' => count($callbacks),
             'success_count' => $successCount,
-            'failure_count' => count($callbacks]) - $successCount,
+            'failure_count' => count($callbacks) - $successCount,
         ]);
 
         return $results;
@@ -259,7 +324,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function invalidateOverviewCache(?StatisticsPeriod $period = null): bool
     {
-        if ($period == null) {
+        if ($period === null) {
             return $this->invalidateByTags(['statistics', 'overview']);
         }
 
@@ -268,7 +333,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function invalidateSnapshotCache(?StatisticsPeriod $period = null): bool
     {
-        if ($period == null) {
+        if ($period === null) {
             return $this->invalidateByTags(['statistics', 'snapshot']);
         }
 
@@ -278,7 +343,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function invalidatePopularContentCache(?StatisticsPeriod $period = null): bool
     {
-        if ($period == null) {
+        if ($period === null) {
             return $this->invalidateByTags(['statistics', 'popular']);
         }
 
@@ -288,7 +353,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function invalidateReportCache(string $reportType, ?StatisticsPeriod $period = null): bool
     {
-        if ($period == null) {
+        if ($period === null) {
             return $this->invalidateByTags(['statistics', 'report']);
         }
 
@@ -297,20 +362,27 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function invalidateAllCache(): bool
     {
-        try { /* empty */ }
+        try {
             $result = $this->invalidateByTags(['statistics']);
 
             $this->logger->info('清除所有統計快取', ['success' => $result]);
 
             return $result;
+        } catch (Exception $e) {
+            $this->logger->error('清除所有統計快取失敗', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
         }
+    }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {
-        try { /* empty */ }
+        try {
             $managerStats = $this->cacheManager->getStats();
 
             return [
@@ -320,11 +392,23 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                 'tag_config' => self::CACHE_TAGS,
                 'health_status' => $this->cacheManager->getHealthStatus(),
             ];
+        } catch (Exception $e) {
+            $this->logger->error('取得快取統計失敗', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'error' => $e->getMessage(),
+                'cache_keys' => $this->getCacheKeyStats(),
+                'ttl_config' => self::DEFAULT_TTL,
+                'tag_config' => self::CACHE_TAGS,
+            ];
         }
+    }
 
     public function isHealthy(): bool
     {
-        try { /* empty */ }
+        try {
             $healthStatus = $this->cacheManager->getHealthStatus();
 
             // 檢查是否有任何驅動可用
@@ -335,14 +419,21 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return false;
+        } catch (Exception $e) {
+            $this->logger->error('檢查快取健康狀態失敗', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
         }
+    }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function cleanup(): array
     {
-        try { /* empty */ }
+        try {
             $results = $this->cacheManager->cleanup();
 
             $this->logger->info('快取清理完成', ['results' => $results]);
@@ -354,7 +445,17 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return ['success' => true, 'message' => 'cleanup completed'];
+        } catch (Exception $e) {
+            $this->logger->error('快取清理失敗', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
         }
+    }
 
     /**
      * 正規化快取鍵。
@@ -380,7 +481,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     /**
      * 取得快取鍵統計資訊。
-     * @return array
+     * @return array<string, mixed>
      */
     private function getCacheKeyStats(): array
     {

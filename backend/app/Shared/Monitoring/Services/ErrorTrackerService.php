@@ -17,7 +17,7 @@ use Throwable;
  */
 class ErrorTrackerService implements ErrorTrackerInterface
 {
-    /** @var array<array<string, mixed> 錯誤記錄暫存 */
+    /** @var array<array<string, mixed>> 錯誤記錄暫存 */
     private array $errorRecords = [];
 
     /** @var array<callable> 錯誤過濾器 */
@@ -30,13 +30,13 @@ class ErrorTrackerService implements ErrorTrackerInterface
     private int $maxRecords = 1000;
 
     public function __construct(
-        private LoggerInterface $logger) {}
+        private LoggerInterface $logger
+    ) {}
 
     /**
      * 記錄一個錯誤。
-     * @param array $context
      */
-    public function recordError(Throwable $error, /** @var array<string, mixed> */ array $context = []): string
+    public function recordError(Throwable $error, array $context = []): string
     {
         return $this->recordErrorWithLevel('error', $error->getMessage(), array_merge($context, [
             'exception_class' => get_class($error),
@@ -49,27 +49,24 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 記錄一個警告。
-     * @param array $context
      */
-    public function recordWarning(string $message, /** @var array<string, mixed> */ array $context = []): string
+    public function recordWarning(string $message, array $context = []): string
     {
         return $this->recordErrorWithLevel('warning', $message, $context);
     }
 
     /**
      * 記錄一個訊息。
-     * @param array $context
      */
-    public function recordInfo(string $message, /** @var array<string, mixed> */ array $context = []): string
+    public function recordInfo(string $message, array $context = []): string
     {
         return $this->recordErrorWithLevel('info', $message, $context);
     }
 
     /**
      * 記錄關鍵錯誤（需要立即注意）。
-     * @param array $context
      */
-    public function recordCriticalError(Throwable $error, /** @var array<string, mixed> */ array $context = []): string
+    public function recordCriticalError(Throwable $error, array $context = []): string
     {
         $errorId = $this->recordErrorWithLevel('critical', $error->getMessage(), array_merge($context, [
             'exception_class' => get_class($error),
@@ -87,7 +84,6 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 取得錯誤統計資料。
-     * @return array
      */
     public function getErrorStats(int $hours = 24): array
     {
@@ -110,7 +106,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         // 按等級分組
         foreach ($recentErrors as $record) {
             $level = $record['level'];
-            if (!isset($stats['levels'][$level]) {
+            if (!isset($stats['levels'][$level])) {
                 $stats['levels'][$level] = 0;
             }
             $stats['levels'][$level]++;
@@ -122,11 +118,11 @@ class ErrorTrackerService implements ErrorTrackerInterface
                 continue;
             }
 
-    /** @var array<string, mixed> $context */
+            /** @var array<string, mixed> $context */
             $context = $record['context'];
-            if (is_string($context['exception_class')] {
+            if (is_string($context['exception_class'] ?? null)) {
                 $type = $context['exception_class'];
-                if (!isset($stats['error_types'][$type]) {
+                if (!isset($stats['error_types'][$type])) {
                     $stats['error_types'][$type] = 0;
                 }
                 $stats['error_types'][$type]++;
@@ -140,9 +136,9 @@ class ErrorTrackerService implements ErrorTrackerInterface
             }
             /** @var array<string, mixed> $context */
             $context = $record['context'];
-            if (is_string($context['file')] {
+            if (is_string($context['file'] ?? null)) {
                 $file = basename($context['file']);
-                if (!isset($stats['top_error_files'][$file]) {
+                if (!isset($stats['top_error_files'][$file])) {
                     $stats['top_error_files'][$file] = 0;
                 }
                 $stats['top_error_files'][$file]++;
@@ -162,7 +158,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 取得最近的錯誤記錄。
-     * @return list>
+     *
+     * @return list<array<string, mixed>>
      */
     public function getRecentErrors(int $limit = 50): array
     {
@@ -176,7 +173,6 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 取得錯誤趨勢分析。
-     * @return array
      */
     public function getErrorTrends(int $days = 7): array
     {
@@ -203,7 +199,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             $timestampValue = $record['timestamp'] ?? 0;
             $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int) $timestampValue : time();
             $date = date('Y-m-d', $timestamp);
-            if (!isset($trends['daily_counts'][$date]) {
+            if (!isset($trends['daily_counts'][$date])) {
                 $trends['daily_counts'][$date] = 0;
             }
             $trends['daily_counts'][$date]++;
@@ -219,10 +215,10 @@ class ErrorTrackerService implements ErrorTrackerInterface
             $date = date('Y-m-d', $timestamp);
             $level = is_string($record['level'] ?? '') ? $record['level'] : 'unknown';
 
-            if (!isset($trends['level_trends'][$level]) {
+            if (!isset($trends['level_trends'][$level])) {
                 $trends['level_trends'][$level] = [];
             }
-            if (!isset($trends['level_trends'][$level][$date]) {
+            if (!isset($trends['level_trends'][$level][$date])) {
                 $trends['level_trends'][$level][$date] = 0;
             }
             $trends['level_trends'][$level][$date]++;
@@ -234,18 +230,18 @@ class ErrorTrackerService implements ErrorTrackerInterface
                 continue;
             }
 
-    /** @var array<string, mixed> $context */
+            /** @var array<string, mixed> $context */
             $context = $record['context'];
-            if (is_string($context['exception_class')] {
+            if (is_string($context['exception_class'] ?? null)) {
                 $timestampValue = $record['timestamp'] ?? 0;
                 $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int) $timestampValue : time();
                 $date = date('Y-m-d', $timestamp);
                 $type = $context['exception_class'];
 
-                if (!isset($trends['type_trends'][$type]) {
+                if (!isset($trends['type_trends'][$type])) {
                     $trends['type_trends'][$type] = [];
                 }
-                if (!isset($trends['type_trends'][$type][$date]) {
+                if (!isset($trends['type_trends'][$type][$date])) {
                     $trends['type_trends'][$type][$date] = 0;
                 }
                 $trends['type_trends'][$type][$date]++;
@@ -276,7 +272,6 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 取得錯誤摘要報告。
-     * @return array
      */
     public function getErrorSummary(int $hours = 24): array
     {
@@ -359,9 +354,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 記錄錯誤並分配等級。
-     * @param array $context
      */
-    private function recordErrorWithLevel(string $level, string $message, /** @var array<string, mixed> */ array $context = [], ?Throwable $exception = null): string
+    private function recordErrorWithLevel(string $level, string $message, array $context = [], ?Throwable $exception = null): string
     {
         // 應用過濾器
         foreach ($this->errorFilters as $filter) {
@@ -380,7 +374,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             'message' => $message,
             'context' => $this->sanitizeContext($context),
             'timestamp' => $timestamp,
-            'formatted_time' => date('Y-m-d H => i:s.u', (int) $timestamp), // 顯示微秒
+            'formatted_time' => date('Y-m-d H:i:s.u', (int) $timestamp), // 顯示微秒
             'request_id' => $_SERVER['HTTP_X_REQUEST_ID'] ?? null,
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null,
             'client_ip' => $_SERVER['REMOTE_ADDR'] ?? null,
@@ -408,8 +402,6 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 清理上下文資料，移除敏感資訊。
-     * @param array $context
-     * @return array
      */
     private function sanitizeContext(array $context): array
     {
@@ -434,9 +426,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 觸發通知處理器。
-     * @param array $context
      */
-    private function triggerNotifications(string $level, string $message, /** @var array<string, mixed> */ array $context, ?Throwable $exception = null): void
+    private function triggerNotifications(string $level, string $message, array $context, ?Throwable $exception = null): void
     {
         foreach ($this->notificationHandlers as $handler) {
             try {
@@ -450,8 +441,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 計算錯誤趨勢（每小時）。
-     * @param array> $errors
-     * @return array
+     *
+     * @param array<array<string, mixed>> $errors
      */
     private function calculateErrorTrend(array $errors, int $hours): array
     {
@@ -481,19 +472,17 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 填充遺漏的日期。
-     * @param array $trends
-     * @return array
      */
     private function fillMissingDates(array $trends, int $days): array
     {
         // 確保必要的陣列結構存在
-        if (!isset($trends['daily_counts'] || !is_array($trends['daily_counts'])) {
+        if (!isset($trends['daily_counts']) || !is_array($trends['daily_counts'])) {
             $trends['daily_counts'] = [];
         }
-        if (!isset($trends['level_trends'] || !is_array($trends['level_trends'])) {
+        if (!isset($trends['level_trends']) || !is_array($trends['level_trends'])) {
             $trends['level_trends'] = [];
         }
-        if (!isset($trends['type_trends'] || !is_array($trends['type_trends'])) {
+        if (!isset($trends['type_trends']) || !is_array($trends['type_trends'])) {
             $trends['type_trends'] = [];
         }
 
@@ -503,11 +492,11 @@ class ErrorTrackerService implements ErrorTrackerInterface
         for ($timestamp = $startDate; $timestamp <= $endDate; $timestamp += 24 * 3600) {
             $date = date('Y-m-d', $timestamp);
 
-            if (!isset($trends['daily_counts'][$date]) {
+            if (!isset($trends['daily_counts'][$date])) {
                 $trends['daily_counts'][$date] = 0;
             }
 
-            if (is_array($trends['level_trends')] {
+            if (is_array($trends['level_trends'])) {
                 foreach ($trends['level_trends'] as $level => &$levelData) {
                     if (is_array($levelData) && !isset($levelData[$date])) {
                         $levelData[$date] = 0;
@@ -515,7 +504,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
                 }
             }
 
-            if (is_array($trends['type_trends')] {
+            if (is_array($trends['type_trends'])) {
                 foreach ($trends['type_trends'] as $type => &$typeData) {
                     if (is_array($typeData) && !isset($typeData[$date])) {
                         $typeData[$date] = 0;
@@ -525,17 +514,17 @@ class ErrorTrackerService implements ErrorTrackerInterface
         }
 
         // 排序日期
-        if (is_array($trends['daily_counts')] {
+        if (is_array($trends['daily_counts'])) {
             ksort($trends['daily_counts']);
         }
-        if (is_array($trends['level_trends')] {
+        if (is_array($trends['level_trends'])) {
             foreach ($trends['level_trends'] as &$levelData) {
                 if (is_array($levelData)) {
                     ksort($levelData);
                 }
             }
         }
-        if (is_array($trends['type_trends')] {
+        if (is_array($trends['type_trends'])) {
             foreach ($trends['type_trends'] as &$typeData) {
                 if (is_array($typeData)) {
                     ksort($typeData);
@@ -548,8 +537,6 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 判斷健康狀態。
-     * @param array $stats
-     * @return array
      */
     private function determineHealthStatus(array $stats): array
     {

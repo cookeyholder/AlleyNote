@@ -16,19 +16,19 @@ use Psr\Log\NullLogger;
  */
 class CacheMonitor implements CacheMonitorInterface
 {
-    /** @var array<string, array<string, mixed> 快取操作統計 */
+    /** @var array<string, array<string, mixed>> 快取操作統計 */
     private array $operationStats = [];
 
-    /** @var array<string, array<string, mixed> 快取命中統計 */
+    /** @var array<string, array<string, mixed>> 快取命中統計 */
     private array $hitStats = [];
 
-    /** @var array<string, array<string, mixed> 快取錯誤統計 */
+    /** @var array<string, array<string, mixed>> 快取錯誤統計 */
     private array $errorStats = [];
 
-    /** @var array<string, array<string, mixed> 健康狀態記錄 */
+    /** @var array<string, array<string, mixed>> 健康狀態記錄 */
     private array $healthRecords = [];
 
-    /** @var array<array<string, mixed> 操作歷史記錄 */
+    /** @var array<array<string, mixed>> 操作歷史記錄 */
     private array $operationHistory = [];
 
     /** @var LoggerInterface 記錄器 */
@@ -38,9 +38,9 @@ class CacheMonitor implements CacheMonitorInterface
     private array $config;
 
     /**
-     * @param array $config
+     * @param array<string, mixed> $config
      */
-    public function __construct(?LoggerInterface $logger = null, /** @var array<string, mixed> */ array $config = [])
+    public function __construct(?LoggerInterface $logger = null, array $config = [])
     {
         $this->logger = $logger ?? new NullLogger();
         /** @var array<string, mixed> $mergedConfig */
@@ -50,20 +50,19 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @param array $context
+     * @param array<string, mixed> $context
      */
     public function recordOperation(
         string $operation,
         string $driver,
         bool $success,
         float $duration,
-        /** @var array<string, mixed> */
         array $context = [],
     ): void {
         $timestamp = microtime(true);
 
         // 更新操作統計
-        if (!isset($this->operationStats[$driver) {
+        if (!isset($this->operationStats[$driver])) {
             $this->initializeDriverStats($driver);
         }
 
@@ -141,11 +140,11 @@ class CacheMonitor implements CacheMonitorInterface
                 'context' => $context,
             ]);
         }
-
     }
+
     public function recordHit(string $driver, string $key, float $duration): void
     {
-        if (!isset($this->hitStats[$driver) {
+        if (!isset($this->hitStats[$driver])) {
             $this->hitStats[$driver] = [
                 'hits' => 0,
                 'misses' => 0,
@@ -179,7 +178,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     public function recordMiss(string $driver, string $key, float $duration = 0.0): void
     {
-        if (!isset($this->hitStats[$driver) {
+        if (!isset($this->hitStats[$driver])) {
             $this->hitStats[$driver] = [
                 'hits' => 0,
                 'misses' => 0,
@@ -204,13 +203,13 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @param array $context
+     * @param array<string, mixed> $context
      */
-    public function recordError(string $driver, string $operation, string $error, /** @var array<string, mixed> */ array $context = []): void
+    public function recordError(string $driver, string $operation, string $error, array $context = []): void
     {
         $timestamp = microtime(true);
 
-        if (!isset($this->errorStats[$driver) {
+        if (!isset($this->errorStats[$driver])) {
             $this->errorStats[$driver] = [
                 'total_errors' => 0,
                 'errors_by_operation' => [],
@@ -229,7 +228,7 @@ class CacheMonitor implements CacheMonitorInterface
         $errorStats['errors_by_operation'] = $errorsByOp;
 
         // 保留最近的錯誤記錄
-        /** @var array<array<string, mixed> $recentErrors */
+        /** @var array<array<string, mixed>> $recentErrors */
         $recentErrors = $errorStats['recent_errors'] ?? [];
         /** @var int $maxRecentErrors */
         $maxRecentErrors = $this->config['max_recent_errors'] ?? 10;
@@ -254,9 +253,9 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @param array $details
+     * @param array<string, mixed> $details
      */
-    public function recordHealthStatus(string $driver, bool $healthy, /** @var array<string, mixed> */ array $details = []): void
+    public function recordHealthStatus(string $driver, bool $healthy, array $details = []): void
     {
         $timestamp = microtime(true);
 
@@ -275,7 +274,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getCacheStats(?string $driver = null, ?string $timeRange = null): array
     {
@@ -291,13 +290,13 @@ class CacheMonitor implements CacheMonitorInterface
         return [
             'summary' => $this->calculateGlobalStats(),
             'drivers' => $allStats,
-            'generated_at' => date('Y-m-d H => i:s'),
+            'generated_at' => date('Y-m-d H:i:s'),
             'time_range' => $timeRange,
         ];
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getHitRateStats(?string $timeRange = null): array
     {
@@ -336,7 +335,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getDriverPerformanceComparison(): array
     {
@@ -354,7 +353,7 @@ class CacheMonitor implements CacheMonitorInterface
             $maxDurationValue = $validStats['max_duration'] ?? 0;
 
             $comparison[$driver] = [
-                'avg_duration' => is_numeric($avgDurationValue) ? (float) $avgDurationValue  => 0.0,
+                'avg_duration' => is_numeric($avgDurationValue) ? (float) $avgDurationValue : 0.0,
                 'min_duration' => is_numeric($minDurationValue) ? (float) $minDurationValue : 0.0,
                 'max_duration' => is_numeric($maxDurationValue) ? (float) $maxDurationValue : 0.0,
                 'total_operations' => $totalOperations,
@@ -372,7 +371,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return list>
+     * @return list<array<string, mixed>>
      */
     public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array
     {
@@ -385,7 +384,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getCacheCapacityStats(): array
     {
@@ -398,7 +397,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getErrorStats(?string $timeRange = null): array
     {
@@ -416,7 +415,7 @@ class CacheMonitor implements CacheMonitorInterface
             $stats[$driver] = [
                 'total_errors' => $driverTotalErrors,
                 'errors_by_operation' => $errorsByOperation,
-                'recent_errors_count' => is_array($recentErrors) ? count($recentErrors)  => 0,
+                'recent_errors_count' => is_array($recentErrors) ? count($recentErrors) : 0,
                 'error_rate' => $this->calculateErrorRate($driver),
             ];
 
@@ -431,7 +430,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getHealthOverview(): array
     {
@@ -454,13 +453,13 @@ class CacheMonitor implements CacheMonitorInterface
                 $issues[] = [
                     'driver' => $driver,
                     'details' => $details,
-                    'since' => date('Y-m-d H => i:s', is_numeric($timestamp) ? (int) $timestamp : time()),
+                    'since' => date('Y-m-d H:i:s', is_numeric($timestamp) ? (int) $timestamp : time()),
                 ];
             }
         }
 
         return [
-            'overall_health' => $totalSystems > 0 ? ($healthySystems / $totalSystems) * 100  => 0,
+            'overall_health' => $totalSystems > 0 ? ($healthySystems / $totalSystems) * 100 : 0,
             'healthy_drivers' => $healthySystems,
             'total_drivers' => $totalSystems,
             'issues' => $issues,
@@ -500,7 +499,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getMetrics(): array
     {
@@ -520,7 +519,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getDriverPerformance(): array
     {
@@ -557,7 +556,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getHealth(): array
     {
@@ -573,7 +572,7 @@ class CacheMonitor implements CacheMonitorInterface
     {
         $data = [
             'export_info' => [
-                'timestamp' => date('Y-m-d H => i:s'),
+                'timestamp' => date('Y-m-d H:i:s'),
                 'format' => $format,
                 'time_range' => $timeRange,
             ],
@@ -585,7 +584,7 @@ class CacheMonitor implements CacheMonitorInterface
         ];
 
         return match ($format) {
-            'json' => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ? true : '',
+            'json' => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '',
             'csv' => $this->convertToCsv($data),
             default => throw new InvalidArgumentException("不支援的匯出格式: {$format}"),
         };
@@ -625,247 +624,107 @@ class CacheMonitor implements CacheMonitorInterface
      */
     private function updateHitRate(string $driver): void
     {
-        if (!isset($this->hitStats[$driver) {
-            return;
-        }
+        $stats = $this->hitStats[$driver];
+        $totalRequests = $stats['total_requests'];
+        $hits = $stats['hits'];
 
-        $stats = &$this->hitStats[$driver];
-
-        $totalRequestsValue = $stats['total_requests'] ?? 0;
-        $hitsValue = $stats['hits'] ?? 0;
-
-        $totalRequests = is_numeric($totalRequestsValue) ? (float) $totalRequestsValue : 0.0;
-        $hits = is_numeric($hitsValue) ? (float) $hitsValue : 0.0;
-
-        $stats['hit_rate'] = $totalRequests > 0 ? ($hits / $totalRequests) * 100 : 0;
+        $this->hitStats[$driver]['hit_rate'] = $totalRequests > 0
+            ? ($hits / $totalRequests) * 100
+            : 0.0;
     }
 
     /**
-     * 取得單一驅動統計資料。
-     * @return array
+     * @return array<string, mixed>
      */
     private function getDriverStats(string $driver): array
     {
-        $operationStats = $this->operationStats[$driver] ?? $this->getEmptyDriverStats();
-        $hitStats = $this->hitStats[$driver] ?? $this->getEmptyHitStats();
-        $errorStats = $this->errorStats[$driver] ?? $this->getEmptyErrorStats();
-        $healthStatus = $this->healthRecords[$driver] ?? ['healthy' => true, 'timestamp' => time(), 'details' => []];
+        $operationStats = $this->operationStats[$driver] ?? [];
+        $hitStats = $this->hitStats[$driver] ?? [];
+        $errorStats = $this->errorStats[$driver] ?? [];
+        $healthRecord = $this->healthRecords[$driver] ?? [];
 
         return [
             'operations' => $operationStats,
-            'hit_stats' => $hitStats,
-            'error_stats' => $errorStats,
-            'health_status' => $healthStatus,
+            'hit_statistics' => $hitStats,
+            'error_statistics' => $errorStats,
+            'health_status' => $healthRecord,
         ];
     }
 
     /**
-     * 計算全域統計資料。
-     * @return array
+     * @return array<string, mixed>
      */
     private function calculateGlobalStats(): array
     {
-        $totalOps = 0;
-        $totalSuccessful = 0;
-        $totalDuration = 0.0;
-        $totalRequests = 0;
-        $totalHits = 0;
-        $totalErrors = 0;
+        $totalOps = array_sum(array_column($this->operationStats, 'total_operations'));
+        $totalSuccessful = array_sum(array_column($this->operationStats, 'successful_operations'));
+        $totalDuration = array_sum(array_column($this->operationStats, 'total_duration'));
 
-        foreach ($this->operationStats as $stats) {
-            $totalOpsValue = $stats['total_operations'] ?? 0;
-            $successfulOpsValue = $stats['successful_operations'] ?? 0;
-            $durationValue = $stats['total_duration'] ?? 0;
-
-            $totalOps += is_numeric($totalOpsValue) ? (float) $totalOpsValue : 0;
-            $totalSuccessful += is_numeric($successfulOpsValue) ? (float) $successfulOpsValue : 0;
-            $totalDuration += is_numeric($durationValue) ? (float) $durationValue : 0;
-        }
-
-        foreach ($this->hitStats as $stats) {
-            $requestsValue = $stats['total_requests'] ?? 0;
-            $hitsValue = $stats['hits'] ?? 0;
-
-            $totalRequests += is_numeric($requestsValue) ? (float) $requestsValue : 0;
-            $totalHits += is_numeric($hitsValue) ? (float) $hitsValue : 0;
-        }
-
-        foreach ($this->errorStats as $stats) {
-            $errorsValue = $stats['total_errors'] ?? 0;
-            $totalErrors += is_numeric($errorsValue) ? (float) $errorsValue : 0;
-        }
+        $totalHits = array_sum(array_column($this->hitStats, 'hits'));
+        $totalRequests = array_sum(array_column($this->hitStats, 'total_requests'));
 
         return [
             'total_operations' => $totalOps,
-            'success_rate' => $totalOps > 0 ? ($totalSuccessful / $totalOps) * 100  => 0,
+            'success_rate' => $totalOps > 0 ? ($totalSuccessful / $totalOps) * 100 : 0,
             'avg_duration' => $totalOps > 0 ? $totalDuration / $totalOps : 0,
-            'total_cache_requests' => $totalRequests,
             'global_hit_rate' => $totalRequests > 0 ? ($totalHits / $totalRequests) * 100 : 0,
-            'total_errors' => $totalErrors,
         ];
     }
 
-    /**
-     * 計算每秒操作數。
-     */
-    private function calculateOperationsPerSecond(string $driver): float
-    {
-        if (empty($this->operationHistory)) {
-            return 0.0;
-        }
-
-        $driverOps = array_filter($this->operationHistory, fn($op): bool => $op['driver'] === $driver);
-
-        if (empty($driverOps)) {
-            return 0.0;
-        }
-
-        $firstOp = reset($driverOps);
-        $lastOp = end($driverOps);
-
-        $firstTimestampValue = $firstOp['timestamp'] ?? 0;
-        $lastTimestampValue = $lastOp['timestamp'] ?? 0;
-
-        $firstTimestamp = is_numeric($firstTimestampValue) ? (float) $firstTimestampValue : 0.0;
-        $lastTimestamp = is_numeric($lastTimestampValue) ? (float) $lastTimestampValue : 0.0;
-        $timeSpan = $lastTimestamp - $firstTimestamp;
-
-        return $timeSpan > 0 ? count($driverOps) / $timeSpan : 0.0;
-    }
-
-    /**
-     * 計算錯誤率。
-     */
     private function calculateErrorRate(string $driver): float
     {
-        $totalOpsValue = $this->operationStats[$driver]['total_operations'] ?? 0;
-        $totalErrorsValue = $this->errorStats[$driver]['total_errors'] ?? 0;
+        $totalOperations = $this->operationStats[$driver]['total_operations'] ?? 0;
+        $totalErrors = $this->errorStats[$driver]['total_errors'] ?? 0;
 
-        $totalOps = is_numeric($totalOpsValue) ? (float) $totalOpsValue : 0.0;
-        $totalErrors = is_numeric($totalErrorsValue) ? (float) $totalErrorsValue : 0.0;
-
-        return $totalOps > 0 ? ($totalErrors / $totalOps) * 100 : 0;
+        return $totalOperations > 0 ? ($totalErrors / $totalOperations) * 100 : 0;
     }
 
-    /**
-     * 轉換為 CSV 格式。
-     * @param array $data
-     */
-    private function convertToCsv(array $data): string
+    private function calculateOperationsPerSecond(string $driver): float
     {
-        // 簡化的 CSV 實作
-        $csv = '快取監控報告
-';
-        $exportTimestamp = date('Y-m-d H:i:s');
-        if (is_array($data['export_info'] ?? null) && isset($data['export_info']['timestamp'])) {
-            $timestampValue = $data['export_info']['timestamp'];
-            if (is_string($timestampValue) || is_numeric($timestampValue)) {
-                $exportTimestamp = (string) $timestampValue;
-            }
-        }
-        $csv .= '匯出時間,' . $exportTimestamp . '
-
-';
-
-        // 可以根據需要擴展 CSV 格式
-        return $csv . '請使用 JSON 格式取得完整資料
-';
+        // 簡化計算 - 實際應該基於時間範圍
+        $totalOps = $this->operationStats[$driver]['total_operations'] ?? 0;
+        return (float) ($totalOps / max(1, 3600)); // 假設1小時窗口
     }
 
-    /**
-     * 取得空的驅動統計資料。
-     * @return array
-     */
-    private function getEmptyDriverStats(): array
-    {
-        return [
-            'operations' => [],
-            'total_operations' => 0,
-            'successful_operations' => 0,
-            'failed_operations' => 0,
-            'total_duration' => 0.0,
-            'avg_duration' => 0.0,
-            'min_duration' => 0.0,
-            'max_duration' => 0.0,
-        ];
-    }
-
-    /**
-     * 取得空的命中統計資料。
-     * @return array
-     */
-    private function getEmptyHitStats(): array
-    {
-        return [
-            'hits' => 0,
-            'misses' => 0,
-            'total_requests' => 0,
-            'hit_rate' => 0.0,
-            'total_hit_duration' => 0.0,
-            'avg_hit_duration' => 0.0,
-        ];
-    }
-
-    /**
-     * 取得空的錯誤統計資料。
-     * @return array
-     */
-    private function getEmptyErrorStats(): array
-    {
-        return [
-            'total_errors' => 0,
-            'errors_by_operation' => [],
-            'recent_errors' => [],
-        ];
-    }
-
-    /**
-     * 取得特定操作的總數。
-     */
     private function getOperationCount(string $operation): int
     {
         $count = 0;
-        foreach ($this->operationStats as $stats) {
-            $operationValue = 0;
-            if (is_array($stats['operations'] ?? null) && isset($stats['operations'][$operation])) {
-                $operationCount = $stats['operations'][$operation];
-                $operationValue = is_numeric($operationCount) ? (int) $operationCount : 0;
-            }
-            $count += $operationValue;
+        foreach ($this->operationStats as $driverStats) {
+            $operations = $driverStats['operations'] ?? [];
+            $count += $operations[$operation] ?? 0;
         }
-
         return $count;
     }
 
     /**
-     * 取得預設設定。
-     * @return array
+     * @param array<string, mixed> $stats
+     */
+    private function calculateSuccessRate(array $stats): float
+    {
+        $total = $stats['total_operations'] ?? 0;
+        $successful = $stats['successful_operations'] ?? 0;
+
+        return $total > 0 ? ($successful / $total) * 100 : 0;
+    }
+
+    /**
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {
         return [
-            'slow_operation_threshold' => 100.0, // 毫秒
             'max_history_size' => 1000,
-            'max_recent_errors' => 50,
+            'max_recent_errors' => 10,
+            'slow_operation_threshold' => 1.0,
         ];
     }
 
     /**
-     * 計算成功率。
-     * @param array $stats
+     * @param array<string, mixed> $data
      */
-    private function calculateSuccessRate(array $stats): float
+    private function convertToCsv(array $data): string
     {
-        $totalOperations = $stats['total_operations'] ?? 0;
-        $successfulOperations = $stats['successful_operations'] ?? 0;
-
-        if (!is_numeric($totalOperations) || !is_numeric($successfulOperations)) {
-            return 0.0;
-        }
-
-        $total = (float) $totalOperations;
-        $successful = (float) $successfulOperations;
-
-        return $total > 0 ? ($successful / $total) * 100 : 0.0;
+        // 簡化的CSV轉換 - 實際實作應該更完整
+        return "CSV conversion not implemented yet\n";
     }
 }

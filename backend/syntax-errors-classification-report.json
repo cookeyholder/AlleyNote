@@ -1,28 +1,16 @@
 {
-    "timestamp": "2025-09-09T04:14:17+08:00",
-    "total_syntax_errors": 755,
-    "affected_files": 129,
+    "timestamp": "2025-09-09T04:34:31+08:00",
+    "total_syntax_errors": 577,
+    "affected_files": 117,
     "error_type_stats": {
-        "syntax_general": 617,
-        "try_without_catch": 126,
-        "empty_array_elements": 12
+        "syntax_general": 477,
+        "try_without_catch": 91,
+        "empty_array_elements": 9
     },
     "file_error_counts": {
-        "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/MemoryTagRepository.php": 18,
-        "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/ErrorTrackerService.php": 18,
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthenticationService.php": 17,
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthorizationService.php": 17,
-        "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/CacheMonitor.php": 16,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Error\/ErrorHandlerService.php": 15,
-        "\/var\/www\/html\/app\/Domains\/Statistics\/Services\/PostStatisticsService.php": 15,
-        "\/var\/www\/html\/app\/Domains\/Statistics\/Services\/StatisticsCalculationService.php": 15,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Providers\/CacheServiceProvider.php": 15,
-        "\/var\/www\/html\/app\/Application\/Controllers\/Security\/CSPReportController.php": 14,
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/TokenBlacklistService.php": 14,
         "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/DeviceInfo.php": 14,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Core\/XssProtectionService.php": 14,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php": 14,
-        "\/var\/www\/html\/app\/Domains\/Statistics\/Services\/StatisticsCacheService.php": 14,
         "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/MemoryCacheDriver.php": 14,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Providers\/RoutingServiceProvider.php": 13,
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/UserActivityDTO.php": 12,
@@ -36,38 +24,39 @@
         "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthorizationMiddleware.php": 10,
         "\/var\/www\/html\/app\/Application\/Services\/Statistics\/StatisticsApplicationService.php": 10,
         "\/var\/www\/html\/app\/Shared\/Validation\/Validator.php": 10,
+        "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": 9,
         "\/var\/www\/html\/tests\/Unit\/DTOs\/BaseDTOTest.php": 9,
+        "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/SuspiciousActivityDetectorTest.php": 9,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/IpController.php": 8,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/PostController.php": 8,
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php": 8,
         "\/var\/www\/html\/app\/Domains\/Auth\/Exceptions\/JwtException.php": 8,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/RichTextProcessorService.php": 8,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": 8,
+        "\/var\/www\/html\/app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": 8,
         "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/PerformanceMonitorService.php": 8,
         "\/var\/www\/html\/app\/Shared\/Schemas\/PostRequestSchema.php": 8,
         "\/var\/www\/html\/tests\/Integration\/FileSystemBackupTest.php": 8,
-        "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/SuspiciousActivityDetectorTest.php": 8,
         "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/AttachmentService.php": 7,
         "\/var\/www\/html\/app\/Domains\/Post\/DTOs\/UpdatePostDTO.php": 7,
-        "\/var\/www\/html\/app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": 7,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/SystemStatisticsRepository.php": 7,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/RouteCacheFactory.php": 7,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/RouteCollection.php": 7,
+        "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php": 7,
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheGroupManager.php": 7,
         "\/var\/www\/html\/tests\/Performance\/SimpleUserActivityLogPerformanceTest.php": 7,
         "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthenticationMiddleware.php": 6,
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthService.php": 6,
+        "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 6,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Commands\/StatisticsCalculationCommand.php": 6,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/RedisRouteCache.php": 6,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php": 6,
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheManager.php": 6,
         "\/var\/www\/html\/app\/Shared\/Config\/EnvironmentConfig.php": 6,
         "\/var\/www\/html\/tests\/UI\/UITestCase.php": 6,
         "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/FileSecurityService.php": 5,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostService.php": 5,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 5,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php": 5,
         "\/var\/www\/html\/tests\/Integration\/ActivityLogging\/UserActivityLogEndToEndTest.php": 5,
+        "\/var\/www\/html\/tests\/Integration\/Api\/V1\/AuthEndpointTest.php": 5,
         "\/var\/www\/html\/tests\/Unit\/Services\/Security\/PwnedPasswordServiceTest.php": 5,
         "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php": 4,
         "\/var\/www\/html\/app\/Domains\/Post\/Repositories\/PostRepository.php": 4,
@@ -79,9 +68,10 @@
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheKeys.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Response.php": 4,
         "\/var\/www\/html\/app\/Shared\/Config\/JwtConfig.php": 4,
-        "\/var\/www\/html\/tests\/Integration\/Api\/V1\/AuthEndpointTest.php": 4,
         "\/var\/www\/html\/tests\/Performance\/DatabaseOptimizationValidationTest.php": 4,
         "\/var\/www\/html\/tests\/Security\/SqlInjectionTest.php": 4,
+        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": 3,
+        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/IpRepository.php": 3,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": 3,
         "\/var\/www\/html\/app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php": 3,
@@ -100,7 +90,6 @@
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/RefreshTokenService.php": 2,
         "\/var\/www\/html\/app\/Domains\/Post\/DTOs\/CreatePostDTO.php": 2,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/ContentModerationService.php": 2,
-        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/IpRepository.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Uri.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 2,
@@ -111,6 +100,7 @@
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/TaggedCacheManager.php": 2,
         "\/var\/www\/html\/app\/Shared\/Validation\/Factory\/ValidatorFactory.php": 2,
         "\/var\/www\/html\/app\/Shared\/Validation\/ValidationResult.php": 2,
+        "\/var\/www\/html\/tests\/Integration\/DIValidationIntegrationTest.php": 2,
         "\/var\/www\/html\/tests\/Integration\/DTOs\/DTOValidationIntegrationTest.php": 2,
         "\/var\/www\/html\/tests\/Integration\/PostControllerTest.php": 2,
         "\/var\/www\/html\/tests\/Security\/XssPreventionTest.php": 2,
@@ -119,7 +109,6 @@
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php": 1,
         "\/var\/www\/html\/app\/Domains\/Auth\/Repositories\/UserRepository.php": 1,
         "\/var\/www\/html\/app\/Domains\/Post\/Validation\/PostValidator.php": 1,
-        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": 1,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Content\/XssProtectionExtensionService.php": 1,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php": 1,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Stream.php": 1,
@@ -130,7 +119,6 @@
         "\/var\/www\/html\/app\/Shared\/Monitoring\/Providers\/MonitoringServiceProvider.php": 1,
         "\/var\/www\/html\/tests\/Database\/Seeds\/UserActivityLogsSeederTest.php": 1,
         "\/var\/www\/html\/tests\/E2E\/Shared\/Cache\/CacheSystemE2ETest.php": 1,
-        "\/var\/www\/html\/tests\/Integration\/DIValidationIntegrationTest.php": 1,
         "\/var\/www\/html\/tests\/Integration\/Shared\/Cache\/Services\/TaggedCacheIntegrationTest.php": 1,
         "\/var\/www\/html\/tests\/Performance\/JwtPerformanceTest.php": 1,
         "\/var\/www\/html\/tests\/Support\/Traits\/DatabaseTestTrait.php": 1,
@@ -220,78 +208,6 @@
             {
                 "line": 145,
                 "message": "Syntax error, unexpected EOF on line 145",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Application\/Controllers\/Security\/CSPReportController.php": [
-            {
-                "line": 31,
-                "message": "Cannot use try without catch or finally on line 31",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 34,
-                "message": "Syntax error, unexpected T_CATCH on line 34",
-                "type": "syntax_general"
-            },
-            {
-                "line": 43,
-                "message": "Syntax error, unexpected T_CATCH on line 43",
-                "type": "syntax_general"
-            },
-            {
-                "line": 46,
-                "message": "Syntax error, unexpected T_CATCH on line 46",
-                "type": "syntax_general"
-            },
-            {
-                "line": 55,
-                "message": "Syntax error, unexpected T_CATCH on line 55",
-                "type": "syntax_general"
-            },
-            {
-                "line": 58,
-                "message": "Syntax error, unexpected T_CATCH on line 58",
-                "type": "syntax_general"
-            },
-            {
-                "line": 67,
-                "message": "Syntax error, unexpected T_CATCH on line 67",
-                "type": "syntax_general"
-            },
-            {
-                "line": 70,
-                "message": "Syntax error, unexpected T_CATCH on line 70",
-                "type": "syntax_general"
-            },
-            {
-                "line": 79,
-                "message": "Syntax error, unexpected T_CATCH on line 79",
-                "type": "syntax_general"
-            },
-            {
-                "line": 82,
-                "message": "Syntax error, unexpected T_CATCH on line 82",
-                "type": "syntax_general"
-            },
-            {
-                "line": 91,
-                "message": "Syntax error, unexpected T_CATCH on line 91",
-                "type": "syntax_general"
-            },
-            {
-                "line": 94,
-                "message": "Syntax error, unexpected T_CATCH on line 94",
-                "type": "syntax_general"
-            },
-            {
-                "line": 103,
-                "message": "Syntax error, unexpected T_CATCH on line 103",
-                "type": "syntax_general"
-            },
-            {
-                "line": 109,
-                "message": "Syntax error, unexpected EOF on line 109",
                 "type": "syntax_general"
             }
         ],
@@ -756,180 +672,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthenticationService.php": [
-            {
-                "line": 47,
-                "message": "Cannot use try without catch or finally on line 47",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 58,
-                "message": "Syntax error, unexpected '{' on line 58",
-                "type": "syntax_general"
-            },
-            {
-                "line": 62,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 62",
-                "type": "syntax_general"
-            },
-            {
-                "line": 65,
-                "message": "Syntax error, unexpected ']' on line 65",
-                "type": "syntax_general"
-            },
-            {
-                "line": 76,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 76",
-                "type": "syntax_general"
-            },
-            {
-                "line": 77,
-                "message": "Syntax error, unexpected ',' on line 77",
-                "type": "syntax_general"
-            },
-            {
-                "line": 77,
-                "message": "Syntax error, unexpected ']' on line 77",
-                "type": "syntax_general"
-            },
-            {
-                "line": 105,
-                "message": "Cannot use try without catch or finally on line 105",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 124,
-                "message": "Cannot use try without catch or finally on line 124",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 147,
-                "message": "Cannot use try without catch or finally on line 147",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 155,
-                "message": "Cannot use try without catch or finally on line 155",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 163,
-                "message": "Cannot use try without catch or finally on line 163",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 171,
-                "message": "Cannot use try without catch or finally on line 171",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 177,
-                "message": "Cannot use try without catch or finally on line 177",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 186,
-                "message": "Cannot use try without catch or finally on line 186",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 199,
-                "message": "Cannot use try without catch or finally on line 199",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 205,
-                "message": "Cannot use try without catch or finally on line 205",
-                "type": "try_without_catch"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthorizationService.php": [
-            {
-                "line": 65,
-                "message": "Cannot use try without catch or finally on line 65",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 94,
-                "message": "Syntax error, unexpected T_PUBLIC on line 94",
-                "type": "syntax_general"
-            },
-            {
-                "line": 96,
-                "message": "Cannot use try without catch or finally on line 96",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 112,
-                "message": "Syntax error, unexpected T_PUBLIC on line 112",
-                "type": "syntax_general"
-            },
-            {
-                "line": 114,
-                "message": "Cannot use try without catch or finally on line 114",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 143,
-                "message": "Syntax error, unexpected T_PUBLIC on line 143",
-                "type": "syntax_general"
-            },
-            {
-                "line": 145,
-                "message": "Cannot use try without catch or finally on line 145",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 161,
-                "message": "Syntax error, unexpected T_PUBLIC on line 161",
-                "type": "syntax_general"
-            },
-            {
-                "line": 177,
-                "message": "Syntax error, unexpected T_PUBLIC on line 177",
-                "type": "syntax_general"
-            },
-            {
-                "line": 213,
-                "message": "Syntax error, unexpected T_PUBLIC on line 213",
-                "type": "syntax_general"
-            },
-            {
-                "line": 218,
-                "message": "Syntax error, unexpected T_PUBLIC on line 218",
-                "type": "syntax_general"
-            },
-            {
-                "line": 229,
-                "message": "Syntax error, unexpected T_PUBLIC on line 229",
-                "type": "syntax_general"
-            },
-            {
-                "line": 240,
-                "message": "Syntax error, unexpected T_PRIVATE on line 240",
-                "type": "syntax_general"
-            },
-            {
-                "line": 250,
-                "message": "Syntax error, unexpected T_PRIVATE on line 250",
-                "type": "syntax_general"
-            },
-            {
-                "line": 252,
-                "message": "Cannot use try without catch or finally on line 252",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 265,
-                "message": "Syntax error, unexpected T_PRIVATE on line 265",
-                "type": "syntax_general"
-            },
-            {
-                "line": 269,
-                "message": "Syntax error, unexpected EOF on line 269",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/RefreshTokenService.php": [
             {
                 "line": 74,
@@ -1002,78 +744,6 @@
                 "line": 194,
                 "message": "Syntax error, unexpected ']' on line 194",
                 "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/TokenBlacklistService.php": [
-            {
-                "line": 71,
-                "message": "Cannot use try without catch or finally on line 71",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 108,
-                "message": "Cannot use try without catch or finally on line 108",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 129,
-                "message": "Cannot use try without catch or finally on line 129",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 173,
-                "message": "Cannot use try without catch or finally on line 173",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 196,
-                "message": "Cannot use try without catch or finally on line 196",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 223,
-                "message": "Cannot use try without catch or finally on line 223",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 228,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 228",
-                "type": "syntax_general"
-            },
-            {
-                "line": 244,
-                "message": "Cannot use try without catch or finally on line 244",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 274,
-                "message": "Cannot use try without catch or finally on line 274",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 296,
-                "message": "Cannot use try without catch or finally on line 296",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 320,
-                "message": "Cannot use try without catch or finally on line 320",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 340,
-                "message": "Cannot use try without catch or finally on line 340",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 350,
-                "message": "Cannot use try without catch or finally on line 350",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 364,
-                "message": "Cannot use try without catch or finally on line 364",
-                "type": "try_without_catch"
             }
         ],
         "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/DeviceInfo.php": [
@@ -1375,12 +1045,27 @@
         ],
         "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": [
             {
+                "line": 114,
+                "message": "Cannot use try without catch or finally on line 114",
+                "type": "try_without_catch"
+            },
+            {
                 "line": 182,
                 "message": "Cannot use try without catch or finally on line 182",
+                "type": "try_without_catch"
+            },
+            {
+                "line": 296,
+                "message": "Cannot use try without catch or finally on line 296",
                 "type": "try_without_catch"
             }
         ],
         "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/IpRepository.php": [
+            {
+                "line": 105,
+                "message": "Cannot use try without catch or finally on line 105",
+                "type": "try_without_catch"
+            },
             {
                 "line": 191,
                 "message": "Syntax error, unexpected '{', expecting ')' on line 191",
@@ -1396,6 +1081,11 @@
             {
                 "line": 94,
                 "message": "Cannot use try without catch or finally on line 94",
+                "type": "try_without_catch"
+            },
+            {
+                "line": 274,
+                "message": "Cannot use try without catch or finally on line 274",
                 "type": "try_without_catch"
             },
             {
@@ -1517,83 +1207,6 @@
             {
                 "line": 176,
                 "message": "Syntax error, unexpected EOF on line 176",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Error\/ErrorHandlerService.php": [
-            {
-                "line": 153,
-                "message": "Syntax error, unexpected T_PRIVATE on line 153",
-                "type": "syntax_general"
-            },
-            {
-                "line": 211,
-                "message": "Syntax error, unexpected T_PRIVATE on line 211",
-                "type": "syntax_general"
-            },
-            {
-                "line": 223,
-                "message": "Syntax error, unexpected T_PUBLIC on line 223",
-                "type": "syntax_general"
-            },
-            {
-                "line": 236,
-                "message": "Syntax error, unexpected T_PUBLIC on line 236",
-                "type": "syntax_general"
-            },
-            {
-                "line": 252,
-                "message": "Syntax error, unexpected T_PUBLIC on line 252",
-                "type": "syntax_general"
-            },
-            {
-                "line": 256,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 256",
-                "type": "syntax_general"
-            },
-            {
-                "line": 267,
-                "message": "Syntax error, unexpected T_PRIVATE on line 267",
-                "type": "syntax_general"
-            },
-            {
-                "line": 274,
-                "message": "Cannot use empty array elements in arrays on line 274",
-                "type": "empty_array_elements"
-            },
-            {
-                "line": 274,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 274",
-                "type": "syntax_general"
-            },
-            {
-                "line": 280,
-                "message": "Syntax error, unexpected T_PRIVATE on line 280",
-                "type": "syntax_general"
-            },
-            {
-                "line": 291,
-                "message": "Syntax error, unexpected T_PRIVATE on line 291",
-                "type": "syntax_general"
-            },
-            {
-                "line": 302,
-                "message": "Syntax error, unexpected T_PRIVATE on line 302",
-                "type": "syntax_general"
-            },
-            {
-                "line": 313,
-                "message": "Syntax error, unexpected T_PRIVATE on line 313",
-                "type": "syntax_general"
-            },
-            {
-                "line": 333,
-                "message": "Syntax error, unexpected T_PRIVATE on line 333",
-                "type": "syntax_general"
-            },
-            {
-                "line": 340,
-                "message": "Syntax error, unexpected EOF on line 340",
                 "type": "syntax_general"
             }
         ],
@@ -1796,232 +1409,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Domains\/Statistics\/Services\/PostStatisticsService.php": [
-            {
-                "line": 44,
-                "message": "Cannot use try without catch or finally on line 44",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 86,
-                "message": "Syntax error, unexpected T_PUBLIC on line 86",
-                "type": "syntax_general"
-            },
-            {
-                "line": 139,
-                "message": "Syntax error, unexpected T_PUBLIC on line 139",
-                "type": "syntax_general"
-            },
-            {
-                "line": 199,
-                "message": "Syntax error, unexpected T_PUBLIC on line 199",
-                "type": "syntax_general"
-            },
-            {
-                "line": 254,
-                "message": "Syntax error, unexpected T_PUBLIC on line 254",
-                "type": "syntax_general"
-            },
-            {
-                "line": 288,
-                "message": "Syntax error, unexpected T_PUBLIC on line 288",
-                "type": "syntax_general"
-            },
-            {
-                "line": 314,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 314",
-                "type": "syntax_general"
-            },
-            {
-                "line": 317,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 317",
-                "type": "syntax_general"
-            },
-            {
-                "line": 362,
-                "message": "Syntax error, unexpected T_PRIVATE on line 362",
-                "type": "syntax_general"
-            },
-            {
-                "line": 387,
-                "message": "Syntax error, unexpected T_PRIVATE on line 387",
-                "type": "syntax_general"
-            },
-            {
-                "line": 409,
-                "message": "Syntax error, unexpected T_PRIVATE on line 409",
-                "type": "syntax_general"
-            },
-            {
-                "line": 444,
-                "message": "Syntax error, unexpected T_PUBLIC on line 444",
-                "type": "syntax_general"
-            },
-            {
-                "line": 455,
-                "message": "Syntax error, unexpected T_PUBLIC on line 455",
-                "type": "syntax_general"
-            },
-            {
-                "line": 465,
-                "message": "Syntax error, unexpected T_PRIVATE on line 465",
-                "type": "syntax_general"
-            },
-            {
-                "line": 478,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 478",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Statistics\/Services\/StatisticsCacheService.php": [
-            {
-                "line": 62,
-                "message": "Cannot use try without catch or finally on line 62",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 71,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 71",
-                "type": "syntax_general"
-            },
-            {
-                "line": 85,
-                "message": "Cannot use try without catch or finally on line 85",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 97,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 97",
-                "type": "syntax_general"
-            },
-            {
-                "line": 112,
-                "message": "Cannot use try without catch or finally on line 112",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 127,
-                "message": "Cannot use try without catch or finally on line 127",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 176,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 176",
-                "type": "syntax_general"
-            },
-            {
-                "line": 180,
-                "message": "Cannot use try without catch or finally on line 180",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 209,
-                "message": "Syntax error, unexpected ',' on line 209",
-                "type": "syntax_general"
-            },
-            {
-                "line": 209,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 209",
-                "type": "syntax_general"
-            },
-            {
-                "line": 300,
-                "message": "Cannot use try without catch or finally on line 300",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 313,
-                "message": "Cannot use try without catch or finally on line 313",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 327,
-                "message": "Cannot use try without catch or finally on line 327",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 345,
-                "message": "Cannot use try without catch or finally on line 345",
-                "type": "try_without_catch"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Statistics\/Services\/StatisticsCalculationService.php": [
-            {
-                "line": 84,
-                "message": "Syntax error, unexpected T_PUBLIC on line 84",
-                "type": "syntax_general"
-            },
-            {
-                "line": 120,
-                "message": "Syntax error, unexpected T_PUBLIC on line 120",
-                "type": "syntax_general"
-            },
-            {
-                "line": 139,
-                "message": "Syntax error, unexpected '=' on line 139",
-                "type": "syntax_general"
-            },
-            {
-                "line": 151,
-                "message": "Syntax error, unexpected T_PUBLIC on line 151",
-                "type": "syntax_general"
-            },
-            {
-                "line": 185,
-                "message": "Syntax error, unexpected T_PUBLIC on line 185",
-                "type": "syntax_general"
-            },
-            {
-                "line": 220,
-                "message": "Syntax error, unexpected T_PUBLIC on line 220",
-                "type": "syntax_general"
-            },
-            {
-                "line": 236,
-                "message": "Syntax error, unexpected '=' on line 236",
-                "type": "syntax_general"
-            },
-            {
-                "line": 248,
-                "message": "Syntax error, unexpected T_PUBLIC on line 248",
-                "type": "syntax_general"
-            },
-            {
-                "line": 261,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 261",
-                "type": "syntax_general"
-            },
-            {
-                "line": 306,
-                "message": "Syntax error, unexpected T_PRIVATE on line 306",
-                "type": "syntax_general"
-            },
-            {
-                "line": 324,
-                "message": "Syntax error, unexpected T_PRIVATE on line 324",
-                "type": "syntax_general"
-            },
-            {
-                "line": 348,
-                "message": "Syntax error, unexpected T_PRIVATE on line 348",
-                "type": "syntax_general"
-            },
-            {
-                "line": 373,
-                "message": "Syntax error, unexpected T_PUBLIC on line 373",
-                "type": "syntax_general"
-            },
-            {
-                "line": 422,
-                "message": "Syntax error, unexpected T_PRIVATE on line 422",
-                "type": "syntax_general"
-            },
-            {
-                "line": 440,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 440",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php": [
             {
                 "line": 229,
@@ -2081,6 +1468,11 @@
                 "line": 122,
                 "message": "Syntax error, unexpected T_PUBLIC on line 122",
                 "type": "syntax_general"
+            },
+            {
+                "line": 124,
+                "message": "Cannot use try without catch or finally on line 124",
+                "type": "try_without_catch"
             },
             {
                 "line": 138,
@@ -2764,6 +2156,11 @@
                 "type": "try_without_catch"
             },
             {
+                "line": 108,
+                "message": "Cannot use try without catch or finally on line 108",
+                "type": "try_without_catch"
+            },
+            {
                 "line": 156,
                 "message": "Syntax error, unexpected T_RETURN on line 156",
                 "type": "syntax_general"
@@ -2779,179 +2176,15 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Shared\/Cache\/Providers\/CacheServiceProvider.php": [
-            {
-                "line": 213,
-                "message": "Syntax error, unexpected '{' on line 213",
-                "type": "syntax_general"
-            },
-            {
-                "line": 222,
-                "message": "Syntax error, unexpected '{' on line 222",
-                "type": "syntax_general"
-            },
-            {
-                "line": 232,
-                "message": "Cannot use try without catch or finally on line 232",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 245,
-                "message": "Syntax error, unexpected ':' on line 245",
-                "type": "syntax_general"
-            },
-            {
-                "line": 245,
-                "message": "Syntax error, unexpected T_PUBLIC on line 245",
-                "type": "syntax_general"
-            },
-            {
-                "line": 254,
-                "message": "Syntax error, unexpected ':' on line 254",
-                "type": "syntax_general"
-            },
-            {
-                "line": 331,
-                "message": "Cannot use try without catch or finally on line 331",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 374,
-                "message": "Cannot use try without catch or finally on line 374",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 380,
-                "message": "Syntax error, unexpected ';', expecting ',' or ']' or ')' on line 380",
-                "type": "syntax_general"
-            },
-            {
-                "line": 380,
-                "message": "Syntax error, unexpected T_VARIABLE, expecting ')' on line 380",
-                "type": "syntax_general"
-            },
-            {
-                "line": 421,
-                "message": "Syntax error, unexpected T_PRIVATE on line 421",
-                "type": "syntax_general"
-            },
-            {
-                "line": 466,
-                "message": "Syntax error, unexpected T_PRIVATE on line 466",
-                "type": "syntax_general"
-            },
-            {
-                "line": 475,
-                "message": "Syntax error, unexpected T_PUBLIC on line 475",
-                "type": "syntax_general"
-            },
-            {
-                "line": 484,
-                "message": "Syntax error, unexpected T_PUBLIC on line 484",
-                "type": "syntax_general"
-            },
-            {
-                "line": 490,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 490",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/MemoryTagRepository.php": [
-            {
-                "line": 96,
-                "message": "Syntax error, unexpected '{' on line 96",
-                "type": "syntax_general"
-            },
-            {
-                "line": 104,
-                "message": "Syntax error, unexpected '{' on line 104",
-                "type": "syntax_general"
-            },
-            {
-                "line": 118,
-                "message": "Syntax error, unexpected '{' on line 118",
-                "type": "syntax_general"
-            },
-            {
-                "line": 129,
-                "message": "Syntax error, unexpected '{' on line 129",
-                "type": "syntax_general"
-            },
-            {
-                "line": 133,
-                "message": "Syntax error, unexpected '{' on line 133",
-                "type": "syntax_general"
-            },
-            {
-                "line": 140,
-                "message": "Syntax error, unexpected '{' on line 140",
-                "type": "syntax_general"
-            },
-            {
-                "line": 162,
-                "message": "Syntax error, unexpected '{' on line 162",
-                "type": "syntax_general"
-            },
-            {
-                "line": 207,
-                "message": "Syntax error, unexpected '{' on line 207",
-                "type": "syntax_general"
-            },
-            {
-                "line": 217,
-                "message": "Syntax error, unexpected '{' on line 217",
-                "type": "syntax_general"
-            },
-            {
-                "line": 298,
-                "message": "Syntax error, unexpected '{' on line 298",
-                "type": "syntax_general"
-            },
-            {
-                "line": 330,
-                "message": "Syntax error, unexpected '{' on line 330",
-                "type": "syntax_general"
-            },
-            {
-                "line": 340,
-                "message": "Syntax error, unexpected '{' on line 340",
-                "type": "syntax_general"
-            },
-            {
-                "line": 343,
-                "message": "Syntax error, unexpected '{' on line 343",
-                "type": "syntax_general"
-            },
-            {
-                "line": 350,
-                "message": "Syntax error, unexpected '{' on line 350",
-                "type": "syntax_general"
-            },
-            {
-                "line": 360,
-                "message": "Syntax error, unexpected '{' on line 360",
-                "type": "syntax_general"
-            },
-            {
-                "line": 370,
-                "message": "Syntax error, unexpected '{' on line 370",
-                "type": "syntax_general"
-            },
-            {
-                "line": 373,
-                "message": "Syntax error, unexpected '{' on line 373",
-                "type": "syntax_general"
-            },
-            {
-                "line": 380,
-                "message": "Syntax error, unexpected '{' on line 380",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": [
             {
                 "line": 50,
                 "message": "Cannot use try without catch or finally on line 50",
+                "type": "try_without_catch"
+            },
+            {
+                "line": 129,
+                "message": "Cannot use try without catch or finally on line 129",
                 "type": "try_without_catch"
             },
             {
@@ -3253,180 +2486,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/CacheMonitor.php": [
-            {
-                "line": 66,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 66",
-                "type": "syntax_general"
-            },
-            {
-                "line": 148,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 148",
-                "type": "syntax_general"
-            },
-            {
-                "line": 182,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 182",
-                "type": "syntax_general"
-            },
-            {
-                "line": 213,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 213",
-                "type": "syntax_general"
-            },
-            {
-                "line": 357,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 357",
-                "type": "syntax_general"
-            },
-            {
-                "line": 358,
-                "message": "Syntax error, unexpected ',' on line 358",
-                "type": "syntax_general"
-            },
-            {
-                "line": 359,
-                "message": "Syntax error, unexpected ',' on line 359",
-                "type": "syntax_general"
-            },
-            {
-                "line": 363,
-                "message": "Syntax error, unexpected ',' on line 363",
-                "type": "syntax_general"
-            },
-            {
-                "line": 364,
-                "message": "Syntax error, unexpected ',' on line 364",
-                "type": "syntax_general"
-            },
-            {
-                "line": 419,
-                "message": "Cannot use empty array elements in arrays on line 419",
-                "type": "empty_array_elements"
-            },
-            {
-                "line": 419,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 419",
-                "type": "syntax_general"
-            },
-            {
-                "line": 463,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 463",
-                "type": "syntax_general"
-            },
-            {
-                "line": 467,
-                "message": "Syntax error, unexpected ',' on line 467",
-                "type": "syntax_general"
-            },
-            {
-                "line": 628,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 628",
-                "type": "syntax_general"
-            },
-            {
-                "line": 700,
-                "message": "Cannot use empty array elements in arrays on line 700",
-                "type": "empty_array_elements"
-            },
-            {
-                "line": 700,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 700",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/ErrorTrackerService.php": [
-            {
-                "line": 113,
-                "message": "Syntax error, unexpected '{' on line 113",
-                "type": "syntax_general"
-            },
-            {
-                "line": 127,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 127",
-                "type": "syntax_general"
-            },
-            {
-                "line": 143,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 143",
-                "type": "syntax_general"
-            },
-            {
-                "line": 145,
-                "message": "Syntax error, unexpected '{' on line 145",
-                "type": "syntax_general"
-            },
-            {
-                "line": 206,
-                "message": "Syntax error, unexpected '{' on line 206",
-                "type": "syntax_general"
-            },
-            {
-                "line": 225,
-                "message": "Syntax error, unexpected '{' on line 225",
-                "type": "syntax_general"
-            },
-            {
-                "line": 239,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 239",
-                "type": "syntax_general"
-            },
-            {
-                "line": 245,
-                "message": "Syntax error, unexpected '{' on line 245",
-                "type": "syntax_general"
-            },
-            {
-                "line": 248,
-                "message": "Syntax error, unexpected '{' on line 248",
-                "type": "syntax_general"
-            },
-            {
-                "line": 490,
-                "message": "Syntax error, unexpected '{' on line 490",
-                "type": "syntax_general"
-            },
-            {
-                "line": 493,
-                "message": "Syntax error, unexpected '{' on line 493",
-                "type": "syntax_general"
-            },
-            {
-                "line": 496,
-                "message": "Syntax error, unexpected '{' on line 496",
-                "type": "syntax_general"
-            },
-            {
-                "line": 506,
-                "message": "Syntax error, unexpected '{' on line 506",
-                "type": "syntax_general"
-            },
-            {
-                "line": 510,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 510",
-                "type": "syntax_general"
-            },
-            {
-                "line": 518,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 518",
-                "type": "syntax_general"
-            },
-            {
-                "line": 528,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 528",
-                "type": "syntax_general"
-            },
-            {
-                "line": 531,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 531",
-                "type": "syntax_general"
-            },
-            {
-                "line": 538,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 538",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/PerformanceMonitorService.php": [
             {
                 "line": 132,
@@ -3702,6 +2761,11 @@
                 "type": "try_without_catch"
             },
             {
+                "line": 155,
+                "message": "Cannot use try without catch or finally on line 155",
+                "type": "try_without_catch"
+            },
+            {
                 "line": 183,
                 "message": "Cannot use try without catch or finally on line 183",
                 "type": "try_without_catch"
@@ -3745,6 +2809,11 @@
             {
                 "line": 252,
                 "message": "Syntax error, unexpected ';', expecting ',' or ']' or ')' on line 252",
+                "type": "syntax_general"
+            },
+            {
+                "line": 256,
+                "message": "Syntax error, unexpected ')', expecting ']' on line 256",
                 "type": "syntax_general"
             }
         ],
@@ -4062,6 +3131,11 @@
         ],
         "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/SuspiciousActivityDetectorTest.php": [
             {
+                "line": 71,
+                "message": "Syntax error, unexpected ']', expecting ')' on line 71",
+                "type": "syntax_general"
+            },
+            {
                 "line": 72,
                 "message": "Syntax error, unexpected ',' on line 72",
                 "type": "syntax_general"
@@ -4174,6 +3248,8 @@
         ]
     },
     "quick_fixes": {
+        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": 3,
+        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/IpRepository.php": 3,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": 3,
         "\/var\/www\/html\/app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php": 3,
@@ -4192,7 +3268,6 @@
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/RefreshTokenService.php": 2,
         "\/var\/www\/html\/app\/Domains\/Post\/DTOs\/CreatePostDTO.php": 2,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/ContentModerationService.php": 2,
-        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/IpRepository.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Uri.php": 2,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 2,
@@ -4203,6 +3278,7 @@
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/TaggedCacheManager.php": 2,
         "\/var\/www\/html\/app\/Shared\/Validation\/Factory\/ValidatorFactory.php": 2,
         "\/var\/www\/html\/app\/Shared\/Validation\/ValidationResult.php": 2,
+        "\/var\/www\/html\/tests\/Integration\/DIValidationIntegrationTest.php": 2,
         "\/var\/www\/html\/tests\/Integration\/DTOs\/DTOValidationIntegrationTest.php": 2,
         "\/var\/www\/html\/tests\/Integration\/PostControllerTest.php": 2,
         "\/var\/www\/html\/tests\/Security\/XssPreventionTest.php": 2,
@@ -4211,7 +3287,6 @@
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php": 1,
         "\/var\/www\/html\/app\/Domains\/Auth\/Repositories\/UserRepository.php": 1,
         "\/var\/www\/html\/app\/Domains\/Post\/Validation\/PostValidator.php": 1,
-        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": 1,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Content\/XssProtectionExtensionService.php": 1,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php": 1,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Stream.php": 1,
@@ -4222,7 +3297,6 @@
         "\/var\/www\/html\/app\/Shared\/Monitoring\/Providers\/MonitoringServiceProvider.php": 1,
         "\/var\/www\/html\/tests\/Database\/Seeds\/UserActivityLogsSeederTest.php": 1,
         "\/var\/www\/html\/tests\/E2E\/Shared\/Cache\/CacheSystemE2ETest.php": 1,
-        "\/var\/www\/html\/tests\/Integration\/DIValidationIntegrationTest.php": 1,
         "\/var\/www\/html\/tests\/Integration\/Shared\/Cache\/Services\/TaggedCacheIntegrationTest.php": 1,
         "\/var\/www\/html\/tests\/Performance\/JwtPerformanceTest.php": 1,
         "\/var\/www\/html\/tests\/Support\/Traits\/DatabaseTestTrait.php": 1,
@@ -4234,38 +3308,39 @@
         "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthorizationMiddleware.php": 10,
         "\/var\/www\/html\/app\/Application\/Services\/Statistics\/StatisticsApplicationService.php": 10,
         "\/var\/www\/html\/app\/Shared\/Validation\/Validator.php": 10,
+        "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": 9,
         "\/var\/www\/html\/tests\/Unit\/DTOs\/BaseDTOTest.php": 9,
+        "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/SuspiciousActivityDetectorTest.php": 9,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/IpController.php": 8,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/PostController.php": 8,
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php": 8,
         "\/var\/www\/html\/app\/Domains\/Auth\/Exceptions\/JwtException.php": 8,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/RichTextProcessorService.php": 8,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": 8,
+        "\/var\/www\/html\/app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": 8,
         "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/PerformanceMonitorService.php": 8,
         "\/var\/www\/html\/app\/Shared\/Schemas\/PostRequestSchema.php": 8,
         "\/var\/www\/html\/tests\/Integration\/FileSystemBackupTest.php": 8,
-        "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/SuspiciousActivityDetectorTest.php": 8,
         "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/AttachmentService.php": 7,
         "\/var\/www\/html\/app\/Domains\/Post\/DTOs\/UpdatePostDTO.php": 7,
-        "\/var\/www\/html\/app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": 7,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/SystemStatisticsRepository.php": 7,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/RouteCacheFactory.php": 7,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/RouteCollection.php": 7,
+        "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php": 7,
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheGroupManager.php": 7,
         "\/var\/www\/html\/tests\/Performance\/SimpleUserActivityLogPerformanceTest.php": 7,
         "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthenticationMiddleware.php": 6,
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthService.php": 6,
+        "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 6,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Commands\/StatisticsCalculationCommand.php": 6,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/RedisRouteCache.php": 6,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php": 6,
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheManager.php": 6,
         "\/var\/www\/html\/app\/Shared\/Config\/EnvironmentConfig.php": 6,
         "\/var\/www\/html\/tests\/UI\/UITestCase.php": 6,
         "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/FileSecurityService.php": 5,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostService.php": 5,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 5,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php": 5,
         "\/var\/www\/html\/tests\/Integration\/ActivityLogging\/UserActivityLogEndToEndTest.php": 5,
+        "\/var\/www\/html\/tests\/Integration\/Api\/V1\/AuthEndpointTest.php": 5,
         "\/var\/www\/html\/tests\/Unit\/Services\/Security\/PwnedPasswordServiceTest.php": 5,
         "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php": 4,
         "\/var\/www\/html\/app\/Domains\/Post\/Repositories\/PostRepository.php": 4,
@@ -4277,26 +3352,13 @@
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheKeys.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Response.php": 4,
         "\/var\/www\/html\/app\/Shared\/Config\/JwtConfig.php": 4,
-        "\/var\/www\/html\/tests\/Integration\/Api\/V1\/AuthEndpointTest.php": 4,
         "\/var\/www\/html\/tests\/Performance\/DatabaseOptimizationValidationTest.php": 4,
         "\/var\/www\/html\/tests\/Security\/SqlInjectionTest.php": 4
     },
     "complex_fixes": {
-        "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/MemoryTagRepository.php": 18,
-        "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/ErrorTrackerService.php": 18,
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthenticationService.php": 17,
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthorizationService.php": 17,
-        "\/var\/www\/html\/app\/Shared\/Monitoring\/Services\/CacheMonitor.php": 16,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Error\/ErrorHandlerService.php": 15,
-        "\/var\/www\/html\/app\/Domains\/Statistics\/Services\/PostStatisticsService.php": 15,
-        "\/var\/www\/html\/app\/Domains\/Statistics\/Services\/StatisticsCalculationService.php": 15,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Providers\/CacheServiceProvider.php": 15,
-        "\/var\/www\/html\/app\/Application\/Controllers\/Security\/CSPReportController.php": 14,
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/TokenBlacklistService.php": 14,
         "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/DeviceInfo.php": 14,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Core\/XssProtectionService.php": 14,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php": 14,
-        "\/var\/www\/html\/app\/Domains\/Statistics\/Services\/StatisticsCacheService.php": 14,
         "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/MemoryCacheDriver.php": 14,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Providers\/RoutingServiceProvider.php": 13,
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/UserActivityDTO.php": 12,
