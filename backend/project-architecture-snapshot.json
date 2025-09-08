@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 03:57:28",
+        "scan_time": "2025-09-09 04:09:49",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -786,7 +786,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Advanced\/SecurityTestService.php",
                                                     "extension": "php",
-                                                    "size": 17182
+                                                    "size": 17698
                                                 }
                                             }
                                         },
@@ -1968,7 +1968,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Controllers\/Web\/SwaggerController.php",
                                             "extension": "php",
-                                            "size": 11502
+                                            "size": 11078
                                         }
                                     }
                                 },
@@ -2196,7 +2196,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepository.php",
                                             "extension": "php",
-                                            "size": 16687
+                                            "size": 14576
                                         },
                                         "TokenBlacklistRepository.php": {
                                             "type": "file",
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 198933
+            "size": 180978
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1676987
+            "size": 1676900
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -7824,7 +7824,8 @@
                 "App\\Domains\\Security\\Contracts\\SecretsManagerInterface",
                 "App\\Domains\\Security\\Contracts\\SecurityHeaderServiceInterface",
                 "App\\Domains\\Security\\Contracts\\SecurityTestInterface",
-                "Exception"
+                "Exception",
+                "Throwable"
             ],
             "functions": [
                 "__construct",
@@ -7838,17 +7839,11 @@
                 "testSecretsManagement",
                 "testSystemSecurity",
                 "generateSecurityReport",
-                "createMockUploadedFile",
-                "getClientFilename",
-                "getClientMediaType",
-                "getSize",
-                "getError",
-                "getStream",
                 "getSecurityLevel",
                 "getRecommendations"
             ],
             "constants": [],
-            "lines_of_code": 532
+            "lines_of_code": 535
         },
         "app\/Domains\/Security\/Services\/Core\/XssProtectionService.php": {
             "path": "app\/Domains\/Security\/Services\/Core\/XssProtectionService.php",
@@ -12249,16 +12244,21 @@
                 "Exception",
                 "OpenApi\\Generator",
                 "Psr\\Http\\Message\\ResponseInterface as Response",
-                "Psr\\Http\\Message\\ServerRequestInterface as Request"
+                "Psr\\Http\\Message\\ServerRequestInterface as Request",
+                "Throwable"
             ],
             "functions": [
                 "docs",
                 "ui",
                 "generateSwaggerUiHtml",
-                "info"
+                "generateErrorHtml",
+                "info",
+                "health",
+                "getUptime",
+                "formatBytes"
             ],
             "constants": [],
-            "lines_of_code": 285
+            "lines_of_code": 330
         },
         "app\/Application\/Controllers\/Health\/HealthController.php": {
             "path": "app\/Application\/Controllers\/Health\/HealthController.php",
@@ -12970,38 +12970,34 @@
                 "App\\Domains\\Auth\\ValueObjects\\DeviceInfo",
                 "DateTime",
                 "PDO",
-                "PDOException"
+                "PDOException",
+                "Throwable"
             ],
             "functions": [
                 "__construct",
                 "create",
                 "findByJti",
-                "findByTokenHash",
                 "findByUserId",
-                "findByUserIdAndDevice",
+                "findActiveByUserAndDevice",
                 "updateLastUsed",
-                "revoke",
+                "revokeByJti",
                 "revokeAllByUserId",
-                "revokeAllByDevice",
-                "delete",
-                "isRevoked",
-                "isExpired",
+                "revokeAllByUserAndDevice",
+                "deleteExpired",
                 "isValid",
-                "cleanup",
-                "cleanupRevoked",
-                "getUserTokenStats",
-                "getTokenFamily",
-                "revokeTokenFamily",
-                "batchCreate",
-                "batchRevoke",
-                "getTokensNearExpiry",
-                "getSystemStats",
-                "getTokenFamilySimple"
+                "countActiveByUser",
+                "findRecentlyUsed",
+                "findByTokenHash",
+                "updateStatus",
+                "findExpiringSoon",
+                "getStatistics",
+                "transaction",
+                "revokeBatch"
             ],
             "constants": [
                 "TABLE_NAME"
             ],
-            "lines_of_code": 511
+            "lines_of_code": 457
         },
         "app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": {
             "path": "app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php",
@@ -26413,8 +26409,8 @@
             "avg_classes_per_file": 0.79
         },
         "dependency_metrics": {
-            "total_dependencies": 2313,
-            "avg_dependencies_per_file": 3.92
+            "total_dependencies": 2316,
+            "avg_dependencies_per_file": 3.93
         },
         "maintainability_score": 100,
         "test_coverage_estimate": {
@@ -28351,6 +28347,11 @@
             {
                 "type": "use",
                 "target": "Exception",
+                "file": null
+            },
+            {
+                "type": "use",
+                "target": "Throwable",
                 "file": null
             }
         ],
@@ -30934,6 +30935,11 @@
                 "type": "use",
                 "target": "Psr\\Http\\Message\\ServerRequestInterface as Request",
                 "file": null
+            },
+            {
+                "type": "use",
+                "target": "Throwable",
+                "file": null
             }
         ],
         "app\/Application\/Controllers\/Health\/HealthController.php": [
@@ -31960,6 +31966,11 @@
             {
                 "type": "use",
                 "target": "PDOException",
+                "file": null
+            },
+            {
+                "type": "use",
+                "target": "Throwable",
                 "file": null
             }
         ],

@@ -30,9 +30,6 @@ use Throwable;
  * - 統一查詢參數驗證
  */
 final class StatisticsQueryService
-
-
-
 {
     public function __construct(
         private readonly StatisticsRepositoryInterface $statisticsRepository,
@@ -46,22 +43,23 @@ final class StatisticsQueryService
      * 查詢統計快照清單.
      *
      * 支援分頁和篩選條件的統計快照查詢。
-     * @return array
      */
-    public function getStatisticsSnapshots(
+    public function getStatisticsList(
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
         ?PeriodType $periodType = null,
+        ?SourceType $sourceType = null,
         int $page = 1,
         int $limit = 20,
     ): array {
-        try { /* empty */ }
+        try {
             $this->validatePaginationParams($page, $limit);
 
             $this->logger->info('查詢統計快照清單', [
-                'start_date' => $startDate?->format('Y-m-d H => i:s'),
-                'end_date' => $endDate?->format('Y-m-d H:i:s']),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 'period_type' => $periodType?->value,
+                'source_type' => $sourceType?->value,
                 'page' => $page,
                 'limit' => $limit,
             ]);
@@ -70,277 +68,364 @@ final class StatisticsQueryService
             $startDate ??= new DateTimeImmutable('-30 days');
             $endDate ??= new DateTimeImmutable();
 
-            // 查詢統計快照
-            $allSnapshots = $this->statisticsRepository->findByDateRange(
-                $startDate,
-                $endDate,
-                $limit * $page, // 取得足夠的資料進行分頁
+            // 建立統計期間物件
+            $period = new StatisticsPeriod($startDate, $endDate, $periodType ?? PeriodType::DAILY);
+
+            // 計算分頁偏移量
+            $offset = ($page - 1) * $limit;
+
+            // 查詢統計資料
+            $statistics = $this->statisticsRepository->findByPeriod(
+                $period,
+                $sourceType,
+                $limit,
+                $offset
             );
 
-            // 手動分頁
-            $offset = ($page - 1) * $limit;
-            $snapshots = array_slice($allSnapshots, $offset, $limit);
+            // 查詢總數量
+            $totalCount = $this->statisticsRepository->countByPeriod($period, $sourceType);
 
-            // 如果有週期類型篩選，進行額外過濾
-            if ($periodType !== null) {
-                $snapshots = array_filter(
-                    $snapshots,
-                    fn($snapshot): bool => $snapshot->getPeriod()->type === $periodType,
+            return [
+                'data' => $statistics,
+                'pagination' => [
+                    'page' => $page,
+                    'limit' => $limit,
+                    'total' => $totalCount,
+                    'total_pages' => ceil($totalCount / $limit),
+                    'has_next' => ($page * $limit) < $totalCount,
+                    'has_previous' => $page > 1,
+                ],
+                'filters' => [
+                    'start_date' => $startDate->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate->format('Y-m-d H:i:s'),
+                    'period_type' => $period->getPeriodType()->value,
+                    'source_type' => $sourceType?->value,
+                ],
+            ];
+
+        } catch (Throwable $e) {
+            $this->logger->error('查詢統計清單失敗', [
+                'error' => $e->getMessage(),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
+                'period_type' => $periodType?->value,
+                'source_type' => $sourceType?->value,
+                'page' => $page,
+                'limit' => $limit,
+            ]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * 查詢特定統計快照.
+     */
+    public function getStatisticsById(int $id): ?array
+    {
+        try {
+            $this->logger->info('查詢統計快照', ['id' => $id]);
+
+            $statistics = $this->statisticsRepository->findById($id);
+
+            if ($statistics === null) {
+                $this->logger->warning('統計快照不存在', ['id' => $id]);
+                return null;
+            }
+
+            return $statistics;
+
+        } catch (Throwable $e) {
+            $this->logger->error('查詢統計快照失敗', [
+                'error' => $e->getMessage(),
+                'id' => $id,
+            ]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * 查詢文章統計資料.
+     */
+    public function getPostStatistics(
+        ?int $postId = null,
+        ?DateTimeInterface $startDate = null,
+        ?DateTimeInterface $endDate = null,
+        int $page = 1,
+        int $limit = 20
+    ): array {
+        try {
+            $this->validatePaginationParams($page, $limit);
+
+            $this->logger->info('查詢文章統計', [
+                'post_id' => $postId,
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
+                'page' => $page,
+                'limit' => $limit,
+            ]);
+
+            $offset = ($page - 1) * $limit;
+
+            if ($postId !== null) {
+                // 查詢特定文章的統計
+                $statistics = $this->postStatisticsRepository->findByPostId(
+                    $postId,
+                    $startDate,
+                    $endDate,
+                    $limit,
+                    $offset
+                );
+                $totalCount = $this->postStatisticsRepository->countByPostId(
+                    $postId,
+                    $startDate,
+                    $endDate
+                );
+            } else {
+                // 查詢所有文章統計
+                $statistics = $this->postStatisticsRepository->findByDateRange(
+                    $startDate,
+                    $endDate,
+                    $limit,
+                    $offset
+                );
+                $totalCount = $this->postStatisticsRepository->countByDateRange(
+                    $startDate,
+                    $endDate
                 );
             }
 
-            // 計算總數
-            $totalCount = $this->statisticsRepository->countByDateRange(
-                $startDate,
-                $endDate,
-            );
-
-            $result = [
-                'data' => array_map(
-                    fn($snapshot) => array => [
-                        'id' => $snapshot->getId()->toString(),
-                        'period' => [
-                            'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H => i:s'),
-                            'end_date' => $snapshot->getPeriod()->endDate->format('Y-m-d H:i:s'),
-                            'type' => $snapshot->getPeriod()->type->value,
-                            'display' => $snapshot->getPeriod()->__toString(),
-                        ],
-                        'metrics' => [
-                            'total_posts' => [
-                                'value' => $snapshot->getTotalPosts()->value,
-                                'formatted' => $snapshot->getTotalPosts()->getFormattedValueWithUnit(),
-                            ],
-                            'total_views' => [
-                                'value' => $snapshot->getTotalViews()->value,
-                                'formatted' => $snapshot->getTotalViews()->getFormattedValueWithUnit(),
-                            ],
-                        ],
-                        'created_at' => $snapshot->getCreatedAt()->format('Y-m-d H:i:s'),
-                    ],
-                    $snapshots,
-                ),
+            return [
+                'data' => $statistics,
                 'pagination' => [
-                    'current_page' => $page,
-                    'per_page' => $limit,
+                    'page' => $page,
+                    'limit' => $limit,
                     'total' => $totalCount,
                     'total_pages' => ceil($totalCount / $limit),
-                    'has_next' => $page * $limit < $totalCount,
-                    'has_prev' => $page > 1,
+                    'has_next' => ($page * $limit) < $totalCount,
+                    'has_previous' => $page > 1,
                 ],
                 'filters' => [
-                    'start_date' => $startDate->format('Y-m-d H => i:s'),
-                    'end_date' => $endDate->format('Y-m-d H:i:s'),
-                    'period_type' => $periodType?->value,
+                    'post_id' => $postId,
+                    'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
 
-            $this->logger->info('統計快照查詢完成', [
-                'count' => count($snapshots]),
-                'total' => $totalCount,
+        } catch (Throwable $e) {
+            $this->logger->error('查詢文章統計失敗', [
+                'error' => $e->getMessage(),
+                'post_id' => $postId,
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 'page' => $page,
+                'limit' => $limit,
             ]);
 
-            return $result;
+            throw $e;
         }
+    }
 
     /**
-     * 查詢文章統計趨勢.
-     *
-     * 分析指定週期內的文章統計趨勢資料。
-     * @return array
+     * 查詢使用者統計資料.
      */
-    public function getPostStatisticsTrends(
-        StatisticsPeriod $period,
-        ?SourceType $sourceType = null,
-        int $dataPoints = 30,
+    public function getUserStatistics(
+        ?int $userId = null,
+        ?DateTimeInterface $startDate = null,
+        ?DateTimeInterface $endDate = null,
+        int $page = 1,
+        int $limit = 20
     ): array {
-        try { /* empty */ }
-            $this->validateDataPoints($dataPoints);
+        try {
+            $this->validatePaginationParams($page, $limit);
 
-            $this->logger->info('查詢文章統計趨勢', [
-                'period' => $period->__toString(),
-                'source_type' => $sourceType?->value,
-                'data_points' => $dataPoints,
+            $this->logger->info('查詢使用者統計', [
+                'user_id' => $userId,
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
+                'page' => $page,
+                'limit' => $limit,
             ]);
 
-            // 根據週期類型計算資料點間隔
-            $interval = $this->calculateDataPointInterval($period, $dataPoints);
+            $offset = ($page - 1) * $limit;
 
-            // 查詢統計資料
-            /** @var array<string, mixed> $trends */
-            $trends = $this->postStatisticsRepository->getStatisticsTrends(
+            if ($userId !== null) {
+                // 查詢特定使用者的統計
+                $statistics = $this->userStatisticsRepository->findByUserId(
+                    $userId,
+                    $startDate,
+                    $endDate,
+                    $limit,
+                    $offset
+                );
+                $totalCount = $this->userStatisticsRepository->countByUserId(
+                    $userId,
+                    $startDate,
+                    $endDate
+                );
+            } else {
+                // 查詢所有使用者統計
+                $statistics = $this->userStatisticsRepository->findByDateRange(
+                    $startDate,
+                    $endDate,
+                    $limit,
+                    $offset
+                );
+                $totalCount = $this->userStatisticsRepository->countByDateRange(
+                    $startDate,
+                    $endDate
+                );
+            }
+
+            return [
+                'data' => $statistics,
+                'pagination' => [
+                    'page' => $page,
+                    'limit' => $limit,
+                    'total' => $totalCount,
+                    'total_pages' => ceil($totalCount / $limit),
+                    'has_next' => ($page * $limit) < $totalCount,
+                    'has_previous' => $page > 1,
+                ],
+                'filters' => [
+                    'user_id' => $userId,
+                    'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate?->format('Y-m-d H:i:s'),
+                ],
+            ];
+
+        } catch (Throwable $e) {
+            $this->logger->error('查詢使用者統計失敗', [
+                'error' => $e->getMessage(),
+                'user_id' => $userId,
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
+                'page' => $page,
+                'limit' => $limit,
+            ]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * 查詢系統統計資料.
+     */
+    public function getSystemStatistics(
+        ?DateTimeInterface $startDate = null,
+        ?DateTimeInterface $endDate = null,
+        ?string $metricType = null
+    ): array {
+        try {
+            $this->logger->info('查詢系統統計', [
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
+                'metric_type' => $metricType,
+            ]);
+
+            // 設定預設時間範圍
+            $startDate ??= new DateTimeImmutable('-7 days');
+            $endDate ??= new DateTimeImmutable();
+
+            if ($metricType !== null) {
+                // 查詢特定指標類型
+                $statistics = $this->systemStatisticsRepository->findByMetricType(
+                    $metricType,
+                    $startDate,
+                    $endDate
+                );
+            } else {
+                // 查詢所有系統統計
+                $statistics = $this->systemStatisticsRepository->findByDateRange(
+                    $startDate,
+                    $endDate
+                );
+            }
+
+            return [
+                'data' => $statistics,
+                'summary' => $this->generateSystemStatisticsSummary($statistics),
+                'filters' => [
+                    'start_date' => $startDate->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate->format('Y-m-d H:i:s'),
+                    'metric_type' => $metricType,
+                ],
+            ];
+
+        } catch (Throwable $e) {
+            $this->logger->error('查詢系統統計失敗', [
+                'error' => $e->getMessage(),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
+                'metric_type' => $metricType,
+            ]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * 查詢統計趨勢資料.
+     */
+    public function getStatisticsTrend(
+        PeriodType $periodType,
+        ?SourceType $sourceType = null,
+        ?DateTimeInterface $startDate = null,
+        ?DateTimeInterface $endDate = null,
+        int $limit = 100
+    ): array {
+        try {
+            $this->logger->info('查詢統計趨勢', [
+                'period_type' => $periodType->value,
+                'source_type' => $sourceType?->value,
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
+                'limit' => $limit,
+            ]);
+
+            // 設定預設時間範圍
+            $startDate ??= new DateTimeImmutable('-30 days');
+            $endDate ??= new DateTimeImmutable();
+
+            // 建立統計期間物件
+            $period = new StatisticsPeriod($startDate, $endDate, $periodType);
+
+            // 查詢趨勢資料
+            $trendData = $this->statisticsRepository->findTrendByPeriod(
                 $period,
-                $dataPoints,
+                $sourceType,
+                $limit
             );
 
-            // 計算趨勢指標
-            $trendAnalysis = $this->analyzeTrends($trends);
+            // 計算趨勢分析
+            $analysis = $this->analyzeTrend($trendData);
 
-            $result = [
-                'period' => [
-                    'start_date' => $period->startDate->format('Y-m-d H => i:s'),
-                    'end_date' => $period->endDate->format('Y-m-d H:i:s'),
-                    'type' => $period->type->value,
-                    'display' => $period->__toString(),
+            return [
+                'trend_data' => $trendData,
+                'analysis' => $analysis,
+                'period_info' => [
+                    'type' => $periodType->value,
+                    'start_date' => $startDate->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate->format('Y-m-d H:i:s'),
                 ],
                 'filters' => [
                     'source_type' => $sourceType?->value,
-                    'data_points' => $dataPoints,
-                    'interval' => $interval,
                 ],
-                'trends' => $trends,
-                'analysis' => $trendAnalysis,
-                'generated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ];
 
-            $this->logger->info('文章統計趨勢查詢完成', [
-                'trends_count' => count($trends),
-                'analysis_metrics' => array_keys($trendAnalysis]),
+        } catch (Throwable $e) {
+            $this->logger->error('查詢統計趨勢失敗', [
+                'error' => $e->getMessage(),
+                'period_type' => $periodType->value,
+                'source_type' => $sourceType?->value,
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
             ]);
 
-            return $result;
+            throw $e;
         }
-
-    /**
-     * 查詢使用者活動統計.
-     *
-     * 取得指定週期內的使用者活動統計資訊。
-     * @return array
-     */
-    public function getUserActivityStatistics(
-        StatisticsPeriod $period,
-        int $topUsersLimit = 10,
-        int $perPage = 20,
-    ): array {
-        try { /* empty */ }
-            $this->validateLimit($topUsersLimit, 1, 100);
-            $this->validateLimit($perPage, 1, 100);
-
-            $this->logger->info('查詢使用者活動統計', [
-                'period' => $period->__toString(),
-                'top_users_limit' => $topUsersLimit,
-                'per_page' => $perPage,
-            ]);
-
-            // 查詢基本統計
-            $totalActiveUsers = $this->userStatisticsRepository->countActiveUsersByPeriod($period);
-            $newUsers = $this->userStatisticsRepository->countNewUsersByPeriod($period);
-
-            // 查詢活躍使用者排行
-            $topActiveUsers = $this->userStatisticsRepository->getTopActiveUsers($period, $topUsersLimit);
-
-            // 查詢使用者行為分析
-            $behaviorAnalysis = $this->userStatisticsRepository->getUserBehaviorAnalysis($period);
-
-            $result = [
-                'period' => [
-                    'start_date' => $period->startDate->format('Y-m-d H => i:s'),
-                    'end_date' => $period->endDate->format('Y-m-d H:i:s'),
-                    'type' => $period->type->value,
-                    'display' => $period->__toString(),
-                ],
-                'overview' => [
-                    'total_active_users' => $totalActiveUsers,
-                    'new_users' => $newUsers,
-                    'retention_rate' => $totalActiveUsers > 0
-                        ? round((($totalActiveUsers - $newUsers) / $totalActiveUsers) * 100, 2)  => 0,
-                ],
-                'top_active_users' => $topActiveUsers,
-                'behavior_analysis' => $behaviorAnalysis,
-                'generated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
-            ];
-
-            $this->logger->info('使用者活動統計查詢完成', [
-                'total_active_users' => $totalActiveUsers,
-                'new_users' => $newUsers,
-                'top_users_count' => count($topActiveUsers]),
-            ]);
-
-            return $result;
-        }
-
-    /**
-     * 查詢系統效能統計.
-     *
-     * 取得系統效能相關的統計資訊。
-     * @return array
-     */
-    public function getSystemPerformanceStatistics(
-        StatisticsPeriod $period): array {
-        try { /* empty */ }
-            $this->logger->info('查詢系統效能統計', ['period' => $period->__toString()]);
-
-            // 查詢系統效能指標
-            $performanceMetrics = $this->systemStatisticsRepository->getPerformanceMetrics($period);
-
-            // 查詢錯誤統計
-            $errorStatistics = $this->systemStatisticsRepository->getErrorStatistics($period);
-
-            // 查詢資源使用統計
-            $resourceUsage = $this->systemStatisticsRepository->getResourceUsageStatistics($period);
-
-            $result = [
-                'period' => [
-                    'start_date' => $period->startDate->format('Y-m-d H => i:s'),
-                    'end_date' => $period->endDate->format('Y-m-d H:i:s'),
-                    'type' => $period->type->value,
-                    'display' => $period->__toString(),
-                ],
-                'performance_metrics' => $performanceMetrics,
-                'error_statistics' => $errorStatistics,
-                'resource_usage' => $resourceUsage,
-                'generated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
-            ];
-
-            $this->logger->info('系統效能統計查詢完成', [
-                'metrics_count' => count($performanceMetrics]),
-            ]);
-
-            return $result;
-        }
-
-    /**
-     * 自訂統計查詢.
-     *
-     * 提供彈性的自訂統計查詢功能。
-     * @param array $queryParams
-     * @return array
-     */
-    public function customStatisticsQuery(array $queryParams): array
-    {
-        try { /* empty */ }
-            $this->validateCustomQueryParams($queryParams);
-
-            $this->logger->info('執行自訂統計查詢', ['query_params' => $queryParams]);
-
-            // 解析查詢參數
-            $period = $this->parseQueryPeriod($queryParams);
-            /** @var array<string> $metrics */
-            $metrics = is_array($queryParams['metrics'] ?? null) ? $queryParams['metrics'] : [];
-            $groupBy = is_string($queryParams['group_by'] ?? null) ? $queryParams['group_by'] : null;
-            /** @var array<string, mixed> $filters */
-            $filters = is_array($queryParams['filters'] ?? null) ? $queryParams['filters'] : [];
-
-            // 執行查詢
-            $queryResult = $this->executeCustomQuery($period, $metrics, $groupBy, $filters);
-
-            $result = [
-                'query_params' => $queryParams,
-                'period' => [
-                    'start_date' => $period->startDate->format('Y-m-d H => i:s'),
-                    'end_date' => $period->endDate->format('Y-m-d H:i:s'),
-                    'type' => $period->type->value,
-                ],
-                'data' => $queryResult,
-                'generated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
-            ];
-
-            $this->logger->info('自訂統計查詢完成', [
-                'result_count' => count($queryResult]),
-            ]);
-
-            return $result;
-        }
+    }
 
     /**
      * 驗證分頁參數.
@@ -351,179 +436,72 @@ final class StatisticsQueryService
             throw new InvalidArgumentException('頁碼必須大於 0');
         }
 
-        if ($limit < 1 || $limit > 100) {
-            throw new InvalidArgumentException('每頁筆數必須在 1-100 之間');
+        if ($limit < 1 || $limit > 200) {
+            throw new InvalidArgumentException('每頁筆數必須在 1-200 之間');
         }
     }
 
     /**
-     * 驗證資料點數量.
+     * 產生系統統計摘要.
      */
-    private function validateDataPoints(int $dataPoints): void
+    private function generateSystemStatisticsSummary(array $statistics): array
     {
-        if ($dataPoints < 2 || $dataPoints > 365) {
-            throw new InvalidArgumentException('資料點數量必須在 2-365 之間');
-        }
-    }
-
-    /**
-     * 驗證限制參數.
-     */
-    private function validateLimit(int $limit, int $min, int $max): void
-    {
-        if ($limit < $min || $limit > $max) {
-            throw new InvalidArgumentException("限制數量必須在 {$min}-{$max} 之間");
-        }
-    }
-
-    /**
-     * 計算資料點間隔.
-     */
-    private function calculateDataPointInterval(StatisticsPeriod $period, int $dataPoints): string
-    {
-        $totalDays = $period->getDaysCount();
-        $intervalDays = max(1, floor($totalDays / $dataPoints));
-
-        if ($intervalDays >= 7) {
-            return 'week';
-        } elseif ($intervalDays >= 1) {
-            return 'day';
-        } else {
-            return 'hour';
-        }
-    }
-
-    /**
-     * 分析趨勢資料.
-     * @param array $trends
-     * @return array
-     */
-    private function analyzeTrends(array $trends): array
-    {
-        if (empty($trends)) {
-            return [];
+        if (empty($statistics)) {
+            return [
+                'total_records' => 0,
+                'date_range' => null,
+                'metrics_count' => 0,
+            ];
         }
 
-        // 計算基本趨勢指標
-        $values = array_column($trends, 'value');
-        $count = count($values);
+        $metricTypes = array_unique(array_column($statistics, 'metric_type'));
+        $dates = array_column($statistics, 'created_at');
 
         return [
-            'total_points' => $count,
-            'min_value' => min($values),
-            'max_value' => max($values),
-            'avg_value' => round(array_sum($values) / $count, 2),
-            'trend_direction' => $this->calculateTrendDirection($values),
-            'volatility' => $this->calculateVolatility($values),
+            'total_records' => count($statistics),
+            'date_range' => [
+                'start' => min($dates),
+                'end' => max($dates),
+            ],
+            'metrics_count' => count($metricTypes),
+            'available_metrics' => $metricTypes,
         ];
     }
 
     /**
-     * 計算趨勢方向.
-     * @param array $values
+     * 分析趨勢資料.
      */
-    private function calculateTrendDirection(array $values): string
+    private function analyzeTrend(array $trendData): array
     {
-        if (count($values) < 2) {
-            return 'stable';
+        if (count($trendData) < 2) {
+            return [
+                'trend_direction' => 'insufficient_data',
+                'change_percentage' => 0,
+                'data_points' => count($trendData),
+            ];
         }
 
-        $sliceSize = (int) ceil(count($values) / 3);
-        $first = array_slice($values, 0, $sliceSize);
-        $last = array_slice($values, -$sliceSize);
+        $firstValue = (float) ($trendData[0]['value'] ?? 0);
+        $lastValue = (float) ($trendData[count($trendData) - 1]['value'] ?? 0);
 
-        $firstAvg = array_sum($first) / count($first);
-        $lastAvg = array_sum($last) / count($last);
+        $changePercentage = $firstValue > 0
+            ? (($lastValue - $firstValue) / $firstValue) * 100
+            : 0;
 
-        $change = ($lastAvg - $firstAvg) / $firstAvg * 100;
+        $trendDirection = match (true) {
+            $changePercentage > 5 => 'increasing',
+            $changePercentage < -5 => 'decreasing',
+            default => 'stable',
+        };
 
-        if ($change > 5) {
-            return 'increasing';
-        } elseif ($change < -5) {
-            return 'decreasing';
-        } else {
-            return 'stable';
-        }
-    }
-
-    /**
-     * 計算波動性.
-     * @param array $values
-     */
-    private function calculateVolatility(array $values): float
-    {
-        if (count($values) < 2) {
-            return 0.0;
-        }
-
-        // 確保所有值都是數字
-        $numericValues = array_filter($values, 'is_numeric');
-        $numericValues = array_map('floatval', $numericValues);
-
-        if (count($numericValues) < 2) {
-            return 0.0;
-        }
-
-        $count = count($numericValues);
-        $mean = array_sum($numericValues) / $count;
-        $squaredDiffs = array_map(fn(float $value): float => pow($value - $mean, 2), $numericValues);
-        $variance = array_sum($squaredDiffs) / ($count - 1);
-
-        return round(sqrt($variance), 2);
-    }
-
-    /**
-     * 驗證自訂查詢參數.
-     * @param array $params
-     */
-    private function validateCustomQueryParams(array $params): void
-    {
-        $required = ['period_start', 'period_end'];
-        foreach ($required as $field) {
-            if (!isset($params[$field] {
-                throw new InvalidArgumentException("缺少必要參數：{$field}"];
-            }
-        }
-    }
-
-    /**
-     * 解析查詢週期
-     * @param array $params
-     */
-    private function parseQueryPeriod(array $params): StatisticsPeriod
-    {
-        $startDate = new DateTimeImmutable(is_string($params['period_start'] ?? null) ? $params['period_start'] : 'now');
-        $endDate = new DateTimeImmutable(is_string($params['period_end'] ?? null) ? $params['period_end'] : 'now');
-
-        $periodType = $params['period_type'] ?? 'daily';
-        if (!is_string($periodType) && !is_int($periodType)) {
-            $periodType = 'daily';
-        }
-        $type = PeriodType::from($periodType);
-
-        return StatisticsPeriod::create($startDate, $endDate, $type);
-    }
-
-    /**
-     * 執行自訂查詢.
-     * @param array $metrics
-     * @return array
-     */
-    private function executeCustomQuery(
-        StatisticsPeriod $period,
-        /** @var array<string, mixed> */
-        array $metrics,
-        ?string $groupBy,
-        /** @var array<string, mixed> */
-        array $filters,
-    ): array {
-        // 基本查詢實作
         return [
-            'period' => $period->__toString(),
-            'metrics' => $metrics,
-            'group_by' => $groupBy,
-            'filters' => $filters,
-            'note' => '自訂查詢功能需要進一步實作',
+            'trend_direction' => $trendDirection,
+            'change_percentage' => round($changePercentage, 2),
+            'data_points' => count($trendData),
+            'first_value' => $firstValue,
+            'last_value' => $lastValue,
+            'peak_value' => max(array_column($trendData, 'value')),
+            'min_value' => min(array_column($trendData, 'value')),
         ];
     }
 }
