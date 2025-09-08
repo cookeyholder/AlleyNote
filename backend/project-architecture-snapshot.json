@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 03:38:29",
+        "scan_time": "2025-09-09 03:48:55",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -11,6 +11,12 @@
             "path": "syntax-errors-analysis-report.md",
             "extension": "md",
             "size": 804
+        },
+        "quick-syntax-fixes-report.json": {
+            "type": "file",
+            "path": "quick-syntax-fixes-report.json",
+            "extension": "json",
+            "size": 4570
         },
         "database": {
             "type": "directory",
@@ -560,7 +566,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Services\/RichTextProcessorService.php",
                                             "extension": "php",
-                                            "size": 10201
+                                            "size": 10187
                                         },
                                         "PostCacheKeyService.php": {
                                             "type": "file",
@@ -780,7 +786,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Advanced\/SecurityTestService.php",
                                                     "extension": "php",
-                                                    "size": 17427
+                                                    "size": 17182
                                                 }
                                             }
                                         },
@@ -792,7 +798,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Core\/XssProtectionService.php",
                                                     "extension": "php",
-                                                    "size": 5239
+                                                    "size": 5192
                                                 },
                                                 "CsrfProtectionService.php": {
                                                     "type": "file",
@@ -842,7 +848,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Services\/IpService.php",
                                             "extension": "php",
-                                            "size": 3213
+                                            "size": 3195
                                         },
                                         "Headers": {
                                             "type": "directory",
@@ -870,7 +876,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Error\/ErrorHandlerService.php",
                                                     "extension": "php",
-                                                    "size": 10510
+                                                    "size": 10478
                                                 }
                                             }
                                         },
@@ -1100,7 +1106,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/DTOs\/LoginRequestDTO.php",
                                             "extension": "php",
-                                            "size": 1406
+                                            "size": 1405
                                         },
                                         "LogoutRequestDTO.php": {
                                             "type": "file",
@@ -1130,7 +1136,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/DTOs\/RefreshRequestDTO.php",
                                             "extension": "php",
-                                            "size": 1117
+                                            "size": 1116
                                         }
                                     }
                                 },
@@ -1146,7 +1152,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Auth\/Services\/Advanced\/PwnedPasswordService.php",
                                                     "extension": "php",
-                                                    "size": 4855
+                                                    "size": 4773
                                                 }
                                             }
                                         },
@@ -1166,7 +1172,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/AuthService.php",
                                             "extension": "php",
-                                            "size": 5439
+                                            "size": 5358
                                         },
                                         "PasswordManagementService.php": {
                                             "type": "file",
@@ -1190,7 +1196,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/AuthorizationService.php",
                                             "extension": "php",
-                                            "size": 7980
+                                            "size": 7845
                                         },
                                         "TokenBlacklistService.php": {
                                             "type": "file",
@@ -1334,7 +1340,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Attachment\/Services\/AttachmentService.php",
                                             "extension": "php",
-                                            "size": 19656
+                                            "size": 20084
                                         },
                                         "FileSecurityService.php": {
                                             "type": "file",
@@ -1898,7 +1904,7 @@
                                     "type": "file",
                                     "path": "app\/Application\/Middleware\/RateLimitMiddleware.php",
                                     "extension": "php",
-                                    "size": 11265
+                                    "size": 11266
                                 }
                             }
                         },
@@ -4065,6 +4071,12 @@
             "extension": "cache",
             "size": 43293
         },
+        "syntax-errors-classification-report.json": {
+            "type": "file",
+            "path": "syntax-errors-classification-report.json",
+            "extension": "json",
+            "size": 198933
+        },
         "ci-simulation-report.md": {
             "type": "file",
             "path": "ci-simulation-report.md",
@@ -4256,6 +4268,12 @@
                     "path": "scripts\/final-remaining-phpstan-fixer.php",
                     "extension": "php",
                     "size": 4785
+                },
+                "classify-current-syntax-errors.php": {
+                    "type": "file",
+                    "path": "scripts\/classify-current-syntax-errors.php",
+                    "extension": "php",
+                    "size": 6982
                 },
                 "restore_sqlite.sh": {
                     "type": "file",
@@ -5031,6 +5049,12 @@
                     "extension": "php",
                     "size": 5040
                 },
+                "fix-quick-syntax-errors.php": {
+                    "type": "file",
+                    "path": "scripts\/fix-quick-syntax-errors.php",
+                    "extension": "php",
+                    "size": 7492
+                },
                 "parse-error-fixer.php": {
                     "type": "file",
                     "path": "scripts\/parse-error-fixer.php",
@@ -5265,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1673142
+            "size": 1673793
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -5348,20 +5372,26 @@
             "path": "eighth-round-phase2-progress-report.md",
             "extension": "md",
             "size": 14483
+        },
+        "eight-round-phase5-progress-report.md": {
+            "type": "file",
+            "path": "eight-round-phase5-progress-report.md",
+            "extension": "md",
+            "size": 13650
         }
     },
     "file_statistics": {
-        "total_files": 672,
+        "total_files": 677,
         "by_extension": {
-            "md": 23,
-            "php": 596,
+            "md": 24,
+            "json": 8,
+            "php": 598,
             "bak": 3,
             "sqlite3": 1,
             "gitkeep": 1,
             "testing": 1,
             "lock": 1,
             "xml": 1,
-            "json": 6,
             "2025-08-30_13-17-14": 3,
             "2025-08-30_08-53-31": 2,
             "txt": 4,
@@ -5377,7 +5407,7 @@
             "development": 1
         },
         "by_directory": {
-            "\/": 40,
+            "\/": 43,
             "\/database\/migrations": 10,
             "\/database": 2,
             "\/database\/seeds": 3,
@@ -5548,7 +5578,7 @@
             "\/tests\/Factory\/Abstracts": 2,
             "\/public": 5,
             "\/examples": 3,
-            "\/scripts": 168,
+            "\/scripts": 170,
             "\/scripts\/consolidated": 9,
             "\/scripts\/lib": 1
         }
@@ -6999,7 +7029,7 @@
                 "getCachePath"
             ],
             "constants": [],
-            "lines_of_code": 300
+            "lines_of_code": 296
         },
         "app\/Domains\/Post\/Services\/PostCacheKeyService.php": {
             "path": "app\/Domains\/Post\/Services\/PostCacheKeyService.php",
@@ -7812,7 +7842,7 @@
                 "getRecommendations"
             ],
             "constants": [],
-            "lines_of_code": 556
+            "lines_of_code": 532
         },
         "app\/Domains\/Security\/Services\/Core\/XssProtectionService.php": {
             "path": "app\/Domains\/Security\/Services\/Core\/XssProtectionService.php",
@@ -7846,7 +7876,7 @@
                 "logXssAttempt"
             ],
             "constants": [],
-            "lines_of_code": 183
+            "lines_of_code": 176
         },
         "app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php": {
             "path": "app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php",
@@ -8037,7 +8067,7 @@
                 "logIpRuleEvent"
             ],
             "constants": [],
-            "lines_of_code": 103
+            "lines_of_code": 101
         },
         "app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php": {
             "path": "app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php",
@@ -8143,7 +8173,7 @@
                 "truncateString"
             ],
             "constants": [],
-            "lines_of_code": 348
+            "lines_of_code": 340
         },
         "app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php": {
             "path": "app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php",
@@ -9277,7 +9307,7 @@
                 "REQUEST_TIMEOUT",
                 "CACHE_TTL"
             ],
-            "lines_of_code": 185
+            "lines_of_code": 177
         },
         "app\/Domains\/Auth\/Services\/SessionSecurityService.php": {
             "path": "app\/Domains\/Auth\/Services\/SessionSecurityService.php",
@@ -9375,7 +9405,7 @@
                 "logout"
             ],
             "constants": [],
-            "lines_of_code": 160
+            "lines_of_code": 155
         },
         "app\/Domains\/Auth\/Services\/PasswordManagementService.php": {
             "path": "app\/Domains\/Auth\/Services\/PasswordManagementService.php",
@@ -9511,7 +9541,7 @@
             "constants": [
                 "CACHE_TTL"
             ],
-            "lines_of_code": 277
+            "lines_of_code": 269
         },
         "app\/Domains\/Auth\/Services\/TokenBlacklistService.php": {
             "path": "app\/Domains\/Auth\/Services\/TokenBlacklistService.php",
@@ -10102,7 +10132,7 @@
                 "MAX_FILE_SIZE",
                 "FORBIDDEN_EXTENSIONS"
             ],
-            "lines_of_code": 579
+            "lines_of_code": 589
         },
         "app\/Domains\/Attachment\/Services\/FileSecurityService.php": {
             "path": "app\/Domains\/Attachment\/Services\/FileSecurityService.php",
@@ -20459,6 +20489,19 @@
             "constants": [],
             "lines_of_code": 177
         },
+        "scripts\/classify-current-syntax-errors.php": {
+            "path": "scripts\/classify-current-syntax-errors.php",
+            "namespace": null,
+            "classes": [],
+            "interfaces": [],
+            "traits": [],
+            "uses": [
+                "try without catch' => 'try_without_catch',\n    'Cannot use empty array elements' => 'empty_array_elements',\n    'Syntax error, unexpected EOF' => 'unexpected_eof',\n    'Syntax error, unexpected T_CATCH' => 'multiple_catch',\n    'Syntax error, unexpected T_DOUBLE_ARROW' => 'double_arrow',\n    'Syntax error, unexpected T_IF' => 'unexpected_if',\n    'Syntax error, unexpected \\'{\\'' => 'unexpected_brace',\n    'Syntax error, unexpected \\')\\'' => 'unexpected_paren',\n    'Syntax error, unexpected \\']\\'' => 'unexpected_bracket',\n]"
+            ],
+            "functions": [],
+            "constants": [],
+            "lines_of_code": 204
+        },
         "scripts\/consolidated\/ConsolidatedAnalyzer.php": {
             "path": "scripts\/consolidated\/ConsolidatedAnalyzer.php",
             "namespace": "AlleyNote\\Scripts\\Consolidated",
@@ -22979,6 +23022,17 @@
             ],
             "constants": [],
             "lines_of_code": 186
+        },
+        "scripts\/fix-quick-syntax-errors.php": {
+            "path": "scripts\/fix-quick-syntax-errors.php",
+            "namespace": null,
+            "classes": [],
+            "interfaces": [],
+            "traits": [],
+            "uses": [],
+            "functions": [],
+            "constants": [],
+            "lines_of_code": 235
         },
         "scripts\/parse-error-fixer.php": {
             "path": "scripts\/parse-error-fixer.php",
@@ -26355,19 +26409,19 @@
     },
     "metrics": {
         "code_complexity": {
-            "total_files": 588,
+            "total_files": 590,
             "total_classes": 467,
             "total_interfaces": 80,
             "avg_classes_per_file": 0.79
         },
         "dependency_metrics": {
-            "total_dependencies": 2312,
-            "avg_dependencies_per_file": 3.93
+            "total_dependencies": 2313,
+            "avg_dependencies_per_file": 3.92
         },
         "maintainability_score": 100,
         "test_coverage_estimate": {
             "test_files": 0,
-            "source_files": 588,
+            "source_files": 590,
             "estimated_coverage": 0
         }
     },
@@ -38550,6 +38604,13 @@
         "scripts\/fix-arrow-syntax-errors.php": [],
         "scripts\/fix-iterable-types.php": [],
         "scripts\/final-remaining-phpstan-fixer.php": [],
+        "scripts\/classify-current-syntax-errors.php": [
+            {
+                "type": "use",
+                "target": "try without catch' => 'try_without_catch',\n    'Cannot use empty array elements' => 'empty_array_elements',\n    'Syntax error, unexpected EOF' => 'unexpected_eof',\n    'Syntax error, unexpected T_CATCH' => 'multiple_catch',\n    'Syntax error, unexpected T_DOUBLE_ARROW' => 'double_arrow',\n    'Syntax error, unexpected T_IF' => 'unexpected_if',\n    'Syntax error, unexpected \\'{\\'' => 'unexpected_brace',\n    'Syntax error, unexpected \\')\\'' => 'unexpected_paren',\n    'Syntax error, unexpected \\']\\'' => 'unexpected_bracket',\n]",
+                "file": null
+            }
+        ],
         "scripts\/consolidated\/ConsolidatedAnalyzer.php": [
             {
                 "type": "use",
@@ -39253,6 +39314,7 @@
         ],
         "scripts\/fix-empty-try-blocks.php": [],
         "scripts\/fix-phpstan-array-types.php": [],
+        "scripts\/fix-quick-syntax-errors.php": [],
         "scripts\/parse-error-fixer.php": [],
         "scripts\/fix-application-response.php": [],
         "scripts\/context7-guided-phpstan-fixer.php": [],
