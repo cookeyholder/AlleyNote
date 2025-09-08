@@ -349,7 +349,7 @@ readonly class StatisticsMetric
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>{
+     * @return array{
      *     value: int|float,
      *     unit: string,
      *     description: string,

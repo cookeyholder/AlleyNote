@@ -47,7 +47,7 @@ class DatabaseBackupTest extends TestCase
                 user_ip VARCHAR(45) NULL,
                 views INTEGER NOT NULL DEFAULT 0,
                 is_pinned BOOLEAN NOT NULL DEFAULT 0,
-                status VARCHAR(20) NOT NULL DEFAULT "draft",
+                status VARCHAR(20) NOT NULL DEFAULT "draftsprintf(",
                 publish_date DATETIME NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NULL,
@@ -226,10 +226,10 @@ class DatabaseBackupTest extends TestCase
         // 比較關鍵欄位而非完整記錄
         $originalPostsFiltered = array_map(function ($post) {
             return [
-                'title' => $post['title'],
-                'content' => $post['content'],
-                'user_id' => $post['user_id'],
-                'status' => $post['status'],
+                'title' => (is_array($post) && array_key_exists('title', $post) ? $post['title'] : null),
+                'content' => (is_array($post) && array_key_exists('content', $post) ? $post['content'] : null),
+                'user_id' => (is_array($post) && array_key_exists('user_id', $post) ? $post['user_id'] : null),
+                'status' => (is_array($post) && array_key_exists('status', $post) ? $post['status'] : null),
             ];
         }, $originalPosts);
 

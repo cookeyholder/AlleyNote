@@ -48,7 +48,6 @@ class CacheSystemTest extends TestCase
             }
             rmdir($this->tempDir);
         }
-    }
 
     public function testCacheManagerBasicOperations(): void
     {
@@ -104,7 +103,6 @@ class CacheSystemTest extends TestCase
         foreach (array_keys($values) as $key) {
             $this->assertFalse($this->cacheManager->has($key));
         }
-    }
 
     public function testCacheStrategyFiltering(): void
     {

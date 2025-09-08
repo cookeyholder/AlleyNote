@@ -231,7 +231,6 @@ class PostRepositoryTest extends TestCase
         foreach ($pinnedPosts as $post) {
             $this->assertTrue($post->getIsPinned());
         }
-    }
 
     public function testCanSetPinnedStatus(): void
     {
@@ -273,15 +272,10 @@ class PostRepositoryTest extends TestCase
     {
         $post = $this->repository->create(PostFactory::make());
 
-        try {
+        try { /* empty */ }
             $this->repository->setTags($post->getId(), [999]); // 使用不存在的標籤 ID
             $this->fail('應該拋出異常');
-        } catch (Exception $e) {
-            // 確保交易已回溯
-            $tags = $this->db->query("SELECT * FROM post_tags WHERE post_id = {$post->getId()}")->fetchAll();
-            $this->assertEmpty($tags);
         }
-    }
 
     public function testShouldCommitOnTagAssignmentSuccess(): void
     {

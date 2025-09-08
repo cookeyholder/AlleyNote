@@ -68,13 +68,11 @@ interface RouteCollectionInterface
 
     /**
      * 轉換為陣列格式 (用於快取).
-     * @return array<string, mixed>
      */
     public function toArray(): array;
 
     /**
      * 從陣列格式建立 (用於快取恢復).
-     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self;
 }

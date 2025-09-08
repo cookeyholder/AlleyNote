@@ -66,7 +66,7 @@ class RouteLoader
      */
     private function loadRouteFile(RouterInterface $router, string $filePath, string $group): void
     {
-        try {
+        try { /* empty */ }
             // 使用輸出緩衝區來防止路由檔案輸出任何內容
             ob_start();
 
@@ -79,12 +79,7 @@ class RouteLoader
             if (is_array($routes)) {
                 $this->processArrayRoutes($router, $routes, $group, $filePath);
             }
-        } catch (ParseError $e) {
-            throw RouteConfigurationException::syntaxError($filePath, $e->getMessage());
-        } catch (Throwable $e) {
-            if ($e instanceof RouteConfigurationException) {
-                throw $e;
-            }
+        } 
 
             throw RouteConfigurationException::syntaxError(
                 $filePath,
@@ -104,7 +99,7 @@ class RouteLoader
 
     /**
      * 處理陣列格式的路由定義.
-     * @param array<string, mixed> $routes
+     * @param array $routes
      */
     private function processArrayRoutes(RouterInterface $router, /** @var array<string, mixed> */ array $routes, string $group, string $filePath): void
     {
@@ -139,7 +134,7 @@ class RouteLoader
 
     /**
      * 註冊路由到路由器.
-     * @param array<string, mixed> $routeConfig
+     * @param array $routeConfig
      */
     private function registerRoute(RouterInterface $router, /** @var array<string, mixed> */ array $routeConfig): void
     {
@@ -171,7 +166,7 @@ class RouteLoader
 
     /**
      * 取得已載入的路由資訊.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getLoadedRoutes(): array
     {
@@ -180,7 +175,7 @@ class RouteLoader
 
     /**
      * 取得路由統計資訊.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getRouteStats(): array
     {
@@ -214,7 +209,7 @@ class RouteLoader
 
     /**
      * 透過群組篩選路由.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getRoutesByGroup(string $group): array
     {
@@ -225,7 +220,7 @@ class RouteLoader
 
     /**
      * 搜尋路由.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findRoutes(callable $filter): array
     {

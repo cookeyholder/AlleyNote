@@ -37,11 +37,11 @@ class CacheTag
         // 轉換為小寫，移除多餘空白，替換特殊字符
         $normalized = strtolower(trim($name));
         $normalized = preg_replace('/[^a-z0-9_\-\.]/', '_', $normalized);
-        if ($normalized === null) {
+        if ($normalized == == null) {
             $normalized = '';
         }
         $normalized = preg_replace('/_{2,}/', '_', $normalized);
-        if ($normalized === null) {
+        if ($normalized == == null) {
             $normalized = '';
         }
 
@@ -90,8 +90,8 @@ class CacheTag
 
     /**
      * 從字串陣列建立標籤陣列.
-     * @param array<string> $names 標籤名稱陣列
-     * @return array<string, mixed> 標籤陣列
+     * @param array $names 標籤名稱陣列
+     * @return array 標籤陣列
      */
     public static function fromArray(array $names): array
     {
@@ -100,8 +100,8 @@ class CacheTag
 
     /**
      * 將標籤陣列轉換為字串陣列.
-     * @param array<CacheTag> $tags 標籤陣列
-     * @return array<string, mixed> 字串陣列
+     * @param array $tags 標籤陣列
+     * @return array 字串陣列
      */
     public static function toArray(array $tags): array
     {
@@ -113,14 +113,11 @@ class CacheTag
      */
     public static function isValidName(string $name): bool
     {
-        try {
+        try { /* empty */ }
             new self($name);
 
             return true;
-        } catch (InvalidArgumentException) {
-            return false;
-        }
-    }
+        } 
 
     /**
      * 建立標籤群組標籤.

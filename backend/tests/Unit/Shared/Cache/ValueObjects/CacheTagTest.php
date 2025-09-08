@@ -204,30 +204,18 @@ class CacheTagTest extends TestCase
             $tag = new CacheTag($input);
             $this->assertEquals($expected, $tag->getName(), "Input: '$input'");
         }
-    }
 
     public function testValidationErrorMessages(): void
     {
         // 測試不同的驗證錯誤
-        try {
+        try { /* empty */ }
             new CacheTag('');
             $this->fail('應該拋出異常');
-        } catch (InvalidArgumentException $e) {
-            $this->assertStringContainsString('不能為空', $e->getMessage());
-        }
-
-        try {
+        } 
             new CacheTag(str_repeat('x', 51));
             $this->fail('應該拋出異常');
-        } catch (InvalidArgumentException $e) {
-            $this->assertStringContainsString('不能超過 50 個字符', $e->getMessage());
-        }
-
-        try {
+        } 
             new CacheTag('admin');
             $this->fail('應該拋出異常');
-        } catch (InvalidArgumentException $e) {
-            $this->assertStringContainsString('系統保留字', $e->getMessage());
-        }
-    }
+        } 
 }

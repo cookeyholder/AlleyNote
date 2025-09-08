@@ -88,7 +88,7 @@ class FileUploadSecurityTest extends TestCase
             'application/x-msdownload',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicious"; ?>',
+            '<?php echo "malicioussprintf("; ?>',
         );
 
         // 模擬文章存在
@@ -98,7 +98,7 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
@@ -125,7 +125,7 @@ class FileUploadSecurityTest extends TestCase
             'image/jpeg',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicious"; ?>',
+            '<?php echo "malicioussprintf("; ?>',
         );
 
         // 模擬文章存在
@@ -135,7 +135,7 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
@@ -172,7 +172,7 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
@@ -209,7 +209,7 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
@@ -246,7 +246,7 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
@@ -281,7 +281,7 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
@@ -303,7 +303,7 @@ class FileUploadSecurityTest extends TestCase
                 'size' => 1024,
                 'path' => '/uploads/valid-image.jpg',
                 'user_id' => 1,
-                'created_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H => i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
 

@@ -72,7 +72,6 @@ enum PeriodType: string
 
     /**
      * 取得所有週期類型.
-     * @return array<string, mixed>
      */
     public static function getAllTypes(): array
     {

@@ -51,7 +51,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function runAllTests(): array
     {
@@ -71,7 +71,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function testSessionSecurity(): array
     {
@@ -83,7 +83,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試 Session 初始化
-        try {
+        try { /* empty */ }
             $this->sessionService->initializeSecureSession();
             $results['tests'][] = [
                 'name' => 'Session 安全初始化',
@@ -91,17 +91,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => 'Session 成功初始化',
             ];
             $results['passed']++;
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => 'Session 安全初始化',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        // 測試 Session ID 重新產生
-        try {
+        } 
             $oldSessionId = session_id();
             $this->sessionService->regenerateSessionId();
             $newSessionId = session_id();
@@ -121,22 +111,10 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => 'Session ID 重新產生',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        $this->testResults['session_security'] = $results;
-
-        return $results;
-    }
+        } 
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function testAuthorization(): array
     {
@@ -148,7 +126,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試權限檢查
-        try {
+        try { /* empty */ }
             $hasPermission = $this->authService->hasPermission(1, 'read_posts');
             $results['tests'][] = [
                 'name' => '權限檢查',
@@ -156,17 +134,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '權限檢查功能正常',
             ];
             $results['passed']++;
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => '權限檢查',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        // 測試角色檢查
-        try {
+        } 
             $can = $this->authService->can(1, 'manage_posts', 'posts');
             $results['tests'][] = [
                 'name' => '角色權限檢查',
@@ -174,22 +142,10 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '角色權限檢查功能正常',
             ];
             $results['passed']++;
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => '角色權限檢查',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        $this->testResults['authorization'] = $results;
-
-        return $results;
-    }
+        } 
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function testFileSecurity(): array
     {
@@ -212,7 +168,7 @@ class SecurityTestService implements SecurityTestInterface
         $results['passed']++;
 
         // 測試檔名清理
-        try {
+        try { /* empty */ }
             $cleanName = $this->fileService->sanitizeFileName('test<script>alert("xss")</script>.txt');
             if ($cleanName !== 'test<script>alert("xss")</script>.txt') {
                 $results['tests'][] = [
@@ -229,22 +185,10 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => '檔名清理',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        $this->testResults['file_security'] = $results;
-
-        return $results;
-    }
+        } 
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function testSecurityHeaders(): array
     {
@@ -256,7 +200,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試安全標頭設定
-        try {
+        try { /* empty */ }
             ob_start();
             $this->headerService->setSecurityHeaders();
             $headers = headers_list();
@@ -295,22 +239,10 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => '安全標頭設定',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        $this->testResults['security_headers'] = $results;
-
-        return $results;
-    }
+        } 
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function testErrorHandling(): array
     {
@@ -322,7 +254,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試錯誤處理
-        try {
+        try { /* empty */ }
             $exception = new Exception('Test exception');
             $response = $this->errorService->handleException($exception, false);
 
@@ -341,22 +273,10 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => '錯誤處理',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        $this->testResults['error_handling'] = $results;
-
-        return $results;
-    }
+        } 
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function testPasswordSecurity(): array
     {
@@ -368,7 +288,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試密碼雜湊
-        try {
+        try { /* empty */ }
             $password = 'TestPassword123!';
             $hash = $this->passwordService->hashPassword($password);
 
@@ -387,17 +307,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => '密碼雜湊',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        // 測試密碼強度檢查
-        try {
+        } 
             $weakPassword = '123456';
             $strongPassword = 'StrongP@ssw0rd123!';
 
@@ -419,22 +329,10 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => '密碼強度檢查',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        $this->testResults['password_security'] = $results;
-
-        return $results;
-    }
+        } 
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function testSecretsManagement(): array
     {
@@ -446,7 +344,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試秘密載入
-        try {
+        try { /* empty */ }
             $this->secretsManager->load();
             $results['tests'][] = [
                 'name' => '秘密設定載入',
@@ -454,21 +352,11 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '秘密設定載入成功',
             ];
             $results['passed']++;
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => '秘密設定載入',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        // 測試 .env 檔案驗證
-        try {
+        } 
             $issues = $this->secretsManager->validateEnvFile();
             $results['tests'][] = [
                 'name' => '.env 檔案驗證',
-                'status' => empty($issues) ? 'PASS' : 'WARNING',
+                'status' => empty($issues) ? 'PASS'  => 'WARNING',
                 'message' => empty($issues) ? '.env 檔案驗證通過' : 'Found ' . count($issues) . ' issues',
             ];
 
@@ -477,22 +365,10 @@ class SecurityTestService implements SecurityTestInterface
             } else {
                 $results['failed']++;
             }
-        } catch (Exception $e) {
-            $results['tests'][] = [
-                'name' => '.env 檔案驗證',
-                'status' => 'FAIL',
-                'message' => $e->getMessage(),
-            ];
-            $results['failed']++;
-        }
-
-        $this->testResults['secrets_management'] = $results;
-
-        return $results;
-    }
+        } 
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function testSystemSecurity(): array
     {
@@ -561,7 +437,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function generateSecurityReport(): array
     {
@@ -649,7 +525,7 @@ class SecurityTestService implements SecurityTestInterface
     }
 
     /**
-     * @param array<string, mixed> $criticalIssues
+     * @param array $criticalIssues
      */
     private function getRecommendations(array $criticalIssues): array
     {

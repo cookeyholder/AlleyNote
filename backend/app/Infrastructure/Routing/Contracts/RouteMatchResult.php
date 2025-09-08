@@ -11,7 +11,7 @@ namespace App\Infrastructure\Routing\Contracts;
  */
 class RouteMatchResult
 /**
- * @param array<string, mixed> $parameters
+ * @param array $parameters
  */
 {
     public function __construct(
@@ -40,7 +40,6 @@ class RouteMatchResult
 
     /**
      * 取得路由參數.
-     * @return array<string, mixed>
      */
     public function getParameters(): array
     {
@@ -65,7 +64,6 @@ class RouteMatchResult
 
     /**
      * 建立成功匹配的結果.
-     * @param array<string, string> $parameters
      */
     public static function success(RouteInterface $route, /** @var array<string, mixed> */ array $parameters = []): self
     {

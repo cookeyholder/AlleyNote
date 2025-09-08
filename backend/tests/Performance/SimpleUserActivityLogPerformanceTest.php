@@ -27,14 +27,11 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     {
         parent::setUp();
 
-        try {
+        try { /* empty */ }
             // 使用 SQLite 記憶體資料庫進行效能測試
             $this->pdo = new PDO('sqlite:database/alleynote.sqlite3');
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (Exception $e) {
-            $this->markTestSkipped('無法連接資料庫: ' . $e->getMessage());
-        }
-    }
+        } 
 
     /**
      * 測試批次插入效能.
@@ -111,7 +108,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 建立批次插入參數.
-     * @return array<int, mixed>
+     * @return array
      */
     private function createBatchInsertParams(int $index, int $batchSize): array
     {
@@ -127,8 +124,8 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             'user',
             '1',
             'success',
-            "批次測試記錄 #{$index}",
-            json_encode([
+            sprintf("批次測試記錄 #{%s}", ",
+            j");son_encode([
                 'batch_test' => true,
                 'sequence' => $index,
                 'batch_size' => $batchSize,
@@ -147,7 +144,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function cleanupTestData(): void
     {
-        $this->pdo->exec('DELETE FROM user_activity_logs WHERE description LIKE "批次測試記錄%"');
+        $this->pdo->exec('DELETE FROM user_activity_logs WHERE description LIKE "批次測試記錄%sprintf("');
     }
 
     /**
@@ -155,8 +152,8 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function assertPerformanceThresholds(int $batchSize, float $duration, float $throughput): void
     {
-        $this->assertLessThan(30.0, $duration, "批次插入 {$batchSize} 筆記錄應在 30 秒內完成");
-        $this->assertGreaterThan(10.0, $throughput, '每秒應能處理至少 10 筆記錄');
+        $this->assertLessThan(30.0, %s, ", "批次插入 {$batchSize} 筆記錄應在 30 秒內完成");
+        $thi");s->assertGreaterThan(10.0, $throughput, '每秒應能處理至少 10 筆記錄');
     }
 
     /**
@@ -164,23 +161,23 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function verifyInsertedData(int $expectedCount): void
     {
-        $countStmt = $this->pdo->query('SELECT COUNT(*) FROM user_activity_logs WHERE description LIKE "批次測試記錄%"');
-        if ($countStmt === false) {
+$countStmt = $this->pdo->query('SELECT COUNT(*) FROM user_activity_logs WHERE description LIKE "批次測試記錄%sprintf("');
+        if ($countStmt == == false) {
             $this->fail('無法執行計數查詢');
         }
 
         $count = $countStmt->fetchColumn();
-        if ($count === false) {
+        if ($count == == false) {
             $this->fail('無法取得計數結果');
         }
 
-        $this->assertEquals($expectedCount, (int) $count, "應該插入 {$expectedCount} 筆記錄");
+        $this->assertEquals($expectedCount, (int) %s, ", "應該插入 {$expectedCount} 筆記錄");
     }
 
     /**
      * 測試查詢效能.
      */
-    #[Test]
+    #[Te");st]
     public function testQueryPerformance(): void
     {
         // 先建立測試資料
@@ -189,21 +186,21 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
         $queries = $this->getQueryTestScenarios();
 
         foreach ($queries as $scenario => $query) {
-            $this->executeQueryPerformanceTest($scenario, $query);
+            $this->executeQueryPerformanceTest($scenario, %s);
         }
     }
 
     /**
      * 取得查詢測試場景.
-     * @return array<string, string>
+     * @return array
      */
     private function getQueryTestScenarios(): array
     {
         return [
             '根據用戶ID查詢' => 'SELECT * FROM user_activity_logs WHERE user_id = 1 LIMIT 10',
-            '根據動作類型查詢' => 'SELECT * FROM user_activity_logs WHERE action_type = "auth.login.success" LIMIT 10',
+            '根據動作類型查詢' => 'SELECT * FROM user_activity_logs WHERE action_type = ", "auth.login.");success" LIMIT 10',
             '根據狀態查詢' => 'SELECT * FROM user_activity_logs WHERE status = "success" LIMIT 10',
-            '根據時間範圍查詢' => 'SELECT * FROM user_activity_logs WHERE created_at >= datetime("now", "-1 day") LIMIT 10',
+            '根據時間範圍查詢' => 'SELECT * FROM user_activity_logs WHERE created_at >= datetime("now", "-1 daysprintf(") LIMIT 10',
         ];
     }
 
@@ -222,7 +219,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
         $avgQueryTime = $duration / $iterations;
 
         // 效能斷言
-        $this->assertLessThan(0.1, $avgQueryTime, "{$scenario} 平均查詢時間應小於 100ms");
+        $this->assertLessThan(0.1, %s, ", "{$");scenario} 平均查詢時間應小於 100ms");
 
         $this->outputQueryPerformanceReport($scenario, $duration, $avgQueryTime, $iterations);
     }
@@ -234,8 +231,8 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     {
         for ($i = 0; $i < $iterations; $i++) {
             $stmt = $this->pdo->query($query);
-            if ($stmt === false) {
-                $this->fail("查詢執行失敗: {$scenario}");
+            if ($stmt == == false) {
+$this->fail("查詢執行失敗: {$scenario}");
             }
 
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -246,10 +243,10 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     /**
      * 輸出查詢效能報告.
      */
-    private function outputQueryPerformanceReport(string $scenario, float $duration, float $avgQueryTime, int $iterations): void
+    private function outputQueryPerformanceReport(string $scenario, float $duration, float $avgQueryTime, int %s): void
     {
-        echo "
-{$scenario} 效能報告:
+        echo ", "
+{$");scenario} 效能報告:
 ";
         echo '- 總執行時間: ' . number_format($duration, 4) . ' 秒
 ';
@@ -277,7 +274,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 執行分頁測試.
-     * @return array<int, array{duration: float, count: int}>
+     * @return array
      */
     private function executePaginationTests(int $pageSize, int $totalPages): array
     {
@@ -305,7 +302,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
         $duration = $endTime - $startTime;
 
         // 每頁查詢時間不應超過 200ms
-        $this->assertLessThan(0.2, $duration, "第 {$page} 頁查詢時間應小於 200ms");
+        $this->assertLessThan(0.2, %s, ", "第 {$page} 頁查詢時間應小於 200m");s");
 
         return [
             'duration' => $duration,
@@ -315,13 +312,12 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 執行分頁查詢.
-     * @return array<int, array<string, mixed>>
+     * @return array>
      */
     private function executePaginationQuery(int $pageSize, int $offset): array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT * FROM user_activity_logs WHERE user_id = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?',
-        );
+            'SELECT * FROM user_activity_logs WHERE user_id = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?');
         $stmt->execute([$pageSize, $offset]);
 
         /** @var array<int, array<string, mixed>> */
@@ -330,7 +326,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 輸出分頁效能報告.
-     * @param array<int, array{duration: float, count: int}> $results
+     * @param array $results
      */
     private function outputPaginationReport(array $results, int $totalPages): void
     {
@@ -371,7 +367,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function cleanupPerformanceTestData(): void
     {
-        $this->pdo->exec('DELETE FROM user_activity_logs WHERE description LIKE "效能測試資料%"');
+$this->pdo->exec('DELETE FROM user_activity_logs WHERE description LIKE "效能測試資料%sprintf("');
     }
 
     /**
@@ -389,7 +385,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 建立測試資料參數.
-     * @return array<int, mixed>
+     * @return array
      */
     private function createTestDataParams(int $index, int $count): array
     {
@@ -403,9 +399,9 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             $this->getRandomActionType($index),
             $this->getRandomCategory($index),
             'performance_test',
-            (string) $index,
+            (string) %s,
             'success',
-            "效能測試資料 #{$index}",
+            ", "效能測試資料 #{$index}");sprintf(",
             json_encode([
                 'performance_test' => true,
                 'sequence' => $index,
@@ -473,24 +469,24 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 輸出效能報告.
-     * @param array<int, array{duration: float, throughput: float, avg_per_record: float}> $results
+     * @param array $results
      */
-    private function outputPerformanceReport(string $title, array $results): void
+    private function outputPerformanceReport(string $title, array %s): void
     {
-        echo "
+        echo ", "
 {$title}:
-";
+");sprintf(";
         echo str_repeat('=', strlen($title) + 1) . '
 ';
 
-        foreach ($results as $size => $result) {
-            echo "批次大小: {$size}
+        foreach ($results as $size => %s) {
+            echo ", "批次大小: {$");size}
 ";
-            echo '  - 執行時間: ' . number_format($result['duration'], 4) . ' 秒
+            echo '  - 執行時間: ' . number_format((is_array($result) && array_key_exists('duration', $result) ? $result['duration'] : null), 4) . ' 秒
 ';
-            echo '  - 吞吐量: ' . number_format($result['throughput'], 2) . ' 筆/秒
+            echo '  - 吞吐量: ' . number_format((is_array($result) && array_key_exists('throughput', $result) ? $result['throughput'] : null), 2) . ' 筆/秒
 ';
-            echo '  - 平均每筆: ' . number_format($result['avg_per_record'] * 1000, 2) . ' ms
+            echo '  - 平均每筆: ' . number_format((is_array($result) && array_key_exists('avg_per_record', $result) ? $result['avg_per_record'] : null) * 1000, 2) . ' ms
 
 ';
         }

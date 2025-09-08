@@ -24,7 +24,7 @@ class RoutingServiceProvider
 {
     /**
      * 取得所有路由服務定義.
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getDefinitions(): array
     {
@@ -38,19 +38,19 @@ class RoutingServiceProvider
             RouteValidator::class => \DI\create(RouteValidator::class),
 
             // 路由載入器
-            RouteLoader::class => \DI\factory([self::class, 'createRouteLoader']),
+            RouteLoader::class => \DI\factory([self => :class, 'createRouteLoader']),
 
             // 控制器解析器
-            ControllerResolver::class => \DI\factory([self::class, 'createControllerResolver']),
+            ControllerResolver::class => \DI\factory([self => :class, 'createControllerResolver']),
 
             // 中間件解析器
-            MiddlewareResolver::class => \DI\factory([self::class, 'createMiddlewareResolver']),
+            MiddlewareResolver::class => \DI\factory([self => :class, 'createMiddlewareResolver']),
 
             // 中間件分派器
             MiddlewareDispatcher::class => \DI\create(MiddlewareDispatcher::class),
 
             // 路由分派器
-            RouteDispatcher::class => \DI\factory([self::class, 'createRouteDispatcher']),
+            RouteDispatcher::class => \DI\factory([self => :class, 'createRouteDispatcher']),
         ];
     }
 
@@ -100,7 +100,7 @@ class RoutingServiceProvider
 
     /**
      * 取得路由配置檔案清單.
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getRouteFiles(): array
     {
@@ -120,7 +120,7 @@ class RoutingServiceProvider
         $routeLoader = $container->get(RouteLoader::class);
         $router = $container->get(RouterInterface::class);
 
-        try {
+        try { /* empty */ }
             // 載入各種路由配置檔案
             foreach (self::getRouteFiles() as $group => $filePath) {
                 if (file_exists($filePath)) {
@@ -130,38 +130,19 @@ class RoutingServiceProvider
 
             // 載入所有路由到路由器
             $routeLoader->loadRoutes($router);
-        } catch (Throwable $e) {
-            // 記錄路由載入錯誤並回退到基本配置
-            error_log('路由載入失敗: ' . $e->getMessage());
-
-            // 嘗試載入舊版路由檔案作為回退
-            $legacyRoutesFile = __DIR__ . '/../../../../config/routes.php';
-            if (file_exists($legacyRoutesFile)) {
-                $routeDefinitions = require $legacyRoutesFile;
-                if (is_callable($routeDefinitions)) {
-                    $routeDefinitions($router);
-                }
-            }
+        } 
         }
     }
 
     /**
      * 取得路由系統統計資訊.
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getRoutingStats(ContainerInterface $container): array
     {
-        try {
+        try { /* empty */ }
             $routeLoader = $container->get(RouteLoader::class);
 
             return $routeLoader->getRouteStats();
-        } catch (Throwable $e) {
-            return [
-                'error' => $e->getMessage(),
-                'total_routes' => 0,
-                'files_loaded' => 0,
-                'groups' => [],
-            ];
-        }
-    }
+        } 
 }

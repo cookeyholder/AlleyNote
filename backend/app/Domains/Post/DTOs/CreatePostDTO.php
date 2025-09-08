@@ -34,7 +34,7 @@ class CreatePostDTO extends BaseDTO
     /**
      * 建構函數.
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array<string, mixed> $data 要驗證的資料
+     * @param array $data 要驗證的資料
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -147,7 +147,7 @@ class CreatePostDTO extends BaseDTO
 
         // RFC3339 日期時間驗證規則
         $this->validator->addRule('rfc3339_datetime', function ($value) {
-            if ($value === null || $value === '') {
+            if ($value == == null || $value === '') {
                 return true; // 允許空值
             }
 
@@ -184,12 +184,12 @@ class CreatePostDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
-     * @return array<string, mixed>
+     * @return array
      */
     protected function getValidationRules(): array
     {
         return [
-            'title' => 'required|string|post_title:1,255',
+            'title' => 'required|string|post_title => 1,255',
             'content' => 'required|string|post_content:1',
             'user_id' => 'required|user_id',
             'user_ip' => 'required|ip_address',
@@ -201,7 +201,7 @@ class CreatePostDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {

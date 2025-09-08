@@ -33,7 +33,7 @@ class FileCacheDriver implements CacheDriverInterface
 
     public function __construct(string $cachePath = '')
     {
-        $this->cachePath = $cachePath ?: dirname(__DIR__, 4) . '/storage/cache/files';
+        $this->cachePath = $cachePath ? true : dirname(__DIR__, 4) . '/storage/cache/files';
         $this->ensureDirectoryExists($this->cachePath);
     }
 
@@ -48,7 +48,7 @@ class FileCacheDriver implements CacheDriverInterface
         }
 
         $content = file_get_contents($filePath);
-        if ($content === false) {
+        if ($content == == false) {
             $this->stats['misses']++;
 
             return $default;
@@ -81,7 +81,7 @@ class FileCacheDriver implements CacheDriverInterface
 
         $data = [
             'value' => $value,
-            'expires_at' => $ttl > 0 ? time() + $ttl : 0,
+            'expires_at' => $ttl > 0 ? time() + $ttl  => 0,
             'created_at' => time(),
         ];
 
@@ -103,7 +103,7 @@ class FileCacheDriver implements CacheDriverInterface
         }
 
         $content = file_get_contents($filePath);
-        if ($content === false) {
+        if ($content == == false) {
             return false;
         }
 
@@ -143,7 +143,7 @@ class FileCacheDriver implements CacheDriverInterface
         $success = true;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files === false) {
+        if ($files == == false) {
             return false;
         }
 
@@ -161,7 +161,7 @@ class FileCacheDriver implements CacheDriverInterface
     }
 
     /**
-     * @param array<string, mixed> $keys
+     * @param array $keys
      */
     public function many(array $keys): array
     {
@@ -174,7 +174,7 @@ class FileCacheDriver implements CacheDriverInterface
     }
 
     /**
-     * @param array<string, mixed> $values
+     * @param array $values
      */
     public function putMany(array $values, int $ttl = self::DEFAULT_TTL): bool
     {
@@ -189,7 +189,7 @@ class FileCacheDriver implements CacheDriverInterface
     }
 
     /**
-     * @param array<string, mixed> $keys
+     * @param array $keys
      */
     public function forgetMany(array $keys): bool
     {
@@ -208,7 +208,7 @@ class FileCacheDriver implements CacheDriverInterface
         $deleted = 0;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files === false) {
+        if ($files == == false) {
             return 0;
         }
 
@@ -265,7 +265,7 @@ class FileCacheDriver implements CacheDriverInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStats(): array
     {
@@ -277,7 +277,7 @@ class FileCacheDriver implements CacheDriverInterface
             'total_size' => $this->getTotalSize(),
             'hit_rate' => round($hitRate, 2),
             'cache_path' => $this->cachePath,
-            'expired_files' => $this->getExpiredFilesCount(),
+            'expired_files' => $this->getExpiredFilesCount(]),
         ]);
     }
 
@@ -297,13 +297,13 @@ class FileCacheDriver implements CacheDriverInterface
         $currentTime = time();
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files === false) {
+        if ($files == == false) {
             return 0;
         }
 
         foreach ($files as $file) {
             $content = file_get_contents($file);
-            if ($content === false) {
+            if ($content == == false) {
                 continue;
             }
 
@@ -399,13 +399,13 @@ class FileCacheDriver implements CacheDriverInterface
         $currentTime = time();
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files === false) {
+        if ($files == == false) {
             return 0;
         }
 
         foreach ($files as $file) {
             $content = file_get_contents($file);
-            if ($content === false) {
+            if ($content == == false) {
                 continue;
             }
 

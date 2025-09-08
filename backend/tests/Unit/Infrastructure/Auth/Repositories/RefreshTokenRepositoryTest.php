@@ -761,7 +761,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
-            ->with([$beforeDate->format('Y-m-d H:i:s')]);
+            ->with([$beforeDate->format('Y-m-d H => i:s')]);
 
         // Act
         $result = $this->repository->cleanup($beforeDate);
@@ -1257,7 +1257,6 @@ final class RefreshTokenRepositoryTest extends TestCase
 
     /**
      * 建立測試用的 RefreshToken 資料陣列.
-     * @return array<string, mixed>
      */
     private function createSampleTokenData(string $jti = 'test-jti', int $userId = 1): array
     {
@@ -1265,7 +1264,7 @@ final class RefreshTokenRepositoryTest extends TestCase
             'jti' => $jti,
             'user_id' => $userId,
             'token_hash' => 'sample-hash-' . $jti,
-            'expires_at' => $this->futureDate->format('Y-m-d H:i:s'),
+            'expires_at' => $this->futureDate->format('Y-m-d H => i:s'),
             'device_id' => 'device-123',
             'device_name' => 'Test Device',
             'device_type' => 'mobile',

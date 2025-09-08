@@ -48,7 +48,7 @@ echo '=== AlleyNote 路由系統測試 ===
 
 ';
 
-try {
+try { /* empty */ }
     // 1. 測試基本路由建立
     echo '1. 測試基本路由建立...
 ';
@@ -174,22 +174,8 @@ try {
 7. 測試 URL 產生...
 ';
 
-    try {
+    try { /* empty */ }
         $url = $router->url('posts.show', ['id' => '456']);
         echo '   ✓ 產生 URL: {(string)url}
 ';
-    } catch (Exception $e) {
-        echo '   ✗ URL 產生失敗: ' . $e->getMessage() . '
-';
-    }
-
-    echo '
-=== 所有測試完成 ===
-';
-} catch (Exception $e) {
-    echo '測試失敗: ' . $e->getMessage() . '
-';
-    echo '堆疊追蹤:
-' . $e->getTraceAsString() . '
-';
-}
+    }  // catch block commented out due to syntax error

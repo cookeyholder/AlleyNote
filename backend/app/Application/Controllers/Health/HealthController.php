@@ -33,10 +33,18 @@ class HealthController extends BaseController
 
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
-            $errorResponse = $this->handleException($e);
-            $response->getBody()->write(($errorResponse ?: ''));
+            $this->logger?->error('操作失敗', [
+                'error' => $e->getMessage(),
+            ]);
 
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'message' => '操作失敗',
+                    'details' => $e->getMessage(),
+                ],
+                'timestamp' => time(),
+            ], 500);
         }
     }
 }

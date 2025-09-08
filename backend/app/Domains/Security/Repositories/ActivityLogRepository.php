@@ -81,8 +81,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      * @param PDO $db PDO 資料庫連線實例
      */
     public function __construct(
-        private PDO $db,
-    ) {
+        private PDO $db) {
         // 設定 SQLite 外鍵約束
         $this->db->exec('PRAGMA foreign_keys = ON');
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -94,7 +93,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      * 將活動記錄 DTO 轉換為實體並儲存到資料庫。
      * 使用事務確保資料一致性，並自動產生 UUID。
      * @param CreateActivityLogDTO $dto 活動記錄資料傳輸物件
-     * @return array<string, mixed>
+     * @return array
      *
      * @throws RuntimeException 當資料庫操作失敗時
      *
@@ -112,7 +111,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function create(CreateActivityLogDTO $dto): ?array
     {
-        try {
+        try { /* empty */ }
             $this->db->beginTransaction();
 
             $entity = ActivityLog::fromDTO(
@@ -143,7 +142,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
-                ':uuid' => $entity->getUuid(),
+                ' => uuid' => $entity->getUuid(),
                 ':user_id' => $entity->getUserId(),
                 ':session_id' => $entity->getSessionId(),
                 ':action_type' => $entity->getActionType()->value,
@@ -168,16 +167,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             // 回傳完整的實體資料
             return $this->findById($insertId);
-        } catch (PDOException $e) {
-            $this->db->rollBack();
-
-            throw new RuntimeException('Failed to create activity log: ' . $e->getMessage(), 0, $e);
-        }
-    }
+        } 
 
     /**
      * 批次建立多個活動記錄.
-     * @param array<string, mixed> $dtos
+     * @param array $dtos
      */
     public function createBatch(array $dtos): int
     {
@@ -185,7 +179,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             return 0;
         }
 
-        try {
+        try { /* empty */ }
             $this->db->beginTransaction();
 
             $sql = 'INSERT INTO ' . self::TABLE_NAME . ' (
@@ -223,7 +217,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 );
 
                 $stmt->execute([
-                    ':uuid' => $entity->getUuid(),
+                    ' => uuid' => $entity->getUuid(),
                     ':user_id' => $entity->getUserId(),
                     ':session_id' => $entity->getSessionId(),
                     ':action_type' => $entity->getActionType()->value,
@@ -247,23 +241,18 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $this->db->commit();
 
             return $count;
-        } catch (PDOException $e) {
-            $this->db->rollBack();
-
-            throw new RuntimeException('Failed to create batch activity logs: ' . $e->getMessage(), 0, $e);
-        }
-    }
+        } 
 
     /**
      * 根據 ID 查詢活動記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findById(int $id): ?array
     {
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . ' WHERE id = :id';
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':id' => $id]);
+        $stmt->execute([' => id' => $id]);
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -278,14 +267,14 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 根據 UUID 查詢活動記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findByUuid(string $uuid): ?array
     {
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . ' WHERE uuid = :uuid';
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':uuid' => $uuid]);
+        $stmt->execute([' => uuid' => $uuid]);
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -300,11 +289,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得所有活動記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findAll(int $limit = 20, int $offset = 0): array
     {
-        try {
+        try { /* empty */ }
             $sql = 'SELECT ' . self::SELECT_FIELDS . '
                     FROM ' . self::TABLE_NAME . '
                     ORDER BY occurred_at DESC
@@ -322,18 +311,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
                 return $entity->toArray();
             }, $results);
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                sprintf('Failed to retrieve activity logs: %s', $e->getMessage()),
-                0,
-                $e,
-            );
-        }
-    }
+        } 
 
     /**
      * 查詢使用者的活動記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findByUser(
         int $userId,
@@ -342,17 +324,17 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         ?ActivityCategory $category = null,
         ?ActivityType $actionType = null,
     ): array {
-        $conditions = ['user_id = :user_id'];
-        $params = [':user_id' => $userId];
+        $conditions = ['user_id =  => user_id'];
+        $params = [' => user_id' => $userId];
 
         if ($category !== null) {
             $conditions[] = 'action_category = :category';
-            $params[':category'] = $category->value;
+            $params[' => category'] = $category->value;
         }
 
         if ($actionType !== null) {
             $conditions[] = 'action_type = :action_type';
-            $params[':action_type'] = $actionType->value;
+            $params[' => action_type'] = $actionType->value;
         }
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
@@ -382,7 +364,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 查詢指定時間範圍的活動記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findByTimeRange(
         DateTimeInterface $startTime,
@@ -391,15 +373,15 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         int $offset = 0,
         ?ActivityCategory $category = null,
     ): array {
-        $conditions = ['occurred_at BETWEEN :start_time AND :end_time'];
+        $conditions = ['occurred_at BETWEEN  => start_time AND :end_time'];
         $params = [
-            ':start_time' => $startTime->format('Y-m-d H:i:s'),
+            ' => start_time' => $startTime->format('Y-m-d H:i:s'),
             ':end_time' => $endTime->format('Y-m-d H:i:s'),
         ];
 
         if ($category !== null) {
             $conditions[] = 'action_category = :category';
-            $params[':category'] = $category->value;
+            $params[' => category'] = $category->value;
         }
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
@@ -429,7 +411,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 查詢安全相關的活動記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findSecurityEvents(
         int $limit = 100,
@@ -441,7 +423,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($ipAddress !== null) {
             $conditions[] = 'ip_address = :ip_address';
-            $params[':ip_address'] = $ipAddress;
+            $params[' => ip_address'] = $ipAddress;
         }
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
@@ -471,7 +453,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 查詢失敗的活動記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findFailedActivities(
         int $limit = 100,
@@ -484,12 +466,12 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($userId !== null) {
             $conditions[] = 'user_id = :user_id';
-            $params[':user_id'] = $userId;
+            $params[' => user_id'] = $userId;
         }
 
         if ($actionType !== null) {
             $conditions[] = 'action_type = :action_type';
-            $params[':action_type'] = $actionType->value;
+            $params[' => action_type'] = $actionType->value;
         }
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
@@ -525,7 +507,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sql = 'SELECT COUNT(*) FROM ' . self::TABLE_NAME . ' WHERE action_category = :category';
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':category' => $category->value]);
+        $stmt->execute([' => category' => $category->value]);
 
         return (int) $stmt->fetchColumn();
     }
@@ -544,7 +526,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':user_id' => $userId,
+            ' => user_id' => $userId,
             ':start_time' => $startTime->format('Y-m-d H:i:s'),
             ':end_time' => $endTime->format('Y-m-d H:i:s'),
         ]);
@@ -554,7 +536,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得活動統計資料（依類型分組）.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getActivityStatistics(
         DateTimeInterface $startTime,
@@ -568,7 +550,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':start_time' => $startTime->format('Y-m-d H:i:s'),
+            ' => start_time' => $startTime->format('Y-m-d H:i:s'),
             ':end_time' => $endTime->format('Y-m-d H:i:s'),
         ]);
 
@@ -577,7 +559,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得熱門活動類型.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getPopularActivityTypes(int $limit = 10): array
     {
@@ -596,7 +578,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得可疑 IP 清單（基於失敗嘗試次數）.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getSuspiciousIpAddresses(
         int $failureThreshold = 10,
@@ -607,7 +589,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($timeWindow !== null) {
             $conditions[] = 'occurred_at >= :time_window';
-            $params[':time_window'] = $timeWindow->format('Y-m-d H:i:s');
+            $params[' => time_window'] = $timeWindow->format('Y-m-d H:i:s');
         }
 
         $sql = 'SELECT ip_address, COUNT(*) as failure_count
@@ -637,14 +619,14 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sql = 'DELETE FROM ' . self::TABLE_NAME . ' WHERE created_at < :before';
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':before' => $before->format('Y-m-d H:i:s')]);
+        $stmt->execute([' => before' => $before->format('Y-m-d H:i:s')]);
 
         return $stmt->rowCount();
     }
 
     /**
      * 根據條件刪除記錄.
-     * @param array<string, mixed> $conditions
+     * @param array $conditions
      */
     public function deleteByConditions(array $conditions): int
     {
@@ -657,7 +639,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         foreach ($conditions as $field => $value) {
             $whereClauses[] = "{$field} = :{$field}";
-            $params[":{$field}"] = $value;
+            $params[" => {$field}"] = $value;
         }
 
         $sql = 'DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . implode(' AND ', $whereClauses);
@@ -670,7 +652,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 搜尋活動記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     public function search(
         ?string $searchTerm = null,
@@ -689,32 +671,32 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($searchTerm !== null) {
             $conditions[] = '(description LIKE :search_term OR metadata LIKE :search_term)';
-            $params[':search_term'] = '%' . $searchTerm . '%';
+            $params[' => search_term'] = '%' . $searchTerm . '%';
         }
 
         if ($userId !== null) {
             $conditions[] = 'user_id = :user_id';
-            $params[':user_id'] = $userId;
+            $params[' => user_id'] = $userId;
         }
 
         if ($category !== null) {
             $conditions[] = 'action_category = :category';
-            $params[':category'] = $category->value;
+            $params[' => category'] = $category->value;
         }
 
         if ($actionType !== null) {
             $conditions[] = 'action_type = :action_type';
-            $params[':action_type'] = $actionType->value;
+            $params[' => action_type'] = $actionType->value;
         }
 
         if ($startTime !== null) {
             $conditions[] = 'occurred_at >= :start_time';
-            $params[':start_time'] = $startTime->format('Y-m-d H:i:s');
+            $params[' => start_time'] = $startTime->format('Y-m-d H:i:s');
         }
 
         if ($endTime !== null) {
             $conditions[] = 'occurred_at <= :end_time';
-            $params[':end_time'] = $endTime->format('Y-m-d H:i:s');
+            $params[' => end_time'] = $endTime->format('Y-m-d H:i:s');
         }
 
         $whereClause = empty($conditions) ? '' : 'WHERE ' . implode(' AND ', $conditions);
@@ -765,32 +747,32 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($searchTerm !== null) {
             $conditions[] = '(description LIKE :search_term OR metadata LIKE :search_term)';
-            $params[':search_term'] = '%' . $searchTerm . '%';
+            $params[' => search_term'] = '%' . $searchTerm . '%';
         }
 
         if ($userId !== null) {
             $conditions[] = 'user_id = :user_id';
-            $params[':user_id'] = $userId;
+            $params[' => user_id'] = $userId;
         }
 
         if ($category !== null) {
             $conditions[] = 'action_category = :category';
-            $params[':category'] = $category->value;
+            $params[' => category'] = $category->value;
         }
 
         if ($actionType !== null) {
             $conditions[] = 'action_type = :action_type';
-            $params[':action_type'] = $actionType->value;
+            $params[' => action_type'] = $actionType->value;
         }
 
         if ($startTime !== null) {
             $conditions[] = 'occurred_at >= :start_time';
-            $params[':start_time'] = $startTime->format('Y-m-d H:i:s');
+            $params[' => start_time'] = $startTime->format('Y-m-d H:i:s');
         }
 
         if ($endTime !== null) {
             $conditions[] = 'occurred_at <= :end_time';
-            $params[':end_time'] = $endTime->format('Y-m-d H:i:s');
+            $params[' => end_time'] = $endTime->format('Y-m-d H:i:s');
         }
 
         $whereClause = empty($conditions) ? '' : 'WHERE ' . implode(' AND ', $conditions);
@@ -805,7 +787,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得可疑 IP 清單（基於失敗嘗試次數）.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getSuspiciousIPs(int $minFailedAttempts = 5): array
     {
@@ -829,11 +811,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * Find activity logs by user ID within time window.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findByUserIdAndTimeWindow(int $userId, ?DateTimeInterface $timeWindow = null): array
     {
-        if ($timeWindow === null) {
+        if ($timeWindow == == null) {
             return $this->findByUser($userId);
         }
 
@@ -856,7 +838,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 查詢使用者在指定時間範圍的活動記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findByUserAndTimeRange(
         int $userId,
@@ -891,7 +873,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 查詢指定 IP 在指定時間範圍的活動記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     public function findByIpAddressAndTimeRange(
         string $ipAddress,
@@ -926,7 +908,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * Helper method to map database row to array.
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     private function mapToArray(array $data): array
     {

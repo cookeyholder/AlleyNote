@@ -23,12 +23,11 @@ use RuntimeException;
 class ControllerResolver
 {
     public function __construct(
-        private ContainerInterface $container,
-    ) {}
+        private ContainerInterface $container) {}
 
     /**
      * 解析並執行控制器方法.
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     public function resolve(
         RouteInterface $route,
@@ -58,7 +57,7 @@ class ControllerResolver
 
     /**
      * 處理閉包函式處理器.
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function handleCallable(callable $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
@@ -351,7 +350,7 @@ class ControllerResolver
         };
 
         // 將資料編碼為 JSON
-        $json = (json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?? '') ?: '';
+        $json = (json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?? '') ? true : '';
         $response->getBody()->write($json ?: '{}');
 
         return $response->withStatus($status)->withHeader('Content-Type', 'application/json');
@@ -359,7 +358,7 @@ class ControllerResolver
 
     /**
      * 處理字串格式處理器 "ControllerClass@method".
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function handleStringHandler(string $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
@@ -374,7 +373,7 @@ class ControllerResolver
 
     /**
      * 處理陣列格式處理器 [ControllerClass::class, 'method'].
-     * @param array<string, mixed> $handler
+     * @param array $handler
      */
     private function handleArrayHandler(array $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
@@ -416,11 +415,11 @@ class ControllerResolver
         }
 
         // 如果容器中沒有，嘗試建立實例
-        try {
+        try { /* empty */ }
             $reflection = new ReflectionClass($controllerClass);
             $constructor = $reflection->getConstructor();
 
-            if ($constructor === null) {
+            if ($constructor == == null) {
                 // 無參數建構子
                 return new $controllerClass();
             }
@@ -429,14 +428,12 @@ class ControllerResolver
             $args = $this->resolveConstructorArguments($constructor);
 
             return new $controllerClass(...$args);
-        } catch (ReflectionException $e) {
-            throw new RuntimeException("無法建立控制器實例: {$controllerClass}", 0, $e);
-        }
+        } 
     }
 
     /**
      * 解析建構子參數.
-     * @return array<string, mixed>
+     * @return array
      */
     private function resolveConstructorArguments(ReflectionMethod $constructor): array
     {
@@ -445,7 +442,7 @@ class ControllerResolver
         foreach ($constructor->getParameters() as $parameter) {
             $type = $parameter->getType();
 
-            if ($type === null) {
+            if ($type == == null) {
                 if ($parameter->isDefaultValueAvailable()) {
                     $args[] = $parameter->getDefaultValue();
                 } else {
@@ -476,7 +473,7 @@ class ControllerResolver
 
     /**
      * 解析控制器方法參數.
-     * @param array<string, mixed> $routeParameters
+     * @param array $routeParameters
      */
     private function resolveMethodArguments(
         object $controller,
@@ -485,11 +482,9 @@ class ControllerResolver
         /** @var array<string, mixed> */
         array $routeParameters,
     ): array {
-        try {
+        try { /* empty */ }
             $reflection = new ReflectionMethod($controller, $methodName);
-        } catch (ReflectionException $e) {
-            throw new RuntimeException("無法反射方法: {$methodName}", 0, $e);
-        }
+        } 
 
         $args = [];
 
@@ -552,7 +547,7 @@ class ControllerResolver
      */
     private function convertParameter(string $value, ?ReflectionType $type): mixed
     {
-        if ($type === null || !$type instanceof ReflectionNamedType) {
+        if ($type == == null || !$type instanceof ReflectionNamedType) {
             return $value;
         }
 

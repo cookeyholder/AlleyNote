@@ -340,7 +340,6 @@ class CacheGroupManagerTest extends TestCase
 
     /**
      * Calculate flush cascade result for testing.
-     * @param array<int, string> $tags
      */
     public function calculateFlushCascadeResult(array $tags): int
     {
@@ -378,7 +377,6 @@ class CacheGroupManagerTest extends TestCase
 
     /**
      * Calculate pattern flush result for testing.
-     * @param array<int, string> $tags
      */
     public function calculatePatternFlushResult(array $tags): int
     {

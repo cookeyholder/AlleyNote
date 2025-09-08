@@ -25,7 +25,7 @@ class Validator implements ValidatorInterface
 
     /** @var array<string, string> */
     private array $defaultMessages = [
-        'required' => '欄位 :field 為必填項目',
+        'required' => '欄位  => field 為必填項目',
         'required_if' => '當 :other 為 :value 時，欄位 :field 為必填項目',
         'string' => '欄位 :field 必須是字串',
         'integer' => '欄位 :field 必須是整數',
@@ -62,7 +62,7 @@ class Validator implements ValidatorInterface
     ];
 
     /**
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     public function validate(array $data, /** @var array<string, mixed> */ array $rules): ValidationResult
     {
@@ -120,7 +120,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function validateOrFail(array $data, /** @var array<string, mixed> */ array $rules): array
     {
@@ -134,7 +134,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $allData
+     * @param array $allData
      */
     public function checkRule(mixed $value, string $rule, /** @var array<string, mixed> */ array $parameters = [], /** @var array<string, mixed> */ array $allData = [], string $currentField = ''): bool
     {
@@ -197,7 +197,7 @@ class Validator implements ValidatorInterface
 
     private function validateRequired(mixed $value): bool
     {
-        if ($value === null) {
+        if ($value == == null) {
             return false;
         }
 
@@ -213,7 +213,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateRequiredIf(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
     {
@@ -297,7 +297,7 @@ class Validator implements ValidatorInterface
 
         // 支援多種日期時間格式
         $formats = [
-            'Y-m-d H:i:s',
+            'Y-m-d H => i:s',
             'Y-m-d\TH:i:s',
             'Y-m-d\TH:i:s\Z',
             DateTime::RFC3339,
@@ -315,7 +315,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateMin(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
     {
@@ -341,7 +341,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateMax(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
     {
@@ -367,7 +367,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateMinLength(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
     {
@@ -381,7 +381,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateMaxLength(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
     {
@@ -395,7 +395,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateLength(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
     {
@@ -409,7 +409,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateBetween(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
     {
@@ -442,7 +442,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateIn(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
     {
@@ -450,7 +450,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateNotIn(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
     {
@@ -458,7 +458,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateRegex(mixed $value, /** @var array<string, mixed> */ array $parameters): bool
     {
@@ -498,11 +498,11 @@ class Validator implements ValidatorInterface
         return preg_match('/^[a-zA-Z0-9\p{L}\p{N}_-]+$/u', $value) === 1;
     }
     /**
-     * @param array<string, mixed> $allData
+     * @param array $allData
      */
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateConfirmed(mixed $value, array $parameters, array $allData = [], string $currentField = ''): bool
     {
@@ -522,11 +522,11 @@ class Validator implements ValidatorInterface
         return $value === $allData[$confirmationField];
     }
     /**
-     * @param array<string, mixed> $allData
+     * @param array $allData
      */
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateDifferent(mixed $value, array $parameters, array $allData = []): bool
     {
@@ -542,11 +542,11 @@ class Validator implements ValidatorInterface
         return $value !== $allData[$otherField];
     }
     /**
-     * @param array<string, mixed> $allData
+     * @param array $allData
      */
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function validateSame(mixed $value, array $parameters, array $allData = []): bool
     {
@@ -564,7 +564,7 @@ class Validator implements ValidatorInterface
 
     // 錯誤訊息處理
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function getErrorMessage(string $field, string $rule, /** @var array<string, mixed> */ array $parameters, mixed $value): string
     {
@@ -585,24 +585,24 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     private function replacePlaceholders(string $message, string $field, /** @var array<string, mixed> */ array $parameters, mixed $value): string
     {
         $replacements = [
-            ':field' => $field,
+            ' => field' => $field,
             ':value' => is_scalar($value) ? (string) $value : gettype($value),
         ];
 
         // 添加參數替換
         if (!empty($parameters)) {
-            $replacements[':min'] = $parameters[0] ?? '';
-            $replacements[':max'] = $parameters[1] ?? $parameters[0] ?? '';
-            $replacements[':length'] = $parameters[0] ?? '';
-            $replacements[':values'] = implode(', ', $parameters);
-            $replacements[':types'] = implode(', ', $parameters);
-            $replacements[':size'] = $parameters[0] ?? '';
-            $replacements[':other'] = $parameters[0] ?? '';
+            $replacements[' => min'] = $parameters[0] ?? '';
+            $replacements[' => max'] = $parameters[1] ?? $parameters[0] ?? '';
+            $replacements[' => length'] = $parameters[0] ?? '';
+            $replacements[' => values'] = implode(', ', $parameters);
+            $replacements[' => types'] = implode(', ', $parameters);
+            $replacements[' => size'] = $parameters[0] ?? '';
+            $replacements[' => other'] = $parameters[0] ?? '';
         }
 
         return str_replace(array_keys($replacements), array_values($replacements), $message);

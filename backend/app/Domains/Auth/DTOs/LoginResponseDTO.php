@@ -13,9 +13,6 @@ use App\Domains\Auth\ValueObjects\TokenPair;
  */
 final readonly class LoginResponseDTO
 {
-    /**
-     * @param array<string, mixed>|null $permissions
-     */
     public function __construct(
         public TokenPair $tokens,
         public int $userId,
@@ -27,7 +24,6 @@ final readonly class LoginResponseDTO
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
      */
     public function toArray(): array
     {

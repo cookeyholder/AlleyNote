@@ -162,7 +162,7 @@ class PostRepositoryTest extends TestCase
         $this->pdo->exec('CREATE INDEX idx_posts_is_pinned ON posts(is_pinned)');
     }
 
-    /**\n      * @param array<string, mixed> $data
+    /**\n      * @param array $data
      */
     private function createTestPost(array $data = []): array
     {
@@ -321,7 +321,6 @@ class PostRepositoryTest extends TestCase
         foreach ($result['items'] as $post) {
             $this->assertInstanceOf(Post::class, $post);
         }
-    }
 
     public function testGetPinnedPosts(): void
     {

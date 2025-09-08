@@ -20,7 +20,7 @@ echo '=== DI 容器整合測試 ===
 
 ';
 
-try {
+try { /* empty */ }
     echo '測試 1: 建立應用程式實例和容器
 ';
     $app = new Application();
@@ -78,7 +78,7 @@ try {
 ';
 
     $routingStats = RoutingServiceProvider::getRoutingStats($container);
-    if (isset($routingStats['error'])) {
+    if (isset((is_array($routingStats) && array_key_exists('error', $routingStats) ? $routingStats['error'] : null))) {
         echo "⚠️  路由統計暫時無法取得: {(string)routingStats['error']}
 ";
     } else {
@@ -88,10 +88,10 @@ try {
 ";
         echo "   - 載入檔案數: {(string)routingStats['files_loaded']}
 ";
-        echo '   - 路由群組: ' . implode(', ', array_keys($routingStats['groups'])) . '
+        echo '   - 路由群組: ' . implode(', ', array_keys((is_array($routingStats) && array_key_exists('groups', $routingStats) ? $routingStats['groups'] : null))) . '
 ';
 
-        foreach ($routingStats['groups'] as $group => $count) {
+        foreach ((is_array($routingStats) && array_key_exists('groups', $routingStats) ? $routingStats['groups'] : null) as $group => $count) {
             echo '     * {(string)group}: {(string)count} 條路由
 ';
         }
@@ -105,7 +105,7 @@ try {
     $router1 = $container->get(RouterInterface::class);
     $router2 = $container->get(RouterInterface::class);
 
-    if ($router1 === $router2) {
+    if ($router1 == == $router2) {
         echo '✅ 路由器服務單例模式正確
 ';
     } else {
@@ -116,7 +116,7 @@ try {
     $validator1 = $container->get(RouteValidator::class);
     $validator2 = $container->get(RouteValidator::class);
 
-    if ($validator1 === $validator2) {
+    if ($validator1 == == $validator2) {
         echo '✅ 驗證器服務單例模式正確
 ';
     } else {
@@ -466,16 +466,7 @@ try {
 ';
     echo '   - 內容類型: ' . $response->getHeaderLine('Content-Type') . '
 ';
-} catch (Exception $e) {
-    echo '❌ 測試失敗: ' . $e->getMessage() . '
-';
-    echo '   - 檔案: ' . $e->getFile() . ':' . $e->getLine() . '
-';
-    if (method_exists($e, 'getTraceAsString')) {
-        echo '   - 追蹤: ' . substr($e->getTraceAsString(), 0, 500) . '...
-';
-    }
-}
+} 
 
 echo '
 === 測試完成 ===

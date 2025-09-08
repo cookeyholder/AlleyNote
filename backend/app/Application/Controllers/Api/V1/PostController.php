@@ -85,17 +85,15 @@ class PostController extends BaseController
                 response: 200,
                 description: '成功取得貼文列表',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/PaginatedResponse',
-                ),
+                    ref: '#/components/schemas/PaginatedResponse'),
             ),
             new OA\Response(
                 response: 400,
                 description: '請求參數錯誤',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError',
-                ),
+                    ref: '#/components/schemas/ValidationError'),
             ),
-        ],
+        ]
     )]
     public function index(Request $request, Response $response): Response
     {
@@ -163,24 +161,20 @@ class PostController extends BaseController
             $response->getBody()->write(($responseData ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (RequestValidationException $e) {
-            // 記錄驗證失敗活動
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_VIEWED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Request validation failed: ' . $e->getMessage(),
-                metadata: [
-                    'errors' => $e->getErrors(),
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->errorResponse($e->getMessage(), 422, $e->getErrors());
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         } catch (Exception $e) {
+            $this->logger?->error('操作失敗', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'message' => '操作失敗',
+                    'details' => $e->getMessage(),
+                ],
+                'timestamp' => time(),
+            ], 500);
+        }
             // 記錄一般錯誤
             $userId = $request->getAttribute('user_id');
             $this->activityLogger->logFailure(
@@ -212,30 +206,26 @@ class PostController extends BaseController
             description: '貼文資料',
             required: true,
             content: new OA\JsonContent(
-                ref: '#/components/schemas/CreatePostRequest',
-            ),
+                ref: '#/components/schemas/CreatePostRequest'),
         ),
         responses: [
             new OA\Response(
                 response: 201,
                 description: '貼文建立成功',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ApiResponse',
-                ),
+                    ref: '#/components/schemas/ApiResponse'),
             ),
             new OA\Response(
                 response: 400,
                 description: '輸入資料驗證失敗',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError',
-                ),
+                    ref: '#/components/schemas/ValidationError'),
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized',
-                ),
+                    ref: '#/components/responses/Unauthorized'),
             ),
             new OA\Response(
                 response: 403,
@@ -246,7 +236,7 @@ class PostController extends BaseController
                     ],
                 ),
             ),
-        ],
+        ]
     )]
     public function store(Request $request, Response $response): Response
     {
@@ -265,7 +255,7 @@ class PostController extends BaseController
                 );
 
                 $errorResponse = $this->errorResponse('Invalid JSON format', 400);
-                $response->getBody()->write(($errorResponse ?: ''));
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -296,26 +286,9 @@ class PostController extends BaseController
             );
 
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '貼文建立成功');
-            $response->getBody()->write(($successResponse ?: ''));
+            $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
-        } catch (ValidationException $e) {
-            // 記錄驗證失敗
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_CREATED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Validation failed: ' . $e->getMessage(),
-                metadata: [
-                    'errors' => $e->getErrors(),
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (Exception $e) {
             // 記錄一般錯誤
             $userId = $request->getAttribute('user_id');
@@ -327,7 +300,7 @@ class PostController extends BaseController
             );
 
             $errorResponse = $this->handleException($e);
-            $response->getBody()->write(($errorResponse ?: ''));
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -362,10 +335,9 @@ class PostController extends BaseController
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound',
-                ),
+                    ref: '#/components/responses/NotFound'),
             ),
-        ],
+        ]
     )]
     /**
      * 顯示單一貼文.
@@ -418,41 +390,7 @@ class PostController extends BaseController
             $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (PostNotFoundException $e) {
-            // 記錄文章未找到錯誤
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_VIEWED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Post not found: ' . $e->getMessage(),
-                metadata: [
-                    'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->errorResponse($e->getMessage(), 404);
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (Exception $e) {
-            // 記錄一般錯誤
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_VIEWED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Internal server error: ' . $e->getMessage(),
-                metadata: [
-                    'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->handleException($e);
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        }
+        } 
     }
 
     #[OA\Put(
@@ -477,30 +415,26 @@ class PostController extends BaseController
             description: '更新的貼文資料',
             required: true,
             content: new OA\JsonContent(
-                ref: '#/components/schemas/UpdatePostRequest',
-            ),
+                ref: '#/components/schemas/UpdatePostRequest'),
         ),
         responses: [
             new OA\Response(
                 response: 200,
                 description: '貼文更新成功',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ApiResponse',
-                ),
+                    ref: '#/components/schemas/ApiResponse'),
             ),
             new OA\Response(
                 response: 400,
                 description: '輸入資料驗證失敗',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError',
-                ),
+                    ref: '#/components/schemas/ValidationError'),
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized',
-                ),
+                    ref: '#/components/responses/Unauthorized'),
             ),
             new OA\Response(
                 response: 403,
@@ -515,10 +449,9 @@ class PostController extends BaseController
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound',
-                ),
+                    ref: '#/components/responses/NotFound'),
             ),
-        ],
+        ]
     )]
     /**
      * 更新貼文.
@@ -594,60 +527,7 @@ class PostController extends BaseController
             $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (ValidationException $e) {
-            // 記錄驗證失敗
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_UPDATED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Validation failed: ' . $e->getMessage(),
-                metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
-                    'errors' => $e->getErrors(),
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
-        } catch (PostNotFoundException $e) {
-            // 記錄文章未找到錯誤
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_UPDATED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Post not found: ' . $e->getMessage(),
-                metadata: [
-                    'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->errorResponse($e->getMessage(), 404);
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (Exception $e) {
-            // 記錄一般錯誤
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_UPDATED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Internal server error: ' . $e->getMessage(),
-                metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->handleException($e);
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        }
-    }
+        }  
 
     #[OA\Delete(
         path: '/posts/{id}',
@@ -676,8 +556,7 @@ class PostController extends BaseController
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized',
-                ),
+                    ref: '#/components/responses/Unauthorized'),
             ),
             new OA\Response(
                 response: 403,
@@ -692,10 +571,9 @@ class PostController extends BaseController
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound',
-                ),
+                    ref: '#/components/responses/NotFound'),
             ),
-        ],
+        ]
     )]
     /**
      * 刪除貼文.
@@ -745,76 +623,7 @@ class PostController extends BaseController
 
             // 刪除成功回傳 204 No Content
             return $response->withStatus(204);
-        } catch (ValidationException $e) {
-            // 記錄驗證失敗
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_DELETED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Validation failed: ' . $e->getMessage(),
-                metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
-                    'errors' => $e->getErrors(),
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->errorResponse($e->getMessage(), 400, $e->getErrors());
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
-        } catch (PostNotFoundException $e) {
-            // 記錄文章未找到錯誤
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_DELETED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Post not found: ' . $e->getMessage(),
-                metadata: [
-                    'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->errorResponse($e->getMessage(), 404);
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (PostStatusException $e) {
-            // 記錄狀態轉換錯誤
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_DELETED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Post status error: ' . $e->getMessage(),
-                metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->errorResponse($e->getMessage(), 422);
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
-        } catch (Exception $e) {
-            // 記錄一般錯誤
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_DELETED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Internal server error: ' . $e->getMessage(),
-                metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->handleException($e);
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        }
+        }  
     }
 
     #[OA\Patch(
@@ -865,15 +674,13 @@ class PostController extends BaseController
                 response: 400,
                 description: '請求資料格式錯誤',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError',
-                ),
+                    ref: '#/components/schemas/ValidationError'),
             ),
             new OA\Response(
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized',
-                ),
+                    ref: '#/components/responses/Unauthorized'),
             ),
             new OA\Response(
                 response: 403,
@@ -888,10 +695,9 @@ class PostController extends BaseController
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound',
-                ),
+                    ref: '#/components/responses/NotFound'),
             ),
-        ],
+        ]
     )]
     /**
      * 切換貼文置頂狀態.
@@ -983,59 +789,7 @@ class PostController extends BaseController
             $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (PostNotFoundException $e) {
-            // 記錄文章未找到錯誤
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_PINNED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Post not found: ' . $e->getMessage(),
-                metadata: [
-                    'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->errorResponse($e->getMessage(), 404);
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (StateTransitionException $e) {
-            // 記錄狀態轉換錯誤
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_PINNED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'State transition error: ' . $e->getMessage(),
-                metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->errorResponse($e->getMessage(), 422);
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
-        } catch (Exception $e) {
-            // 記錄一般錯誤
-            $userId = $request->getAttribute('user_id');
-            $this->activityLogger->logFailure(
-                actionType: ActivityType::POST_PINNED,
-                userId: is_int($userId) ? $userId : null,
-                reason: 'Internal server error: ' . $e->getMessage(),
-                metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
-                ],
-            );
-
-            $errorResponse = $this->handleException($e);
-            $response->getBody()->write(($errorResponse ?: ''));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        }
-    }
+        }  
 
     /**
      * 取得使用者 IP 位址
@@ -1093,7 +847,7 @@ class PostController extends BaseController
 
     /**
      * 刪除貼文.
-     * @param array<string, mixed> $args 路由參數
+     * @param array $args 路由參數
      */
     public function destroy(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
     {
@@ -1115,18 +869,9 @@ class PostController extends BaseController
                 'message' => '貼文已成功刪除',
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+            $response->getBody()->write((json_encode($responseData) ? true : '{"error": "JSON encoding failed"}'));
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
-            $responseData = [
-                'success' => false,
-                'error' => '刪除貼文失敗: ' . $e->getMessage(),
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
-
-            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
-        }
+        } 
     }
 }

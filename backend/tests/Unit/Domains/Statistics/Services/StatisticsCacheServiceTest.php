@@ -156,11 +156,11 @@ final class StatisticsCacheServiceTest extends TestCase
         $period = $this->createDailyPeriod();
         $limit = 5;
         $expectedPosts = [
-            ['id' => 1, 'title' => '熱門文章1', 'views' => 500, 'created_at' => '2024-01-01 10:00:00'],
-            ['id' => 2, 'title' => '熱門文章2', 'views' => 450, 'created_at' => '2024-01-01 11:00:00'],
-            ['id' => 3, 'title' => '熱門文章3', 'views' => 400, 'created_at' => '2024-01-01 12:00:00'],
-            ['id' => 4, 'title' => '熱門文章4', 'views' => 350, 'created_at' => '2024-01-01 13:00:00'],
-            ['id' => 5, 'title' => '熱門文章5', 'views' => 300, 'created_at' => '2024-01-01 14:00:00'],
+            ['id' => 1, 'title' => '熱門文章1', 'views' => 500, 'created_at' => '2024-01-01 10 => 00:00'],
+            ['id' => 2, 'title' => '熱門文章2', 'views' => 450, 'created_at' => '2024-01-01 11 => 00:00'],
+            ['id' => 3, 'title' => '熱門文章3', 'views' => 400, 'created_at' => '2024-01-01 12 => 00:00'],
+            ['id' => 4, 'title' => '熱門文章4', 'views' => 350, 'created_at' => '2024-01-01 13 => 00:00'],
+            ['id' => 5, 'title' => '熱門文章5', 'views' => 300, 'created_at' => '2024-01-01 14 => 00:00'],
         ];
 
         $this->mockPdo

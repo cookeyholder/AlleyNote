@@ -129,21 +129,12 @@ class TaggedCacheManager implements TaggedCacheInterface
             return $value;
         }
 
-        try {
+        try { /* empty */ }
             $value = $callback();
             $this->put($key, $value, $ttl);
 
             return $value;
-        } catch (Exception $e) {
-            $this->logger->error('標籤化快取記憶化失敗', [
-                'key' => $key,
-                'tags' => $this->tags,
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 增加新標籤到快取管理器.
@@ -358,9 +349,9 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 批量設定帶標籤的快取.
-     * @param array<string, mixed> $items 快取項目 key => value
+     * @param array $items 快取項目 key => value
      * @param int $ttl 存活時間
-     * @return array<string, mixed> 設定結果 key => success
+     * @return array 設定結果 key => success
      */
     public function putMany(array $items, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): array
     {
@@ -373,7 +364,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         $this->logger->info('批量設定標籤化快取', [
             'items_count' => count($items),
             'tags' => $tags,
-            'success_count' => count(array_filter($results)),
+            'success_count' => count(array_filter($results)]),
         ]);
 
         return $results;
@@ -382,7 +373,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     /**
      * 按標籤批量獲取快取.
      * @param string $tag 標籤
-     * @return array<string, mixed> 快取項目 key => value
+     * @return array 快取項目 key => value
      */
     public function getManyByTag(string $tag): array
     {
@@ -412,7 +403,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     /**
      * 記錄標籤化快取存取.
      * @param string $operation 操作類型
-     * @param array<string> $tags 標籤陣列
+     * @param array $tags 標籤陣列
      */
     private function logTaggedAccess(string $operation, string $key, /** @var array<string, mixed> */ array $tags): void
     {

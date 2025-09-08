@@ -46,10 +46,19 @@ class SwaggerController
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
                 ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         } catch (Exception $e) {
-            // 確保清除任何緩衝的輸出
-            if (ob_get_level() > 0) {
-                ob_end_clean();
-            }
+            $this->logger?->error('操作失敗', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'message' => '操作失敗',
+                    'details' => $e->getMessage(),
+                ],
+                'timestamp' => time(),
+            ], 500);
+        }
 
             $error = [
                 'error' => 'OpenAPI 掃描失敗',
@@ -75,7 +84,7 @@ class SwaggerController
     {
         $html = $this->generateSwaggerUiHtml();
 
-        $response->getBody()->write(($html ?: ''));
+        $response->getBody()->write($html ?: '');
 
         return $response
             ->withStatus(200)
@@ -147,7 +156,7 @@ class SwaggerController
         ];
 
         $infoJson = json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        $response->getBody()->write(($infoJson ?: ''));
+        $response->getBody()->write($infoJson ?: '{"error": "JSON encoding failed"}');
 
         return $response
             ->withStatus(200)

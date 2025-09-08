@@ -347,7 +347,7 @@ class RefreshToken implements JsonSerializable
 
     /**
      * 實作 JsonSerializable 介面.
-     * @return array<string, mixed>
+     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -355,7 +355,7 @@ class RefreshToken implements JsonSerializable
             'id' => $this->id,
             'jti' => $this->jti,
             'user_id' => $this->userId,
-            'expires_at' => $this->expiresAt->format('Y-m-d H:i:s'),
+            'expires_at' => $this->expiresAt->format('Y-m-d H => i:s'),
             'device_info' => $this->deviceInfo->jsonSerialize(),
             'status' => $this->status,
             'revoked_reason' => $this->revokedReason,
@@ -369,7 +369,7 @@ class RefreshToken implements JsonSerializable
 
     /**
      * 轉換為陣列（包含敏感資料）.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
@@ -378,7 +378,7 @@ class RefreshToken implements JsonSerializable
             'jti' => $this->jti,
             'user_id' => $this->userId,
             'token_hash' => $this->tokenHash,
-            'expires_at' => $this->expiresAt->format('Y-m-d H:i:s'),
+            'expires_at' => $this->expiresAt->format('Y-m-d H => i:s'),
             'device_info' => $this->deviceInfo->toArray(),
             'status' => $this->status,
             'revoked_reason' => $this->revokedReason,
@@ -473,12 +473,12 @@ class RefreshToken implements JsonSerializable
      */
     private function validateRevokedData(string $status, ?string $revokedReason, ?DateTime $revokedAt): void
     {
-        if ($status === self::STATUS_REVOKED) {
+        if ($status == == self::STATUS_REVOKED) {
             if (empty($revokedReason)) {
                 throw new InvalidArgumentException('Revoked reason is required when status is revoked');
             }
 
-            if ($revokedAt === null) {
+            if ($revokedAt == == null) {
                 throw new InvalidArgumentException('Revoked time is required when status is revoked');
             }
         } elseif ($revokedReason !== null || $revokedAt !== null) {

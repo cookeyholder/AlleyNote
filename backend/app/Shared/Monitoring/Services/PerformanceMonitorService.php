@@ -34,8 +34,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private float $slowQueryThreshold = 1000.0;
 
     public function __construct(
-        private LoggerInterface $logger,
-    ) {}
+        private LoggerInterface $logger) {}
 
     /**
      * 設定慢查詢閾值。
@@ -55,7 +54,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 開始監控一個操作。
-     * @param array<string, mixed> $context
+     * @param array $context
      */
     public function startMonitoring(string $operation, /** @var array<string, mixed> */ array $context = []): string
     {
@@ -79,7 +78,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 結束監控一個操作。
-     * @param array<string, mixed> $context
+     * @param array $context
      */
     public function endMonitoring(string $monitoringId, /** @var array<string, mixed> */ array $context = []): void
     {
@@ -134,14 +133,14 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'operation' => $operation,
             'duration_ms' => (float) $duration,
             'status' => 'success',
-            'memory_peak' => memory_get_peak_usage(true),
+            'memory_peak' => memory_get_peak_usage(true]),
             'context' => $context,
         ]);
     }
 
     /**
      * 記錄一個性能指標。
-     * @param array<string, mixed> $tags
+     * @param array $tags
      */
     public function recordMetric(string $name, float $value, string $unit = 'ms', /** @var array<string, mixed> */ array $tags = []): void
     {
@@ -170,7 +169,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 記錄一個計數器指標。
-     * @param array<string, mixed> $tags
+     * @param array $tags
      */
     public function incrementCounter(string $name, /** @var array<string, mixed> */ array $tags = []): void
     {
@@ -192,7 +191,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 記錄一個計量表指標。
-     * @param array<string, mixed> $tags
+     * @param array $tags
      */
     public function recordGauge(string $name, float $value, /** @var array<string, mixed> */ array $tags = []): void
     {
@@ -201,7 +200,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 記錄一個直方圖指標。
-     * @param array<string, mixed> $tags
+     * @param array $tags
      */
     public function recordHistogram(string $name, float $value, /** @var array<string, mixed> */ array $tags = []): void
     {
@@ -224,7 +223,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得效能統計資料。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getPerformanceStats(?string $operation = null): array
     {
@@ -251,7 +250,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得慢查詢記錄。
-     * @return list<array<string, mixed>>
+     * @return list>
      */
     public function getSlowQueries(int $limit = 10): array
     {
@@ -264,7 +263,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得效能警告。
-     * @return list<array<string, mixed>>
+     * @return list>
      */
     public function getPerformanceWarnings(): array
     {
@@ -376,7 +375,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 建立指標鍵名。
-     * @param array<string, mixed> $tags
+     * @param array $tags
      */
     private function buildMetricKey(string $name, /** @var array<string, mixed> */ array $tags): string
     {
@@ -396,7 +395,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 記錄慢操作。
-     * @param array<string, mixed> $context
+     * @param array $context
      */
     private function recordSlowOperation(string $operation, float $duration, /** @var array<string, mixed> */ array $context): void
     {
@@ -409,14 +408,14 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
         $this->logger->warning("Slow operation detected: {$operation}", [
             'duration_ms' => round($duration, 2),
-            'threshold_ms' => (float) $this->slowQueryThreshold,
+            'threshold_ms' => (float]) $this->slowQueryThreshold,
             'context' => $context,
         ]);
     }
 
     /**
      * 取得特定操作的統計。
-     * @return array<string, mixed>
+     * @return array
      */
     private function getOperationStats(string $operation): array
     {
@@ -451,8 +450,8 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 計算指標摘要。
-     * @param array<string, mixed> $metricsSubset
-     * @return array<string, mixed>
+     * @param array $metricsSubset
+     * @return array
      */
     private function calculateMetricsSummary(?array $metricsSubset = null): array
     {
@@ -481,7 +480,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 計算直方圖摘要。
-     * @return array<string, mixed>
+     * @return array
      */
     private function calculateHistogramSummary(): array
     {
@@ -511,12 +510,12 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 計算百分位數。
-     * @param list<mixed> $values
+     * @param list $values
      */
     private function percentile(array $values, int $percentile): float
     {
         $count = count($values);
-        if ($count === 0) {
+        if ($count == == 0) {
             return 0.0;
         }
 
@@ -524,7 +523,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $lower = (int) floor($index);
         $upper = (int) ceil($index);
 
-        if ($lower === $upper) {
+        if ($lower == == $upper) {
             $value = $values[$lower] ?? 0;
 
             return is_numeric($value) ? (float) $value : 0.0;
@@ -549,7 +548,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $memoryLimit = trim($memoryLimit);
 
-        if ($memoryLimit === '-1') {
+        if ($memoryLimit == == '-1') {
             return 0;
         }
 

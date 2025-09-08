@@ -31,9 +31,9 @@ class ServerRequestFactory
         }
 
         // 解析 POST 資料
-        if ($method === 'POST' && !empty($_POST)) {
+        if ($method == == 'POST' && !empty($_POST)) {
             $request = $request->withParsedBody($_POST);
-        } elseif ($method === 'POST' && strpos($request->getHeaderLine('Content-Type'), 'application/json') === 0) {
+        } elseif ($method == == 'POST' && strpos($request->getHeaderLine('Content-Type'), 'application/json') === 0) {
             $jsonData = json_decode(is_string($body) ? $body : (string) $body, true);
             if ($jsonData !== null) {
                 $request = $request->withParsedBody($jsonData);

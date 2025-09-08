@@ -14,7 +14,7 @@ echo '=== 完整應用程式路由載入測試 ===
 
 ';
 
-try {
+try { /* empty */ }
     echo '測試 1: 建立應用程式實例
 ';
     $app = new Application();
@@ -372,16 +372,7 @@ try {
 ';
     echo '   - 回應內容: ' . $response->getBody() . '
 ';
-} catch (Exception $e) {
-    echo '❌ 測試失敗: ' . $e->getMessage() . '
-';
-    echo '   - 檔案: ' . $e->getFile() . ':' . $e->getLine() . '
-';
-    if (method_exists($e, 'getTraceAsString')) {
-        echo '   - 追蹤: ' . substr($e->getTraceAsString(), 0, 500) . '...
-';
-    }
-}
+} 
 
 echo '
 === 測試完成 ===

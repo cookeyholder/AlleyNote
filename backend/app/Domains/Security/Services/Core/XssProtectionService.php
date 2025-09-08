@@ -8,7 +8,6 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
-use Exception;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 
@@ -56,9 +55,6 @@ class XssProtectionService implements XssProtectionServiceInterface
         return $cleaned;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function cleanArray(array $data, /** @var array<string, mixed> */ array $keys = []): array
     {
         if (empty($keys)) {
@@ -93,9 +89,6 @@ class XssProtectionService implements XssProtectionServiceInterface
         return $this->clean($input);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public function sanitizeArray(array $data): array
     {
         return $this->cleanArrayRecursive($data);
@@ -143,9 +136,6 @@ class XssProtectionService implements XssProtectionServiceInterface
         $this->strictPurifier = new HTMLPurifier($strictConfig);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     private function cleanArrayRecursive(array $data): array
     {
         foreach ($data as $key => $value) {
@@ -161,31 +151,29 @@ class XssProtectionService implements XssProtectionServiceInterface
 
     private function logXssAttempt(string $originalInput, string $cleanedInput): void
     {
-        try {
-            $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
-            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
-
-            // 確保類型正確
-            $ipAddress = is_string($ipAddress) ? $ipAddress : null;
-            $userAgent = is_string($userAgent) ? $userAgent : null;
-
-            $dto = CreateActivityLogDTO::securityEvent(
-                actionType: ActivityType::XSS_ATTACK_BLOCKED,
-                ipAddress: $ipAddress,
-                userAgent: $userAgent,
-                description: 'XSS attack attempt detected and blocked',
-                metadata: [
-                    'original_length' => strlen($originalInput),
-                    'cleaned_length' => strlen($cleanedInput),
-                    'original_sample' => substr($originalInput, 0, 100),
-                    'referer' => $_SERVER['HTTP_REFERER'] ?? null,
-                    'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
-                ],
-            );
-
-            $this->activityLogger->log($dto);
-        } catch (Exception) {
-            // 記錄失敗不應影響主要功能
+        try { /* empty */
         }
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+
+        // 確保類型正確
+        $ipAddress = is_string($ipAddress) ? $ipAddress : null;
+        $userAgent = is_string($userAgent) ? $userAgent : null;
+
+        $dto = CreateActivityLogDTO::securityEvent(
+            actionType: ActivityType::XSS_ATTACK_BLOCKED,
+            ipAddress: $ipAddress,
+            userAgent: $userAgent,
+            description: 'XSS attack attempt detected and blocked',
+            metadata: [
+                'original_length' => strlen($originalInput),
+                'cleaned_length' => strlen($cleanedInput),
+                'original_sample' => substr($originalInput, 0, 100),
+                'referer' => $_SERVER['HTTP_REFERER'] ?? null,
+                'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
+            ],
+        );
+
+        $this->activityLogger->log($dto);
     }
 }

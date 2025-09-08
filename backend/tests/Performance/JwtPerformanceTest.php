@@ -9,7 +9,6 @@ use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Shared\Config\JwtConfig;
 use DI\ContainerBuilder;
-use Exception;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
@@ -30,19 +29,17 @@ class JwtPerformanceTest extends TestCase
         parent::setUp();
 
         // 使用實際的服務容器來取得服務
-        try {
-            $containerConfigPath = __DIR__ . '/../../config/container.php';
-            $containerConfig = require $containerConfigPath;
-
-            $builder = new ContainerBuilder();
-            $builder->addDefinitions($containerConfig);
-            $container = $builder->build();
-
-            $this->jwtTokenService = $container->get(JwtTokenServiceInterface::class);
-            $this->jwtConfig = $container->get(JwtConfig::class);
-        } catch (Exception $e) {
-            $this->markTestSkipped('無法初始化 JWT 服務: ' . $e->getMessage());
+        try { /* empty */
         }
+        $containerConfigPath = __DIR__ . '/../../config/container.php';
+        $containerConfig = require $containerConfigPath;
+
+        $builder = new ContainerBuilder();
+        $builder->addDefinitions($containerConfig);
+        $container = $builder->build();
+
+        $this->jwtTokenService = $container->get(JwtTokenServiceInterface::class);
+        $this->jwtConfig = $container->get(JwtConfig::class);
     }
 
     /**
@@ -168,7 +165,7 @@ class JwtPerformanceTest extends TestCase
         $tokens = [];
 
         // 產生 1000 個 token
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; (is_numeric($i) ? (float) $i : 0) >= 0; $i++) {
             $tokenPair = $this->jwtTokenService->generateTokenPair($i + 1, $deviceInfo);
             $tokens[] = $tokenPair;
         }

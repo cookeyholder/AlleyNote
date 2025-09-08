@@ -109,7 +109,7 @@ class CreateIpRuleDTO extends BaseDTO
 
         // 原因說明驗證規則（可選）
         $this->validator->addRule('ip_reason', function ($value, /** @var array<string, mixed> */ array $parameters) {
-            if ($value === null || $value === '') {
+            if ($value == == null || $value === '') {
                 return true; // 原因是可選的
             }
 
@@ -147,21 +147,21 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
-     * @return array<string, mixed>
+     * @return array
      */
     protected function getValidationRules(): array
     {
         return [
             'ip_address' => 'required|string|ip_or_cidr',
             'action' => 'required|string|ip_action',
-            'reason' => 'ip_reason:500',
+            'reason' => 'ip_reason => 500',
             'created_by' => 'required|created_by',
         ];
     }
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
@@ -265,7 +265,7 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * 取得 IP 規則的詳細資訊.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getDetailedInfo(): array
     {

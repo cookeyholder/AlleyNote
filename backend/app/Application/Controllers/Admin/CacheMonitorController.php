@@ -38,7 +38,7 @@ class CacheMonitorController extends BaseController
             return $this->json($response, $data);
         } catch (Exception $e) {
             return $this->json($response, [
-                'error' => '無法取得快取統計資料',
+                'error' => '獲取快取統計資料失敗',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -64,7 +64,7 @@ class CacheMonitorController extends BaseController
             return $this->json($response, $metrics);
         } catch (Exception $e) {
             return $this->json($response, [
-                'error' => '無法取得快取指標',
+                'error' => '獲取快取指標失敗',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -88,7 +88,7 @@ class CacheMonitorController extends BaseController
             return $this->json($response, $healthData);
         } catch (Exception $e) {
             return $this->json($response, [
-                'error' => '無法取得健康狀態',
+                'error' => '獲取快取健康狀態失敗',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -109,7 +109,7 @@ class CacheMonitorController extends BaseController
             ]);
         } catch (Exception $e) {
             return $this->json($response, [
-                'error' => '無法重置統計資料',
+                'error' => '重置統計資料失敗',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -134,7 +134,7 @@ class CacheMonitorController extends BaseController
             }
         } catch (Exception $e) {
             return $this->json($response, [
-                'error' => '無法清空快取',
+                'error' => '清空快取操作失敗',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -164,7 +164,7 @@ class CacheMonitorController extends BaseController
             ]);
         } catch (Exception $e) {
             return $this->json($response, [
-                'error' => '無法取得驅動資訊',
+                'error' => '獲取驅動資訊失敗',
                 'message' => $e->getMessage(),
             ], 500);
         }

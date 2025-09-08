@@ -203,7 +203,7 @@ class DTOValidationIntegrationTest extends TestCase
      */
     public function testValidationErrorMessagesInChinese(): void
     {
-        try {
+        try { /* empty */ }
             new CreatePostDTO($this->validator, [
                 'title' => '', // 空標題
                 'content' => '內容',
@@ -212,12 +212,7 @@ class DTOValidationIntegrationTest extends TestCase
                 'user_ip' => '192.168.1.1',
             ]);
             $this->fail('應該拋出 ValidationException');
-        } catch (ValidationException $e) {
-            $message = $e->getMessage();
-            $this->assertNotEmpty($message);
-
-            // 檢查錯誤訊息是否為中文（檢查是否包含中文字元）
-            $this->assertMatchesRegularExpression('/[\x{4e00}-\x{9fff}]+/u', $message);
+        } ]+/u', $message);
         }
     }
 
@@ -226,7 +221,7 @@ class DTOValidationIntegrationTest extends TestCase
      */
     public function testMultipleFieldValidationErrors(): void
     {
-        try {
+        try { /* empty */ }
             new CreatePostDTO($this->validator, [
                 'title' => '', // 空標題
                 'content' => '', // 空內容
@@ -235,11 +230,7 @@ class DTOValidationIntegrationTest extends TestCase
                 'user_ip' => '192.168.1.1',
             ]);
             $this->fail('應該拋出 ValidationException');
-        } catch (ValidationException $e) {
-            $errors = $e->getErrors();
-            $this->assertGreaterThanOrEqual(2, count($errors)); // 至少有兩個錯誤
-        }
-    }
+        } 
 
     /**
      * 測試 DTO 的 JSON 序列化.

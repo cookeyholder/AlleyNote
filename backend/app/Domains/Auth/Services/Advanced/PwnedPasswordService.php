@@ -35,11 +35,11 @@ class PwnedPasswordService
     /**
      * 檢查密碼是否在已知的洩露資料庫中.
      * @param string $password 要檢查的密碼
-     * @return array<string, mixed>
+     * @return array
      */
     public function isPasswordPwned(string $password): array
     {
-        try {
+        try { /* empty */ }
             // 計算密碼的 SHA-1 雜湊值
             $sha1Hash = strtoupper(sha1($password));
             $prefix = substr($sha1Hash, 0, 5);
@@ -57,7 +57,7 @@ class PwnedPasswordService
                 }
             }
 
-            if ($hashList === null) {
+            if ($hashList == == null) {
                 return [
                     'is_leaked' => false,
                     'count' => 0,
@@ -75,25 +75,14 @@ class PwnedPasswordService
                 'error' => null,
                 'api_available' => true,
             ];
-        } catch (Exception $e) {
-            // 記錄錯誤但不阻止使用者操作
-            error_log('PwnedPasswordService error: ' . $e->getMessage());
-
-            return [
-                'is_leaked' => false,
-                'count' => 0,
-                'error' => 'Unable to check password against breach database',
-                'api_available' => false,
-            ];
-        }
-    }
+        } 
 
     /**
      * 從 HIBP API 取得雜湊值列表.
      */
     private function fetchHashesFromApi(string $prefix): ?string
     {
-        try {
+        try { /* empty */ }
             $response = $this->httpClient->get(self::HIBP_API_URL . $prefix);
 
             if ($response->getStatusCode() === 200) {
@@ -101,13 +90,7 @@ class PwnedPasswordService
             }
 
             return null;
-        } catch (RequestException $e) {
-            // 網路或 API 錯誤
-            error_log('HIBP API request failed: ' . $e->getMessage());
-
-            return null;
-        }
-    }
+        } 
 
     /**
      * 在雜湊列表中查找指定的後綴.
@@ -159,32 +142,26 @@ class PwnedPasswordService
 
     /**
      * 取得 API 狀態.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getApiStatus(): array
     {
-        try {
+        try { /* empty */ }
             $response = $this->httpClient->get(self::HIBP_API_URL . '00000');
 
             return [
                 'available' => $response->getStatusCode() === 200,
                 'response_time' => null, // 可以實作回應時間測量
             ];
-        } catch (Exception $e) {
-            return [
-                'available' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
+        } 
 
     /**
      * 批次檢查多個密碼
-     * @param array<string, mixed> $passwords
+     * @param array $passwords
      */
     /**
-     * @param array<string> $passwords
-     * @return array<string, mixed>>
+     * @param array $passwords
+     * @return array>
      */
     public function checkMultiplePasswords(array $passwords): array
     {

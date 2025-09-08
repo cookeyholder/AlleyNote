@@ -15,7 +15,6 @@ interface CacheMonitorInterface
      * 記錄快取操作。
      * @param string $operation 操作類型 (get, set, delete, flush, etc.)
      * @param bool $success 操作是否成功
-     * @param array<string, mixed> $context
      */
     public function recordOperation(
         string $operation,
@@ -50,53 +49,46 @@ interface CacheMonitorInterface
     /**
      * 記錄驅動健康狀態。
      * @param string $driver 驅動名稱
-     * @param array<string, mixed> $details
      */
     public function recordHealthStatus(string $driver, bool $healthy, /** @var array<string, mixed> */ array $details = []): void;
 
     /**
      * 取得快取統計資料。
      * @param string|null $driver 指定驅動，null 表示所有驅動
-     * @return array<string, mixed>
      */
     public function getCacheStats(?string $driver = null, ?string $timeRange = null): array;
 
     /**
      * 取得命中率統計。
      * @param string|null $timeRange 時間範圍
-     * @return array<string, mixed>
      */
     public function getHitRateStats(?string $timeRange = null): array;
 
     /**
      * 取得驅動效能比較。
-     * @return array<string, mixed>
      */
     public function getDriverPerformanceComparison(): array;
 
     /**
      * 取得慢速快取操作。
      * @param int $limit 限制數量
-     * @return list<array<string, mixed>>
+     * @return list>
      */
     public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array;
 
     /**
      * 取得快取容量使用情況。
-     * @return array<string, mixed>
      */
     public function getCacheCapacityStats(): array;
 
     /**
      * 取得快取錯誤統計。
      * @param string|null $timeRange 時間範圍
-     * @return array<string, mixed>
      */
     public function getErrorStats(?string $timeRange = null): array;
 
     /**
      * 取得快取健康狀態。
-     * @return array<string, mixed>
      */
     public function getHealthOverview(): array;
 

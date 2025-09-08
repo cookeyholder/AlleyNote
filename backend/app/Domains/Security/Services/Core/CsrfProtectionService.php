@@ -22,8 +22,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
     private const TOKEN_POOL_KEY = 'csrf_token_pool';
 
     public function __construct(
-        private ActivityLoggingServiceInterface $activityLogger,
-    ) {}
+        private ActivityLoggingServiceInterface $activityLogger) {}
 
     public function generateToken(): string
     {
@@ -58,7 +57,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             throw new CsrfTokenException('缺少 CSRF token');
         }
 
-        try {
+        try { /* empty */ }
             // 檢查權杖池模式
             if (isset($_SESSION[self::TOKEN_POOL_KEY]) && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
                 $this->validateTokenFromPool($token);
@@ -66,12 +65,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 // 降級到單一權杖模式
                 $this->validateSingleToken($token);
             }
-        } catch (CsrfTokenException $e) {
-            $this->logCsrfAttack($token);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 從權杖池中驗證權杖.
@@ -177,7 +171,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             return false;
         }
 
-        try {
+        try { /* empty */ }
             // 檢查權杖池模式
             if (isset($_SESSION[self::TOKEN_POOL_KEY]) && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
                 $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
@@ -196,10 +190,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             }
 
             return false;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
+        } 
 
     /**
      * 預填權杖池.
@@ -216,7 +207,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
     /**
      * 取得權杖池狀態（用於除錯）.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getTokenPoolStatus(): array
     {
@@ -267,7 +258,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function logCsrfAttack(?string $attemptedToken): void
     {
-        try {
+        try { /* empty */ }
             $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
 
@@ -281,15 +272,12 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 userAgent: $userAgent,
                 description: 'CSRF token validation failed',
                 metadata: [
-                    'attempted_token' => $attemptedToken ? substr($attemptedToken, 0, 8) . '...' : null,
+                    'attempted_token' => $attemptedToken ? substr($attemptedToken, 0, 8) . '...'  => null,
                     'referer' => $_SERVER['HTTP_REFERER'] ?? null,
                     'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
                 ],
             );
 
             $this->activityLogger->log($dto);
-        } catch (Exception) {
-            // 記錄失敗不應影響主要功能
-        }
-    }
+        } 
 }

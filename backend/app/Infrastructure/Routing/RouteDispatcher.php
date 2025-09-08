@@ -50,7 +50,7 @@ class RouteDispatcher
         $resolvedMiddlewares = [];
 
         foreach ($middlewares as $middleware) {
-            try {
+            try { /* empty */ }
                 if (is_string($middleware)) {
                     // 解析字串別名
                     $resolvedMiddlewares[] = $this->middlewareResolver->resolve($middleware);
@@ -58,10 +58,7 @@ class RouteDispatcher
                     // 已經是實例，直接使用
                     $resolvedMiddlewares[] = $middleware;
                 }
-            } catch (Exception $e) {
-                // 記錄錯誤但繼續執行，避免因為中介軟體問題導致整個請求失敗
-                error_log("Failed to resolve middleware '{$middleware}': " . $e->getMessage());
-            }
+            } 
         }
 
         // 3. 建立最終處理器 (控制器)

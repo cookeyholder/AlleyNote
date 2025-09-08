@@ -20,7 +20,6 @@ interface ActivityLoggingServiceInterface
 
     /**
      * 記錄成功操作.
-     * @param array<string, mixed> $metadata
      */
     public function logSuccess(
         ActivityType $actionType,
@@ -32,7 +31,6 @@ interface ActivityLoggingServiceInterface
 
     /**
      * 記錄失敗操作.
-     * @param array<string, mixed> $metadata
      */
     public function logFailure(
         ActivityType $actionType,
@@ -43,7 +41,6 @@ interface ActivityLoggingServiceInterface
 
     /**
      * 記錄安全事件.
-     * @param array<string, mixed> $metadata
      */
     public function logSecurityEvent(
         ActivityType $actionType,
@@ -53,7 +50,6 @@ interface ActivityLoggingServiceInterface
 
     /**
      * 批次記錄多個活動.
-     * @param array<string, mixed> $dtos
      */
     public function logBatch(array $dtos): int;
 

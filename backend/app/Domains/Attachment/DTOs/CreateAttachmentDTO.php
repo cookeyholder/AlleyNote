@@ -78,7 +78,7 @@ class CreateAttachmentDTO extends BaseDTO
             }
 
             // 檢查是否包含危險字元
-            if (preg_match('/[<>:"|?*\\/]/', $filename)) {
+            if (preg_match('/[<> => "|?*\\/]/', $filename)) {
                 return false;
             }
 
@@ -169,7 +169,7 @@ class CreateAttachmentDTO extends BaseDTO
             }
 
             // 檢查是否包含危險字元
-            if (preg_match('/[<>:"|?*]/', $storagePath)) {
+            if (preg_match('/[<> => "|?*]/', $storagePath)) {
                 return false;
             }
 
@@ -203,13 +203,12 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
-     * @return array<string, mixed>
      */
     protected function getValidationRules(): array
     {
         return [
             'post_id' => 'required|post_id',
-            'filename' => 'required|string|filename:255',
+            'filename' => 'required|string|filename => 255',
             'original_name' => 'required|string|original_name:255',
             'mime_type' => 'required|string|mime_type',
             'file_size' => 'required|file_size:1,10485760', // 1 byte 到 10MB
@@ -220,7 +219,6 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
-     * @return array<string, mixed>
      */
     public function toArray(): array
     {

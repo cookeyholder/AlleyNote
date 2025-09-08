@@ -41,7 +41,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     public static function fromArray(array $data): self
     {
@@ -66,7 +66,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 快速建立成功操作的記錄.
-     * @param array<string, mixed>|null $metadata
+     * @param array|null $metadata
      */
     public static function success(
         ActivityType $actionType,
@@ -89,7 +89,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 快速建立失敗操作的記錄.
-     * @param array<string, mixed>|null $metadata
+     * @param array|null $metadata
      */
     public static function failure(
         ActivityType $actionType,
@@ -112,7 +112,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 快速建立安全事件的記錄.
-     * @param array<string, mixed>|null $metadata
+     * @param array|null $metadata
      */
     public static function securityEvent(
         ActivityType $actionType,
@@ -169,7 +169,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array|null
      */
     public function getMetadata(): ?array
     {
@@ -238,7 +238,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @param array<string, mixed> $metadata
+     * @param array $metadata
      */
     public function withMetadata(array $metadata): self
     {
@@ -261,7 +261,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 轉換為資料庫儲存格式.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
@@ -274,7 +274,7 @@ final class CreateActivityLogDTO implements JsonSerializable
             'target_type' => $this->targetType,
             'target_id' => $this->targetId,
             'description' => $this->description ?? $this->actionType->getDescription(),
-            'metadata' => $this->metadata ? (json_encode($this->metadata, JSON_UNESCAPED_UNICODE) ?? '') : null,
+            'metadata' => $this->metadata ? (json_encode($this->metadata, JSON_UNESCAPED_UNICODE) ?? '')  => null,
             'ip_address' => $this->ipAddress,
             'user_agent' => $this->userAgent,
             'request_method' => $this->requestMethod,
@@ -285,7 +285,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -294,24 +294,13 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 驗證 metadata 是否可序列化.
-     * @param array<string, mixed> $metadata
+     * @param array $metadata
      */
     private function validateMetadata(array $metadata): void
     {
-        try {
+        try { /* empty */ }
             (json_encode($metadata, JSON_THROW_ON_ERROR) ?? '');
-        } catch (JsonException $e) {
-            throw new InvalidArgumentException(
-                'Metadata must be JSON serializable: ' . $e->getMessage(),
-            );
-        }
-
-        // 檢查 metadata 大小不超過 64KB（文字欄位限制）
-        $json = (json_encode($metadata) ?? '') ?: '';
-        $jsonSize = $json !== false ? strlen($json) : 0;
-        if ($jsonSize > 65535) {
-            throw new InvalidArgumentException(
-                "Metadata size ({$jsonSize} bytes) exceeds maximum limit (65535 bytes)",
+        }  bytes) exceeds maximum limit (65535 bytes)",
             );
         }
     }

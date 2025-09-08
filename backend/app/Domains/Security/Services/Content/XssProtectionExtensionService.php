@@ -25,7 +25,7 @@ class XssProtectionExtensionService
     private array $config;
 
     /**
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     public function __construct(
         XssProtectionService $baseXssProtection,
@@ -42,7 +42,7 @@ class XssProtectionExtensionService
 
     /**
      * 情境感知的 XSS 防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     public function protectByContext(string $input, string $context, /** @var array<string, mixed> */ array $options = []): array
     {
@@ -92,7 +92,7 @@ class XssProtectionExtensionService
 
     /**
      * 富文本編輯器防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function protectRichTextEditor(string $input, /** @var array<string, mixed> */ array $options): array
     {
@@ -122,7 +122,7 @@ class XssProtectionExtensionService
 
     /**
      * 使用者簡介防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function protectUserBio(string $input, /** @var array<string, mixed> */ array $options): array
     {
@@ -143,7 +143,7 @@ class XssProtectionExtensionService
 
     /**
      * 文章標題防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function protectPostTitle(string $input, /** @var array<string, mixed> */ array $options): array
     {
@@ -167,7 +167,7 @@ class XssProtectionExtensionService
 
     /**
      * 文章內容防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function protectPostContent(string $input, /** @var array<string, mixed> */ array $options): array
     {
@@ -202,7 +202,7 @@ class XssProtectionExtensionService
 
     /**
      * 評論防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function protectComment(string $input, /** @var array<string, mixed> */ array $options): array
     {
@@ -228,7 +228,7 @@ class XssProtectionExtensionService
 
     /**
      * 搜尋查詢防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function protectSearchQuery(string $input, /** @var array<string, mixed> */ array $options): array
     {
@@ -255,7 +255,7 @@ class XssProtectionExtensionService
 
     /**
      * URL 參數防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function protectUrlParameter(string $input, /** @var array<string, mixed> */ array $options): array
     {
@@ -273,7 +273,7 @@ class XssProtectionExtensionService
 
     /**
      * JSON 資料防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function protectJsonData(string $input, /** @var array<string, mixed> */ array $options): array
     {
@@ -306,7 +306,7 @@ class XssProtectionExtensionService
 
     /**
      * 檔案上傳防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function protectFileUpload(string $input, /** @var array<string, mixed> */ array $options): array
     {
@@ -340,7 +340,7 @@ class XssProtectionExtensionService
 
     /**
      * 通用防護.
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function protectGeneric(string $input, /** @var array<string, mixed> */ array $options): array
     {
@@ -396,14 +396,14 @@ class XssProtectionExtensionService
      */
     private function calculateSecurityScore(string $original, string $filtered): int
     {
-        if ($original === $filtered) {
+        if ($original == == $filtered) {
             return 100;
         }
 
         $originalLength = strlen($original);
         $filteredLength = strlen($filtered);
 
-        if ($originalLength === 0) {
+        if ($originalLength == == 0) {
             return 100;
         }
 
@@ -423,7 +423,7 @@ class XssProtectionExtensionService
 
     /**
      * 預設設定.
-     * @return array<string, mixed>
+     * @return array
      */
     private function getDefaultConfig(): array
     {

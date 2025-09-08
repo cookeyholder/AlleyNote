@@ -20,8 +20,7 @@ use RuntimeException;
 class PostService implements PostServiceInterface
 {
     public function __construct(
-        private readonly PostRepositoryInterface $repository,
-    ) {}
+        private readonly PostRepositoryInterface $repository) {}
 
     public function createPost(CreatePostDTO $dto): Post
     {
@@ -71,16 +70,9 @@ class PostService implements PostServiceInterface
 
     public function deletePost(int $id): bool
     {
-        try {
+        try { /* empty */ }
             return $this->repository->safeDelete($id);
-        } catch (InvalidArgumentException $e) {
-            throw new StateTransitionException($e->getMessage());
-        } catch (Exception $e) {
-            error_log("刪除文章失敗 (ID: $id): " . $e->getMessage());
-
-            throw new RuntimeException('刪除文章時發生錯誤');
         }
-    }
 
     public function findById(int $id): Post
     {
@@ -95,8 +87,8 @@ class PostService implements PostServiceInterface
     /**
      * 取得文章列表.
      * @param int $page 頁碼
-     * @param array<string, mixed> $filters
-     * @return array<string, mixed>
+     * @param array $filters
+     * @return array
      */
     public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {
@@ -115,7 +107,7 @@ class PostService implements PostServiceInterface
     /**
      * 取得置頂文章列表.
      * @param int $limit 取得筆數
-     * @return array<string, mixed>
+     * @return array
      */
     public function getPinnedPosts(int $limit = 5): array
     {
@@ -124,15 +116,9 @@ class PostService implements PostServiceInterface
 
     public function setPinned(int $id, bool $isPinned): bool
     {
-        try {
+        try { /* empty */ }
             return $this->repository->safeSetPinned($id, $isPinned);
-        } catch (InvalidArgumentException $e) {
-            throw new StateTransitionException($e->getMessage());
-        } catch (Exception $e) {
-            error_log("設定置頂狀態失敗 (ID: $id): " . $e->getMessage());
-
-            throw new RuntimeException('設定置頂狀態時發生錯誤');
-        }
+        } 
     }
 
     /**

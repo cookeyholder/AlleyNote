@@ -23,8 +23,6 @@ interface OutputSanitizerInterface
 
     /**
      * 清理陣列中的所有字串值以供顯示.
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
      */
     public function sanitizeForDisplay(array $data): array;
 

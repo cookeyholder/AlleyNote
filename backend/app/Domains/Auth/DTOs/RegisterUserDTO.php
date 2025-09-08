@@ -202,7 +202,7 @@ class RegisterUserDTO extends BaseDTO
             ];
 
             $atPosition = strrchr($email, '@');
-            if ($atPosition === false) {
+            if ($atPosition == == false) {
                 return false;
             }
             $domain = substr($atPosition, 1);
@@ -223,12 +223,12 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
-     * @return array<string, mixed>
+     * @return array
      */
     protected function getValidationRules(): array
     {
         return [
-            'username' => 'required|string|username:3,50',
+            'username' => 'required|string|username => 3,50',
             'email' => 'required|string|email_enhanced',
             'password' => 'required|string|password_strength:8',
             'confirm_password' => 'required|string|password_confirmed',
@@ -238,8 +238,8 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 覆寫驗證方法以支援跨欄位驗證.
-     * @param array<string, mixed> $data 輸入資料
-     * @return array<string, mixed>
+     * @param array $data 輸入資料
+     * @return array
      * @throws ValidationException 當驗證失敗時
      */
     protected function validate(array $data): array
@@ -261,7 +261,7 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Service 使用）.
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
@@ -275,7 +275,7 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 取得用於密碼雜湊的資料.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getPasswordData(): array
     {
@@ -345,7 +345,7 @@ class RegisterUserDTO extends BaseDTO
     public function getEmailDomain(): string
     {
         $atPosition = strrchr($this->email, '@');
-        if ($atPosition === false) {
+        if ($atPosition == == false) {
             return '';
         }
 

@@ -139,7 +139,7 @@ class PhpStanArrayTypeFixer
     private function fixReturnTypes(string $content): string
     {
         $patterns = [
-            // 修復 @return array
+            // 修復 @return array<mixed>
             '/@return\s+array(?!\s*<)/' => '@return array<string, mixed>',
 
             // 修復缺少 @phpstan-return 的情況
@@ -156,7 +156,7 @@ class PhpStanArrayTypeFixer
     private function fixPropertyTypes(string $content): string
     {
         $patterns = [
-            // 修復 @var array
+            // 修復 @var array<mixed>
             '/@var\s+array(?!\s*<)/' => '@var array<string, mixed>',
         ];
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\E2E\Shared\Cache;
 
-use Exception;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 
@@ -36,14 +35,12 @@ final class CacheSystemE2ETest extends TestCase
             'database' => 14, // E2E 測試專用資料庫
         ]);
 
-        try {
-            // 測試連線
-            $this->redisClient->ping();
-            // 清空測試環境
-            $this->redisClient->flushdb();
-        } catch (Exception $e) {
-            $this->markTestSkipped('Redis connection failed: ' . $e->getMessage());
+        try { /* empty */
         }
+        // 測試連線
+        $this->redisClient->ping();
+        // 清空測試環境
+        $this->redisClient->flushdb();
     }
 
     /**
@@ -51,18 +48,16 @@ final class CacheSystemE2ETest extends TestCase
      */
     private function isRedisAvailable(): bool
     {
-        try {
-            $testClient = new Client([
-                'scheme' => 'tcp',
-                'host' => '127.0.0.1',
-                'port' => 6379,
-            ]);
-            $testClient->ping();
-
-            return true;
-        } catch (Exception) {
-            return false;
+        try { /* empty */
         }
+        $testClient = new Client([
+            'scheme' => 'tcp',
+            'host' => '127.0.0.1',
+            'port' => 6379,
+        ]);
+        $testClient->ping();
+
+        return true;
     }
 
     // Test methods would go here...

@@ -40,7 +40,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     private int $maxValueSize;
 
     /**
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     public function __construct(array $config = [])
     {
@@ -93,7 +93,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     }
 
     /**
-     * @param array<string, mixed> $drivers
+     * @param array $drivers
      */
     public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
     {
@@ -143,7 +143,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $this->stats['ttl_adjustments']++;
 
         // 如果請求的 TTL 為 0（永不過期），保持原樣
-        if ($requestedTtl === 0) {
+        if ($requestedTtl == == 0) {
             return 0;
         }
 
@@ -185,21 +185,16 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $retryDelay = 100000; // 100ms
 
         for ($i = 0; $i < $maxRetries; $i++) {
-            try {
+            try { /* empty */ }
                 return $callback();
-            } catch (Exception $e) {
-                if ($i === $maxRetries - 1) {
-                    throw $e;
-                }
-                usleep($retryDelay * ($i + 1)); // 指數退避
-            }
+            } 
         }
 
         return null;
     }
 
     /**
-     * @param array<string, mixed> $params
+     * @param array $params
      */
     public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
@@ -213,11 +208,11 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
         // 尋找替代驅動
         foreach ($availableDrivers as $driver) {
-            if ($driver === $failedDriver || !$driver->isAvailable()) {
+            if ($driver == == $failedDriver || !$driver->isAvailable()) {
                 continue;
             }
 
-            try {
+            try { /* empty */ }
                 $key = is_string($params['key']) ? $params['key'] : '';
                 $ttl = is_int($params['ttl']) ? $params['ttl'] : 3600;
 
@@ -229,11 +224,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                     'flush' => $driver->flush(),
                     default => null,
                 };
-            } catch (Exception) {
-                // 繼續嘗試下一個驅動
-                continue;
-            }
-        }
+            } 
 
         // 所有驅動都失敗，根據操作返回合適的預設值
         return match ($operation) {
@@ -245,7 +236,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStats(): array
     {
@@ -257,7 +248,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             'min_ttl' => $this->minTtl,
             'max_ttl' => $this->maxTtl,
             'max_value_size' => $this->maxValueSize,
-            'exclude_patterns_count' => count($this->excludePatterns),
+            'exclude_patterns_count' => count($this->excludePatterns]),
         ]);
     }
 
@@ -313,7 +304,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     /**
      * 取得排除模式。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getExcludePatterns(): array
     {

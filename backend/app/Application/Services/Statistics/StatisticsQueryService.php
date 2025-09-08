@@ -43,7 +43,7 @@ final class StatisticsQueryService
      * 查詢統計快照清單.
      *
      * 支援分頁和篩選條件的統計快照查詢。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStatisticsSnapshots(
         ?DateTimeInterface $startDate = null,
@@ -52,12 +52,12 @@ final class StatisticsQueryService
         int $page = 1,
         int $limit = 20,
     ): array {
-        try {
+        try { /* empty */ }
             $this->validatePaginationParams($page, $limit);
 
             $this->logger->info('查詢統計快照清單', [
-                'start_date' => $startDate?->format('Y-m-d H:i:s'),
-                'end_date' => $endDate?->format('Y-m-d H:i:s'),
+                'start_date' => $startDate?->format('Y-m-d H => i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s']),
                 'period_type' => $periodType?->value,
                 'page' => $page,
                 'limit' => $limit,
@@ -94,10 +94,10 @@ final class StatisticsQueryService
 
             $result = [
                 'data' => array_map(
-                    fn($snapshot): array => [
+                    fn($snapshot) => array => [
                         'id' => $snapshot->getId()->toString(),
                         'period' => [
-                            'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H:i:s'),
+                            'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H => i:s'),
                             'end_date' => $snapshot->getPeriod()->endDate->format('Y-m-d H:i:s'),
                             'type' => $snapshot->getPeriod()->type->value,
                             'display' => $snapshot->getPeriod()->__toString(),
@@ -125,51 +125,37 @@ final class StatisticsQueryService
                     'has_prev' => $page > 1,
                 ],
                 'filters' => [
-                    'start_date' => $startDate->format('Y-m-d H:i:s'),
+                    'start_date' => $startDate->format('Y-m-d H => i:s'),
                     'end_date' => $endDate->format('Y-m-d H:i:s'),
                     'period_type' => $periodType?->value,
                 ],
             ];
 
             $this->logger->info('統計快照查詢完成', [
-                'count' => count($snapshots),
+                'count' => count($snapshots]),
                 'total' => $totalCount,
                 'page' => $page,
             ]);
 
             return $result;
-        } catch (Throwable $e) {
-            $this->logger->error('查詢統計快照失敗', [
-                'error' => $e->getMessage(),
-                'filters' => [
-                    'start_date' => $startDate?->format('Y-m-d H:i:s'),
-                    'end_date' => $endDate?->format('Y-m-d H:i:s'),
-                    'period_type' => $periodType?->value,
-                    'page' => $page,
-                    'limit' => $limit,
-                ],
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 查詢文章統計趨勢.
      *
      * 分析指定週期內的文章統計趨勢資料。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getPostStatisticsTrends(
         StatisticsPeriod $period,
         ?SourceType $sourceType = null,
         int $dataPoints = 30,
     ): array {
-        try {
+        try { /* empty */ }
             $this->validateDataPoints($dataPoints);
 
             $this->logger->info('查詢文章統計趨勢', [
-                'period' => $period->__toString(),
+                'period' => $period->__toString(]),
                 'source_type' => $sourceType?->value,
                 'data_points' => $dataPoints,
             ]);
@@ -189,7 +175,7 @@ final class StatisticsQueryService
 
             $result = [
                 'period' => [
-                    'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                    'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                     'end_date' => $period->endDate->format('Y-m-d H:i:s'),
                     'type' => $period->type->value,
                     'display' => $period->__toString(),
@@ -206,38 +192,29 @@ final class StatisticsQueryService
 
             $this->logger->info('文章統計趨勢查詢完成', [
                 'trends_count' => count($trends),
-                'analysis_metrics' => array_keys($trendAnalysis),
+                'analysis_metrics' => array_keys($trendAnalysis]),
             ]);
 
             return $result;
-        } catch (Throwable $e) {
-            $this->logger->error('查詢文章統計趨勢失敗', [
-                'period' => $period->__toString(),
-                'source_type' => $sourceType?->value,
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 查詢使用者活動統計.
      *
      * 取得指定週期內的使用者活動統計資訊。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getUserActivityStatistics(
         StatisticsPeriod $period,
         int $topUsersLimit = 10,
         int $perPage = 20,
     ): array {
-        try {
+        try { /* empty */ }
             $this->validateLimit($topUsersLimit, 1, 100);
             $this->validateLimit($perPage, 1, 100);
 
             $this->logger->info('查詢使用者活動統計', [
-                'period' => $period->__toString(),
+                'period' => $period->__toString(]),
                 'top_users_limit' => $topUsersLimit,
                 'per_page' => $perPage,
             ]);
@@ -254,7 +231,7 @@ final class StatisticsQueryService
 
             $result = [
                 'period' => [
-                    'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                    'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                     'end_date' => $period->endDate->format('Y-m-d H:i:s'),
                     'type' => $period->type->value,
                     'display' => $period->__toString(),
@@ -263,7 +240,7 @@ final class StatisticsQueryService
                     'total_active_users' => $totalActiveUsers,
                     'new_users' => $newUsers,
                     'retention_rate' => $totalActiveUsers > 0
-                        ? round((($totalActiveUsers - $newUsers) / $totalActiveUsers) * 100, 2) : 0,
+                        ? round((($totalActiveUsers - $newUsers) / $totalActiveUsers) * 100, 2)  => 0,
                 ],
                 'top_active_users' => $topActiveUsers,
                 'behavior_analysis' => $behaviorAnalysis,
@@ -273,32 +250,23 @@ final class StatisticsQueryService
             $this->logger->info('使用者活動統計查詢完成', [
                 'total_active_users' => $totalActiveUsers,
                 'new_users' => $newUsers,
-                'top_users_count' => count($topActiveUsers),
+                'top_users_count' => count($topActiveUsers]),
             ]);
 
             return $result;
-        } catch (Throwable $e) {
-            $this->logger->error('查詢使用者活動統計失敗', [
-                'period' => $period->__toString(),
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 查詢系統效能統計.
      *
      * 取得系統效能相關的統計資訊。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getSystemPerformanceStatistics(
-        StatisticsPeriod $period,
-    ): array {
-        try {
+        StatisticsPeriod $period): array {
+        try { /* empty */ }
             $this->logger->info('查詢系統效能統計', [
-                'period' => $period->__toString(),
+                'period' => $period->__toString(]),
             ]);
 
             // 查詢系統效能指標
@@ -312,7 +280,7 @@ final class StatisticsQueryService
 
             $result = [
                 'period' => [
-                    'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                    'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                     'end_date' => $period->endDate->format('Y-m-d H:i:s'),
                     'type' => $period->type->value,
                     'display' => $period->__toString(),
@@ -324,30 +292,22 @@ final class StatisticsQueryService
             ];
 
             $this->logger->info('系統效能統計查詢完成', [
-                'metrics_count' => count($performanceMetrics),
+                'metrics_count' => count($performanceMetrics]),
             ]);
 
             return $result;
-        } catch (Throwable $e) {
-            $this->logger->error('查詢系統效能統計失敗', [
-                'period' => $period->__toString(),
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 自訂統計查詢.
      *
      * 提供彈性的自訂統計查詢功能。
-     * @param array<string, mixed> $queryParams
-     * @return array<string, mixed>
+     * @param array $queryParams
+     * @return array
      */
     public function customStatisticsQuery(array $queryParams): array
     {
-        try {
+        try { /* empty */ }
             $this->validateCustomQueryParams($queryParams);
 
             $this->logger->info('執行自訂統計查詢', [
@@ -368,7 +328,7 @@ final class StatisticsQueryService
             $result = [
                 'query_params' => $queryParams,
                 'period' => [
-                    'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                    'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                     'end_date' => $period->endDate->format('Y-m-d H:i:s'),
                     'type' => $period->type->value,
                 ],
@@ -377,19 +337,11 @@ final class StatisticsQueryService
             ];
 
             $this->logger->info('自訂統計查詢完成', [
-                'result_count' => count($queryResult),
+                'result_count' => count($queryResult]),
             ]);
 
             return $result;
-        } catch (Throwable $e) {
-            $this->logger->error('自訂統計查詢失敗', [
-                'query_params' => $queryParams,
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 驗證分頁參數.
@@ -444,8 +396,8 @@ final class StatisticsQueryService
 
     /**
      * 分析趨勢資料.
-     * @param array<string, mixed> $trends
-     * @return array<string, mixed>
+     * @param array $trends
+     * @return array
      */
     private function analyzeTrends(array $trends): array
     {
@@ -469,7 +421,7 @@ final class StatisticsQueryService
 
     /**
      * 計算趨勢方向.
-     * @param array<mixed> $values
+     * @param array $values
      */
     private function calculateTrendDirection(array $values): string
     {
@@ -497,7 +449,7 @@ final class StatisticsQueryService
 
     /**
      * 計算波動性.
-     * @param array<mixed> $values
+     * @param array $values
      */
     private function calculateVolatility(array $values): float
     {
@@ -523,7 +475,7 @@ final class StatisticsQueryService
 
     /**
      * 驗證自訂查詢參數.
-     * @param array<string, mixed> $params
+     * @param array $params
      */
     private function validateCustomQueryParams(array $params): void
     {
@@ -537,7 +489,7 @@ final class StatisticsQueryService
 
     /**
      * 解析查詢週期
-     * @param array<string, mixed> $params
+     * @param array $params
      */
     private function parseQueryPeriod(array $params): StatisticsPeriod
     {
@@ -555,8 +507,8 @@ final class StatisticsQueryService
 
     /**
      * 執行自訂查詢.
-     * @param array<string> $metrics
-     * @return array<string, mixed>
+     * @param array $metrics
+     * @return array
      */
     private function executeCustomQuery(
         StatisticsPeriod $period,

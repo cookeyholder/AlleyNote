@@ -61,7 +61,7 @@ class AdvancedConservativePHPStanFixer
             $content = file_get_contents($file);
             $originalContent = $content;
 
-            // 修復 @return array 缺少泛型
+            // 修復 @return array<mixed> 缺少泛型
             $content = preg_replace(
                 '/@return\s+array(\s|$)/',
                 '@return array<string, mixed>$1',
@@ -75,7 +75,7 @@ class AdvancedConservativePHPStanFixer
                 $content
             );
 
-            // 修復 @var array 缺少泛型
+            // 修復 @var array<mixed> 缺少泛型
             $content = preg_replace(
                 '/@var\s+array(\s|$)/',
                 '@var array<string, mixed>$1',

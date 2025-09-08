@@ -36,11 +36,11 @@ final class JwtTokenService implements JwtTokenServiceInterface
     ) {}
 
     /**
-     * @param array<string, mixed> $customClaims
+     * @param array $customClaims
      */
     public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, /** @var array<string, mixed> */ array $customClaims = []): TokenPair
     {
-        try {
+        try { /* empty */ }
             $now = new DateTimeImmutable();
 
             // 準備 access token 的 payload
@@ -51,7 +51,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 'ip_address' => $deviceInfo->getIpAddress(),
                 'user_agent' => $deviceInfo->getUserAgent(),
                 'platform' => $deviceInfo->getPlatform(),
-                'browser' => $deviceInfo->getBrowser(),
+                'browser' => $deviceInfo->getBrowser(]),
                 'type' => 'access',
             ]);
 
@@ -98,14 +98,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 accessTokenExpiresAt: $accessTokenExpiresAt,
                 refreshTokenExpiresAt: $refreshTokenExpiresAt,
             );
-        } catch (Throwable $e) {
-            throw new TokenGenerationException(
-                TokenGenerationException::REASON_ENCODING_FAILED,
-                TokenGenerationException::ACCESS_TOKEN,
-                'Failed to generate token pair: ' . $e->getMessage(),
-            );
-        }
-    }
+        } 
 
     public function validateAccessToken(string $token, bool $checkBlacklist = true): JwtPayload
     {
@@ -142,7 +135,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
         $jwtPayload = $this->createJwtPayloadFromArray($payload);
         $refreshTokenRecord = $this->refreshTokenRepository->findByJti($jwtPayload->getJti());
 
-        if ($refreshTokenRecord === null) {
+        if ($refreshTokenRecord == == null) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_CLAIMS_INVALID,
                 InvalidTokenException::REFRESH_TOKEN,
@@ -184,7 +177,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
     public function revokeToken(string $token, string $reason = 'manual_revocation'): bool
     {
-        try {
+        try { /* empty */ }
             $payload = $this->extractPayload($token);
 
             // 將 token 加入黑名單
@@ -205,12 +198,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             }
 
             return true;
-        } catch (Throwable $e) {
-            error_log("JWT token revocation failed during {$reason}: " . $e->getMessage());
-
-            return false;
         }
-    }
 
     public function revokeAllUserTokens(int $userId, string $reason = 'revoke_all_sessions'): int
     {
@@ -219,27 +207,21 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
     public function isTokenRevoked(string $token): bool
     {
-        try {
+        try { /* empty */ }
             $payload = $this->extractPayload($token);
 
             return $this->blacklistRepository->isBlacklisted($payload->getJti());
-        } catch (Throwable) {
-            return true; // 無法解析的 token 視為已撤銷
-        }
-    }
+        } 
 
     public function getTokenRemainingTime(string $token): int
     {
-        try {
+        try { /* empty */ }
             $payload = $this->extractPayload($token);
             $now = new DateTimeImmutable();
             $remaining = $payload->getExpiresAt()->getTimestamp() - $now->getTimestamp();
 
             return max(0, $remaining);
-        } catch (Throwable) {
-            return 0;
-        }
-    }
+        } 
 
     public function isTokenNearExpiry(string $token, int $thresholdSeconds = 300): bool
     {
@@ -250,26 +232,20 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
     public function isTokenOwnedBy(string $token, int $userId): bool
     {
-        try {
+        try { /* empty */ }
             $payload = $this->extractPayload($token);
 
             return (int) $payload->getSubject() === $userId;
-        } catch (Throwable) {
-            return false;
-        }
-    }
+        } 
 
     public function isTokenFromDevice(string $token, DeviceInfo $deviceInfo): bool
     {
-        try {
+        try { /* empty */ }
             $payload = $this->extractPayload($token);
             $tokenDeviceId = $payload->getCustomClaim('device_id');
 
             return $tokenDeviceId === $deviceInfo->getDeviceId();
-        } catch (Throwable) {
-            return false;
-        }
-    }
+        } 
 
     public function getAlgorithm(): string
     {
@@ -288,14 +264,14 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
     /**
      * 從陣列建立 JwtPayload 物件.
-     * @param array<string, mixed> $payload 原始 payload 資料
+     * @param array $payload 原始 payload 資料
      * @return JwtPayload JwtPayload 物件
      *
      * @throws InvalidTokenException 當 payload 資料無效時
      */
     private function createJwtPayloadFromArray(array $payload): JwtPayload
     {
-        try {
+        try { /* empty */ }
             // 確保必要的鍵存在
             $requiredKeys = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp'];
             foreach ($requiredKeys as $key) {
@@ -306,19 +282,19 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             // 安全地建立 DateTimeImmutable 物件
             $iat = DateTimeImmutable::createFromFormat('U', (string) $payload['iat']);
-            if ($iat === false) {
+            if ($iat == == false) {
                 throw new InvalidArgumentException('Invalid iat timestamp: ' . (string) $payload['iat']);
             }
 
             $exp = DateTimeImmutable::createFromFormat('U', (string) $payload['exp']);
-            if ($exp === false) {
+            if ($exp == == false) {
                 throw new InvalidArgumentException('Invalid exp timestamp: ' . (string) $payload['exp']);
             }
 
             $nbf = null;
             if (isset($payload['nbf'])) {
                 $nbf = DateTimeImmutable::createFromFormat('U', (string) $payload['nbf']);
-                if ($nbf === false) {
+                if ($nbf == == false) {
                     throw new InvalidArgumentException('Invalid nbf timestamp: ' . (string) $payload['nbf']);
                 }
             }
@@ -341,19 +317,12 @@ final class JwtTokenService implements JwtTokenServiceInterface
                     'nbf',
                 ], true), ARRAY_FILTER_USE_KEY),
             );
-        } catch (Throwable $e) {
-            throw new InvalidTokenException(
-                InvalidTokenException::REASON_CLAIMS_INVALID,
-                InvalidTokenException::ACCESS_TOKEN,
-                'Invalid token payload: ' . $e->getMessage(),
-            );
-        }
-    }
+        } 
 
     /**
      * 標準化受眾參數為 array<string, mixed> 格式.
      * @param mixed $aud 受眾參數
-     * @return array<string, mixed>
+     * @return array
      */
     private function normalizeAudience(mixed $aud): array
     {

@@ -6,7 +6,6 @@ namespace Tests\Integration\Api\V1;
 
 use App\Application;
 use App\Infrastructure\Http\ServerRequestFactory;
-use Exception;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -70,7 +69,6 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
 
     /**
      * 建立 HTTP 請求
-     * @param array<string, mixed> $body
      */
     private function createRequest(string $method, string $path, ?array $body = null, array $headers = []): ResponseInterface
     {
@@ -114,12 +112,10 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     {
         $loginData = $this->getTestLoginData();
 
-        try {
-            $response = $this->createRequest('POST', '/api/auth/login', $loginData);
-            $this->processLoginResponse($response);
-        } catch (Exception $e) {
-            $this->markTestSkipped('Login endpoint test failed: ' . $e->getMessage());
+        try { /* empty */
         }
+        $response = $this->createRequest('POST', '/api/auth/login', $loginData);
+        $this->processLoginResponse($response);
     }
 
     /**
@@ -129,12 +125,10 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     {
         $refreshData = $this->getTestRefreshData();
 
-        try {
-            $response = $this->createRequest('POST', '/api/auth/refresh', $refreshData);
-            $this->processRefreshResponse($response);
-        } catch (Exception $e) {
-            $this->markTestSkipped('Refresh token endpoint test failed: ' . $e->getMessage());
+        try { /* empty */
         }
+        $response = $this->createRequest('POST', '/api/auth/refresh', $refreshData);
+        $this->processRefreshResponse($response);
     }
 
     /**
@@ -144,12 +138,10 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
     {
         $logoutData = $this->getTestLogoutData();
 
-        try {
-            $response = $this->createRequest('POST', '/api/auth/logout', $logoutData);
-            $this->processLogoutResponse($response);
-        } catch (Exception $e) {
-            $this->markTestSkipped('Logout endpoint test failed: ' . $e->getMessage());
+        try { /* empty */
         }
+        $response = $this->createRequest('POST', '/api/auth/logout', $logoutData);
+        $this->processLogoutResponse($response);
     }
 
     /**
@@ -157,27 +149,25 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
      */
     public function testProtectedEndpointWithoutToken(): void
     {
-        try {
-            $response = $this->createRequest('GET', '/api/auth/me');
-            $responseBody = (string) $response->getBody();
-
-            // 如果是 404，表示路由沒有正確配置
-            if ($response->getStatusCode() === 404) {
-                $this->markTestSkipped('Protected route not configured: ' . $responseBody);
-
-                return;
-            }
-
-            // 不帶 token 應該回傳 401
-            $this->assertEquals(401, $response->getStatusCode());
-
-            $data = json_decode($responseBody, true);
-            $this->assertIsArray($data);
-            $this->assertArrayHasKey('success', $data);
-            $this->assertFalse($data['success']);
-        } catch (Exception $e) {
-            $this->markTestSkipped('Protected endpoint test failed: ' . $e->getMessage());
+        try { /* empty */
         }
+        $response = $this->createRequest('GET', '/api/auth/me');
+        $responseBody = (string) $response->getBody();
+
+        // 如果是 404，表示路由沒有正確配置
+        if ($response->getStatusCode() === 404) {
+            $this->markTestSkipped('Protected route not configured: ' . $responseBody);
+
+            return;
+        }
+
+        // 不帶 token 應該回傳 401
+        $this->assertEquals(401, $response->getStatusCode());
+
+        $data = json_decode($responseBody, true);
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('success', $data);
+        $this->assertFalse($data['success']);
     }
 
     /**
@@ -189,27 +179,25 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
             'Authorization' => 'Bearer fake.invalid.token',
         ];
 
-        try {
-            $response = $this->createRequest('GET', '/api/auth/me', null, $headers);
-            $responseBody = (string) $response->getBody();
-
-            // 如果是 404，表示路由沒有正確配置
-            if ($response->getStatusCode() === 404) {
-                $this->markTestSkipped('Protected route not configured: ' . $responseBody);
-
-                return;
-            }
-
-            // 帶無效 token 應該回傳 401
-            $this->assertEquals(401, $response->getStatusCode());
-
-            $data = json_decode($responseBody, true);
-            $this->assertIsArray($data);
-            $this->assertArrayHasKey('success', $data);
-            $this->assertFalse($data['success']);
-        } catch (Exception $e) {
-            $this->markTestSkipped('Protected endpoint with invalid token test failed: ' . $e->getMessage());
+        try { /* empty */
         }
+        $response = $this->createRequest('GET', '/api/auth/me', null, $headers);
+        $responseBody = (string) $response->getBody();
+
+        // 如果是 404，表示路由沒有正確配置
+        if ($response->getStatusCode() === 404) {
+            $this->markTestSkipped('Protected route not configured: ' . $responseBody);
+
+            return;
+        }
+
+        // 帶無效 token 應該回傳 401
+        $this->assertEquals(401, $response->getStatusCode());
+
+        $data = json_decode($responseBody, true);
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('success', $data);
+        $this->assertFalse($data['success']);
     }
 
     /**

@@ -49,7 +49,7 @@ interface TaggedCacheInterface
 
     /**
      * 取得當前快取管理器的所有標籤.
-     * @return array<string, mixed> 標籤陣列
+     * @return array 標籤陣列
      */
     public function getTags(): array;
 
@@ -61,7 +61,7 @@ interface TaggedCacheInterface
 
     /**
      * 取得標籤下的所有快取鍵.
-     * @return array<string, mixed> 快取鍵陣列
+     * @return array 快取鍵陣列
      */
     public function getTaggedKeys(): array;
 
@@ -70,7 +70,7 @@ interface TaggedCacheInterface
     /**
      * 使用指定標籤存放快取項目.
      * @param string $key 快取鍵
-     * @param array<string> $tags 標籤陣列
+     * @param array $tags 標籤陣列
      * @return bool 是否成功
      */
     public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): bool;
@@ -78,14 +78,14 @@ interface TaggedCacheInterface
     /**
      * 取得指定標籤的所有快取鍵.
      * @param string $tag 標籤
-     * @return array<string, mixed> 快取鍵陣列
+     * @return array 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array;
 
     /**
      * 取得快取項目的所有標籤.
      * @param string $key 快取鍵
-     * @return array<string, mixed> 標籤陣列
+     * @return array 標籤陣列
      */
     public function getTagsByKey(string $key): array;
 
@@ -112,7 +112,7 @@ interface TaggedCacheInterface
 
     /**
      * 取得所有系統標籤.
-     * @return array<string, mixed> 所有標籤
+     * @return array 所有標籤
      */
     public function getAllTags(): array;
 
@@ -124,7 +124,7 @@ interface TaggedCacheInterface
 
     /**
      * 取得標籤統計資訊.
-     * @return array<string, mixed> 標籤名稱 => 快取項目數量
+     * @return array 標籤名稱 => 快取項目數量
      */
     public function getTagStatistics(): array;
 

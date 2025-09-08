@@ -64,7 +64,6 @@ enum ActivityStatus: string
 
     /**
      * 取得所有可用狀態.
-     * @return array<string, mixed>
      */
     public static function getAvailableStatuses(): array
     {

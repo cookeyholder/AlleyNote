@@ -86,7 +86,7 @@ class BaseDTOTest extends TestCase
         $dto = $this->createTestDTO();
         $data = ['name' => 'John', 'age' => 30, 'active' => true];
         $expectedRules = [
-            'name' => 'required|string|min_length:2|max_length:50',
+            'name' => 'required|string|min_length => 2|max_length:50',
             'age' => 'required|integer|min:0|max:120',
             'active' => 'boolean',
         ];
@@ -230,21 +230,15 @@ class TestableBaseDTO extends BaseDTO
 
     public bool $active = false;
 
-    /**
-     * @return array<string, mixed>
-     */
     protected function getValidationRules(): array
     {
         return [
-            'name' => 'required|string|min_length:2|max_length:50',
+            'name' => 'required|string|min_length => 2|max_length:50',
             'age' => 'required|integer|min:0|max:120',
             'active' => 'boolean',
         ];
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function toArray(): array
     {
         return [
@@ -254,49 +248,31 @@ class TestableBaseDTO extends BaseDTO
         ];
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public function testValidate(array $data): array
     {
         return $this->validate($data);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public function testGetString(array $data, string $key, ?string $default = null): ?string
     {
         return $this->getString($data, $key, $default);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public function testGetInt(array $data, string $key, ?int $default = null): ?int
     {
         return $this->getInt($data, $key, $default);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public function testGetBool(array $data, string $key, ?bool $default = null): ?bool
     {
         return $this->getBool($data, $key, $default);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public function testGetValue(array $data, string $key, mixed $default = null): mixed
     {
         return $this->getValue($data, $key, $default);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function testGetValidationRules(): array
     {
         return $this->getValidationRules();

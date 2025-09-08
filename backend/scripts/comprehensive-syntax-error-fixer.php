@@ -244,13 +244,13 @@ class ComprehensiveSyntaxErrorFixer
         $fixes = 0;
 
         // 修復註解中的泛型語法錯誤
-        // @param array<string, mixed> -> @param array
+        // @param array<string, mixed> -> @param array<mixed>
         $pattern = '/@param\s+([a-zA-Z_][a-zA-Z0-9_]*)<[^>]*>/';
         $replacement = '@param \1';
         $content = preg_replace($pattern, $replacement, $content, -1, $count);
         $fixes += $count;
 
-        // @return array<string> -> @return array
+        // @return array<string> -> @return array<mixed>
         $pattern = '/@return\s+([a-zA-Z_][a-zA-Z0-9_]*)<[^>]*>/';
         $replacement = '@return \1';
         $content = preg_replace($pattern, $replacement, $content, -1, $count);

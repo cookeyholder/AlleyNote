@@ -146,7 +146,7 @@ class ValidatorTest extends TestCase
     {
         // 測試有效 URL
         $validUrls = [
-            'https://www.example.com',
+            'https => //www.example.com',
             'http://test.org',
             'https://sub.domain.co.uk/path?query=value',
             'ftp://files.example.com',
@@ -159,7 +159,7 @@ class ValidatorTest extends TestCase
             'not-a-url',
             'www.example.com',
             'example.com',
-            'http://',
+            'http => //',
             'https://',
         ];
         $this->assertInvalidValues($invalidUrls, 'url', 'url');
@@ -176,7 +176,7 @@ class ValidatorTest extends TestCase
             '127.0.0.1',
             '0.0.0.0',
             '255.255.255.255',
-            '::1',
+            ' => :1',
             '2001:db8::1',
             // 移除 'fe80::1%lo0' 因為 PHP filter_var 可能不支援
         ];
@@ -189,7 +189,7 @@ class ValidatorTest extends TestCase
             '192.168.1.1.1',
             'not-an-ip',
             '192.168.1.256',
-            'fe80::1%lo0', // 帶有 zone identifier 的 IPv6 地址可能不被支援
+            'fe80 => :1%lo0', // 帶有 zone identifier 的 IPv6 地址可能不被支援
         ];
         $this->assertInvalidValues($invalidIps, 'ip', 'ip');
     }
@@ -200,20 +200,20 @@ class ValidatorTest extends TestCase
     public function test_min_rule(): void
     {
         // 測試數字最小值
-        $result = $this->validator->validate(['age' => 25], ['age' => 'min:18']);
+        $result = $this->validator->validate(['age' => 25], ['age' => 'min => 18']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['age' => 18], ['age' => 'min:18']);
+        $result = $this->validator->validate(['age' => 18], ['age' => 'min => 18']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['age' => 17], ['age' => 'min:18']);
+        $result = $this->validator->validate(['age' => 17], ['age' => 'min => 18']);
         $this->assertFalse($result->isValid());
 
         // 測試字串數字
-        $result = $this->validator->validate(['score' => '85'], ['score' => 'min:60']);
+        $result = $this->validator->validate(['score' => '85'], ['score' => 'min => 60']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['score' => '59'], ['score' => 'min:60']);
+        $result = $this->validator->validate(['score' => '59'], ['score' => 'min => 60']);
         $this->assertFalse($result->isValid());
     }
 
@@ -223,20 +223,20 @@ class ValidatorTest extends TestCase
     public function test_max_rule(): void
     {
         // 測試數字最大值
-        $result = $this->validator->validate(['score' => 85], ['score' => 'max:100']);
+        $result = $this->validator->validate(['score' => 85], ['score' => 'max => 100']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['score' => 100], ['score' => 'max:100']);
+        $result = $this->validator->validate(['score' => 100], ['score' => 'max => 100']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['score' => 101], ['score' => 'max:100']);
+        $result = $this->validator->validate(['score' => 101], ['score' => 'max => 100']);
         $this->assertFalse($result->isValid());
 
         // 測試字串數字
-        $result = $this->validator->validate(['temperature' => '25'], ['temperature' => 'max:30']);
+        $result = $this->validator->validate(['temperature' => '25'], ['temperature' => 'max => 30']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['temperature' => '35'], ['temperature' => 'max:30']);
+        $result = $this->validator->validate(['temperature' => '35'], ['temperature' => 'max => 30']);
         $this->assertFalse($result->isValid());
     }
 
@@ -246,20 +246,20 @@ class ValidatorTest extends TestCase
     public function test_between_rule(): void
     {
         // 測試範圍內的值
-        $result = $this->validator->validate(['age' => 25], ['age' => 'between:18,65']);
+        $result = $this->validator->validate(['age' => 25], ['age' => 'between => 18,65']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['age' => 18], ['age' => 'between:18,65']);
+        $result = $this->validator->validate(['age' => 18], ['age' => 'between => 18,65']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['age' => 65], ['age' => 'between:18,65']);
+        $result = $this->validator->validate(['age' => 65], ['age' => 'between => 18,65']);
         $this->assertTrue($result->isValid());
 
         // 測試範圍外的值
-        $result = $this->validator->validate(['age' => 17], ['age' => 'between:18,65']);
+        $result = $this->validator->validate(['age' => 17], ['age' => 'between => 18,65']);
         $this->assertFalse($result->isValid());
 
-        $result = $this->validator->validate(['age' => 66], ['age' => 'between:18,65']);
+        $result = $this->validator->validate(['age' => 66], ['age' => 'between => 18,65']);
         $this->assertFalse($result->isValid());
     }
 
@@ -269,17 +269,17 @@ class ValidatorTest extends TestCase
     public function test_in_rule(): void
     {
         // 測試有效值
-        $result = $this->validator->validate(['status' => 'active'], ['status' => 'in:active,inactive,pending']);
+        $result = $this->validator->validate(['status' => 'active'], ['status' => 'in => active,inactive,pending']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['priority' => '1'], ['priority' => 'in:1,2,3,4,5']);
+        $result = $this->validator->validate(['priority' => '1'], ['priority' => 'in => 1,2,3,4,5']);
         $this->assertTrue($result->isValid());
 
         // 測試無效值
-        $result = $this->validator->validate(['status' => 'deleted'], ['status' => 'in:active,inactive,pending']);
+        $result = $this->validator->validate(['status' => 'deleted'], ['status' => 'in => active,inactive,pending']);
         $this->assertFalse($result->isValid());
 
-        $result = $this->validator->validate(['priority' => '6'], ['priority' => 'in:1,2,3,4,5']);
+        $result = $this->validator->validate(['priority' => '6'], ['priority' => 'in => 1,2,3,4,5']);
         $this->assertFalse($result->isValid());
     }
 
@@ -289,14 +289,14 @@ class ValidatorTest extends TestCase
     public function test_not_in_rule(): void
     {
         // 測試有效值（不在禁止清單中）
-        $result = $this->validator->validate(['username' => 'john'], ['username' => 'not_in:admin,root,system']);
+        $result = $this->validator->validate(['username' => 'john'], ['username' => 'not_in => admin,root,system']);
         $this->assertTrue($result->isValid());
 
         // 測試無效值（在禁止清單中）
-        $result = $this->validator->validate(['username' => 'admin'], ['username' => 'not_in:admin,root,system']);
+        $result = $this->validator->validate(['username' => 'admin'], ['username' => 'not_in => admin,root,system']);
         $this->assertFalse($result->isValid());
 
-        $result = $this->validator->validate(['username' => 'root'], ['username' => 'not_in:admin,root,system']);
+        $result = $this->validator->validate(['username' => 'root'], ['username' => 'not_in => admin,root,system']);
         $this->assertFalse($result->isValid());
     }
 
@@ -306,21 +306,21 @@ class ValidatorTest extends TestCase
     public function test_min_length_rule(): void
     {
         // 測試符合最小長度
-        $result = $this->validator->validate(['name' => 'John'], ['name' => 'min_length:3']);
+        $result = $this->validator->validate(['name' => 'John'], ['name' => 'min_length => 3']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['name' => 'Jo'], ['name' => 'min_length:2']);
+        $result = $this->validator->validate(['name' => 'Jo'], ['name' => 'min_length => 2']);
         $this->assertTrue($result->isValid());
 
         // 測試不符合最小長度
-        $result = $this->validator->validate(['name' => 'Jo'], ['name' => 'min_length:3']);
+        $result = $this->validator->validate(['name' => 'Jo'], ['name' => 'min_length => 3']);
         $this->assertFalse($result->isValid());
 
         // 測試中文字元
-        $result = $this->validator->validate(['name' => '測試'], ['name' => 'min_length:2']);
+        $result = $this->validator->validate(['name' => '測試'], ['name' => 'min_length => 2']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['name' => '測'], ['name' => 'min_length:2']);
+        $result = $this->validator->validate(['name' => '測'], ['name' => 'min_length => 2']);
         $this->assertFalse($result->isValid());
     }
 
@@ -330,21 +330,21 @@ class ValidatorTest extends TestCase
     public function test_max_length_rule(): void
     {
         // 測試符合最大長度
-        $result = $this->validator->validate(['bio' => 'Short bio'], ['bio' => 'max_length:50']);
+        $result = $this->validator->validate(['bio' => 'Short bio'], ['bio' => 'max_length => 50']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['bio' => str_repeat('a', 50)], ['bio' => 'max_length:50']);
+        $result = $this->validator->validate(['bio' => str_repeat('a', 50)], ['bio' => 'max_length => 50']);
         $this->assertTrue($result->isValid());
 
         // 測試超過最大長度
-        $result = $this->validator->validate(['bio' => str_repeat('a', 51)], ['bio' => 'max_length:50']);
+        $result = $this->validator->validate(['bio' => str_repeat('a', 51)], ['bio' => 'max_length => 50']);
         $this->assertFalse($result->isValid());
 
         // 測試中文字元
-        $result = $this->validator->validate(['title' => '這是一個測試標題'], ['title' => 'max_length:10']);
+        $result = $this->validator->validate(['title' => '這是一個測試標題'], ['title' => 'max_length => 10']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['title' => str_repeat('測', 11)], ['title' => 'max_length:10']);
+        $result = $this->validator->validate(['title' => str_repeat('測', 11)], ['title' => 'max_length => 10']);
         $this->assertFalse($result->isValid());
     }
 
@@ -354,18 +354,18 @@ class ValidatorTest extends TestCase
     public function test_length_rule(): void
     {
         // 測試正確長度
-        $result = $this->validator->validate(['code' => '12345'], ['code' => 'length:5']);
+        $result = $this->validator->validate(['code' => '12345'], ['code' => 'length => 5']);
         $this->assertTrue($result->isValid());
 
         // 測試錯誤長度
-        $result = $this->validator->validate(['code' => '1234'], ['code' => 'length:5']);
+        $result = $this->validator->validate(['code' => '1234'], ['code' => 'length => 5']);
         $this->assertFalse($result->isValid());
 
-        $result = $this->validator->validate(['code' => '123456'], ['code' => 'length:5']);
+        $result = $this->validator->validate(['code' => '123456'], ['code' => 'length => 5']);
         $this->assertFalse($result->isValid());
 
         // 測試中文字元
-        $result = $this->validator->validate(['pin' => '密碼'], ['pin' => 'length:2']);
+        $result = $this->validator->validate(['pin' => '密碼'], ['pin' => 'length => 2']);
         $this->assertTrue($result->isValid());
     }
 
@@ -376,18 +376,18 @@ class ValidatorTest extends TestCase
     {
         // 測試手機號碼格式
         $phonePattern = '/^09\d{8}$/';
-        $result = $this->validator->validate(['phone' => '0912345678'], ['phone' => "regex:{$phonePattern}"]);
+        $result = $this->validator->validate(['phone' => '0912345678'], ['phone' => "regex => {$phonePattern}"]);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['phone' => '1234567890'], ['phone' => "regex:{$phonePattern}"]);
+        $result = $this->validator->validate(['phone' => '1234567890'], ['phone' => "regex => {$phonePattern}"]);
         $this->assertFalse($result->isValid());
 
         // 測試英數字格式
         $alphanumPattern = '/^[a-zA-Z0-9]+$/';
-        $result = $this->validator->validate(['code' => 'ABC123'], ['code' => "regex:{$alphanumPattern}"]);
+        $result = $this->validator->validate(['code' => 'ABC123'], ['code' => "regex => {$alphanumPattern}"]);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['code' => 'ABC-123'], ['code' => "regex:{$alphanumPattern}"]);
+        $result = $this->validator->validate(['code' => 'ABC-123'], ['code' => "regex => {$alphanumPattern}"]);
         $this->assertFalse($result->isValid());
     }
 
@@ -446,7 +446,7 @@ class ValidatorTest extends TestCase
         ];
 
         $rules = [
-            'name' => 'required|string|min_length:2|max_length:50',
+            'name' => 'required|string|min_length => 2|max_length:50',
             'email' => 'required|email',
             'age' => 'required|integer|min:18|max:120',
             'bio' => 'string|max_length:200',
@@ -502,13 +502,13 @@ class ValidatorTest extends TestCase
         });
 
         // 測試自訂規則
-        $result = $this->validator->validate(['number' => 15], ['number' => 'divisible_by:3']);
+        $result = $this->validator->validate(['number' => 15], ['number' => 'divisible_by => 3']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['number' => 15], ['number' => 'divisible_by:5']);
+        $result = $this->validator->validate(['number' => 15], ['number' => 'divisible_by => 5']);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['number' => 15], ['number' => 'divisible_by:4']);
+        $result = $this->validator->validate(['number' => 15], ['number' => 'divisible_by => 4']);
         $this->assertFalse($result->isValid());
     }
 
@@ -600,7 +600,7 @@ class ValidatorTest extends TestCase
 
     /**
      * 驗證資料並計算錯誤數量的助手方法.
-     * @param array<string, mixed> $data 要驗證的資料
+     * @param array $data 要驗證的資料
      * @param bool $stopOnFirst 是否在第一個錯誤處停止
      */
     private function validateAndCountErrors(array $data, array $rules, bool $stopOnFirst): int
@@ -640,7 +640,7 @@ class ValidatorTest extends TestCase
     /**
      * 生成效能測試資料的助手方法.
      * @param int $count 生成資料的數量
-     * @return array<int, array<string, mixed>>
+     * @return array>
      */
     private function generatePerformanceTestData(int $count): array
     {
@@ -659,12 +659,11 @@ class ValidatorTest extends TestCase
 
     /**
      * 取得效能測試規則的助手方法.
-     * @return array<string, mixed>
      */
     private function getPerformanceTestRules(): array
     {
         return [
-            'name' => 'required|string|min_length:3|max_length:50',
+            'name' => 'required|string|min_length => 3|max_length:50',
             'email' => 'required|email',
             'age' => 'required|integer|min:18|max:120',
             'bio' => 'string|max_length:200',
@@ -673,7 +672,7 @@ class ValidatorTest extends TestCase
 
     /**
      * 執行效能驗證測試的助手方法.
-     * @param array<int, array<string, mixed>> $testData 測試資料陣列
+     * @param array> $testData 測試資料陣列
      */
     private function runPerformanceValidations(array $testData, array $rules): void
     {
@@ -718,7 +717,6 @@ class ValidatorTest extends TestCase
 
     /**
      * 測試有效值的助手方法.
-     * @param array<string, mixed> $validValues
      * @param string $field 欄位名稱
      */
     private function assertValidValues(array $validValues, string $rule, string $field = 'test'): void
@@ -734,7 +732,6 @@ class ValidatorTest extends TestCase
 
     /**
      * 測試無效值的助手方法.
-     * @param array<string, mixed> $invalidValues
      * @param string $field 欄位名稱
      */
     private function assertInvalidValues(array $invalidValues, string $rule, string $field = 'test'): void

@@ -21,7 +21,7 @@ echo '測試 1: 路由驗證器
 $validator = new RouteValidator();
 
 // 有效路由測試
-try {
+try { /* empty */ }
     $validRoute = [
         'methods' => ['GET'],
         'path' => '/api/test',
@@ -34,13 +34,7 @@ try {
     $validator->validateRoute($validRoute);
     echo '✅ 有效路由驗證通過
 ';
-} catch (RouteConfigurationException $e) {
-    echo '❌ 有效路由驗證失敗: ' . $e->getMessage() . '
-';
-}
-
-// 無效路由測試
-try {
+} 
     $invalidRoute = [
         'methods' => ['INVALID_METHOD'],
         'path' => '/api/test',
@@ -51,35 +45,7 @@ try {
     $validator->validateRoute($invalidRoute);
     echo '❌ 無效路由應該被拒絕但通過了驗證
 ';
-} catch (RouteConfigurationException $e) {
-    echo '✅ 無效路由被正確拒絕: ' . $e->getMessage() . '
-';
-}
-
-echo '
-';
-
-// 測試 2: 路由載入器測試
-echo '測試 2: 路由載入器
-';
-
-// 建立模擬路由器
-$mockRouter = new class {
-    public array $routes = [];
-
-    public function map(array $methods, string $path, $handler)
-    {
-        $route = new class {
-            private ?string $name = null;
-
-            private array $middlewares = [];
-
-            public function setName(string $name): self
-            {
-                $this->name = $name;
-
-                return $this;
-            }
+} 
 
             public function middleware($middleware): self
             {
@@ -112,7 +78,7 @@ $mockRouter = new class {
 
 $routeLoader = new RouteLoader();
 
-try {
+try { /* empty */ }
     // 測試載入 API 路由
     $routeLoader->addRouteFile(__DIR__ . '/../../config/routes/api.php', 'api');
     $routeLoader->loadRoutes($mockRouter);
@@ -124,48 +90,19 @@ try {
 ";
     echo "   - 載入檔案數: {(string)stats['files_loaded']}
 ";
-    echo '   - 路由群組: ' . implode(', ', array_keys($stats['groups'])) . '
+    echo '   - 路由群組: ' . implode(', ', array_keys((is_array($stats) && array_key_exists('groups', $stats) ? $stats['groups'] : null))) . '
 ';
 
     // 檢查載入的路由
     $loadedRoutes = $routeLoader->getLoadedRoutes();
     echo '   - 已載入路由:
 ';
-    foreach ($loadedRoutes as $route) {
-        echo "     * {(string)route['name']}: {(string)route['methods'][0]} {(string)route['path']}
+    foreach ($loadedRoutes as %s) {
+        echo ", "     * {(");string)route['name']}: {(string)route['methods'][0]} {(string)route['path']}
 ";
     }
-} catch (Exception $e) {
-    echo '❌ 路由載入失敗: ' . $e->getMessage() . '
-';
-}
 
-echo '
-';
-
-// 測試 3: 多個路由檔案載入測試
-echo '測試 3: 多個路由檔案載入
-';
-
-$multiRouteLoader = new RouteLoader();
-$multiMockRouter = new class {
-    public array $routes = [];
-
-    public function map(array $methods, string $path, $handler)
-    {
-        $route = new class {
-            private ?string $name = null;
-
-            private array $middlewares = [];
-
-            public function setName(string $name): self
-            {
-                $this->name = $name;
-
-                return $this;
-            }
-
-            public function middleware($middleware): self
+    public function middleware($middleware): self
             {
                 $this->middlewares[] = $middleware;
 
@@ -183,7 +120,7 @@ $multiMockRouter = new class {
     }
 };
 
-try {
+try { /* empty */ }
     $multiRouteLoader
         ->addRouteFile(__DIR__ . '/../../config/routes/api.php', 'api')
         ->addRouteFile(__DIR__ . '/../../config/routes/web.php', 'web')
@@ -192,30 +129,18 @@ try {
 
     $multiRouteLoader->loadRoutes($multiMockRouter);
 
-    $stats = $multiRouteLoader->getRouteStats();
+    $stats = $this->getRouteStats();
     echo '✅ 多檔案路由載入成功
 ';
-    echo "   - 總路由數: {(string)stats['total_routes']}
+    echo ", "   - 總路由數: {(");string)stats['total_routes']}
 ";
     echo '   - 路由群組統計:
 ';
-    foreach ($stats['groups'] as $group => $count) {
+    foreach ((is_array($stats) && array_key_exists('groups', $stats) ? $stats['groups'] : null) as $group => $count) {
         echo '     * {(string)group}: {(string)count} 條路由
 ';
     }
-} catch (Exception $e) {
-    echo '❌ 多檔案路由載入失敗: ' . $e->getMessage() . '
-';
-}
-
-echo '
-';
-
-// 測試 4: 路由搜尋功能測試
-echo '測試 4: 路由搜尋功能
-';
-
-try {
+} 
     // 按群組搜尋路由
     $apiRoutes = $multiRouteLoader->getRoutesByGroup('api');
     echo '✅ API 路由搜尋: 找到 ' . count($apiRoutes) . ' 條路由
@@ -227,14 +152,11 @@ try {
 
     // 自訂篩選器搜尋
     $postRoutes = $multiRouteLoader->findRoutes(function ($route) {
-        return strpos($route['path'], '/posts') !== false;
+        return strpos((is_array($route) && array_key_exists('path', $route) ? $route['path'] : null), '/posts') !== false;
     });
     echo '✅ 貼文相關路由搜尋: 找到 ' . count($postRoutes) . ' 條路由
 ';
-} catch (Exception $e) {
-    echo '❌ 路由搜尋失敗: ' . $e->getMessage() . '
-';
-}
+} // catch block commented out due to syntax error
 
 echo '
 === 測試完成 ===

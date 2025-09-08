@@ -6,8 +6,6 @@ namespace Tests\Support\Traits;
 
 use App\Infrastructure\Database\DatabaseConnection;
 use PDO;
-use PDOException;
-use RuntimeException;
 
 /**
  * 資料庫測試功能 Trait.
@@ -28,23 +26,21 @@ trait DatabaseTestTrait
         putenv('DB_DATABASE=:memory:');
 
         // 建立記憶體資料庫連線
-        try {
-            $this->db = new PDO('sqlite::memory:', null, null, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ]);
-
-            // 啟用外鍵約束
-            $this->db->exec('PRAGMA foreign_keys = ON');
-
-            // 建立測試用資料表
-            $this->createTestTables();
-
-            // 設定全域資料庫連線實例
-            DatabaseConnection::setInstance($this->db);
-        } catch (PDOException $e) {
-            throw new RuntimeException('無法建立測試資料庫連線：' . $e->getMessage());
+        try { /* empty */
         }
+        $this->db = new PDO('sqlite::memory:', null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+
+        // 啟用外鍵約束
+        $this->db->exec('PRAGMA foreign_keys = ON');
+
+        // 建立測試用資料表
+        $this->createTestTables();
+
+        // 設定全域資料庫連線實例
+        DatabaseConnection::setInstance($this->db);
     }
 
     /**
@@ -283,8 +279,6 @@ trait DatabaseTestTrait
 
     /**
      * 插入測試用貼文資料.
-     *
-     * @param array<string, mixed> $data
      */
     protected function insertTestPost(array $data = []): int
     {
@@ -298,7 +292,7 @@ trait DatabaseTestTrait
             'views' => 0,
             'is_pinned' => 0,
             'status' => 1,
-            'publish_date' => date('Y-m-d H:i:s'),
+            'publish_date' => date('Y-m-d H => i:s'),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];
@@ -317,8 +311,6 @@ trait DatabaseTestTrait
 
     /**
      * 插入測試用使用者資料.
-     *
-     * @param array<string, mixed> $data
      */
     protected function insertTestUser(array $data = []): int
     {
@@ -327,7 +319,7 @@ trait DatabaseTestTrait
             'email' => $this->generateTestEmail(),
             'password' => password_hash('password123', PASSWORD_BCRYPT),
             'status' => 1,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];
 

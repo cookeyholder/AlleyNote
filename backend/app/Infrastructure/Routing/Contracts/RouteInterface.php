@@ -87,7 +87,7 @@ interface RouteInterface
 
     /**
      * 為路由生成 URL.
-     * @param array<string, scalar> $parameters 路由參數
+     * @param array $parameters 路由參數
      * @return string 生成的 URL
      * @throws InvalidArgumentException 當參數無效時
      */
@@ -96,13 +96,13 @@ interface RouteInterface
     /**
      * 從路徑中提取參數.
      * @param string $path URI 路徑
-     * @return array<string, mixed> 提取的參數
+     * @return array 提取的參數
      */
     public function extractParameters(string $path): array;
 
     /**
      * 克隆路由並設定新的屬性.
-     * @param array<string, mixed> $attributes 新的屬性
+     * @param array $attributes 新的屬性
      */
     public function withAttributes(array $attributes): self;
 }

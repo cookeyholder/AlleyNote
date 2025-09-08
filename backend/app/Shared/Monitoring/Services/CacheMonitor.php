@@ -38,7 +38,7 @@ class CacheMonitor implements CacheMonitorInterface
     private array $config;
 
     /**
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     public function __construct(?LoggerInterface $logger = null, /** @var array<string, mixed> */ array $config = [])
     {
@@ -50,7 +50,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @param array<string, mixed> $context
+     * @param array $context
      */
     public function recordOperation(
         string $operation,
@@ -141,7 +141,6 @@ class CacheMonitor implements CacheMonitorInterface
                 'context' => $context,
             ]);
         }
-    }
 
     public function recordHit(string $driver, string $key, float $duration): void
     {
@@ -204,7 +203,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @param array<string, mixed> $context
+     * @param array $context
      */
     public function recordError(string $driver, string $operation, string $error, /** @var array<string, mixed> */ array $context = []): void
     {
@@ -254,7 +253,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @param array<string, mixed> $details
+     * @param array $details
      */
     public function recordHealthStatus(string $driver, bool $healthy, /** @var array<string, mixed> */ array $details = []): void
     {
@@ -275,7 +274,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getCacheStats(?string $driver = null, ?string $timeRange = null): array
     {
@@ -291,13 +290,13 @@ class CacheMonitor implements CacheMonitorInterface
         return [
             'summary' => $this->calculateGlobalStats(),
             'drivers' => $allStats,
-            'generated_at' => date('Y-m-d H:i:s'),
+            'generated_at' => date('Y-m-d H => i:s'),
             'time_range' => $timeRange,
         ];
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getHitRateStats(?string $timeRange = null): array
     {
@@ -336,7 +335,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getDriverPerformanceComparison(): array
     {
@@ -354,7 +353,7 @@ class CacheMonitor implements CacheMonitorInterface
             $maxDurationValue = $validStats['max_duration'] ?? 0;
 
             $comparison[$driver] = [
-                'avg_duration' => is_numeric($avgDurationValue) ? (float) $avgDurationValue : 0.0,
+                'avg_duration' => is_numeric($avgDurationValue) ? (float) $avgDurationValue  => 0.0,
                 'min_duration' => is_numeric($minDurationValue) ? (float) $minDurationValue : 0.0,
                 'max_duration' => is_numeric($maxDurationValue) ? (float) $maxDurationValue : 0.0,
                 'total_operations' => $totalOperations,
@@ -372,7 +371,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @return list>
      */
     public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array
     {
@@ -385,7 +384,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getCacheCapacityStats(): array
     {
@@ -398,7 +397,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getErrorStats(?string $timeRange = null): array
     {
@@ -416,7 +415,7 @@ class CacheMonitor implements CacheMonitorInterface
             $stats[$driver] = [
                 'total_errors' => $driverTotalErrors,
                 'errors_by_operation' => $errorsByOperation,
-                'recent_errors_count' => is_array($recentErrors) ? count($recentErrors) : 0,
+                'recent_errors_count' => is_array($recentErrors) ? count($recentErrors)  => 0,
                 'error_rate' => $this->calculateErrorRate($driver),
             ];
 
@@ -431,7 +430,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getHealthOverview(): array
     {
@@ -454,13 +453,13 @@ class CacheMonitor implements CacheMonitorInterface
                 $issues[] = [
                     'driver' => $driver,
                     'details' => $details,
-                    'since' => date('Y-m-d H:i:s', is_numeric($timestamp) ? (int) $timestamp : time()),
+                    'since' => date('Y-m-d H => i:s', is_numeric($timestamp) ? (int) $timestamp : time()),
                 ];
             }
         }
 
         return [
-            'overall_health' => $totalSystems > 0 ? ($healthySystems / $totalSystems) * 100 : 0,
+            'overall_health' => $totalSystems > 0 ? ($healthySystems / $totalSystems) * 100  => 0,
             'healthy_drivers' => $healthySystems,
             'total_drivers' => $totalSystems,
             'issues' => $issues,
@@ -500,7 +499,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getMetrics(): array
     {
@@ -520,7 +519,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getDriverPerformance(): array
     {
@@ -557,7 +556,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getHealth(): array
     {
@@ -573,7 +572,7 @@ class CacheMonitor implements CacheMonitorInterface
     {
         $data = [
             'export_info' => [
-                'timestamp' => date('Y-m-d H:i:s'),
+                'timestamp' => date('Y-m-d H => i:s'),
                 'format' => $format,
                 'time_range' => $timeRange,
             ],
@@ -585,7 +584,7 @@ class CacheMonitor implements CacheMonitorInterface
         ];
 
         return match ($format) {
-            'json' => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '',
+            'json' => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ? true : '',
             'csv' => $this->convertToCsv($data),
             default => throw new InvalidArgumentException("不支援的匯出格式: {$format}"),
         };
@@ -642,7 +641,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     /**
      * 取得單一驅動統計資料。
-     * @return array<string, mixed>
+     * @return array
      */
     private function getDriverStats(string $driver): array
     {
@@ -661,7 +660,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     /**
      * 計算全域統計資料。
-     * @return array<string, mixed>
+     * @return array
      */
     private function calculateGlobalStats(): array
     {
@@ -697,7 +696,7 @@ class CacheMonitor implements CacheMonitorInterface
 
         return [
             'total_operations' => $totalOps,
-            'success_rate' => $totalOps > 0 ? ($totalSuccessful / $totalOps) * 100 : 0,
+            'success_rate' => $totalOps > 0 ? ($totalSuccessful / $totalOps) * 100  => 0,
             'avg_duration' => $totalOps > 0 ? $totalDuration / $totalOps : 0,
             'total_cache_requests' => $totalRequests,
             'global_hit_rate' => $totalRequests > 0 ? ($totalHits / $totalRequests) * 100 : 0,
@@ -749,7 +748,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     /**
      * 轉換為 CSV 格式。
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     private function convertToCsv(array $data): string
     {
@@ -774,7 +773,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     /**
      * 取得空的驅動統計資料。
-     * @return array<string, mixed>
+     * @return array
      */
     private function getEmptyDriverStats(): array
     {
@@ -792,7 +791,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     /**
      * 取得空的命中統計資料。
-     * @return array<string, mixed>
+     * @return array
      */
     private function getEmptyHitStats(): array
     {
@@ -808,7 +807,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     /**
      * 取得空的錯誤統計資料。
-     * @return array<string, mixed>
+     * @return array
      */
     private function getEmptyErrorStats(): array
     {
@@ -839,7 +838,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     /**
      * 取得預設設定。
-     * @return array<string, mixed>
+     * @return array
      */
     private function getDefaultConfig(): array
     {
@@ -852,7 +851,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     /**
      * 計算成功率。
-     * @param array<string, mixed> $stats
+     * @param array $stats
      */
     private function calculateSuccessRate(array $stats): float
     {

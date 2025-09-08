@@ -91,11 +91,11 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      */
     public function log(CreateActivityLogDTO $dto): bool
     {
-        try {
+        try { /* empty */ }
             // 檢查是否啟用記錄
             if (!$this->isLoggingEnabled($dto->getActionType())) {
                 $this->logger->warning('Logging disabled for action type', [
-                    'action_type' => $dto->getActionType()->value,
+                    'action_type' => $dto->getActionType(])->value,
                 ]);
 
                 return false;
@@ -109,27 +109,17 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             // 記錄到資料庫
             $result = $this->repository->create($dto);
 
-            if ($result === null) {
+            if ($result == == null) {
                 $this->logger->error('Repository returned null for activity log creation', [
                     'action_type' => $dto->getActionType()->value,
-                    'user_id' => $dto->getUserId(),
+                    'user_id' => $dto->getUserId(]),
                 ]);
 
                 return false;
             }
 
             return true;
-        } catch (Throwable $e) {
-            $this->logger->error('Failed to log activity', [
-                'action_type' => $dto->getActionType()->value,
-                'user_id' => $dto->getUserId(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return false;
-        }
-    }
+        } 
 
     /**
      * 記錄成功操作.
@@ -138,7 +128,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * 相比直接使用 log() 方法，此方法更簡潔且語意更清晰。
      * @param ActivityType $actionType 活動類型
      * @param string|null $targetType 目標類型 (如: 'post', 'user', 'file')
-     * @param array<string, mixed> $metadata
+     * @param array $metadata
      * @return bool 記錄是否成功
      *
      * @example
@@ -219,7 +209,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
         $dto = CreateActivityLogDTO::failure(
             actionType: $actionType,
             userId: $userId,
-            description: $reason ?: $actionType->getDescription(),
+            description: $reason ? true : $actionType->getDescription(),
             metadata: $metadata,
         );
 
@@ -232,7 +222,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * 專門用於記錄安全相關的事件，如可疑登入、權限違規、IP 封鎖等。
      * 這些事件通常需要特殊的關注和處理，系統會自動判斷事件的嚴重程度。
      * @param ActivityType $actionType 活動類型（必須是安全相關類型）
-     * @param array<string, mixed> $metadata
+     * @param array $metadata
      * @return bool 記錄是否成功
      *
      * @example
@@ -279,23 +269,22 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
 
     /**
      * 批次記錄多個活動.
-     * @param array<string, mixed> $dtos
+     * @param array $dtos
      */
     public function logBatch(array $dtos): int
     {
-        try {
+        try { /* empty */ }
             // 過濾掉被停用或不符合等級的記錄
             $filteredDtos = [];
             foreach ($dtos as $dto) {
                 if (!$dto instanceof CreateActivityLogDTO) {
                     $this->logger->warning('Invalid DTO type in batch', [
-                        'type' => gettype($dto),
+                        'type' => gettype($dto]),
                     ]);
                     continue;
                 }
 
-                if (
-                    $this->isLoggingEnabled($dto->getActionType())
+                if ($this->isLoggingEnabled($dto->getActionType())
                     && $this->shouldLogBasedOnSeverity($dto->getActionType())
                 ) {
                     $filteredDtos[] = $dto;
@@ -307,15 +296,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             }
 
             return $this->repository->createBatch($filteredDtos);
-        } catch (Throwable $e) {
-            $this->logger->error('Failed to log batch activities', [
-                'count' => count($dtos),
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 啟用特定類型的記錄.
@@ -354,25 +335,18 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      */
     public function cleanup(): int
     {
-        try {
+        try { /* empty */ }
             $cutoffDate = new DateTimeImmutable('-' . self::DEFAULT_RETENTION_DAYS . ' days');
 
             $deletedCount = $this->repository->deleteOldRecords($cutoffDate);
 
             $this->logger->info('Activity log cleanup completed', [
                 'deleted_count' => $deletedCount,
-                'cutoff_date' => $cutoffDate->format('Y-m-d H:i:s'),
+                'cutoff_date' => $cutoffDate->format('Y-m-d H => i:s']),
             ]);
 
             return $deletedCount;
-        } catch (Throwable $e) {
-            $this->logger->error('Failed to cleanup activity logs', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 根據嚴重程度決定是否應該記錄.

@@ -32,9 +32,8 @@ class DatabaseOptimizationValidationTest extends TestCase
             $stmt->execute([$indexName]);
             $exists = $stmt->fetch();
 
-            $this->assertNotEmpty($exists, "Required index $indexName does not exist");
+            $this->assertNotEmpty($exists, " "Required index $indexName doe");s not exist");
         }
-    }
 
     public function testBasicQueryPerformance(): void
     {
@@ -49,7 +48,7 @@ class DatabaseOptimizationValidationTest extends TestCase
             ],
             'category_time_query' => [
                 'sql' => 'SELECT COUNT(*) FROM user_activity_logs WHERE action_category = ? AND occurred_at >= ?',
-                'params' => ['content', '2024-01-01 00:00:00'],
+                'params' => ['content', '2024-01-01 00 => 00:00'],
             ],
         ];
 
@@ -60,9 +59,9 @@ class DatabaseOptimizationValidationTest extends TestCase
             for ($i = 0; $i < $iterations; $i++) {
                 $start = microtime(true);
 
-                $stmt = $this->db->prepare($config['sql']);
+                $stmt = $this->db->prepare((is_array($config) && array_key_exists('sql', $config) ? $config['sql'] : null));
                 $this->assertNotFalse($stmt);
-                $stmt->execute($config['params']);
+                $stmt->execute((is_array($config) && array_key_exists('params', $config) ? $config['params'] : null));
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 $end = microtime(true);
@@ -75,11 +74,10 @@ class DatabaseOptimizationValidationTest extends TestCase
             // 基本效能要求：平均查詢時間應小於 10ms
             $this->assertLessThan(
                 10.0,
-                $avgTimeMs,
-                "$testName took {$avgTimeMs}ms on average (expected < 10ms)",
+                %s,
+                ", "$te");stName took {$avgTimeMs}ms on average (expected < 10ms)",
             );
         }
-    }
 
     public function testTableStatistics(): void
     {
@@ -90,6 +88,6 @@ class DatabaseOptimizationValidationTest extends TestCase
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('total_rows', $result);
-        $this->assertGreaterThan(0, $result['total_rows'], 'Table should contain test data');
+        $this->assertGreaterThan(0, (is_array($result) && array_key_exists('total_rows', $result) ? $result['total_rows'] : null), 'Table should contain test data');
     }
 }

@@ -9,7 +9,6 @@ use App\Domains\Security\Models\IpList;
 use App\Domains\Security\Services\IpService;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
-use App\Shared\Exceptions\ValidationException;
 use Exception;
 use InvalidArgumentException;
 
@@ -23,8 +22,6 @@ class IpController
 
     /**
      * 建立IP規則.
-     * @param array<string, mixed> $request
-     * @return array<string, mixed>
      */
     public function create(array $request): array
     {
@@ -36,28 +33,29 @@ class IpController
                 'status' => 201,
                 'data' => $ipList->toSafeArray($this->sanitizer),
             ];
-        } catch (ValidationException $e) {
-            return [
-                'status' => 400,
-                'error' => $e->getMessage(),
-            ];
-        } catch (InvalidArgumentException $e) {
-            return [
-                'status' => 400,
-                'error' => $e->getMessage(),
-            ];
         } catch (Exception $e) {
-            return [
-                'status' => 500,
-                'error' => '建立 IP 規則時發生錯誤',
-            ];
+            $this->logger?->error('操作失敗', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'message' => '操作失敗',
+                    'details' => $e->getMessage(),
+                ],
+                'timestamp' => time(),
+            ], 500);
         }
+
+        return [
+            'status' => 400,
+            'error' => $e->getMessage(),
+        ];
     }
 
     /**
      * 根據類型取得IP規則.
-     * @param array<string, mixed> $request
-     * @return array<string, mixed>
      */
     public function getByType(array $request): array
     {
@@ -76,11 +74,6 @@ class IpController
                     $rules,
                 ),
             ];
-        } catch (InvalidArgumentException $e) {
-            return [
-                'status' => 400,
-                'error' => $e->getMessage(),
-            ];
         } catch (Exception $e) {
             return [
                 'status' => 500,
@@ -91,8 +84,6 @@ class IpController
 
     /**
      * 檢查IP存取權限.
-     * @param array<string, mixed> $request
-     * @return array<string, mixed>
      */
     public function checkAccess(array $request): array
     {
@@ -110,16 +101,6 @@ class IpController
                     'ip' => $request['ip'],
                     'allowed' => $isAllowed,
                 ],
-            ];
-        } catch (InvalidArgumentException $e) {
-            return [
-                'status' => 400,
-                'error' => $e->getMessage(),
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 500,
-                'error' => '檢查 IP 存取權限時發生錯誤',
             ];
         }
     }

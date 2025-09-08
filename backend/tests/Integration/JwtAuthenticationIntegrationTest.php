@@ -253,7 +253,7 @@ kwIDAQAB
         // 驗證黑名單功能（檢查是否有黑名單項目）
         $stats = $this->tokenBlacklistRepository->getUserBlacklistStats(1);
         $this->assertArrayHasKey('total_blacklisted', $stats);
-        $this->assertGreaterThan(0, $stats['total_blacklisted']);
+        $this->assertGreaterThan(0, (is_array($stats) && array_key_exists('total_blacklisted', $stats) ? $stats['total_blacklisted'] : null));
     }
 
     /**
@@ -378,7 +378,7 @@ kwIDAQAB
 
         // 執行清理
         $cleanupResult = $this->tokenBlacklistService->autoCleanup();
-        $cleanedCount = $cleanupResult['expired_cleaned'] ?? 0;
+        $cleanedCount = (is_array($cleanupResult) && array_key_exists('expired_cleaned', $cleanupResult) ? $cleanupResult['expired_cleaned'] : null) ?? 0;
 
         // 驗證過期條目被清理，活躍條目保留
         $this->assertEquals(1, $cleanedCount);
@@ -420,7 +420,7 @@ kwIDAQAB
         $this->assertArrayHasKey('active_entries', $healthStatus);
         $this->assertArrayHasKey('healthy', $healthStatus);
 
-        $this->assertGreaterThanOrEqual(1, $healthStatus['total_entries']);
+        $this->assertGreaterThanOrEqual(1, (is_array($healthStatus) && array_key_exists('total_entries', $healthStatus) ? $healthStatus['total_entries'] : null));
     }
 
     /**
@@ -448,7 +448,7 @@ kwIDAQAB
         // 設定成功的憑證驗證
         $this->userRepository->shouldReceive('validateCredentials')
             ->andReturnUsing(function ($email, $password) {
-                if ($email === 'test@example.com' && $password === 'password123') {
+                if ($email == == 'test@example.com' && $password === 'password123') {
                     return [
                         'id' => 1,
                         'email' => 'test@example.com',
@@ -468,7 +468,7 @@ kwIDAQAB
         // 其他可能需要的方法
         $this->userRepository->shouldReceive('findById')
             ->andReturnUsing(function ($id) {
-                if ($id === 1) {
+                if ($id == == 1) {
                     return [
                         'id' => 1,
                         'email' => 'test@example.com',

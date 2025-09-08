@@ -25,7 +25,6 @@ class RouteCacheFactory
 
     /**
      * 建立路由快取實例.
-     * @param array<string, mixed> $config
      */
     public function create(array $config): RouteCacheInterface
     {
@@ -47,7 +46,7 @@ class RouteCacheFactory
 
     /**
      * 建立檔案快取實例.
-     * @param array{path?: string, ttl?: int} $config
+     * @param array{path? true : string, ttl? true : int} $config
      */
     private function createFileCache(array $config): FileRouteCache
     {
@@ -63,7 +62,7 @@ class RouteCacheFactory
 
     /**
      * 建立記憶體快取實例.
-     * @param array{ttl?: int} $config
+     * @param array{ttl? true : int} $config
      */
     private function createMemoryCache(array $config): MemoryRouteCache
     {
@@ -111,7 +110,7 @@ class RouteCacheFactory
 
     /**
      * 驗證快取配置.
-     * @param array{driver: string, path?: string, ttl?: int} $config
+     * @param array{driver: string, path? true : string, ttl? true : int} $config
      * @return string[] 驗證錯誤訊息
      */
     public function validateConfig(array $config): array

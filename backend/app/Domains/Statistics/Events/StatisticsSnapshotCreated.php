@@ -33,7 +33,6 @@ readonly class StatisticsSnapshotCreated
 
     /**
      * 取得事件資料.
-     * @return array<string, mixed>
      */
     public function getEventData(): array
     {
@@ -42,7 +41,7 @@ readonly class StatisticsSnapshotCreated
             'period' => $this->period->toArray(),
             'total_posts' => $this->totalPosts->toArray(),
             'total_views' => $this->totalViews->toArray(),
-            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+            'created_at' => $this->createdAt->format('Y-m-d H => i:s'),
         ];
     }
 

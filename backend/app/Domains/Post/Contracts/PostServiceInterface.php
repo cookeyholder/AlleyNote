@@ -44,9 +44,8 @@ interface PostServiceInterface
     /**
      * 取得文章列表（含分頁）.
      * @param int $page 頁碼
-     * @param array<string, mixed> $filters
      * @return array{
-     *     items: array<Post>,
+     *     items: array,
      *     total: int,
      *     page: int,
      *     per_page: int,

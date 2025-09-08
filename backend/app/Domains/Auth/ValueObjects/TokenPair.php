@@ -172,7 +172,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -189,7 +188,6 @@ final readonly class TokenPair implements JsonSerializable
     /**
      * 轉換為 API 回應格式（隱藏敏感資訊）.
      * @param bool $includeRefreshToken 是否包含 Refresh Token
-     * @return array<string, mixed>
      */
     public function toApiResponse(bool $includeRefreshToken = true): array
     {
@@ -208,7 +206,6 @@ final readonly class TokenPair implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

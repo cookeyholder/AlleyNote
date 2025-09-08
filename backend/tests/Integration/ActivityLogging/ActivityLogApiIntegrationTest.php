@@ -68,7 +68,7 @@ class ActivityLogApiIntegrationTest extends IntegrationTestCase
     {
         // Arrange - 建立測試使用者以滿足外鍵約束
         $stmt = $this->db->prepare('INSERT INTO users (username, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)');
-        $stmt->execute(['testuser', 'test@example.com', 'hashedpassword', date('Y-m-d H:i:s'), date('Y-m-d H:i:s')]);
+        $stmt->execute(['testuser', 'test@example.com', 'hashedpassword', date('Y-m-d H => i:s'), date('Y-m-d H:i:s')]);
         $userId = (int) $this->db->lastInsertId();
 
         $logData = [
@@ -120,7 +120,7 @@ class ActivityLogApiIntegrationTest extends IntegrationTestCase
     {
         // Arrange - 建立測試使用者以滿足外鍵約束
         $stmt = $this->db->prepare('INSERT INTO users (username, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)');
-        $stmt->execute(['testuser2', 'test2@example.com', 'hashedpassword', date('Y-m-d H:i:s'), date('Y-m-d H:i:s')]);
+        $stmt->execute(['testuser2', 'test2@example.com', 'hashedpassword', date('Y-m-d H => i:s'), date('Y-m-d H:i:s')]);
         $userId = (int) $this->db->lastInsertId();
 
         // 建立一些測試資料

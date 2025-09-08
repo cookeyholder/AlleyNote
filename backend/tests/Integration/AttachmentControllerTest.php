@@ -63,7 +63,7 @@ class AttachmentControllerTest extends TestCase
                 'file_size' => 1024,
                 'mime_type' => 'image/jpeg',
                 'storage_path' => '/uploads/test.jpg',
-                'created_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H => i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ]))
             ->byDefault();

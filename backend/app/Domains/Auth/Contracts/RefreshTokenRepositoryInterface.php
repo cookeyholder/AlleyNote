@@ -34,28 +34,28 @@ interface RefreshTokenRepositoryInterface
     /**
      * 根據JTI查找refresh token.
      * @param string $jti JWT ID
-     * @return array<string, mixed>|null token資料，找不到時回傳null
+     * @return array|null token資料，找不到時回傳null
      */
     public function findByJti(string $jti): ?array;
 
     /**
      * 根據token雜湊值查找refresh token.
      * @param string $tokenHash token的雜湊值
-     * @return array<string, mixed>|null token資料，找不到時回傳null
+     * @return array|null token資料，找不到時回傳null
      */
     public function findByTokenHash(string $tokenHash): ?array;
 
     /**
      * 取得使用者的所有有效refresh token.
      * @param int $userId 使用者ID
-     * @return array<string, mixed>> token資料陣列
+     * @return array> token資料陣列
      */
     public function findByUserId(int $userId, bool $includeExpired = false): array;
 
     /**
      * 取得特定裝置的refresh token.
      * @param int $userId 使用者ID
-     * @return array<string, mixed>> token資料陣列
+     * @return array> token資料陣列
      */
     public function findByUserIdAndDevice(int $userId, string $deviceId): array;
 
@@ -134,18 +134,18 @@ interface RefreshTokenRepositoryInterface
     /**
      * 取得使用者的refresh token統計資訊.
      * @param int $userId 使用者ID
-     * @return array<string, mixed> 統計資訊
-     *                              - total: 總數
-     *                              - active: 有效數量
-     *                              - expired: 已過期數量
-     *                              - revoked: 已撤銷數量
+     * @return array 統計資訊
+     *               - total: 總數
+     *               - active: 有效數量
+     *               - expired: 已過期數量
+     *               - revoked: 已撤銷數量
      */
     public function getUserTokenStats(int $userId): array;
 
     /**
      * 取得token家族的所有相關token.
      * @param string $rootJti 根token的JTI
-     * @return array<string, mixed>> token資料陣列
+     * @return array> token資料陣列
      */
     public function getTokenFamily(string $rootJti): array;
 
@@ -158,14 +158,14 @@ interface RefreshTokenRepositoryInterface
 
     /**
      * 批次建立refresh token記錄.
-     * @param array<int, array<string, mixed>> $tokens token資料陣列
+     * @param array> $tokens token資料陣列
      * @return int 建立成功的記錄數量
      */
     public function batchCreate(array $tokens): int;
 
     /**
      * 批次撤銷refresh token.
-     * @param array<int, string> $jtis JTI陣列
+     * @param array $jtis JTI陣列
      * @return int 撤銷成功的數量
      */
     public function batchRevoke(array $jtis, string $reason = 'batch_revocation'): int;
@@ -173,19 +173,19 @@ interface RefreshTokenRepositoryInterface
     /**
      * 取得即將過期的refresh token.
      * @param int $thresholdHours 臨界小時數，預設24小時
-     * @return array<string, mixed>> token資料陣列
+     * @return array> token資料陣列
      */
     public function getTokensNearExpiry(int $thresholdHours = 24): array;
 
     /**
      * 統計系統中的refresh token資訊.
-     * @return array<string, mixed> 系統統計資訊
-     *                              - total_tokens: 總token數量
-     *                              - active_tokens: 有效token數量
-     *                              - expired_tokens: 過期token數量
-     *                              - revoked_tokens: 撤銷token數量
-     *                              - unique_users: 擁有token的使用者數量
-     *                              - unique_devices: 裝置數量
+     * @return array 系統統計資訊
+     *               - total_tokens: 總token數量
+     *               - active_tokens: 有效token數量
+     *               - expired_tokens: 過期token數量
+     *               - revoked_tokens: 撤銷token數量
+     *               - unique_users: 擁有token的使用者數量
+     *               - unique_devices: 裝置數量
      */
     public function getSystemStats(): array;
 }

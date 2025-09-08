@@ -22,7 +22,7 @@ interface TagRepositoryInterface
     /**
      * 取得快取鍵的所有標籤.
      * @param string $key 快取鍵
-     * @return array<string, mixed> 標籤陣列
+     * @return array 標籤陣列
      */
     public function getTags(string $key): array;
 
@@ -50,14 +50,14 @@ interface TagRepositoryInterface
     /**
      * 取得指定標籤的所有快取鍵.
      * @param string $tag 標籤
-     * @return array<string, mixed> 快取鍵陣列
+     * @return array 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array;
 
     /**
      * 按標籤刪除快取鍵記錄.
      * @param string|array<string> $tags 標籤或標籤陣列
-     * @return array<string, mixed> 被刪除的快取鍵陣列
+     * @return array 被刪除的快取鍵陣列
      */
     public function deleteByTags(string|array $tags): array;
 
@@ -70,7 +70,7 @@ interface TagRepositoryInterface
 
     /**
      * 取得所有標籤.
-     * @return array<string, mixed> 所有標籤
+     * @return array 所有標籤
      */
     public function getAllTags(): array;
 
@@ -82,7 +82,7 @@ interface TagRepositoryInterface
 
     /**
      * 取得標籤統計資訊.
-     * @return array<string, mixed> 標籤名稱 => 快取項目數量
+     * @return array 標籤名稱 => 快取項目數量
      */
     public function getTagStatistics(): array;
 

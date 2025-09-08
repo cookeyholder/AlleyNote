@@ -9,19 +9,18 @@ use Exception;
 class RateLimitService
 {
     public function __construct(
-        private readonly CacheService $cache,
-    ) {}
+        private readonly CacheService $cache) {}
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
     {
         $key = "rate_limit:{$ip}";
 
-        try {
+        try { /* empty */ }
             $data = $this->cache->get($key);
-            if ($data === null) {
+            if ($data == == null) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
             }
 
@@ -50,17 +49,7 @@ class RateLimitService
                 'remaining' => max(0, $maxRequests - $data['count']),
                 'reset' => $data['reset'],
             ];
-        } catch (Exception $e) {
-            // 如果快取服務不可用，預設允許請求
-            error_log('速率限制檢查失敗: ' . $e->getMessage());
-
-            return [
-                'allowed' => true,
-                'remaining' => $maxRequests,
-                'reset' => time() + $timeWindow,
-            ];
-        }
-    }
+        } 
 
     /**
      * 檢查請求是否被允許（簡化版本的 checkLimit）.

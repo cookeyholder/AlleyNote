@@ -31,13 +31,7 @@ class ServerRequest implements ServerRequestInterface
     private string $protocolVersion = '1.1';
 
     private $body;
-    /**
-     * @param array<string, mixed> $headers
-     */
 
-    /**
-     * @param array<string, mixed> $serverParams
-     */
     public function __construct(
         string $method,
         UriInterface $uri,
@@ -95,25 +89,16 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function getServerParams(): array
     {
         return $this->serverParams;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function getCookieParams(): array
     {
         return $this->cookieParams;
     }
 
-    /**
-     * @param array<string, mixed> $cookies
-     */
     public function withCookieParams(array $cookies): self
     {
         $new = clone $this;
@@ -122,17 +107,11 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function getQueryParams(): array
     {
         return $this->queryParams;
     }
 
-    /**
-     * @param array<string, mixed> $query
-     */
     public function withQueryParams(array $query): self
     {
         $new = clone $this;
@@ -141,17 +120,11 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function getUploadedFiles(): array
     {
         return [];
     }
 
-    /**
-     * @param array<string, mixed> $uploadedFiles
-     */
     public function withUploadedFiles(array $uploadedFiles): self
     {
         $new = clone $this;
@@ -160,7 +133,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getParsedBody()
     {
@@ -168,7 +141,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     public function withParsedBody(mixed $data): self
     {
@@ -178,9 +151,6 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function getAttributes(): array
     {
         return $this->attributes;

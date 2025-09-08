@@ -16,9 +16,6 @@ class AttachmentRepository
         private CacheServiceInterface $cache,
     ) {}
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public function create(array $data): Attachment
     {
         $uuid = Uuid::uuid4()->toString();
@@ -104,9 +101,6 @@ class AttachmentRepository
         return $result;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function getByPostId(int $postId): array
     {
         /** @var array<int, Attachment> $result */

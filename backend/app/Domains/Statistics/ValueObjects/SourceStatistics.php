@@ -27,7 +27,6 @@ readonly class SourceStatistics
 
     /**
      * 建立來源統計.
-     * @param array<string, StatisticsMetric> $additionalMetrics
      */
     public static function create(
         SourceType $sourceType,
@@ -157,7 +156,6 @@ readonly class SourceStatistics
 
     /**
      * 取得所有額外指標的鍵.
-     * @return array<string, mixed>
      */
     public function getAdditionalMetricKeys(): array
     {
@@ -291,18 +289,18 @@ readonly class SourceStatistics
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
-     *                              source_type: string,
-     *                              source_name: string,
-     *                              source_description: string,
-     *                              count: array,
-     *                              percentage: array,
-     *                              additional_metrics: array,
-     *                              has_data: bool,
-     *                              is_primary_source: bool,
-     *                              is_programmatic_access: bool,
-     *                              is_external_source: bool
-     *                              }
+     * @return array
+     *               source_type: string,
+     *               source_name: string,
+     *               source_description: string,
+     *               count: array,
+     *               percentage: array,
+     *               additional_metrics: array,
+     *               has_data: bool,
+     *               is_primary_source: bool,
+     *               is_programmatic_access: bool,
+     *               is_external_source: bool
+     *               }
      */
     public function toArray(): array
     {

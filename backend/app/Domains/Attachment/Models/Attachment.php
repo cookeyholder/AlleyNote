@@ -28,9 +28,6 @@ class Attachment
 
     private ?string $deletedAt = null;
 
-    /**
-     * @param array<string, mixed> $attributes
-     */
     public function __construct(array $attributes = [])
     {
         $this->id = isset($attributes['id']) ? (int) $attributes['id'] : null;
@@ -101,9 +98,6 @@ class Attachment
         return $this->deletedAt;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function toArray(): array
     {
         return [

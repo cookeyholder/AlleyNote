@@ -11,9 +11,6 @@ namespace App\Domains\Auth\DTOs;
  */
 final readonly class LoginRequestDTO
 {
-    /**
-     * @param array<string>|null $scopes
-     */
     public function __construct(
         public string $email,
         public string $password,
@@ -24,7 +21,6 @@ final readonly class LoginRequestDTO
 
     /**
      * 從陣列建立 LoginRequestDTO.
-     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -44,7 +40,6 @@ final readonly class LoginRequestDTO
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
      */
     public function toArray(): array
     {

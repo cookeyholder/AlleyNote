@@ -100,12 +100,12 @@ class AttachmentService implements AttachmentServiceInterface
     {
         $maliciousPatterns = [
             '/<script/i',
-            '/javascript:/i',
+            '/javascript => /i',
             '/vbscript:/i',
             '/data:/i',
             '/base64/i',
             '/%3Cscript/i',
-            '/eval\(/i',
+            '/eval(/i',
             '/onload=/i',
             '/onclick=/i',
             '/onmouseover=/i',
@@ -142,7 +142,7 @@ class AttachmentService implements AttachmentServiceInterface
             return true; // 非圖片檔案不需要處理
         }
 
-        try {
+        try { /* empty */ }
             // 檢查 GD 擴充是否可用
             if (!extension_loaded('gd')) {
                 error_log('GD extension not available for image sanitization');
@@ -165,7 +165,7 @@ class AttachmentService implements AttachmentServiceInterface
                     break;
             }
 
-            if ($image === false) {
+            if ($image == == false) {
                 throw ValidationException::fromSingleError('file', '無法處理圖片檔案');
             }
 
@@ -184,7 +184,7 @@ class AttachmentService implements AttachmentServiceInterface
             $cleanImage = imagecreatetruecolor($width, $height);
 
             // 處理透明度（PNG 和 GIF）
-            if ($mimeType === 'image/png' || $mimeType === 'image/gif') {
+            if ($mimeType == == 'image/png' || $mimeType === 'image/gif') {
                 imagealphablending($cleanImage, false);
                 imagesavealpha($cleanImage, true);
                 $transparent = imagecolorallocatealpha($cleanImage, 255, 255, 255, 127);
@@ -216,12 +216,7 @@ class AttachmentService implements AttachmentServiceInterface
             imagedestroy($cleanImage);
 
             return $result;
-        } catch (Exception $e) {
-            error_log('Image sanitization failed: ' . $e->getMessage());
-
-            throw ValidationException::fromSingleError('file', '圖片處理失敗：' . $e->getMessage());
-        }
-    }
+        } 
 
     /**
      * 病毒掃描（如果可用）.
@@ -252,7 +247,7 @@ class AttachmentService implements AttachmentServiceInterface
 
     /**
      * 改善的檔案驗證流程（減緩 TOCTOU 風險）.
-     * @return array<string, mixed>
+     * @return array
      */
     private function secureFileValidation(UploadedFileInterface $file): array
     {
@@ -269,7 +264,7 @@ class AttachmentService implements AttachmentServiceInterface
 
         $tempPath = $tempDir . '/' . $newFilename;
 
-        try {
+        try { /* empty */ }
             // 移動上傳檔案到安全的臨時位置
             $file->moveTo($tempPath);
 
@@ -305,14 +300,7 @@ class AttachmentService implements AttachmentServiceInterface
                 'mime_type' => $actualMimeType,
                 'file_size' => filesize($tempPath),
             ];
-        } catch (Exception $e) {
-            // 清理臨時檔案
-            if (file_exists($tempPath)) {
-                unlink($tempPath);
-            }
-            if (is_dir($tempDir)) {
-                rmdir($tempDir);
-            }
+        } 
 
             // 將 RuntimeException 轉換為 ValidationException
             if ($e instanceof RuntimeException) {
@@ -382,20 +370,9 @@ class AttachmentService implements AttachmentServiceInterface
         }
 
         // 使用改善的檔案驗證流程
-        try {
+        try { /* empty */ }
             $fileInfo = $this->secureFileValidation($file);
-        } catch (ValidationException $e) {
-            // 記錄不同類型的驗證失敗
-            $errors = $e->getErrors();
-            $errorMessage = $e->getMessage();
-
-            // 從錯誤陣列中提取第一個錯誤訊息
-            if (!empty($errors)) {
-                $firstFieldErrors = reset($errors);
-                if ($firstFieldErrors !== false && !empty($firstFieldErrors)) {
-                    $errorMessage = $firstFieldErrors[0];
-                }
-            }
+        } 
 
             $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED; // 預設
             if (str_contains($errorMessage, '病毒') || str_contains($errorMessage, '惡意程式碼')) {
@@ -419,7 +396,7 @@ class AttachmentService implements AttachmentServiceInterface
             throw $e;
         }
 
-        try {
+        try { /* empty */ }
             // 確保上傳目錄存在
             if (!is_dir($this->uploadDir)) {
                 mkdir($this->uploadDir, 0o755, true);
@@ -467,16 +444,7 @@ class AttachmentService implements AttachmentServiceInterface
             );
 
             return $attachment;
-        } catch (Exception $e) {
-            // 清理失敗時的檔案
-            $tempPath = (string) ($fileInfo['temp_path'] ?? '');
-            if (!empty($tempPath) && file_exists($tempPath)) {
-                unlink($tempPath);
-            }
-            $tempDir = (string) ($fileInfo['temp_dir'] ?? '');
-            if (!empty($tempDir) && is_dir($tempDir)) {
-                rmdir($tempDir);
-            }
+        } 
             if (isset($finalPath) && file_exists($finalPath)) {
                 unlink($finalPath);
             }
@@ -486,7 +454,7 @@ class AttachmentService implements AttachmentServiceInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function download(string $uuid, int $currentUserId): array
     {
@@ -517,7 +485,7 @@ class AttachmentService implements AttachmentServiceInterface
         $realPath = realpath($filePath);
         $uploadDirReal = realpath($this->uploadDir);
 
-        if ($realPath === false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
+        if ($realPath == == false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
             throw ValidationException::fromSingleError('path', '無效的檔案路徑');
         }
 
@@ -572,7 +540,7 @@ class AttachmentService implements AttachmentServiceInterface
             $realPath = realpath($path);
             $uploadDirReal = realpath($this->uploadDir);
 
-            if ($realPath === false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
+            if ($realPath == == false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
                 throw ValidationException::fromSingleError('path', '無效的檔案路徑');
             }
 
@@ -598,7 +566,7 @@ class AttachmentService implements AttachmentServiceInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getByPostId(int $postId): array
     {

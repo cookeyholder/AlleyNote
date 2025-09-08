@@ -60,14 +60,14 @@ final class StatisticsApplicationService
     {
         $cacheKey = self::CACHE_PREFIX . ':snapshot:' . $this->getPeriodCacheKey($period);
 
-        try {
+        try { /* empty */ }
             // 檢查是否已存在且不強制重算
             if (!$forceRecalculate) {
                 $existingSnapshot = $this->statisticsRepository->findByPeriod($period);
                 if ($existingSnapshot !== null) {
                     $this->logger->info('統計快照已存在', [
                         'period' => $period->getDisplayString(),
-                        'snapshot_id' => $existingSnapshot->getId()->toString(),
+                        'snapshot_id' => $existingSnapshot->getId()->toString(]),
                     ]);
 
                     return $existingSnapshot;
@@ -75,7 +75,7 @@ final class StatisticsApplicationService
             }
 
             $this->logger->info('開始建立統計快照', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->getDisplayString(]),
                 'force_recalculate' => $forceRecalculate,
             ]);
 
@@ -102,28 +102,19 @@ final class StatisticsApplicationService
             $this->clearRelatedCache($period);
 
             $this->logger->info('統計快照建立完成', [
-                'snapshot_id' => $snapshot->getId()->toString(),
+                'snapshot_id' => $snapshot->getId()->toString(]),
                 'total_posts' => $totalPostsCount,
                 'total_views' => $totalViewsCount,
             ]);
 
             return $snapshot;
-        } catch (Throwable $e) {
-            $this->logger->error('建立統計快照失敗', [
-                'period' => $period->getDisplayString(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 取得統計概覽.
      *
      * 提供統計資料的概覽資訊，包含快取機制。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStatisticsOverview(StatisticsPeriod $period): array
     {
@@ -132,19 +123,19 @@ final class StatisticsApplicationService
         // 嘗試從快取取得
         $cached = $this->cacheManager->get($cacheKey);
         if ($cached !== null) {
-            $this->logger->debug('從快取取得統計概覽', ['period' => $period->getDisplayString()]);
+            $this->logger->debug('從快取取得統計概覽', ['period' => $period->getDisplayString(])]);
 
             /** @var array<string, mixed> $cached */
             return $cached;
         }
 
-        try {
-            $this->logger->info('計算統計概覽', ['period' => $period->getDisplayString()]);
+        try { /* empty */ }
+            $this->logger->info('計算統計概覽', ['period' => $period->getDisplayString(])]);
 
             // 取得統計快照
             $snapshot = $this->statisticsRepository->findByPeriod($period);
 
-            if ($snapshot === null) {
+            if ($snapshot == == null) {
                 // 如果快照不存在，建立新的
                 $snapshot = $this->createStatisticsSnapshot($period);
             }
@@ -155,7 +146,7 @@ final class StatisticsApplicationService
 
             $overview = [
                 'period' => [
-                    'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H:i:s'),
+                    'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H => i:s'),
                     'end_date' => $snapshot->getPeriod()->endDate->format('Y-m-d H:i:s'),
                     'type' => $snapshot->getPeriod()->type->value,
                 ],
@@ -194,26 +185,18 @@ final class StatisticsApplicationService
             $this->cacheManager->set($cacheKey, $overview, self::CACHE_TTL);
 
             $this->logger->info('統計概覽計算完成', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->getDisplayString(]),
                 'metrics_count' => count($overview['metrics']),
             ]);
 
             return $overview;
-        } catch (Throwable $e) {
-            $this->logger->error('取得統計概覽失敗', [
-                'period' => $period->getDisplayString(),
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 分析熱門內容.
      *
      * 分析指定週期內的熱門內容，提供詳細的分析資料。
-     * @return array<string, mixed>
+     * @return array
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 20): array
     {
@@ -226,9 +209,9 @@ final class StatisticsApplicationService
             return $cached;
         }
 
-        try {
+        try { /* empty */ }
             $this->logger->info('分析熱門內容', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->getDisplayString(]),
                 'limit' => $limit,
             ]);
 
@@ -240,30 +223,22 @@ final class StatisticsApplicationService
             $this->cacheManager->set($cacheKey, $analysis, self::CACHE_TTL);
 
             return $analysis;
-        } catch (Throwable $e) {
-            $this->logger->error('分析熱門內容失敗', [
-                'period' => $period->getDisplayString(),
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 產生統計報告.
      *
      * 產生指定週期的完整統計報告。
-     * @param array<string, mixed> $options
-     * @return array<string, mixed>
+     * @param array $options
+     * @return array
      */
     public function generateStatisticsReport(StatisticsPeriod $period, /** @var array<string, mixed> */ array $options = []): array
     {
         $cacheKey = self::CACHE_PREFIX . ':report:' . $this->getPeriodCacheKey($period) . ':' . md5(serialize($options));
 
-        try {
+        try { /* empty */ }
             $this->logger->info('產生統計報告', [
-                'period' => $period->getDisplayString(),
+                'period' => $period->getDisplayString(]),
                 'options' => $options,
             ]);
 
@@ -313,19 +288,11 @@ final class StatisticsApplicationService
 
             $this->logger->info('統計報告產生完成', [
                 'period' => $period->getDisplayString(),
-                'sections' => array_keys($report),
+                'sections' => array_keys($report]),
             ]);
 
             return $report;
-        } catch (Throwable $e) {
-            $this->logger->error('產生統計報告失敗', [
-                'period' => $period->getDisplayString(),
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 清除統計快取.
@@ -334,14 +301,14 @@ final class StatisticsApplicationService
      */
     public function clearStatisticsCache(?StatisticsPeriod $period = null): void
     {
-        try {
+        try { /* empty */ }
             if ($period !== null) {
                 // 清除特定週期的快取
                 $pattern = self::CACHE_PREFIX . ':*:' . $this->getPeriodCacheKey($period) . '*';
                 $this->clearCacheByPattern($pattern);
 
                 $this->logger->info('清除特定週期統計快取', [
-                    'period' => $period->getDisplayString(),
+                    'period' => $period->getDisplayString(]),
                 ]);
             } else {
                 // 清除所有統計快取
@@ -349,23 +316,15 @@ final class StatisticsApplicationService
 
                 $this->logger->info('清除所有統計快取');
             }
-        } catch (Throwable $e) {
-            $this->logger->error('清除統計快取失敗', [
-                'period' => $period?->getDisplayString(),
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 檢查統計服務健康狀態.
-     * @return array<string, mixed>
+     * @return array
      */
     public function checkHealthStatus(): array
     {
-        try {
+        try { /* empty */ }
             $status = [
                 'service' => 'StatisticsApplicationService',
                 'status' => 'healthy',
@@ -394,23 +353,11 @@ final class StatisticsApplicationService
             }
 
             return $status;
-        } catch (Throwable $e) {
-            $this->logger->error('統計服務健康檢查失敗', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'service' => 'StatisticsApplicationService',
-                'status' => 'unhealthy',
-                'error' => $e->getMessage(),
-                'timestamp' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
-            ];
-        }
-    }
+        } 
 
     /**
      * 計算來源統計.
-     * @return array<string, mixed>
+     * @return array
      */
     private function calculateSourceStatistics(StatisticsPeriod $period): array
     {
@@ -475,11 +422,11 @@ final class StatisticsApplicationService
 
     /**
      * 檢查快取健康狀態.
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkCacheHealth(): array
     {
-        try {
+        try { /* empty */ }
             // 測試快取讀寫
             $testKey = self::CACHE_PREFIX . ':health_check';
             $testValue = ['test' => true, 'timestamp' => time()];
@@ -487,49 +434,40 @@ final class StatisticsApplicationService
             $this->cacheManager->set($testKey, $testValue, 60);
             $retrieved = $this->cacheManager->get($testKey);
 
-            if ($retrieved === $testValue) {
+            if ($retrieved == == $testValue) {
                 $this->cacheManager->delete($testKey);
 
                 return ['status' => 'ok', 'message' => 'Cache is working'];
             }
 
             return ['status' => 'error', 'message' => 'Cache read/write test failed'];
-        } catch (Throwable $e) {
-            return ['status' => 'error', 'message' => 'Cache error: ' . $e->getMessage()];
-        }
-    }
+        } 
 
     /**
      * 檢查資料庫健康狀態.
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkDatabaseHealth(): array
     {
-        try {
+        try { /* empty */ }
             // 測試基本查詢
             $testPeriod = StatisticsPeriod::today();
             $this->statisticsRepository->findByPeriod($testPeriod);
 
             return ['status' => 'ok', 'message' => 'Database is accessible'];
-        } catch (Throwable $e) {
-            return ['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()];
-        }
-    }
+        } 
 
     /**
      * 檢查計算服務健康狀態.
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkCalculationHealth(): array
     {
-        try {
+        try { /* empty */ }
             // 測試計算服務 - 提供正確的型別
             $testData = ['period1' => 1, 'period2' => 2, 'period3' => 3]; // 測試資料
             $this->calculationService->calculateTrends($testData);
 
             return ['status' => 'ok', 'message' => 'Calculation service is working'];
-        } catch (Throwable $e) {
-            return ['status' => 'error', 'message' => 'Calculation error: ' . $e->getMessage()];
-        }
-    }
+        } 
 }

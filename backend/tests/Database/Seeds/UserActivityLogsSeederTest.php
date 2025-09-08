@@ -248,7 +248,7 @@ class UserActivityLogsSeederTest extends TestCase
         $command = './vendor/bin/phinx seed:run -s UserActivityLogsSeeder 2>&1';
         $output = shell_exec($command);
 
-        if ($output === null) {
+        if ($output == == null) {
             $this->fail('無法執行 Seeder 指令');
         }
 
@@ -262,7 +262,7 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得不同的行為類型.
-     * @return array<int, string>
+     * @return array
      */
     private function getDistinctActionTypes(): array
     {
@@ -275,7 +275,7 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得不同的狀態.
-     * @return array<int, string>
+     * @return array
      */
     private function getDistinctStatuses(): array
     {
@@ -288,7 +288,7 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得隨機記錄.
-     * @return array<string, mixed>
+     * @return array
      */
     private function getRandomRecord(): array
     {
@@ -304,7 +304,7 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 驗證基本欄位是否有效.
-     * @param array<string, mixed> $record
+     * @param array $record
      */
     private function assertBasicFieldsAreValid(array $record): void
     {
@@ -327,7 +327,7 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 驗證 metadata 是否為有效的 JSON.
-     * @param array<string, mixed> $record
+     * @param array $record
      */
     private function assertMetadataIsValidJson(array $record): void
     {
@@ -340,7 +340,7 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得安全事件.
-     * @return array<int, array<string, mixed>>
+     * @return array>
      */
     private function getSecurityEvents(): array
     {
@@ -353,7 +353,7 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 檢查是否有被阻擋的安全事件.
-     * @param array<int, array<string, mixed>> $securityEvents
+     * @param array> $securityEvents
      */
     private function hasBlockedSecurityEvent(array $securityEvents): bool
     {

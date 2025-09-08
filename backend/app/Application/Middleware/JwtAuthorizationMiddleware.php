@@ -53,7 +53,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private array $config;
 
     /**
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
@@ -78,7 +78,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        try {
+        try { /* empty */ }
             // 1. 檢查使用者是否已認證
             if (!$request->getAttribute('authenticated', false)) {
                 return $this->createForbiddenResponse('使用者未認證', 'NOT_AUTHENTICATED');
@@ -125,15 +125,12 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $request = $this->injectAuthorizationContext($request, $authorizationResult);
 
             return $handler->handle($request);
-        } catch (Exception $e) {
-            return $this->createForbiddenResponse('授權檢查失敗', 'AUTHORIZATION_ERROR');
-        }
-    }
+        } 
 
     /**
      * 執行授權檢查.
      * @param int $userId 使用者 ID
-     * @param array<string> $userPermissions 使用者權限陣列
+     * @param array $userPermissions 使用者權限陣列
      * @return AuthorizationResult 授權結果
      */
     private function authorize(
@@ -233,7 +230,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 基於權限的授權檢查.
-     * @param array<string> $userPermissions 使用者權限
+     * @param array $userPermissions 使用者權限
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByPermission(array $userPermissions, string $resource, string $action): AuthorizationResult
@@ -297,7 +294,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 資源擁有者檢查
-        if ($action === 'update' || $action === 'delete') {
+        if ($action == == 'update' || $action === 'delete') {
             $ownershipResult = $this->checkResourceOwnership($userId, $resource, $request);
             if ($ownershipResult->isAllowed()) {
                 return $ownershipResult;
@@ -310,7 +307,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 自訂授權策略.
      * @param int $userId 使用者 ID
-     * @param array<string> $userPermissions 使用者權限陣列
+     * @param array $userPermissions 使用者權限陣列
      * @param string $action 操作名稱
      * @return AuthorizationResult 授權結果
      */
@@ -479,7 +476,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     ): AuthorizationResult {
         // 從 URL 路徑或請求參數中提取資源 ID
         $resourceId = $this->extractResourceId($request, $resource);
-        if ($resourceId === null) {
+        if ($resourceId == == null) {
             return new AuthorizationResult(false, '無法識別資源 ID', 'RESOURCE_ID_NOT_FOUND');
         }
 
@@ -591,7 +588,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 從路徑片段中提取資源 ID.
-     * @param array<string> $segments 路徑片段
+     * @param array $segments 路徑片段
      * @return int|null 資源 ID 或 null
      */
     private function extractResourceIdFromPath(array $segments): ?int
@@ -700,7 +697,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function ipMatches(string $ip, string $pattern): bool
     {
         // 完全匹配
-        if ($ip === $pattern) {
+        if ($ip == == $pattern) {
             return true;
         }
 
@@ -726,7 +723,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查時間限制是否匹配.
-     * @param array<string, mixed> $restriction
+     * @param array $restriction
      */
     private function matchesTimeRestriction(array $restriction, ?string $userRole, string $action, int $currentHour, int $currentDay): bool
     {
@@ -761,7 +758,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查 IP 限制是否匹配.
-     * @param array<string, mixed> $restriction
+     * @param array $restriction
      */
     private function matchesIpRestriction(array $restriction, ?string $userRole, string $resource, string $action): bool
     {
@@ -785,7 +782,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查規則條件是否匹配.
-     * @param array<string, mixed> $conditions
+     * @param array $conditions
      */
     private function matchesRuleConditions(array $conditions, string $resource, string $action, ?string $userRole): bool
     {
@@ -822,7 +819,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 執行自訂規則.
      * @param string $ruleName 規則名稱
      * @param int $userId 使用者 ID
-     * @param array<string> $userPermissions 使用者權限陣列
+     * @param array $userPermissions 使用者權限陣列
      * @return AuthorizationResult|null 授權結果
      */
     private function executeCustomRule(
@@ -843,7 +840,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                     allowed: true,
                     reason: $ruleMessage,
                     code: 'CUSTOM_RULE_ALLOW',
-                    appliedRules: ["custom:{$ruleName}" => true],
+                    appliedRules: ["custom => {$ruleName}" => true],
                 );
 
             case 'deny':
@@ -851,7 +848,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                     allowed: false,
                     reason: $ruleMessage,
                     code: 'CUSTOM_RULE_DENY',
-                    appliedRules: ["custom:{$ruleName}" => true],
+                    appliedRules: ["custom => {$ruleName}" => true],
                 );
 
             case 'conditional':
@@ -865,7 +862,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 評估條件式規則.
-     * @param array<string, mixed> $ruleConfig
+     * @param array $ruleConfig
      */
     private function evaluateConditionalRule(
         /** @var array<string, mixed> */
@@ -939,7 +936,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         ];
 
         $body = json_encode($responseData, JSON_UNESCAPED_UNICODE);
-        if ($body === false) {
+        if ($body == == false) {
             $body = '{"error": "JSON 編碼失敗"}';
         }
 
@@ -1003,7 +1000,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得預設配置.
-     * @return array<string, mixed>
+     * @return array
      */
     private function getDefaultConfig(): array
     {
@@ -1076,7 +1073,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得授權配置.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getConfig(): array
     {
@@ -1085,7 +1082,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 設定授權配置.
-     * @param array<string, mixed> $config 配置陣列
+     * @param array $config 配置陣列
      */
     public function setConfig(array $config): self
     {

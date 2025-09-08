@@ -306,7 +306,7 @@ readonly class StatisticsPeriod
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>{
+     * @return array{
      *     start_date: string,
      *     end_date: string,
      *     type: string,
@@ -317,7 +317,7 @@ readonly class StatisticsPeriod
     public function toArray(): array
     {
         return [
-            'start_date' => $this->startDate->format('Y-m-d H:i:s'),
+            'start_date' => $this->startDate->format('Y-m-d H => i:s'),
             'end_date' => $this->endDate->format('Y-m-d H:i:s'),
             'type' => $this->type->value,
             'display_name' => $this->getDisplayName(),

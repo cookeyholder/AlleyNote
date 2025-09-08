@@ -28,10 +28,9 @@ class AuthorizationMiddleware
             echo json_encode([
                 'error' => '您沒有權限執行此操作',
                 'code' => 'FORBIDDEN',
-            ]) ?: '';
+            ]) ? true : '';
             exit;
         }
-    }
 
     public function requireRole(int $userId, string $roleName): void
     {
@@ -41,10 +40,9 @@ class AuthorizationMiddleware
             echo json_encode([
                 'error' => '需要特定角色才能執行此操作',
                 'code' => 'FORBIDDEN',
-            ]) ?: '';
+            ]) ? true : '';
             exit;
         }
-    }
 
     public function extractResourceFromPath(string $path): string
     {

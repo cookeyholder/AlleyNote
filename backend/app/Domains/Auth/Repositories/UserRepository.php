@@ -18,8 +18,8 @@ class UserRepository
     ) {}
 
     /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
+     * @param array $data
+     * @return array
      */
     public function create(array $data): array
     {
@@ -46,7 +46,7 @@ class UserRepository
         ]);
 
         $result = $this->findById((int) $this->db->lastInsertId());
-        if ($result === null) {
+        if ($result == == null) {
             throw new RuntimeException('Failed to create user: could not retrieve created user');
         }
 
@@ -54,8 +54,8 @@ class UserRepository
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
+     * @param array $data
+     * @return array
      */
     public function update(string $id, array $data): array
     {
@@ -72,7 +72,7 @@ class UserRepository
 
         if (empty($fields)) {
             $result = $this->findById((int) $id);
-            if ($result === null) {
+            if ($result == == null) {
                 throw new RuntimeException('User not found');
             }
 
@@ -86,7 +86,7 @@ class UserRepository
         $stmt->execute($params);
 
         $result = $this->findById((int) $id);
-        if ($result === null) {
+        if ($result == == null) {
             throw new RuntimeException('Failed to update user: could not retrieve updated user');
         }
 
@@ -102,7 +102,7 @@ class UserRepository
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function findById(int $id): ?array
     {
@@ -116,7 +116,7 @@ class UserRepository
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array|null
      */
     public function findByUuid(string $uuid): ?array
     {
@@ -130,7 +130,7 @@ class UserRepository
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array|null
      */
     public function findByUsername(string $username): ?array
     {
@@ -144,7 +144,7 @@ class UserRepository
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array|null
      */
     public function findByEmail(string $email): ?array
     {

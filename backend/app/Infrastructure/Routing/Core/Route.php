@@ -66,9 +66,6 @@ class Route implements RouteInterface
         return $this;
     }
 
-    /**
-     * @param array<string, mixed> $middlewares
-     */
     public function addMiddlewares(array $middlewares): self
     {
         foreach ($middlewares as $middleware) {
@@ -127,9 +124,6 @@ class Route implements RouteInterface
         return $this->matchesPath($path);
     }
 
-    /**
-     * @param array<string, mixed> $parameters
-     */
     public function generateUrl(array $parameters = [], /** @var array<string, mixed> */ array $queryParams = []): string
     {
         $url = $this->pattern;
@@ -147,7 +141,7 @@ class Route implements RouteInterface
         }
 
         // 檢查是否還有未替換的參數
-        if (preg_match('/\{([^}]+)\}/', $url, $matches)) {
+        if (preg_match('/{([^}]+)}/', $url, $matches)) {
             throw new InvalidArgumentException("缺少必要的路由參數: {$matches[1]}");
         }
 
@@ -159,9 +153,6 @@ class Route implements RouteInterface
         return $url;
     }
 
-    /**
-     * @param array<string, mixed> $attributes
-     */
     public function withAttributes(array $attributes): self
     {
         $clone = clone $this;
@@ -188,7 +179,7 @@ class Route implements RouteInterface
 
     /**
      * 添加中介軟體（支援字串別名、實例和陣列）.
-     * @param array<string, mixed> $middleware
+     * @param array $middleware
      */
     public function middleware($middleware): self
     {
@@ -223,7 +214,7 @@ class Route implements RouteInterface
         $pattern = $this->pattern;
 
         // 先將參數佔位符替換為特殊標記
-        $pattern = preg_replace('/\{([^}]+)\}/', 'ROUTEPARAM', $pattern);
+        $pattern = preg_replace('/{([^}]+)}/', 'ROUTEPARAM', $pattern);
 
         // 轉義特殊字符
         $pattern = preg_quote($pattern, '/');
@@ -244,7 +235,7 @@ class Route implements RouteInterface
      */
     private function extractParameterNames(string $pattern): array
     {
-        preg_match_all('/\{([^}]+)\}/', $pattern, $matches);
+        preg_match_all('/{([^}]+)}/', $pattern, $matches);
 
         return $matches[1];
     }
@@ -280,9 +271,6 @@ class Route implements RouteInterface
         return new self(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'], $pattern, $handler);
     }
 
-    /**
-     * @param array<string, mixed> $methods
-     */
     public static function match(array $methods, string $pattern, callable|string $handler): self
     {
         return new self($methods, $pattern, $handler);

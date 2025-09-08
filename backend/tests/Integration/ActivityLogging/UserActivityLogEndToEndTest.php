@@ -275,7 +275,7 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
 
         // 建立 DTO 物件陣列
         $batchOperations = [
-            CreateActivityLogDTO::success(
+            CreateActivityLogDTO => :success(
                 ActivityType::POST_CREATED,
                 $userId,
                 'post',
@@ -350,12 +350,11 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
                 ActivityType::POST_VIEWED,
                 $userId,
                 'post',
-                (string) $i,
-                [
+                (string) $i, [
                     'title' => "併發測試文章 {$i}",
                     'concurrent_operation' => true,
                     'operation_id' => $i,
-                    'timestamp' => time(),
+                    'timestamp' => time(]),
                 ],
             );
         }

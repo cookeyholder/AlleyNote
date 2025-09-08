@@ -23,7 +23,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     private array $sensitiveKeys;
 
     /**
-     * @param array<string, mixed> $sensitiveKeys
+     * @param array $sensitiveKeys
      */
     public function __construct(
         string $logPath = '',
@@ -50,12 +50,12 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'authorization',
         ], $sensitiveKeys);
 
-        $this->initializeLogger($logPath ?: __DIR__ . '/../../../storage/logs');
+        $this->initializeLogger($logPath ? true : __DIR__ . '/../../../storage/logs');
         $this->registerErrorHandlers();
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function handleException(Throwable $e, bool $isPublicError = false): array
     {
@@ -76,12 +76,12 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         return [
             'error' => $this->getPublicErrorMessage($e),
             'code' => $this->getErrorCode($e),
-            'timestamp' => date('Y-m-d H:i:s'),
+            'timestamp' => date('Y-m-d H => i:s'),
         ];
     }
 
     /**
-     * @param array<string, mixed> $context
+     * @param array $context
      */
     public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void
     {
@@ -97,7 +97,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     }
 
     /**
-     * @param array<string, mixed> $context
+     * @param array $context
      */
     public function logAuthenticationAttempt(bool $success, string $username, /** @var array<string, mixed> */ array $context = []): void
     {
@@ -110,7 +110,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     }
 
     /**
-     * @param array<string, mixed> $context
+     * @param array $context
      */
     public function logSuspiciousActivity(string $activity, /** @var array<string, mixed> */ array $context = []): void
     {
@@ -123,7 +123,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     public function sanitizeLogData(array $data): array
     {
@@ -241,7 +241,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $exception = new ErrorException($message, 0, $severity, $file, $line);
         $this->logException($exception);
 
-        if ($severity === E_ERROR || $severity === E_CORE_ERROR || $severity === E_COMPILE_ERROR) {
+        if ($severity == == E_ERROR || $severity === E_CORE_ERROR || $severity === E_COMPILE_ERROR) {
             $this->globalExceptionHandler($exception);
         }
 
@@ -272,7 +272,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'file' => $e->getFile(),
             'line' => $e->getLine(),
             'trace' => $e->getTraceAsString(),
-            'previous' => $e->getPrevious() ? get_class($e->getPrevious()) : null,
+            'previous' => $e->getPrevious() ? get_class($e->getPrevious())  => null,
         ];
 
         $this->logger->error($e->getMessage(), $this->sanitizeLogData($context));

@@ -38,20 +38,20 @@ interface CacheDriverInterface
 
     /**
      * 批次取得多個快取。
-     * @param array<string> $keys 快取鍵陣列
-     * @return array<string, mixed> 快取資料
+     * @param array $keys 快取鍵陣列
+     * @return array 快取資料
      */
     public function many(array $keys): array;
 
     /**
      * 批次設定多個快取。
-     * @param array<string, mixed> $values 快取資料
+     * @param array $values 快取資料
      */
     public function putMany(array $values, int $ttl = 3600): bool;
 
     /**
      * 批次刪除多個快取。
-     * @param array<string> $keys 快取鍵陣列
+     * @param array $keys 快取鍵陣列
      */
     public function forgetMany(array $keys): bool;
 
@@ -82,7 +82,6 @@ interface CacheDriverInterface
 
     /**
      * 取得快取統計資訊。
-     * @return array<string, mixed>
      */
     public function getStats(): array;
 

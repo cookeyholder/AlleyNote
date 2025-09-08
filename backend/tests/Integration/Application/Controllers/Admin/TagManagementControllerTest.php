@@ -60,7 +60,6 @@ class TagManagementControllerTest extends TestCase
 
     /**
      * 安全地解析 JSON 響應，確保型別安全.
-     * @return array<string, mixed>
      */
     private function safeJsonDecode(mixed $content): ?array
     {
@@ -74,8 +73,6 @@ class TagManagementControllerTest extends TestCase
 
     /**
      * 驗證響應資料結構.
-     * @param array<string, mixed> $data
-     * @param array<string, mixed> $expectedKeys
      */
     private function validateResponse(array $data, array $expectedKeys): bool
     {
@@ -179,8 +176,8 @@ class TagManagementControllerTest extends TestCase
 
     public function testListGroups(): void
     {
-        $mockGroupData = $this->getMockGroupData();
-        $this->groupManager->method('getAllGroups')->willReturn($mockGroupData);
+        $mockGroupStatistics = $this->getMockGroupStatistics();
+        $this->groupManager->method('getGroupStatistics')->willReturn($mockGroupStatistics);
 
         $this->expectSuccessfulListGroupsResponse();
 
@@ -265,8 +262,6 @@ class TagManagementControllerTest extends TestCase
 
     /**
      * 取得測試查詢參數.
-     *
-     * @return array<string, string>
      */
     private function getTestQueryParams(): array
     {
@@ -451,8 +446,6 @@ class TagManagementControllerTest extends TestCase
 
     /**
      * 設定清空多個標籤的 Mock 驅動程式.
-     *
-     * @param array<string> $testTags
      */
     private function setupMockDriverForFlushTags(array $testTags): MemoryCacheDriver&MockObject
     {
@@ -582,7 +575,7 @@ class TagManagementControllerTest extends TestCase
     /**
      * 取得測試群組資料.
      *
-     * @return array{name: string, tags: array<string>}
+     * @return array{name: string, tags: array}
      */
     private function getTestGroupData(): array
     {
@@ -595,7 +588,7 @@ class TagManagementControllerTest extends TestCase
     /**
      * 設定群組管理器用於建立群組測試.
      *
-     * @param array{name: string, tags: array<string>} $testGroupData
+     * @param array{name: string, tags: array} $testGroupData
      */
     private function setupGroupManagerForCreateGroup(array $testGroupData): void
     {
@@ -632,15 +625,25 @@ class TagManagementControllerTest extends TestCase
     }
 
     /**
-     * 取得模擬群組資料.
-     *
-     * @return array<string, array<string, mixed>>
+     * 取得模擬群組統計資料.
      */
-    private function getMockGroupData(): array
+    private function getMockGroupStatistics(): array
     {
         return [
-            'group1' => ['tags' => ['tag1', 'tag2'], 'created_at' => '2023-01-01'],
-            'group2' => ['tags' => ['tag3', 'tag4'], 'created_at' => '2023-01-02'],
+            'groups' => [
+                'group1' => [
+                    'tags' => ['tag1', 'tag2'],
+                    'created_at' => '2023-01-01',
+                    'cache_count' => 5,
+                    'has_dependencies' => false,
+                ],
+                'group2' => [
+                    'tags' => ['tag3', 'tag4'],
+                    'created_at' => '2023-01-02',
+                    'cache_count' => 3,
+                    'has_dependencies' => true,
+                ],
+            ],
         ];
     }
 

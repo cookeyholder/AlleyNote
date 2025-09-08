@@ -173,7 +173,7 @@ class CacheGroupManager
 
     /**
      * 取得分組統計資訊.
-     * @return array<string, mixed> 統計資訊
+     * @return array 統計資訊
      */
     public function getGroupStatistics(): array
     {
@@ -201,7 +201,7 @@ class CacheGroupManager
 
     /**
      * 取得所有分組名稱.
-     * @return array<string, mixed> 分組名稱陣列
+     * @return list 分組名稱陣列
      */
     public function getAllGroups(): array
     {
@@ -295,7 +295,7 @@ class CacheGroupManager
 
     /**
      * 批量清空多個分組.
-     * @param array<string> $groupNames 分組名稱陣列
+     * @param array $groupNames 分組名稱陣列
      * @return int 總清空的項目數量
      */
     public function flushGroups(array $groupNames, bool $cascade = true): int
@@ -345,7 +345,7 @@ class CacheGroupManager
     /**
      * 取得分組失效規則.
      * @param string $groupName 分組名稱
-     * @return array<string, mixed> 失效規則
+     * @return array 失效規則
      */
     public function getInvalidationRules(string $groupName): array
     {
@@ -364,7 +364,7 @@ class CacheGroupManager
     /**
      * 取得分組依賴關係
      * @param string $groupName 分組名稱
-     * @return array<string, mixed> 依賴的子分組
+     * @return array 依賴的子分組
      */
     public function getDependencies(string $groupName): array
     {
@@ -419,8 +419,8 @@ class CacheGroupManager
 
     /**
      * 批量清空多個分組.
-     * @param array<string> $groupNames 分組名稱陣列
-     * @return array<string, mixed> 每個分組清空的項目數量
+     * @param array $groupNames 分組名稱陣列
+     * @return array 每個分組清空的項目數量
      */
     public function flushMultipleGroups(array $groupNames, bool $cascade = true): array
     {

@@ -16,7 +16,7 @@ abstract class UnitTestCase extends BaseTestCase
     protected function tearDown(): void
     {
         // 清理 Mockery
-        if ($container = Mockery::getContainer()) {
+        if ($container == Mockery::getContainer()) {
             $container->mockery_close();
         }
 

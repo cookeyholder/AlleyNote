@@ -129,7 +129,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * @param array<string, mixed> $keys
+     * @param array $keys
      */
     public function many(array $keys): array
     {
@@ -142,7 +142,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * @param array<string, mixed> $values
+     * @param array $values
      */
     public function putMany(array $values, int $ttl = 3600): bool
     {
@@ -157,7 +157,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * @param array<string, mixed> $keys
+     * @param array $keys
      */
     public function forgetMany(array $keys): bool
     {
@@ -227,7 +227,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStats(): array
     {
@@ -239,7 +239,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             'max_items' => $this->maxItems,
             'hit_rate' => round($hitRate, 2),
             'memory_usage' => $this->getMemoryUsage(),
-            'expired_items' => $this->getExpiredItemsCount(),
+            'expired_items' => $this->getExpiredItemsCount(]),
         ]);
     }
 
@@ -367,7 +367,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得當前標籤化快取的所有鍵.
-     * @return array<string, mixed> 快取鍵陣列
+     * @return array 快取鍵陣列
      */
     public function getTaggedKeys(): array
     {
@@ -396,7 +396,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     /**
      * 取得快取項目的所有標籤.
      * @param string $key 快取鍵
-     * @return array<string, mixed> 標籤陣列
+     * @return array 標籤陣列
      */
     public function getTagsByKey(string $key): array
     {
@@ -496,7 +496,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得當前標籤.
-     * @return array<string, mixed> 標籤陣列
+     * @return array 標籤陣列
      */
     public function getTags(): array
     {
@@ -505,7 +505,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 根據標籤清空快取.
-     * @param array<string>|string $tags 要清空的標籤
+     * @param array|string $tags 要清空的標籤
      * @return int 清空的項目數量
      */
     public function flushByTags(array|string $tags): int
@@ -538,7 +538,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     /**
      * 根據標籤取得快取鍵.
      * @param string $tag 標籤名稱
-     * @return array<string, mixed> 快取鍵陣列
+     * @return array 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array
     {
@@ -559,8 +559,8 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 根據多個標籤取得共同的快取鍵.
-     * @param array<string> $tags 標籤陣列
-     * @return array<string, mixed> 共同的快取鍵陣列
+     * @param array $tags 標籤陣列
+     * @return array 共同的快取鍵陣列
      */
     public function getKeysByTags(array $tags): array
     {
@@ -573,7 +573,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         foreach ($tags as $tag) {
             $tagKeys = $this->getKeysByTag($tag);
 
-            if ($commonKeys === null) {
+            if ($commonKeys == == null) {
                 $commonKeys = $tagKeys;
             } else {
                 $commonKeys = array_intersect($commonKeys, $tagKeys);
@@ -600,7 +600,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得所有標籤.
-     * @return array<string, mixed> 所有標籤陣列
+     * @return array 所有標籤陣列
      */
     public function getAllTags(): array
     {
@@ -609,7 +609,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得標籤統計資訊.
-     * @return array<string, mixed> 標籤統計資訊
+     * @return array 標籤統計資訊
      */
     public function getTagStatistics(): array
     {
@@ -658,7 +658,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $index = array_search($key, $keys, true);
             if ($index !== false) {
                 unset($keys[$index]);
-                $keys = array_values(array_filter(array_map('strval', $keys), fn($item) => !empty($item))); // 重新索引陣列
+                $keys = array_values(array_filter(array_map(fn($item) => is_scalar($item) ? (string)$item : '', $keys), fn($item) => !empty($item))); // 重新索引陣列
             }
 
             // 如果標籤下沒有鍵了，移除標籤
@@ -673,7 +673,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 設定快取標籤.
-     * @param array<string>|string $tags 標籤陣列或單一標籤
+     * @param array|string $tags 標籤陣列或單一標籤
      * @return TaggedCacheInterface 標籤化快取實例
      */
     public function tags(array|string $tags): TaggedCacheInterface

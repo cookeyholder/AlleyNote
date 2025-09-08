@@ -255,7 +255,6 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
             $returnType = $method->getReturnType();
             $this->assertEquals('bool', $returnType->getName());
         }
-    }
 
     public function testCleanupMethodSignature(): void
     {
@@ -329,7 +328,6 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
                 $paramIndex++;
             }
         }
-    }
 
     public function testBatchMethods(): void
     {
@@ -342,7 +340,6 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
             $returnType = $method->getReturnType();
             $this->assertEquals('int', $returnType->getName());
         }
-    }
 
     public function testGetTokensNearExpiryMethodSignature(): void
     {
@@ -408,7 +405,6 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         foreach ($expectedMethods as $expectedMethod) {
             $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
         }
-    }
 
     public function testInterfaceHasCorrectDocumentation(): void
     {

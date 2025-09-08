@@ -29,7 +29,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     ];
 
     /**
-     * @param array<CacheDriverInterface> $layers 快取層級，按優先順序排列
+     * @param array $layers 快取層級，按優先順序排列
      */
     public function __construct(array $layers)
     {
@@ -143,7 +143,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     }
 
     /**
-     * @param array<string, mixed> $keys
+     * @param array $keys
      */
     public function many(array $keys): array
     {
@@ -179,7 +179,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     }
 
     /**
-     * @param array<string, mixed> $values
+     * @param array $values
      */
     public function putMany(array $values, int $ttl = 3600): bool
     {
@@ -203,7 +203,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     }
 
     /**
-     * @param array<string, mixed> $keys
+     * @param array $keys
      */
     public function forgetMany(array $keys): bool
     {
@@ -300,7 +300,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStats(): array
     {
@@ -318,7 +318,7 @@ class LayeredCacheDriver implements CacheDriverInterface
 
         return array_merge($this->stats, [
             'total_layers' => count($this->layers),
-            'hit_rate' => round($hitRate, 2),
+            'hit_rate' => round($hitRate, 2]),
             'layers' => $layerStats,
         ]);
     }
@@ -382,7 +382,7 @@ class LayeredCacheDriver implements CacheDriverInterface
 
     /**
      * 取得所有層級。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getLayers(): array
     {

@@ -31,7 +31,7 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->repository = new ActivityLogRepository($this->pdo);
 
         // 清理測試資料
-        $this->pdo->exec('DELETE FROM user_activity_logs WHERE action_type LIKE "post.%" AND user_id IS NULL');
+        $this->pdo->exec('DELETE FROM user_activity_logs WHERE action_type LIKE "post.%sprintf(" AND user_id IS NULL');
     }
 
     protected function tearDown(): void
@@ -84,8 +84,8 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->assertSame('post', $logs[0]['target_type']);
 
         $metadata = json_decode($logs[0]['metadata'], true);
-        $this->assertSame($postId, $metadata['post_id']);
-        $this->assertSame('Test Post Title', $metadata['title']);
+        $this->assertSame($postId, (is_array($metadata) && array_key_exists('post_id', $metadata) ? $metadata['post_id'] : null));
+        $this->assertSame('Test Post Title', (is_array($metadata) && array_key_exists('title', $metadata) ? $metadata['title'] : null));
     }
 
     #[Test]
@@ -130,8 +130,8 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->assertSame((string) $postId, $logs[0]['target_id']);
 
         $metadata = json_decode($logs[0]['metadata'], true);
-        $this->assertSame($postId, $metadata['post_id']);
-        $this->assertSame('view', $metadata['operation']);
+        $this->assertSame($postId, (is_array($metadata) && array_key_exists('post_id', $metadata) ? $metadata['post_id'] : null));
+        $this->assertSame('view', (is_array($metadata) && array_key_exists('operation', $metadata) ? $metadata['operation'] : null));
     }
 
     #[Test]
@@ -173,9 +173,9 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->assertSame(ActivityType::POST_UPDATED->value, $logs[0]['action_type']);
 
         $metadata = json_decode($logs[0]['metadata'], true);
-        $this->assertSame('update', $metadata['operation']);
-        $this->assertArrayHasKey('title', array_flip(is_array($metadata['changes']) ? array_filter($metadata['changes'], fn($v) => is_string($v) || is_int($v)) : []));
-        $this->assertArrayHasKey('content', array_flip(is_array($metadata['changes']) ? array_filter($metadata['changes'], fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertSame('update', (is_array($metadata) && array_key_exists('operation', $metadata) ? $metadata['operation'] : null));
+        $this->assertArrayHasKey('title', array_flip(is_array((is_array($metadata) && array_key_exists('changes', $metadata) ? $metadata['changes'] : null)) ? array_filter((is_array($metadata) && array_key_exists('changes', $metadata) ? $metadata['changes'] : null), fn($v) => is_string($v) || is_int($v)) : []));
+        $this->assertArrayHasKey('content', array_flip(is_array((is_array($metadata) && array_key_exists('changes', $metadata) ? $metadata['changes'] : null)) ? array_filter((is_array($metadata) && array_key_exists('changes', $metadata) ? $metadata['changes'] : null), fn($v) => is_string($v) || is_int($v)) : []));
     }
 
     #[Test]
@@ -204,14 +204,14 @@ class PostControllerActivityLoggingTest extends TestCase
             ')->execute([
                 uniqid('test_' . $i . '_', true),
                 $userId,
-                $activity['type']->value,
-                $activity['type']->getCategory()->value,
+                (is_array($activity) && array_key_exists('type', $activity) ? $activity['type'] : null)->value,
+                (is_array($activity) && array_key_exists('type', $activity) ? $activity['type'] : null)->getCategory()->value,
                 'success',
                 (string) ($i + 1),
                 'post',
                 '192.168.1.100',
-                $activity['time']->format('Y-m-d H:i:s'),
-                $activity['time']->format('Y-m-d H:i:s'),
+                (is_array($activity) && array_key_exists('time', $activity) ? $activity['time'] : null)->format('Y-m-d H:i:s'),
+                (is_array($activity) && array_key_exists('time', $activity) ? $activity['time'] : null)->format('Y-m-d H:i:s'),
             ]);
         }
 

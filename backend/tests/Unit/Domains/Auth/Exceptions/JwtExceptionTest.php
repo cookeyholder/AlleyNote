@@ -18,7 +18,6 @@ class JwtExceptionTest extends TestCase
 {
     /**
      * 建立測試用的具體實作類別.
-     * @param array<string, mixed> $context
      */
     private function createConcreteJwtException(
         string $message = 'Test exception',
@@ -28,7 +27,7 @@ class JwtExceptionTest extends TestCase
     ): JwtException {
         /** @var array<string, mixed> $context */
         return new class ($message, $code, $previous, $context) extends JwtException {
-            /**\n              * @param array<string, mixed> $context
+            /**\n              * @param array $context
              */
             public function __construct(
                 string $message,
@@ -236,7 +235,7 @@ class JwtExceptionTest extends TestCase
                 'type' => 'access',
                 'scopes' => ['read', 'write'],
                 'metadata' => [
-                    'created_at' => '2025-01-01T00:00:00Z',
+                    'created_at' => '2025-01-01T00 => 00:00Z',
                     'expires_at' => '2025-01-01T01:00:00Z',
                 ],
             ],

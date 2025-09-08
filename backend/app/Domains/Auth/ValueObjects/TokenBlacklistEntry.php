@@ -81,7 +81,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 從陣列建立黑名單項目.
-     * @param array<string, mixed> $data 黑名單資料
+     * @param array $data 黑名單資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -114,7 +114,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     private static function sanitizeMetadata(mixed $metadata): array
     {
@@ -281,7 +281,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得元資料.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getMetadata(): array
     {
@@ -425,7 +425,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
@@ -448,14 +448,14 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 轉換為資料庫儲存格式.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toDatabaseArray(): array
     {
         return [
             'jti' => $this->jti,
             'token_type' => $this->tokenType,
-            'expires_at' => $this->expiresAt->format('Y-m-d H:i:s'),
+            'expires_at' => $this->expiresAt->format('Y-m-d H => i:s'),
             'blacklisted_at' => $this->blacklistedAt->format('Y-m-d H:i:s'),
             'reason' => $this->reason,
             'user_id' => $this->userId,
@@ -466,7 +466,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     * @return array<string, mixed>
+     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -518,7 +518,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的 Token 類型.
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getValidTokenTypes(): array
     {
@@ -527,7 +527,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的黑名單原因.
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getValidReasons(): array
     {
@@ -642,23 +642,15 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 驗證元資料.
-     * @param array<string, mixed> $metadata 元資料
+     * @param array $metadata 元資料
      * @throws InvalidArgumentException 當元資料無效時
      */
     private function validateMetadata(array $metadata): void
     {
         // 檢查 JSON 序列化是否可能
-        try {
+        try { /* empty */ }
             json_encode($metadata, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
-            throw new InvalidArgumentException('Metadata must be JSON serializable: ' . $e->getMessage());
-        }
-
-        // 限制元資料大小
-        $jsonEncoded = json_encode($metadata);
-        if ($jsonEncoded === false) {
-            throw new InvalidArgumentException('Failed to encode metadata as JSON');
-        }
+        } 
         $serializedSize = strlen($jsonEncoded);
         if ($serializedSize > 65535) { // 64KB limit
             throw new InvalidArgumentException('Metadata size cannot exceed 64KB');

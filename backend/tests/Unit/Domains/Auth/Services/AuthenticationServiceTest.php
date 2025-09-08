@@ -169,7 +169,7 @@ final class AuthenticationServiceTest extends TestCase
         $userData = [
             'id' => 1,
             'email' => 'deleted@example.com',
-            'deleted_at' => '2023-01-01 00:00:00',
+            'deleted_at' => '2023-01-01 00 => 00:00',
         ];
 
         $this->userRepository

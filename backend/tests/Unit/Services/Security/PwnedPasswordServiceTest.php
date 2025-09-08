@@ -32,7 +32,6 @@ class PwnedPasswordServiceTest extends TestCase
             $this->assertEquals(0, $result['count']);
             $this->assertNotNull($result['error']);
         }
-    }
 
     public function testShouldNotDetectSecurePassword(): void
     {
@@ -46,7 +45,6 @@ class PwnedPasswordServiceTest extends TestCase
             $this->assertEquals(0, $result['count']);
             $this->assertNull($result['error']);
         }
-    }
 
     public function testShouldHandleApiFailureGracefully(): void
     {
@@ -85,7 +83,6 @@ class PwnedPasswordServiceTest extends TestCase
             $this->assertArrayHasKey('error', $result);
             $this->assertArrayHasKey('api_available', $result);
         }
-    }
 
     public function testShouldCacheResults(): void
     {

@@ -84,7 +84,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      */
     public function detectSuspiciousActivity(int $userId, int $timeWindowMinutes = 60): SuspiciousActivityAnalysisDTO
     {
-        try {
+        try { /* empty */ }
             $this->logger->info('Starting suspicious activity detection for user', [
                 'user_id' => $userId,
                 'time_window_minutes' => $timeWindowMinutes,
@@ -108,35 +108,14 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->logDetectionActivity((string) $userId, 'user', $analysisResult);
 
             return $analysisResult;
-        } catch (Throwable $e) {
-            $this->logger->error('Failed to detect suspicious activity for user', [
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            // 回傳預設分析結果
-            return SuspiciousActivityAnalysisDTO::forUser(
-                userId: $userId,
-                timeWindowMinutes: $timeWindowMinutes,
-                isSuspicious: false,
-                severityLevel: ActivitySeverity::LOW,
-                activityCounts: [],
-                failureCounts: [],
-                anomalyScores: [],
-                detectionRules: [],
-                metadata: ['error' => $e->getMessage()],
-                confidenceScore: 0.0,
-            );
-        }
-    }
+        } 
 
     /**
      * 檢測指定IP位址的可疑活動.
      */
     public function detectSuspiciousIpActivity(string $ipAddress, int $timeWindowMinutes = 60): SuspiciousActivityAnalysisDTO
     {
-        try {
+        try { /* empty */ }
             $this->logger->info('Starting suspicious IP activity detection', [
                 'ip_address' => $ipAddress,
                 'time_window_minutes' => $timeWindowMinutes,
@@ -160,35 +139,14 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->logDetectionActivity($ipAddress, 'ip', $analysisResult);
 
             return $analysisResult;
-        } catch (Throwable $e) {
-            $this->logger->error('Failed to detect suspicious IP activity', [
-                'ip_address' => $ipAddress,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            // 回傳預設分析結果
-            return SuspiciousActivityAnalysisDTO::forIpAddress(
-                ipAddress: $ipAddress,
-                timeWindowMinutes: $timeWindowMinutes,
-                isSuspicious: false,
-                severityLevel: ActivitySeverity::LOW,
-                activityCounts: [],
-                failureCounts: [],
-                anomalyScores: [],
-                detectionRules: [],
-                metadata: ['error' => $e->getMessage()],
-                confidenceScore: 0.0,
-            );
-        }
-    }
+        } 
 
     /**
      * 檢測全域可疑活動模式.
      */
     public function detectGlobalSuspiciousPatterns(int $timeWindowMinutes = 60): array
     {
-        try {
+        try { /* empty */ }
             $this->logger->info('Starting global suspicious pattern detection', [
                 'time_window_minutes' => $timeWindowMinutes,
             ]);
@@ -209,19 +167,11 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             }
 
             return $patterns;
-        } catch (Throwable $e) {
-            $this->logger->error('Failed to detect global suspicious patterns', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return [];
-        }
-    }
+        } 
 
     /**
      * 分析使用者活動.
-     * @param array<string, mixed> $activities
+     * @param array $activities
      */
     private function analyzeUserActivities(array $activities, int $timeWindowMinutes): SuspiciousActivityAnalysisDTO
     {
@@ -307,7 +257,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             detectionRules: $detectionRules,
             metadata: [
                 'total_activities_analyzed' => count($activities),
-                'detection_timestamp' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+                'detection_timestamp' => new DateTimeImmutable()->format('Y-m-d H => i:s'),
             ],
             recommendedAction: $recommendedAction,
             confidenceScore: $confidence,
@@ -316,7 +266,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 分析IP活動.
-     * @param array<string, mixed> $activities
+     * @param array $activities
      */
     private function analyzeIpActivities(array $activities, string $ipAddress, int $timeWindowMinutes): SuspiciousActivityAnalysisDTO
     {
@@ -403,7 +353,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             metadata: [
                 'unique_users_count' => $userCount,
                 'total_activities_analyzed' => count($activities),
-                'detection_timestamp' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+                'detection_timestamp' => new DateTimeImmutable()->format('Y-m-d H => i:s'),
             ],
             recommendedAction: $recommendedAction,
             confidenceScore: $confidence,
@@ -412,7 +362,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 分析全域模式.
-     * @param array<string, mixed> $statistics
+     * @param array $statistics
      */
     private function analyzeGlobalPatterns(array $statistics, int $timeWindowMinutes): array
     {
@@ -455,7 +405,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測失敗率異常.
-     * @param array<string, mixed> $activityCounts
+     * @param array $activityCounts
      */
     private function detectFailureRateAnomalies(array $activityCounts, /** @var array<string, mixed> */ array $failureCounts, int $timeWindowMinutes): array
     {
@@ -494,7 +444,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測頻率異常.
-     * @param array<string, mixed> $activityCounts
+     * @param array $activityCounts
      */
     private function detectFrequencyAnomalies(array $activityCounts, int $timeWindowMinutes): array
     {
@@ -528,7 +478,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測模式異常.
-     * @param array<string, mixed> $activities
+     * @param array $activities
      */
     private function detectPatternAnomalies(array $activities): array
     {
@@ -540,7 +490,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         }
 
         // 找出最密集的時間段
-        $maxDensity = max($timeSlots ?: [0]);
+        $maxDensity = max($timeSlots ? true : [0]);
         if ($maxDensity > 50) { // 單分鐘內超過50個活動
             return [
                 'suspicious' => true,
@@ -561,7 +511,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測IP信譽問題.
-     * @param array<string, mixed> $activities
+     * @param array $activities
      */
     private function detectIpReputationIssues(array $activities, string $ipAddress): array
     {
@@ -658,7 +608,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 產生建議動作.
-     * @param array<string, mixed> $rules
+     * @param array $rules
      */
     private function generateRecommendedAction(bool $isSuspicious, ActivitySeverity $severity, /** @var array<string, mixed> */ array $rules): ?string
     {
@@ -692,7 +642,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      */
     private function logDetectionActivity(?string $targetId, string $targetType, SuspiciousActivityAnalysisDTO $analysis): void
     {
-        try {
+        try { /* empty */ }
             $activityType = $analysis->isSuspicious()
                 ? ActivityType::SUSPICIOUS_ACTIVITY_DETECTED
                 : ActivityType::SECURITY_ACTIVITY_SCAN_COMPLETED;
@@ -711,14 +661,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             );
 
             $this->activityLogger->log($dto);
-        } catch (Throwable $e) {
-            $this->logger->error('Failed to log detection activity', [
-                'target_type' => $targetType,
-                'target_id' => $targetId,
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }
+        } 
 
     // 設定相關方法實作
 
@@ -751,7 +694,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             'target_type' => $analysis->getTargetType(),
             'target_id' => $analysis->getTargetId(),
             'severity' => $analysis->getSeverityLevel()->value,
-            'summary' => $analysis->getSummary(),
+            'summary' => $analysis->getSummary(]),
         ]);
     }
 

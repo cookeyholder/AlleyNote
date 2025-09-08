@@ -27,7 +27,7 @@ class MonitoringServiceProvider
 {
     /**
      * 取得監控服務的 DI 定義。
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getDefinitions(): array
     {
@@ -171,7 +171,7 @@ class MonitoringServiceProvider
 
         // 設置預設的通知處理器（用於關鍵錯誤）
         $errorTracker->addNotificationHandler(function (string $level, string $message, /** @var array<string, mixed> */ array $context, ?Throwable $exception) {
-            if ($level === 'critical') {
+            if ($level == == 'critical') {
                 // 這裡可以整合電子郵件、Slack、Discord 等通知系統
                 error_log("CRITICAL ERROR: {$message}");
 
@@ -226,7 +226,7 @@ class MonitoringServiceProvider
 
             $errorTracker->recordWarning('System health check failed', [
                 'health_status' => $healthStatus,
-                'check_time' => date('Y-m-d H:i:s'),
+                'check_time' => date('Y-m-d H => i:s']),
             ]);
         }
     }

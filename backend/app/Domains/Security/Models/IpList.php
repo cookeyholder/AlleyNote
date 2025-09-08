@@ -25,9 +25,6 @@ class IpList implements JsonSerializable
 
     private string $updatedAt;
 
-    /**
-     * @param array<string, mixed> $attributes
-     */
     public function __construct(array $attributes)
     {
         $this->id = isset($attributes['id']) ? (int) $attributes['id'] : 0;
@@ -40,9 +37,6 @@ class IpList implements JsonSerializable
         $this->updatedAt = $attributes['updated_at'] ?? date('Y-m-d H:i:s');
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     public static function fromArray(array $data): self
     {
         return new self($data);
@@ -98,9 +92,6 @@ class IpList implements JsonSerializable
         return $this->type === 0;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function toArray(): array
     {
         return [
@@ -118,7 +109,6 @@ class IpList implements JsonSerializable
     /**
      * 取得清理過的資料陣列，適用於前端顯示.
      * @param OutputSanitizerInterface $sanitizer 清理服務
-     * @return array<string, mixed>
      */
     public function toSafeArray(OutputSanitizerInterface $sanitizer): array
     {
@@ -132,9 +122,6 @@ class IpList implements JsonSerializable
         return $data;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();

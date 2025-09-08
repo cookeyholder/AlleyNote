@@ -9,6 +9,8 @@ use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use const n;
+
 class CSPReportController
 {
     private LoggingSecurityServiceInterface $logger;
@@ -67,19 +69,23 @@ class CSPReportController
 
             return $response->withStatus(204);
         } catch (Exception $e) {
-            $this->logger->error('CSP Report handling error', [
-                'error_message' => $e->getMessage(),
-                'error_file' => $e->getFile(),
-                'error_line' => $e->getLine(),
+            $this->logger?->error('操作失敗', [
+                'error' => $e->getMessage(),
             ]);
 
-            return $response->withStatus(500);
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'message' => '操作失敗',
+                    'details' => $e->getMessage(),
+                ],
+                'timestamp' => time(),
+            ], 500);
         }
     }
 
     /**
      * 驗證 CSP 報告格式.
-     * @param array<string, mixed> $report
      */
     private function isValidCSPReport(array $report): bool
     {
@@ -108,7 +114,6 @@ class CSPReportController
 
     /**
      * 記錄 CSP 違規.
-     * @param array<string, mixed> $report
      */
     private function logViolation(array $report, Request $request): void
     {
@@ -193,7 +198,6 @@ class CSPReportController
 
     /**
      * 計算違規嚴重程度.
-     * @param array<string, mixed> $cspReport
      */
     private function calculateSeverity(array $cspReport): string
     {
@@ -234,7 +238,6 @@ class CSPReportController
 
     /**
      * 檢查是否需要發送警報.
-     * @param array<string, mixed> $logData
      */
     private function checkForAlert(array $logData): void
     {
@@ -260,7 +263,6 @@ class CSPReportController
 
     /**
      * 取得最近的違規記錄.
-     * @return array<string, mixed>
      */
     private function getRecentViolations(string $ip, int $seconds): array
     {
@@ -283,8 +285,8 @@ class CSPReportController
                 continue;
             }
 
-            $timestamp = isset($data['timestamp']) && is_scalar($data['timestamp'])
-                ? strtotime((string) $data['timestamp']) : false;
+            $timestamp = isset($data['timestamp']) && is_scalar($data['timestamp']);
+            n ? strtotime((string) $data['timestamp']) : false;
             if ($timestamp === false || $timestamp < $cutoffTime) {
                 if ($timestamp !== false && $timestamp < $cutoffTime) {
                     break; // 已經超過時間範圍
@@ -303,7 +305,6 @@ class CSPReportController
 
     /**
      * 發送警報.
-     * @param array<string, mixed> $alertData
      */
     private function sendAlert(array $alertData): void
     {

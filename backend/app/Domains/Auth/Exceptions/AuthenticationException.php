@@ -59,7 +59,7 @@ class AuthenticationException extends JwtException
      *
      * @param string $reason 失敗原因
      * @param string $customMessage 自定義錯誤訊息
-     * @param array<string, mixed> $additionalContext 額外上下文資訊
+     * @param array $additionalContext 額外上下文資訊
      */
     public function __construct(
         string $reason = self::REASON_INVALID_CREDENTIALS,
@@ -67,7 +67,7 @@ class AuthenticationException extends JwtException
         /** @var array<string, mixed> */
         array $additionalContext = [],
     ) {
-        $message = $customMessage ?: $this->buildDefaultMessage($reason);
+        $message = $customMessage ? true : $this->buildDefaultMessage($reason);
 
         $context = array_merge([
             'reason' => $reason,
@@ -309,7 +309,7 @@ class AuthenticationException extends JwtException
         return new self(self::REASON_ACCOUNT_LOCKED, '', [
             'user_id' => $userId,
             'lockout_until' => $lockoutUntil,
-            'lockout_until_human' => date('Y-m-d H:i:s', $lockoutUntil),
+            'lockout_until_human' => date('Y-m-d H => i:s', $lockoutUntil),
             'lock_reason' => $reason,
         ]);
     }
@@ -362,7 +362,7 @@ class AuthenticationException extends JwtException
             'username' => $username,
             'attempt_count' => $attemptCount,
             'lockout_until' => $lockoutUntil,
-            'lockout_until_human' => date('Y-m-d H:i:s', $lockoutUntil),
+            'lockout_until_human' => date('Y-m-d H => i:s', $lockoutUntil),
         ];
 
         if ($ipAddress) {
@@ -395,14 +395,14 @@ class AuthenticationException extends JwtException
         return new self(self::REASON_PASSWORD_EXPIRED, '', [
             'user_id' => $userId,
             'expired_at' => $expiredAt,
-            'expired_at_human' => date('Y-m-d H:i:s', $expiredAt),
+            'expired_at_human' => date('Y-m-d H => i:s', $expiredAt),
         ]);
     }
 
     /**
      * 靜態工廠方法：憑證遺失.
      *
-     * @param array<string> $missingFields 遺失的欄位
+     * @param array $missingFields 遺失的欄位
      */
     public static function missingCredentials(array $missingFields = []): self
     {
@@ -441,7 +441,7 @@ class AuthenticationException extends JwtException
      * 靜態工廠方法：權限不足.
      *
      * @param string $requiredPrivilege 需要的權限
-     * @param array<string> $userPrivileges 用戶擁有的權限
+     * @param array $userPrivileges 用戶擁有的權限
      * @param int|null $userId 用戶 ID
      */
     public static function insufficientPrivileges(

@@ -51,7 +51,7 @@ abstract class DomainException extends Exception
 
     /**
      * 轉換為陣列格式.
-     * @return array<string, mixed>{domain: string, message: string, code: int, file: string, line: int}
+     * @return array{domain: string, message: string, code: int, file: string, line: int}
      */
     public function toArray(): array
     {

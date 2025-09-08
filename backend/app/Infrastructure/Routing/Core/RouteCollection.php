@@ -44,7 +44,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @param array<string, mixed> $routes
+     * @param array $routes
      */
     public function addRoutes(array $routes): void
     {
@@ -53,7 +53,6 @@ class RouteCollection implements RouteCollectionInterface
                 $this->add($route);
             }
         }
-    }
 
     public function getByName(string $name): ?RouteInterface
     {
@@ -131,7 +130,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
@@ -151,7 +150,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     public static function fromArray(array $data): RouteCollectionInterface
     {
@@ -182,8 +181,8 @@ class RouteCollection implements RouteCollectionInterface
      * 序列化路由處理器.
      *
      * 注意：這裡的實作是簡化版本，實際使用時可能需要更複雜的序列化邏輯
-     * @param array<string, mixed> $handler
-     * @return array<string, mixed>
+     * @param array $handler
+     * @return array
      */
     private function serializeHandler($handler): string|array
     {

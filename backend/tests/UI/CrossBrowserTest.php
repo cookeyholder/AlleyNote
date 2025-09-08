@@ -18,7 +18,7 @@ class CrossBrowserTest extends UITestCase
         ],
         'firefox' => [
             'name' => 'Firefox',
-            'userAgent' => 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0',
+            'userAgent' => 'Mozilla/5.0 (X11; Linux x86_64; rv => 109.0) Gecko/20100101 Firefox/119.0',
         ],
         'safari' => [
             'name' => 'Safari',
@@ -35,9 +35,6 @@ class CrossBrowserTest extends UITestCase
         }
     }
 
-    /**
-     * @param array<string, mixed> $browser
-     */
     private function testBrowserCompatibility(array $browser): void
     {
         // 啟動瀏覽器並設定 User Agent

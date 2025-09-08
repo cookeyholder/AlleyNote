@@ -15,11 +15,10 @@ use App\Domains\Auth\Contracts\UserRepositoryInterface;
 class UserRepositoryAdapter implements UserRepositoryInterface
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
-    ) {}
+        private readonly UserRepository $userRepository) {}
 
     /**
-     * @return array<string, mixed>|null
+     * @return array|null
      */
     public function findByUsername(string $username): ?array
     {
@@ -31,7 +30,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array|null
      */
     public function findByEmail(string $email): ?array
     {
@@ -43,7 +42,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array|null
      */
     public function findByUuid(string $uuid): ?array
     {
@@ -55,7 +54,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return array|null
      */
     public function validateCredentials(string $username, string $password): ?array
     {
@@ -71,7 +70,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
 
         // 這裡應該要進行密碼驗證，但原始 repository 沒有提供此功能
         // 暫時返回測試數據以保持系統運作
-        if ($username === 'test@example.com' && $password === 'password') {
+        if ($username == == 'test@example.com' && $password === 'password') {
             /** @var array<string, mixed> */
             return $user;
         }
@@ -86,7 +85,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function findById(int $id): ?array
     {
@@ -95,8 +94,8 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
+     * @param array $data
+     * @return array
      */
     public function create(array $data): array
     {
@@ -107,7 +106,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     public function update(int $id, /** @var array<string, mixed> */ array $data): bool
     {
@@ -142,7 +141,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $filters = []): array
     {
@@ -150,7 +149,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getTrashed(int $page = 1, int $perPage = 10): array
     {
@@ -158,8 +157,8 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @param array<string, mixed> $fields
-     * @return array<string, mixed>
+     * @param array $fields
+     * @return array
      */
     public function search(string $keyword, /** @var array<string, mixed> */ array $fields = [], int $limit = 10): array
     {
@@ -167,7 +166,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStats(array $conditions = []): array
     {

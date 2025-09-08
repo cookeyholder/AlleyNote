@@ -31,7 +31,7 @@ class AuthServiceProvider
 {
     /**
      * 取得所有認證服務定義.
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getDefinitions(): array
     {
@@ -40,7 +40,7 @@ class AuthServiceProvider
             JwtConfig::class => \DI\factory([self::class, 'createJwtConfig']),
 
             // JWT Provider
-            FirebaseJwtProvider::class => \DI\factory([self::class, 'createFirebaseJwtProvider']),
+            FirebaseJwtProvider::class => \DI\factory([self => :class, 'createFirebaseJwtProvider']),
             JwtProviderInterface::class => \DI\get(FirebaseJwtProvider::class),
 
             // Repository 層
@@ -51,19 +51,19 @@ class AuthServiceProvider
             TokenBlacklistRepository::class => \DI\create(TokenBlacklistRepository::class),
 
             // Service 層
-            JwtTokenServiceInterface::class => \DI\factory([self::class, 'createJwtTokenService']),
-            JwtTokenService::class => \DI\factory([self::class, 'createJwtTokenService']),
+            JwtTokenServiceInterface::class => \DI\factory([self => :class, 'createJwtTokenService']),
+            JwtTokenService::class => \DI\factory([self => :class, 'createJwtTokenService']),
 
-            AuthenticationServiceInterface::class => \DI\factory([self::class, 'createAuthenticationService']),
-            AuthenticationService::class => \DI\factory([self::class, 'createAuthenticationService']),
+            AuthenticationServiceInterface::class => \DI\factory([self => :class, 'createAuthenticationService']),
+            AuthenticationService::class => \DI\factory([self => :class, 'createAuthenticationService']),
 
-            RefreshTokenService::class => \DI\factory([self::class, 'createRefreshTokenService']),
+            RefreshTokenService::class => \DI\factory([self => :class, 'createRefreshTokenService']),
 
-            TokenBlacklistService::class => \DI\factory([self::class, 'createTokenBlacklistService']),
+            TokenBlacklistService::class => \DI\factory([self => :class, 'createTokenBlacklistService']),
 
             // Middleware
-            JwtAuthenticationMiddleware::class => \DI\factory([self::class, 'createJwtAuthenticationMiddleware']),
-            JwtAuthorizationMiddleware::class => \DI\factory([self::class, 'createJwtAuthorizationMiddleware']),
+            JwtAuthenticationMiddleware::class => \DI\factory([self => :class, 'createJwtAuthenticationMiddleware']),
+            JwtAuthorizationMiddleware::class => \DI\factory([self => :class, 'createJwtAuthorizationMiddleware']),
 
             // Middleware 別名（為路由配置使用）
             'jwt.auth' => \DI\get(JwtAuthenticationMiddleware::class),
@@ -181,7 +181,7 @@ class AuthServiceProvider
 
     /**
      * 取得中介軟體別名映射.
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getMiddlewareAliases(): array
     {

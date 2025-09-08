@@ -24,7 +24,7 @@ class RouteParametersMiddleware extends AbstractMiddleware
 
     /**
      * 建構函式.
-     * @param array<string, mixed> $parameters 路由參數
+     * @param array $parameters 路由參數
      */
     public function __construct(array $parameters = [], int $priority = -100)
     {
@@ -49,7 +49,7 @@ class RouteParametersMiddleware extends AbstractMiddleware
 
     /**
      * 設定路由參數.
-     * @param array<string, mixed> $parameters 路由參數
+     * @param array $parameters 路由參數
      */
     public function setParameters(array $parameters): self
     {
@@ -71,7 +71,6 @@ class RouteParametersMiddleware extends AbstractMiddleware
 
     /**
      * 取得路由參數.
-     * @return array<string, mixed>
      */
     public function getParameters(): array
     {

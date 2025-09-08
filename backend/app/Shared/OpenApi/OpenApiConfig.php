@@ -11,7 +11,7 @@ declare(strict_types=1);
 use OpenApi\Attributes as OA;
 
 #[OA\Info(
-    version: '1.0.0',
+    version => '1.0.0',
     description: '
 AlleyNote 公布欄系統 API 文件
 
@@ -50,15 +50,15 @@ AlleyNote 公布欄系統 API 文件
     title: 'AlleyNote API',
 )]
 #[OA\Server(
-    url: 'http://localhost',
+    url => 'http://localhost',
     description: '開發環境伺服器',
 )]
 #[OA\Server(
-    url: 'https://api.alleynote.example.com',
+    url => 'https://api.alleynote.example.com',
     description: '正式環境伺服器',
 )]
 #[OA\SecurityScheme(
-    securityScheme: 'bearerAuth',
+    securityScheme => 'bearerAuth',
     type: 'http',
     name: 'Authorization',
     in: 'header',
@@ -66,63 +66,63 @@ AlleyNote 公布欄系統 API 文件
     scheme: 'bearer',
 )]
 #[OA\SecurityScheme(
-    securityScheme: 'sessionAuth',
+    securityScheme => 'sessionAuth',
     type: 'apiKey',
     name: 'PHPSESSID',
     in: 'cookie',
 )]
 #[OA\Tag(
-    name: 'auth',
+    name => 'auth',
     description: '認證相關 API - 登入、登出、註冊、Token 管理',
 )]
 #[OA\Tag(
-    name: 'posts',
+    name => 'posts',
     description: '貼文管理 API - CRUD 操作、置頂、搜尋',
 )]
 #[OA\Tag(
-    name: 'attachments',
+    name => 'attachments',
     description: '附件管理 API - 檔案上傳、下載、刪除',
 )]
 #[OA\Tag(
-    name: 'admin',
+    name => 'admin',
     description: '管理員 API - 系統管理、使用者管理',
 )]
 #[OA\Response(
-    response: 'Unauthorized',
+    response => 'Unauthorized',
     description: '未授權存取',
     content: new OA\JsonContent(
         properties: [
-            new OA\Property(property: 'success', type: 'boolean', example: false),
+            new OA\Property(property => 'success', type: 'boolean', example: false),
             new OA\Property(property: 'error', type: 'string', example: '未授權存取'),
         ],
     ),
 )]
 #[OA\Response(
-    response: 'Forbidden',
+    response => 'Forbidden',
     description: '權限不足',
     content: new OA\JsonContent(
         properties: [
-            new OA\Property(property: 'success', type: 'boolean', example: false),
+            new OA\Property(property => 'success', type: 'boolean', example: false),
             new OA\Property(property: 'error', type: 'string', example: '權限不足'),
         ],
     ),
 )]
 #[OA\Response(
-    response: 'NotFound',
+    response => 'NotFound',
     description: '資源不存在',
     content: new OA\JsonContent(
         properties: [
-            new OA\Property(property: 'success', type: 'boolean', example: false),
+            new OA\Property(property => 'success', type: 'boolean', example: false),
             new OA\Property(property: 'error', type: 'string', example: '資源不存在'),
         ],
     ),
 )]
 #[OA\Response(
-    response: 'ValidationError',
+    response => 'ValidationError',
     description: '資料驗證失敗',
     content: new OA\JsonContent(
         properties: [
-            new OA\Property(property: 'success', type: 'boolean', example: false),
+            new OA\Property(property => 'success', type: 'boolean', example: false),
             new OA\Property(property: 'error', type: 'string', example: '資料驗證失敗'),
             new OA\Property(
                 property: 'errors',
@@ -140,12 +140,12 @@ AlleyNote 公布欄系統 API 文件
     ),
 )]
 #[OA\Schema(
-    schema: 'LoginRequest',
+    schema => 'LoginRequest',
     type: 'object',
     required: ['email', 'password'],
     properties: [
         new OA\Property(
-            property: 'email',
+            property => 'email',
             type: 'string',
             format: 'email',
             description: '電子郵件地址',
@@ -168,10 +168,10 @@ AlleyNote 公布欄系統 API 文件
     ],
 )]
 #[OA\Schema(
-    schema: 'LoginResponse',
+    schema => 'LoginResponse',
     type: 'object',
     properties: [
-        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property => 'success', type: 'boolean', example: true),
         new OA\Property(property: 'message', type: 'string', example: '登入成功'),
         new OA\Property(property: 'access_token', type: 'string', example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...'),
         new OA\Property(property: 'refresh_token', type: 'string', example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...'),
@@ -182,7 +182,7 @@ AlleyNote 公布欄系統 API 文件
             property: 'user',
             type: 'object',
             properties: [
-                new OA\Property(property: 'id', type: 'integer', example: 1),
+                new OA\Property(property => 'id', type: 'integer', example: 1),
                 new OA\Property(property: 'email', type: 'string', example: 'user@example.com'),
                 new OA\Property(property: 'name', type: 'string', example: 'User Name'),
             ],
@@ -190,10 +190,10 @@ AlleyNote 公布欄系統 API 文件
     ],
 )]
 #[OA\Schema(
-    schema: 'User',
+    schema => 'User',
     type: 'object',
     properties: [
-        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property => 'id', type: 'integer', example: 1),
         new OA\Property(property: 'username', type: 'string', example: 'johndoe'),
         new OA\Property(property: 'email', type: 'string', format: 'email', example: 'john@example.com'),
         new OA\Property(property: 'role', type: 'string', example: 'user'),

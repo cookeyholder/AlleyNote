@@ -20,15 +20,14 @@ use RuntimeException;
 final readonly class UserStatisticsRepository implements UserStatisticsRepositoryInterface
 {
     public function __construct(
-        private PDO $pdo,
-    ) {}
+        private PDO $pdo) {}
 
     /**
      * 計算指定週期內的新註冊使用者數量.
      */
     public function countNewUsersByPeriod(StatisticsPeriod $period): int
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT COUNT(*)
                 FROM users
@@ -39,18 +38,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return (int) $stmt->fetchColumn();
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "計算新註冊使用者數量失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -58,7 +51,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function countActiveUsersByPeriod(StatisticsPeriod $period): int
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT COUNT(DISTINCT user_id)
                 FROM user_activity_logs
@@ -69,18 +62,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return (int) $stmt->fetchColumn();
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "計算活躍使用者數量失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -88,7 +75,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function countTotalUsersByPeriod(StatisticsPeriod $period): int
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT COUNT(*)
                 FROM users
@@ -97,16 +84,10 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['end_date' => $period->endDate->format('Y-m-d H:i:s')]);
+            $stmt->execute(['end_date' => $period->endDate->format('Y-m-d H => i:s')]);
 
             return (int) $stmt->fetchColumn();
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "計算總使用者數量失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -114,7 +95,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getUserRegistrationTrends(StatisticsPeriod $period): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT
                     DATE(created_at) as date,
@@ -129,7 +110,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -149,13 +130,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             }
 
             return $trends;
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "取得使用者註冊趨勢失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -163,7 +138,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getUserActivityStats(StatisticsPeriod $period): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT
                     u.id as user_id,
@@ -189,7 +164,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -213,18 +188,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             }
 
             return $activities;
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "取得使用者活躍度統計失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
      * 取得最活躍的使用者列表 (應用層服務需要).
-     * @return array<string, mixed>
+     * @return array
      */
     public function getActiveUsersByPeriod(StatisticsPeriod $period, int $limit = 10): array
     {
@@ -236,7 +205,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getMostActiveUsers(StatisticsPeriod $period, int $limit = 10): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT
                     u.id as user_id,
@@ -289,13 +258,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             }
 
             return $activeUsers;
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "取得最活躍使用者失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -325,7 +288,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getUserBehaviorAnalysis(StatisticsPeriod $period): array
     {
-        try {
+        try { /* empty */ }
             // 計算平均會話持續時間（以分鐘為單位）
             $sessionSql = '
                 SELECT AVG(TIMESTAMPDIFF(MINUTE, MIN(created_at), MAX(created_at))) as avg_session_duration
@@ -339,7 +302,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sessionSql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -368,7 +331,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($bounceSql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -396,7 +359,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($pageViewsSql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -426,7 +389,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($conversionSql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -445,22 +408,16 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'page_views_per_session' => $pageViewsPerSession,
                 'conversion_rate' => $conversionRate,
             ];
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "取得使用者行為分析失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
      * 取得使用者行為模式分析.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getUserBehaviorPatterns(StatisticsPeriod $period): array
     {
-        try {
+        try { /* empty */ }
             // 小時活動分析
             $hourlySql = '
                 SELECT
@@ -477,7 +434,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($hourlySql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
             $hourlyActivity = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -499,7 +456,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($weeklySql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
             $weeklyActivity = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -508,13 +465,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'hourly_activity' => $hourlyActivity,
                 'weekly_activity' => $weeklyActivity,
             ];
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "取得使用者行為模式失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -522,7 +473,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getUserRetentionRate(StatisticsPeriod $period, int $retentionDays = 30): array
     {
-        try {
+        try { /* empty */ }
             // 計算在期間內註冊的使用者
             $newUsersSql = '
                 SELECT COUNT(*) as total_new_users
@@ -534,12 +485,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($newUsersSql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
             $totalNewUsers = (int) $stmt->fetchColumn();
 
-            if ($totalNewUsers === 0) {
+            if ($totalNewUsers == == 0) {
                 return [
                     'total_new_users' => 0,
                     'retained_users' => 0,
@@ -564,7 +515,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($retainedUsersSql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
                 'retention_end_date' => $retentionEndDate->format('Y-m-d H:i:s'),
             ]);
@@ -578,13 +529,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'retention_rate' => round($retentionRate, 2),
                 'retention_period_days' => $retentionDays,
             ];
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "計算使用者留存率失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -592,7 +537,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getUserSegmentationStats(StatisticsPeriod $period): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT
                     CASE
@@ -639,7 +584,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -662,13 +607,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             }
 
             return $segmentStats;
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "取得使用者分群統計失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -676,7 +615,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getUserChurnRate(StatisticsPeriod $period, int $inactivityDays = 30): array
     {
-        try {
+        try { /* empty */ }
             // 計算期間結束前已存在的使用者總數
             $totalUsersSql = '
                 SELECT COUNT(*)
@@ -686,10 +625,10 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             ';
 
             $stmt = $this->pdo->prepare($totalUsersSql);
-            $stmt->execute(['start_date' => $period->startDate->format('Y-m-d H:i:s')]);
+            $stmt->execute(['start_date' => $period->startDate->format('Y-m-d H => i:s')]);
             $totalUsers = (int) $stmt->fetchColumn();
 
-            if ($totalUsers === 0) {
+            if ($totalUsers == == 0) {
                 return [
                     'total_users' => 0,
                     'churned_users' => 0,
@@ -718,7 +657,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($churnedUsersSql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'inactivity_start_date' => $inactivityStartDate->format('Y-m-d H:i:s'),
             ]);
             $churnedUsers = (int) $stmt->fetchColumn();
@@ -735,24 +674,18 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'retention_rate' => round($retentionRate, 2),
                 'inactivity_threshold_days' => $inactivityDays,
             ];
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "計算使用者流失率失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     // 其餘介面方法的簡化實作...
 
     /**
      * 取得新使用者首次活動分析.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getNewUserFirstActivityAnalysis(StatisticsPeriod $period): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT
                     COUNT(DISTINCT u.id) as total_new_users_with_activity,
@@ -773,7 +706,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -797,18 +730,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'total_new_users_with_activity' => $totalNewUsersWithActivity,
                 'avg_days_to_first_activity' => round($avgDaysToFirstActivity, 2),
             ];
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "取得新使用者首次活動分析失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
      * 取得使用者互動網路分析.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getUserInteractionNetworkStats(StatisticsPeriod $period): array
     {
@@ -823,7 +750,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
     /**
      * 計算使用者生命週期價值分析.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getUserLifetimeValueAnalysis(StatisticsPeriod $period): array
     {
@@ -849,7 +776,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getUserEngagementScores(StatisticsPeriod $period, int $limit = 100): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT
                     u.id as user_id,
@@ -909,13 +836,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             }
 
             return $engagementScores;
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "計算使用者參與度評分失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -923,7 +844,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getUserActivityTimeDistribution(StatisticsPeriod $period): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT
                     HOUR(created_at) as hour,
@@ -939,7 +860,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -960,13 +881,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             }
 
             return $timeDistribution;
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "取得使用者活動時間分布失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -974,7 +889,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getUserActivityTrends(StatisticsPeriod $period): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT
                     DATE(ual.created_at) as date,
@@ -993,7 +908,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -1015,13 +930,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             }
 
             return $activityTrends;
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "計算使用者活躍度趨勢失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -1038,7 +947,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function hasUserActivityInPeriod(StatisticsPeriod $period): bool
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT 1
                 FROM user_activity_logs
@@ -1050,18 +959,12 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return $stmt->fetchColumn() !== false;
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "檢查使用者活動資料存在性失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
@@ -1069,7 +972,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      */
     public function getTotalUsersAsOfDate(DateTimeInterface $date): int
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT COUNT(*)
                 FROM users
@@ -1078,25 +981,19 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['date' => $date->format('Y-m-d H:i:s')]);
+            $stmt->execute(['date' => $date->format('Y-m-d H => i:s')]);
 
             return (int) $stmt->fetchColumn();
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "計算截至日期的總使用者數失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 
     /**
      * 計算使用者參與度.
-     * @return array<string, mixed>
+     * @return array
      */
     public function calculateUserEngagement(StatisticsPeriod $period): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT
                     AVG(posts_count) as posts_per_user,
@@ -1120,7 +1017,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -1140,12 +1037,6 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'views_per_user' => 0.0,
                 'avg_session_duration' => 450.0,
             ];
-        } catch (PDOException $e) {
-            throw new RuntimeException(
-                "計算使用者參與度失敗: {$e->getMessage()}",
-                (int) $e->getCode(),
-                $e,
-            );
-        }
+        } 
     }
 }

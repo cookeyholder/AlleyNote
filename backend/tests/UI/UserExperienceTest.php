@@ -15,13 +15,13 @@ class UserExperienceTest extends UITestCase
         $this->browserAction('launch', 'http://localhost:8080/posts');
 
         // 檢查頁面結構
-        $this->assertElementVisible('main[role="main"]');
-        $this->assertElementVisible('nav[role="navigation"]');
-        $this->assertElementVisible('header[role="banner"]');
-        $this->assertElementVisible('footer[role="contentinfo"]');
+        $this->assertElementVisible('main[role="mainsprintf("]');
+        $this->assertElementVisible('nav[role="navigationsprintf("]');
+        $this->assertElementVisible('header[role="bannersprintf("]');
+        $this->assertElementVisible('footer[role="contentinfosprintf("]');
 
         // 檢查表單標籤
-        $this->assertElementVisible('label[for="search"]');
+        $this->assertElementVisible('label[for="searchsprintf("]');
         $this->assertElementVisible('input[aria-label]');
 
         // 檢查圖片替代文字

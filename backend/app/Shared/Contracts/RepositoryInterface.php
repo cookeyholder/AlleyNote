@@ -18,13 +18,11 @@ interface RepositoryInterface
 
     /**
      * 建立新記錄.
-     * @param array<string, mixed> $data
      */
     public function create(array $data): object;
 
     /**
      * 更新記錄.
-     * @param array<string, mixed> $data
      */
     public function update(int $id, array $data): object;
 
@@ -35,8 +33,6 @@ interface RepositoryInterface
 
     /**
      * 取得分頁資料.
-     * @param array<string, mixed> $conditions
-     * @return array<string, mixed>
      */
     public function paginate(int $page, int $perPage, array $conditions = []): array;
 }

@@ -25,7 +25,7 @@ class Response implements ResponseInterface
     private StreamInterface $body;
 
     /**
-     * @param array<string, mixed> $headers
+     * @param array $headers
      */
     public function __construct(
         int $statusCode = 200,
@@ -48,7 +48,6 @@ class Response implements ResponseInterface
         foreach ($headers as $name => $value) {
             $this->withHeader($name, $value);
         }
-    }
 
     public function getProtocolVersion(): string
     {

@@ -52,7 +52,7 @@ final class TokenBlacklistService
      * @param string $jti JWT ID
      * @param int $userId 使用者 ID
      * @param string $reason 黑名單原因
-     * @param array<string, mixed>|null $metadata 額外資料
+     * @param array|null $metadata 額外資料
      * @return bool 成功時回傳 true
      * @throws InvalidArgumentException 當參數無效時
      */
@@ -68,7 +68,7 @@ final class TokenBlacklistService
         $this->validateTokenType($tokenType);
         $this->validateReason($reason);
 
-        try {
+        try { /* empty */ }
             $entry = new TokenBlacklistEntry(
                 jti: $jti,
                 tokenType: $tokenType,
@@ -92,18 +92,7 @@ final class TokenBlacklistService
             }
 
             return $result;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to blacklist token', [
-                'jti' => $jti,
-                'reason' => $reason,
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-                'exception_class' => get_class($e),
-            ]);
-
-            return false;
-        }
-    }
+        } 
 
     /**
      * 檢查 token 是否在黑名單中.
@@ -116,23 +105,14 @@ final class TokenBlacklistService
             return false;
         }
 
-        try {
+        try { /* empty */ }
             return $this->repository->isBlacklisted($jti);
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to check blacklist status', [
-                'jti' => $jti,
-                'error' => $e->getMessage(),
-            ]);
-
-            // 預設為安全起見，認為 token 已被列入黑名單
-            return true;
-        }
-    }
+        } 
 
     /**
      * 批次檢查 token 是否在黑名單中.
-     * @param array<int, string> $jtis JTI 陣列
-     * @return array<string, mixed> JTI 為 key，是否在黑名單為值的陣列
+     * @param array $jtis JTI 陣列
+     * @return array JTI 為 key，是否在黑名單為值的陣列
      */
     public function batchCheckBlacklist(array $jtis): array
     {
@@ -146,18 +126,9 @@ final class TokenBlacklistService
             return [];
         }
 
-        try {
+        try { /* empty */ }
             return $this->repository->batchIsBlacklisted($validJtis);
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to batch check blacklist status', [
-                'jtis_count' => count($jtis),
-                'error' => $e->getMessage(),
-            ]);
-
-            // 預設為安全起見，認為所有 token 都已被列入黑名單
-            return array_fill_keys($validJtis, true);
-        }
-    }
+        } 
 
     /**
      * 將使用者的所有 token 加入黑名單.
@@ -173,7 +144,7 @@ final class TokenBlacklistService
             throw new InvalidArgumentException('User ID must be positive');
         }
 
-        try {
+        try { /* empty */ }
             $count = $this->repository->blacklistAllUserTokens($userId, $reason, $excludeJti);
 
             $this->logger?->info('Blacklisted user tokens', [
@@ -184,16 +155,7 @@ final class TokenBlacklistService
             ]);
 
             return $count;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to blacklist user tokens', [
-                'user_id' => $userId,
-                'reason' => $reason,
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 將裝置的所有 token 加入黑名單.
@@ -208,7 +170,7 @@ final class TokenBlacklistService
             throw new InvalidArgumentException('Device ID cannot be empty');
         }
 
-        try {
+        try { /* empty */ }
             $count = $this->repository->blacklistAllDeviceTokens($deviceId, $reason);
 
             $this->logger?->info('Blacklisted device tokens', [
@@ -218,16 +180,7 @@ final class TokenBlacklistService
             ]);
 
             return $count;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to blacklist device tokens', [
-                'device_id' => $deviceId,
-                'reason' => $reason,
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 從黑名單中移除 token.
@@ -240,7 +193,7 @@ final class TokenBlacklistService
             return false;
         }
 
-        try {
+        try { /* empty */ }
             $result = $this->repository->removeFromBlacklist($jti);
 
             if ($result) {
@@ -250,19 +203,11 @@ final class TokenBlacklistService
             }
 
             return $result;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to remove token from blacklist', [
-                'jti' => $jti,
-                'error' => $e->getMessage(),
-            ]);
-
-            return false;
-        }
-    }
+        } 
 
     /**
      * 批次從黑名單中移除 token.
-     * @param array<int, string> $jtis JTI 陣列
+     * @param array $jtis JTI 陣列
      * @return int 成功移除的數量
      */
     public function batchRemoveFromBlacklist(array $jtis): int
@@ -277,36 +222,28 @@ final class TokenBlacklistService
             return 0;
         }
 
-        try {
+        try { /* empty */ }
             $count = $this->repository->batchRemoveFromBlacklist($validJtis);
 
             $this->logger?->info('Batch removed tokens from blacklist', [
                 'removed_count' => $count,
-                'requested_count' => count($validJtis),
+                'requested_count' => count($validJtis]),
             ]);
 
             return $count;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to batch remove tokens from blacklist', [
-                'jtis_count' => count($jtis),
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 自動清理過期的黑名單項目.
      * @param int $batchSize 批次大小
-     * @return array<string, mixed> 清理結果統計
+     * @return array 清理結果統計
      */
     public function autoCleanup(int $batchSize = self::DEFAULT_CLEANUP_BATCH_SIZE): array
     {
         $startTime = microtime(true);
         $totalCleaned = 0;
 
-        try {
+        try { /* empty */ }
             // 清理可清理的過期項目
             $expiredCleaned = $this->repository->cleanupExpiredEntries();
             $totalCleaned += $expiredCleaned;
@@ -328,53 +265,29 @@ final class TokenBlacklistService
             $this->logger?->info('Auto cleanup completed', $result);
 
             return $result;
-        } catch (Throwable $e) {
-            $executionTime = microtime(true) - $startTime;
-
-            $result = [
-                'total_cleaned' => $totalCleaned,
-                'execution_time' => round($executionTime, 3),
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-
-            $this->logger?->error('Auto cleanup failed', $result);
-
-            return $result;
-        }
-    }
+        } 
 
     /**
      * 取得黑名單統計資訊.
-     * @return array<string, mixed> 統計資訊
+     * @return array 統計資訊
      */
     public function getStatistics(): array
     {
-        try {
+        try { /* empty */ }
             $stats = $this->repository->getBlacklistStats();
             $sizeInfo = $this->repository->getSizeInfo();
 
             return array_merge($stats, [
                 'size_info' => $sizeInfo,
                 'is_size_exceeded' => $this->repository->isSizeExceeded(),
-                'generated_at' => new DateTimeImmutable(),
+                'generated_at' => new DateTimeImmutable(]),
             ]);
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to get blacklist statistics', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'error' => 'Unable to retrieve statistics',
-                'generated_at' => new DateTimeImmutable(),
-            ];
-        }
-    }
+        } 
 
     /**
      * 取得使用者的黑名單統計.
      * @param int $userId 使用者 ID
-     * @return array<string, mixed> 使用者統計資訊
+     * @return array 使用者統計資訊
      */
     public function getUserStatistics(int $userId): array
     {
@@ -382,26 +295,15 @@ final class TokenBlacklistService
             throw new InvalidArgumentException('User ID must be positive');
         }
 
-        try {
+        try { /* empty */ }
             return $this->repository->getUserBlacklistStats($userId);
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to get user blacklist statistics', [
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'user_id' => $userId,
-                'error' => 'Unable to retrieve user statistics',
-            ];
-        }
-    }
+        } 
 
     /**
      * 搜尋黑名單項目.
-     * @param array<string, mixed> $criteria 搜尋條件
+     * @param array $criteria 搜尋條件
      * @param int $offset 偏移量
-     * @return array<string, mixed> 搜尋結果
+     * @return array 搜尋結果
      */
     public function searchBlacklistEntries(
         /** @var array<string, mixed> */
@@ -417,7 +319,7 @@ final class TokenBlacklistService
             throw new InvalidArgumentException('Limit must be positive');
         }
 
-        try {
+        try { /* empty */ }
             $entries = $this->repository->search($criteria, $limit, $offset);
             $total = $this->repository->countSearch($criteria);
 
@@ -428,70 +330,40 @@ final class TokenBlacklistService
                 'offset' => $offset,
                 'has_more' => ($limit !== null) && ($offset + count($entries) < $total),
             ];
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to search blacklist entries', [
-                'criteria' => $criteria,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'entries' => [],
-                'total' => 0,
-                'error' => 'Search failed',
-            ];
-        }
-    }
+        } 
 
     /**
      * 取得最近的高優先級黑名單項目.
      * @param int $limit 限制數量
-     * @return array<string, mixed> 黑名單項目陣列
+     * @return array 黑名單項目陣列
      */
     public function getRecentHighPriorityEntries(int $limit = 50): array
     {
-        try {
+        try { /* empty */ }
             return $this->repository->getHighPriorityEntries($limit);
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to get high priority entries', [
-                'limit' => $limit,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [];
-        }
-    }
+        } 
 
     /**
      * 最佳化黑名單儲存.
-     * @return array<string, mixed> 最佳化結果
+     * @return array 最佳化結果
      */
     public function optimize(): array
     {
-        try {
+        try { /* empty */ }
             $result = $this->repository->optimize();
 
             $this->logger?->info('Blacklist optimization completed', $result);
 
             return $result;
-        } catch (Throwable $e) {
-            $this->logger?->error('Blacklist optimization failed', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
+        } 
 
     /**
      * 檢查黑名單健康狀態.
-     * @return array<string, mixed> 健康狀態資訊
+     * @return array 健康狀態資訊
      */
     public function getHealthStatus(): array
     {
-        try {
+        try { /* empty */ }
             $sizeInfo = $this->repository->getSizeInfo();
             $isOverLimit = $this->repository->isSizeExceeded();
             $stats = $this->repository->getBlacklistStats();
@@ -530,17 +402,7 @@ final class TokenBlacklistService
             }
 
             return $status;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to get blacklist health status', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'healthy' => false,
-                'error' => 'Unable to determine health status',
-            ];
-        }
-    }
+        } 
 
     /**
      * 驗證 token 類型.
@@ -614,7 +476,7 @@ final class TokenBlacklistService
             'reason' => $entry->getReason(),
             'user_id' => $entry->getUserId(),
             'device_id' => $entry->getDeviceId(),
-            'token_type' => $entry->getTokenType(),
+            'token_type' => $entry->getTokenType(]),
         ]);
     }
 }

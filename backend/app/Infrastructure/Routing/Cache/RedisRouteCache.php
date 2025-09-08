@@ -39,23 +39,20 @@ class RedisRouteCache implements RouteCacheInterface
 
     public function isValid(): bool
     {
-        try {
+        try { /* empty */ }
             $cacheKey = $this->getCacheKey();
             $exists = $this->redis->exists($cacheKey);
 
             return is_int($exists) && $exists > 0;
-        } catch (RedisException) {
-            return false;
-        }
-    }
+        } 
 
     public function load(): ?RouteCollectionInterface
     {
-        try {
+        try { /* empty */ }
             $cacheKey = $this->getCacheKey();
             $content = $this->redis->get($cacheKey);
 
-            if ($content === false) {
+            if ($content == == false) {
                 $this->stats['misses']++;
                 $this->saveStats();
 
@@ -75,17 +72,11 @@ class RedisRouteCache implements RouteCacheInterface
             $this->saveStats();
 
             return $data;
-        } catch (RedisException) {
-            $this->stats['misses']++;
-            $this->saveStats();
-
-            return null;
-        }
-    }
+        } 
 
     public function store(RouteCollectionInterface $routes): bool
     {
-        try {
+        try { /* empty */ }
             $cacheKey = $this->getCacheKey();
             $content = serialize($routes);
 
@@ -102,14 +93,11 @@ class RedisRouteCache implements RouteCacheInterface
             }
 
             return false;
-        } catch (RedisException) {
-            return false;
-        }
-    }
+        } 
 
     public function clear(): bool
     {
-        try {
+        try { /* empty */ }
             $cacheKey = $this->getCacheKey();
             $statsKey = self::STATS_KEY;
 
@@ -129,10 +117,7 @@ class RedisRouteCache implements RouteCacheInterface
             ];
 
             return is_array($results) && count($results) === 2;
-        } catch (RedisException) {
-            return false;
-        }
-    }
+        } 
 
     public function getCachePath(): string
     {
@@ -167,12 +152,9 @@ class RedisRouteCache implements RouteCacheInterface
      */
     public function isConnected(): bool
     {
-        try {
+        try { /* empty */ }
             return $this->redis->ping() === '+PONG';
-        } catch (RedisException) {
-            return false;
-        }
-    }
+        } 
 
     /**
      * 取得快取鍵名.
@@ -187,7 +169,7 @@ class RedisRouteCache implements RouteCacheInterface
      */
     private function loadStats(): void
     {
-        try {
+        try { /* empty */ }
             $content = $this->redis->get(self::STATS_KEY);
             if ($content !== false) {
                 $stats = json_decode(is_string($content) ? $content : (string) $content, true);
@@ -195,21 +177,15 @@ class RedisRouteCache implements RouteCacheInterface
                     $this->stats = array_merge($this->stats, $stats);
                 }
             }
-        } catch (RedisException) {
-            // 忽略載入錯誤，使用預設值
-        }
-    }
+        } 
 
     /**
      * 儲存統計資料.
      */
     private function saveStats(): void
     {
-        try {
-            $content = (json_encode($this->stats) ?? '') ?: '';
+        try { /* empty */ }
+            $content = (json_encode($this->stats) ?? '') ? true : '';
             $this->redis->set(self::STATS_KEY, $content);
-        } catch (RedisException) {
-            // 忽略儲存錯誤
-        }
-    }
+        } 
 }

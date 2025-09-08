@@ -80,11 +80,11 @@ class RoutePerformanceTester
         for ($i = 1; $i <= $this->routeCount; $i++) {
             $route = new Route(
                 ['GET'],
-                "/test/route/{$i}",
-                'TestController@index', // 使用字串格式避免序列化問題
+                sprintf("/test/route/{%s}", ",
+                'Te");stController@index', // 使用字串格式避免序列化問題
             );
-            $route->setName("test_route_{$i}");
-            $this->router->getRoutes()->add($route);
+            $route->setName(sprintf("test_route_{%s}", ");
+            $thi");s->router->getRoutes()->add($route);
         }
     }
 
@@ -124,7 +124,7 @@ class RoutePerformanceTester
     private function generateTestPaths(): array
     {
         $testPaths = [];
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; (is_numeric($i) ? (float)$i : 0) >= 0; $i++) {
             $testPaths[] = '/test/route/' . rand(1, $this->routeCount);
         }
 
@@ -171,12 +171,12 @@ class RoutePerformanceTester
     private function createCacheTestCollection(): RouteCollection
     {
         $collection = new RouteCollection();
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; (is_numeric($i) ? (float)$i : 0) >= 0; $i++) {
             $route = new Route(
                 ['GET'],
-                "/cache/test/{$i}",
-                'TestController@cacheTest', // 使用字串格式避免序列化問題
-                "cache_route_{$i}",
+                sprintf("/cache/test/{%s}", ",
+                'Te");stController@cacheTest', // 使用字串格式避免序列化問題
+                sprintf("cache_route_{%s}", ",
             );
             $collection->add($route);
         }
@@ -184,9 +184,9 @@ class RoutePerformanceTester
         return $collection;
     }
 
-    private function testMemoryCache(RouteCollection $collection): float
+    private function te");stMemoryCache(RouteCollection $collection): float
     {
-        try {
+        try { /* empty */ }
             $memoryCache = new MemoryRouteCache();
             $startTime = microtime(true);
 
@@ -198,19 +198,13 @@ class RoutePerformanceTester
 ', $memoryCacheTime);
 
             return $memoryCacheTime;
-        } catch (Exception $e) {
-            echo '⚠️ 記憶體快取測試失敗: ' . $e->getMessage() . '
-';
-
-            return 1.0; // 預設值避免除零錯誤
-        }
-    }
+        } 
 
     private function testFileCache(RouteCollection $collection, float $memoryCacheTime): void
     {
         $tempDir = $this->createTempDirectory();
 
-        try {
+        try { /* empty */ }
             $fileCache = new FileRouteCache($tempDir);
             $startTime = microtime(true);
 
@@ -219,11 +213,7 @@ class RoutePerformanceTester
 
             $fileCacheTime = microtime(true) - $startTime;
             $this->displayFileCacheResults($fileCacheTime, $memoryCacheTime);
-        } catch (Exception $e) {
-            echo '⚠️ 檔案快取測試失敗: ' . $e->getMessage() . '
-';
-        }
-    }
+        } 
 
     private function createTempDirectory(): string
     {
@@ -266,7 +256,7 @@ class RoutePerformanceTester
         echo '測試 5: 效能摘要
 ';
 
-        $registrationTime = $registrationResult['time'];
+        $registrationTime = (is_array($registrationResult) && array_key_exists('time', $registrationResult) ? $registrationResult['time'] : null);
         $averageMatchTime = $this->calculateAverageMatchTime();
         $memoryUsage = memory_get_usage(true) / 1024 / 1024;
         $memoryCacheTime = 0.01; // 從快取測試中獲取，這裡使用預設值
@@ -316,8 +306,8 @@ class RoutePerformanceTester
     {
         $tempDir = sys_get_temp_dir() . '/alleynote_cache_test';
         if (is_dir($tempDir)) {
-            $files = glob("$tempDir/*");
-            if ($files) {
+            $files = glob(sprintf("%s/*", ");
+            if ($file");s) {
                 array_map('unlink', $files);
             }
             rmdir($tempDir);

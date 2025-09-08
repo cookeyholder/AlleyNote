@@ -210,7 +210,7 @@ class ZeroErrorPhpStanFixer
                     'return array_map(\'floatval\', $1);',
 
                 // 修復 array 回傳類型不匹配
-                '/return (\$[a-zA-Z_][a-zA-Z0-9_]*);(\s*\/\*\* @return array \*\/)/' =>
+                '/return (\$[a-zA-Z_][a-zA-Z0-9_]*);(\s*\/\*\* @return array<mixed> \*\/)/' =>
                     'return is_array($1) ? $1 : [];',
 
                 // 修復 string 回傳類型

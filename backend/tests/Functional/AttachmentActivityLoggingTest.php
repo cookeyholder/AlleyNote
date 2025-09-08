@@ -76,14 +76,14 @@ class AttachmentActivityLoggingTest extends TestCase
         ")->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄附件上傳活動');
-        $this->assertEquals('attachment.uploaded', $logs['action_type']);
-        $this->assertEquals('success', $logs['status']);
-        $this->assertNull($logs['user_id']);
+        $this->assertEquals('attachment.uploaded', (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null));
+        $this->assertEquals('success', (is_array($logs) && array_key_exists('status', $logs) ? $logs['status'] : null));
+        $this->assertNull((is_array($logs) && array_key_exists('user_id', $logs) ? $logs['user_id'] : null));
 
-        $metadata = json_decode($logs['metadata'], true);
+        $metadata = json_decode((is_array($logs) && array_key_exists('metadata', $logs) ? $logs['metadata'] : null), true);
         $this->assertIsArray($metadata);
-        $this->assertEquals($postId, $metadata['post_id']);
-        $this->assertEquals($filename, $metadata['filename']);
+        $this->assertEquals($postId, (is_array($metadata) && array_key_exists('post_id', $metadata) ? $metadata['post_id'] : null));
+        $this->assertEquals($filename, (is_array($metadata) && array_key_exists('filename', $metadata) ? $metadata['filename'] : null));
     }
 
     #[Test]
@@ -118,13 +118,13 @@ class AttachmentActivityLoggingTest extends TestCase
         ")->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄附件下載活動');
-        $this->assertEquals('attachment.downloaded', $logs['action_type']);
-        $this->assertNull($logs['user_id']);
+        $this->assertEquals('attachment.downloaded', (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null));
+        $this->assertNull((is_array($logs) && array_key_exists('user_id', $logs) ? $logs['user_id'] : null));
 
-        $metadata = json_decode($logs['metadata'], true);
+        $metadata = json_decode((is_array($logs) && array_key_exists('metadata', $logs) ? $logs['metadata'] : null), true);
         $this->assertIsArray($metadata);
-        $this->assertEquals($attachmentUuid, $metadata['attachment_uuid']);
-        $this->assertEquals($filename, $metadata['filename']);
+        $this->assertEquals($attachmentUuid, (is_array($metadata) && array_key_exists('attachment_uuid', $metadata) ? $metadata['attachment_uuid'] : null));
+        $this->assertEquals($filename, (is_array($metadata) && array_key_exists('filename', $metadata) ? $metadata['filename'] : null));
     }
 
     #[Test]
@@ -159,13 +159,13 @@ class AttachmentActivityLoggingTest extends TestCase
         ")->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄附件刪除活動');
-        $this->assertEquals('attachment.deleted', $logs['action_type']);
-        $this->assertNull($logs['user_id']);
+        $this->assertEquals('attachment.deleted', (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null));
+        $this->assertNull((is_array($logs) && array_key_exists('user_id', $logs) ? $logs['user_id'] : null));
 
-        $metadata = json_decode($logs['metadata'], true);
+        $metadata = json_decode((is_array($logs) && array_key_exists('metadata', $logs) ? $logs['metadata'] : null), true);
         $this->assertIsArray($metadata);
-        $this->assertEquals($attachmentUuid, $metadata['attachment_uuid']);
-        $this->assertEquals($filename, $metadata['filename']);
+        $this->assertEquals($attachmentUuid, (is_array($metadata) && array_key_exists('attachment_uuid', $metadata) ? $metadata['attachment_uuid'] : null));
+        $this->assertEquals($filename, (is_array($metadata) && array_key_exists('filename', $metadata) ? $metadata['filename'] : null));
     }
 
     #[Test]
@@ -202,14 +202,14 @@ class AttachmentActivityLoggingTest extends TestCase
         ")->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄附件權限被拒絕活動');
-        $this->assertEquals('attachment.permission_denied', $logs['action_type']);
-        $this->assertEquals('failed', $logs['status']);
-        $this->assertNull($logs['user_id']);
+        $this->assertEquals('attachment.permission_denied', (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null));
+        $this->assertEquals('failed', (is_array($logs) && array_key_exists('status', $logs) ? $logs['status'] : null));
+        $this->assertNull((is_array($logs) && array_key_exists('user_id', $logs) ? $logs['user_id'] : null));
 
-        $metadata = json_decode($logs['metadata'], true);
+        $metadata = json_decode((is_array($logs) && array_key_exists('metadata', $logs) ? $logs['metadata'] : null), true);
         $this->assertIsArray($metadata);
-        $this->assertEquals($postId, $metadata['post_id']);
-        $this->assertEquals($filename, $metadata['filename']);
+        $this->assertEquals($postId, (is_array($metadata) && array_key_exists('post_id', $metadata) ? $metadata['post_id'] : null));
+        $this->assertEquals($filename, (is_array($metadata) && array_key_exists('filename', $metadata) ? $metadata['filename'] : null));
     }
 
     #[Test]
@@ -246,14 +246,14 @@ class AttachmentActivityLoggingTest extends TestCase
         ")->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄檔案大小超限活動');
-        $this->assertEquals('attachment.size_exceeded', $logs['action_type']);
-        $this->assertEquals('failed', $logs['status']);
-        $this->assertNull($logs['user_id']);
+        $this->assertEquals('attachment.size_exceeded', (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null));
+        $this->assertEquals('failed', (is_array($logs) && array_key_exists('status', $logs) ? $logs['status'] : null));
+        $this->assertNull((is_array($logs) && array_key_exists('user_id', $logs) ? $logs['user_id'] : null));
 
-        $metadata = json_decode($logs['metadata'], true);
+        $metadata = json_decode((is_array($logs) && array_key_exists('metadata', $logs) ? $logs['metadata'] : null), true);
         $this->assertIsArray($metadata);
-        $this->assertEquals($filename, $metadata['filename']);
-        $this->assertEquals($fileSize, $metadata['file_size']);
+        $this->assertEquals($filename, (is_array($metadata) && array_key_exists('filename', $metadata) ? $metadata['filename'] : null));
+        $this->assertEquals($fileSize, (is_array($metadata) && array_key_exists('file_size', $metadata) ? $metadata['file_size'] : null));
     }
 
     #[Test]
@@ -289,14 +289,14 @@ class AttachmentActivityLoggingTest extends TestCase
         ")->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄病毒檢測活動');
-        $this->assertEquals('attachment.virus_detected', $logs['action_type']);
-        $this->assertEquals('failed', $logs['status']);
-        $this->assertNull($logs['user_id']);
+        $this->assertEquals('attachment.virus_detected', (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null));
+        $this->assertEquals('failed', (is_array($logs) && array_key_exists('status', $logs) ? $logs['status'] : null));
+        $this->assertNull((is_array($logs) && array_key_exists('user_id', $logs) ? $logs['user_id'] : null));
 
-        $metadata = json_decode($logs['metadata'], true);
+        $metadata = json_decode((is_array($logs) && array_key_exists('metadata', $logs) ? $logs['metadata'] : null), true);
         $this->assertIsArray($metadata);
-        $this->assertEquals($filename, $metadata['filename']);
-        $this->assertEquals('Test.Virus', $metadata['virus_name']);
+        $this->assertEquals($filename, (is_array($metadata) && array_key_exists('filename', $metadata) ? $metadata['filename'] : null));
+        $this->assertEquals('Test.Virus', (is_array($metadata) && array_key_exists('virus_name', $metadata) ? $metadata['virus_name'] : null));
     }
 
     protected function tearDown(): void

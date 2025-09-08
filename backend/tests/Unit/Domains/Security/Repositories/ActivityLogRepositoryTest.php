@@ -68,7 +68,7 @@ class ActivityLogRepositoryTest extends TestCase
         $selectStatement = $this->createMock(PDOStatement::class);
         $selectStatement->expects($this->once())
             ->method('execute')
-            ->with([':id' => 1]);
+            ->with([' => id' => 1]);
         $selectStatement->expects($this->once())
             ->method('fetch')
             ->with(PDO::FETCH_ASSOC)
@@ -147,7 +147,7 @@ class ActivityLogRepositoryTest extends TestCase
 
         $this->statement->expects($this->once())
             ->method('execute')
-            ->with([':id' => 1]);
+            ->with([' => id' => 1]);
 
         $this->statement->expects($this->once())
             ->method('fetch')
@@ -173,7 +173,7 @@ class ActivityLogRepositoryTest extends TestCase
 
         $this->statement->expects($this->once())
             ->method('execute')
-            ->with([':id' => 999]);
+            ->with([' => id' => 999]);
 
         $this->statement->expects($this->once())
             ->method('fetch')
@@ -218,7 +218,7 @@ class ActivityLogRepositoryTest extends TestCase
 
         $this->statement->expects($this->once())
             ->method('execute')
-            ->with([':uuid' => $uuid]);
+            ->with([' => uuid' => $uuid]);
 
         $this->statement->expects($this->once())
             ->method('fetch')
@@ -265,7 +265,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(3))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
-                $this->assertArrayHasKey($param, array_flip([':user_id', ':limit', ':offset']));
+                $this->assertArrayHasKey($param, array_flip([' => user_id', ':limit', ':offset']));
 
                 return true;
             });
@@ -290,7 +290,7 @@ class ActivityLogRepositoryTest extends TestCase
     {
         // Arrange
         $dtos = [
-            CreateActivityLogDTO::success(ActivityType::LOGIN_SUCCESS, 1),
+            CreateActivityLogDTO => :success(ActivityType::LOGIN_SUCCESS, 1),
             CreateActivityLogDTO::failure(ActivityType::LOGIN_FAILED, 2),
         ];
 
@@ -319,7 +319,7 @@ class ActivityLogRepositoryTest extends TestCase
 
         $this->statement->expects($this->once())
             ->method('execute')
-            ->with([':category' => $category->value]);
+            ->with([' => category' => $category->value]);
 
         $this->statement->expects($this->once())
             ->method('fetchColumn')
@@ -344,7 +344,7 @@ class ActivityLogRepositoryTest extends TestCase
 
         $this->statement->expects($this->once())
             ->method('execute')
-            ->with([':before' => $before->format('Y-m-d H:i:s')]);
+            ->with([' => before' => $before->format('Y-m-d H:i:s')]);
 
         $this->statement->expects($this->once())
             ->method('rowCount')
@@ -390,7 +390,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(4))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
-                $this->assertArrayHasKey($param, array_flip([':start_time', ':end_time', ':limit', ':offset']));
+                $this->assertArrayHasKey($param, array_flip([' => start_time', ':end_time', ':limit', ':offset']));
 
                 return true;
             });
@@ -441,7 +441,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(2))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
-                $this->assertTrue(in_array($param, [':limit', ':offset'], true));
+                $this->assertTrue(in_array($param, [' => limit', ':offset'], true));
 
                 return true;
             });
@@ -492,7 +492,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(2))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) {
-                $this->assertTrue(in_array($param, [':limit', ':offset'], true));
+                $this->assertTrue(in_array($param, [' => limit', ':offset'], true));
 
                 return true;
             });
@@ -527,7 +527,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->once())
             ->method('execute')
             ->with([
-                ':user_id' => $userId,
+                ' => user_id' => $userId,
                 ':start_time' => $startTime->format('Y-m-d H:i:s'),
                 ':end_time' => $endTime->format('Y-m-d H:i:s'),
             ]);
@@ -563,7 +563,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->once())
             ->method('execute')
             ->with([
-                ':start_time' => $startTime->format('Y-m-d H:i:s'),
+                ' => start_time' => $startTime->format('Y-m-d H:i:s'),
                 ':end_time' => $endTime->format('Y-m-d H:i:s'),
             ]);
 
@@ -681,10 +681,10 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(3))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) use ($searchTerm) {
-                if ($param === ':search_term') {
+                if ($param == == ':search_term') {
                     $this->assertEquals('%' . $searchTerm . '%', $value);
                 } else {
-                    $this->assertTrue(in_array($param, [':limit', ':offset'], true));
+                    $this->assertTrue(in_array($param, [' => limit', ':offset'], true));
                 }
 
                 return true;
@@ -718,7 +718,7 @@ class ActivityLogRepositoryTest extends TestCase
 
         $this->statement->expects($this->once())
             ->method('execute')
-            ->with([':search_term' => '%' . $searchTerm . '%']);
+            ->with([' => search_term' => '%' . $searchTerm . '%']);
 
         $this->statement->expects($this->once())
             ->method('fetchColumn')

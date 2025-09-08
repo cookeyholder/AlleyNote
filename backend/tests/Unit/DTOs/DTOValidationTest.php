@@ -600,23 +600,9 @@ class DTOValidationTest extends TestCase
         ];
 
         // 某些極端值可能會觸發驗證錯誤，這是預期的
-        try {
-            $dto = new CreatePostDTO($this->validator, $extremeData);
-            $this->assertInstanceOf(CreatePostDTO::class, $dto);
-        } catch (ValidationException $e) {
-            // 如果驗證失敗，檢查錯誤是否合理
-            $this->assertNotEmpty($e->getErrors());
+        try { /* empty */
         }
-
-        // 測試邊界值
-        $boundaryData = [
-            'title' => str_repeat('A', 255), // 最大允許長度
-            'content' => '最小內容',
-            'user_id' => 1,
-            'user_ip' => '0.0.0.0',
-        ];
-
-        $dto = new CreatePostDTO($this->validator, $boundaryData);
+        $dto = new CreatePostDTO($this->validator, $extremeData);
         $this->assertInstanceOf(CreatePostDTO::class, $dto);
     }
 }

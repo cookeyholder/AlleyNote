@@ -16,8 +16,7 @@ use Psr\Http\Message\UploadedFileInterface;
 class AttachmentController
 {
     public function __construct(
-        private AttachmentService $attachmentService,
-    ) {}
+        private AttachmentService $attachmentService) {}
 
     /**
      * 取得當前登入使用者 ID
@@ -113,15 +112,13 @@ class AttachmentController
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized',
-                ),
+                    ref: '#/components/responses/Unauthorized'),
             ),
             new OA\Response(
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound',
-                ),
+                    ref: '#/components/responses/NotFound'),
             ),
             new OA\Response(
                 response: 413,
@@ -132,7 +129,7 @@ class AttachmentController
                     ],
                 ),
             ),
-        ],
+        ]
     )]
     public function upload(Request $request, Response $response): Response
     {
@@ -142,7 +139,7 @@ class AttachmentController
             if (!is_numeric($postIdAttr)) {
                 $response->getBody()->write((json_encode([
                     'error' => '無效的貼文 ID',
-                ]) ?: ''));
+                ]) ? true : ''));
 
                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
@@ -152,7 +149,7 @@ class AttachmentController
             if (!isset($files['file'])) {
                 $response->getBody()->write((json_encode([
                     'error' => '缺少上傳檔案',
-                ]) ?: ''));
+                ]) ? true : ''));
 
                 return $response
                     ->withStatus(400)
@@ -163,7 +160,7 @@ class AttachmentController
             if (!$file instanceof UploadedFileInterface) {
                 $response->getBody()->write((json_encode([
                     'error' => '無效的上傳檔案格式',
-                ]) ?: ''));
+                ]) ? true : ''));
 
                 return $response
                     ->withStatus(400)
@@ -175,26 +172,36 @@ class AttachmentController
             $jsonResponse = json_encode([
                 'data' => $attachment->toArray(),
             ]);
-            $response->getBody()->write($jsonResponse ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write($jsonResponse ? true : '{"error": "JSON encoding failed"}');
 
             return $response
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
-        } catch (ValidationException $e) {
-            $response->getBody()->write((json_encode([
+        } catch (Exception $e) {
+            $this->logger?->error('操作失敗', [
                 'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}'));
+            ]);
+
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'message' => '操作失敗',
+                    'details' => $e->getMessage(),
+                ],
+                'timestamp' => time(),
+            ], 500);
+        } catch (\Exception $e) {
+            error_log('Attachment deletion error: ' . $e->getMessage());
+
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Failed to delete attachment',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response
-                ->withStatus(400)
-                ->withHeader('Content-Type', 'application/json');
-        } catch (NotFoundException $e) {
-            $response->getBody()->write((json_encode([
-                'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}'));
-
-            return $response
-                ->withStatus(404)
+                ->withStatus(500)
                 ->withHeader('Content-Type', 'application/json');
         }
     }
@@ -221,7 +228,7 @@ class AttachmentController
                 description: '檔案下載成功',
                 content: [
                     'application/octet-stream' => new OA\MediaType(
-                        mediaType: 'application/octet-stream',
+                        mediaType => 'application/octet-stream',
                         schema: new OA\Schema(
                             type: 'string',
                             format: 'binary',
@@ -237,7 +244,7 @@ class AttachmentController
                 ],
                 headers: [
                     'Content-Disposition' => new OA\Header(
-                        header: 'Content-Disposition',
+                        header => 'Content-Disposition',
                         description: '檔案下載標頭',
                         schema: new OA\Schema(type: 'string', example: 'attachment; filename="document.pdf"'),
                     ),
@@ -266,8 +273,7 @@ class AttachmentController
                 response: 404,
                 description: '附件不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound',
-                ),
+                    ref: '#/components/responses/NotFound'),
             ),
             new OA\Response(
                 response: 410,
@@ -278,11 +284,11 @@ class AttachmentController
                     ],
                 ),
             ),
-        ],
+        ]
     )]
     /**
      * 下載附件.
-     * @param array<string, mixed> $args 路由參數
+     * @param array $args 路由參數
      */
     public function download(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
     {
@@ -300,28 +306,12 @@ class AttachmentController
 
             $response->getBody()->write((json_encode([
                 'error' => '檔案下載功能尚未實作',
-            ]) ?: ''));
+            ]) ? true : ''));
 
             return $response
                 ->withStatus(501)
                 ->withHeader('Content-Type', 'application/json');
-        } catch (ValidationException $e) {
-            $response->getBody()->write((json_encode([
-                'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}'));
-
-            return $response
-                ->withStatus(400)
-                ->withHeader('Content-Type', 'application/json');
-        } catch (NotFoundException $e) {
-            $response->getBody()->write((json_encode([
-                'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}'));
-
-            return $response
-                ->withStatus(404)
-                ->withHeader('Content-Type', 'application/json');
-        }
+        }  
     }
 
     #[OA\Get(
@@ -369,10 +359,9 @@ class AttachmentController
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound',
-                ),
+                    ref: '#/components/responses/NotFound'),
             ),
-        ],
+        ]
     )]
     public function list(Request $request, Response $response): Response
     {
@@ -388,10 +377,10 @@ class AttachmentController
                 /**
                  * @param Attachment $attachment
                  */
-                fn($attachment): array => $attachment->toArray(),
+                fn($attachment) => array => $attachment->toArray(),
                 $attachments,
             ),
-        ]) ?: '{"error": "JSON encoding failed"}'));
+        ]) ? true : '{"error": "JSON encoding failed"}'));
 
         return $response
             ->withStatus(200)
@@ -435,8 +424,7 @@ class AttachmentController
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized',
-                ),
+                    ref: '#/components/responses/Unauthorized'),
             ),
             new OA\Response(
                 response: 403,
@@ -451,10 +439,9 @@ class AttachmentController
                 response: 404,
                 description: '附件不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound',
-                ),
+                    ref: '#/components/responses/NotFound'),
             ),
-        ],
+        ]
     )]
     public function delete(Request $request, Response $response): Response
     {
@@ -467,22 +454,6 @@ class AttachmentController
             $this->attachmentService->delete($uuid, $currentUserId);
 
             return $response->withStatus(204);
-        } catch (ValidationException $e) {
-            $response->getBody()->write((json_encode([
-                'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}'));
-
-            return $response
-                ->withStatus(400)
-                ->withHeader('Content-Type', 'application/json');
-        } catch (NotFoundException $e) {
-            $response->getBody()->write((json_encode([
-                'error' => $e->getMessage(),
-            ]) ?: '{"error": "JSON encoding failed"}'));
-
-            return $response
-                ->withStatus(404)
-                ->withHeader('Content-Type', 'application/json');
-        }
+        }  
     }
 }

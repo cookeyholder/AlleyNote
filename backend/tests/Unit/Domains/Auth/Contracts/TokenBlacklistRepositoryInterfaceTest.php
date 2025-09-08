@@ -475,7 +475,6 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         foreach ($expectedMethods as $expectedMethod) {
             $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
         }
-    }
 
     public function testInterfaceHasCorrectDocumentation(): void
     {
@@ -498,7 +497,6 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
             $this->assertTrue($method->isPublic(), "Method {$method->getName()} should be public");
             $this->assertFalse($method->isStatic(), "Method {$method->getName()} should not be static");
         }
-    }
 
     public function testInterfaceExtendsNoOtherInterface(): void
     {

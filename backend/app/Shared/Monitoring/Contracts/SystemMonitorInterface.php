@@ -13,37 +13,31 @@ interface SystemMonitorInterface
 {
     /**
      * 取得系統基本資訊。
-     * @return array<string, mixed>
      */
     public function getSystemInfo(): array;
 
     /**
      * 取得記憶體使用統計。
-     * @return array<string, mixed>
      */
     public function getMemoryUsage(): array;
 
     /**
      * 取得 CPU 使用率（如果可用）。
-     * @return array<string, mixed>
      */
     public function getCpuUsage(): array;
 
     /**
      * 取得磁碟使用統計。
-     * @return array<string, mixed>
      */
     public function getDiskUsage(string $path = '/'): array;
 
     /**
      * 取得資料庫連線狀態和統計。
-     * @return array<string, mixed>
      */
     public function getDatabaseStatus(): array;
 
     /**
      * 取得應用程式健康狀態。
-     * @return array<string, mixed>
      */
     public function getHealthCheck(): array;
 
@@ -59,7 +53,6 @@ interface SystemMonitorInterface
 
     /**
      * 取得所有系統指標。
-     * @return array<string, mixed>
      */
     public function getAllMetrics(): array;
 }

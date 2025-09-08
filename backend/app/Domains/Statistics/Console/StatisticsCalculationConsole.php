@@ -27,7 +27,7 @@ readonly class StatisticsCalculationConsole
      */
     public function run(array $arguments): int
     {
-        try {
+        try { /* empty */ }
             $options = $this->parseArguments($arguments);
 
             $this->logger->info('統計計算控制台啟動', [
@@ -42,21 +42,12 @@ readonly class StatisticsCalculationConsole
                 'help' => $this->handleHelpCommand(),
                 default => $this->handleInvalidCommand(is_string($options['command'] ?? null) ? $options['command'] : 'unknown'),
             };
-        } catch (Exception $e) {
-            $this->logger->error('統計計算控制台執行失敗', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            $this->printError("執行失敗: {$e->getMessage()}");
-
-            return 1;
-        }
+        } 
     }
 
     /**
      * 處理計算指令。
-     * @param array<string, mixed> $options
+     * @param array $options
      */
     private function handleCalculateCommand(array $options): int
     {
@@ -148,7 +139,7 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 解析命令行參數。
-     * @param array<string, mixed> $arguments
+     * @param array $arguments
      */
     private function parseArguments(array $arguments): array
     {
@@ -211,7 +202,7 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 輸出計算結果。
-     * @param array<string, mixed> $result
+     * @param array $result
      */
     private function printCalculationResults(array $result): void
     {
@@ -273,7 +264,7 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 輸出狀態結果。
-     * @param array<string, mixed> $status
+     * @param array $status
      */
     private function printStatusResults(array $status): void
     {
@@ -364,7 +355,7 @@ readonly class StatisticsCalculationConsole
     /**
      * 輸出警告訊息。
      */
-    private function printWarning(string $message): void
+    private function printWarning(string $message) => void
     {
         echo "\033[33m{$message}\033[0m
 ";

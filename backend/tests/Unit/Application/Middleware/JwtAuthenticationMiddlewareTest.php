@@ -67,7 +67,6 @@ class JwtAuthenticationMiddlewareTest extends TestCase
                 "路徑 {$path} 應該被跳過",
             );
         }
-    }
 
     public function testShouldProcessAuthenticatedPaths(): void
     {
@@ -86,7 +85,6 @@ class JwtAuthenticationMiddlewareTest extends TestCase
                 "路徑 {$path} 應該需要認證",
             );
         }
-    }
 
     public function testShouldReturnUnauthorizedWhenNoTokenProvided(): void
     {
@@ -472,7 +470,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
 
     /**
      * 建立有效的 JWT payload.
-     * @param array<string, mixed> $customClaims 自訂宣告
+     * @param array $customClaims 自訂宣告
      */
     private function createValidPayload(array $customClaims = []): JwtPayload
     {

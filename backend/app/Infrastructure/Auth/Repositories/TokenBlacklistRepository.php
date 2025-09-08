@@ -28,8 +28,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      * @param PDO $pdo 資料庫連線
      */
     public function __construct(
-        private readonly PDO $pdo,
-    ) {}
+        private readonly PDO $pdo) {}
 
     /**
      * 將 token 加入黑名單.
@@ -38,7 +37,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     public function addToBlacklist(TokenBlacklistEntry $entry): bool
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 INSERT INTO token_blacklist (
                     jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
@@ -61,14 +60,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 'device_id' => $data['device_id'],
                 'metadata' => $data['metadata'],
             ]);
-        } catch (PDOException $e) {
-            // 處理重複鍵值錯誤
-            if ($this->isDuplicateKeyError($e)) {
-                return false;
-            }
-
-            throw $e;
-        }
+        } 
     }
 
     /**
@@ -78,7 +70,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     public function isBlacklisted(string $jti): bool
     {
-        try {
+        try { /* empty */ }
             $currentTime = new DateTime();
             $sql = '
                 SELECT COUNT(*)
@@ -90,14 +82,11 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 'jti' => $jti,
-                'current_time' => $currentTime->format('Y-m-d H:i:s'),
+                'current_time' => $currentTime->format('Y-m-d H => i:s'),
             ]);
 
             return (int) $stmt->fetchColumn() > 0;
-        } catch (PDOException) {
-            return false;
-        }
-    }
+        } 
 
     /**
      * 檢查 token 是否在黑名單中（根據 token hash）.
@@ -106,7 +95,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     public function isTokenHashBlacklisted(string $tokenHash): bool
     {
-        try {
+        try { /* empty */ }
             $currentTime = new DateTime();
             // 假設我們在 metadata 中儲存 token_hash
             $sql = '
@@ -119,14 +108,11 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 'token_hash' => $tokenHash,
-                'current_time' => $currentTime->format('Y-m-d H:i:s'),
+                'current_time' => $currentTime->format('Y-m-d H => i:s'),
             ]);
 
             return (int) $stmt->fetchColumn() > 0;
-        } catch (PDOException) {
-            return false;
-        }
-    }
+        } 
 
     /**
      * 從黑名單中移除 token.
@@ -135,25 +121,21 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     public function removeFromBlacklist(string $jti): bool
     {
-        try {
+        try { /* empty */ }
             $sql = 'DELETE FROM token_blacklist WHERE jti = :jti';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute(['jti' => $jti]);
 
             return $stmt->rowCount() > 0;
-        } catch (PDOException) {
-            return false;
-        }
-    }
+        } 
 
     /**
      * 根據 JTI 查找黑名單項目.
      * @param string $jti JWT ID
      * @return TokenBlacklistEntry|null 黑名單項目，找不到時回傳 null
      */
-    public function findByJti(string $jti): ?TokenBlacklistEntry
-    {
-        try {
+    public function findByJti(string $jti): ?TokenBlacklistEntry { /* empty */ }
+        try { /* empty */ }
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
                 FROM token_blacklist
@@ -169,19 +151,16 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $this->createEntryFromRow($row);
-        } catch (PDOException) {
-            return null;
-        }
-    }
+        } 
 
     /**
      * 取得使用者的所有黑名單項目.
      * @param int $userId 使用者 ID
-     * @return array<string, mixed> 黑名單項目陣列
+     * @return array 黑名單項目陣列
      */
     public function findByUserId(int $userId, ?int $limit = null): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
                 FROM token_blacklist
@@ -208,19 +187,16 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } catch (PDOException) {
-            return [];
-        }
-    }
+        } 
 
     /**
      * 取得特定裝置的黑名單項目.
      * @param string $deviceId 裝置 ID
-     * @return array<string, mixed> 黑名單項目陣列
+     * @return array 黑名單項目陣列
      */
     public function findByDeviceId(string $deviceId, ?int $limit = null): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
                 FROM token_blacklist
@@ -247,19 +223,16 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } catch (PDOException) {
-            return [];
-        }
-    }
+        } 
 
     /**
      * 根據 token 類型查找項目.
      * @param string $tokenType token 類型
-     * @return array<string, mixed> 黑名單項目陣列
+     * @return array 黑名單項目陣列
      */
     public function findByTokenType(string $tokenType, ?int $limit = null): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
                 FROM token_blacklist
@@ -286,19 +259,16 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } catch (PDOException) {
-            return [];
-        }
-    }
+        } 
 
     /**
      * 根據黑名單原因查找項目.
      * @param string $reason 黑名單原因
-     * @return array<string, mixed> 黑名單項目陣列
+     * @return array 黑名單項目陣列
      */
     public function findByReason(string $reason, ?int $limit = null): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
                 FROM token_blacklist
@@ -325,14 +295,11 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } catch (PDOException) {
-            return [];
-        }
-    }
+        } 
 
     /**
      * 批次將 token 加入黑名單.
-     * @param array<int, TokenBlacklistEntry> $entries 黑名單項目陣列
+     * @param array $entries 黑名單項目陣列
      * @return int 成功加入的數量
      */
     public function batchAddToBlacklist(array $entries): int
@@ -341,7 +308,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             return 0;
         }
 
-        try {
+        try { /* empty */ }
             $this->pdo->beginTransaction();
 
             $sql = '
@@ -356,7 +323,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $successCount = 0;
 
             foreach ($entries as $entry) {
-                try {
+                try { /* empty */ }
                     $data = $entry->toDatabaseArray();
                     if ($stmt->execute([
                         'jti' => $data['jti'],
@@ -370,28 +337,18 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                     ])) {
                         $successCount++;
                     }
-                } catch (PDOException $e) {
-                    // 忽略重複鍵值錯誤，繼續處理其他項目
-                    if (!$this->isDuplicateKeyError($e)) {
-                        throw $e;
-                    }
-                }
+                } 
             }
 
             $this->pdo->commit();
 
             return $successCount;
-        } catch (Throwable $e) {
-            $this->pdo->rollBack();
-
-            throw $e;
-        }
-    }
+        } 
 
     /**
      * 批次檢查 token 是否在黑名單中.
-     * @param array<int, string> $jtis JTI 陣列
-     * @return array<string, mixed> JTI 為 key，是否在黑名單為值的陣列
+     * @param array $jtis JTI 陣列
+     * @return array JTI 為 key，是否在黑名單為值的陣列
      */
     public function batchIsBlacklisted(array $jtis): array
     {
@@ -399,7 +356,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             return [];
         }
 
-        try {
+        try { /* empty */ }
             $currentTime = new DateTime();
             $placeholders = str_repeat('?,', count($jtis) - 1) . '?';
             $sql = "
@@ -409,7 +366,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 AND expires_at > ?
             ";
 
-            $params = array_merge($jtis, [$currentTime->format('Y-m-d H:i:s')]);
+            $params = array_merge($jtis, [$currentTime->format('Y-m-d H => i:s'])]);
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
 
@@ -422,15 +379,11 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $result;
-        } catch (PDOException) {
-            // 發生錯誤時，預設所有都不在黑名單中
-            return array_fill_keys($jtis, false);
-        }
-    }
+        } 
 
     /**
      * 批次從黑名單移除 token.
-     * @param array<int, string> $jtis JTI 陣列
+     * @param array $jtis JTI 陣列
      * @return int 成功移除的數量
      */
     public function batchRemoveFromBlacklist(array $jtis): int
@@ -439,7 +392,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             return 0;
         }
 
-        try {
+        try { /* empty */ }
             $placeholders = str_repeat('?,', count($jtis) - 1) . '?';
             $sql = "DELETE FROM token_blacklist WHERE jti IN ({$placeholders})";
 
@@ -447,10 +400,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute($jtis);
 
             return $stmt->rowCount();
-        } catch (PDOException) {
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 將使用者的所有 token 加入黑名單.
@@ -460,7 +410,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     public function blacklistAllUserTokens(int $userId, string $reason, ?string $excludeJti = null): int
     {
-        try {
+        try { /* empty */ }
             $currentTime = new DateTime();
 
             // 先查找該使用者所有的 refresh token
@@ -479,7 +429,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt = $this->pdo->prepare($selectSql);
             $params = [
                 'user_id' => $userId,
-                'current_time' => $currentTime->format('Y-m-d H:i:s'),
+                'current_time' => $currentTime->format('Y-m-d H => i:s'),
             ];
             if ($excludeJti !== null) {
                 $params['exclude_jti'] = $excludeJti;
@@ -508,10 +458,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $this->batchAddToBlacklist($entries);
-        } catch (PDOException) {
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 將特定裝置的所有 token 加入黑名單.
@@ -520,7 +467,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     public function blacklistAllDeviceTokens(string $deviceId, string $reason): int
     {
-        try {
+        try { /* empty */ }
             $currentTime = new DateTime();
 
             // 查找該裝置所有的 refresh token
@@ -535,7 +482,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt = $this->pdo->prepare($selectSql);
             $stmt->execute([
                 'device_id' => $deviceId,
-                'current_time' => $currentTime->format('Y-m-d H:i:s'),
+                'current_time' => $currentTime->format('Y-m-d H => i:s'),
             ]);
 
             $tokens = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -561,10 +508,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $this->batchAddToBlacklist($entries);
-        } catch (PDOException) {
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 清理過期的黑名單項目.
@@ -573,23 +517,20 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     public function cleanup(?DateTime $beforeDate = null): int
     {
-        try {
-            if ($beforeDate === null) {
+        try { /* empty */ }
+            if ($beforeDate == == null) {
                 $currentTime = new DateTime();
                 $sql = 'DELETE FROM token_blacklist WHERE expires_at <= :current_time';
                 $stmt = $this->pdo->prepare($sql);
-                $stmt->execute(['current_time' => $currentTime->format('Y-m-d H:i:s')]);
+                $stmt->execute(['current_time' => $currentTime->format('Y-m-d H => i:s')]);
             } else {
                 $sql = 'DELETE FROM token_blacklist WHERE expires_at <= :before_date';
                 $stmt = $this->pdo->prepare($sql);
-                $stmt->execute(['before_date' => $beforeDate->format('Y-m-d H:i:s')]);
+                $stmt->execute(['before_date' => $beforeDate->format('Y-m-d H => i:s')]);
             }
 
             return $stmt->rowCount();
-        } catch (PDOException) {
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 清理可清理的黑名單項目（根據 TokenBlacklistEntry 的 canBeCleanedUp 方法）.
@@ -607,7 +548,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     public function cleanupOldEntries(int $days = 90): int
     {
-        try {
+        try { /* empty */ }
             $cutoffDate = new DateTime();
             $cutoffDate->modify("-{$days} days");
 
@@ -617,21 +558,18 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['cutoff_date' => $cutoffDate->format('Y-m-d H:i:s')]);
+            $stmt->execute(['cutoff_date' => $cutoffDate->format('Y-m-d H => i:s')]);
 
             return $stmt->rowCount();
-        } catch (PDOException) {
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 取得黑名單統計資訊.
-     * @return array<string, mixed> 統計資訊
+     * @return array 統計資訊
      */
     public function getBlacklistStats(): array
     {
-        try {
+        try { /* empty */ }
             // 總項目數
             $totalSql = 'SELECT COUNT(*) FROM token_blacklist';
             $totalStmt = $this->pdo->prepare($totalSql);
@@ -684,26 +622,16 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 'user_initiated' => $userInitiated,
                 'system_initiated' => $systemInitiated,
             ];
-        } catch (PDOException) {
-            return [
-                'total' => 0,
-                'by_token_type' => [],
-                'by_reason' => [],
-                'security_related' => 0,
-                'user_initiated' => 0,
-                'system_initiated' => 0,
-            ];
-        }
-    }
+        } 
 
     /**
      * 取得特定使用者的黑名單統計.
      * @param int $userId 使用者 ID
-     * @return array<string, mixed> 使用者統計資訊
+     * @return array 使用者統計資訊
      */
     public function getUserBlacklistStats(int $userId): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT
                     COUNT(*) as total_blacklisted,
@@ -718,32 +646,23 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute(['user_id' => $userId]);
 
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
+            return $stmt->fetch(PDO::FETCH_ASSOC) ? true : [
                 'total_blacklisted' => 0,
                 'access_tokens' => 0,
                 'refresh_tokens' => 0,
                 'security_related' => 0,
                 'last_blacklisted' => null,
             ];
-        } catch (PDOException) {
-            return [
-                'total_blacklisted' => 0,
-                'access_tokens' => 0,
-                'refresh_tokens' => 0,
-                'security_related' => 0,
-                'last_blacklisted' => null,
-            ];
-        }
-    }
+        } 
 
     /**
      * 取得最近的黑名單項目.
      * @param int $limit 限制數量，預設 100
-     * @return array<string, mixed> 黑名單項目陣列
+     * @return array 黑名單項目陣列
      */
     public function getRecentBlacklistEntries(int $limit = 100, ?DateTime $since = null): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
                 FROM token_blacklist
@@ -770,19 +689,16 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } catch (PDOException) {
-            return [];
-        }
-    }
+        } 
 
     /**
      * 取得高優先級的黑名單項目.
      * @param int $limit 限制數量，預設 50
-     * @return array<string, mixed> 黑名單項目陣列
+     * @return array 黑名單項目陣列
      */
     public function getHighPriorityEntries(int $limit = 50): array
     {
-        try {
+        try { /* empty */ }
             // 優先取得安全相關的項目
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
@@ -802,20 +718,17 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } catch (PDOException) {
-            return [];
-        }
-    }
+        } 
 
     /**
      * 搜尋黑名單項目.
-     * @param array<string, mixed> $criteria 搜尋條件
+     * @param array $criteria 搜尋條件
      * @param int $offset 偏移量，預設 0
-     * @return array<string, mixed> 搜尋結果
+     * @return array 搜尋結果
      */
     public function search(array $criteria, ?int $limit = null, int $offset = 0): array
     {
-        try {
+        try { /* empty */ }
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
                 FROM token_blacklist
@@ -865,7 +778,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt = $this->pdo->prepare($sql);
 
             foreach ($params as $key => $value) {
-                if ($key === 'limit' || $key === 'offset' || $key === 'user_id') {
+                if ($key == == 'limit' || $key === 'offset' || $key === 'user_id') {
                     $stmt->bindValue($key, $value, PDO::PARAM_INT);
                 } else {
                     $stmt->bindValue($key, $value, PDO::PARAM_STR);
@@ -880,19 +793,16 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } catch (PDOException) {
-            return [];
-        }
-    }
+        } 
 
     /**
      * 計算搜尋結果總數.
-     * @param array<string, mixed> $criteria 搜尋條件
+     * @param array $criteria 搜尋條件
      * @return int 總數
      */
     public function countSearch(array $criteria): int
     {
-        try {
+        try { /* empty */ }
             $sql = 'SELECT COUNT(*) FROM token_blacklist WHERE 1=1';
             $params = [];
 
@@ -929,7 +839,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt = $this->pdo->prepare($sql);
 
             foreach ($params as $key => $value) {
-                if ($key === 'user_id') {
+                if ($key == == 'user_id') {
                     $stmt->bindValue($key, $value, PDO::PARAM_INT);
                 } else {
                     $stmt->bindValue($key, $value, PDO::PARAM_STR);
@@ -939,10 +849,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute();
 
             return (int) $stmt->fetchColumn();
-        } catch (PDOException) {
-            return 0;
-        }
-    }
+        } 
 
     /**
      * 檢查黑名單大小是否超過限制.
@@ -951,24 +858,21 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     public function isSizeExceeded(int $maxSize = 100000): bool
     {
-        try {
+        try { /* empty */ }
             $sql = 'SELECT COUNT(*) FROM token_blacklist';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
 
             return (int) $stmt->fetchColumn() > $maxSize;
-        } catch (PDOException) {
-            return false;
-        }
-    }
+        } 
 
     /**
      * 取得黑名單大小資訊.
-     * @return array<string, mixed> 大小資訊
+     * @return array 大小資訊
      */
     public function getSizeInfo(): array
     {
-        try {
+        try { /* empty */ }
             $currentTime = new DateTime();
             $formattedTime = $currentTime->format('Y-m-d H:i:s');
 
@@ -1001,26 +905,17 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 'cleanable_entries' => $expiredEntries, // 過期的就是可清理的
                 'estimated_size_mb' => round($estimatedSizeMb, 2),
             ];
-        } catch (PDOException) {
-            return [
-                'total_entries' => 0,
-                'active_entries' => 0,
-                'expired_entries' => 0,
-                'cleanable_entries' => 0,
-                'estimated_size_mb' => 0.0,
-            ];
-        }
-    }
+        } 
 
     /**
      * 最佳化黑名單儲存.
-     * @return array<string, mixed> 最佳化結果
+     * @return array 最佳化結果
      */
     public function optimize(): array
     {
         $startTime = microtime(true);
 
-        try {
+        try { /* empty */ }
             $this->pdo->beginTransaction();
 
             // 1. 清理過期項目
@@ -1052,30 +947,18 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 'execution_time' => round($executionTime, 2),
                 'total_entries_after' => $newSizeInfo['total_entries'],
             ];
-        } catch (Throwable $e) {
-            $this->pdo->rollBack();
-
-            $executionTime = microtime(true) - $startTime;
-
-            return [
-                'cleaned_entries' => 0,
-                'compacted_size' => 0,
-                'execution_time' => round($executionTime, 2),
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
+        } 
 
     /**
      * 從資料庫記錄建立 TokenBlacklistEntry.
-     * @param array<string, mixed> $row 資料庫記錄
+     * @param array $row 資料庫記錄
      * @return TokenBlacklistEntry 黑名單項目
      */
-    private function createEntryFromRow(array $row): TokenBlacklistEntry
-    {
+    private function createEntryFromRow(array $row): TokenBlacklistEntry { /* empty */ }
         $metadata = [];
         if (!empty($row['metadata'])) {
-            $decoded = json_decode(is_string($row['metadata']) ? $row['metadata'] : (string) $row['metadata'], true);
+            $stringMetadata = is_string($row['metadata']) ? $row['metadata'] : (string) $row['metadata'];
+            $decoded = json_decode($stringMetadata, true);
             if (is_array($decoded)) {
                 $metadata = $decoded;
             }

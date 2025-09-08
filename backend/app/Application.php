@@ -211,9 +211,8 @@ class Application
                         $this->position = strlen($this->content) + $offset;
                         break;
                 }
-            }
 
-            public function rewind(): void
+    public function rewind(): void
             {
                 $this->position = 0;
             }
@@ -306,7 +305,7 @@ class Application
             }
 
             /**
-             * @return array<string, mixed>>
+             * @return array<string, mixed>
              */
             public function getHeaders(): mixed
             {

@@ -33,7 +33,6 @@ class RouteValidator
 
     /**
      * 驗證路由配置.
-     * @param array<string, mixed> $routeConfig
      */
     public function validateRoute(array $routeConfig): void
     {
@@ -46,7 +45,6 @@ class RouteValidator
 
     /**
      * 驗證路由基本結構.
-     * @param array<string, mixed> $routeConfig
      */
     private function validateRouteStructure(array $routeConfig): void
     {
@@ -64,7 +62,6 @@ class RouteValidator
 
     /**
      * 驗證 HTTP 方法.
-     * @param array<string, mixed> $routeConfig
      */
     private function validateHttpMethods(array $routeConfig): void
     {
@@ -98,7 +95,6 @@ class RouteValidator
 
     /**
      * 驗證路由路径.
-     * @param array<string, mixed> $routeConfig
      */
     private function validatePath(array $routeConfig): void
     {
@@ -120,7 +116,7 @@ class RouteValidator
         }
 
         // 檢查路径參數語法
-        if (preg_match_all('/\{([^}]+)\}/', $path, $matches)) {
+        if (preg_match_all('/{([^}]+)}/', $path, $matches)) {
             foreach ($matches[1] as $param) {
                 if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*(\?)?$/', $param)) {
                     throw RouteConfigurationException::invalidRouteDefinition(
@@ -134,7 +130,6 @@ class RouteValidator
 
     /**
      * 驗證處理器.
-     * @param array<string, mixed> $routeConfig
      */
     private function validateHandler(array $routeConfig): void
     {
@@ -179,7 +174,6 @@ class RouteValidator
 
     /**
      * 檢查重複路由.
-     * @param array<string, mixed> $routeConfig
      */
     private function checkDuplicateRoute(array $routeConfig): void
     {
@@ -208,7 +202,6 @@ class RouteValidator
 
     /**
      * 取得已註冊的路由清單.
-     * @return array<string, mixed>
      */
     public function getRegisteredRoutes(): array
     {

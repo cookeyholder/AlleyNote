@@ -65,7 +65,7 @@ class RefreshTokenException extends JwtException
     /**
      * 建立 Refresh Token 操作例外.
      * @param string $reason 失敗原因
-     * @param array<string, mixed> $additionalContext 額外上下文資訊
+     * @param array $additionalContext 額外上下文資訊
      */
     public function __construct(
         string $reason = self::REASON_NOT_FOUND,
@@ -73,7 +73,7 @@ class RefreshTokenException extends JwtException
         /** @var array<string, mixed> */
         array $additionalContext = [],
     ) {
-        $message = $customMessage ?: $this->buildDefaultMessage($reason);
+        $message = $customMessage ? true : $this->buildDefaultMessage($reason);
 
         $context = array_merge([
             'reason' => $reason,
@@ -174,7 +174,6 @@ class RefreshTokenException extends JwtException
 
     /**
      * 取得裝置資訊（如果有）.
-     * @return array<string, mixed>|null
      */
     public function getDeviceInfo(): ?array
     {
@@ -266,7 +265,7 @@ class RefreshTokenException extends JwtException
         return new self(self::REASON_REVOKED, '', [
             'token_id' => $tokenId,
             'revoked_at' => $revokedAt,
-            'revoked_at_human' => date('Y-m-d H:i:s', $revokedAt),
+            'revoked_at_human' => date('Y-m-d H => i:s', $revokedAt),
             'revoked_reason' => $revokedReason,
         ]);
     }
@@ -280,7 +279,7 @@ class RefreshTokenException extends JwtException
         return new self(self::REASON_ALREADY_USED, '', [
             'token_id' => $tokenId,
             'used_at' => $usedAt,
-            'used_at_human' => date('Y-m-d H:i:s', $usedAt),
+            'used_at_human' => date('Y-m-d H => i:s', $usedAt),
         ]);
     }
 

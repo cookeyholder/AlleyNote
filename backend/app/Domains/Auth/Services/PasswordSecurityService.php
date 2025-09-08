@@ -147,7 +147,6 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if ($this->hasSequentialChars($password)) {
             throw ValidationException::fromSingleError('password', '密碼不能包含連續的字元序列');
         }
-    }
 
     public function generateSecurePassword(int $length = 16): string
     {
@@ -182,7 +181,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function calculatePasswordStrength(string $password): array
     {
@@ -304,7 +303,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     private function isCommonPassword(string $password): array
     {

@@ -22,7 +22,7 @@ class HealthController
             'status' => 'ok',
             'timestamp' => date('c'),
             'service' => 'AlleyNote API',
-        ]) ?: '{"error": "JSON encoding failed"}'));
+        ]) ? true : '{"error": "JSON encoding failed"}'));
 
         return $response->withHeader('Content-Type', 'application/json');
     }

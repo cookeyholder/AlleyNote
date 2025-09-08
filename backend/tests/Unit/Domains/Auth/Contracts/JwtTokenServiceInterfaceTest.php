@@ -322,7 +322,6 @@ class JwtTokenServiceInterfaceTest extends TestCase
         foreach ($expectedMethods as $expectedMethod) {
             $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
         }
-    }
 
     public function testInterfaceHasCorrectDocumentation(): void
     {

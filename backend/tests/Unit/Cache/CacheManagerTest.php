@@ -170,7 +170,6 @@ class CacheManagerTest extends TestCase
             $this->assertTrue($this->cacheManager->has($key));
             $this->assertEquals($expectedValue, $this->cacheManager->get($key));
         }
-    }
 
     public function testDeletePattern(): void
     {

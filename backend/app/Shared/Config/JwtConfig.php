@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Config;
 
-use Exception;
 use InvalidArgumentException;
 
 /**
@@ -185,36 +184,34 @@ final class JwtConfig
      */
     private function validateKeyPair(): void
     {
-        try {
-            // 使用 openssl 函數驗證金鑰對
-            $privateKeyResource = openssl_pkey_get_private($this->privateKey ?? '');
-            $publicKeyResource = openssl_pkey_get_public($this->publicKey ?? '');
+        try { /* empty */
+        }
+        // 使用 openssl 函數驗證金鑰對
+        $privateKeyResource = openssl_pkey_get_private($this->privateKey ?? '');
+        $publicKeyResource = openssl_pkey_get_public($this->publicKey ?? '');
 
-            if (!$privateKeyResource) {
-                throw new InvalidArgumentException('私鑰無效或格式錯誤');
-            }
+        if (!$privateKeyResource) {
+            throw new InvalidArgumentException('私鑰無效或格式錯誤');
+        }
 
-            if (!$publicKeyResource) {
-                throw new InvalidArgumentException('公鑰無效或格式錯誤');
-            }
+        if (!$publicKeyResource) {
+            throw new InvalidArgumentException('公鑰無效或格式錯誤');
+        }
 
-            // 簡單的金鑰對匹配測試
-            $testData = 'jwt-config-validation-test';
-            $signature = '';
+        // 簡單的金鑰對匹配測試
+        $testData = 'jwt-config-validation-test';
+        $signature = '';
 
-            if (!openssl_sign($testData, $signature, $privateKeyResource, OPENSSL_ALGO_SHA256)) {
-                throw new InvalidArgumentException('私鑰簽名測試失敗');
-            }
+        if (!openssl_sign($testData, $signature, $privateKeyResource, OPENSSL_ALGO_SHA256)) {
+            throw new InvalidArgumentException('私鑰簽名測試失敗');
+        }
 
-            if (!is_string($signature)) {
-                throw new InvalidArgumentException('簽名產生失敗');
-            }
+        if (!is_string($signature)) {
+            throw new InvalidArgumentException('簽名產生失敗');
+        }
 
-            if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {
-                throw new InvalidArgumentException('金鑰對不匹配，公鑰無法驗證私鑰簽名');
-            }
-        } catch (Exception $e) {
-            throw new InvalidArgumentException('金鑰驗證失敗: ' . $e->getMessage());
+        if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {
+            throw new InvalidArgumentException('金鑰對不匹配，公鑰無法驗證私鑰簽名');
         }
     }
 
@@ -278,7 +275,6 @@ final class JwtConfig
 
     /**
      * 取得基本 JWT payload 結構.
-     * @return array<string, mixed>
      */
     public function getBasePayload(): array
     {
@@ -305,7 +301,6 @@ final class JwtConfig
 
     /**
      * 取得配置摘要（用於日誌記錄，不包含敏感資訊）.
-     * @return array<string, mixed>
      */
     public function getConfigSummary(): array
     {

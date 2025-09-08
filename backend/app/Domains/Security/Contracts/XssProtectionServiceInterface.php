@@ -13,15 +13,12 @@ interface XssProtectionServiceInterface
 
     /**
      * 清理陣列中所有值的 XSS 內容.
-     * @param array<string, mixed> $input
-     * @return array<string, mixed>
      */
     public function sanitizeArray(array $input): array;
 
     /**
      * 清理陣列中指定欄位的 XSS 內容.
-     * @param array<string, mixed> $input 要清理的陣列
-     * @return array<string, mixed>
+     * @param array $input 要清理的陣列
      */
     public function cleanArray(array $input, array $fields): array;
 }

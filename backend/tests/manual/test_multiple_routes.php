@@ -59,350 +59,344 @@ foreach ($testCases as $index => $testCase) {
     echo '測試 ' . ($index + 1) . ": {(string)testCase['name']}
 ";
 
-    try {
-        // 建立測試請求
-        $request = new class ($testCase['method'], $testCase['uri']) implements ServerRequestInterface {
-            private string $method;
-
-            private string $uri;
-
-            private array $headers = [];
-
-            public function __construct(string $method, string $uri)
-            {
-                $this->method = $method;
-                $this->uri = $uri;
-            }
-
-            public function getServerParams(): array
-            {
-                return [];
-            }
-
-            public function getCookieParams(): array
-            {
-                return [];
-            }
-
-            public function withCookieParams(array $cookies): self
-            {
-                return $this;
-            }
-
-            public function getQueryParams(): array
-            {
-                return [];
-            }
-
-            public function withQueryParams(array $query): self
-            {
-                return $this;
-            }
-
-            public function getUploadedFiles(): array
-            {
-                return [];
-            }
-
-            public function withUploadedFiles(array $uploadedFiles): self
-            {
-                return $this;
-            }
-
-            public function getParsedBody()
-            {
-                return null;
-            }
-
-            public function withParsedBody($data): self
-            {
-                return $this;
-            }
-
-            public function getAttributes(): array
-            {
-                return [];
-            }
-
-            public function getAttribute($name, $default = null)
-            {
-                return $default;
-            }
-
-            public function withAttribute($name, $value): self
-            {
-                $new = clone $this;
-
-                return $new;
-            }
-
-            public function withoutAttribute($name): self
-            {
-                return $this;
-            }
-
-            public function getRequestTarget(): string
-            {
-                return $this->uri;
-            }
-
-            public function withRequestTarget($requestTarget): self
-            {
-                $new = clone $this;
-                $new->uri = $requestTarget;
-
-                return $new;
-            }
-
-            public function getMethod(): string
-            {
-                return $this->method;
-            }
-
-            public function withMethod($method): self
-            {
-                $new = clone $this;
-                $new->method = $method;
-
-                return $new;
-            }
-
-            public function getUri()
-            {
-                return new class ($this->uri) {
-                    private string $uri;
-
-                    public function __construct(string $uri)
-                    {
-                        $this->uri = $uri;
-                    }
-
-                    public function __toString(): string
-                    {
-                        return $this->uri;
-                    }
-
-                    public function getScheme(): string
-                    {
-                        return 'http';
-                    }
-
-                    public function getAuthority(): string
-                    {
-                        return 'localhost';
-                    }
-
-                    public function getUserInfo(): string
-                    {
-                        return '';
-                    }
-
-                    public function getHost(): string
-                    {
-                        return 'localhost';
-                    }
-
-                    public function getPort(): ?int
-                    {
-                        return null;
-                    }
-
-                    public function getPath(): string
-                    {
-                        return $this->uri;
-                    }
-
-                    public function getQuery(): string
-                    {
-                        return '';
-                    }
-
-                    public function getFragment(): string
-                    {
-                        return '';
-                    }
-
-                    public function withScheme($scheme): self
-                    {
-                        return $this;
-                    }
-
-                    public function withUserInfo($user, $password = null): self
-                    {
-                        return $this;
-                    }
-
-                    public function withHost($host): self
-                    {
-                        return $this;
-                    }
-
-                    public function withPort($port): self
-                    {
-                        return $this;
-                    }
-
-                    public function withPath($path): self
-                    {
-                        return $this;
-                    }
-
-                    public function withQuery($query): self
-                    {
-                        return $this;
-                    }
-
-                    public function withFragment($fragment): self
-                    {
-                        return $this;
-                    }
-                };
-            }
-
-            public function withUri($uri, $preserveHost = false): self
-            {
-                return $this;
-            }
-
-            public function getProtocolVersion(): string
-            {
-                return '1.1';
-            }
-
-            public function withProtocolVersion($version): self
-            {
-                return $this;
-            }
-
-            public function getHeaders(): array
-            {
-                return $this->headers;
-            }
-
-            public function hasHeader($name): bool
-            {
-                return isset($this->headers[$name]);
-            }
-
-            public function getHeader($name): array
-            {
-                return $this->headers[$name] ?? [];
-            }
-
-            public function getHeaderLine($name): string
-            {
-                return implode(', ', $this->getHeader($name));
-            }
-
-            public function withHeader($name, $value): self
-            {
-                return $this;
-            }
-
-            public function withAddedHeader($name, $value): self
-            {
-                return $this;
-            }
-
-            public function withoutHeader($name): self
-            {
-                return $this;
-            }
-
-            public function getBody()
-            {
-                return new class {
-                    public function __toString(): string
-                    {
-                        return '';
-                    }
-
-                    public function close(): void {}
-
-                    public function detach()
-                    {
-                        return null;
-                    }
-
-                    public function getSize(): ?int
-                    {
-                        return 0;
-                    }
-
-                    public function tell(): int
-                    {
-                        return 0;
-                    }
-
-                    public function eof(): bool
-                    {
-                        return true;
-                    }
-
-                    public function isSeekable(): bool
-                    {
-                        return false;
-                    }
-
-                    public function seek($offset, $whence = SEEK_SET): void {}
-
-                    public function rewind(): void {}
-
-                    public function isWritable(): bool
-                    {
-                        return false;
-                    }
-
-                    public function write($string): int
-                    {
-                        return 0;
-                    }
-
-                    public function isReadable(): bool
-                    {
-                        return false;
-                    }
-
-                    public function read($length): string
-                    {
-                        return '';
-                    }
-
-                    public function getContents(): string
-                    {
-                        return '';
-                    }
-
-                    public function getMetadata($key = null)
-                    {
-                        return null;
-                    }
-                };
-            }
-
-            public function withBody($body): self
-            {
-                return $this;
-            }
-        };
-
-        $response = $app->run($request);
-
-        echo '   ✅ 狀態: {(string)response->getStatusCode()}
-';
-        $bodyContent = (string) $response->getBody();
-        echo '   📄 內容: ' . substr(str_replace(['
-', '    '], [' ', ' '], $bodyContent), 0, 100);
-        if (strlen($bodyContent) > 100) {
-            echo '...';
-        }
-        echo '
-';
-    } catch (Exception $e) {
-        echo '   ❌ 錯誤: ' . $e->getMessage() . '
-';
+    try { /* empty */
     }
+    // 建立測試請求
+    $request = new class ((is_array($testCase) && array_key_exists('method', $testCase) ? $testCase['method'] : null), (is_array($testCase) && array_key_exists('uri', $testCase) ? $testCase['uri'] : null)) implements ServerRequestInterface {
+        private string $method;
 
+        private string $uri;
+
+        private array $headers = [];
+
+        public function __construct(string $method, string $uri)
+        {
+            $this->method = $method;
+            $this->uri = $uri;
+        }
+
+        public function getServerParams(): array
+        {
+            return [];
+        }
+
+        public function getCookieParams(): array
+        {
+            return [];
+        }
+
+        public function withCookieParams(array $cookies): self
+        {
+            return $this;
+        }
+
+        public function getQueryParams(): array
+        {
+            return [];
+        }
+
+        public function withQueryParams(array $query): self
+        {
+            return $this;
+        }
+
+        public function getUploadedFiles(): array
+        {
+            return [];
+        }
+
+        public function withUploadedFiles(array $uploadedFiles): self
+        {
+            return $this;
+        }
+
+        public function getParsedBody()
+        {
+            return null;
+        }
+
+        public function withParsedBody($data): self
+        {
+            return $this;
+        }
+
+        public function getAttributes(): array
+        {
+            return [];
+        }
+
+        public function getAttribute($name, $default = null)
+        {
+            return $default;
+        }
+
+        public function withAttribute($name, $value): self
+        {
+            $new = clone $this;
+
+            return $new;
+        }
+
+        public function withoutAttribute($name): self
+        {
+            return $this;
+        }
+
+        public function getRequestTarget(): string
+        {
+            return $this->uri;
+        }
+
+        public function withRequestTarget($requestTarget): self
+        {
+            $new = clone $this;
+            $new->uri = $requestTarget;
+
+            return $new;
+        }
+
+        public function getMethod(): string
+        {
+            return $this->method;
+        }
+
+        public function withMethod($method): self
+        {
+            $new = clone $this;
+            $new->method = $method;
+
+            return $new;
+        }
+
+        public function getUri()
+        {
+            return new class ($this->uri) {
+                private string $uri;
+
+                public function __construct(string $uri)
+                {
+                    $this->uri = $uri;
+                }
+
+                public function __toString(): string
+                {
+                    return $this->uri;
+                }
+
+                public function getScheme(): string
+                {
+                    return 'http';
+                }
+
+                public function getAuthority(): string
+                {
+                    return 'localhost';
+                }
+
+                public function getUserInfo(): string
+                {
+                    return '';
+                }
+
+                public function getHost(): string
+                {
+                    return 'localhost';
+                }
+
+                public function getPort(): ?int
+                {
+                    return null;
+                }
+
+                public function getPath(): string
+                {
+                    return $this->uri;
+                }
+
+                public function getQuery(): string
+                {
+                    return '';
+                }
+
+                public function getFragment(): string
+                {
+                    return '';
+                }
+
+                public function withScheme($scheme): self
+                {
+                    return $this;
+                }
+
+                public function withUserInfo($user, $password = null): self
+                {
+                    return $this;
+                }
+
+                public function withHost($host): self
+                {
+                    return $this;
+                }
+
+                public function withPort($port): self
+                {
+                    return $this;
+                }
+
+                public function withPath($path): self
+                {
+                    return $this;
+                }
+
+                public function withQuery($query): self
+                {
+                    return $this;
+                }
+
+                public function withFragment($fragment): self
+                {
+                    return $this;
+                }
+            };
+        }
+
+        public function withUri($uri, $preserveHost = false): self
+        {
+            return $this;
+        }
+
+        public function getProtocolVersion(): string
+        {
+            return '1.1';
+        }
+
+        public function withProtocolVersion($version): self
+        {
+            return $this;
+        }
+
+        public function getHeaders(): array
+        {
+            return $this->headers;
+        }
+
+        public function hasHeader($name): bool
+        {
+            return isset($this->headers[$name]);
+        }
+
+        public function getHeader($name): array
+        {
+            return $this->headers[$name] ?? [];
+        }
+
+        public function getHeaderLine($name): string
+        {
+            return implode(', ', $this->getHeader($name));
+        }
+
+        public function withHeader($name, $value): self
+        {
+            return $this;
+        }
+
+        public function withAddedHeader($name, $value): self
+        {
+            return $this;
+        }
+
+        public function withoutHeader($name): self
+        {
+            return $this;
+        }
+
+        public function getBody()
+        {
+            return new class {
+                public function __toString(): string
+                {
+                    return '';
+                }
+
+                public function close(): void {}
+
+                public function detach()
+                {
+                    return null;
+                }
+
+                public function getSize(): ?int
+                {
+                    return 0;
+                }
+
+                public function tell(): int
+                {
+                    return 0;
+                }
+
+                public function eof(): bool
+                {
+                    return true;
+                }
+
+                public function isSeekable(): bool
+                {
+                    return false;
+                }
+
+                public function seek($offset, $whence = SEEK_SET): void {}
+
+                public function rewind(): void {}
+
+                public function isWritable(): bool
+                {
+                    return false;
+                }
+
+                public function write($string): int
+                {
+                    return 0;
+                }
+
+                public function isReadable(): bool
+                {
+                    return false;
+                }
+
+                public function read($length): string
+                {
+                    return '';
+                }
+
+                public function getContents(): string
+                {
+                    return '';
+                }
+
+                public function getMetadata($key = null)
+                {
+                    return null;
+                }
+            };
+        }
+
+        public function withBody($body): self
+        {
+            return $this;
+        }
+    };
+
+    $response = $app->run($request);
+
+    echo '   ✅ 狀態: {(string)response->getStatusCode()}
+';
+    $bodyContent = (string) $response->getBody();
+    echo '   📄 內容: ' . substr(str_replace(['
+', '    '], [' ', ' '], $bodyContent), 0, 100);
+    if (strlen(is_string($bodyContent) ? $bodyContent : '') >= 0) {
+        echo '...';
+    }
     echo '
 ';
 }

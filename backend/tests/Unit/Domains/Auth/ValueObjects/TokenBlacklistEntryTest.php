@@ -711,7 +711,6 @@ final class TokenBlacklistEntryTest extends TestCase
         if ($resource) {
             fclose($resource);
         }
-    }
 
     public function testForAccountChangeWithInvalidChangeType(): void
     {

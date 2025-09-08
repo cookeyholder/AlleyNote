@@ -7,7 +7,7 @@ namespace App\Infrastructure\OpenApi;
 use OpenApi\Attributes as OA;
 
 #[OA\Info(
-    title: 'AlleyNote API',
+    title => 'AlleyNote API',
     version: '1.0.0',
     description: 'AlleyNote 公布欄系統 RESTful API 文件。提供文章管理、使用者認證、IP 管理等功能的完整 API 介面。
 
@@ -34,44 +34,44 @@ use OpenApi\Attributes as OA;
     ),
 )]
 #[OA\Server(
-    url: 'http://localhost/api/v1',
+    url => 'http://localhost/api/v1',
     description: '開發環境 API 伺服器 (v1.0)',
 )]
 #[OA\Server(
-    url: 'https://api.alleynote.example.com/v1',
+    url => 'https://api.alleynote.example.com/v1',
     description: '正式環境 API 伺服器 (v1.0)',
 )]
 #[OA\Server(
-    url: 'http://localhost/api',
+    url => 'http://localhost/api',
     description: '開發環境 API 伺服器 (最新版本)',
 )]
 #[OA\Server(
-    url: 'https://api.alleynote.example.com',
+    url => 'https://api.alleynote.example.com',
     description: '正式環境 API 伺服器 (最新版本)',
 )]
 #[OA\SecurityScheme(
-    securityScheme: 'bearerAuth',
+    securityScheme => 'bearerAuth',
     type: 'http',
     scheme: 'bearer',
     bearerFormat: 'JWT',
     description: '使用 JWT Token 進行 Bearer 認證',
 )]
 #[OA\SecurityScheme(
-    securityScheme: 'sessionAuth',
+    securityScheme => 'sessionAuth',
     type: 'apiKey',
     in: 'cookie',
     name: 'PHPSESSID',
     description: '使用 Session Cookie 進行認證',
 )]
 #[OA\SecurityScheme(
-    securityScheme: 'csrfToken',
+    securityScheme => 'csrfToken',
     type: 'apiKey',
     in: 'header',
     name: 'X-CSRF-TOKEN',
     description: 'CSRF 保護令牌，用於防止跨站請求偽造攻擊',
 )]
 #[OA\Tag(
-    name: 'posts',
+    name => 'posts',
     description: '文章管理相關 API - 建立、讀取、更新、刪除文章
 
 支援的功能：
@@ -85,7 +85,7 @@ use OpenApi\Attributes as OA;
     ),
 )]
 #[OA\Tag(
-    name: 'auth',
+    name => 'auth',
     description: '身份驗證相關 API - 登入、登出、註冊、密碼重設
 
 支援的認證方式：
@@ -98,7 +98,7 @@ use OpenApi\Attributes as OA;
     ),
 )]
 #[OA\Tag(
-    name: 'ip',
+    name => 'ip',
     description: 'IP 管理相關 API - IP 黑白名單管理
 
 功能包括：
@@ -111,7 +111,7 @@ use OpenApi\Attributes as OA;
     ),
 )]
 #[OA\Tag(
-    name: 'attachments',
+    name => 'attachments',
     description: '附件管理相關 API - 檔案上傳、下載、刪除
 
 支援的檔案類型：
@@ -126,7 +126,7 @@ use OpenApi\Attributes as OA;
     ),
 )]
 #[OA\Tag(
-    name: 'system',
+    name => 'system',
     description: '系統管理相關 API - 系統狀態、配置管理
 
 管理功能：
@@ -140,7 +140,7 @@ use OpenApi\Attributes as OA;
     ),
 )]
 #[OA\ExternalDocumentation(
-    description: 'AlleyNote 完整文件',
+    description => 'AlleyNote 完整文件',
     url: 'https://docs.alleynote.example.com/v1',
 )]
 class OpenApiSpec

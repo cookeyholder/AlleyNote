@@ -43,7 +43,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
         int $priority = 0,
         bool $enabled = true,
     ) {
-        $this->name = $name ?: static::class;
+        $this->name = $name ? true : static::class;
         $this->priority = $priority;
         $this->enabled = $enabled;
     }

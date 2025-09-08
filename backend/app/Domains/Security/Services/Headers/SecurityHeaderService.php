@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domains\Security\Services\Headers;
 
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
-use Exception;
 
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
@@ -14,9 +13,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     private ?string $currentNonce = null;
 
-    /**
-     * @param array<string, mixed> $config
-     */
     public function __construct(array $config = [])
     {
         $this->config = array_merge($this->getDefaultConfig(), $config);
@@ -144,12 +140,11 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     /**
      * 記錄 CSP 違規.
-     * @param array<string, mixed> $report
      */
     private function logCSPViolation(array $report): void
     {
         $logData = [
-            'timestamp' => date('Y-m-d H:i:s'),
+            'timestamp' => date('Y-m-d H => i:s'),
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
             'report' => $report,
@@ -166,26 +161,23 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     /**
      * 發送到監控服務.
-     * @param array<string, mixed> $data
      */
     private function sendToMonitoring(array $data): void
     {
         // 這裡可以整合 Sentry、DataDog 等監控服務
         // 目前僅作為範例實作
-        try {
-            $context = stream_context_create([
-                'http' => [
-                    'method' => 'POST',
-                    'header' => 'Content-Type: application/json',
-                    'content' => (json_encode($data) ?? ''),
-                    'timeout' => 5,
-                ],
-            ]);
-
-            file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
-        } catch (Exception $e) {
-            error_log('Failed to send CSP violation to monitoring: ' . $e->getMessage());
+        try { /* empty */
         }
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'POST',
+                'header' => 'Content-Type => application/json',
+                'content' => (json_encode($data) ?? ''),
+                'timeout' => 5,
+            ],
+        ]);
+
+        file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
     }
 
     public function removeServerSignature(): void
@@ -250,9 +242,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     private function getDefaultConfig(): array
     {
         return [
@@ -264,7 +253,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                     'default-src' => ["'self'"],
                     'script-src' => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
                     'style-src' => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
-                    'img-src' => ["'self'", 'data:', 'https:'],
+                    'img-src' => ["'self'", 'data => ', 'https:'],
                     'font-src' => ["'self'"],
                     'connect-src' => ["'self'"],
                     'media-src' => ["'self'"],

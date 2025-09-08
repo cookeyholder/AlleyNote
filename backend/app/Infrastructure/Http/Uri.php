@@ -49,7 +49,6 @@ class Uri implements UriInterface
                 $this->userInfo .= ':' . $parts['pass'];
             }
         }
-    }
 
     public function getScheme(): string
     {

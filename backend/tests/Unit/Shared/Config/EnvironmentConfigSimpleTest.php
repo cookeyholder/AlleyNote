@@ -29,7 +29,7 @@ final class EnvironmentConfigSimpleTest extends TestCase
         foreach ($envKeys as $key) {
             $this->originalEnv[$key] = [
                 'env' => $_ENV[$key] ?? null,
-                'getenv' => getenv($key) ?: null,
+                'getenv' => getenv($key) ? true : null,
             ];
 
             // 清空環境變數以確保從檔案載入

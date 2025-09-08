@@ -128,7 +128,6 @@ class MemoryRouteCache implements RouteCacheInterface
 
     /**
      * 取得所有快取項目.
-     * @return array<string, mixed>
      */
     public function getCache(): array
     {
@@ -137,7 +136,6 @@ class MemoryRouteCache implements RouteCacheInterface
 
     /**
      * 取得所有時間戳.
-     * @return array<string, mixed>
      */
     public function getTimestamps(): array
     {

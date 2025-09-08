@@ -45,7 +45,7 @@ interface PostStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 限制回傳數量，預設為 10
-     * @return array<string, mixed> 熱門文章資料
+     * @return array 熱門文章資料
      */
     public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array;
 
@@ -53,7 +53,7 @@ interface PostStatisticsRepositoryInterface
      * 取得指定週期內各來源的文章統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed> 來源統計資料
+     * @return array 來源統計資料
      */
     public function getSourceDistributionByPeriod(StatisticsPeriod $period): array;
 
@@ -79,7 +79,7 @@ interface PostStatisticsRepositoryInterface
      * 取得文章發布趨勢資料（按日期分組）.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed> 趨勢資料
+     * @return array 趨勢資料
      */
     public function getPostTrendsByPeriod(StatisticsPeriod $period): array;
 
@@ -87,7 +87,7 @@ interface PostStatisticsRepositoryInterface
      * 取得觀看次數趨勢資料（按日期分組）.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed> 觀看趨勢資料
+     * @return array 觀看趨勢資料
      */
     public function getViewTrendsByPeriod(StatisticsPeriod $period): array;
 
@@ -103,7 +103,7 @@ interface PostStatisticsRepositoryInterface
      * 取得指定週期內觀看次數最高的文章.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed>{id: int, title: string, views: int, created_at: string}|null 最高觀看文章資料
+     * @return array{id: int, title: string, views: int, created_at: string}|null 最高觀看文章資料
      */
     public function getMostViewedPostByPeriod(StatisticsPeriod $period): ?array;
 
@@ -111,7 +111,7 @@ interface PostStatisticsRepositoryInterface
      * 取得指定週期內新發布的文章統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed>{total_new_posts: int, total_views: int, avg_views_per_post: float} 新文章統計
+     * @return array{total_new_posts: int, total_views: int, avg_views_per_post: float} 新文章統計
      */
     public function getNewPostsStatsByPeriod(StatisticsPeriod $period): array;
 
@@ -119,7 +119,7 @@ interface PostStatisticsRepositoryInterface
      * 取得文章觀看次數分布.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed> 觀看次數分布
+     * @return array 觀看次數分布
      */
     public function getViewsDistributionByPeriod(StatisticsPeriod $period): array;
 
@@ -143,7 +143,7 @@ interface PostStatisticsRepositoryInterface
      * 取得文章活動熱圖資料（小時級別）.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed> 活動熱圖資料
+     * @return array 活動熱圖資料
      */
     public function getPostActivityHeatmapByPeriod(StatisticsPeriod $period): array;
 
@@ -152,7 +152,7 @@ interface PostStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 限制回傳數量，預設為 10
-     * @return array<string, mixed> 活躍作者統計
+     * @return array 活躍作者統計
      */
     public function getMostActiveAuthorsByPeriod(StatisticsPeriod $period, int $limit = 10): array;
 
@@ -169,7 +169,7 @@ interface PostStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 限制回傳數量，預設為 20
-     * @return array<string, mixed> 標籤統計（如果系統支援標籤）
+     * @return array 標籤統計（如果系統支援標籤）
      */
     public function getTagUsageStatsByPeriod(StatisticsPeriod $period, int $limit = 20): array;
 
@@ -186,7 +186,7 @@ interface PostStatisticsRepositoryInterface
      *
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed>{views: int, comments: int, likes: int, shares: int, source: string} 文章統計資料
+     * @return array{views: int, comments: int, likes: int, shares: int, source: string} 文章統計資料
      */
     public function getPostStatsByPeriod(int $postId, StatisticsPeriod $period): array;
 
@@ -194,7 +194,7 @@ interface PostStatisticsRepositoryInterface
      * 取得按發布時間分組的文章統計.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed> 發布時間統計
+     * @return array 發布時間統計
      */
     public function getPostsByPublishTime(StatisticsPeriod $period): array;
 
@@ -203,7 +203,7 @@ interface PostStatisticsRepositoryInterface
      *
      * @param int $postId 文章ID
      * @param StatisticsPeriod $period 統計週期
-     * @return array<string, mixed> 歷史表現資料
+     * @return array 歷史表現資料
      */
     public function getPostHistoricalPerformance(int $postId, StatisticsPeriod $period): array;
 
@@ -212,7 +212,7 @@ interface PostStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $dataPoints 資料點數量，預設為 30
-     * @return array<string, mixed> 趨勢資料
+     * @return array 趨勢資料
      */
     public function getStatisticsTrends(StatisticsPeriod $period, int $dataPoints = 30): array;
 }

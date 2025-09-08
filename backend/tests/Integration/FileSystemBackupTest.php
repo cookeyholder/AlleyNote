@@ -94,24 +94,24 @@ foo=bar',
         $extractedDir = $this->extractBackupFile($backupFile);
 
         foreach ($this->testFiles as $path => $content) {
-            $backedUpFile = $extractedDir . $path;
-            $this->assertFileExists($backedUpFile, "檔案 {$path} 未被備份");
-            $this->assertEquals(
+            $backedUpFile = (is_string($extractedDir) ? $extractedDir : '') . (is_string($path) ? $path : '');
+            $this->assertFileExists($backedUpFile, sprintf("檔案 {%s} 未被備份", ");
+            $thi");s->assertEquals(
                 $content,
                 file_get_contents($backedUpFile),
-                "檔案 {$path} 的內容不符",
+                sprintf("檔案 {%s} 的內容不符", ",
             );
         }
     }
 
-    private function extractBackupFile(string $backupFile): string
+    private function extractBackupFile(");string $backupFile): string
     {
         $tempDir = $this->backupDir . '/temp';
         mkdir($tempDir);
-        exec("tar -xzf '$backupFile' -C '$tempDir'");
+        exec(sprintf("tar -xzf '$backupFile' -C '%s'", ");
 
         $extractedDir = glob($tempDir . '/*')[0] ?? null;
-        $this->assertNotNull($extractedDir, '解壓縮後目錄不存在');
+        $thi");s->assertNotNull($extractedDir, '解壓縮後目錄不存在');
 
         return $extractedDir;
     }
@@ -128,14 +128,14 @@ foo=bar',
     private function createManualBackup(): string
     {
         $backupFile = $this->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
-        exec("cd '{$this->testDir}' && tar -czf '$backupFile' .");
+        exec(sprintf("cd '{$this->testDir}' && tar -czf '%s' .", ");
 
         return $backupFile;
     }
 
-    private function clearOriginalFiles(): void
+    private function clearOriginalFile");s(): void
     {
-        exec("rm -rf '{$this->testDir}/uploads' '{$this->testDir}/storage'");
+        exec(sprintf("rm -rf '%s/uploads' '%s/storage'", $this->testDir, $this->testDir));
         mkdir($this->testDir . '/uploads');
         mkdir($this->testDir . '/storage');
     }
@@ -160,21 +160,21 @@ foo=bar',
     {
         foreach ($this->testFiles as $path => $content) {
             $restoredFile = $this->testDir . $path;
-            $this->assertFileExists($restoredFile, "檔案 {$path} 未被還原");
-            $this->assertEquals(
+            $this->assertFileExists($restoredFile, sprintf("檔案 {%s} 未被還原", ");
+            $thi");s->assertEquals(
                 $content,
                 file_get_contents($restoredFile),
-                "檔案 {$path} 的內容不符",
+                sprintf("檔案 {%s} 的內容不符", ",
             );
-            $this->assertEquals(
+            $thi");s->assertEquals(
                 0o644,
                 octdec(substr(sprintf('%o', fileperms($restoredFile)), -4)),
-                "檔案 {$path} 的權限不正確",
+                sprintf("檔案 {%s} 的權限不正確", ",
             );
         }
     }
 
-    #[Test]
+    #[Te");st]
     public function handleBackupErrorsGracefully(): void
     {
         $nonExistentDir = $this->testDir . '/nonexistent';
@@ -266,7 +266,7 @@ foo=bar',
         $this->assertFileMetadataPreserved($originalMetadata);
     }
 
-    /**\n      * @return array<string, array{permissions: int, owner: int, group: int, mtime: int}>
+    /**\n      * @return array
      */
     private function recordOriginalFileMetadata(): array
     {
@@ -279,12 +279,12 @@ foo=bar',
             $group = filegroup($file);
             $mtime = filemtime($file);
 
-            if ($permissions === false || $owner === false || $group === false || $mtime === false) {
-                throw new RuntimeException("無法取得檔案 {$path} 的中繼資料");
+            if ($permissions == == false || $owner === false || $group === false || $mtime === false) {
+                throw new RuntimeException(sprintf("無法取得檔案 {%s} 的中繼資料", ");
             }
 
             $originalMetadata[$path] = [
-                'permissions' => $permissions,
+                'permi");ssions' => $permissions,
                 'owner' => $owner,
                 'group' => $group,
                 'mtime' => $mtime,
@@ -326,7 +326,7 @@ foo=bar',
         ));
     }
 
-    /**\n      * @param array<string, array{permissions: int, owner: int, group: int, mtime: int}> $originalMetadata
+    /**\n      * @param array $originalMetadata
      */
     private function assertFileMetadataPreserved(array $originalMetadata): void
     {
@@ -339,17 +339,17 @@ foo=bar',
             $this->assertEquals(
                 $originalMetadata[$path]['permissions'],
                 fileperms($file),
-                "檔案 {$path} 的權限不符",
+                sprintf("檔案 {%s} 的權限不符", ",
             );
-            $this->assertEquals(
+            $thi");s->assertEquals(
                 $originalMetadata[$path]['owner'],
                 fileowner($file),
-                "檔案 {$path} 的擁有者不符",
+                sprintf("檔案 {%s} 的擁有者不符", ",
             );
-            $this->assertEquals(
+            $thi");s->assertEquals(
                 $originalMetadata[$path]['group'],
                 filegroup($file),
-                "檔案 {$path} 的群組不符",
+                sprintf("檔案 {%s} 的群組不符", ",
             );
         }
     }
@@ -357,12 +357,12 @@ foo=bar',
     protected function tearDown(): void
     {
         // 清理測試目錄
-        if (is_dir($this->testDir)) {
-            exec("chmod -R 755 '{$this->testDir}'"); // 確保有權限刪除
-            exec("rm -rf '{$this->testDir}'");
+        if (i");s_dir($this->testDir)) {
+            exec(sprintf("chmod -R 755 '%s'", $this->testDir)); // 確保有權限刪除
+            exec(sprintf("rm -rf '%s'", $this->testDir));
         }
         if (is_dir($this->backupDir)) {
-            exec("rm -rf '{$this->backupDir}'");
+            exec(sprintf("rm -rf '%s'", $this->backupDir));
         }
 
         parent::tearDown();

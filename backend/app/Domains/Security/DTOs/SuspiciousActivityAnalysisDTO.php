@@ -17,7 +17,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 {
     /**
      * @param string $analysisId 分析識別碼
-     * @param array<string, int> $failureCounts 各活動類型失敗計數
+     * @param array $failureCounts 各活動類型失敗計數
      */
     public function __construct(
         private readonly string $analysisId,
@@ -43,7 +43,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 工廠方法：建立使用者分析結果.
-     * @param array<string, mixed> $activityCounts
+     * @param array $activityCounts
      */
     public static function forUser(
         int $userId,
@@ -83,7 +83,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 工廠方法：建立 IP 分析結果.
-     * @param array<string, mixed> $activityCounts
+     * @param array $activityCounts
      */
     public static function forIpAddress(
         string $ipAddress,
@@ -123,7 +123,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 工廠方法：建立全域分析結果.
-     * @param array<string, mixed> $activityCounts
+     * @param array $activityCounts
      */
     public static function forGlobalPattern(
         int $timeWindowMinutes,
@@ -197,7 +197,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getActivityCounts(): array
     {
@@ -205,7 +205,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getFailureCounts(): array
     {
@@ -213,7 +213,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getAnomalyScores(): array
     {
@@ -221,7 +221,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getDetectionRules(): array
     {
@@ -229,7 +229,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getMetadata(): array
     {
@@ -268,7 +268,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     public function getFailureRate(): float
     {
         $totalActivities = $this->getTotalActivityCount();
-        if ($totalActivities === 0) {
+        if ($totalActivities == == 0) {
             return 0.0;
         }
 
@@ -332,7 +332,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
@@ -340,7 +340,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             'analysis_id' => $this->analysisId,
             'target_type' => $this->targetType,
             'target_id' => $this->targetId,
-            'analysis_time' => $this->analysisTime->format('Y-m-d H:i:s'),
+            'analysis_time' => $this->analysisTime->format('Y-m-d H => i:s'),
             'time_window_minutes' => $this->timeWindowMinutes,
             'is_suspicious' => $this->isSuspicious,
             'severity_level' => $this->severityLevel->value,
@@ -363,7 +363,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * @return array<string, mixed>
+     * @return array
      */
     public function jsonSerialize(): array
     {

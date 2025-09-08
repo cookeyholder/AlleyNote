@@ -40,13 +40,13 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         public array $distributionAnalysis,
         public DateTimeImmutable $generatedAt,
     ) {
-        $this->validateSourceStatistics($sourceStatistics);
-        $this->validateTotalCount($totalCount);
+        $this->validateSourceStatistics($this->sourceStatistics);
+        $this->validateTotalCount($this->totalCount);
     }
 
     /**
      * 從來源統計資料建立 DTO.
-     * @param array<SourceStatistics> $sourceStatistics
+     * @param array $sourceStatistics
      */
     public static function fromSourceStatistics(
         StatisticsPeriod $period,
@@ -68,7 +68,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     public static function fromArray(array $data): self
     {
@@ -231,7 +231,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得前 N 個來源.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getTopSources(int $limit = 3): array
     {
@@ -244,7 +244,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得來源排名.
-     * @return array<string, mixed>>
+     * @return array>
      */
     public function getSourceRanking(): array
     {
@@ -267,7 +267,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得分佈摘要
-     * @return array<string, mixed>
+     * @return array
      */
     public function getDistributionSummary(): array
     {
@@ -296,14 +296,14 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得格式化的分佈資訊.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getFormattedDistribution(): array
     {
         return [
             'period_info' => [
                 'display_name' => $this->period->getDisplayName(),
-                'start_date' => $this->period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $this->period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
                 'type' => $this->period->type->value,
             ],
@@ -335,7 +335,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 比較與另一個分佈的差異.
-     * @return array<string, mixed>
+     * @return array
      */
     public function compareWith(SourceDistributionDTO $other): array
     {
@@ -368,7 +368,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 'absolute_change' => $thisCount - $otherCount,
                 'percentage_change' => $otherCount > 0
                     ? round((($thisCount - $otherCount) / $otherCount) * 100, 2)
-                    : ($thisCount > 0 ? 100 : 0),
+                     => ($thisCount > 0 ? 100 : 0),
             ];
         }
 
@@ -383,7 +383,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 'absolute_change' => $this->totalCount - $other->totalCount,
                 'percentage_change' => $other->totalCount > 0
                     ? round((($this->totalCount - $other->totalCount) / $other->totalCount) * 100, 2)
-                    : ($this->totalCount > 0 ? 100 : 0),
+                     => ($this->totalCount > 0 ? 100 : 0),
             ],
             'diversity_change' => round($this->getDiversityIndex() - $other->getDiversityIndex(), 4),
             'source_changes' => $changes,
@@ -396,13 +396,13 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
         return [
             'period' => [
-                'start_date' => $this->period->startDate->format('Y-m-d H:i:s'),
+                'start_date' => $this->period->startDate->format('Y-m-d H => i:s'),
                 'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
                 'type' => $this->period->type->value,
                 'display_name' => $this->period->getDisplayName(),
@@ -425,7 +425,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * @return array<string, mixed>
+     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -440,7 +440,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         $dominant = $this->getDominantSource();
 
         return sprintf(
-            'SourceDistribution[%s: %d total, dominant: %s]',
+            'SourceDistribution[%s => %d total, dominant: %s]',
             $this->period->getDisplayName(),
             $this->totalCount,
             $dominant ? $dominant->sourceType->value : 'none',
@@ -449,8 +449,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 計算分佈分析.
-     * @param array<SourceStatistics> $sourceStatistics
-     * @return array<string, mixed>
+     * @param array $sourceStatistics
+     * @return array
      */
     private static function calculateDistributionAnalysis(array $sourceStatistics, int $totalCount): array
     {
@@ -477,13 +477,13 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             'concentration_index' => round($hhi, 4),
             'source_count' => count($sourceStatistics),
             'analysis_type' => 'basic_distribution',
-            'calculated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+            'calculated_at' => new DateTimeImmutable()->format('Y-m-d H => i:s'),
         ];
     }
 
     /**
      * 驗證來源統計資料.
-     * @param array<SourceStatistics> $sourceStatistics
+     * @param array $sourceStatistics
      */
     private function validateSourceStatistics(array $sourceStatistics): void
     {
@@ -491,8 +491,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             // 基本驗證：確保有有效的統計值
             if ($source->count->value < 0) {
                 throw new InvalidArgumentException(
-                    "來源統計索引 {$index} 的計數不能為負數",
-                );
+                    "來源統計索引 {$index} 的計數不能為負數");
             }
         }
     }

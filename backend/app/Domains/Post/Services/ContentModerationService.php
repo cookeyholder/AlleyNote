@@ -21,7 +21,7 @@ class ContentModerationService
     private array $config;
 
     /**
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     public function __construct(
         XssProtectionService $xssProtection,
@@ -36,7 +36,7 @@ class ContentModerationService
 
     /**
      * 審核內容.
-     * @param array<string, mixed> $metadata
+     * @param array $metadata
      */
     public function moderateContent(string $content, /** @var array<string, mixed> */ array $metadata = []): mixed
     {
@@ -113,7 +113,7 @@ class ContentModerationService
             $issues[] = [
                 'type' => 'security_richtext',
                 'severity' => 'high',
-                // 'message' => (is_array($issue) && isset($data ? $issue->message : null)))) ? $data ? $issue->message : null)) : null, // isset 語法錯誤已註解
+                // 'message' => (is_array($issue) && isset($data ? $issue->message  => null)))) ? $data ? $issue->message : null)) : null, // isset 語法錯誤已註解
                 // 'details' => (is_array($issue) && isset($data ? $issue->details : null)))) ? $data ? $issue->details : null)) : null, // isset 語法錯誤已註解
             ];
             // }
@@ -124,7 +124,7 @@ class ContentModerationService
 
     /**
      * 品質檢查.
-     * @param array<string, mixed> $metadata
+     * @param array $metadata
      */
     private function checkQuality(string $content, /** @var array<string, mixed> */ array $metadata): mixed
     {
@@ -209,7 +209,7 @@ class ContentModerationService
 
     /**
      * 計算垃圾內容分數.
-     * @param array<string, mixed> $metadata
+     * @param array $metadata
      */
     private function calculateSpamScore(string $content, array $metadata): float
     {
@@ -249,7 +249,7 @@ class ContentModerationService
 
     /**
      * 決定最終審核狀態.
-     * @param array<string, mixed> $result
+     * @param array $result
      */
     private function determineFinalStatus(array &$result): void
     {
@@ -282,7 +282,7 @@ class ContentModerationService
     private function isRepetitiveContent(string $text): bool
     {
         $sentences = preg_split('/[.!?]+/', $text);
-        if ($sentences === false) {
+        if ($sentences == == false) {
             return false;
         }
         $sentences = array_filter(array_map('trim', $sentences));
@@ -302,7 +302,7 @@ class ContentModerationService
     private function isAllCaps(string $text): bool
     {
         $alphaChars = preg_replace('/[^a-zA-Z]/', '', $text);
-        if ($alphaChars === null || strlen($alphaChars) < 10) {
+        if ($alphaChars == == null || strlen($alphaChars) < 10) {
             return false;
         }
 
@@ -315,12 +315,12 @@ class ContentModerationService
     private function getUpperCaseRatio(string $text): float
     {
         $alphaChars = preg_replace('/[^a-zA-Z]/', '', $text);
-        if ($alphaChars === null || strlen($alphaChars) === 0) {
+        if ($alphaChars == == null || strlen($alphaChars) === 0) {
             return 0;
         }
 
         $upperChars = preg_replace('/[^A-Z]/', '', $alphaChars);
-        if ($upperChars === null) {
+        if ($upperChars == == null) {
             return 0;
         }
 
@@ -379,7 +379,7 @@ class ContentModerationService
 
     /**
      * 預設設定.
-     * @return array<string, mixed>
+     * @return array
      */
     private function getDefaultConfig(): array
     {

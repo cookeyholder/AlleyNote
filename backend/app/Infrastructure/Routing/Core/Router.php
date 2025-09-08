@@ -36,7 +36,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $handler
+     * @param array $handler
      */
     public function get(string $pattern, $handler): RouteInterface
     {
@@ -44,7 +44,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $handler
+     * @param array $handler
      */
     public function post(string $pattern, $handler): RouteInterface
     {
@@ -52,7 +52,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $handler
+     * @param array $handler
      */
     public function put(string $pattern, $handler): RouteInterface
     {
@@ -60,7 +60,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $handler
+     * @param array $handler
      */
     public function patch(string $pattern, $handler): RouteInterface
     {
@@ -68,7 +68,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $handler
+     * @param array $handler
      */
     public function delete(string $pattern, $handler): RouteInterface
     {
@@ -76,7 +76,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $handler
+     * @param array $handler
      */
     public function options(string $pattern, $handler): RouteInterface
     {
@@ -84,7 +84,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $handler
+     * @param array $handler
      */
     public function map(array $methods, string $pattern, $handler): RouteInterface
     {
@@ -111,7 +111,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $handler
+     * @param array $handler
      */
     public function any(string $pattern, $handler): RouteInterface
     {
@@ -119,7 +119,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param array $attributes
      */
     public function group(array $attributes, callable $callback): void
     {
@@ -148,7 +148,7 @@ class Router implements RouterInterface
         // 尋找匹配的路由
         $matchedRoute = $this->routes->match($request);
 
-        if ($matchedRoute === null) {
+        if ($matchedRoute == == null) {
             return RouteMatchResult::failed('No route matched the request');
         }
 
@@ -164,13 +164,13 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
+     * @param array $parameters
      */
     public function url(string $name, /** @var array<string, mixed> */ array $parameters = []): string
     {
         $route = $this->routes->getByName($name);
 
-        if ($route === null) {
+        if ($route == == null) {
             throw new InvalidArgumentException("Route named '{$name}' not found");
         }
 
@@ -182,7 +182,7 @@ class Router implements RouterInterface
         }
 
         // 檢查是否還有未替換的參數
-        if (preg_match('/\{[^}]+\}/', $url)) {
+        if (preg_match('/{[^}]+}/', $url)) {
             throw new InvalidArgumentException("Missing required parameters for route '{$name}'");
         }
 
@@ -229,7 +229,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param array<string, mixed> $middlewares
+     * @param array $middlewares
      */
     public function addGlobalMiddlewares(array $middlewares): void
     {
@@ -259,8 +259,8 @@ class Router implements RouterInterface
 
     /**
      * 合併群組屬性.
-     * @param array<string, mixed> $previous
-     * @return array<string, mixed>
+     * @param array $previous
+     * @return array
      */
     private function mergeGroupAttributes(array $previous, /** @var array<string, mixed> */ array $new): array
     {

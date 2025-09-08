@@ -56,9 +56,6 @@ class ActivityLog
 
     private DateTimeImmutable $createdAt;
 
-    /**
-     * @param array<string, mixed> $metadata
-     */
     public function __construct(
         ActivityType $actionType,
         ?int $userId = null,
@@ -150,16 +147,14 @@ class ActivityLog
         return $this->description;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function getMetadata(): ?array
     {
         if ($this->metadata === null) {
             return null;
         }
 
-        $decoded = json_decode(is_string($this->metadata) ? $this->metadata : (string) $this->metadata, true);
+        $stringMetadata = is_string($this->metadata) ? $this->metadata : (string) $this->metadata;
+        $decoded = json_decode($stringMetadata, true);
 
         return is_array($decoded) ? $decoded : null;
     }
@@ -228,7 +223,6 @@ class ActivityLog
 
     /**
      * 取得活動的上下文資訊.
-     * @return array<string, mixed>
      */
     public function getContext(): array
     {
@@ -251,7 +245,6 @@ class ActivityLog
 
     /**
      * 轉換為陣列格式.
-     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -272,14 +265,13 @@ class ActivityLog
             'user_agent' => $this->userAgent,
             'request_method' => $this->requestMethod,
             'request_path' => $this->requestPath,
-            'occurred_at' => $this->occurredAt->format('Y-m-d H:i:s'),
+            'occurred_at' => $this->occurredAt->format('Y-m-d H => i:s'),
             'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
         ];
     }
 
     /**
      * 轉換為用於日誌記錄的格式.
-     * @return array<string, mixed>
      */
     public function toLogFormat(): array
     {
@@ -291,7 +283,7 @@ class ActivityLog
             'status' => $this->status->value,
             'user' => $this->userId,
             'target' => $this->targetType && $this->targetId
-                ? "{$this->targetType}:{$this->targetId}"
+                ? "{$this->targetType} => {$this->targetId}"
                 : null,
             'ip' => $this->ipAddress,
             'timestamp' => $this->occurredAt->format(DateTime::ISO8601),
@@ -303,7 +295,6 @@ class ActivityLog
 
     /**
      * 從資料庫資料建立 ActivityLog 實體.
-     * @param array<string, mixed> $data
      */
     public static function fromDatabaseRow(array $data): self
     {
@@ -343,7 +334,6 @@ class ActivityLog
 
     /**
      * 從 DTO 建立 ActivityLog 實體.
-     * @param array<string, mixed> $metadata
      */
     public static function fromDTO(
         ActivityType $actionType,

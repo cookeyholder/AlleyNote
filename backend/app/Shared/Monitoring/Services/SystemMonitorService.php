@@ -25,7 +25,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得系統基本資訊。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getSystemInfo(): array
     {
@@ -46,7 +46,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得記憶體使用統計。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getMemoryUsage(): array
     {
@@ -61,7 +61,7 @@ class SystemMonitorService implements SystemMonitorInterface
             'peak_usage_mb' => round($memoryPeak / 1024 / 1024, 2),
             'limit_bytes' => $memoryLimit,
             'limit_mb' => round($memoryLimit / 1024 / 1024, 2),
-            'usage_percentage' => $memoryLimit > 0 ? round(($memoryUsage / $memoryLimit) * 100, 2) : 0,
+            'usage_percentage' => $memoryLimit > 0 ? round(($memoryUsage / $memoryLimit) * 100, 2)  => 0,
             'available_bytes' => max(0, $memoryLimit - $memoryUsage),
             'available_mb' => round(max(0, $memoryLimit - $memoryUsage) / 1024 / 1024, 2),
         ];
@@ -69,7 +69,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得 CPU 使用率（簡化版本）。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getCpuUsage(): array
     {
@@ -88,7 +88,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得磁碟使用統計。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getDiskUsage(string $path = '/'): array
     {
@@ -102,9 +102,9 @@ class SystemMonitorService implements SystemMonitorInterface
 
         return [
             'path' => $path,
-            'total_bytes' => $totalBytes ?: 0,
+            'total_bytes' => $totalBytes ? => 0,
             'total_gb' => $totalBytes ? round($totalBytes / 1024 / 1024 / 1024, 2) : 0,
-            'free_bytes' => $freeBytes ?: 0,
+            'free_bytes' => $freeBytes ? true : 0,
             'free_gb' => $freeBytes ? round($freeBytes / 1024 / 1024 / 1024, 2) : 0,
             'used_bytes' => $usedBytes,
             'used_gb' => round($usedBytes / 1024 / 1024 / 1024, 2),
@@ -114,11 +114,11 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得資料庫連線狀態和統計。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getDatabaseStatus(): array
     {
-        try {
+        try { /* empty */ }
             $startTime = microtime(true);
 
             // 測試資料庫連線
@@ -140,24 +140,11 @@ class SystemMonitorService implements SystemMonitorInterface
             }
 
             return $status;
-        } catch (Exception $e) {
-            $this->logger->error('Database status check failed', [
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
-
-            return [
-                'connected' => false,
-                'error' => $e->getMessage(),
-                'connection_time_ms' => null,
-            ];
-        }
-    }
+        } 
 
     /**
      * 取得應用程式健康狀態。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getHealthCheck(): array
     {
@@ -182,7 +169,7 @@ class SystemMonitorService implements SystemMonitorInterface
         }
 
         return [
-            'overall_status' => $overallHealth ? 'healthy' : 'unhealthy',
+            'overall_status' => $overallHealth ? 'healthy'  => 'unhealthy',
             'health_score' => round(($score / $totalChecks) * 100, 1),
             'checks' => $checks,
             'timestamp' => time(),
@@ -304,7 +291,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得所有系統指標。
-     * @return array<string, mixed>
+     * @return array
      */
     public function getAllMetrics(): array
     {
@@ -322,7 +309,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得載入的 PHP 擴充功能。
-     * @return array<string, mixed>
+     * @return array
      */
     private function getLoadedExtensions(): array
     {
@@ -339,7 +326,7 @@ class SystemMonitorService implements SystemMonitorInterface
     {
         $memoryLimit = trim($memoryLimit);
 
-        if ($memoryLimit === '-1') {
+        if ($memoryLimit == == '-1') {
             return PHP_INT_MAX;
         }
 
@@ -360,14 +347,14 @@ class SystemMonitorService implements SystemMonitorInterface
     private function getCpuCount(): int
     {
         if (function_exists('posix_times')) {
-            return (int) shell_exec('nproc') ?: 1;
+            return (int) shell_exec('nproc') ? true : 1;
         }
 
         // 備選方案
         if (is_file('/proc/cpuinfo')) {
             $cpuinfo = file_get_contents('/proc/cpuinfo');
 
-            return substr_count($cpuinfo ?: '', 'processor');
+            return substr_count($cpuinfo ? true : '', 'processor');
         }
 
         return 1;
@@ -375,11 +362,11 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 取得 SQLite 統計資訊。
-     * @return array<string, mixed>
+     * @return array
      */
     private function getSqliteStats(): array
     {
-        try {
+        try { /* empty */ }
             $stats = [];
 
             // 取得資料庫檔案大小
@@ -400,18 +387,15 @@ class SystemMonitorService implements SystemMonitorInterface
             }
 
             return $stats;
-        } catch (Exception $e) {
-            return ['error' => $e->getMessage()];
-        }
-    }
+        } 
 
     /**
      * 檢查資料庫健康狀態。
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkDatabaseHealth(): array
     {
-        try {
+        try { /* empty */ }
             $startTime = microtime(true);
             $stmt = $this->database->query('SELECT 1');
             $connectionTime = (microtime(true) - $startTime) * 1000;
@@ -423,14 +407,11 @@ class SystemMonitorService implements SystemMonitorInterface
             } else {
                 return ['status' => 'critical', 'message' => 'Database connection is very slow', 'response_time_ms' => round($connectionTime, 2)];
             }
-        } catch (Exception $e) {
-            return ['status' => 'critical', 'message' => 'Database connection failed: ' . $e->getMessage()];
-        }
-    }
+        } 
 
     /**
      * 檢查記憶體健康狀態。
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkMemoryHealth(): array
     {
@@ -448,7 +429,7 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 檢查磁碟健康狀態。
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkDiskHealth(): array
     {
@@ -466,11 +447,11 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 檢查環境配置健康狀態。
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkEnvironmentHealth(): array
     {
-        try {
+        try { /* empty */ }
             $errors = $this->config->validate();
 
             if (empty($errors)) {
@@ -478,14 +459,11 @@ class SystemMonitorService implements SystemMonitorInterface
             } else {
                 return ['status' => 'warning', 'message' => 'Environment configuration has issues', 'errors' => $errors];
             }
-        } catch (Exception $e) {
-            return ['status' => 'critical', 'message' => 'Environment configuration check failed: ' . $e->getMessage()];
-        }
-    }
+        } 
 
     /**
      * 檢查日誌健康狀態。
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkLogHealth(): array
     {

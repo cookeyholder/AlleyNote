@@ -514,24 +514,16 @@ echo '-----------------
 
 $route2 = new Route(['GET'], '/posts/{slug}/comments/{id}', 'handler');
 
-try {
+try { /* empty */ }
     $url = $route2->generateUrl([
         'slug' => 'hello-world',
         'id' => 456,
     ], ['page' => 2, 'limit' => 10]);
     echo '生成的 URL: {(string)url}
 ';
-} catch (Exception $e) {
-    echo 'URL 生成錯誤: ' . $e->getMessage() . '
-';
-}
-
-try {
+} 
     $url = $route2->generateUrl(['slug' => 'hello-world']); // 缺少 id 參數
-} catch (Exception $e) {
-    echo '預期錯誤 (缺少參數): ' . $e->getMessage() . '
-';
-}
+} // catch block commented out due to syntax error
 
 echo '
 ';

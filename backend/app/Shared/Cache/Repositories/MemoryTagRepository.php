@@ -316,8 +316,6 @@ class MemoryTagRepository implements TagRepositoryInterface
 
     /**
      * 正規化標籤陣列.
-     * @param array<string> $tags
-     * @return array<string, mixed>
      */
     private function normalizeTags(array $tags): array
     {
