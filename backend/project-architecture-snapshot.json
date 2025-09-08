@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 03:48:55",
+        "scan_time": "2025-09-09 03:57:28",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -190,7 +190,7 @@
             "type": "file",
             "path": "test-error-analysis-snapshot.json",
             "extension": "json",
-            "size": 698891
+            "size": 899668
         },
         "app": {
             "type": "directory",
@@ -1208,7 +1208,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/JwtTokenService.php",
                                             "extension": "php",
-                                            "size": 12429
+                                            "size": 13153
                                         }
                                     }
                                 },
@@ -5283,19 +5283,25 @@
             "type": "file",
             "path": "test-error-analysis-report.md",
             "extension": "md",
-            "size": 13083
+            "size": 11988
         },
         "project-architecture-snapshot.json": {
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1673793
+            "size": 1676987
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
             "path": "eighth-round-phase1-progress-report.md",
             "extension": "md",
             "size": 9113
+        },
+        "eight-round-phase6-progress-report.md": {
+            "type": "file",
+            "path": "eight-round-phase6-progress-report.md",
+            "extension": "md",
+            "size": 16920
         },
         "test_private_key.pem": {
             "type": "file",
@@ -5381,9 +5387,9 @@
         }
     },
     "file_statistics": {
-        "total_files": 677,
+        "total_files": 678,
         "by_extension": {
-            "md": 24,
+            "md": 25,
             "json": 8,
             "php": 598,
             "bak": 3,
@@ -5407,7 +5413,7 @@
             "development": 1
         },
         "by_directory": {
-            "\/": 43,
+            "\/": 44,
             "\/database\/migrations": 10,
             "\/database": 2,
             "\/database\/seeds": 3,
@@ -9615,25 +9621,17 @@
             "functions": [
                 "__construct",
                 "generateTokenPair",
-                "validateAccessToken",
-                "validateRefreshToken",
-                "extractPayload",
-                "refreshTokens",
+                "validateToken",
+                "refreshToken",
                 "revokeToken",
                 "revokeAllUserTokens",
-                "isTokenRevoked",
-                "getTokenRemainingTime",
-                "isTokenNearExpiry",
-                "isTokenOwnedBy",
-                "isTokenFromDevice",
-                "getAlgorithm",
-                "getAccessTokenTtl",
-                "getRefreshTokenTtl",
+                "revokeDeviceTokens",
+                "isTokenBlacklisted",
                 "createJwtPayloadFromArray",
                 "normalizeAudience"
             ],
             "constants": [],
-            "lines_of_code": 349
+            "lines_of_code": 384
         },
         "app\/Domains\/Auth\/Entities\/RefreshToken.php": {
             "path": "app\/Domains\/Auth\/Entities\/RefreshToken.php",

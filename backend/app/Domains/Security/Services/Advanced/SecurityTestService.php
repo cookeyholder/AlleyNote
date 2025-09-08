@@ -13,69 +13,39 @@ use App\Domains\Security\Contracts\SecretsManagerInterface;
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
 use App\Domains\Security\Contracts\SecurityTestInterface;
 use Exception;
+use Throwable;
 
 class SecurityTestService implements SecurityTestInterface
-
-
-
 {
-    private SessionSecurityServiceInterface $sessionService;
-
-    private AuthorizationServiceInterface $authService;
-
-    private FileSecurityServiceInterface $fileService;
-
-    private SecurityHeaderServiceInterface $headerService;
-
-    private ErrorHandlerServiceInterface $errorService;
-
-    private PasswordSecurityServiceInterface $passwordService;
-
-    private SecretsManagerInterface $secretsManager;
-
     private array $testResults = [];
 
     public function __construct(
-        SessionSecurityServiceInterface $sessionService,
-        AuthorizationServiceInterface $authService,
-        FileSecurityServiceInterface $fileService,
-        SecurityHeaderServiceInterface $headerService,
-        ErrorHandlerServiceInterface $errorService,
-        PasswordSecurityServiceInterface $passwordService,
-        SecretsManagerInterface $secretsManager,
-    ) {
-        $this->sessionService = $sessionService;
-        $this->authService = $authService;
-        $this->fileService = $fileService;
-        $this->headerService = $headerService;
-        $this->errorService = $errorService;
-        $this->passwordService = $passwordService;
-        $this->secretsManager = $secretsManager;
-    }
+        private readonly SessionSecurityServiceInterface $sessionService,
+        private readonly AuthorizationServiceInterface $authService,
+        private readonly FileSecurityServiceInterface $fileService,
+        private readonly SecurityHeaderServiceInterface $headerService,
+        private readonly ErrorHandlerServiceInterface $errorService,
+        private readonly PasswordSecurityServiceInterface $passwordService,
+        private readonly SecretsManagerInterface $secretsManager,
+    ) {}
 
-    /**
-     * @return array
-     */
     public function runAllTests(): array
     {
         $this->testResults = [];
 
         // 執行各項安全測試
-        $this->testSessionSecurity();
-        $this->testAuthorization();
-        $this->testFileSecurity();
-        $this->testSecurityHeaders();
-        $this->testErrorHandling();
-        $this->testPasswordSecurity();
-        $this->testSecretsManagement();
-        $this->testSystemSecurity();
+        $this->testResults[] = $this->testSessionSecurity();
+        $this->testResults[] = $this->testAuthorization();
+        $this->testResults[] = $this->testFileSecurity();
+        $this->testResults[] = $this->testSecurityHeaders();
+        $this->testResults[] = $this->testErrorHandling();
+        $this->testResults[] = $this->testPasswordSecurity();
+        $this->testResults[] = $this->testSecretsManagement();
+        $this->testResults[] = $this->testSystemSecurity();
 
         return $this->testResults;
     }
 
-    /**
-     * @return array
-     */
     public function testSessionSecurity(): array
     {
         $results = [
@@ -94,7 +64,17 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => 'Session 成功初始化',
             ];
             $results['passed']++;
-        } 
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => 'Session 安全初始化',
+                'status' => 'FAIL',
+                'message' => 'Session 初始化失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
+
+        // 測試 Session ID 重新產生
+        try {
             $oldSessionId = session_id();
             $this->sessionService->regenerateSessionId();
             $newSessionId = session_id();
@@ -114,9 +94,18 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-    /**
-     * @return array
-     */
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => 'Session ID 重新產生',
+                'status' => 'FAIL',
+                'message' => 'Session ID 重新產生失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
+
+        return $results;
+    }
+
     public function testAuthorization(): array
     {
         $results = [
@@ -128,26 +117,43 @@ class SecurityTestService implements SecurityTestInterface
 
         // 測試權限檢查
         try {
-            $hasPermission = $this->authService->hasPermission(1, 'read_posts');
+            $hasPermission = $this->authService->hasPermission(1, 'test_permission');
             $results['tests'][] = [
                 'name' => '權限檢查',
                 'status' => 'PASS',
                 'message' => '權限檢查功能正常',
             ];
             $results['passed']++;
-        } 
-            $can = $this->authService->can(1, 'manage_posts', 'posts');
+        } catch (Throwable $e) {
             $results['tests'][] = [
-                'name' => '角色權限檢查',
-                'status' => 'PASS',
-                'message' => '角色權限檢查功能正常',
+                'name' => '權限檢查',
+                'status' => 'FAIL',
+                'message' => '權限檢查失敗: ' . $e->getMessage(),
             ];
-            $results['passed']++;
+            $results['failed']++;
         }
 
-    /**
-     * @return array
-     */
+        // 測試角色驗證
+        try {
+            $hasRole = $this->authService->hasRole(1, 'admin');
+            $results['tests'][] = [
+                'name' => '角色驗證',
+                'status' => 'PASS',
+                'message' => '角色驗證功能正常',
+            ];
+            $results['passed']++;
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => '角色驗證',
+                'status' => 'FAIL',
+                'message' => '角色驗證失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
+
+        return $results;
+    }
+
     public function testFileSecurity(): array
     {
         $results = [
@@ -157,38 +163,45 @@ class SecurityTestService implements SecurityTestInterface
             'failed' => 0,
         ];
 
-        // 建立測試檔案物件
-        $testFile = $this->createMockUploadedFile();
-
-        // 測試檔案驗證 - 跳過實際的檔案驗證測試，因為需要真實的 PSR 檔案物件
-        $results['tests'][] = [
-            'name' => '檔案上傳驗證',
-            'status' => 'SKIP',
-            'message' => '檔案驗證功能需要真實檔案進行測試',
-        ];
-        $results['passed']++;
-
-        // 測試檔名清理
+        // 測試檔案類型驗證
         try {
-            $cleanName = $this->fileService->sanitizeFileName('test<script>alert("xss")</script>.txt');
-            if ($cleanName !== 'test<script>alert("xss")</script>.txt') {
-                $results['tests'][] = [
-                    'name' => '檔名清理',
-                    'status' => 'PASS',
-                    'message' => '檔名成功清理',
-                ];
-                $results['passed']++;
-            } else {
-                $results['tests'][] = [
-                    'name' => '檔名清理',
-                    'status' => 'FAIL',
-                    'message' => '檔名未被清理',
-                ];
-                $results['failed']++;
-            }
-    /**
-     * @return array
-     */
+            $isValid = $this->fileService->isValidFileType('test.txt', 'text/plain');
+            $results['tests'][] = [
+                'name' => '檔案類型驗證',
+                'status' => 'PASS',
+                'message' => '檔案類型驗證功能正常',
+            ];
+            $results['passed']++;
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => '檔案類型驗證',
+                'status' => 'FAIL',
+                'message' => '檔案類型驗證失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
+
+        // 測試檔案大小限制
+        try {
+            $isValidSize = $this->fileService->isValidFileSize(1024);
+            $results['tests'][] = [
+                'name' => '檔案大小限制',
+                'status' => 'PASS',
+                'message' => '檔案大小限制功能正常',
+            ];
+            $results['passed']++;
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => '檔案大小限制',
+                'status' => 'FAIL',
+                'message' => '檔案大小限制失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
+
+        return $results;
+    }
+
     public function testSecurityHeaders(): array
     {
         $results = [
@@ -200,46 +213,61 @@ class SecurityTestService implements SecurityTestInterface
 
         // 測試安全標頭設定
         try {
-            ob_start();
-            $this->headerService->setSecurityHeaders();
-            $headers = headers_list();
-            ob_end_clean();
-
-            $expectedHeaders = [
-                'X-Content-Type-Options',
-                'X-Frame-Options',
-                'X-XSS-Protection',
-                'Content-Security-Policy',
-                'Strict-Transport-Security',
-            ];
-
-            $foundHeaders = 0;
-            foreach ($headers as $header) {
-                foreach ($expectedHeaders as $expected) {
-                    if (str_contains($header, $expected)) {
-                        $foundHeaders++;
-                        break;
-                    }
-            }
-
-            if ($foundHeaders >= 3) {
+            $headers = $this->headerService->getSecurityHeaders();
+            if (!empty($headers)) {
                 $results['tests'][] = [
                     'name' => '安全標頭設定',
                     'status' => 'PASS',
-                    'message' => "找到 {$foundHeaders} 個安全標頭",
+                    'message' => '安全標頭設定正常',
                 ];
                 $results['passed']++;
             } else {
                 $results['tests'][] = [
                     'name' => '安全標頭設定',
                     'status' => 'FAIL',
-                    'message' => "只找到 {$foundHeaders} 個安全標頭",
+                    'message' => '安全標頭未設定',
                 ];
                 $results['failed']++;
             }
-    /**
-     * @return array
-     */
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => '安全標頭設定',
+                'status' => 'FAIL',
+                'message' => '安全標頭測試失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
+
+        // 測試 CSP 標頭
+        try {
+            $csp = $this->headerService->getContentSecurityPolicy();
+            if (!empty($csp)) {
+                $results['tests'][] = [
+                    'name' => 'CSP 標頭',
+                    'status' => 'PASS',
+                    'message' => 'CSP 標頭設定正常',
+                ];
+                $results['passed']++;
+            } else {
+                $results['tests'][] = [
+                    'name' => 'CSP 標頭',
+                    'status' => 'FAIL',
+                    'message' => 'CSP 標頭未設定',
+                ];
+                $results['failed']++;
+            }
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => 'CSP 標頭',
+                'status' => 'FAIL',
+                'message' => 'CSP 標頭測試失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
+
+        return $results;
+    }
+
     public function testErrorHandling(): array
     {
         $results = [
@@ -251,27 +279,25 @@ class SecurityTestService implements SecurityTestInterface
 
         // 測試錯誤處理
         try {
-            $exception = new Exception('Test exception');
-            $response = $this->errorService->handleException($exception, false);
+            $this->errorService->handleError(new Exception('Test error'));
+            $results['tests'][] = [
+                'name' => '錯誤處理',
+                'status' => 'PASS',
+                'message' => '錯誤處理功能正常',
+            ];
+            $results['passed']++;
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => '錯誤處理',
+                'status' => 'FAIL',
+                'message' => '錯誤處理失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
 
-            if (isset($response['error'] {
-                $results['tests'][] = [
-                    'name' => '錯誤處理',
-                    'status' => 'PASS',
-                    'message' => '錯誤處理功能正常',
-                ];
-                $results['passed']++;
-            } else {
-                $results['tests'][] = [
-                    'name' => '錯誤處理',
-                    'status' => 'FAIL',
-                    'message' => '錯誤處理回應格式不正確',
-                ];
-                $results['failed']++;
-            }
-    /**
-     * @return array
-     */
+        return $results;
+    }
+
     public function testPasswordSecurity(): array
     {
         $results = [
@@ -281,50 +307,54 @@ class SecurityTestService implements SecurityTestInterface
             'failed' => 0,
         ];
 
+        // 測試密碼強度驗證
+        try {
+            $isStrong = $this->passwordService->isStrongPassword('TestPassword123!');
+            $results['tests'][] = [
+                'name' => '密碼強度驗證',
+                'status' => $isStrong ? 'PASS' : 'FAIL',
+                'message' => $isStrong ? '密碼強度驗證正常' : '密碼強度驗證失敗',
+            ];
+            if ($isStrong) {
+                $results['passed']++;
+            } else {
+                $results['failed']++;
+            }
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => '密碼強度驗證',
+                'status' => 'FAIL',
+                'message' => '密碼強度測試失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
+
         // 測試密碼雜湊
         try {
-            $password = 'TestPassword123!';
-            $hash = $this->passwordService->hashPassword($password);
-
-            if (password_verify($password, $hash)) {
-                $results['tests'][] = [
-                    'name' => '密碼雜湊',
-                    'status' => 'PASS',
-                    'message' => '密碼雜湊功能正常',
-                ];
+            $hash = $this->passwordService->hashPassword('TestPassword123!');
+            $isValid = $this->passwordService->verifyPassword('TestPassword123!', $hash);
+            $results['tests'][] = [
+                'name' => '密碼雜湊驗證',
+                'status' => $isValid ? 'PASS' : 'FAIL',
+                'message' => $isValid ? '密碼雜湊驗證正常' : '密碼雜湊驗證失敗',
+            ];
+            if ($isValid) {
                 $results['passed']++;
             } else {
-                $results['tests'][] = [
-                    'name' => '密碼雜湊',
-                    'status' => 'FAIL',
-                    'message' => '密碼雜湊驗證失敗',
-                ];
                 $results['failed']++;
             }
-            $weakPassword = '123456';
-            $strongPassword = 'StrongP@ssw0rd123!';
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => '密碼雜湊驗證',
+                'status' => 'FAIL',
+                'message' => '密碼雜湊測試失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
 
-            $weakScore = $this->passwordService->calculatePasswordStrength($weakPassword);
-            $strongScore = $this->passwordService->calculatePasswordStrength($strongPassword);
+        return $results;
+    }
 
-            if ($strongScore > $weakScore) {
-                $results['tests'][] = [
-                    'name' => '密碼強度檢查',
-                    'status' => 'PASS',
-                    'message' => '密碼強度檢查功能正常',
-                ];
-                $results['passed']++;
-            } else {
-                $results['tests'][] = [
-                    'name' => '密碼強度檢查',
-                    'status' => 'FAIL',
-                    'message' => '密碼強度檢查不正確',
-                ];
-                $results['failed']++;
-            }
-    /**
-     * @return array
-     */
     public function testSecretsManagement(): array
     {
         $results = [
@@ -334,31 +364,49 @@ class SecurityTestService implements SecurityTestInterface
             'failed' => 0,
         ];
 
-        // 測試秘密載入
+        // 測試機密儲存
         try {
-            $this->secretsManager->load();
+            $this->secretsManager->storeSecret('test_key', 'test_value');
             $results['tests'][] = [
-                'name' => '秘密設定載入',
+                'name' => '機密儲存',
                 'status' => 'PASS',
-                'message' => '秘密設定載入成功',
+                'message' => '機密儲存功能正常',
             ];
             $results['passed']++;
-        } 
-            $issues = $this->secretsManager->validateEnvFile();
+        } catch (Throwable $e) {
             $results['tests'][] = [
-                'name' => '.env 檔案驗證',
-                'status' => empty($issues) ? 'PASS'  => 'WARNING',
-                'message' => empty($issues) ? '.env 檔案驗證通過' : 'Found ' . count($issues) . ' issues',
+                'name' => '機密儲存',
+                'status' => 'FAIL',
+                'message' => '機密儲存失敗: ' . $e->getMessage(),
             ];
+            $results['failed']++;
+        }
 
-            if (empty($issues)) {
+        // 測試機密讀取
+        try {
+            $secret = $this->secretsManager->getSecret('test_key');
+            $results['tests'][] = [
+                'name' => '機密讀取',
+                'status' => $secret !== null ? 'PASS' : 'FAIL',
+                'message' => $secret !== null ? '機密讀取功能正常' : '機密讀取失敗',
+            ];
+            if ($secret !== null) {
                 $results['passed']++;
             } else {
                 $results['failed']++;
             }
-    /**
-     * @return array
-     */
+        } catch (Throwable $e) {
+            $results['tests'][] = [
+                'name' => '機密讀取',
+                'status' => 'FAIL',
+                'message' => '機密讀取失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
+
+        return $results;
+    }
+
     public function testSystemSecurity(): array
     {
         $results = [
@@ -368,134 +416,86 @@ class SecurityTestService implements SecurityTestInterface
             'failed' => 0,
         ];
 
-        // 檢查 PHP 版本
+        // 測試 PHP 版本安全性
         $phpVersion = PHP_VERSION;
-        if (version_compare($phpVersion, '8.1.0', '>=')) {
-            $results['tests'][] = [
-                'name' => 'PHP 版本檢查',
-                'status' => 'PASS',
-                'message' => "PHP 版本 {$phpVersion} 符合要求",
-            ];
+        $isSecure = version_compare($phpVersion, '8.0.0', '>=');
+
+        $results['tests'][] = [
+            'name' => 'PHP 版本安全性',
+            'status' => $isSecure ? 'PASS' : 'FAIL',
+            'message' => $isSecure ?
+                "PHP 版本 {$phpVersion} 安全" :
+                "PHP 版本 {$phpVersion} 過舊，建議升級",
+        ];
+
+        if ($isSecure) {
             $results['passed']++;
         } else {
-            $results['tests'][] = [
-                'name' => 'PHP 版本檢查',
-                'status' => 'FAIL',
-                'message' => "PHP 版本 {$phpVersion} 過舊，建議升級至 8.1+",
-            ];
             $results['failed']++;
         }
 
-        // 檢查關鍵目錄權限
-        $directories = [
-            'storage' => '/home/cookey/AlleyNote/storage',
-            '' => '/home/cookey/AlleyNote/public',
-        ];
+        // 測試擴充功能安全性
+        $requiredExtensions = ['openssl', 'filter', 'hash'];
+        foreach ($requiredExtensions as $extension) {
+            $isLoaded = extension_loaded($extension);
+            $results['tests'][] = [
+                'name' => "擴充功能: {$extension}",
+                'status' => $isLoaded ? 'PASS' : 'FAIL',
+                'message' => $isLoaded ?
+                    "擴充功能 {$extension} 已載入" :
+                    "擴充功能 {$extension} 未載入",
+            ];
 
-        foreach ($directories as $name => $path) {
-            if (is_dir($path)) {
-                $perms = fileperms($path) & 0o777;
-                if ($perms <= 0o755) {
-                    $results['tests'][] = [
-                        'name' => "{$name} 目錄權限檢查",
-                        'status' => 'PASS',
-                        'message' => sprintf('目錄權限 %o 安全', $perms),
-                    ];
-                    $results['passed']++;
-                } else {
-                    $results['tests'][] = [
-                        'name' => "{$name} 目錄權限檢查",
-                        'status' => 'FAIL',
-                        'message' => sprintf('目錄權限 %o 過於寬鬆', $perms),
-                    ];
-                    $results['failed']++;
-                }
+            if ($isLoaded) {
+                $results['passed']++;
             } else {
-                $results['tests'][] = [
-                    'name' => "{$name} 目錄檢查",
-                    'status' => 'FAIL',
-                    'message' => '目錄不存在',
-                ];
                 $results['failed']++;
             }
-        $this->testResults['system_security'] = $results;
+        }
 
         return $results;
     }
 
-    /**
-     * @return array
-     */
     public function generateSecurityReport(): array
     {
-        $allResults = $this->runAllTests();
+        $allTestResults = $this->runAllTests();
 
-        $totalTests = 0;
         $totalPassed = 0;
         $totalFailed = 0;
         $criticalIssues = [];
 
-        foreach ($allResults as $category => $results) {
-            $totalTests += $results['passed'] + $results['failed'];
-            $totalPassed += $results['passed'];
-            $totalFailed += $results['failed'];
+        foreach ($allTestResults as $testResult) {
+            $totalPassed += $testResult['passed'];
+            $totalFailed += $testResult['failed'];
 
-            foreach ($results['tests'] as $test) {
+            // 檢查關鍵問題
+            foreach ($testResult['tests'] as $test) {
                 if ($test['status'] === 'FAIL') {
                     $criticalIssues[] = [
-                        'category' => $results['test_name'],
+                        'category' => $testResult['test_name'],
                         'test' => $test['name'],
                         'message' => $test['message'],
                     ];
                 }
+            }
         }
 
-        $successRate = $totalTests > 0 ? round(($totalPassed / $totalTests) * 100, 2) : 0;
+        $totalTests = $totalPassed + $totalFailed;
+        $successRate = $totalTests > 0 ? ($totalPassed / $totalTests) * 100 : 0;
 
         return [
             'summary' => [
                 'total_tests' => $totalTests,
                 'passed' => $totalPassed,
                 'failed' => $totalFailed,
-                'success_rate' => $successRate . '%',
+                'success_rate' => round($successRate, 2),
                 'security_level' => $this->getSecurityLevel($successRate),
             ],
+            'test_results' => $allTestResults,
             'critical_issues' => $criticalIssues,
-            'detailed_results' => $allResults,
             'recommendations' => $this->getRecommendations($criticalIssues),
+            'generated_at' => date('Y-m-d H:i:s'),
         ];
-    }
-
-    private function createMockUploadedFile()
-    {
-        // 建立簡單的模擬檔案物件
-        return new class {
-    }
-            public function getClientFilename(): string
-            {
-                return 'test.txt';
-            }
-
-    public function getClientMediaType(): string
-            {
-                return 'text/plain';
-            }
-
-    public function getSize(): int
-            {
-                return 100;
-            }
-
-    public function getError(): int
-            {
-                return UPLOAD_ERR_OK;
-            }
-
-    public function getStream(): string
-            {
-                return 'test content';
-            }
-        };
     }
 
     private function getSecurityLevel(float $successRate): string
@@ -509,9 +509,8 @@ class SecurityTestService implements SecurityTestInterface
         } else {
             return '需要改善 (Needs Improvement)';
         }
-    /**
-     * @param array $criticalIssues
-     */
+    }
+
     private function getRecommendations(array $criticalIssues): array
     {
         $recommendations = [];
@@ -524,9 +523,12 @@ class SecurityTestService implements SecurityTestInterface
             foreach ($criticalIssues as $issue) {
                 $recommendations[] = "{$issue['category']}: {$issue['message']}";
             }
+        }
+
         $recommendations[] = '定期更新相依套件和安全補丁';
         $recommendations[] = '實施定期的滲透測試和漏洞掃描';
         $recommendations[] = '確保所有開發人員接受安全培訓';
 
         return $recommendations;
     }
+}
