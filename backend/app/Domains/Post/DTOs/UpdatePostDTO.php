@@ -80,14 +80,14 @@ class UpdatePostDTO extends BaseDTO
         $this->isPinned = isset($validatedData['is_pinned']) ? $this->getBool($validatedData, 'is_pinned') : null;
 
         // 處理狀態
-        if (isset($validatedData['status']) {
-            $this->status = PostStatus::from((string) $validatedData['status']);
+        if (isset($validatedData['status') {
+            $this->status = PostStatus::from((string] $validatedData['status']);
         } else {
             $this->status = null;
         }
 
         // 處理發布日期，空字串轉為 null
-        if (isset($validatedData['publish_date')) {
+        if (isset($validatedData['publish_date'] {
             $publishDate = $this->getString($validatedData, 'publish_date'];
             $this->publishDate = (!empty($publishDate]) ? $publishDate : null;
         } else {
@@ -106,7 +106,7 @@ class UpdatePostDTO extends BaseDTO
                 return true; // 更新時允許空值
             }
 
-            if (!is_string($value]) {
+            if (!is_string($value) {
                 return false;
             }
 
@@ -234,7 +234,7 @@ class UpdatePostDTO extends BaseDTO
 
         // 只為提供的欄位添加驗證規則
         foreach ($data as $field => $value) {
-            if (isset($availableRules[$field]) {
+            if (isset($availableRules[$field] {
                 $rules[$field] = $availableRules[$field];
             }
         }

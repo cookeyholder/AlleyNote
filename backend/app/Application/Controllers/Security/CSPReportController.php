@@ -18,7 +18,7 @@ class CSPReportController
 {
     private LoggingSecurityServiceInterface $logger;
 
-    public public function __construct(LoggingSecurityServiceInterface $logger)
+    public function __construct(LoggingSecurityServiceInterface $logger)
     {
         $this->logger = $logger;
     }
@@ -26,9 +26,10 @@ class CSPReportController
     /**
      * 處理 CSP 違規報告.
      */
-    public public function handleReport(Request $request, Response $response): Response
+    public function handleReport(Request $request, Response $response): Response
     {
         try {
+
 
 
 
@@ -44,4 +45,9 @@ class CSPReportController
                 } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
+    }
+    }

@@ -284,7 +284,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 $hour = isset($activity['hour']) && is_numeric($activity['hour']) ? (int) $activity['hour'] : 0;
                 $count = isset($activity['activity_count']) && is_numeric($activity['activity_count']) ? (int) $activity['activity_count'] : 0;
 
-                if ($date !== '' && !isset($heatmap[$date]) {
+                if ($date !== '' && !isset($heatmap[$date] {
                     $heatmap[$date] = array_fill(0, 24, 0);
                 }
 
@@ -511,7 +511,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
         // 安全地處理錯誤統計
         $totalErrors = 0;
-        if (isset($errors['summary'] && is_array($errors['summary']) && isset($errors['summary']['total_errors'])) {
+        if (isset($errors['summary'] && is_array($errors['summary'] && isset($errors['summary']['total_errors'])) {
             $totalErrorsValue = $errors['summary']['total_errors'];
             $totalErrors = is_numeric($totalErrorsValue) ? (int) $totalErrorsValue : 0;
         }
@@ -522,7 +522,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
         // 安全地處理效能指標
         $performanceMetrics = [];
-        if (isset($performance['total_statistics'] && is_array($performance['total_statistics'])) {
+        if (isset($performance['total_statistics'] && is_array($performance['total_statistics']) {
             $performanceMetrics = $performance['total_statistics'];
         }
 
@@ -692,21 +692,21 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
         // 安全地提取錯誤率
         $errorRate = 0.05; // 預設值
-        if (isset($errors['summary'] && is_array($errors['summary']) && isset($errors['summary']['error_rate_percentage'])) {
+        if (isset($errors['summary'] && is_array($errors['summary'] && isset($errors['summary']['error_rate_percentage'])) {
             $errorRateValue = $errors['summary']['error_rate_percentage'];
             $errorRate = is_numeric($errorRateValue) ? (float) $errorRateValue : 0.05;
         }
 
         // 安全地提取平均回應時間
         $avgResponseTime = 0.25; // 預設值
-        if (isset($load['avg_response_time']) {
+        if (isset($load['avg_response_time'] {
             $responseTimeValue = $load['avg_response_time'];
             $avgResponseTime = is_numeric($responseTimeValue) ? (float) $responseTimeValue : 0.25;
         }
 
         // 安全地提取總事件數
         $totalEvents = 1000; // 預設值
-        if (isset($load['total_requests']) {
+        if (isset($load['total_requests'] {
             $totalRequestsValue = $load['total_requests'];
             $totalEvents = is_numeric($totalRequestsValue) ? (int) $totalRequestsValue : 1000;
         }

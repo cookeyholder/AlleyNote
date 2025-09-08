@@ -16,7 +16,7 @@ class HealthController
         tags: ['health'],
         responses: [new OA\Response(response: 200, description: '系統正常運行')],
     )]
-    public public function check(Request $request, Response $response): Response
+    public function check(Request $request, Response $response): Response
     {
         $response->getBody()->write((json_encode([
             'status' => 'ok',

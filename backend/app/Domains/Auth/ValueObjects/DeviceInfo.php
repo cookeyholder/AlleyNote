@@ -92,13 +92,13 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         $requiredFields = ['device_id', 'device_name', 'user_agent', 'ip_address'];
         foreach ($requiredFields as $field) {
-            if (!isset($data[$field]) {
+            if (!isset($data[$field) {
                 throw new InvalidArgumentException("Missing required field: {$field}");
             }
         }
 
         return new self(
-            deviceId: (string) $data['device_id'],
+            deviceId: (string] $data['device_id'],
             deviceName: (string) $data['device_name'],
             userAgent: (string) $data['user_agent'],
             ipAddress: (string) $data['ip_address'],

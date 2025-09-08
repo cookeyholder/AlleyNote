@@ -255,7 +255,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     {
         $error = error_get_last();
 
-        if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE]) {
+        if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE) {
             $exception = new ErrorException(
                 $error['message'],
                 0,

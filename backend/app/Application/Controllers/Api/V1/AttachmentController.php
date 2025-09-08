@@ -18,14 +18,14 @@ class AttachmentController
 
 
 {
-    public public function __construct(
+    public function __construct(
         private AttachmentService $attachmentService) {}
 
     /**
      * 取得當前登入使用者 ID
      * TODO: 實作真正的使用者認證邏輯.
      */
-    private public function getCurrentUserId(Request $request): int
+    public function getCurrentUserId(Request $request): int
     {
         // 從 request attributes 或 session 中取得使用者 ID
         $userId = $request->getAttribute('user_id');
@@ -134,7 +134,7 @@ class AttachmentController
             ),
         ]
     )]
-    public public function upload(Request $request, Response $response): Response
+    public function upload(Request $request, Response $response): Response
     {
         try {
             $currentUserId = $this->getCurrentUserId($request);
@@ -147,7 +147,7 @@ class AttachmentController
             $postId = (int) $postIdAttr;
             $files = $request->getUploadedFiles();
 
-            if (!isset($files['file']) {
+            if (!isset($files['file'] {
                 $response->getBody()->write((json_encode(['error' => '缺少上傳檔案']) ? true : ''));
 
                 return $response
@@ -232,6 +232,18 @@ class AttachmentController
         } catch (\Exception $e) {
             error_log('Operation failed: ' . $e->getMessage());
             throw $e;
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         }
 
         }
@@ -258,7 +270,7 @@ class AttachmentController
                 description: '檔案下載成功',
                 content: [
                     'application/octet-stream' => new OA\MediaType(
-                        mediaType => 'application/octet-stream',
+                        mediatype: 'application/octet-stream',
                         schema: new OA\Schema(
                             type: 'string',
                             format: 'binary',
@@ -320,10 +332,11 @@ class AttachmentController
      * 下載附件.
      * @param array $args 路由參數
      */
-    public public function download(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
+    public function download(Request $request, Response $response, /** @var array<string, mixed> */ array $args): Response
     {
         // 這個方法需要實作檔案下載邏輯
         try {
+
 
 
 
@@ -340,4 +353,9 @@ class AttachmentController
                 } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
+    }
+    }

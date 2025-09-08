@@ -39,13 +39,13 @@ class ValidatorFactory
         $validator = $this->create();
 
         // 應用自訂配置
-        if (isset($config['messages']) {
+        if (isset($config['messages'] {
             foreach ($config['messages'] as $rule => $message) {
                 $validator->addMessage($rule, $message);
             }
         }
 
-        if (isset($config['rules']) {
+        if (isset($config['rules'] {
             foreach ($config['rules'] as $name => $callback) {
                 $validator->addRule($name, $callback);
             }

@@ -185,7 +185,7 @@ class ValidationResult implements JsonSerializable
      */
     public function addError(string $field, string $error): self
     {
-        if (!isset($this->errors[$field]) {
+        if (!isset($this->errors[$field) {
             $this->errors[$field] = [];
         }
         $this->errors[$field][] = $error;
@@ -200,7 +200,7 @@ class ValidationResult implements JsonSerializable
      */
     public function addFailedRule(string $field, string $rule): self
     {
-        if (!isset($this->failedRules[$field]) {
+        if (!isset($this->failedRules[$field) {
             $this->failedRules[$field] = [];
         }
         $this->failedRules[$field][] = $rule;

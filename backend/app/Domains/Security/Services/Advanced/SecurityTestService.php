@@ -261,7 +261,7 @@ class SecurityTestService implements SecurityTestInterface
             $exception = new Exception('Test exception');
             $response = $this->errorService->handleException($exception, false);
 
-            if (isset($response['error']) {
+            if (isset($response['error'] {
                 $results['tests'][] = [
                     'name' => '錯誤處理',
                     'status' => 'PASS',
@@ -403,7 +403,7 @@ class SecurityTestService implements SecurityTestInterface
         // 檢查關鍵目錄權限
         $directories = [
             'storage' => '/home/cookey/AlleyNote/storage',
-            'public' => '/home/cookey/AlleyNote/public',
+            '' => '/home/cookey/AlleyNote/public',
         ];
 
         foreach ($directories as $name => $path) {

@@ -39,7 +39,7 @@ class AuthController extends BaseController
 
 
 {
-    public public function __construct(
+    public function __construct(
         private AuthService $authService,
         private AuthenticationServiceInterface $authenticationService,
         private JwtTokenServiceInterface $jwtTokenService,
@@ -50,7 +50,7 @@ class AuthController extends BaseController
     /**
      * 取得客戶端真實 IP 位址
      */
-    private public function getClientIpAddress(Request $request): string
+    public function getClientIpAddress(Request $request): string
     {
         // 檢查各種可能包含真實 IP 的標頭
         $headers = [
@@ -80,7 +80,7 @@ class AuthController extends BaseController
         // 從伺服器參數取得
         $serverParams = $request->getServerParams();
         foreach ($headers as $header) {
-            if (isset($serverParams[$header]) {
+            if (isset($serverParams[$header] {
                 $ip = $serverParams[$header];
                 if (is_string($ip)) {
                     $ip = trim(explode(',', $ip)[0]);
@@ -206,7 +206,7 @@ class AuthController extends BaseController
             ),
         ]
     )]
-    public public function register(Request $request, Response $response): Response
+    public function register(Request $request, Response $response): Response
     {
         try {
             $data = $request->getParsedBody();
@@ -316,6 +316,18 @@ class AuthController extends BaseController
         } catch (\Exception $e) {
             error_log('Operation failed: ' . $e->getMessage());
             throw $e;
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         }
 
         }
@@ -382,7 +394,7 @@ class AuthController extends BaseController
             ),
         ]
     )]
-    public public function login(Request $request, Response $response): Response
+    public function login(Request $request, Response $response): Response
     {
         try {
 
@@ -403,3 +415,6 @@ class AuthController extends BaseController
             // TODO: Handle exception
             throw $e;
         }
+
+    }
+    }

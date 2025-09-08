@@ -58,7 +58,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
 
         /** @var array<string, mixed> $result */
-        if (!$result['allowed') {
+        if (!$result['allowed']) {
             return $this->createRateLimitResponse($result, $request);
         }
 
@@ -123,7 +123,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         // 判斷回應格式
         $acceptHeader = $request->getHeaderLine('Accept');
         $isJsonRequest = strpos($acceptHeader, 'application/json') !== false
-            || strpos($request->getUri()->getPath(], '/api/'] === 0;
+            || strpos($request->getUri()->getPath(), '/api/') === 0;
 
         // 確保數值型別正確
         $resetTime = is_int($result['reset']) ? $result['reset'] : time();
@@ -138,7 +138,7 @@ class RateLimitMiddleware implements MiddlewareInterface
                 'remaining' => $remaining,
                 'reset' => $resetTime,
                 'retry_after' => $resetTime - time(),
-            ]) ? true : '';
+            ]) ?: '';
 
             $response = new Response(429, ['Content-Type' => 'application/json'], $body);
         } else {
@@ -177,7 +177,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         $retryAfter = $resetTime - time();
         $retryTime = date('H:i:s', $resetTime);
 
-        return <HTML
+        return <<<HTML
                         <!DOCTYPE html>
                         <html lang="zh-TW">
                         <head>

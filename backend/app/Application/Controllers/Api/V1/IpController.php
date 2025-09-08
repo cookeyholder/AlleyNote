@@ -17,7 +17,7 @@ class IpController
 
 
 {
-    public public function __construct(
+    public function __construct(
         private IpService $service,
         private ValidatorInterface $validator,
         private OutputSanitizerInterface $sanitizer,
@@ -26,7 +26,7 @@ class IpController
     /**
      * 建立IP規則.
      */
-    public public function create(array $request): array
+    public function create(array $request): array
     {
         try {
             $dto = new CreateIpRuleDTO($this->validator, $request);
@@ -58,11 +58,11 @@ class IpController
     /**
      * 根據類型取得IP規則.
      */
-    public public function getByType(array $request): array
+    public function getByType(array $request): array
     {
         try {
-            if (!isset($request['type']) {
-                throw new InvalidArgumentException('必須指定名單類型');
+            if (!isset($request['type') {
+                throw new InvalidArgumentException('必須指定名單類型'];
             }
 
             $type = is_numeric($request['type']) ? (int) $request['type'] : 0;
@@ -86,12 +86,12 @@ class IpController
     /**
      * 檢查IP存取權限.
      */
-    public public function checkAccess(array $request): array
+    public function checkAccess(array $request): array
     {
         try {
 
-            if (!isset($request['ip']) {
-                throw new InvalidArgumentException('必須提供 IP 位址');
+            if (!isset($request['ip') {
+                throw new InvalidArgumentException('必須提供 IP 位址'];
             }
 
             $ip = is_string($request['ip']) ? $request['ip'] : '';

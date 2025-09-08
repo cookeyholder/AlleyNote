@@ -258,7 +258,7 @@ final class StatisticsCalculationService
             $month = $snapshot->getPeriod()->startDate->format('m');
             $views = $snapshot->getTotalViews()->value;
 
-            if (!isset($monthlyData[$month]) {
+            if (!isset($monthlyData[$month] {
                 $monthlyData[$month] = [];
             }
 

@@ -27,7 +27,7 @@ class PostController extends BaseController
 
 
 {
-    public public function __construct(
+    public function __construct(
         private readonly PostServiceInterface $postService,
         private readonly ValidatorInterface $validator,
         private readonly OutputSanitizerInterface $sanitizer,
@@ -98,9 +98,10 @@ class PostController extends BaseController
             ),
         ]
     )]
-    public public function index(Request $request, Response $response): Response
+    public function index(Request $request, Response $response): Response
     {
         try {
+
 
 
 
@@ -115,13 +116,13 @@ class PostController extends BaseController
             $limit = min(100, max(1, is_numeric($limitParam) ? (int) $limitParam : 10));
 
             $filters = [];
-            if (!empty($queryParams['search']) {
+            if (!empty($queryParams['search'] {
                 $filters['search'] = trim(is_string($queryParams['search']) ? $queryParams['search'] : '');
             }
-            if (!empty($queryParams['category']) {
+            if (!empty($queryParams['category'] {
                 $filters['category'] = $queryParams['category'];
             }
-            if (!empty($queryParams['status']) {
+            if (!empty($queryParams['status'] {
                 $filters['status'] = $queryParams['status'];
             }
 
@@ -142,4 +143,10 @@ class PostController extends BaseController
                 } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
+    }
+    }
+    }

@@ -7,14 +7,14 @@ namespace App\Shared\Schemas;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
-    schema => 'CreatePostRequest',
+    schema: 'CreatePostRequest',
     type: 'object',
     title: '建立貼文請求',
     description: '建立新貼文的請求資料結構，包含標題、內容、分類等必要資訊',
     required: ['title', 'content'],
     properties: [
         new OA\Property(
-            property => 'title',
+            property: 'title',
             type: 'string',
             description: '貼文標題，用於簡要描述貼文主題',
             minLength: 1,
@@ -102,13 +102,13 @@ use OpenApi\Attributes as OA;
     ],
 )]
 #[OA\Schema(
-    schema => 'UpdatePostRequest',
+    schema: 'UpdatePostRequest',
     type: 'object',
     title: '更新貼文請求',
     description: '更新既有貼文的請求資料，所有欄位皆為可選，僅更新提供的欄位',
     properties: [
         new OA\Property(
-            property => 'title',
+            property: 'title',
             type: 'string',
             description: '更新貼文標題',
             minLength: 1,
@@ -192,14 +192,14 @@ use OpenApi\Attributes as OA;
     ],
 )]
 #[OA\Schema(
-    schema => 'ApiResponse',
+    schema: 'ApiResponse',
     type: 'object',
     title: 'API 回應',
     description: '標準 API 回應格式，用於包裝所有 API 的成功回應',
     required: ['success'],
     properties: [
         new OA\Property(
-            property => 'success',
+            property: 'success',
             type: 'boolean',
             description: '操作是否成功',
             example: true,
@@ -224,7 +224,7 @@ use OpenApi\Attributes as OA;
             type: 'object',
             description: '額外的元資料',
             properties: [
-                new OA\Property(property => 'timestamp', type: 'string', format: 'date-time', example: '2025-01-15T10:30:00+08:00'),
+                new OA\Property(property: 'timestamp', type: 'string', format: 'date-time', example: '2025-01-15T10:30:00+08:00'),
                 new OA\Property(property: 'request_id', type: 'string', example: 'req_550e8400e29b41d4a716446655440000'),
                 new OA\Property(property: 'version', type: 'string', example: '1.0.0'),
             ],
@@ -248,14 +248,14 @@ use OpenApi\Attributes as OA;
     ],
 )]
 #[OA\Schema(
-    schema => 'PaginatedResponse',
+    schema: 'PaginatedResponse',
     type: 'object',
     title: '分頁回應',
     description: '分頁資料的標準回應格式，包含資料項目和詳細的分頁資訊',
     required: ['data', 'pagination'],
     properties: [
         new OA\Property(
-            property => 'success',
+            property: 'success',
             type: 'boolean',
             description: '請求是否成功',
             example: true,
@@ -272,7 +272,7 @@ use OpenApi\Attributes as OA;
             description: '詳細的分頁資訊',
             required: ['current_page', 'per_page', 'total', 'total_pages'],
             properties: [
-                new OA\Property(property => 'current_page', type: 'integer', description: '目前頁碼（從 1 開始）', minimum: 1, example: 2),
+                new OA\Property(property: 'current_page', type: 'integer', description: '目前頁碼（從 1 開始）', minimum: 1, example: 2),
                 new OA\Property(property: 'per_page', type: 'integer', description: '每頁顯示筆數', minimum: 1, maximum: 100, example: 10),
                 new OA\Property(property: 'total', type: 'integer', description: '總資料筆數', minimum: 0, example: 157),
                 new OA\Property(property: 'total_pages', type: 'integer', description: '總頁數', minimum: 0, example: 16),
@@ -289,7 +289,7 @@ use OpenApi\Attributes as OA;
             type: 'object',
             description: '分頁導航連結',
             properties: [
-                new OA\Property(property => 'first', type: 'string', nullable: true, example: '/api/posts?page=1&limit=10'),
+                new OA\Property(property: 'first', type: 'string', nullable: true, example: '/api/posts?page=1&limit=10'),
                 new OA\Property(property: 'last', type: 'string', nullable: true, example: '/api/posts?page=16&limit=10'),
                 new OA\Property(property: 'prev', type: 'string', nullable: true, example: '/api/posts?page=1&limit=10'),
                 new OA\Property(property: 'next', type: 'string', nullable: true, example: '/api/posts?page=3&limit=10'),
@@ -332,21 +332,21 @@ use OpenApi\Attributes as OA;
     ],
 )]
 #[OA\Schema(
-    schema => 'PostRequest',
+    schema: 'PostRequest',
     type: 'object',
     title: '貼文請求',
     description: '建立或更新貼文的通用請求資料',
     allOf: [new OA\Schema(ref => '#/components/schemas/CreatePostRequest')],
 )]
 #[OA\Schema(
-    schema => 'ValidationError',
+    schema: 'ValidationError',
     type: 'object',
     title: '驗證錯誤',
     description: '表單或 API 請求資料驗證失敗時的詳細錯誤回應格式',
     required: ['success', 'error'],
     properties: [
         new OA\Property(
-            property => 'success',
+            property: 'success',
             type: 'boolean',
             description: '請求是否成功',
             example: false,
@@ -391,7 +391,7 @@ use OpenApi\Attributes as OA;
             type: 'object',
             description: '額外的錯誤資訊',
             properties: [
-                new OA\Property(property => 'timestamp', type: 'string', format: 'date-time', example: '2025-01-15T10:30:00+08:00'),
+                new OA\Property(property: 'timestamp', type: 'string', format: 'date-time', example: '2025-01-15T10:30:00+08:00'),
                 new OA\Property(property: 'request_id', type: 'string', example: 'req_550e8400e29b41d4a716446655440000'),
                 new OA\Property(property: 'validation_rules', type: 'object', description: '驗證規則參考'),
             ],

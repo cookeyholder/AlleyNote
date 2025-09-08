@@ -159,6 +159,7 @@ class SecurityServiceProvider
         $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
 
         return new XssProtectionService($activityLogger);
+            }
     }
 
     /**
@@ -172,5 +173,6 @@ class SecurityServiceProvider
         $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
 
         return new IpService($repository, $activityLogger);
+            }
     }
 }

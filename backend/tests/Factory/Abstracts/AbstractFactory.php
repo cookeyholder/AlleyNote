@@ -36,7 +36,7 @@ abstract class AbstractFactory
      */
     protected static function sequence(string $key): int
     {
-        if (!isset(static::$sequence[$key]) {
+        if (!isset(static::$sequence[$key] {
             static::$sequence[$key] = 0;
         }
 

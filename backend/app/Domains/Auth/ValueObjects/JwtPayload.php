@@ -57,8 +57,8 @@ final readonly class JwtPayload implements JsonSerializable
     {
         $requiredFields = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp'];
         foreach ($requiredFields as $field) {
-            if (!isset($data[$field]) {
-                throw new InvalidArgumentException("Missing required field: {$field}");
+            if (!isset($data[$field) {
+                throw new InvalidArgumentException("Missing required field: {$field}"];
             }
         }
 

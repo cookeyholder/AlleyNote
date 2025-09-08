@@ -49,12 +49,12 @@ final class JwtConfig
         $this->algorithm = $algorithm;
 
         // 先驗證算法是否支援
-        if (!in_array($this->algorithm, ['RS256', 'RS384', 'RS512', 'HS256', 'HS384', 'HS512']) {
+        if (!in_array($this->algorithm, ['RS256', 'RS384', 'RS512', 'HS256', 'HS384', 'HS512') {
             throw new InvalidArgumentException("不支援的演算法: {$this->algorithm}");
         }
 
         // 根據算法載入不同的金鑰
-        if ($this->isSymmetricAlgorithm($this->algorithm]) {
+        if ($this->isSymmetricAlgorithm($this->algorithm) {
             $this->secret = $this->loadSecret();
         } else {
             $this->privateKey = $this->loadPrivateKey();

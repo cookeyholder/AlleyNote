@@ -16,7 +16,7 @@ class StatisticsAdminController extends BaseController
 
 
 {
-    public public function __construct(
+    public function __construct(
         private StatisticsApplicationService $statisticsService,
         private LoggerInterface $logger,
     ) {}
@@ -26,9 +26,10 @@ class StatisticsAdminController extends BaseController
      *
      * POST /api/admin/statistics/refresh
      */
-    public public function refresh(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function refresh(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
+
 
 
 
@@ -52,4 +53,9 @@ class StatisticsAdminController extends BaseController
                 } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
+    }
+    }

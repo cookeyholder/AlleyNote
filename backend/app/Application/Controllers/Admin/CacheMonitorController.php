@@ -16,7 +16,7 @@ class CacheMonitorController extends BaseController
 
 
 {
-    public public function __construct(
+    public function __construct(
         private CacheMonitorInterface $cacheMonitor,
         private CacheManagerInterface $cacheManager,
     ) {
@@ -26,7 +26,7 @@ class CacheMonitorController extends BaseController
     /**
      * 取得快取效能統計資料.
      */
-    public public function getStats(Request $request, Response $response): Response
+    public function getStats(Request $request, Response $response): Response
     {
         try {
             $stats = $this->cacheManager->getStats();
@@ -50,7 +50,7 @@ class CacheMonitorController extends BaseController
     /**
      * 取得詳細的快取指標.
      */
-    public public function getMetrics(Request $request, Response $response): Response
+    public function getMetrics(Request $request, Response $response): Response
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -76,7 +76,7 @@ class CacheMonitorController extends BaseController
     /**
      * 取得快取健康狀態.
      */
-    public public function getHealth(Request $request, Response $response): Response
+    public function getHealth(Request $request, Response $response): Response
     {
         try {
             $healthOverview = $this->cacheMonitor->getHealthOverview();
@@ -100,7 +100,7 @@ class CacheMonitorController extends BaseController
     /**
      * 重置統計資料.
      */
-    public public function resetStats(Request $request, Response $response): Response
+    public function resetStats(Request $request, Response $response): Response
     {
         try {
             // 清理舊的監控資料
@@ -121,9 +121,10 @@ class CacheMonitorController extends BaseController
     /**
      * 清空快取.
      */
-    public public function flushCache(Request $request, Response $response): Response
+    public function flushCache(Request $request, Response $response): Response
     {
         try {
+
 
 
 
@@ -134,6 +135,9 @@ class CacheMonitorController extends BaseController
             } else {
                 return $this->json($response, ['error' => '清空快取失敗'], 500);
                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {
@@ -154,9 +158,10 @@ class CacheMonitorController extends BaseController
     /**
      * 取得驅動資訊.
      */
-    public public function getDriverInfo(Request $request, Response $response): Response
+    public function getDriverInfo(Request $request, Response $response): Response
     {
         try {
+
 
 
 
@@ -171,6 +176,9 @@ class CacheMonitorController extends BaseController
                         'available' => $driver->isAvailable(),
                     ];
                         } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {

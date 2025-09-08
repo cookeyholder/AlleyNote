@@ -154,7 +154,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         error_log('CSP Violation: ' . (json_encode($logData) ?? ''));
 
         // 如果設定了監控服務，也可以發送到那裡
-        if (isset($this->config['csp']['monitoring_endpoint']) {
+        if (isset($this->config['csp']['monitoring_endpoint') {
             $this->sendToMonitoring($logData);
         }
     }
@@ -213,7 +213,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         }
 
         // 添加 CSP 違規報告
-        if (isset($this->config['csp']['report_uri']) {
+        if (isset($this->config['csp']['report_uri') {
             $directives[] = 'report-uri ' . $this->config['csp']['report_uri'];
         }
 

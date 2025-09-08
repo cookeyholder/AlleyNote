@@ -737,32 +737,32 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             $params = [];
 
-            if (!empty($criteria['user_id']) {
+            if (!empty($criteria['user_id'] {
                 $sql .= ' AND user_id = :user_id';
                 $params['user_id'] = (int) $criteria['user_id'];
             }
 
-            if (!empty($criteria['device_id']) {
+            if (!empty($criteria['device_id'] {
                 $sql .= ' AND device_id = :device_id';
                 $params['device_id'] = $criteria['device_id'];
             }
 
-            if (!empty($criteria['token_type']) {
+            if (!empty($criteria['token_type'] {
                 $sql .= ' AND token_type = :token_type';
                 $params['token_type'] = $criteria['token_type'];
             }
 
-            if (!empty($criteria['reason']) {
+            if (!empty($criteria['reason'] {
                 $sql .= ' AND reason = :reason';
                 $params['reason'] = $criteria['reason'];
             }
 
-            if (!empty($criteria['date_from']) {
+            if (!empty($criteria['date_from'] {
                 $sql .= ' AND blacklisted_at >= :date_from';
                 $params['date_from'] = $criteria['date_from'];
             }
 
-            if (!empty($criteria['date_to']) {
+            if (!empty($criteria['date_to'] {
                 $sql .= ' AND blacklisted_at <= :date_to';
                 $params['date_to'] = $criteria['date_to'];
             }
@@ -806,32 +806,32 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $sql = 'SELECT COUNT(*) FROM token_blacklist WHERE 1=1';
             $params = [];
 
-            if (!empty($criteria['user_id']) {
+            if (!empty($criteria['user_id'] {
                 $sql .= ' AND user_id = :user_id';
                 $params['user_id'] = (int) $criteria['user_id'];
             }
 
-            if (!empty($criteria['device_id']) {
+            if (!empty($criteria['device_id'] {
                 $sql .= ' AND device_id = :device_id';
                 $params['device_id'] = $criteria['device_id'];
             }
 
-            if (!empty($criteria['token_type']) {
+            if (!empty($criteria['token_type'] {
                 $sql .= ' AND token_type = :token_type';
                 $params['token_type'] = $criteria['token_type'];
             }
 
-            if (!empty($criteria['reason']) {
+            if (!empty($criteria['reason'] {
                 $sql .= ' AND reason = :reason';
                 $params['reason'] = $criteria['reason'];
             }
 
-            if (!empty($criteria['date_from']) {
+            if (!empty($criteria['date_from'] {
                 $sql .= ' AND blacklisted_at >= :date_from';
                 $params['date_from'] = $criteria['date_from'];
             }
 
-            if (!empty($criteria['date_to']) {
+            if (!empty($criteria['date_to'] {
                 $sql .= ' AND blacklisted_at <= :date_to';
                 $params['date_to'] = $criteria['date_to'];
             }
@@ -956,7 +956,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     private function createEntryFromRow(array $row): TokenBlacklistEntry { /* empty */ }
         $metadata = [];
-        if (!empty($row['metadata']) {
+        if (!empty($row['metadata'] {
             $stringMetadata = is_string($row['metadata']) ? $row['metadata'] : (string) $row['metadata'];
             $decoded = json_decode($stringMetadata, true);
             if (is_array($decoded)) {

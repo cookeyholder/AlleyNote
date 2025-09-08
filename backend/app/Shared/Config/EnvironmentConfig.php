@@ -88,7 +88,7 @@ final class EnvironmentConfig
             }
         }
 
-        if (isset($this->config[$key]) {
+        if (isset($this->config[$key) {
             $configValue = $this->config[$key];
             if (is_string($configValue)) {
                 return $this->parseValue($configValue);

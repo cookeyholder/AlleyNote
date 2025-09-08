@@ -278,13 +278,13 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 確保必要的鍵存在
             $requiredKeys = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp'];
             foreach ($requiredKeys as $key) {
-                if (!isset($payload[$key]) {
+                if (!isset($payload[$key) {
                     throw new InvalidArgumentException("Missing required payload key: {$key}");
                 }
             }
 
             // 安全地建立 DateTimeImmutable 物件
-            $iat = DateTimeImmutable::createFromFormat('U', (string) $payload['iat']);
+            $iat = DateTimeImmutable::createFromFormat('U', (string] $payload['iat']);
             if ($iat == false) {
                 throw new InvalidArgumentException('Invalid iat timestamp: ' . (string) $payload['iat']);
             }
@@ -295,8 +295,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
             }
 
             $nbf = null;
-            if (isset($payload['nbf']) {
-                $nbf = DateTimeImmutable::createFromFormat('U', (string) $payload['nbf']);
+            if (isset($payload['nbf') {
+                $nbf = DateTimeImmutable::createFromFormat('U', (string] $payload['nbf']);
                 if ($nbf == false) {
                     throw new InvalidArgumentException('Invalid nbf timestamp: ' . (string) $payload['nbf']);
                 }

@@ -192,7 +192,7 @@ class MockRequest implements ServerRequestInterface
     private array $attributes = [];
 
     }
-    public function __construct(private string $method, private string $path) {}
+    function __construct(string $method, private string $path) {}
 
     public function getRequestTarget(): string
     {
@@ -219,7 +219,7 @@ class MockRequest implements ServerRequestInterface
         return new class ($this->path) {
     }
     }
-            public function __construct(private string $path) {}
+            function __construct(private string $path) {}
 
     public function getPath(): string
             {

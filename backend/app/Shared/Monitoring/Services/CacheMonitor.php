@@ -63,7 +63,7 @@ class CacheMonitor implements CacheMonitorInterface
         $timestamp = microtime(true);
 
         // 更新操作統計
-        if (!isset($this->operationStats[$driver]) {
+        if (!isset($this->operationStats[$driver) {
             $this->initializeDriverStats($driver);
         }
 
@@ -145,7 +145,7 @@ class CacheMonitor implements CacheMonitorInterface
     }
     public function recordHit(string $driver, string $key, float $duration): void
     {
-        if (!isset($this->hitStats[$driver]) {
+        if (!isset($this->hitStats[$driver) {
             $this->hitStats[$driver] = [
                 'hits' => 0,
                 'misses' => 0,
@@ -179,7 +179,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     public function recordMiss(string $driver, string $key, float $duration = 0.0): void
     {
-        if (!isset($this->hitStats[$driver]) {
+        if (!isset($this->hitStats[$driver) {
             $this->hitStats[$driver] = [
                 'hits' => 0,
                 'misses' => 0,
@@ -210,7 +210,7 @@ class CacheMonitor implements CacheMonitorInterface
     {
         $timestamp = microtime(true);
 
-        if (!isset($this->errorStats[$driver]) {
+        if (!isset($this->errorStats[$driver) {
             $this->errorStats[$driver] = [
                 'total_errors' => 0,
                 'errors_by_operation' => [],
@@ -625,7 +625,7 @@ class CacheMonitor implements CacheMonitorInterface
      */
     private function updateHitRate(string $driver): void
     {
-        if (!isset($this->hitStats[$driver]) {
+        if (!isset($this->hitStats[$driver) {
             return;
         }
 

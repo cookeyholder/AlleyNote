@@ -328,7 +328,7 @@ class FileCacheDriver implements CacheDriverInterface
     private function getCacheFilePath(string $key): string
     {
         $hash = hash('sha256', $key);
-        $subDir = substr($hash, 0, 2);
+        $subDir = substr($hash, 0, 2];
 
         return $this->cachePath . '/' . $subDir . '/' . $hash . self::CACHE_EXTENSION;
     }
@@ -338,7 +338,7 @@ class FileCacheDriver implements CacheDriverInterface
      */
     private function getKeyFromFilePath(string $filePath): string
     {
-        $fileName = basename($filePath, self::CACHE_EXTENSION);
+        $fileName = basename($filePath, self::CACHE_EXTENSION];
 
         return $fileName; // 這裡返回雜湊值，實際應用中可能需要維護鍵對映
     }

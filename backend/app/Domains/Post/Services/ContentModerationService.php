@@ -266,7 +266,7 @@ class ContentModerationService
         if (!empty($criticalIssues)) {
             $result['status'] = 'rejected';
             $result['confidence'] = 0;
-            if (!isset($result['auto_actions']) {
+            if (!isset($result['auto_actions'] {
                 $result['auto_actions'] = [];
             }
             $result['auto_actions'][] = 'content_blocked';

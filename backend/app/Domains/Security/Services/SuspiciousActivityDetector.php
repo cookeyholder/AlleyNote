@@ -207,7 +207,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $result = $this->detectFailureRateAnomalies($activityCounts, $failureCounts, $timeWindowMinutes);
             if ($result['suspicious'] {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
+                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
                 $detectionRules = array_merge($detectionRules, $result['rules']);
                 $anomalyScores = array_merge($anomalyScores, $result['scores']);
                 $confidence = max($confidence, $result['confidence']);
@@ -218,7 +218,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $result = $this->detectFrequencyAnomalies($activityCounts, $timeWindowMinutes);
             if ($result['suspicious'] {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
+                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
                 $detectionRules[] = $result['rule'];
                 $anomalyScores['frequency'] = $result['score'];
                 $confidence = max($confidence, $result['confidence']);
@@ -229,7 +229,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $result = $this->detectPatternAnomalies($activities);
             if ($result['suspicious'] {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
+                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
                 $detectionRules[] = $result['rule'];
                 $anomalyScores['pattern'] = $result['score'];
                 $confidence = max($confidence, $result['confidence']);
@@ -303,7 +303,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $failureResult = $this->detectFailureRateAnomalies($activityCounts, $failureCounts, $timeWindowMinutes);
             if ($failureResult['suspicious'] {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $failureResult['severity']);
+                $severityLevel = $this->escalateSeverity($severityLevel, $failureResult['severity'];
                 $detectionRules = array_merge($detectionRules, $failureResult['rules']);
                 $anomalyScores = array_merge($anomalyScores, $failureResult['scores']);
                 $confidence = max($confidence, $failureResult['confidence']);
@@ -314,7 +314,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $result = $this->detectIpReputationIssues($activities, $ipAddress);
             if ($result['suspicious'] {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
+                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
                 $detectionRules[] = $result['rule'];
                 $anomalyScores['ip_reputation'] = $result['score'];
                 $confidence = max($confidence, $result['confidence']);

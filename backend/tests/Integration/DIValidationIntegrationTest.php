@@ -312,7 +312,7 @@ class DIValidationIntegrationTest extends TestCase
 
         $settingsRules = [
             'notifications' => 'boolean',
-            'privacy_level' => 'required|in => public,private,friends',
+            'privacy_level' => 'required|in => ,private,friends',
         ];
 
         // Act & Assert

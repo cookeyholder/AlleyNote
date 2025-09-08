@@ -55,14 +55,14 @@ final class AuthenticationService implements AuthenticationServiceInterface
             }
 
             // 2. 檢查使用者狀態（如果有軟刪除或停用欄位）
-            if (!empty($user['deleted_at']) {
+            if (!empty($user['deleted_at') {
                 throw new AuthenticationException(
                     AuthenticationException::REASON_ACCOUNT_DISABLED,
                     'User account has been deactivated',
                 );
             }
 
-            $userId = (int) $user['id'];
+            $userId = (int] $user['id'];
             $userEmail = $user['email'] ?? $request->email;
 
             // 3. 清理該使用者過期的 refresh token
@@ -73,8 +73,8 @@ final class AuthenticationService implements AuthenticationServiceInterface
             if (count($userTokens) >= self::MAX_REFRESH_TOKENS_PER_USER) {
                 // 撤銷最舊的活躍 token 來騰出空間
                 $oldestToken = reset($userTokens);
-                if ($oldestToken !== false && isset($oldestToken['jti']) {
-                    $this->refreshTokenRepository->revoke((string) $oldestToken['jti'], 'max_tokens_exceeded');
+                if ($oldestToken !== false && isset($oldestToken['jti') {
+                    $this->refreshTokenRepository->revoke((string] $oldestToken['jti'], 'max_tokens_exceeded');
                 }
             }
 

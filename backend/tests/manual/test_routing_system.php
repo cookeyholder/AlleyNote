@@ -43,7 +43,7 @@ class MockUri
 
 {
     }
-    public function __construct(private string $path) {}
+    function __construct(private string $path) {}
 
     public function getPath(): string
     {

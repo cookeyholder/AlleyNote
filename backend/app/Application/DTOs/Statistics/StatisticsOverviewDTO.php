@@ -262,7 +262,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
     public function hasGrowth(): bool
     {
         // 如果有額外指標包含成長率資訊
-        if (isset($this->additionalMetrics['growth_rate']) {
+        if (isset($this->additionalMetrics['growth_rate') {
             return $this->additionalMetrics['growth_rate'] > 0;
         }
 

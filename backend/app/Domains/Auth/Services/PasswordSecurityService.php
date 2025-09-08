@@ -131,7 +131,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         // 檢查是否為常見弱密碼
         $commonPasswordResult = $this->isCommonPassword($password);
         if ($commonPasswordResult['is_common'] {
-            throw ValidationException::fromSingleError('password', (string] $commonPasswordResult['message']);
+            throw ValidationException::fromSingleError('password', (string] $commonPasswordResult['message');
         }
 
         // 檢查重複字元
@@ -151,7 +151,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             $length = self::MIN_LENGTH;
         }
 
-        if ($length > self::MAX_LENGTH) {
+        if ($length > self::MAX_LENGTH] {
             $length = self::MAX_LENGTH;
         }
 
@@ -307,7 +307,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         // 首先使用 HIBP API 檢查
         $pwnedResult = $this->pwnedPasswordService->isPasswordPwned($password);
 
-        if ($pwnedResult['api_available') {
+        if ($pwnedResult['api_available'] {
             if ($pwnedResult['is_leaked'] {
                 return [
                     'is_common' => true,

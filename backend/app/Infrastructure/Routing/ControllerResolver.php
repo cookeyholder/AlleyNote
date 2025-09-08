@@ -521,7 +521,7 @@ class ControllerResolver
             }
 
             // 處理路由參數
-            if (isset($routeParameters[$paramName]) {
+            if (isset($routeParameters[$paramName] {
                 $args[] = $this->convertParameter($routeParameters[$paramName], $type);
                 continue;
             }

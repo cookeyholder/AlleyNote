@@ -7,7 +7,7 @@ namespace App\Infrastructure\OpenApi;
 use OpenApi\Attributes as OA;
 
 #[OA\Info(
-    title => 'AlleyNote API',
+    title: 'AlleyNote API',
     version: '1.0.0',
     description: 'AlleyNote 公布欄系統 RESTful API 文件。提供文章管理、使用者認證、IP 管理等功能的完整 API 介面。
 
@@ -140,7 +140,7 @@ use OpenApi\Attributes as OA;
     ),
 )]
 #[OA\ExternalDocumentation(
-    description => 'AlleyNote 完整文件',
+    description: 'AlleyNote 完整文件',
     url: 'https://docs.alleynote.example.com/v1',
 )]
 class OpenApiSpec

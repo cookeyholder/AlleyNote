@@ -82,7 +82,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      */
     public function endMonitoring(string $monitoringId, /** @var array<string, mixed> */ array $context = []): void
     {
-        if (!isset($this->activeMonitoringSessions[$monitoringId]) {
+        if (!isset($this->activeMonitoringSessions[$monitoringId) {
             $this->logger->warning("Attempted to end non-existent monitoring session: {$monitoringId}");
 
             return;
@@ -142,7 +142,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $metricKey = $this->buildMetricKey($name, $tags);
 
-        if (!isset($this->metrics[$metricKey]) {
+        if (!isset($this->metrics[$metricKey) {
             $this->metrics[$metricKey] = [];
         }
 
@@ -171,7 +171,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $counterKey = $this->buildMetricKey($name, $tags);
 
-        if (!isset($this->counters[$counterKey]) {
+        if (!isset($this->counters[$counterKey) {
             $this->counters[$counterKey] = 0;
         }
 
@@ -202,7 +202,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $histogramKey = $this->buildMetricKey($name, $tags);
 
-        if (!isset($this->histograms[$histogramKey]) {
+        if (!isset($this->histograms[$histogramKey) {
             $this->histograms[$histogramKey] = [];
         }
 
@@ -338,7 +338,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $cleanedCount += $originalMetricCount - count($this->metrics[$key]);
 
             // 如果指標陣列為空，移除整個鍵
-            if (empty($this->metrics[$key]) {
+            if (empty($this->metrics[$key) {
                 unset($this->metrics[$key]);
             }
         }
@@ -354,7 +354,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $cleanedCount += $originalHistogramCount - count($this->histograms[$key]);
 
             // 如果直方圖陣列為空，移除整個鍵
-            if (empty($this->histograms[$key]) {
+            if (empty($this->histograms[$key) {
                 unset($this->histograms[$key]);
             }
         }

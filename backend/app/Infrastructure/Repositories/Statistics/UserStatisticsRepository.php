@@ -418,6 +418,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
      * 取得使用者行為模式分析.
      * @return array
      */
+    }
     public function getUserBehaviorPatterns(StatisticsPeriod $period): array
     {
         try { /* empty */ }
@@ -720,10 +721,10 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             $avgDaysToFirstActivity = 0.0;
 
             if (is_array($result)) {
-                if (isset($result['total_new_users_with_activity'] && is_numeric($result['total_new_users_with_activity'])) {
+                if (isset($result['total_new_users_with_activity'] && is_numeric($result['total_new_users_with_activity']) {
                     $totalNewUsersWithActivity = (int) $result['total_new_users_with_activity'];
                 }
-                if (isset($result['avg_days_to_first_activity'] && is_numeric($result['avg_days_to_first_activity'])) {
+                if (isset($result['avg_days_to_first_activity'] && is_numeric($result['avg_days_to_first_activity']) {
                     $avgDaysToFirstActivity = (float) $result['avg_days_to_first_activity'];
                 }
             }

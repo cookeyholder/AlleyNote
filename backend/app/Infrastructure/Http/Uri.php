@@ -46,9 +46,9 @@ class Uri implements UriInterface
         $this->query = $parts['query'] ?? '';
         $this->fragment = $parts['fragment'] ?? '';
 
-        if (isset($parts['user']) {
+        if (isset($parts['user'] {
             $this->userInfo = $parts['user'];
-            if (isset($parts['pass']) {
+            if (isset($parts['pass'] {
                 $this->userInfo .= ':' . $parts['pass'];
             }
 

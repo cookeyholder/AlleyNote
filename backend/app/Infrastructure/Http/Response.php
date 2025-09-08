@@ -79,7 +79,7 @@ class Response implements ResponseInterface
     public function getHeader(string $name): array
     {
         $name = strtolower($name);
-        if (!isset($this->headerNames[$name]) {
+        if (!isset($this->headerNames[$name) {
             return [];
         }
 
@@ -106,7 +106,7 @@ class Response implements ResponseInterface
         $clone = clone $this;
         $normalizedName = strtolower($name);
 
-        if (isset($clone->headerNames[$normalizedName]) {
+        if (isset($clone->headerNames[$normalizedName) {
             $name = $clone->headerNames[$normalizedName];
             $clone->headers[$name] = array_merge($clone->headers[$name], is_array($value) ? $value : [$value]);
         } else {
@@ -122,7 +122,7 @@ class Response implements ResponseInterface
         $clone = clone $this;
         $normalizedName = strtolower($name);
 
-        if (!isset($clone->headerNames[$normalizedName]) {
+        if (!isset($clone->headerNames[$normalizedName) {
             return $clone;
         }
 

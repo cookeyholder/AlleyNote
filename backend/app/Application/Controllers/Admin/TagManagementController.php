@@ -19,7 +19,7 @@ class TagManagementController extends BaseController
 
 
 {
-    public public function __construct(
+    public function __construct(
         private CacheManagerInterface $cacheManager,
         private ?LoggerInterface $logger = null,
     ) {}
@@ -29,9 +29,10 @@ class TagManagementController extends BaseController
      *
      * GET /admin/cache/tags
      */
-    public public function listTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function listTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
+
 
 
 
@@ -53,6 +54,9 @@ class TagManagementController extends BaseController
                                 'driver' => $driverName,
                             ];
                                 } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {
@@ -114,7 +118,7 @@ class TagManagementController extends BaseController
      *
      * GET /admin/cache/groups
      */
-    public public function listGroups(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function listGroups(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $groups = [];
@@ -150,9 +154,10 @@ class TagManagementController extends BaseController
      * POST /admin/cache/tags/{tag}/flush
      * @param array<string, mixed> $args
      */
-    public public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
+
 
 
 
@@ -175,6 +180,9 @@ class TagManagementController extends BaseController
                             $flushed = true;
                             $affectedDrivers[] = $driverName;
                                 } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {
@@ -224,9 +232,10 @@ class TagManagementController extends BaseController
      *
      * POST /admin/cache/tags/flush
      */
-    public public function flushTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function flushTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
+
 
 
 
@@ -263,6 +272,9 @@ class TagManagementController extends BaseController
                                 $flushed = true;
                                 $affectedDrivers[] = $driverName;
                                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {
@@ -320,7 +332,7 @@ class TagManagementController extends BaseController
      *
      * POST /admin/cache/flush
      */
-    public public function flushAllCache(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function flushAllCache(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $success = $this->cacheManager->clear();

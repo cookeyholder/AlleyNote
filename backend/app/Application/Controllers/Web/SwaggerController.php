@@ -14,7 +14,7 @@ class SwaggerController
     /**
      * 產生並傳回 OpenAPI JSON 規格
      */
-    public public function docs(Request $request, Response $response): Response
+    public function docs(Request $request, Response $response): Response
     {
         try {
             // 暫時捕獲所有輸出，避免警告訊息影響 JSON 格式
@@ -108,6 +108,18 @@ class SwaggerController
         } catch (\Exception $e) {
             error_log('Operation failed: ' . $e->getMessage());
             throw $e;
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         }
 
         }
@@ -115,7 +127,7 @@ class SwaggerController
     /**
      * 顯示 Swagger UI 介面.
      */
-    public public function ui(Request $request, Response $response): Response
+    public function ui(Request $request, Response $response): Response
     {
         $html = $this->generateSwaggerUiHtml();
 
@@ -129,7 +141,7 @@ class SwaggerController
     /**
      * 產生 Swagger UI HTML.
      */
-    private public function generateSwaggerUiHtml(): string
+    public function generateSwaggerUiHtml(): string
     {
         return <HTML
             <!DOCTYPE html>
@@ -172,7 +184,7 @@ class SwaggerController
     /**
      * 取得 API 基本資訊.
      */
-    public public function info(Request $request, Response $response): Response
+    public function info(Request $request, Response $response): Response
     {
         $info = [
             'name' => 'AlleyNote API',

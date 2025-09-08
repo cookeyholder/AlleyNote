@@ -21,7 +21,7 @@ class StatisticsController extends BaseController
 
 
 {
-    public public function __construct(
+    public function __construct(
         private StatisticsApplicationService $statisticsService,
         private LoggerInterface $logger,
     ) {}
@@ -31,7 +31,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/overview
      */
-    public public function getOverview(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getOverview(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -65,7 +65,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/posts
      */
-    public public function getPostStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getPostStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -100,7 +100,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/sources
      */
-    public public function getSourceStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getSourceStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -134,7 +134,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/users
      */
-    public public function getUserActivityStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getUserActivityStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -168,7 +168,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/popular
      */
-    public public function getPopularContent(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getPopularContent(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -203,7 +203,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/snapshot
      */
-    public public function getSnapshot(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getSnapshot(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();

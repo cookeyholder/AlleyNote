@@ -32,7 +32,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         $token = bin2hex(random_bytes(self::TOKEN_LENGTH));
 
         // 初始化權杖池（如果不存在）
-        if (!isset($_SESSION[self::TOKEN_POOL_KEY]) {
+        if (!isset($_SESSION[self::TOKEN_POOL_KEY] {
             $_SESSION[self::TOKEN_POOL_KEY] = [];
         }
 
@@ -62,7 +62,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
         try { /* empty */ }
             // 檢查權杖池模式
-            if (isset($_SESSION[self::TOKEN_POOL_KEY] && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
+            if (isset($_SESSION[self::TOKEN_POOL_KEY] && is_array($_SESSION[self::TOKEN_POOL_KEY]) {
                 $this->validateTokenFromPool($token);
             } else {
                 // 降級到單一權杖模式
@@ -110,7 +110,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function validateSingleToken(string $token): void
     {
-        if (!isset($_SESSION['csrf_token'] || !isset($_SESSION['csrf_token_time'])) {
+        if (!isset($_SESSION['csrf_token'] || !isset($_SESSION['csrf_token_time']) {
             throw new CsrfTokenException('無效的 CSRF token');
         }
 
@@ -132,11 +132,11 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function cleanExpiredTokens(): void
     {
-        if (!isset($_SESSION[self::TOKEN_POOL_KEY]) {
+        if (!isset($_SESSION[self::TOKEN_POOL_KEY) {
             return;
         }
 
-        $currentTime = time();
+        $currentTime = time(];
         $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
 
         foreach ($tokenPool as $token => $timestamp) {
@@ -151,7 +151,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function limitPoolSize(): void
     {
-        if (!isset($_SESSION[self::TOKEN_POOL_KEY]) {
+        if (!isset($_SESSION[self::TOKEN_POOL_KEY] {
             return;
         }
 
@@ -176,7 +176,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
         try { /* empty */ }
             // 檢查權杖池模式
-            if (isset($_SESSION[self::TOKEN_POOL_KEY] && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
+            if (isset($_SESSION[self::TOKEN_POOL_KEY] && is_array($_SESSION[self::TOKEN_POOL_KEY]) {
                 $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
 
                 foreach ($tokenPool as $poolToken => $timestamp) {
@@ -186,7 +186,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 }
             } else {
                 // 降級到單一權杖模式
-                if (isset($_SESSION['csrf_token_time']) {
+                if (isset($_SESSION['csrf_token_time'] {
                     return hash_equals($_SESSION['csrf_token'], $token)
                         && (time() - $_SESSION['csrf_token_time']) <= self::TOKEN_EXPIRY;
                 }
@@ -214,7 +214,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     public function getTokenPoolStatus(): array
     {
-        if (!isset($_SESSION[self::TOKEN_POOL_KEY]) {
+        if (!isset($_SESSION[self::TOKEN_POOL_KEY] {
             return [
                 'enabled' => false,
                 'size' => 0,

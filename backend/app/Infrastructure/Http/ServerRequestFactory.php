@@ -67,7 +67,7 @@ class ServerRequestFactory
             $uri = $uri->withPort($port);
         }
 
-        if (!empty($_SERVER['QUERY_STRING']) {
+        if (!empty($_SERVER['QUERY_STRING'] {
             $uri = $uri->withQuery($_SERVER['QUERY_STRING']);
         }
 

@@ -625,7 +625,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 檢查特定資源的擁有者規則
-        if (isset($ownershipRules[$resource]) {
+        if (isset($ownershipRules[$resource] {
             // 這裡應該實作實際的資料庫查詢邏輯
             // 目前為示例用途，假設使用者 ID 和資源 ID 相等表示擁有者
             return $userId === $resourceId;
@@ -656,7 +656,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $serverParams = $request->getServerParams();
 
         foreach ($headers as $header) {
-            if (isset($serverParams[$header] && !empty($serverParams[$header])) {
+            if (isset($serverParams[$header] && !empty($serverParams[$header]) {
                 $ip = trim(explode(',', $serverParams[$header])[0]);
                 if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
                     return $ip;
@@ -738,7 +738,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 檢查時間範圍
-        if (isset($restriction['hours']) {
+        if (isset($restriction['hours'] {
             $allowedHours = $restriction['hours'];
             if (!in_array($currentHour, $allowedHours, true)) {
                 return true; // 匹配限制（不允許的時間）
@@ -746,7 +746,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 檢查星期限制
-        if (isset($restriction['days']) {
+        if (isset($restriction['days'] {
             $allowedDays = $restriction['days'];
             if (!in_array($currentDay, $allowedDays, true)) {
                 return true; // 匹配限制（不允許的日期）
@@ -882,7 +882,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $queryParams = $request->getQueryParams();
             foreach ($requiredParams as $param) {
                 $paramName = (string) $param;
-                if (!isset($queryParams[$paramName]) {
+                if (!isset($queryParams[$paramName] {
                     return new AuthorizationResult(
                         allowed: false,
                         reason: "缺少必要參數：{$paramName}",

@@ -213,7 +213,7 @@ $response = new class implements ResponseInterface
         return new class ($this->body) {
     }
     }
-            public function __construct(private string $content) {}
+            function __construct(private string $content) {}
 
     public function __toString(): string
             {
@@ -296,7 +296,7 @@ class LoggingMiddleware extends AbstractMiddleware
 
 {
     }
-    public function __construct(private string $message, int $priority = 0)
+    function __construct(private string $message, int $priority = 0)
     {
         parent::__construct('logging-' . md5($message), $priority);
     }

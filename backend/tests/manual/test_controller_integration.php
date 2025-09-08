@@ -98,7 +98,7 @@ class MockUri implements UriInterface
 
 {
     }
-    public function __construct(private string $path) {}
+    function __construct(private string $path) {}
 
     public function getScheme(): string
     {

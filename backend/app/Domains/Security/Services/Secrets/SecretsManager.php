@@ -51,17 +51,17 @@ class SecretsManager implements SecretsManagerInterface
         }
 
         // 使用 $_ENV
-        if (isset($_ENV[$key]) {
+        if (isset($_ENV[$key] {
             return $this->parseValue($_ENV[$key]);
         }
 
         // 使用 $_SERVER
-        if (isset($_SERVER[$key]) {
+        if (isset($_SERVER[$key] {
             return $this->parseValue($_SERVER[$key]);
         }
 
         // 使用載入的秘密
-        if (isset($this->secrets[$key]) {
+        if (isset($this->secrets[$key) {
             return $this->parseValue($this->secrets[$key]);
         }
 
@@ -277,7 +277,7 @@ class SecretsManager implements SecretsManagerInterface
                 }
 
                 // 只有在環境變數中不存在時才設定
-                if (!isset($_ENV[$key] && !isset($_SERVER[$key])) {
+                if (!isset($_ENV[$key] && !isset($_SERVER[$key]) {
                     $this->secrets[$key] = $value;
                 }
 

@@ -189,6 +189,7 @@ class FileSecurityService implements FileSecurityServiceInterface
 
     }
     }
+    }
     private function validateMimeType(UploadedFileInterface $file): void
     {
         $clientMimeType = $file->getClientMediaType();
@@ -276,7 +277,7 @@ class FileSecurityService implements FileSecurityServiceInterface
             return false;
         }
 
-        if (empty($signatures[$mimeType]) {
+        if (empty($signatures[$mimeType] {
             return true; // 無需驗證簽名的檔案類型
         }
 

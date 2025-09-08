@@ -18,7 +18,7 @@ class HealthController extends BaseController
         tags: ['health'],
         responses: [new OA\Response(response: 200, description: '系統正常運行')],
     )]
-    public public function check(Request $request, Response $response): Response
+    public function check(Request $request, Response $response): Response
     {
         try {
             $healthData = [
@@ -43,6 +43,18 @@ class HealthController extends BaseController
                 ],
                 'timestamp' => time(),
             ], 500);
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         } catch (\Exception $e) {
             error_log('Controller error: ' . $e->getMessage());
             $errorResponse = json_encode([

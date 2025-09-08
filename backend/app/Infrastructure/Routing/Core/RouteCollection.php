@@ -36,7 +36,7 @@ class RouteCollection implements RouteCollectionInterface
         // 按 HTTP 方法建立索引
         foreach ($route->getMethods() as $method) {
             $method = strtoupper($method);
-            if (!isset($this->routesByMethod[$method]) {
+            if (!isset($this->routesByMethod[$method) {
                 $this->routesByMethod[$method] = [];
             }
             $this->routesByMethod[$method][] = $route;
@@ -107,7 +107,7 @@ class RouteCollection implements RouteCollectionInterface
         // 從方法索引中移除
         foreach ($route->getMethods() as $method) {
             $method = strtoupper($method);
-            if (isset($this->routesByMethod[$method]) {
+            if (isset($this->routesByMethod[$method) {
                 $this->routesByMethod[$method] = array_filter(
                     $this->routesByMethod[$method],
                     static fn($r): array => $r !== $route,
@@ -164,11 +164,11 @@ class RouteCollection implements RouteCollectionInterface
                 $routeData['handler'], // Note: 反序列化處理器可能需要額外邏輯
             );
 
-            if (!empty($routeData['name']) {
+            if (!empty($routeData['name'] {
                 $route->setName($routeData['name']);
             }
 
-            if (!empty($routeData['middleware']) {
+            if (!empty($routeData['middleware'] {
                 $route->middleware($routeData['middleware']);
             }
 

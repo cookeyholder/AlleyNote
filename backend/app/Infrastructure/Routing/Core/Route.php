@@ -160,7 +160,7 @@ class Route implements RouteInterface
     {
         $clone = clone $this;
 
-        if (isset($attributes['name']) {
+        if (isset($attributes['name'] {
             $clone->name = $attributes['name'];
         }
 

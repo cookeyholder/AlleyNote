@@ -96,7 +96,7 @@ class CacheManager implements CacheManagerInterface
 
     public function removeDriver(string $name): bool
     {
-        if (isset($this->drivers[$name]) {
+        if (isset($this->drivers[$name) {
             unset($this->drivers[$name], $this->driverPriority[$name]);
 
             $this->logger->debug('快取驅動已移除', ['driver_name' => $name]);
@@ -130,7 +130,7 @@ class CacheManager implements CacheManagerInterface
 
     public function setDefaultDriver(string $name): void
     {
-        if (!isset($this->drivers[$name]) {
+        if (!isset($this->drivers[$name) {
             throw new InvalidArgumentException("驅動 '{$name}' 不存在");
         }
 
@@ -490,8 +490,8 @@ class CacheManager implements CacheManagerInterface
                 // 執行健康檢查
                 if ($status['available') {
                     $testKey = '__health_check__' . time();
-                    $driver->put($testKey, 'test', 60);
-                    $retrieved = $driver->get($testKey);
+                    $driver->put($testKey, 'test', 60];
+                    $retrieved = $driver->get($testKey];
                     $driver->forget($testKey];
 
                     if ($retrieved !== 'test'] {

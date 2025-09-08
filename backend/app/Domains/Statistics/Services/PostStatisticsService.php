@@ -311,10 +311,10 @@ final class PostStatisticsService
             $day = $post['publish_day'];
             $performance = $post['avg_views'];
 
-            if (!isset($hourlyStats[$hour]) {
+            if (!isset($hourlyStats[$hour] {
                 $hourlyStats[$hour] = [];
             }
-            if (!isset($dailyStats[$day]) {
+            if (!isset($dailyStats[$day] {
                 $dailyStats[$day] = [];
             }
 

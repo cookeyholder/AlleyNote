@@ -82,7 +82,7 @@ class CacheGroupManager
         /** @var array<string> $childGroupsArray */
         $childGroupsArray = is_array($childGroups) ? $childGroups : [$childGroups];
 
-        if (!isset($this->dependencies[$parentGroup]) {
+        if (!isset($this->dependencies[$parentGroup) {
             $this->dependencies[$parentGroup] = [];
         }
 
@@ -122,7 +122,7 @@ class CacheGroupManager
      */
     public function flushGroup(string $groupName, bool $cascade = true): int
     {
-        if (!isset($this->groups[$groupName]) {
+        if (!isset($this->groups[$groupName) {
             return 0;
         }
 
@@ -136,7 +136,7 @@ class CacheGroupManager
         ]);
 
         // 如果啟用級聯清空，清空依賴的子分組
-        if ($cascade && isset($this->dependencies[$groupName]) {
+        if ($cascade && isset($this->dependencies[$groupName) {
             foreach ($this->dependencies[$groupName] as $childGroup) {
                 $clearedCount += $this->flushGroup($childGroup, true);
             }
@@ -225,7 +225,7 @@ class CacheGroupManager
      */
     public function removeGroup(string $groupName, bool $flushCache = true): bool
     {
-        if (!isset($this->groups[$groupName]) {
+        if (!isset($this->groups[$groupName) {
             return false;
         }
 
@@ -385,7 +385,7 @@ class CacheGroupManager
         }
 
         // 檢查最大年齡規則
-        if (is_int($rules['max_age')) {
+        if (is_int($rules['max_age')] {
             $group = $this->getGroup($groupName];
             if ($group && $this->isGroupExpired($groupName, $rules['max_age')] {
                 return true;
@@ -406,7 +406,7 @@ class CacheGroupManager
         /** @var array<string, int> $groupCreationTimes */
         static $groupCreationTimes = [];
 
-        if (!isset($groupCreationTimes[$groupName]) {
+        if (!isset($groupCreationTimes[$groupName] {
             $groupCreationTimes[$groupName] = time();
 
             return false;
