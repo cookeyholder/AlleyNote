@@ -13,6 +13,7 @@ class RouteMatchResult
 /**
  * @param array $parameters
  */
+
 {
     public function __construct(
         private readonly bool $isMatched,

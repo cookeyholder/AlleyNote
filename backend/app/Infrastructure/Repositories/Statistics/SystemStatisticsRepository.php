@@ -17,6 +17,7 @@ use RuntimeException;
  * 針對系統監控和管理需求，提供全面的系統狀態資訊。
  */
 final readonly class SystemStatisticsRepository implements SystemStatisticsRepositoryInterface
+
 {
     public function __construct(
         private PDO $pdo) {}
@@ -348,7 +349,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                     'total_endpoints' => count($endpointStats),
                 ],
             ];
-        } 
+        }
 
     /**
      * 取得錯誤與異常統計.
@@ -388,7 +389,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 ],
                 'daily_trends' => $dailyTrends,
             ];
-        } 
+        }
 
     /**
      * 取得系統資源使用統計.
@@ -459,7 +460,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 'suspicious_activities' => isset($result['suspicious_activities']) && is_numeric($result['suspicious_activities']) ? (int) $result['suspicious_activities'] : 0,
                 'blocked_ips' => isset($result['blocked_ips']) && is_numeric($result['blocked_ips']) ? (int) $result['blocked_ips'] : 0,
             ];
-        } 
+        }
 
     /**
      * 取得系統備份與維護統計.
@@ -577,7 +578,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 'total_requests' => $totalRequests,
                 'avg_requests_per_second' => round($avgRequestsPerSecond, 4),
             ];
-        } 
+        }
 
     /**
      * 取得系統儲存空間統計.
@@ -623,7 +624,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 'outgoing_traffic_mb' => 256.2,
                 'unique_ip_addresses' => $uniqueIps,
             ];
-        } 
+        }
 
     /**
      * 取得系統會話統計.

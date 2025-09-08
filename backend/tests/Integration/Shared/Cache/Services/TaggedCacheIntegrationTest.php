@@ -22,6 +22,7 @@ use Psr\Log\NullLogger;
  * TaggedCacheInterface 實作整合測試.
  */
 class TaggedCacheIntegrationTest extends TestCase
+
 {
     private TaggedCacheInterface $taggedCache;
 
@@ -50,28 +51,29 @@ class TaggedCacheIntegrationTest extends TestCase
 
     private function createTestCacheStrategy(): CacheStrategyInterface
     {
-        return new class implements CacheStrategyInterface {
-            public function shouldCache(string $key, mixed $value, int $ttl): bool
+        return new class implements CacheStrategyInterface 
+{
+    public function shouldCache(string $key, mixed $value, int $ttl): bool
             {
                 return true;
             }
 
-            public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
+    public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
             {
                 return reset($drivers) ? true : null;
             }
 
-            public function decideTtl(string $key, mixed $value, int $requestedTtl): int
+    public function decideTtl(string $key, mixed $value, int $requestedTtl): int
             {
                 return $requestedTtl; // 不調整 TTL
             }
 
-            public function handleMiss(string $key, callable $callback): mixed
+    public function handleMiss(string $key, callable $callback): mixed
             {
                 return $callback();
             }
 
-            /**\n      * @param array $params
+    /**\n      * @param array $params
              */
             public function handleDriverFailure(
                 CacheDriverInterface $failedDriver,
@@ -82,14 +84,14 @@ class TaggedCacheIntegrationTest extends TestCase
                 return null;
             }
 
-            /**\n      * @return array
+    /**\n      * @return array
              */
             public function getStats(): array
             {
                 return [];
             }
 
-            public function resetStats(): void
+    public function resetStats(): void
             {
                 // Nothing to reset
             }

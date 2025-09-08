@@ -10,6 +10,7 @@ use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 
 class FileSecurityService implements FileSecurityServiceInterface
+
 {
     private const ALLOWED_MIME_TYPES = [
         'image/jpeg' => ['jpg', 'jpeg'],
@@ -149,7 +150,6 @@ class FileSecurityService implements FileSecurityServiceInterface
         if ($file->getSize() > self::MAX_FILE_SIZE) {
             throw ValidationException::fromSingleError('file', '檔案大小超過限制（10MB）');
         }
-    }
 
     private function validateFileName(?string $fileName): void
     {
@@ -184,7 +184,6 @@ class FileSecurityService implements FileSecurityServiceInterface
                 throw ValidationException::fromSingleError('file', '不允許的檔案類型');
             }
         }
-    }
 
     private function validateMimeType(UploadedFileInterface $file): void
     {
@@ -201,7 +200,6 @@ class FileSecurityService implements FileSecurityServiceInterface
         if (!in_array($extension, self::ALLOWED_MIME_TYPES[$clientMimeType], true)) {
             throw ValidationException::fromSingleError('file', '檔案副檔名與類型不匹配');
         }
-    }
 
     private function validateFileContent(UploadedFileInterface $file): void
     {
@@ -218,7 +216,6 @@ class FileSecurityService implements FileSecurityServiceInterface
         if (!$this->validateFileSignature($content, $mimeType)) {
             throw ValidationException::fromSingleError('file', '檔案格式驗證失敗');
         }
-    }
 
     private function containsMaliciousContent(string $content): bool
     {

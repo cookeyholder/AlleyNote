@@ -12,6 +12,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RateLimitTest extends TestCase
+
 {
     private RateLimitService $rateLimitService;
 

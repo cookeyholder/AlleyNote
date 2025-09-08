@@ -25,6 +25,7 @@ use ReflectionProperty;
  * @since 1.0.0
  */
 class TokenBlacklistRepositoryTest extends TestCase
+
 {
     private TokenBlacklistRepository $repository;
 

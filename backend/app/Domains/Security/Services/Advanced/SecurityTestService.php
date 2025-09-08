@@ -15,6 +15,7 @@ use App\Domains\Security\Contracts\SecurityTestInterface;
 use Exception;
 
 class SecurityTestService implements SecurityTestInterface
+
 {
     private SessionSecurityServiceInterface $sessionService;
 
@@ -111,7 +112,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } 
+        }
 
     /**
      * @return array
@@ -142,7 +143,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '角色權限檢查功能正常',
             ];
             $results['passed']++;
-        } 
+        }
 
     /**
      * @return array
@@ -185,7 +186,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } 
+        }
 
     /**
      * @return array
@@ -239,7 +240,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } 
+        }
 
     /**
      * @return array
@@ -273,7 +274,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } 
+        }
 
     /**
      * @return array
@@ -329,7 +330,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } 
+        }
 
     /**
      * @return array
@@ -365,7 +366,7 @@ class SecurityTestService implements SecurityTestInterface
             } else {
                 $results['failed']++;
             }
-        } 
+        }
 
     /**
      * @return array
@@ -489,22 +490,22 @@ class SecurityTestService implements SecurityTestInterface
                 return 'test.txt';
             }
 
-            public function getClientMediaType(): string
+    public function getClientMediaType(): string
             {
                 return 'text/plain';
             }
 
-            public function getSize(): int
+    public function getSize(): int
             {
                 return 100;
             }
 
-            public function getError(): int
+    public function getError(): int
             {
                 return UPLOAD_ERR_OK;
             }
 
-            public function getStream(): string
+    public function getStream(): string
             {
                 return 'test content';
             }

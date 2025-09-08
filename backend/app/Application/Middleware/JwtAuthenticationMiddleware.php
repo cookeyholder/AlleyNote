@@ -76,7 +76,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
 
             // 5. 繼續執行後續中介軟體
             return $handler->handle($request);
-        }  
+        }
 
     /**
      * 從請求中提取 JWT token.

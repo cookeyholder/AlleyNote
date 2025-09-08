@@ -19,6 +19,7 @@ use Psr\Http\Message\StreamInterface;
 
 #[CoversClass(ActivityLogController::class)]
 class ActivityLogControllerTest extends TestCase
+
 {
     private ActivityLogController $controller;
 

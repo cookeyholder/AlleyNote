@@ -190,7 +190,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         if ($this->config['server_signature']['enabled']) {
             header('Server: ' . $this->config['server_signature']['value']);
         }
-    }
 
     private function buildCSP(): string
     {

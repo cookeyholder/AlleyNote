@@ -20,6 +20,7 @@ use PHPUnit\Framework\TestCase;
  * 測試 JWT Token 服務的核心功能。
  */
 final class JwtTokenServiceSimpleTest extends TestCase
+
 {
     private JwtTokenService $service;
 

@@ -8,6 +8,7 @@ use App\Domains\Auth\Services\Advanced\PwnedPasswordService;
 use PHPUnit\Framework\TestCase;
 
 class PwnedPasswordServiceTest extends TestCase
+
 {
     private PwnedPasswordService $service;
 

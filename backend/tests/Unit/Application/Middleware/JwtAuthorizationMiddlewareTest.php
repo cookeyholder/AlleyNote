@@ -17,6 +17,7 @@ use Tests\TestCase;
  * JWT 授權中介軟體測試.
  */
 final class JwtAuthorizationMiddlewareTest extends TestCase
+
 {
     private JwtAuthorizationMiddleware $middleware;
 

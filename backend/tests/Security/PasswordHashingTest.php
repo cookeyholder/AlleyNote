@@ -18,6 +18,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PasswordHashingTest extends TestCase
+
 {
     protected AuthService $authService;
 

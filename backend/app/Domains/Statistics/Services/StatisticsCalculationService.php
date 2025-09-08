@@ -24,6 +24,7 @@ use Throwable;
  * - 遵循單一職責原則
  */
 final class StatisticsCalculationService
+
 {
     public function __construct(
         private readonly UserStatisticsRepositoryInterface $userStatisticsRepository) {}
@@ -262,7 +263,7 @@ final class StatisticsCalculationService
             $monthlyData[$month][] = $views;
         }
 
-        /** @var array<string, float> */
+    /** @var array<string, float> */
         $monthlyAverages = [];
         $overallAverage = 0;
         $totalMonths = 0;
@@ -335,7 +336,7 @@ final class StatisticsCalculationService
             $growth = (($currentUsers - $previousUsers) / $previousUsers) * 100;
 
             return round($growth, 2);
-        } 
+        }
 
     /**
      * 計算線性成長率.

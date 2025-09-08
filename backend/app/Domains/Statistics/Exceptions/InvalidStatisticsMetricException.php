@@ -12,6 +12,7 @@ use Throwable;
  * 當統計指標參數不正確時拋出.
  */
 class InvalidStatisticsMetricException extends InvalidArgumentException
+
 {
     public function __construct(
         string $message = '無效的統計指標',

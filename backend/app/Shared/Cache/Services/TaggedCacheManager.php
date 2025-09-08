@@ -134,7 +134,7 @@ class TaggedCacheManager implements TaggedCacheInterface
             $this->put($key, $value, $ttl);
 
             return $value;
-        } 
+        }
 
     /**
      * 增加新標籤到快取管理器.

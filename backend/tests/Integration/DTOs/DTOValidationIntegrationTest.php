@@ -20,6 +20,7 @@ use Tests\TestCase;
  * 測試 DTO 與驗證器的整合功能
  */
 class DTOValidationIntegrationTest extends TestCase
+
 {
     private ValidatorInterface $validator;
 
@@ -230,7 +231,7 @@ class DTOValidationIntegrationTest extends TestCase
                 'user_ip' => '192.168.1.1',
             ]);
             $this->fail('應該拋出 ValidationException');
-        } 
+        }
 
     /**
      * 測試 DTO 的 JSON 序列化.

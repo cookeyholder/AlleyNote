@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
  * ErrorTrackerService 測試類別。
  */
 class ErrorTrackerServiceTest extends TestCase
+
 {
     private ErrorTrackerService $errorTracker;
 

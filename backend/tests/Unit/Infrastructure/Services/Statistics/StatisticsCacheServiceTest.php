@@ -26,6 +26,7 @@ use Psr\Log\LoggerInterface;
  */
 #[CoversClass(StatisticsCacheService::class)]
 final class StatisticsCacheServiceTest extends TestCase
+
 {
     private StatisticsCacheService $cacheService;
 

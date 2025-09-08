@@ -11,6 +11,7 @@ use Throwable;
 // Import ValidationResult
 
 class ValidationException extends Exception
+
 {
     protected ValidationResult $validationResult; // Store the ValidationResult
 

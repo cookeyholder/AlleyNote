@@ -167,7 +167,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             // 回傳完整的實體資料
             return $this->findById($insertId);
-        } 
+        }
 
     /**
      * 批次建立多個活動記錄.
@@ -241,7 +241,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $this->db->commit();
 
             return $count;
-        } 
+        }
 
     /**
      * 根據 ID 查詢活動記錄.
@@ -311,7 +311,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
                 return $entity->toArray();
             }, $results);
-        } 
+        }
 
     /**
      * 查詢使用者的活動記錄.

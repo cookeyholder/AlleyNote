@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(ActivitySeverity::class)]
 class ActivitySeverityTest extends TestCase
+
 {
     public function testEnumValues(): void
     {

@@ -119,7 +119,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             }
 
             return true;
-        } 
+        }
 
     /**
      * 記錄成功操作.
@@ -296,7 +296,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             }
 
             return $this->repository->createBatch($filteredDtos);
-        } 
+        }
 
     /**
      * 啟用特定類型的記錄.
@@ -346,7 +346,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             ]);
 
             return $deletedCount;
-        } 
+        }
 
     /**
      * 根據嚴重程度決定是否應該記錄.

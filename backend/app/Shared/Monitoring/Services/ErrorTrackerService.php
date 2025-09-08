@@ -121,7 +121,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
             if (!is_array($record) || !is_array($record['context'] ?? null)) {
                 continue;
             }
-            /** @var array<string, mixed> $context */
+
+    /** @var array<string, mixed> $context */
             $context = $record['context'];
             if (is_string($context['exception_class'])) {
                 $type = $context['exception_class'];
@@ -232,7 +233,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
             if (!is_array($record) || !is_array($record['context'] ?? null)) {
                 continue;
             }
-            /** @var array<string, mixed> $context */
+
+    /** @var array<string, mixed> $context */
             $context = $record['context'];
             if (is_string($context['exception_class'])) {
                 $timestampValue = $record['timestamp'] ?? 0;

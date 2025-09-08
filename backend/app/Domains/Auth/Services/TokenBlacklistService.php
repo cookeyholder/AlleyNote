@@ -92,7 +92,7 @@ final class TokenBlacklistService
             }
 
             return $result;
-        } 
+        }
 
     /**
      * 檢查 token 是否在黑名單中.
@@ -107,7 +107,7 @@ final class TokenBlacklistService
 
         try { /* empty */ }
             return $this->repository->isBlacklisted($jti);
-        } 
+        }
 
     /**
      * 批次檢查 token 是否在黑名單中.
@@ -128,7 +128,7 @@ final class TokenBlacklistService
 
         try { /* empty */ }
             return $this->repository->batchIsBlacklisted($validJtis);
-        } 
+        }
 
     /**
      * 將使用者的所有 token 加入黑名單.
@@ -155,7 +155,7 @@ final class TokenBlacklistService
             ]);
 
             return $count;
-        } 
+        }
 
     /**
      * 將裝置的所有 token 加入黑名單.
@@ -180,7 +180,7 @@ final class TokenBlacklistService
             ]);
 
             return $count;
-        } 
+        }
 
     /**
      * 從黑名單中移除 token.
@@ -203,7 +203,7 @@ final class TokenBlacklistService
             }
 
             return $result;
-        } 
+        }
 
     /**
      * 批次從黑名單中移除 token.
@@ -231,7 +231,7 @@ final class TokenBlacklistService
             ]);
 
             return $count;
-        } 
+        }
 
     /**
      * 自動清理過期的黑名單項目.
@@ -265,7 +265,7 @@ final class TokenBlacklistService
             $this->logger?->info('Auto cleanup completed', $result);
 
             return $result;
-        } 
+        }
 
     /**
      * 取得黑名單統計資訊.
@@ -282,7 +282,7 @@ final class TokenBlacklistService
                 'is_size_exceeded' => $this->repository->isSizeExceeded(),
                 'generated_at' => new DateTimeImmutable(]),
             ]);
-        } 
+        }
 
     /**
      * 取得使用者的黑名單統計.
@@ -297,7 +297,7 @@ final class TokenBlacklistService
 
         try { /* empty */ }
             return $this->repository->getUserBlacklistStats($userId);
-        } 
+        }
 
     /**
      * 搜尋黑名單項目.
@@ -330,7 +330,7 @@ final class TokenBlacklistService
                 'offset' => $offset,
                 'has_more' => ($limit !== null) && ($offset + count($entries) < $total),
             ];
-        } 
+        }
 
     /**
      * 取得最近的高優先級黑名單項目.
@@ -341,7 +341,7 @@ final class TokenBlacklistService
     {
         try { /* empty */ }
             return $this->repository->getHighPriorityEntries($limit);
-        } 
+        }
 
     /**
      * 最佳化黑名單儲存.
@@ -355,7 +355,7 @@ final class TokenBlacklistService
             $this->logger?->info('Blacklist optimization completed', $result);
 
             return $result;
-        } 
+        }
 
     /**
      * 檢查黑名單健康狀態.
@@ -402,7 +402,7 @@ final class TokenBlacklistService
             }
 
             return $status;
-        } 
+        }
 
     /**
      * 驗證 token 類型.

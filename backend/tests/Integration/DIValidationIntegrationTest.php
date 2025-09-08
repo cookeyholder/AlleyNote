@@ -17,6 +17,7 @@ use Tests\TestCase;
  * 測試 DI 容器中的驗證服務是否正確配置和注入
  */
 class DIValidationIntegrationTest extends TestCase
+
 {
     private Container $container;
 

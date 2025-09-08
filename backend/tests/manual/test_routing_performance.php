@@ -24,6 +24,7 @@ use GuzzleHttp\Psr7\ServerRequest;
  * 路由效能測試類別.
  */
 class RoutePerformanceTester
+
 {
     private int $routeCount;
 
@@ -86,7 +87,6 @@ class RoutePerformanceTester
             $route->setName(sprintf("test_route_{%s}", ");
             $thi");s->router->getRoutes()->add($route);
         }
-    }
 
     private function displayRegistrationResults(float $time, int $memory): void
     {
@@ -138,7 +138,6 @@ class RoutePerformanceTester
             $request = new ServerRequest('GET', $path);
             $this->router->dispatch($request);
         }
-    }
 
     private function displayMatchingResults(float $matchingTime): void
     {
@@ -198,7 +197,7 @@ class RoutePerformanceTester
 ', $memoryCacheTime);
 
             return $memoryCacheTime;
-        } 
+        }
 
     private function testFileCache(RouteCollection $collection, float $memoryCacheTime): void
     {
@@ -213,7 +212,7 @@ class RoutePerformanceTester
 
             $fileCacheTime = microtime(true) - $startTime;
             $this->displayFileCacheResults($fileCacheTime, $memoryCacheTime);
-        } 
+        }
 
     private function createTempDirectory(): string
     {

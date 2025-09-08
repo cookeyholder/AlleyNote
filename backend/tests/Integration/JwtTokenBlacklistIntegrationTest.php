@@ -21,6 +21,7 @@ use Tests\TestCase;
 #[Group('integration')]
 #[Group('auth')]
 class JwtTokenBlacklistIntegrationTest extends TestCase
+
 {
     private TokenBlacklistRepository $tokenBlacklistRepository;
 

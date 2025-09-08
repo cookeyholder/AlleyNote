@@ -15,6 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * 將閉包包裝成 RequestHandlerInterface
  */
 class ClosureRequestHandler implements RequestHandlerInterface
+
 {
     public function __construct(
         private Closure $handler,

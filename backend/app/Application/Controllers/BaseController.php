@@ -13,7 +13,7 @@ abstract class BaseController
     /**
      * 建立JSON回應.
      */
-    protected function json(ResponseInterface $response, /** @var array<string, mixed> */ array $data, int $status = 200): ResponseInterface
+    protected public function json(ResponseInterface $response, /** @var array<string, mixed> */ array $data, int $status = 200): ResponseInterface
     {
         $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         if ($json === false) {
@@ -29,7 +29,7 @@ abstract class BaseController
     /**
      * JSON響應輔助方法.
      */
-    protected function jsonResponse(array $data, int $httpCode = 200): string
+    protected public function jsonResponse(array $data, int $httpCode = 200): string
     {
         http_response_code($httpCode);
         header('Content-Type: application/json; charset=utf-8');
@@ -39,7 +39,7 @@ abstract class BaseController
         return $jsonString !== false ? $jsonString : '{}';
     }
 
-    protected function successResponse(mixed $data = null, string $message = 'Success'): string
+    protected public function successResponse(mixed $data = null, string $message = 'Success'): string
     {
         /** @var array<string, mixed> $responseData */
         $responseData = ApiResponse::success($data, $message);
@@ -47,7 +47,7 @@ abstract class BaseController
         return $this->jsonResponse($responseData);
     }
 
-    protected function errorResponse(string $message, int $httpCode = 400, mixed $errors = null): string
+    protected public function errorResponse(string $message, int $httpCode = 400, mixed $errors = null): string
     {
         /** @var array<string, mixed> $responseData */
         $responseData = ApiResponse::error($message, $httpCode, $errors);
@@ -58,7 +58,7 @@ abstract class BaseController
     /**
      * 分頁響應輔助方法.
      */
-    protected function paginatedResponse(array $data, int $total, int $page, int $perPage): string
+    protected public function paginatedResponse(array $data, int $total, int $page, int $perPage): string
     {
         /** @var array<string, mixed> $responseData */
         $responseData = ApiResponse::paginated($data, $total, $page, $perPage);
@@ -66,7 +66,7 @@ abstract class BaseController
         return $this->jsonResponse($responseData);
     }
 
-    protected function handleException(Exception $e): string
+    protected public function handleException(Exception $e): string
     {
         // 記錄錯誤日誌
         error_log('API Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
@@ -77,7 +77,7 @@ abstract class BaseController
         return $this->errorResponse($e->getMessage(), $httpCode);
     }
 
-    private function getHttpCodeFromException(Exception $e): int
+    private public function getHttpCodeFromException(Exception $e): int
     {
         // 根據例外類型映射 HTTP 狀態碼
         $className = get_class($e);

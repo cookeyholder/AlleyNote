@@ -7,6 +7,7 @@ namespace App\Application\Middleware;
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 
 class AuthorizationMiddleware
+
 {
     private AuthorizationServiceInterface $authorizationService;
 

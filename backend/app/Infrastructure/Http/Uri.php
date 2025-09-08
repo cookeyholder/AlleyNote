@@ -10,6 +10,7 @@ use Psr\Http\Message\UriInterface;
  * 簡單的 PSR-7 URI 實作.
  */
 class Uri implements UriInterface
+
 {
     private string $scheme = '';
 
@@ -30,7 +31,6 @@ class Uri implements UriInterface
         if ($uri !== '') {
             $this->parseUri($uri);
         }
-    }
 
     private function parseUri(string $uri): void
     {
@@ -48,7 +48,6 @@ class Uri implements UriInterface
             if (isset($parts['pass'])) {
                 $this->userInfo .= ':' . $parts['pass'];
             }
-        }
 
     public function getScheme(): string
     {

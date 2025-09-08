@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class XssProtectionServiceTest extends TestCase
+
 {
     private XssProtectionService $service;
 

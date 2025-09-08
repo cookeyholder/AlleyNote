@@ -31,6 +31,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * @param int $totalCount 總數量
      * @param DateTimeImmutable $generatedAt 產生時間
      */
+    
     public function __construct(
         public StatisticsPeriod $period,
         /** @var array<SourceStatistics> */
@@ -148,7 +149,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             return null;
         }
 
-        /** @var SourceStatistics|null */
+    /** @var SourceStatistics|null */
         return array_reduce(
             $this->sourceStatistics,
             fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
@@ -164,7 +165,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             return null;
         }
 
-        /** @var SourceStatistics|null */
+    /** @var SourceStatistics|null */
         return array_reduce(
             $this->sourceStatistics,
             fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => $carry === null || $source->count->value < $carry->count->value ? $source : $carry,

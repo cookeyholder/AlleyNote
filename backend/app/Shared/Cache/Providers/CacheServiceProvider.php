@@ -89,7 +89,7 @@ class CacheServiceProvider
                 $driversConfig = [];
             }
 
-            /** @var array<string, mixed> $memoryConfig */
+    /** @var array<string, mixed> $memoryConfig */
             $memoryConfig = $driversConfig['memory'] ?? [];
             $maxItems = $memoryConfig['max_size'] ?? 1000;
             if (!is_int($maxItems)) {
@@ -294,7 +294,8 @@ class CacheServiceProvider
                 if (!is_array($config)) {
                     $config = [];
                 }
-                /** @var array<string, mixed> $typedConfig */
+
+    /** @var array<string, mixed> $typedConfig */
                 $typedConfig = $config;
 
                 return new RedisCacheDriver($typedConfig);
@@ -488,7 +489,7 @@ class CacheServiceProvider
     }
 }
 
-/**
+    /**
  * 快取設定建構器。
  * 提供流暢的介面來建構快取設定.
  */

@@ -52,7 +52,6 @@ class RouteCollection implements RouteCollectionInterface
             if ($route instanceof RouteInterface) {
                 $this->add($route);
             }
-        }
 
     public function getByName(string $name): ?RouteInterface
     {

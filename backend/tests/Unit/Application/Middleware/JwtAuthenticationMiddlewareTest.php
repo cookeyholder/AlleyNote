@@ -26,6 +26,7 @@ use Tests\TestCase;
  * @since 1.0.0
  */
 class JwtAuthenticationMiddlewareTest extends TestCase
+
 {
     private JwtTokenServiceInterface|MockInterface $jwtTokenService;
 

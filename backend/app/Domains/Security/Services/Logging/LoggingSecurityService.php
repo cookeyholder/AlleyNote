@@ -16,6 +16,7 @@ use Monolog\Logger;
  * 提供安全的日誌記錄功能，包含資料淨化和權限控制
  */
 class LoggingSecurityService implements LoggingSecurityServiceInterface
+
 {
     private Logger $logger;
 

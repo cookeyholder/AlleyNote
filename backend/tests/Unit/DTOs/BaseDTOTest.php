@@ -223,6 +223,7 @@ class BaseDTOTest extends TestCase
  * 測試用的 BaseDTO 具體實作.
  */
 class TestableBaseDTO extends BaseDTO
+
 {
     public string $name = '';
 

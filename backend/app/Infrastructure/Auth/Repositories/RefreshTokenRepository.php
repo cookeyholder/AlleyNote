@@ -19,6 +19,7 @@ use PDOException;
  * 採用 PDO 進行資料庫操作，支援交易處理與錯誤處理。
  */
 final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
+
 {
     private const TABLE_NAME = 'refresh_tokens';
 
@@ -62,7 +63,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 $now->format('Y-m-d H:i:s'),
                 $now->format('Y-m-d H:i:s'),
             ]);
-        } 
+        }
 
     public function findByJti(string $jti): ?array
     {
@@ -74,7 +75,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result ? true : null;
-        } 
+        }
 
     public function findByTokenHash(string $tokenHash): ?array
     {
@@ -86,7 +87,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result ? true : null;
-        } 
+        }
 
     public function findByUserId(int $userId, bool $includeExpired = false): array
     {
@@ -105,7 +106,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute($params);
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } 
+        }
 
     public function findByUserIdAndDevice(int $userId, string $deviceId): array
     {
@@ -119,7 +120,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute([$userId, $deviceId]);
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } 
+        }
 
     public function updateLastUsed(string $jti, ?DateTime $lastUsedAt = null): bool
     {
@@ -133,7 +134,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 new DateTime()->format('Y-m-d H:i:s'),
                 $jti,
             ]);
-        } 
+        }
 
     public function revoke(string $jti, string $reason = 'manual_revocation'): bool
     {
@@ -153,7 +154,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 $now->format('Y-m-d H:i:s'),
                 $jti,
             ]);
-        } 
+        }
 
     public function revokeAllByUserId(int $userId, string $reason = 'revoke_all_sessions', ?string $excludeJti = null): int
     {
@@ -181,7 +182,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute($params);
 
             return $stmt->rowCount();
-        } 
+        }
 
     public function revokeAllByDevice(int $userId, string $deviceId, string $reason = 'device_logout'): int
     {
@@ -205,7 +206,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             ]);
 
             return $stmt->rowCount();
-        } 
+        }
 
     public function delete(string $jti): bool
     {
@@ -215,7 +216,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute([$jti]);
 
             return $stmt->rowCount() > 0;
-        } 
+        }
 
     public function isRevoked(string $jti): bool
     {
@@ -227,7 +228,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $result = $stmt->fetchColumn();
 
             return $result === RefreshToken::STATUS_REVOKED;
-        } 
+        }
 
     public function isExpired(string $jti): bool
     {
@@ -242,7 +243,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             }
 
             return new DateTime($expiresAt) <= new DateTime();
-        } 
+        }
 
     public function isValid(string $jti): bool
     {
@@ -258,7 +259,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute([$beforeDate->format('Y-m-d H => i:s')]);
 
             return $stmt->rowCount();
-        } 
+        }
 
     public function cleanupRevoked(int $days = 30): int
     {
@@ -275,7 +276,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             ]);
 
             return $stmt->rowCount();
-        } 
+        }
 
     public function getUserTokenStats(int $userId): array
     {
@@ -308,7 +309,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 'expired' => (int) $result['expired'],
                 'revoked' => (int) $result['revoked'],
             ];
-        } 
+        }
 
     public function getTokenFamily(string $rootJti): array
     {
@@ -337,7 +338,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute([$rootJti, $rootJti]);
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } 
+        }
 
     public function revokeTokenFamily(string $rootJti, string $reason = 'family_revocation'): int
     {
@@ -368,7 +369,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute($params);
 
             return $stmt->rowCount();
-        } 
+        }
 
     /**
      * @param array $tokens
@@ -397,7 +398,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $this->pdo->commit();
 
             return $createdCount;
-        } 
+        }
 
     /**
      * @param array $jtis
@@ -428,7 +429,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute($params);
 
             return $stmt->rowCount();
-        } 
+        }
 
     public function getTokensNearExpiry(int $thresholdHours = 24): array
     {
@@ -448,7 +449,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             ]);
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } 
+        }
 
     public function getSystemStats(): array
     {
@@ -484,7 +485,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 'unique_users' => (int) $result['unique_users'],
                 'unique_devices' => (int) $result['unique_devices'],
             ];
-        } 
+        }
 
     /**
      * 簡化版的 Token 家族查詢（不使用 CTE）.

@@ -18,6 +18,7 @@ use Tests\TestCase;
  * 測試 DTO 在 Controller 中的使用是否正常
  */
 class DTOControllerIntegrationTest extends TestCase
+
 {
     private ValidatorInterface $validator;
 

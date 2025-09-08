@@ -13,6 +13,7 @@ use Psr\Container\ContainerInterface;
  * 負責建立和配置 DI 容器
  */
 class ContainerFactory
+
 {
     private static ?ContainerInterface $container = null;
 

@@ -18,6 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * 整合路由匹配、中間件執行和控制器呼叫
  */
 class RouteDispatcher
+
 {
     private MiddlewareResolver $middlewareResolver;
 

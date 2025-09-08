@@ -33,6 +33,7 @@ use Throwable;
  * - 統一錯誤處理和日誌記錄
  */
 final class StatisticsApplicationService
+
 {
     private const CACHE_TTL = 3600; // 1 小時
 
@@ -108,7 +109,7 @@ final class StatisticsApplicationService
             ]);
 
             return $snapshot;
-        } 
+        }
 
     /**
      * 取得統計概覽.
@@ -190,7 +191,7 @@ final class StatisticsApplicationService
             ]);
 
             return $overview;
-        } 
+        }
 
     /**
      * 分析熱門內容.
@@ -223,7 +224,7 @@ final class StatisticsApplicationService
             $this->cacheManager->set($cacheKey, $analysis, self::CACHE_TTL);
 
             return $analysis;
-        } 
+        }
 
     /**
      * 產生統計報告.
@@ -292,7 +293,7 @@ final class StatisticsApplicationService
             ]);
 
             return $report;
-        } 
+        }
 
     /**
      * 清除統計快取.
@@ -316,7 +317,7 @@ final class StatisticsApplicationService
 
                 $this->logger->info('清除所有統計快取');
             }
-        } 
+        }
 
     /**
      * 檢查統計服務健康狀態.
@@ -353,7 +354,7 @@ final class StatisticsApplicationService
             }
 
             return $status;
-        } 
+        }
 
     /**
      * 計算來源統計.
@@ -441,7 +442,7 @@ final class StatisticsApplicationService
             }
 
             return ['status' => 'error', 'message' => 'Cache read/write test failed'];
-        } 
+        }
 
     /**
      * 檢查資料庫健康狀態.
@@ -455,7 +456,7 @@ final class StatisticsApplicationService
             $this->statisticsRepository->findByPeriod($testPeriod);
 
             return ['status' => 'ok', 'message' => 'Database is accessible'];
-        } 
+        }
 
     /**
      * 檢查計算服務健康狀態.

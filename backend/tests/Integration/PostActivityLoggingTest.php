@@ -23,6 +23,7 @@ use Tests\TestCase;
  * PostController 與 ActivityLoggingService 整合測試.
  */
 class PostActivityLoggingTest extends TestCase
+
 {
     private PostServiceInterface|MockInterface $postService;
 

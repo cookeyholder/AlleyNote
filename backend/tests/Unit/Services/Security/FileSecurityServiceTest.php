@@ -11,6 +11,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
 class FileSecurityServiceTest extends TestCase
+
 {
     private FileSecurityService $service;
 

@@ -12,6 +12,7 @@ use Mockery;
  * 適用於純單元測試，不需要資料庫和外部依賴
  */
 abstract class UnitTestCase extends BaseTestCase
+
 {
     protected function tearDown(): void
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Attachment\Models;
 
 class Attachment
+
 {
     private ?int $id = null;
 

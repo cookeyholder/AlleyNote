@@ -16,6 +16,7 @@ use Psr\Log\LoggerInterface;
  * 提供全面的系統監控功能，包含記憶體、磁碟、資料庫等系統指標監控
  */
 class SystemMonitorService implements SystemMonitorInterface
+
 {
     public function __construct(
         private LoggerInterface $logger,
@@ -140,7 +141,7 @@ class SystemMonitorService implements SystemMonitorInterface
             }
 
             return $status;
-        } 
+        }
 
     /**
      * 取得應用程式健康狀態。
@@ -387,7 +388,7 @@ class SystemMonitorService implements SystemMonitorInterface
             }
 
             return $stats;
-        } 
+        }
 
     /**
      * 檢查資料庫健康狀態。
@@ -407,7 +408,7 @@ class SystemMonitorService implements SystemMonitorInterface
             } else {
                 return ['status' => 'critical', 'message' => 'Database connection is very slow', 'response_time_ms' => round($connectionTime, 2)];
             }
-        } 
+        }
 
     /**
      * 檢查記憶體健康狀態。
@@ -459,7 +460,7 @@ class SystemMonitorService implements SystemMonitorInterface
             } else {
                 return ['status' => 'warning', 'message' => 'Environment configuration has issues', 'errors' => $errors];
             }
-        } 
+        }
 
     /**
      * 檢查日誌健康狀態。

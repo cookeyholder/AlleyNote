@@ -15,7 +15,9 @@ use JsonSerializable;
  * 建立活動記錄的 DTO.
  */
 final class CreateActivityLogDTO implements JsonSerializable
+
 {
+    
     public function __construct(
         private ActivityType $actionType,
         private ?int $userId = null,

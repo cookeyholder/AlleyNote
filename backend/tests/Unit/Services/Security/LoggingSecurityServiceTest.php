@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 class LoggingSecurityServiceTest extends TestCase
+
 {
     private LoggingSecurityService $service;
 
@@ -47,7 +48,6 @@ class LoggingSecurityServiceTest extends TestCase
         if (is_dir($this->tempLogsDir)) {
             $this->recursiveDelete($this->tempLogsDir);
         }
-    }
 
     private function recursiveDelete(string $dir): void
     {

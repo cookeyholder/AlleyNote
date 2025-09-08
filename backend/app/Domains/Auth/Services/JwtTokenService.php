@@ -27,6 +27,7 @@ use Throwable;
  * 整合 FirebaseJwtProvider 提供安全的 RS256 JWT token 服務。
  */
 final class JwtTokenService implements JwtTokenServiceInterface
+
 {
     public function __construct(
         private readonly JwtProviderInterface $jwtProvider,
@@ -98,7 +99,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 accessTokenExpiresAt: $accessTokenExpiresAt,
                 refreshTokenExpiresAt: $refreshTokenExpiresAt,
             );
-        } 
+        }
 
     public function validateAccessToken(string $token, bool $checkBlacklist = true): JwtPayload
     {
@@ -211,7 +212,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $payload = $this->extractPayload($token);
 
             return $this->blacklistRepository->isBlacklisted($payload->getJti());
-        } 
+        }
 
     public function getTokenRemainingTime(string $token): int
     {
@@ -221,7 +222,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $remaining = $payload->getExpiresAt()->getTimestamp() - $now->getTimestamp();
 
             return max(0, $remaining);
-        } 
+        }
 
     public function isTokenNearExpiry(string $token, int $thresholdSeconds = 300): bool
     {
@@ -236,7 +237,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $payload = $this->extractPayload($token);
 
             return (int) $payload->getSubject() === $userId;
-        } 
+        }
 
     public function isTokenFromDevice(string $token, DeviceInfo $deviceInfo): bool
     {
@@ -245,7 +246,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $tokenDeviceId = $payload->getCustomClaim('device_id');
 
             return $tokenDeviceId === $deviceInfo->getDeviceId();
-        } 
+        }
 
     public function getAlgorithm(): string
     {
@@ -317,7 +318,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
                     'nbf',
                 ], true), ARRAY_FILTER_USE_KEY),
             );
-        } 
+        }
 
     /**
      * 標準化受眾參數為 array<string, mixed> 格式.

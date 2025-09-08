@@ -26,6 +26,7 @@ use PHPUnit\Framework\TestCase;
  * - 錯誤處理與例外情況
  */
 final class RefreshTokenRepositoryTest extends TestCase
+
 {
     private RefreshTokenRepository $repository;
 

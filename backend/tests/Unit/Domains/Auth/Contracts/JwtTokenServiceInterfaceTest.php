@@ -18,6 +18,7 @@ use ReflectionClass;
  * 確保所有方法簽名、參數類型、回傳類型和例外定義正確。
  */
 class JwtTokenServiceInterfaceTest extends TestCase
+
 {
     private ReflectionClass $interfaceReflection;
 

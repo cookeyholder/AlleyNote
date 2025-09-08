@@ -497,6 +497,7 @@ class Validator implements ValidatorInterface
 
         return preg_match('/^[a-zA-Z0-9\p{L}\p{N}_-]+$/u', $value) === 1;
     }
+
     /**
      * @param array $allData
      */
@@ -521,6 +522,7 @@ class Validator implements ValidatorInterface
 
         return $value === $allData[$confirmationField];
     }
+
     /**
      * @param array $allData
      */
@@ -541,6 +543,7 @@ class Validator implements ValidatorInterface
 
         return $value !== $allData[$otherField];
     }
+
     /**
      * @param array $allData
      */

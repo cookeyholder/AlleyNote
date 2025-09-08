@@ -13,6 +13,7 @@ use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
  * 使用檔案系統存儲路由快取資料
  */
 class FileRouteCache implements RouteCacheInterface
+
 {
     private int $ttl = 3600; // 預設 1 小時
 

@@ -11,6 +11,7 @@ use Psr\Http\Message\StreamInterface;
  * PSR-7 Response 實作.
  */
 class Response implements ResponseInterface
+
 {
     private string $protocolVersion = '1.1';
 

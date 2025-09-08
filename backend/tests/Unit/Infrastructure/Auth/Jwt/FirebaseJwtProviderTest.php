@@ -22,6 +22,7 @@ use PHPUnit\Framework\TestCase;
  */
 #[CoversClass(FirebaseJwtProvider::class)]
 final class FirebaseJwtProviderTest extends TestCase
+
 {
     private FirebaseJwtProvider $provider;
 

@@ -78,7 +78,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return $cached;
-        } 
+        }
 
     public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
@@ -105,7 +105,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return $result;
-        } 
+        }
 
     public function delete(string $key): bool
     {
@@ -120,7 +120,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $result;
-        } 
+        }
 
     public function has(string $key): bool
     {
@@ -128,7 +128,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             $normalizedKey = $this->normalizeKey($key);
 
             return $this->cacheManager->has($normalizedKey);
-        } 
+        }
 
     public function remember(string $key, callable $callback, ?int $ttl = null): mixed
     {
@@ -137,7 +137,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             $finalTtl = $ttl ?? $this->getTtlForKey($key);
 
             return $this->cacheManager->remember($normalizedKey, $callback, $finalTtl);
-        } 
+        }
 
     /**
      * @param array $tags
@@ -162,7 +162,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $result;
-        } 
+        }
 
     /**
      * @param array $callbacks
@@ -305,7 +305,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $result;
-        } 
+        }
 
     /**
      * @return array
@@ -322,7 +322,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                 'tag_config' => self::CACHE_TAGS,
                 'health_status' => $this->cacheManager->getHealthStatus(),
             ];
-        } 
+        }
 
     public function isHealthy(): bool
     {
@@ -337,7 +337,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return false;
-        } 
+        }
 
     /**
      * @return array
@@ -358,7 +358,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return ['success' => true, 'message' => 'cleanup completed'];
-        } 
+        }
 
     /**
      * 正規化快取鍵。

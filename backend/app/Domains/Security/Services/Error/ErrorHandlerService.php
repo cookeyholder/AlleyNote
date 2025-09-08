@@ -14,6 +14,7 @@ use Monolog\Processor\WebProcessor;
 use Throwable;
 
 class ErrorHandlerService implements ErrorHandlerServiceInterface
+
 {
     private Logger $logger;
 
@@ -263,7 +264,6 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
             $this->globalExceptionHandler($exception);
         }
-    }
 
     private function logException(Throwable $e): void
     {

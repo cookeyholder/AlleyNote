@@ -13,6 +13,7 @@ use App\Domains\Auth\Contracts\UserRepositoryInterface;
  * 這是一個暫時的解決方案，直到 UserRepository 完全實作介面
  */
 class UserRepositoryAdapter implements UserRepositoryInterface
+
 {
     public function __construct(
         private readonly UserRepository $userRepository) {}

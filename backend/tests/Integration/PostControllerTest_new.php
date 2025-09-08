@@ -19,6 +19,7 @@ use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
 
 class PostControllerTest extends TestCase
+
 {
     private PostServiceInterface $postService;
 

@@ -18,6 +18,7 @@ use Psr\Log\LoggerInterface;
 use Tests\Support\IntegrationTestCase;
 
 class ActivityLogApiIntegrationTest extends IntegrationTestCase
+
 {
     private ActivityLogController $controller;
 
@@ -192,7 +193,6 @@ class ActivityLogApiIntegrationTest extends IntegrationTestCase
         } else {
             $this->fail('count 應該是數字');
         }
-    }
 
     protected function tearDown(): void
     {

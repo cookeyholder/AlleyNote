@@ -18,6 +18,7 @@ use RuntimeException;
  * 支援使用者註冊、活躍度、行為模式等複雜統計分析。
  */
 final readonly class UserStatisticsRepository implements UserStatisticsRepositoryInterface
+
 {
     public function __construct(
         private PDO $pdo) {}

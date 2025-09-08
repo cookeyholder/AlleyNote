@@ -18,6 +18,7 @@ use InvalidArgumentException;
 use RuntimeException;
 
 class PostService implements PostServiceInterface
+
 {
     public function __construct(
         private readonly PostRepositoryInterface $repository) {}

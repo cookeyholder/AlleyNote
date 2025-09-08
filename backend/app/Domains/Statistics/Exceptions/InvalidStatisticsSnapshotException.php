@@ -12,6 +12,7 @@ use Throwable;
  * 當統計快照參數不正確時拋出.
  */
 class InvalidStatisticsSnapshotException extends InvalidArgumentException
+
 {
     public function __construct(
         string $message = '無效的統計快照',

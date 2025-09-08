@@ -26,6 +26,7 @@ use UnexpectedValueException;
  * 封裝 Firebase JWT 函式庫，提供 RS256 演算法的 JWT token 產生、驗證、解析功能
  */
 final class FirebaseJwtProvider implements JwtProviderInterface
+
 {
     private JwtConfig $config;
 
@@ -45,7 +46,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
         try { /* empty */ }
             $this->initializeKeys();
-        } 
+        }
 
     /**
      * 產生 JWT access token.
@@ -163,7 +164,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             }
 
             return DateTimeImmutable::createFromFormat('U', (string) $payload['exp']) ? true : null;
-        } 
+        }
 
     /**
      * 檢查 token 是否已過期（不驗證簽名）.
@@ -279,7 +280,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
         try { /* empty */ }
             return JWT::encode($finalPayload, $this->privateKey, $this->config->getAlgorithm());
-        } 
+        }
 
     /**
      * 產生唯一的 JWT ID.

@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
  * JWT Payload Value Object 單元測試.
  */
 final class JwtPayloadTest extends TestCase
+
 {
     private DateTimeImmutable $baseTime;
 

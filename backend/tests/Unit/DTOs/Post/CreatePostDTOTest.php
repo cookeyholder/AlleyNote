@@ -11,6 +11,7 @@ use App\Shared\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 
 class CreatePostDTOTest extends TestCase
+
 {
     private Validator $validator;
 

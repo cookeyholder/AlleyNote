@@ -16,6 +16,7 @@ use DateTime;
  * 用於安全地傳輸建立文章所需的資料，防止巨量賦值攻擊
  */
 class CreatePostDTO extends BaseDTO
+
 {
     public readonly string $title;
 
@@ -37,6 +38,7 @@ class CreatePostDTO extends BaseDTO
      * @param array $data 要驗證的資料
      * @throws ValidationException 當驗證失敗時
      */
+    
     public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);

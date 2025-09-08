@@ -17,6 +17,7 @@ use DateTime;
  * 支援部分更新，只驗證和處理提供的欄位
  */
 class UpdatePostDTO extends BaseDTO
+
 {
     public readonly ?string $title;
 
@@ -34,6 +35,7 @@ class UpdatePostDTO extends BaseDTO
      * @param array $data 要驗證的資料
      * @throws ValidationException 當驗證失敗時
      */
+    
     public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);

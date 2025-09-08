@@ -23,6 +23,7 @@ use Psr\Http\Message\StreamInterface;
  * 負責初始化和配置整個應用程式
  */
 class Application
+
 {
     private ContainerInterface $container;
 
@@ -144,6 +145,8 @@ class Application
     {
         // 記錄錯誤到監控系統
         try {
+
+
             $errorTracker = $this->container->get(ErrorTrackerInterface::class);
             if ($errorTracker instanceof ErrorTrackerInterface) {
                 $errorTracker->recordCriticalError($e, [
@@ -151,15 +154,22 @@ class Application
                     'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
                     'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
                 ]);
-            }
+                    } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+        }
         } catch (Exception $monitoringException) {
             // 如果監控系統本身出錯，記錄到錯誤日誌
             error_log('Monitoring system error: ' . $monitoringException->getMessage());
         }
 
         // 建立基本的錯誤回應（使用匿名類別實作）
-        $stream = new class implements StreamInterface {
-            private string $content = '';
+        $stream = new class implements StreamInterface 
+{
+    private string $content = '';
 
             private int $position = 0;
 
@@ -168,37 +178,37 @@ class Application
                 return $this->content;
             }
 
-            public function close(): void
+    public function close(): void
             {
                 // 實作關閉流
             }
 
-            public function detach()
+    public function detach()
             {
                 return null;
             }
 
-            public function getSize(): int
+    public function getSize(): int
             {
                 return strlen($this->content);
             }
 
-            public function tell(): int
+    public function tell(): int
             {
                 return $this->position;
             }
 
-            public function eof(): bool
+    public function eof(): bool
             {
                 return $this->position >= strlen($this->content);
             }
 
-            public function isSeekable(): bool
+    public function isSeekable(): bool
             {
                 return true;
             }
 
-            public function seek(int $offset, int $whence = SEEK_SET): void
+    public function seek(int $offset, int $whence = SEEK_SET): void
             {
                 switch ($whence) {
                     case SEEK_SET:
@@ -217,12 +227,12 @@ class Application
                 $this->position = 0;
             }
 
-            public function isWritable(): bool
+    public function isWritable(): bool
             {
                 return true;
             }
 
-            public function write(string $string): int
+    public function write(string $string): int
             {
                 $this->content .= $string;
                 $this->position += strlen($string);
@@ -230,12 +240,12 @@ class Application
                 return strlen($string);
             }
 
-            public function isReadable(): bool
+    public function isReadable(): bool
             {
                 return true;
             }
 
-            public function read(int $length): string
+    public function read(int $length): string
             {
                 $result = substr($this->content, $this->position, $length);
                 $this->position += strlen($result);
@@ -243,12 +253,12 @@ class Application
                 return $result;
             }
 
-            public function getContents(): string
+    public function getContents(): string
             {
                 return substr($this->content, $this->position);
             }
 
-            /**
+    /**
              * @return array<string, mixed>
              */
             public function getMetadata(?string $key = null): mixed
@@ -276,12 +286,12 @@ class Application
                 $this->body = $body;
             }
 
-            public function getStatusCode(): int
+    public function getStatusCode(): int
             {
                 return $this->statusCode;
             }
 
-            public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
             {
                 $new = clone $this;
                 $new->statusCode = $code;
@@ -289,22 +299,22 @@ class Application
                 return $new;
             }
 
-            public function getReasonPhrase(): string
+    public function getReasonPhrase(): string
             {
                 return 'Internal Server Error';
             }
 
-            public function getProtocolVersion(): string
+    public function getProtocolVersion(): string
             {
                 return '1.1';
             }
 
-            public function withProtocolVersion(string $version): ResponseInterface
+    public function withProtocolVersion(string $version): ResponseInterface
             {
                 return $this;
             }
 
-            /**
+    /**
              * @return array<string, mixed>
              */
             public function getHeaders(): mixed
@@ -312,12 +322,12 @@ class Application
                 return ['Content-Type' => ['application/json']];
             }
 
-            public function hasHeader(string $name): bool
+    public function hasHeader(string $name): bool
             {
                 return strtolower($name) === 'content-type';
             }
 
-            /**
+    /**
              * @return array<string, mixed>
              */
             public function getHeader(string $name): mixed
@@ -325,32 +335,32 @@ class Application
                 return strtolower($name) === 'content-type' ? ['application/json'] : [];
             }
 
-            public function getHeaderLine(string $name): string
+    public function getHeaderLine(string $name): string
             {
                 return strtolower($name) === 'content-type' ? 'application/json' : '';
             }
 
-            public function withHeader(string $name, $value): ResponseInterface
+    public function withHeader(string $name, $value): ResponseInterface
             {
                 return $this;
             }
 
-            public function withAddedHeader(string $name, $value): ResponseInterface
+    public function withAddedHeader(string $name, $value): ResponseInterface
             {
                 return $this;
             }
 
-            public function withoutHeader(string $name): ResponseInterface
+    public function withoutHeader(string $name): ResponseInterface
             {
                 return $this;
             }
 
-            public function getBody(): StreamInterface
+    public function getBody(): StreamInterface
             {
                 return $this->body;
             }
 
-            public function withBody(StreamInterface $body): ResponseInterface
+    public function withBody(StreamInterface $body): ResponseInterface
             {
                 $new = clone $this;
                 $new->body = $body;

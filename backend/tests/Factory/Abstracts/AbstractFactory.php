@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Factory\Abstracts;
 
 abstract class AbstractFactory
+
 {
     protected static array $sequence = [];
 

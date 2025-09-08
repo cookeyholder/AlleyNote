@@ -35,8 +35,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
  * @since 1.0.0
  */
 class AuthController extends BaseController
+
 {
-    public function __construct(
+    public public function __construct(
         private AuthService $authService,
         private AuthenticationServiceInterface $authenticationService,
         private JwtTokenServiceInterface $jwtTokenService,
@@ -47,7 +48,7 @@ class AuthController extends BaseController
     /**
      * 取得客戶端真實 IP 位址
      */
-    private function getClientIpAddress(Request $request): string
+    private public function getClientIpAddress(Request $request): string
     {
         // 檢查各種可能包含真實 IP 的標頭
         $headers = [
@@ -203,7 +204,7 @@ class AuthController extends BaseController
             ),
         ]
     )]
-    public function register(Request $request, Response $response): Response
+    public public function register(Request $request, Response $response): Response
     {
         try {
             $data = $request->getParsedBody();
@@ -279,8 +280,21 @@ class AuthController extends BaseController
             return $response
                 ->withStatus(500)
                 ->withHeader('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         }
-    }
+
+        }
 
     #[OA\Post(
         path: '/auth/login',
@@ -344,9 +358,10 @@ class AuthController extends BaseController
             ),
         ]
     )]
-    public function login(Request $request, Response $response): Response
+    public public function login(Request $request, Response $response): Response
     {
         try {
+
             $credentials = $request->getParsedBody();
 
             // 驗證輸入資料
@@ -360,394 +375,7 @@ class AuthController extends BaseController
                 return $response
                     ->withStatus(400)
                     ->withHeader('Content-Type', 'application/json');
-            }
-
-            // 確保credentials是陣列類型
-            /** @var array<string, mixed> $credentials */
-
-            // 建立登入請求 DTO
-            $loginRequest = LoginRequestDTO::fromArray($credentials);
-
-            // 建立裝置資訊
-            $deviceName = $credentials['device_name'] ?? null;
-            $deviceInfo = DeviceInfo::fromUserAgent(
-                userAgent: $request->getHeaderLine('User-Agent') ? true : 'Unknown',
-                ipAddress: $this->getClientIpAddress($request),
-                deviceName: is_string($deviceName) ? $deviceName : null,
-            );
-
-            // 執行 JWT 認證登入
-            $loginResponse = $this->authenticationService->login($loginRequest, $deviceInfo);
-
-            // 記錄成功登入活動
-            $activityDto = CreateActivityLogDTO::success(
-                actionType: ActivityType::LOGIN_SUCCESS,
-                userId: $loginResponse->userId,
-                metadata: [
-                    'email' => $loginRequest->email,
-                    'device_info' => $deviceInfo->toArray(),
-                    'login_timestamp' => date('c'),
-                ],
-            )->withNetworkInfo($deviceInfo->getIpAddress(), $deviceInfo->getUserAgent());
-
-            $this->activityLoggingService->log($activityDto);
-
-            // 使用 DTO 內建的 toArray 方法
-            $result = [
-                'success' => true,
-                'message' => '登入成功',
-                ...$loginResponse->toArray(),
-            ];
-
-            $response->getBody()->write((json_encode($result) ? true : '{"error": "JSON encoding failed"}'));
-
-            return $response
-                ->withStatus(200)
-                ->withHeader('Content-Type', 'application/json');
-        } '));
-
-            return $response
-                ->withStatus(400)
-                ->withHeader('Content-Type', 'application/json');
-        } '));
-
-            return $response
-                ->withStatus(404)
-                ->withHeader('Content-Type', 'application/json');
-        } '));
-
-            return $response
-                ->withStatus(400)
-                ->withHeader('Content-Type', 'application/json');
-        } '));
-
-            return $response
-                ->withStatus(500)
-                ->withHeader('Content-Type', 'application/json');
+                    } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
-    }
-
-    #[OA\Post(
-        path: '/auth/logout',
-        summary: '使用者登出',
-        description: '登出當前使用者，清除認證狀態和會話',
-        operationId: 'logoutUser',
-        tags: ['auth'],
-        security: [
-            ['bearerAuth' => []],
-            ['sessionAuth' => []],
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: '登出成功',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string', example: '登出成功'),
-                    ],
-                ),
-            ),
-            new OA\Response(
-                response: 401,
-                description: '未授權存取或 Token 無效',
-                content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'),
-            ),
-        ]
-    )]
-    public function logout(Request $request, Response $response): Response
-    {
-        try {
-            $requestData = $request->getParsedBody();
-
-            // 確保requestData是陣列類型
-            if (!is_array($requestData)) {
-                $requestData = [];
-            }
-            /** @var array<string, mixed> $requestData */
-
-            // 從 Authorization header 或 request body 取得 access token
-            $accessToken = null;
-            $refreshToken = null;
-
-            // 先檢查 Authorization header
-            $authHeader = $request->getHeaderLine('Authorization');
-            if (!empty($authHeader) && str_starts_with($authHeader, 'Bearer ')) {
-                $accessToken = substr($authHeader, 7);
-            }
-
-            // 如果在 body 中有提供 tokens，優先使用
-            $accessToken = $requestData['access_token'] ?? $accessToken;
-            $refreshToken = $requestData['refresh_token'] ?? null;
-
-            // 建立登出請求 DTO
-            $logoutAllDevices = $requestData['logout_all_devices'] ?? false;
-            $logoutRequest = LogoutRequestDTO::fromArray([
-                'access_token' => $accessToken,
-                'refresh_token' => $refreshToken,
-                'revoke_all_tokens' => is_bool($logoutAllDevices) ? $logoutAllDevices  => false,
-            ]);
-
-            // 建立裝置資訊
-            $deviceName = $requestData['device_name'] ?? null;
-            $deviceInfo = DeviceInfo::fromUserAgent(
-                userAgent: $request->getHeaderLine('User-Agent') ? true : 'Unknown',
-                ipAddress: $this->getClientIpAddress($request),
-                deviceName: is_string($deviceName) ? $deviceName : null,
-            );
-
-            // 執行登出
-            $this->authenticationService->logout($logoutRequest);
-
-            // 記錄成功登出活動
-            // 注意：此時可能無法取得使用者ID，因為token可能已失效
-            $activityDto = CreateActivityLogDTO::success(
-                actionType: ActivityType::LOGOUT,
-                userId: null, // 登出時通常無法確定使用者ID
-                description: '使用者登出',
-                metadata: [
-                    'logout_timestamp' => date('c'),
-                    'logout_all_devices' => $requestData['logout_all_devices'] ?? false,
-                ],
-            )->withNetworkInfo(
-                $this->getClientIpAddress($request),
-                $request->getHeaderLine('User-Agent') ? true : 'Unknown',
-            );
-
-            $this->activityLoggingService->log($activityDto);
-
-            $responseData = [
-                'success' => true,
-                'message' => '登出成功',
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ? true : '{"error": "JSON encoding failed"}'));
-
-            return $response
-                ->withStatus(200)
-                ->withHeader('Content-Type', 'application/json');
-        }    
-    }
-
-    #[OA\Get(
-        path: '/auth/me',
-        summary: '取得當前使用者資訊',
-        description: '取得目前登入使用者的詳細資訊',
-        operationId: 'getCurrentUser',
-        tags: ['auth'],
-        security: [
-            ['bearerAuth' => []],
-            ['sessionAuth' => []],
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: '成功取得使用者資訊',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'data', ref: '#/components/schemas/User'),
-                    ],
-                ),
-            ),
-            new OA\Response(
-                response: 401,
-                description: '未授權存取或 Token 無效',
-                content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'),
-            ),
-        ]
-    )]
-    public function me(Request $request, Response $response): Response
-    {
-        try {
-            // 從 Authorization header 取得 access token
-            $authHeader = $request->getHeaderLine('Authorization');
-            if (empty($authHeader) || !str_starts_with($authHeader, 'Bearer ')) {
-                $responseData = [
-                    'success' => false,
-                    'error' => '缺少有效的 Authorization header',
-                ];
-                $response->getBody()->write((json_encode($responseData) ? true : '{"error": "JSON encoding failed"}'));
-
-                return $response
-                    ->withStatus(401)
-                    ->withHeader('Content-Type', 'application/json');
-            }
-
-            $accessToken = substr($authHeader, 7);
-
-            try {
-                // 驗證 token 並取得使用者 payload
-                $payload = $this->jwtTokenService->validateAccessToken($accessToken);
-                $userId = $payload->getUserId();
-
-                // 這裡你可能需要從資料庫取得完整的使用者資訊
-                // 目前先回傳基本的使用者 ID 和從 token 取得的資訊
-                $userInfo = [
-                    'user_id' => $userId,
-                    'email' => $payload->getCustomClaim('email'),
-                    'name' => $payload->getCustomClaim('name'),
-                    'token_issued_at' => $payload->getIssuedAt()->getTimestamp(),
-                    'token_expires_at' => $payload->getExpiresAt()->getTimestamp(),
-                ];
-            } '));
-
-                return $response
-                    ->withStatus(401)
-                    ->withHeader('Content-Type', 'application/json');
-            }
-
-            $responseData = [
-                'success' => true,
-                'data' => [
-                    'user' => [
-                        'id' => $userInfo['user_id'],
-                        'email' => $userInfo['email'],
-                        'name' => $userInfo['name'],
-                    ],
-                    'token_info' => [
-                        'issued_at' => $userInfo['token_issued_at'],
-                        'expires_at' => $userInfo['token_expires_at'],
-                    ],
-                ],
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ? true : '{"error": "JSON encoding failed"}'));
-
-            return $response
-                ->withStatus(200)
-                ->withHeader('Content-Type', 'application/json');
-        }    
-    }
-
-    #[OA\Post(
-        path: '/auth/refresh',
-        summary: '刷新認證 Token',
-        description: '使用 Refresh Token 取得新的 Access Token',
-        operationId: 'refreshToken',
-        tags: ['auth'],
-        requestBody: new OA\RequestBody(
-            description: 'Refresh Token',
-            required: true,
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(
-                        property: 'refresh_token',
-                        type: 'string',
-                        description: '有效的 Refresh Token',
-                        example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...',
-                    ),
-                ],
-                required: ['refresh_token'],
-            ),
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Token 刷新成功',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string', example: 'Token 刷新成功'),
-                        new OA\Property(property: 'access_token', type: 'string', example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'),
-                        new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
-                        new OA\Property(property: 'expires_in', type: 'integer', description: 'Token 有效期（秒）', example: 3600),
-                        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time', example: '2025-01-15T11:30:00Z'),
-                    ],
-                ),
-            ),
-            new OA\Response(
-                response: 400,
-                description: '缺少或格式錯誤的 Refresh Token',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'success', type: 'boolean', example: false),
-                        new OA\Property(property: 'error', type: 'string', example: '無效的 refresh_token 格式'),
-                    ],
-                ),
-            ),
-            new OA\Response(
-                response: 401,
-                description: 'Refresh Token 無效或已過期',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'success', type: 'boolean', example: false),
-                        new OA\Property(property: 'error', type: 'string', example: 'Refresh token 無效或已過期'),
-                    ],
-                ),
-            ),
-        ]
-    )]
-    public function refresh(Request $request, Response $response): Response
-    {
-        try {
-            $requestData = $request->getParsedBody();
-
-            // 驗證輸入資料
-            if (!is_array($requestData) || !isset($requestData['refresh_token'])) {
-                $responseData = [
-                    'success' => false,
-                    'error' => '缺少必要的 refresh_token',
-                ];
-                $response->getBody()->write((json_encode($responseData) ? true : '{"error": "JSON encoding failed"}'));
-
-                return $response
-                    ->withStatus(400)
-                    ->withHeader('Content-Type', 'application/json');
-            }
-
-            // 確保 requestData 是正確的類型
-            /** @var array<string, mixed> $requestData */
-
-            // 建立刷新請求 DTO
-            $refreshRequest = RefreshRequestDTO::fromArray($requestData);
-
-            // 建立裝置資訊
-            $deviceName = $requestData['device_name'] ?? null;
-            $deviceInfo = DeviceInfo::fromUserAgent(
-                userAgent: $request->getHeaderLine('User-Agent') ? true : 'Unknown',
-                ipAddress: $this->getClientIpAddress($request),
-                deviceName: is_string($deviceName) ? $deviceName : null,
-            );
-
-            // 執行 JWT token 刷新
-            $refreshResponse = $this->authenticationService->refresh($refreshRequest, $deviceInfo);
-
-            $result = [
-                'success' => true,
-                'message' => 'Token 刷新成功',
-                ...$refreshResponse->toArray(),
-            ];
-
-            $response->getBody()->write((json_encode($result) ? true : '{"error": "JSON encoding failed"}'));
-
-            return $response
-                ->withStatus(200)
-                ->withHeader('Content-Type', 'application/json');
-        }    
-    }
-
-    /**
-     * 記錄登入失敗活動.
-     */
-    private function logLoginFailure(Request $request, string $email, string $errorMessage): void
-    {
-        try {
-            $activityDto = CreateActivityLogDTO::failure(
-                actionType: ActivityType::LOGIN_FAILED,
-                description: $errorMessage,
-                metadata: [
-                    'email' => $email,
-                    'error_message' => $errorMessage,
-                    'timestamp' => date('c'),
-                ],
-            )->withNetworkInfo(
-                $this->getClientIpAddress($request),
-                $request->getHeaderLine('User-Agent') ? true : 'Unknown',
-            );
-
-            $this->activityLoggingService->log($activityDto);
-        } 
-}

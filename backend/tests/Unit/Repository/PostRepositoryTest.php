@@ -18,6 +18,7 @@ use Tests\Factory\PostFactory;
 use Tests\TestCase;
 
 class PostRepositoryTest extends TestCase
+
 {
     private PostRepository $repository;
 

@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
  * Token Pair Value Object 單元測試.
  */
 final class TokenPairTest extends TestCase
+
 {
     private DateTimeImmutable $now;
 

@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 
 abstract class UITestCase extends TestCase
+
 {
     protected static ?Process $serverProcess = null;
 
@@ -29,7 +30,6 @@ abstract class UITestCase extends TestCase
         if (static::$serverProcess !== null) {
             static::$serverProcess->stop();
         }
-    }
 
     protected function captureScreenshot(string $name): void
     {

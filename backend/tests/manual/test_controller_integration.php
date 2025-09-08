@@ -17,6 +17,7 @@ use Psr\Http\Message\UriInterface;
 
 // 簡單的 Mock 實作用於測試
 class MockStream implements StreamInterface
+
 {
     private string $content = '';
 
@@ -90,6 +91,7 @@ class MockStream implements StreamInterface
 }
 
 class MockUri implements UriInterface
+
 {
     public function __construct(private string $path) {}
 
@@ -175,6 +177,7 @@ class MockUri implements UriInterface
 }
 
 class MockResponse implements ResponseInterface
+
 {
     private MockStream $body;
 
@@ -265,6 +268,7 @@ class MockResponse implements ResponseInterface
 }
 
 class MockRequest implements ServerRequestInterface
+
 {
     private MockUri $uri;
 
@@ -436,105 +440,8 @@ echo '=== 控制器整合測試 ===
 
 ';
 
-try { /* empty */ }
-    // 1. 建立 DI 容器
-    $containerBuilder = new ContainerBuilder();
-    $containerBuilder->addDefinitions([
-        ResponseInterface::class => function () {
-            return new MockResponse();
-        },
-        ServerRequestInterface::class => function () {
-            return new MockRequest('GET', '/');
-        },
-        PostController::class => \DI\create(PostController::class),
-    ]);
-    $container = $containerBuilder->build();
-
-    // 2. 建立路由器
-    $router = new Router();
-
-    // 3. 建立控制器解析器
-    $controllerResolver = new ControllerResolver($container);
-
-    // 4. 測試控制器解析
-    echo '1. 測試控制器解析...
-';
-
-    // 建立測試路由
-    $route = Route::get('/api/posts/{id}', 'PostController@show');
-    $route->setName('posts.show');
-
-    // 建立測試請求
-    $request = new MockRequest('GET', '/api/posts/123');
-    $response = new MockResponse();
-
-    // 測試控制器解析
-    $result = $controllerResolver->resolve($route, $request, ['id' => '123']);
-
-    echo '   ✓ 控制器解析成功
-';
-    echo '   ✓ 回應狀態碼: ' . $result->getStatusCode() . '
-';
-    echo '   ✓ 內容類型: ' . $result->getHeaderLine('Content-Type') . '
-';
-
-    $body = $result->getBody()->getContents();
-    $data = json_decode($body, true);
-    if ($data && $data['status'] === 'success') {
-        echo '   ✓ 回應內容正確
-';
-        echo '   ✓ 貼文 ID: ' . (is_array($data) && array_key_exists('data', $data) ? $data['data'] : null)['id'] . '
-';
-    } else {
-        echo '   ✗ 回應內容格式錯誤
-';
-        echo '   回應內容: ' . $body . '
-';
-    }
-
-    echo '
-';
-
-    // 6. 測試不同的控制器方法
-    echo '2. 測試不同控制器方法...
-';
-
-    $testCases = [
-        ['GET', '/api/posts', 'PostController@index', [], '取得貼文列表'],
-        ['POST', '/api/posts', 'PostController@store', [], '建立新貼文'],
-        ['GET', '/api/posts/456', 'PostController@show', ['id' => '456'], '取得單一貼文'],
-    ];
-
-    foreach ($testCases as [$method, $path, $handler, $params, $description]) {
-        $route = new Route([$method], $path, $handler);
-        $request = new MockRequest($method, $path);
-
-        try { /* empty */ }
-            $result = $controllerResolver->resolve($route, $request, $params);
-            echo '   ✓ {(string)description}: ' . $result->getStatusCode() . '
-';
-        } 
-    }
-
-    echo '
-';
-
-    // 7. 測試字串格式處理器
-    echo '3. 測試字串格式處理器...
-';
-
-    $stringRoute = Route::get('/api/test', 'PostController@index');
-
-    try { /* empty */ }
-        $result = $controllerResolver->resolve($stringRoute, $request, []);
-        echo '   ✓ 字串格式處理器解析成功
-';
-    } );
-
-    try { /* empty */ }
-        $result = $controllerResolver->resolve($closureRoute, $request, []);
-        echo '   ✓ 閉包處理器解析成功
-';
-        echo '   ✓ 回應狀態碼: ' . $result->getStatusCode() . '
-';
-    }  // catch block commented out due to syntax error
+try {
+ /* empty */         } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+        }

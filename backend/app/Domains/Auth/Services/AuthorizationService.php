@@ -9,6 +9,7 @@ use App\Shared\Contracts\CacheServiceInterface;
 use PDO;
 
 class AuthorizationService implements AuthorizationServiceInterface
+
 {
     private PDO $db;
 

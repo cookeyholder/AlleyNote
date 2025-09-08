@@ -16,6 +16,7 @@ use InvalidArgumentException;
 use RuntimeException;
 
 class IpService implements IpServiceInterface
+
 {
     public function __construct(
         private IpRepositoryInterface $repository,

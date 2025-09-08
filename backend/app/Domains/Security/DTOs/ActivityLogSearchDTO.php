@@ -16,6 +16,7 @@ use InvalidArgumentException;
  * 封裝搜尋活動記錄的各種條件參數.
  */
 class ActivityLogSearchDTO
+
 {
     private const DEFAULT_PAGE = 1;
 
@@ -27,6 +28,7 @@ class ActivityLogSearchDTO
 
     private const DEFAULT_SORT_ORDER = 'desc';
 
+    
     public function __construct(
         private readonly ?int $userId = null,
         private readonly ?string $sessionId = null,

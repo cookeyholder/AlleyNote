@@ -19,8 +19,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
     description: 'Activity logging and retrieval endpoints',
 )]
 class ActivityLogController extends BaseController
+
 {
-    public function __construct(
+    public public function __construct(
         private readonly ActivityLoggingServiceInterface $loggingService,
         private readonly ActivityLogRepositoryInterface $repository,
     ) {}
@@ -51,7 +52,7 @@ class ActivityLogController extends BaseController
             new OA\Response(response: 422, description: 'Validation failed'),
         ],
     )]
-    public function store(Request $request, Response $response): Response
+    public public function store(Request $request, Response $response): Response
     {
         try {
             $data = $request->getParsedBody();
@@ -122,8 +123,21 @@ class ActivityLogController extends BaseController
                 ],
                 'timestamp' => time(),
             ], 500);
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         }
-    }
+
+        }
 
     #[OA\Get(
         path: '/api/v1/activity-logs',
@@ -139,7 +153,7 @@ class ActivityLogController extends BaseController
             new OA\Response(response: 500, description: 'Internal server error'),
         ],
     )]
-    public function index(Request $request, Response $response): Response
+    public public function index(Request $request, Response $response): Response
     {
         try {
             $params = $request->getQueryParams();
@@ -170,6 +184,19 @@ class ActivityLogController extends BaseController
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         }
-    }
+
+        }
 }

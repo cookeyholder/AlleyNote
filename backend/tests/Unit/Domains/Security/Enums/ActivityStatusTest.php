@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(ActivityStatus::class)]
 class ActivityStatusTest extends TestCase
+
 {
     public function testEnumValues(): void
     {

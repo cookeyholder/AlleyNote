@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
  * PostController 活動記錄功能測試.
  */
 class PostControllerActivityLoggingTest extends TestCase
+
 {
     private PDO $pdo;
 

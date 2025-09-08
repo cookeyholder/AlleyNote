@@ -15,6 +15,7 @@ use Psr\Log\LoggerInterface;
  * 提供命令行介面來執行統計計算任務
  */
 readonly class StatisticsCalculationConsole
+
 {
     public function __construct(
         private StatisticsCalculationCommand $calculationCommand,

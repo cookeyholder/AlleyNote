@@ -18,6 +18,7 @@ use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 
 class AttachmentService implements AttachmentServiceInterface
+
 {
     private const ALLOWED_MIME_TYPES = [
         'image/jpeg',
@@ -94,7 +95,6 @@ class AttachmentService implements AttachmentServiceInterface
         if ($this->containsMaliciousContent($content)) {
             throw ValidationException::fromSingleError('file', '檔案內容不安全');
         }
-    }
 
     private function containsMaliciousContent(string $content): bool
     {
@@ -216,7 +216,7 @@ class AttachmentService implements AttachmentServiceInterface
             imagedestroy($cleanImage);
 
             return $result;
-        } 
+        }
 
     /**
      * 病毒掃描（如果可用）.

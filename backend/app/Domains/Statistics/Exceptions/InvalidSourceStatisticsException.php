@@ -12,6 +12,7 @@ use Throwable;
  * 當來源統計參數不正確時拋出.
  */
 class InvalidSourceStatisticsException extends InvalidArgumentException
+
 {
     public function __construct(
         string $message = '無效的來源統計',

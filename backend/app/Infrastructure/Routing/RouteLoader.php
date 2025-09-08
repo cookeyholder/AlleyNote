@@ -15,6 +15,7 @@ use Throwable;
  * 負責載入和管理多個路由配置檔案
  */
 class RouteLoader
+
 {
     private RouteValidator $validator;
 

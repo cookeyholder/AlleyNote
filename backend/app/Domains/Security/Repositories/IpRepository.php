@@ -12,6 +12,7 @@ use InvalidArgumentException;
 use PDO;
 
 class IpRepository implements IpRepositoryInterface
+
 {
     private const CACHE_TTL = 3600; // 1小時
 

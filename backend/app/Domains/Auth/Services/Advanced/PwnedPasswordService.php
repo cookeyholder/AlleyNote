@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
 class PwnedPasswordService
+
 {
     private const HIBP_API_URL = 'https://api.pwnedpasswords.com/range/';
 
@@ -75,7 +76,7 @@ class PwnedPasswordService
                 'error' => null,
                 'api_available' => true,
             ];
-        } 
+        }
 
     /**
      * 從 HIBP API 取得雜湊值列表.
@@ -90,7 +91,7 @@ class PwnedPasswordService
             }
 
             return null;
-        } 
+        }
 
     /**
      * 在雜湊列表中查找指定的後綴.
@@ -153,7 +154,7 @@ class PwnedPasswordService
                 'available' => $response->getStatusCode() === 200,
                 'response_time' => null, // 可以實作回應時間測量
             ];
-        } 
+        }
 
     /**
      * 批次檢查多個密碼

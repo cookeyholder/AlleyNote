@@ -7,6 +7,7 @@ namespace App\Infrastructure\Services;
 use App\Shared\Contracts\CacheServiceInterface;
 
 class CacheService implements CacheServiceInterface
+
 {
     private string $cachePath;
 

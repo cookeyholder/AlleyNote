@@ -22,6 +22,7 @@ use Psr\Http\Message\ResponseInterface;
 #[Group('integration')]
 #[Group('api')]
 class AuthEndpointTest extends TestCase
+
 {
     private Application $app;
 

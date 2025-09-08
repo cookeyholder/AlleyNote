@@ -11,6 +11,7 @@ use PDO;
 use RuntimeException;
 
 class UserRepository
+
 {
     public function __construct(
         private PDO $db,

@@ -14,6 +14,7 @@ use DateTimeImmutable;
  * 當新的統計快照被建立時觸發.
  */
 readonly class StatisticsSnapshotCreated
+
 {
     public function __construct(
         public Uuid $id,

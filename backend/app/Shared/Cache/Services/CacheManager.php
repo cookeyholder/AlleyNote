@@ -453,7 +453,7 @@ class CacheManager implements CacheManagerInterface
             $this->put($key, $value, $ttl);
 
             return $value;
-        } 
+        }
 
     public function prefix(string $prefix): CacheManagerInterface
     {

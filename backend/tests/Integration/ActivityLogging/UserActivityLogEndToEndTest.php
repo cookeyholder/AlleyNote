@@ -20,6 +20,7 @@ use Tests\Support\IntegrationTestCase;
  * 驗證完整的業務流程：從使用者操作到活動記錄存儲
  */
 class UserActivityLogEndToEndTest extends IntegrationTestCase
+
 {
     private ActivityLoggingServiceInterface $activityLoggingService;
 

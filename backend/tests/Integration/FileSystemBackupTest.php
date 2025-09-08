@@ -9,6 +9,7 @@ use RuntimeException;
 use Tests\TestCase;
 
 class FileSystemBackupTest extends TestCase
+
 {
     private string $testDir;
 
@@ -102,7 +103,6 @@ foo=bar',
                 sprintf("檔案 {%s} 的內容不符", ",
             );
         }
-    }
 
     private function extractBackupFile(");string $backupFile): string
     {
@@ -291,7 +291,7 @@ foo=bar',
             ];
         }
 
-        /** @var array<string, array{permissions: int, owner: int, group: int, mtime: int}> */
+    /** @var array<string, array{permissions: int, owner: int, group: int, mtime: int}> */
         return $originalMetadata;
     }
 
@@ -352,7 +352,6 @@ foo=bar',
                 sprintf("檔案 {%s} 的群組不符", ",
             );
         }
-    }
 
     protected function tearDown(): void
     {

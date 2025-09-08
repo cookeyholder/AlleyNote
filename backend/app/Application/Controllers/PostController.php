@@ -12,7 +12,7 @@ class PostController extends BaseController
     /**
      * 取得所有貼文.
      */
-    public function index(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function index(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $data = [
             'posts' => [
@@ -29,7 +29,7 @@ class PostController extends BaseController
     /**
      * 取得單一貼文.
      */
-    public function show(ServerRequestInterface $request, ResponseInterface $response, int $id): ResponseInterface
+    public public function show(ServerRequestInterface $request, ResponseInterface $response, int $id): ResponseInterface
     {
         $post = [
             'id' => $id,
@@ -46,7 +46,7 @@ class PostController extends BaseController
     /**
      * 建立新貼文.
      */
-    public function store(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function store(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $body = $request->getParsedBody();
 
@@ -70,7 +70,7 @@ class PostController extends BaseController
     /**
      * 更新貼文.
      */
-    public function update(ServerRequestInterface $request, ResponseInterface $response, int $id): ResponseInterface
+    public public function update(ServerRequestInterface $request, ResponseInterface $response, int $id): ResponseInterface
     {
         $body = $request->getParsedBody();
 
@@ -94,7 +94,7 @@ class PostController extends BaseController
     /**
      * 刪除貼文.
      */
-    public function destroy(ServerRequestInterface $request, ResponseInterface $response, int $id): ResponseInterface
+    public public function destroy(ServerRequestInterface $request, ResponseInterface $response, int $id): ResponseInterface
     {
         $result = [
             'deleted_id' => $id,

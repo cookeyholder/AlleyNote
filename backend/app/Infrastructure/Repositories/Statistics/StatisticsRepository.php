@@ -23,6 +23,7 @@ use RuntimeException;
  * 使用原生 SQL 進行最佳化查詢，確保統計功能的效能表現。
  */
 final readonly class StatisticsRepository implements StatisticsRepositoryInterface
+
 {
     public function __construct(
         private PDO $pdo) {}

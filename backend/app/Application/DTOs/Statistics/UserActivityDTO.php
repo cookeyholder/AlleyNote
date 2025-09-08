@@ -31,6 +31,7 @@ final readonly class UserActivityDTO implements JsonSerializable
      * @param array> $topActiveUsers
      * @param array $engagementMetrics 參與度指標
      */
+    
     public function __construct(
         public StatisticsPeriod $period,
         public StatisticsMetric $totalActiveUsers,

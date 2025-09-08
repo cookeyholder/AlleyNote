@@ -19,6 +19,7 @@ use ReflectionObject;
  * 記錄使用者和系統的各種活動，用於安全審計和行為分析
  */
 class ActivityLog
+
 {
     private ?int $id = null;
 

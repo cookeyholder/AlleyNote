@@ -20,6 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * 提供路由註冊、解析和執行的完整功能
  */
 class Router implements RouterInterface
+
 {
     private RouteCollectionInterface $routes;
 

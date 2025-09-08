@@ -12,6 +12,7 @@ use RuntimeException;
  * PSR-7 Stream 實作.
  */
 class Stream implements StreamInterface
+
 {
     private mixed $stream;
 

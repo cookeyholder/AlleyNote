@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 final class EnvironmentConfigSimpleTest extends TestCase
+
 {
     private string $testConfigPath;
 

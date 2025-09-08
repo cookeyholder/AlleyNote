@@ -15,6 +15,7 @@ use Tests\TestCase;
  * 驗證 Seeder 能夠正確建立測試資料，並確保資料品質和完整性
  */
 class UserActivityLogsSeederTest extends TestCase
+
 {
     private PDO $pdo;
 

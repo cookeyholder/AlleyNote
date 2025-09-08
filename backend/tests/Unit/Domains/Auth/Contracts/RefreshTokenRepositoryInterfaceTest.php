@@ -17,6 +17,7 @@ use ReflectionClass;
  * 確保所有方法簽名、參數類型、回傳類型正確。
  */
 class RefreshTokenRepositoryInterfaceTest extends TestCase
+
 {
     private ReflectionClass $interfaceReflection;
 
@@ -327,7 +328,6 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
                 $this->assertEquals($paramType, $parameters[$paramIndex]->getType()->getName());
                 $paramIndex++;
             }
-        }
 
     public function testBatchMethods(): void
     {

@@ -125,7 +125,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $request = $this->injectAuthorizationContext($request, $authorizationResult);
 
             return $handler->handle($request);
-        } 
+        }
 
     /**
      * 執行授權檢查.
@@ -331,7 +331,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 continue;
             }
 
-            /** @var array<string, mixed> $conditions */
+    /** @var array<string, mixed> $conditions */
             if (!$this->matchesRuleConditions($conditions, $resource, $action, $userRole)) {
                 continue;
             }
@@ -381,7 +381,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 continue;
             }
 
-            /** @var array<string, mixed> $restriction */
+    /** @var array<string, mixed> $restriction */
             if (!$this->matchesTimeRestriction($restriction, $userRole, $action, $currentHour, $currentDay)) {
                 continue;
             }
@@ -420,7 +420,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 continue;
             }
 
-            /** @var array<string, mixed> $restriction */
+    /** @var array<string, mixed> $restriction */
             if (!$this->matchesIpRestriction($restriction, $userRole, $resource, $action)) {
                 continue;
             }

@@ -12,6 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class RateLimitMiddleware implements MiddlewareInterface
+
 {
     private RateLimitService $rateLimitService;
 

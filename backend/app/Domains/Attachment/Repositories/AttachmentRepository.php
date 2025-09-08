@@ -10,6 +10,7 @@ use PDO;
 use Ramsey\Uuid\Uuid;
 
 class AttachmentRepository
+
 {
     public function __construct(
         private PDO $db,

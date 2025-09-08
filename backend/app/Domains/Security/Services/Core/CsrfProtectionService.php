@@ -12,6 +12,7 @@ use App\Shared\Exceptions\CsrfTokenException;
 use Exception;
 
 class CsrfProtectionService implements CsrfProtectionServiceInterface
+
 {
     private const TOKEN_LENGTH = 32;
 
@@ -65,7 +66,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 // 降級到單一權杖模式
                 $this->validateSingleToken($token);
             }
-        } 
+        }
 
     /**
      * 從權杖池中驗證權杖.
@@ -190,7 +191,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             }
 
             return false;
-        } 
+        }
 
     /**
      * 預填權杖池.

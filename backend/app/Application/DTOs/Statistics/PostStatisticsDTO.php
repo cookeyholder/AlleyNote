@@ -34,6 +34,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      * @param array $additionalMetrics 額外統計指標
      * @param DateTimeImmutable $updatedAt 更新時間
      */
+    
     public function __construct(
         public Uuid $postId,
         public string $title,

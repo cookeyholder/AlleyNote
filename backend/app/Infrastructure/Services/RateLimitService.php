@@ -7,6 +7,7 @@ namespace App\Infrastructure\Services;
 use Exception;
 
 class RateLimitService
+
 {
     public function __construct(
         private readonly CacheService $cache) {}
@@ -49,7 +50,7 @@ class RateLimitService
                 'remaining' => max(0, $maxRequests - $data['count']),
                 'reset' => $data['reset'],
             ];
-        } 
+        }
 
     /**
      * 檢查請求是否被允許（簡化版本的 checkLimit）.

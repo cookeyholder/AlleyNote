@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Cache;
 
 class CacheKeys
+
 {
     private const PREFIX = 'alleynote';
 

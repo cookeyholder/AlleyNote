@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
  * RefreshToken Entity 單元測試.
  */
 class RefreshTokenTest extends TestCase
+
 {
     private DeviceInfo $deviceInfo;
 

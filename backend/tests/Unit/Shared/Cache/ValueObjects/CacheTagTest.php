@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
  * CacheTag 值物件測試（修正版）.
  */
 class CacheTagTest extends TestCase
+
 {
     public function testCreateUserTag(): void
     {

@@ -15,8 +15,9 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class TagManagementController extends BaseController
+
 {
-    public function __construct(
+    public public function __construct(
         private CacheManagerInterface $cacheManager,
         private ?LoggerInterface $logger = null,
     ) {}
@@ -26,9 +27,10 @@ class TagManagementController extends BaseController
      *
      * GET /admin/cache/tags
      */
-    public function listTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function listTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
+
             $queryParams = $request->getQueryParams();
             $page = max(1, is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
             $limit = min(100, max(10, is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 20));
@@ -46,8 +48,11 @@ class TagManagementController extends BaseController
                                 'name' => $tag,
                                 'driver' => $driverName,
                             ];
-                        }
-                    } catch (Exception $e) {
+                                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+        }
+        } catch (Exception $e) {
                         $this->logger?->warning("無法從驅動 {$driverName} 獲取標籤", [
                             'error' => $e->getMessage(),
                         ]);
@@ -103,7 +108,7 @@ class TagManagementController extends BaseController
      *
      * GET /admin/cache/groups
      */
-    public function listGroups(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function listGroups(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $groups = [];
@@ -141,9 +146,10 @@ class TagManagementController extends BaseController
      * POST /admin/cache/tags/{tag}/flush
      * @param array<string, mixed> $args
      */
-    public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
+
             $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
@@ -162,8 +168,11 @@ class TagManagementController extends BaseController
                         if ($flushedCount > 0) {
                             $flushed = true;
                             $affectedDrivers[] = $driverName;
-                        }
-                    } catch (Exception $e) {
+                                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+        }
+        } catch (Exception $e) {
                         $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", [
                             'error' => $e->getMessage(),
                         ]);
@@ -207,9 +216,10 @@ class TagManagementController extends BaseController
      *
      * POST /admin/cache/tags/flush
      */
-    public function flushTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function flushTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
+
             $bodyString = (string) $request->getBody();
             $body = json_decode($bodyString, true);
 
@@ -242,8 +252,11 @@ class TagManagementController extends BaseController
                             if ($flushedCount > 0) {
                                 $flushed = true;
                                 $affectedDrivers[] = $driverName;
-                            }
-                        } catch (Exception $e) {
+                                    } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+        }
+        } catch (Exception $e) {
                             $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", [
                                 'error' => $e->getMessage(),
                             ]);
@@ -295,7 +308,7 @@ class TagManagementController extends BaseController
      *
      * POST /admin/cache/flush
      */
-    public function flushAllCache(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function flushAllCache(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $success = $this->cacheManager->clear();

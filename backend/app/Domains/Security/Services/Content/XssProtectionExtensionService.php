@@ -14,6 +14,7 @@ use App\Domains\Security\Services\Core\XssProtectionService;
  * 提供進階的 XSS 防護功能，包含情境感知的防護和自動修復
  */
 class XssProtectionExtensionService
+
 {
     private XssProtectionService $baseXssProtection;
 

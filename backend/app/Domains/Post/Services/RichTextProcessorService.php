@@ -14,6 +14,7 @@ use HTMLPurifier_Config;
  * 處理來自富文本編輯器的內容，提供多層級的安全清理和驗證
  */
 class RichTextProcessorService
+
 {
     private HTMLPurifier $basicPurifier;
 

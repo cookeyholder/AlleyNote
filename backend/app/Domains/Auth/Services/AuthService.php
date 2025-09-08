@@ -11,6 +11,7 @@ use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 
 class AuthService
+
 {
     public function __construct(
         private UserRepository $userRepository,

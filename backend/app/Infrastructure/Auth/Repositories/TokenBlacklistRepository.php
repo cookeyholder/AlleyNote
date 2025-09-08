@@ -86,7 +86,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             ]);
 
             return (int) $stmt->fetchColumn() > 0;
-        } 
+        }
 
     /**
      * 檢查 token 是否在黑名單中（根據 token hash）.
@@ -112,7 +112,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             ]);
 
             return (int) $stmt->fetchColumn() > 0;
-        } 
+        }
 
     /**
      * 從黑名單中移除 token.
@@ -127,7 +127,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute(['jti' => $jti]);
 
             return $stmt->rowCount() > 0;
-        } 
+        }
 
     /**
      * 根據 JTI 查找黑名單項目.
@@ -151,7 +151,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $this->createEntryFromRow($row);
-        } 
+        }
 
     /**
      * 取得使用者的所有黑名單項目.
@@ -187,7 +187,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } 
+        }
 
     /**
      * 取得特定裝置的黑名單項目.
@@ -223,7 +223,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } 
+        }
 
     /**
      * 根據 token 類型查找項目.
@@ -259,7 +259,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } 
+        }
 
     /**
      * 根據黑名單原因查找項目.
@@ -295,7 +295,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } 
+        }
 
     /**
      * 批次將 token 加入黑名單.
@@ -343,7 +343,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $this->pdo->commit();
 
             return $successCount;
-        } 
+        }
 
     /**
      * 批次檢查 token 是否在黑名單中.
@@ -379,7 +379,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $result;
-        } 
+        }
 
     /**
      * 批次從黑名單移除 token.
@@ -400,7 +400,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute($jtis);
 
             return $stmt->rowCount();
-        } 
+        }
 
     /**
      * 將使用者的所有 token 加入黑名單.
@@ -458,7 +458,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $this->batchAddToBlacklist($entries);
-        } 
+        }
 
     /**
      * 將特定裝置的所有 token 加入黑名單.
@@ -508,7 +508,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $this->batchAddToBlacklist($entries);
-        } 
+        }
 
     /**
      * 清理過期的黑名單項目.
@@ -530,7 +530,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $stmt->rowCount();
-        } 
+        }
 
     /**
      * 清理可清理的黑名單項目（根據 TokenBlacklistEntry 的 canBeCleanedUp 方法）.
@@ -561,7 +561,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute(['cutoff_date' => $cutoffDate->format('Y-m-d H => i:s')]);
 
             return $stmt->rowCount();
-        } 
+        }
 
     /**
      * 取得黑名單統計資訊.
@@ -622,7 +622,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 'user_initiated' => $userInitiated,
                 'system_initiated' => $systemInitiated,
             ];
-        } 
+        }
 
     /**
      * 取得特定使用者的黑名單統計.
@@ -653,7 +653,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 'security_related' => 0,
                 'last_blacklisted' => null,
             ];
-        } 
+        }
 
     /**
      * 取得最近的黑名單項目.
@@ -689,7 +689,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } 
+        }
 
     /**
      * 取得高優先級的黑名單項目.
@@ -718,7 +718,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } 
+        }
 
     /**
      * 搜尋黑名單項目.
@@ -793,7 +793,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             }
 
             return $entries;
-        } 
+        }
 
     /**
      * 計算搜尋結果總數.
@@ -849,7 +849,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute();
 
             return (int) $stmt->fetchColumn();
-        } 
+        }
 
     /**
      * 檢查黑名單大小是否超過限制.
@@ -864,7 +864,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute();
 
             return (int) $stmt->fetchColumn() > $maxSize;
-        } 
+        }
 
     /**
      * 取得黑名單大小資訊.
@@ -905,7 +905,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 'cleanable_entries' => $expiredEntries, // 過期的就是可清理的
                 'estimated_size_mb' => round($estimatedSizeMb, 2),
             ];
-        } 
+        }
 
     /**
      * 最佳化黑名單儲存.
@@ -947,7 +947,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 'execution_time' => round($executionTime, 2),
                 'total_entries_after' => $newSizeInfo['total_entries'],
             ];
-        } 
+        }
 
     /**
      * 從資料庫記錄建立 TokenBlacklistEntry.

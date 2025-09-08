@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Http;
 
 class ApiResponse
+
 {
     public static function success(mixed $data = null, string $message = 'Success'): array
     {

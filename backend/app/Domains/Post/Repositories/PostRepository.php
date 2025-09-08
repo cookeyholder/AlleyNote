@@ -17,6 +17,7 @@ use PDOException;
 use RuntimeException;
 
 class PostRepository implements PostRepositoryInterface
+
 {
     private PDO $db;
 
@@ -83,7 +84,7 @@ class PostRepository implements PostRepositoryInterface
             $this->db->commit();
 
             return $result;
-        } 
+        }
 
     private function invalidateCache(int $postId): void
     {
@@ -223,7 +224,7 @@ class PostRepository implements PostRepositoryInterface
                 return null;
             }
 
-            /** @var array<string, mixed> $result */
+    /** @var array<string, mixed> $result */
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
@@ -261,7 +262,7 @@ class PostRepository implements PostRepositoryInterface
                 return null;
             }
 
-            /** @var array<string, mixed> $result */
+    /** @var array<string, mixed> $result */
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
@@ -686,7 +687,7 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
-        } 
+        }
 
     public function setPinned(int $id, bool $isPinned): bool
     {
@@ -735,7 +736,7 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
-        } 
+        }
 
     public function searchByTitle(string $title): mixed
     {

@@ -13,6 +13,7 @@ use InvalidArgumentException;
  * 負責載入和管理不同環境的配置檔案，支持多環境配置切換
  */
 final class EnvironmentConfig
+
 {
     private string $environment;
 

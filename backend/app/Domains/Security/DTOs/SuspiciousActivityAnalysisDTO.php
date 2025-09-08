@@ -19,6 +19,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
      * @param string $analysisId 分析識別碼
      * @param array $failureCounts 各活動類型失敗計數
      */
+    
     public function __construct(
         private readonly string $analysisId,
         private readonly string $targetType,

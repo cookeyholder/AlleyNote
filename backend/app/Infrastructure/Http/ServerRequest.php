@@ -11,6 +11,7 @@ use Psr\Http\Message\UriInterface;
  * 簡單的 PSR-7 ServerRequest 實作.
  */
 class ServerRequest implements ServerRequestInterface
+
 {
     private string $method;
 

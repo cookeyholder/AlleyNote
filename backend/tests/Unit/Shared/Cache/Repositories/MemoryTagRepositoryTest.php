@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
  * MemoryTagRepository 測試（修正版）.
  */
 class MemoryTagRepositoryTest extends TestCase
+
 {
     private MemoryTagRepository $repository;
 

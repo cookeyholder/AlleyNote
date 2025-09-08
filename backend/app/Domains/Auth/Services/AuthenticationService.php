@@ -30,6 +30,7 @@ use Throwable;
  * @since 1.0.0
  */
 final class AuthenticationService implements AuthenticationServiceInterface
+
 {
     private const MAX_REFRESH_TOKENS_PER_USER = 50;
 
@@ -137,7 +138,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             }
 
             return true;
-        } 
+        }
 
     public function validateAccessToken(string $accessToken): bool
     {
@@ -145,7 +146,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             $this->jwtTokenService->validateAccessToken($accessToken);
 
             return true;
-        } 
+        }
 
     public function validateRefreshToken(string $refreshToken): bool
     {
@@ -153,7 +154,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             $payload = $this->jwtTokenService->validateRefreshToken($refreshToken);
 
             return $this->refreshTokenRepository->isValid($payload->getJti());
-        } 
+        }
 
     public function revokeRefreshToken(string $refreshToken, string $reason = 'manual_revocation'): bool
     {
@@ -161,19 +162,19 @@ final class AuthenticationService implements AuthenticationServiceInterface
             $payload = $this->jwtTokenService->extractPayload($refreshToken);
 
             return $this->refreshTokenRepository->revoke($payload->getJti(), $reason);
-        } 
+        }
 
     public function revokeAllUserTokens(int $userId, ?string $excludeJti = null, string $reason = 'logout_all'): int
     {
         try { /* empty */ }
             return $this->refreshTokenRepository->revokeAllByUserId($userId, $reason, $excludeJti);
-        } 
+        }
 
     public function revokeDeviceTokens(int $userId, string $deviceId, string $reason = 'device_logout'): int
     {
         try { /* empty */ }
             return $this->refreshTokenRepository->revokeAllByDevice($userId, $deviceId, $reason);
-        } 
+        }
 
     /**
      * @return array
@@ -189,19 +190,19 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 'expired' => (int) ($stats['expired'] ?? 0),
                 'revoked' => (int) ($stats['revoked'] ?? 0),
             ];
-        } 
+        }
 
     public function cleanupExpiredTokens(?DateTime $beforeDate = null): int
     {
         try { /* empty */ }
             return $this->refreshTokenRepository->cleanup($beforeDate);
-        } 
+        }
 
     public function cleanupRevokedTokens(int $days = 30): int
     {
         try { /* empty */ }
             return $this->refreshTokenRepository->cleanupRevoked($days);
-        } 
+        }
 
     /**
      * 從 access token 取得使用者資訊.

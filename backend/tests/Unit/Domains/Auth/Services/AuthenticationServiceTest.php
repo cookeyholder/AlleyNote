@@ -31,6 +31,7 @@ use RuntimeException;
  * 涵蓋登入、登出、權杖管理等核心認證功能。
  */
 final class AuthenticationServiceTest extends TestCase
+
 {
     private AuthenticationService $authenticationService;
 

@@ -16,6 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * 實作 RouteInterface，代表單一路由的完整資訊
  */
 class Route implements RouteInterface
+
 {
     private ?string $name = null;
 

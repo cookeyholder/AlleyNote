@@ -12,6 +12,7 @@ use HTMLPurifier;
 use HTMLPurifier_Config;
 
 class XssProtectionService implements XssProtectionServiceInterface
+
 {
     private HTMLPurifier $purifier;
 

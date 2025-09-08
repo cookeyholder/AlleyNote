@@ -218,7 +218,7 @@ readonly class StatisticsCalculationCommand
                 'period_type' => $period->type->value,
                 'results' => $results,
             ]);
-        } 
+        }
 
     /**
      * 根據週期類型建立統計週期。

@@ -14,6 +14,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SqlInjectionTest extends TestCase
+
 {
     protected PostRepository $repository;
 

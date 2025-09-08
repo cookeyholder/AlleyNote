@@ -123,7 +123,7 @@ final class RefreshTokenService
             ]);
 
             return $refreshToken;
-        } 
+        }
 
     /**
      * 使用 refresh token 產生新的 access token.
@@ -207,7 +207,7 @@ final class RefreshTokenService
             }
 
             return $result;
-        } 
+        }
 
     /**
      * 撤銷使用者的所有 refresh token.
@@ -242,7 +242,7 @@ final class RefreshTokenService
             ]);
 
             return $revokedCount;
-        } 
+        }
 
     /**
      * 撤銷裝置的所有 refresh token.
@@ -261,7 +261,7 @@ final class RefreshTokenService
             ]);
 
             return $revokedCount;
-        } 
+        }
 
     /**
      * 清理過期的 refresh token.
@@ -279,7 +279,7 @@ final class RefreshTokenService
             }
 
             return $cleanedCount;
-        } 
+        }
 
     /**
      * 取得使用者的活躍 refresh token 統計.
@@ -308,7 +308,7 @@ final class RefreshTokenService
             }
 
             return $stats;
-        } 
+        }
 
     /**
      * 驗證 refresh token 的有效性.
@@ -387,7 +387,7 @@ final class RefreshTokenService
             );
 
             return $newToken;
-        } 
+        }
 
     /**
      * 驗證裝置一致性.
@@ -437,7 +437,7 @@ final class RefreshTokenService
             );
 
             $this->blacklistRepository->addToBlacklist($entry);
-        } 
+        }
 
     /**
      * 是否應該驗證裝置一致性.

@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Tests\Factory\PostFactory;
 
 class PostFactoryTest extends TestCase
+
 {
     public function testItCanMakePostData(): void
     {

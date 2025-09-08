@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
  */
 #[Group('performance')]
 class SimpleUserActivityLogPerformanceTest extends TestCase
+
 {
     private PDO $pdo;
 
@@ -31,7 +32,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             // 使用 SQLite 記憶體資料庫進行效能測試
             $this->pdo = new PDO('sqlite:database/alleynote.sqlite3');
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } 
+        }
 
     /**
      * 測試批次插入效能.

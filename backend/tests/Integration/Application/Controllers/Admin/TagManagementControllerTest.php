@@ -20,6 +20,7 @@ use RuntimeException;
  * TagManagementController 整合測試.
  */
 class TagManagementControllerTest extends TestCase
+
 {
     private TagManagementController $controller;
 

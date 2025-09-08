@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 class CacheSystemTest extends TestCase
+
 {
     private CacheManager $cacheManager;
 

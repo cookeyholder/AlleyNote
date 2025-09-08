@@ -30,6 +30,7 @@ use RuntimeException;
  */
 #[CoversClass(StatisticsCacheService::class)]
 final class StatisticsCacheServiceTest extends TestCase
+
 {
     private PostStatisticsRepository $postRepository;
 

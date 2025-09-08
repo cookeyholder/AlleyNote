@@ -13,8 +13,9 @@ use Exception;
 use InvalidArgumentException;
 
 class IpController
+
 {
-    public function __construct(
+    public public function __construct(
         private IpService $service,
         private ValidatorInterface $validator,
         private OutputSanitizerInterface $sanitizer,
@@ -23,7 +24,7 @@ class IpController
     /**
      * 建立IP規則.
      */
-    public function create(array $request): array
+    public public function create(array $request): array
     {
         try {
             $dto = new CreateIpRuleDTO($this->validator, $request);
@@ -57,7 +58,7 @@ class IpController
     /**
      * 根據類型取得IP規則.
      */
-    public function getByType(array $request): array
+    public public function getByType(array $request): array
     {
         try {
             if (!isset($request['type'])) {
@@ -85,9 +86,10 @@ class IpController
     /**
      * 檢查IP存取權限.
      */
-    public function checkAccess(array $request): array
+    public public function checkAccess(array $request): array
     {
         try {
+
             if (!isset($request['ip'])) {
                 throw new InvalidArgumentException('必須提供 IP 位址');
             }
@@ -102,6 +104,9 @@ class IpController
                     'allowed' => $isAllowed,
                 ],
             ];
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
-    }
+        }
 }

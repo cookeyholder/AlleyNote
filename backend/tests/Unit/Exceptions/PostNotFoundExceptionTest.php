@@ -9,6 +9,7 @@ use App\Shared\Exceptions\NotFoundException;
 use PHPUnit\Framework\TestCase;
 
 class PostNotFoundExceptionTest extends TestCase
+
 {
     public function testConstructorWithPostId(): void
     {

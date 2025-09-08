@@ -30,6 +30,7 @@ use Throwable;
  * - 統一查詢參數驗證
  */
 final class StatisticsQueryService
+
 {
     public function __construct(
         private readonly StatisticsRepositoryInterface $statisticsRepository,
@@ -138,7 +139,7 @@ final class StatisticsQueryService
             ]);
 
             return $result;
-        } 
+        }
 
     /**
      * 查詢文章統計趨勢.
@@ -196,7 +197,7 @@ final class StatisticsQueryService
             ]);
 
             return $result;
-        } 
+        }
 
     /**
      * 查詢使用者活動統計.
@@ -254,7 +255,7 @@ final class StatisticsQueryService
             ]);
 
             return $result;
-        } 
+        }
 
     /**
      * 查詢系統效能統計.
@@ -296,7 +297,7 @@ final class StatisticsQueryService
             ]);
 
             return $result;
-        } 
+        }
 
     /**
      * 自訂統計查詢.
@@ -341,7 +342,7 @@ final class StatisticsQueryService
             ]);
 
             return $result;
-        } 
+        }
 
     /**
      * 驗證分頁參數.

@@ -17,6 +17,7 @@ use ReflectionClass;
  * 確保所有方法簽名、參數類型、回傳類型正確。
  */
 class TokenBlacklistRepositoryInterfaceTest extends TestCase
+
 {
     private ReflectionClass $interfaceReflection;
 

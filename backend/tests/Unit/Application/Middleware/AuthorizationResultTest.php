@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
  * @since 1.0.0
  */
 class AuthorizationResultTest extends TestCase
+
 {
     public function testCanCreateAllowedResult(): void
     {

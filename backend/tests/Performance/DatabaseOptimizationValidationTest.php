@@ -8,6 +8,7 @@ use PDO;
 use Tests\TestCase;
 
 class DatabaseOptimizationValidationTest extends TestCase
+
 {
     protected PDO $db;
 

@@ -8,6 +8,7 @@ use App\Infrastructure\Cache\CacheKeys;
 use PHPUnit\Framework\TestCase;
 
 class CacheKeysTest extends TestCase
+
 {
     public function testPostCacheKey(): void
     {

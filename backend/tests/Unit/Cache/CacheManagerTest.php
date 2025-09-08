@@ -9,6 +9,7 @@ use App\Infrastructure\Cache\CacheManager;
 use PHPUnit\Framework\TestCase;
 
 class CacheManagerTest extends TestCase
+
 {
     private CacheManager $cacheManager;
 

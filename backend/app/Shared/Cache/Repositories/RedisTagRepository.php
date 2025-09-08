@@ -15,6 +15,7 @@ use Redis;
  * 使用 Redis 的 Set 和 Hash 資料結構來高效管理標籤關係
  */
 class RedisTagRepository implements TagRepositoryInterface
+
 {
     private const KEY_PREFIX = 'cache_tags:';
 
@@ -70,7 +71,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } 
+        }
 
     /**
      * 取得快取鍵的所有標籤.
@@ -140,7 +141,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } 
+        }
 
     /**
      * 從快取鍵移除標籤.
@@ -169,7 +170,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } 
+        }
 
     /**
      * 檢查快取鍵是否包含指定標籤.
@@ -350,7 +351,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } 
+        }
 
     /**
      * 清除所有標籤記錄.
@@ -420,7 +421,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } 
+        }
 
     /**
      * 清理快取鍵的過期標籤.

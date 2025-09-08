@@ -15,6 +15,7 @@ use RedisException;
  * 使用 Redis 存儲路由快取資料，提供更好的效能和分散式支援
  */
 class RedisRouteCache implements RouteCacheInterface
+
 {
     private const CACHE_KEY_PREFIX = 'route_cache:';
 
@@ -44,7 +45,7 @@ class RedisRouteCache implements RouteCacheInterface
             $exists = $this->redis->exists($cacheKey);
 
             return is_int($exists) && $exists > 0;
-        } 
+        }
 
     public function load(): ?RouteCollectionInterface
     {
@@ -72,7 +73,7 @@ class RedisRouteCache implements RouteCacheInterface
             $this->saveStats();
 
             return $data;
-        } 
+        }
 
     public function store(RouteCollectionInterface $routes): bool
     {
@@ -93,7 +94,7 @@ class RedisRouteCache implements RouteCacheInterface
             }
 
             return false;
-        } 
+        }
 
     public function clear(): bool
     {
@@ -117,7 +118,7 @@ class RedisRouteCache implements RouteCacheInterface
             ];
 
             return is_array($results) && count($results) === 2;
-        } 
+        }
 
     public function getCachePath(): string
     {
@@ -154,7 +155,7 @@ class RedisRouteCache implements RouteCacheInterface
     {
         try { /* empty */ }
             return $this->redis->ping() === '+PONG';
-        } 
+        }
 
     /**
      * 取得快取鍵名.
@@ -177,7 +178,7 @@ class RedisRouteCache implements RouteCacheInterface
                     $this->stats = array_merge($this->stats, $stats);
                 }
             }
-        } 
+        }
 
     /**
      * 儲存統計資料.

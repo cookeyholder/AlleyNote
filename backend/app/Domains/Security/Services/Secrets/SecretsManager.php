@@ -8,6 +8,7 @@ use App\Domains\Security\Contracts\SecretsManagerInterface;
 use App\Shared\Exceptions\ValidationException;
 
 class SecretsManager implements SecretsManagerInterface
+
 {
     private string $envPath;
 
@@ -241,7 +242,6 @@ class SecretsManager implements SecretsManagerInterface
                 $this->secrets[$key] = $value;
             }
         }
-    }
 
     private function loadFromFile(string $filePath): void
     {
@@ -278,7 +278,6 @@ class SecretsManager implements SecretsManagerInterface
                 }
             }
         }
-    }
 
     private function parseValue(string $value)
     {

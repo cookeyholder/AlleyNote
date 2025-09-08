@@ -26,6 +26,7 @@ use Throwable;
  * - 遵循單一職責原則
  */
 final class PostStatisticsService
+
 {
     public function __construct(
         private readonly PostStatisticsRepositoryInterface $postStatisticsRepository) {}

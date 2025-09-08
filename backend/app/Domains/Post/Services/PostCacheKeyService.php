@@ -11,6 +11,7 @@ namespace App\Domains\Post\Services;
  * 避免 Domain 層直接依賴 Infrastructure 層的 CacheKeys 類別
  */
 class PostCacheKeyService
+
 {
     private const PREFIX = 'alleynote';
 

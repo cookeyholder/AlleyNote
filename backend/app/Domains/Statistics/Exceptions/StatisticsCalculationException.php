@@ -11,6 +11,7 @@ namespace App\Domains\Statistics\Exceptions;
  * 例如：資料不足、計算溢位、無效參數等。
  */
 final class StatisticsCalculationException extends StatisticsException
+
 {
     public static function insufficientData(string $operation, int $required, int $actual): self
     {

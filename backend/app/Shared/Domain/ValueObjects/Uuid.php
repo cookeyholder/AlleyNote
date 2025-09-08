@@ -14,6 +14,7 @@ use Stringable;
  * 封裝 UUID 識別碼的值物件.
  */
 readonly class Uuid implements Stringable
+
 {
     private function __construct(
         private UuidInterface $value,

@@ -19,6 +19,7 @@ use RuntimeException;
  * 支援文章數量、觀看次數、來源分布等複雜統計查詢。
  */
 final readonly class PostStatisticsRepository implements PostStatisticsRepositoryInterface
+
 {
     public function __construct(
         private PDO $pdo) {}

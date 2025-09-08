@@ -17,8 +17,9 @@ use Psr\Log\LoggerInterface;
  * 提供統計資料的 REST API 端點
  */
 class StatisticsController extends BaseController
+
 {
-    public function __construct(
+    public public function __construct(
         private StatisticsApplicationService $statisticsService,
         private LoggerInterface $logger,
     ) {}
@@ -28,7 +29,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/overview
      */
-    public function getOverview(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function getOverview(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -64,7 +65,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/posts
      */
-    public function getPostStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function getPostStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -101,7 +102,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/sources
      */
-    public function getSourceStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function getSourceStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -137,7 +138,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/users
      */
-    public function getUserActivityStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function getUserActivityStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -173,7 +174,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/popular
      */
-    public function getPopularContent(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function getPopularContent(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();
@@ -210,7 +211,7 @@ class StatisticsController extends BaseController
      *
      * GET /api/statistics/snapshot
      */
-    public function getSnapshot(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public public function getSnapshot(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
             $queryParams = $request->getQueryParams();

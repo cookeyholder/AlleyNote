@@ -108,7 +108,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->logDetectionActivity((string) $userId, 'user', $analysisResult);
 
             return $analysisResult;
-        } 
+        }
 
     /**
      * 檢測指定IP位址的可疑活動.
@@ -139,7 +139,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->logDetectionActivity($ipAddress, 'ip', $analysisResult);
 
             return $analysisResult;
-        } 
+        }
 
     /**
      * 檢測全域可疑活動模式.
@@ -167,7 +167,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             }
 
             return $patterns;
-        } 
+        }
 
     /**
      * 分析使用者活動.

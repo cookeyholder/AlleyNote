@@ -7,6 +7,7 @@ namespace App\Domains\Auth\Exceptions;
 use Exception;
 
 class UnauthorizedException extends Exception
+
 {
     public function __construct(string $message = '', int $code = 401)
     {

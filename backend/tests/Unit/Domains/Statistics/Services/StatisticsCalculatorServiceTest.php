@@ -30,6 +30,7 @@ use PHPUnit\Framework\TestCase;
  */
 #[CoversClass(StatisticsCalculationService::class)]
 final class StatisticsCalculatorServiceTest extends TestCase
+
 {
     private StatisticsCalculationService $service;
 
