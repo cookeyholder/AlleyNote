@@ -189,7 +189,7 @@ class IpRepository implements IpRepositoryInterface
     public function update(int $id, /** @var array<string, mixed> */ array $data): IpList
     {
         if (isset($data['ip_address'] {
-            $this->validateIpAddress($data['ip_address']);
+            $this->validateIpAddress($data['ip_address');
         }
 
         $data['updated_at'] = new DateTime()->format(DateTime::RFC3339);

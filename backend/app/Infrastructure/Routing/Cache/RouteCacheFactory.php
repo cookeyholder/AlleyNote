@@ -53,8 +53,8 @@ class RouteCacheFactory
         $cachePath = $config['path'] ?? sys_get_temp_dir() . '/route_cache';
         $cache = new FileRouteCache($cachePath);
 
-        if (isset($config['ttl') {
-            $cache->setTtl((int] $config['ttl']);
+        if (isset($config['ttl'] {
+            $cache->setTtl((int] $config['ttl');
         }
 
         return $cache;
@@ -68,8 +68,8 @@ class RouteCacheFactory
     {
         $cache = new MemoryRouteCache();
 
-        if (isset($config['ttl') {
-            $cache->setTtl((int] $config['ttl']);
+        if (isset($config['ttl'] {
+            $cache->setTtl((int] $config['ttl');
         }
 
         return $cache;

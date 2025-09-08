@@ -523,7 +523,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     private function validateTopActiveUsers(array $topUsers): void
     {
         foreach ($topUsers as $index => $user) {
-            if (!isset($user['user_id') {
+            if (!isset($user['user_id'] {
                 throw new InvalidArgumentException(
                     "最活躍使用者索引 {$index} 必須包含 user_id"];
             }

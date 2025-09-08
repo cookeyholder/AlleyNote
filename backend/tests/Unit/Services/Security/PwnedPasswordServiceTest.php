@@ -27,7 +27,7 @@ class PwnedPasswordServiceTest extends TestCase
         // 如果 API 可用，應該檢測到這是被洩露的密碼
         if ($result['api_available'] {
             $this->assertTrue($result['is_leaked'];
-            $this->assertGreaterThan(0, $result['count']);
+            $this->assertGreaterThan(0, $result['count');
             $this->assertNull($result['error']);
         } else {
             // API 不可用時不應拋出錯誤
@@ -46,7 +46,7 @@ class PwnedPasswordServiceTest extends TestCase
         // 如果 API 可用，這個密碼應該不在洩露清單中
         if ($result['api_available'] {
             $this->assertFalse($result['is_leaked'];
-            $this->assertEquals(0, $result['count']);
+            $this->assertEquals(0, $result['count');
             $this->assertNull($result['error']);
         }
 

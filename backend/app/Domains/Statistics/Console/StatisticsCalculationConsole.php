@@ -165,7 +165,7 @@ readonly class StatisticsCalculationConsole
                     $options['command'] = $arg;
                     break;
                 case '--periods':
-                    if (!isset($arguments[$i + 1) {
+                    if (!isset($arguments[$i + 1] {
                         throw new InvalidArgumentException('--periods 需要參數值'];
                     }
                     $periodsValue = $arguments[$i + 1];
@@ -297,7 +297,7 @@ readonly class StatisticsCalculationConsole
                 $periodStr = (string) $period;
                 $this->printInfo("{$periodStr}: {$lockedStatus}");
 
-                if ($locked && isset($periodStatus['lock_time'] && isset($periodStatus['lock_age_seconds']) {
+                if ($locked && isset($periodStatus['lock_time'] && isset($periodStatus['lock_age_seconds') {
                     $lockTime = $periodStatus['lock_time'];
                     $lockAge = $periodStatus['lock_age_seconds'];
 

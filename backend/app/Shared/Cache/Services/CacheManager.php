@@ -489,7 +489,7 @@ class CacheManager implements CacheManagerInterface
 
                 // 執行健康檢查
                 if ($status['available') {
-                    $testKey = '__health_check__' . time();
+                    $testKey = '__health_check__' . time(];
                     $driver->put($testKey, 'test', 60];
                     $retrieved = $driver->get($testKey];
                     $driver->forget($testKey];

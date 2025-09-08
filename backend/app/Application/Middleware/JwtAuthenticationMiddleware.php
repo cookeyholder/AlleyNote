@@ -102,13 +102,13 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
 
         // 2. 從 query 參數提取
         $queryParams = $request->getQueryParams();
-        if (!empty($queryParams['token'] && is_string($queryParams['token']) {
+        if (!empty($queryParams['token'] && is_string($queryParams['token') {
             return $queryParams['token'];
         }
 
         // 3. 從 cookie 提取
         $cookies = $request->getCookieParams();
-        if (!empty($cookies['access_token'] && is_string($cookies['access_token']) {
+        if (!empty($cookies['access_token'] && is_string($cookies['access_token') {
             return $cookies['access_token'];
         }
 
@@ -220,7 +220,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
         $serverParams = $request->getServerParams();
 
         foreach ($headers as $header) {
-            if (isset($serverParams[$header] && !empty($serverParams[$header]) {
+            if (isset($serverParams[$header] && !empty($serverParams[$header) {
                 $ip = trim(explode(',', $serverParams[$header])[0]);
                 if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
                     return $ip;

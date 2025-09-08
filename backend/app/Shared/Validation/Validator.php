@@ -139,7 +139,7 @@ class Validator implements ValidatorInterface
     public function checkRule(mixed $value, string $rule, /** @var array<string, mixed> */ array $parameters = [], /** @var array<string, mixed> */ array $allData = [], string $currentField = ''): bool
     {
         // 檢查自訂規則
-        if (isset($this->customRules[$rule]) {
+        if (isset($this->customRules[$rule) {
             return call_user_func($this->customRules[$rule], $value, $parameters, $allData);
         }
 
@@ -516,7 +516,7 @@ class Validator implements ValidatorInterface
         }
 
         // 檢查確認欄位是否存在且值相等
-        if (!isset($allData[$confirmationField]) {
+        if (!isset($allData[$confirmationField) {
             return false;
         }
 
@@ -537,7 +537,7 @@ class Validator implements ValidatorInterface
         }
 
         $otherField = $parameters[0];
-        if (!isset($allData[$otherField]) {
+        if (!isset($allData[$otherField) {
             return true;
         }
 
@@ -558,7 +558,7 @@ class Validator implements ValidatorInterface
         }
 
         $otherField = $parameters[0];
-        if (!isset($allData[$otherField]) {
+        if (!isset($allData[$otherField) {
             return false;
         }
 
@@ -573,11 +573,11 @@ class Validator implements ValidatorInterface
     {
         // 檢查自訂訊息
         $customKey = "{$field}.{$rule}";
-        if (isset($this->customMessages[$customKey]) {
+        if (isset($this->customMessages[$customKey) {
             return $this->replacePlaceholders($this->customMessages[$customKey], $field, $parameters, $value);
         }
 
-        if (isset($this->customMessages[$rule]) {
+        if (isset($this->customMessages[$rule) {
             return $this->replacePlaceholders($this->customMessages[$rule], $field, $parameters, $value);
         }
 

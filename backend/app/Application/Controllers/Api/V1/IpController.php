@@ -61,11 +61,11 @@ class IpController
     public function getByType(array $request): array
     {
         try {
-            if (!isset($request['type') {
+            if (!isset($request['type'] {
                 throw new InvalidArgumentException('必須指定名單類型'];
             }
 
-            $type = is_numeric($request['type']) ? (int) $request['type'] : 0;
+            $type = is_numeric($request['type') ? (int) $request['type'] : 0;
             $rules = $this->service->getRulesByType($type);
 
             return [
@@ -90,11 +90,11 @@ class IpController
     {
         try {
 
-            if (!isset($request['ip') {
+            if (!isset($request['ip'] {
                 throw new InvalidArgumentException('必須提供 IP 位址'];
             }
 
-            $ip = is_string($request['ip']) ? $request['ip'] : '';
+            $ip = is_string($request['ip') ? $request['ip'] : '';
             $isAllowed = $this->service->isIpAllowed($ip);
 
             return [

@@ -59,7 +59,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 throw new AuthenticationException(
                     AuthenticationException::REASON_ACCOUNT_DISABLED,
                     'User account has been deactivated',
-                );
+                ];
             }
 
             $userId = (int] $user['id'];
@@ -73,7 +73,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             if (count($userTokens) >= self::MAX_REFRESH_TOKENS_PER_USER) {
                 // 撤銷最舊的活躍 token 來騰出空間
                 $oldestToken = reset($userTokens);
-                if ($oldestToken !== false && isset($oldestToken['jti') {
+                if ($oldestToken !== false && isset($oldestToken['jti'] {
                     $this->refreshTokenRepository->revoke((string] $oldestToken['jti'], 'max_tokens_exceeded');
                 }
             }

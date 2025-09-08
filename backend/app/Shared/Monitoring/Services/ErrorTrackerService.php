@@ -483,13 +483,13 @@ class ErrorTrackerService implements ErrorTrackerInterface
     private function fillMissingDates(array $trends, int $days): array
     {
         // 確保必要的陣列結構存在
-        if (!isset($trends['daily_counts'] || !is_array($trends['daily_counts']) {
+        if (!isset($trends['daily_counts'] || !is_array($trends['daily_counts') {
             $trends['daily_counts'] = [];
         }
-        if (!isset($trends['level_trends'] || !is_array($trends['level_trends']) {
+        if (!isset($trends['level_trends'] || !is_array($trends['level_trends') {
             $trends['level_trends'] = [];
         }
-        if (!isset($trends['type_trends'] || !is_array($trends['type_trends']) {
+        if (!isset($trends['type_trends'] || !is_array($trends['type_trends') {
             $trends['type_trends'] = [];
         }
 

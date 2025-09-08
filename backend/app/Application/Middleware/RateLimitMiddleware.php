@@ -58,7 +58,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
 
         /** @var array<string, mixed> $result */
-        if (!$result['allowed']) {
+        if (!$result['allowed') {
             return $this->createRateLimitResponse($result, $request);
         }
 

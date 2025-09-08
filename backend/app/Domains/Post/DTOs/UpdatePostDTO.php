@@ -80,8 +80,8 @@ class UpdatePostDTO extends BaseDTO
         $this->isPinned = isset($validatedData['is_pinned']) ? $this->getBool($validatedData, 'is_pinned') : null;
 
         // 處理狀態
-        if (isset($validatedData['status') {
-            $this->status = PostStatus::from((string] $validatedData['status']);
+        if (isset($validatedData['status'] {
+            $this->status = PostStatus::from((string] $validatedData['status');
         } else {
             $this->status = null;
         }
@@ -89,7 +89,7 @@ class UpdatePostDTO extends BaseDTO
         // 處理發布日期，空字串轉為 null
         if (isset($validatedData['publish_date'] {
             $publishDate = $this->getString($validatedData, 'publish_date'];
-            $this->publishDate = (!empty($publishDate]) ? $publishDate : null;
+            $this->publishDate = (!empty($publishDate) ? $publishDate : null;
         } else {
             $this->publishDate = null;
         }

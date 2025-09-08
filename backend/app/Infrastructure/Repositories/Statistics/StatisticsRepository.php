@@ -428,16 +428,16 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
     private function buildSnapshotFromRow(array $row): StatisticsSnapshot
     {
         // 驗證必要欄位
-        if (!isset($row['start_date'] || !is_string($row['start_date']) {
+        if (!isset($row['start_date'] || !is_string($row['start_date') {
             throw new RuntimeException('Missing or invalid start_date');
         }
-        if (!isset($row['end_date'] || !is_string($row['end_date']) {
+        if (!isset($row['end_date'] || !is_string($row['end_date') {
             throw new RuntimeException('Missing or invalid end_date');
         }
-        if (!isset($row['period_type'] || (!is_string($row['period_type'] && !is_int($row['period_type']))) {
+        if (!isset($row['period_type'] || (!is_string($row['period_type'] && !is_int($row['period_type'))) {
             throw new RuntimeException('Missing or invalid period_type');
         }
-        if (!isset($row['uuid'] || !is_string($row['uuid']) {
+        if (!isset($row['uuid'] || !is_string($row['uuid') {
             throw new RuntimeException('Missing or invalid uuid');
         }
 
@@ -481,7 +481,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             : date('Y-m-d H:i:s');
 
         $updatedAt = null;
-        if (isset($row['updated_at'] && is_string($row['updated_at']) {
+        if (isset($row['updated_at'] && is_string($row['updated_at') {
             $updatedAt = $row['updated_at'];
         }
 

@@ -165,11 +165,11 @@ class RouteCollection implements RouteCollectionInterface
             );
 
             if (!empty($routeData['name'] {
-                $route->setName($routeData['name']);
+                $route->setName($routeData['name');
             }
 
             if (!empty($routeData['middleware'] {
-                $route->middleware($routeData['middleware']);
+                $route->middleware($routeData['middleware');
             }
 
             $collection->add($route);

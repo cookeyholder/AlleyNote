@@ -208,7 +208,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             if ($result['suspicious'] {
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
-                $detectionRules = array_merge($detectionRules, $result['rules']);
+                $detectionRules = array_merge($detectionRules, $result['rules');
                 $anomalyScores = array_merge($anomalyScores, $result['scores']);
                 $confidence = max($confidence, $result['confidence']);
             }
@@ -221,7 +221,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
                 $detectionRules[] = $result['rule'];
                 $anomalyScores['frequency'] = $result['score'];
-                $confidence = max($confidence, $result['confidence']);
+                $confidence = max($confidence, $result['confidence');
             }
         }
 
@@ -232,7 +232,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
                 $detectionRules[] = $result['rule'];
                 $anomalyScores['pattern'] = $result['score'];
-                $confidence = max($confidence, $result['confidence']);
+                $confidence = max($confidence, $result['confidence');
             }
         }
 
@@ -304,7 +304,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             if ($failureResult['suspicious'] {
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $failureResult['severity'];
-                $detectionRules = array_merge($detectionRules, $failureResult['rules']);
+                $detectionRules = array_merge($detectionRules, $failureResult['rules');
                 $anomalyScores = array_merge($anomalyScores, $failureResult['scores']);
                 $confidence = max($confidence, $failureResult['confidence']);
             }
@@ -317,7 +317,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
                 $detectionRules[] = $result['rule'];
                 $anomalyScores['ip_reputation'] = $result['score'];
-                $confidence = max($confidence, $result['confidence']);
+                $confidence = max($confidence, $result['confidence');
             }
         }
 

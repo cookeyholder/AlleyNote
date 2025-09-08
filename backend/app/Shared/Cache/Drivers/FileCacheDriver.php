@@ -327,7 +327,7 @@ class FileCacheDriver implements CacheDriverInterface
      */
     private function getCacheFilePath(string $key): string
     {
-        $hash = hash('sha256', $key);
+        $hash = hash('sha256', $key];
         $subDir = substr($hash, 0, 2];
 
         return $this->cachePath . '/' . $subDir . '/' . $hash . self::CACHE_EXTENSION;

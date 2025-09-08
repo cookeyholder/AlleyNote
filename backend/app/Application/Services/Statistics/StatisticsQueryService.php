@@ -480,7 +480,7 @@ final class StatisticsQueryService
     {
         $required = ['period_start', 'period_end'];
         foreach ($required as $field) {
-            if (!isset($params[$field) {
+            if (!isset($params[$field] {
                 throw new InvalidArgumentException("缺少必要參數：{$field}"];
             }
         }

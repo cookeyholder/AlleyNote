@@ -15,9 +15,6 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class TagManagementController extends BaseController
-
-
-
 {
     public function __construct(
         private CacheManagerInterface $cacheManager,
@@ -32,11 +29,6 @@ class TagManagementController extends BaseController
     public function listTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-
-
-
-
-
 
             $queryParams = $request->getQueryParams();
             $page = max(1, is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
@@ -56,21 +48,6 @@ class TagManagementController extends BaseController
                                 'driver' => $driverName,
                             ];
                                 } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
         }
@@ -166,11 +143,6 @@ class TagManagementController extends BaseController
     {
         try {
 
-
-
-
-
-
             $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
@@ -190,21 +162,6 @@ class TagManagementController extends BaseController
                             $flushed = true;
                             $affectedDrivers[] = $driverName;
                                 } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
         }
@@ -252,11 +209,6 @@ class TagManagementController extends BaseController
     {
         try {
 
-
-
-
-
-
             $bodyString = (string) $request->getBody();
             $body = json_decode($bodyString, true);
 
@@ -290,21 +242,6 @@ class TagManagementController extends BaseController
                                 $flushed = true;
                                 $affectedDrivers[] = $driverName;
                                     } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
         }

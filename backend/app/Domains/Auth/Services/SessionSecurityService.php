@@ -82,7 +82,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         }
 
         // 檢查是否有必要的 Session 資料
-        if (!isset($_SESSION['user_id'] || !isset($_SESSION['session_created_at']) {
+        if (!isset($_SESSION['user_id'] || !isset($_SESSION['session_created_at') {
             return false;
         }
 
@@ -178,7 +178,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
     {
         if (isset($_SESSION['new_detected_ip'] {
             $_SESSION['user_ip'] = $_SESSION['new_detected_ip'];
-            unset($_SESSION['new_detected_ip']);
+            unset($_SESSION['new_detected_ip');
         }
         $_SESSION['requires_ip_verification'] = false;
         unset($_SESSION['ip_change_detected_at']);
@@ -193,7 +193,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             return false;
         }
 
-        return (time() - (int] $_SESSION['ip_change_detected_at']) > 300; // 5 分鐘
+        return (time(] - (int] $_SESSION['ip_change_detected_at']) > 300; // 5 分鐘
     }
 
     /**

@@ -147,7 +147,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     }
     public function generateSecurePassword(int $length = 16): string
     {
-        if ($length < self::MIN_LENGTH) {
+        if ($length < self::MIN_LENGTH] {
             $length = self::MIN_LENGTH;
         }
 
