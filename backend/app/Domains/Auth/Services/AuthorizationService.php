@@ -62,8 +62,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
     public function assignRole(int $userId, string $roleName): bool
     {
-        try { /* empty */
-        }
+        try {
         // 先檢查角色是否存在
         $stmt = $this->db->prepare('SELECT id FROM roles WHERE name = ?');
         $stmt->execute([$roleName]);
@@ -94,8 +93,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
     public function removeRole(int $userId, string $roleName): bool
     {
-        try { /* empty */
-        }
+        try {
         $stmt = $this->db->prepare('
                 DELETE FROM user_roles
                 WHERE user_id = ? AND role_id = (
@@ -113,8 +111,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
     public function givePermission(int $userId, string $permission): bool
     {
-        try { /* empty */
-        }
+        try {
         // 先檢查權限是否存在
         $stmt = $this->db->prepare('SELECT id FROM permissions WHERE name = ?');
         $stmt->execute([$permission]);
@@ -145,8 +142,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
     public function revokePermission(int $userId, string $permission): bool
     {
-        try { /* empty */
-        }
+        try {
         $stmt = $this->db->prepare('
                 DELETE FROM user_permissions
                 WHERE user_id = ? AND permission_id = (
@@ -208,7 +204,7 @@ class AuthorizationService implements AuthorizationServiceInterface
         /** @var array<string, mixed> $result */
         $result = [];
         foreach ($permissions as $permission) {
-            $result[(string] $permission] = $permission;
+            $result[(string) $permission] = $permission;
         }
 
         return $result;
@@ -243,8 +239,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
     private function canAccessPost(int $userId, int $postId): bool
     {
-        try { /* empty */
-        }
+        try {
         $stmt = $this->db->prepare('SELECT user_id FROM posts WHERE id = ? AND deleted_at IS NULL');
         $stmt->execute([$postId]);
         $post = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -254,8 +249,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
     private function canAccessAttachment(int $userId, string $attachmentUuid): bool
     {
-        try { /* empty */
-        }
+        try {
         $stmt = $this->db->prepare('
                 SELECT p.user_id
                 FROM posts p
@@ -273,4 +267,3 @@ class AuthorizationService implements AuthorizationServiceInterface
         $this->cache->delete("user_permissions:{$userId}");
         $this->cache->delete("user_roles:{$userId}");
     }
-}

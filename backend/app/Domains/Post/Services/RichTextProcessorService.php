@@ -194,8 +194,6 @@ class RichTextProcessorService
             if (isset($element->attr) && is_array($element->attr)) {
                 $attributes = array_merge($attributes, array_keys($element->attr));
             }
-        }
-
         return [
             'tags' => array_unique($tags),
             'attributes' => array_unique($attributes),
@@ -296,4 +294,3 @@ class RichTextProcessorService
 
         return $cachePath;
     }
-}

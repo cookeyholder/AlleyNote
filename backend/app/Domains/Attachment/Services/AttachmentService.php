@@ -145,7 +145,7 @@ class AttachmentService implements AttachmentServiceInterface
             return true; // 非圖片檔案不需要處理
         }
 
-        try { /* empty */ }
+        try {
             // 檢查 GD 擴充是否可用
             if (!extension_loaded('gd')) {
                 error_log('GD extension not available for image sanitization');
@@ -219,6 +219,9 @@ class AttachmentService implements AttachmentServiceInterface
             imagedestroy($cleanImage);
 
             return $result;
+        } catch (Exception $e) {
+            error_log('Image sanitization failed: ' . $e->getMessage());
+            return false;
         }
 
     /**
@@ -267,7 +270,7 @@ class AttachmentService implements AttachmentServiceInterface
 
         $tempPath = $tempDir . '/' . $newFilename;
 
-        try { /* empty */ }
+        try {
             // 移動上傳檔案到安全的臨時位置
             $file->moveTo($tempPath);
 
@@ -303,7 +306,14 @@ class AttachmentService implements AttachmentServiceInterface
                 'mime_type' => $actualMimeType,
                 'file_size' => filesize($tempPath),
             ];
-        } 
+        } catch (Exception $e) {
+            // 清理臨時檔案和目錄
+            if (file_exists($tempPath)) {
+                unlink($tempPath);
+            }
+            if (is_dir($tempDir)) {
+                rmdir($tempDir);
+            }
 
             // 將 RuntimeException 轉換為 ValidationException
             if ($e instanceof RuntimeException) {
@@ -373,10 +383,10 @@ class AttachmentService implements AttachmentServiceInterface
         }
 
         // 使用改善的檔案驗證流程
-        try { /* empty */ }
+        try {
             $fileInfo = $this->secureFileValidation($file);
-        } 
-
+        } catch (ValidationException $e) {
+            $errorMessage = $e->getMessage();
             $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED; // 預設
             if (str_contains($errorMessage, '病毒') || str_contains($errorMessage, '惡意程式碼')) {
                 $activityType = ActivityType::ATTACHMENT_VIRUS_DETECTED;
@@ -447,7 +457,7 @@ class AttachmentService implements AttachmentServiceInterface
             );
 
             return $attachment;
-        } 
+        } catch (Exception $e) {
             if (isset($finalPath) && file_exists($finalPath)) {
                 unlink($finalPath);
             }

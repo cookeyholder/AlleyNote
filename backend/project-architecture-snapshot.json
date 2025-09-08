@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 03:22:30",
+        "scan_time": "2025-09-09 03:38:29",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -137,6 +137,12 @@
             "path": ".env.testing",
             "extension": "testing",
             "size": 1829
+        },
+        "eight-round-phase4-progress-report.md": {
+            "type": "file",
+            "path": "eight-round-phase4-progress-report.md",
+            "extension": "md",
+            "size": 10824
         },
         ".php-cs-fixer.dist.php": {
             "type": "file",
@@ -2032,7 +2038,7 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/AuthController.php",
                                                     "extension": "php",
-                                                    "size": 24449
+                                                    "size": 26809
                                                 },
                                                 "PostController.php": {
                                                     "type": "file",
@@ -2044,7 +2050,7 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/AttachmentController.php",
                                                     "extension": "php",
-                                                    "size": 17810
+                                                    "size": 18448
                                                 },
                                                 "AttachmentController.php.backup.2025-08-30_08-53-31": {
                                                     "type": "file",
@@ -2062,7 +2068,7 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/Statistics\/StatisticsAdminController.php",
                                                     "extension": "php",
-                                                    "size": 1216
+                                                    "size": 2328
                                                 },
                                                 "StatisticsController.php": {
                                                     "type": "file",
@@ -4075,6 +4081,12 @@
             "type": "directory",
             "ignored": true
         },
+        "eight-round-phase3-progress-report.md": {
+            "type": "file",
+            "path": "eight-round-phase3-progress-report.md",
+            "extension": "md",
+            "size": 9294
+        },
         "coverage-reports": {
             "type": "directory",
             "ignored": true
@@ -5253,7 +5265,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1670495
+            "size": 1673142
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -5339,9 +5351,9 @@
         }
     },
     "file_statistics": {
-        "total_files": 670,
+        "total_files": 672,
         "by_extension": {
-            "md": 21,
+            "md": 23,
             "php": 596,
             "bak": 3,
             "sqlite3": 1,
@@ -5365,7 +5377,7 @@
             "development": 1
         },
         "by_directory": {
-            "\/": 38,
+            "\/": 40,
             "\/database\/migrations": 10,
             "\/database": 2,
             "\/database\/seeds": 3,
@@ -12437,16 +12449,20 @@
                 "InvalidArgumentException",
                 "OpenApi\\Attributes as OA",
                 "Psr\\Http\\Message\\ResponseInterface as Response",
-                "Psr\\Http\\Message\\ServerRequestInterface as Request"
+                "Psr\\Http\\Message\\ServerRequestInterface as Request",
+                "Throwable"
             ],
             "functions": [
                 "__construct",
-                "getClientIpAddress",
+                "getClientIp",
+                "getDeviceInfo",
                 "register",
-                "login"
+                "login",
+                "logout",
+                "refresh"
             ],
             "constants": [],
-            "lines_of_code": 559
+            "lines_of_code": 614
         },
         "app\/Application\/Controllers\/Api\/V1\/PostController.php": {
             "path": "app\/Application\/Controllers\/Api\/V1\/PostController.php",
@@ -12513,7 +12529,7 @@
                 "download"
             ],
             "constants": [],
-            "lines_of_code": 426
+            "lines_of_code": 429
         },
         "app\/Application\/Controllers\/Api\/Statistics\/StatisticsAdminController.php": {
             "path": "app\/Application\/Controllers\/Api\/Statistics\/StatisticsAdminController.php",
@@ -12536,7 +12552,7 @@
                 "refresh"
             ],
             "constants": [],
-            "lines_of_code": 54
+            "lines_of_code": 71
         },
         "app\/Application\/Controllers\/Api\/Statistics\/StatisticsController.php": {
             "path": "app\/Application\/Controllers\/Api\/Statistics\/StatisticsController.php",
@@ -26345,7 +26361,7 @@
             "avg_classes_per_file": 0.79
         },
         "dependency_metrics": {
-            "total_dependencies": 2311,
+            "total_dependencies": 2312,
             "avg_dependencies_per_file": 3.93
         },
         "maintainability_score": 100,
@@ -31191,6 +31207,11 @@
             {
                 "type": "use",
                 "target": "Psr\\Http\\Message\\ServerRequestInterface as Request",
+                "file": null
+            },
+            {
+                "type": "use",
+                "target": "Throwable",
                 "file": null
             }
         ],

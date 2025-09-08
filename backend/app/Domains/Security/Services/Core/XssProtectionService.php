@@ -71,8 +71,6 @@ class XssProtectionService implements XssProtectionServiceInterface
             if (isset($data[$key] && is_string($data[$key] {
                 $data[$key] = $this->clean($data[$key];
             }
-        }
-
         return $data;
     }
 
@@ -147,15 +145,12 @@ class XssProtectionService implements XssProtectionServiceInterface
             } elseif (is_array($value)) {
                 $data[$key] = $this->cleanArrayRecursive($value);
             }
-        }
-
         return $data;
     }
 
     private function logXssAttempt(string $originalInput, string $cleanedInput): void
     {
-        try { /* empty */
-        }
+        try {
         $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
 
@@ -179,4 +174,3 @@ class XssProtectionService implements XssProtectionServiceInterface
 
         $this->activityLogger->log($dto);
     }
-}

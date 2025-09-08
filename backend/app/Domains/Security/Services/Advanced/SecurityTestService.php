@@ -86,7 +86,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試 Session 初始化
-        try { /* empty */ }
+        try {
             $this->sessionService->initializeSecureSession();
             $results['tests'][] = [
                 'name' => 'Session 安全初始化',
@@ -114,8 +114,6 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        }
-
     /**
      * @return array
      */
@@ -129,7 +127,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試權限檢查
-        try { /* empty */ }
+        try {
             $hasPermission = $this->authService->hasPermission(1, 'read_posts');
             $results['tests'][] = [
                 'name' => '權限檢查',
@@ -171,7 +169,7 @@ class SecurityTestService implements SecurityTestInterface
         $results['passed']++;
 
         // 測試檔名清理
-        try { /* empty */ }
+        try {
             $cleanName = $this->fileService->sanitizeFileName('test<script>alert("xss")</script>.txt');
             if ($cleanName !== 'test<script>alert("xss")</script>.txt') {
                 $results['tests'][] = [
@@ -188,8 +186,6 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        }
-
     /**
      * @return array
      */
@@ -203,7 +199,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試安全標頭設定
-        try { /* empty */ }
+        try {
             ob_start();
             $this->headerService->setSecurityHeaders();
             $headers = headers_list();
@@ -224,7 +220,6 @@ class SecurityTestService implements SecurityTestInterface
                         $foundHeaders++;
                         break;
                     }
-                }
             }
 
             if ($foundHeaders >= 3) {
@@ -242,8 +237,6 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        }
-
     /**
      * @return array
      */
@@ -257,7 +250,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試錯誤處理
-        try { /* empty */ }
+        try {
             $exception = new Exception('Test exception');
             $response = $this->errorService->handleException($exception, false);
 
@@ -276,8 +269,6 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        }
-
     /**
      * @return array
      */
@@ -291,7 +282,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試密碼雜湊
-        try { /* empty */ }
+        try {
             $password = 'TestPassword123!';
             $hash = $this->passwordService->hashPassword($password);
 
@@ -310,7 +301,6 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } 
             $weakPassword = '123456';
             $strongPassword = 'StrongP@ssw0rd123!';
 
@@ -332,8 +322,6 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        }
-
     /**
      * @return array
      */
@@ -347,7 +335,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
 
         // 測試秘密載入
-        try { /* empty */ }
+        try {
             $this->secretsManager->load();
             $results['tests'][] = [
                 'name' => '秘密設定載入',
@@ -368,8 +356,6 @@ class SecurityTestService implements SecurityTestInterface
             } else {
                 $results['failed']++;
             }
-        }
-
     /**
      * @return array
      */
@@ -432,8 +418,6 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        }
-
         $this->testResults['system_security'] = $results;
 
         return $results;
@@ -464,7 +448,6 @@ class SecurityTestService implements SecurityTestInterface
                         'message' => $test['message'],
                     ];
                 }
-            }
         }
 
         $successRate = $totalTests > 0 ? round(($totalPassed / $totalTests) * 100, 2) : 0;
@@ -487,7 +470,6 @@ class SecurityTestService implements SecurityTestInterface
     {
         // 建立簡單的模擬檔案物件
         return new class {
-    }
     }
             public function getClientFilename(): string
             {
@@ -527,8 +509,6 @@ class SecurityTestService implements SecurityTestInterface
         } else {
             return '需要改善 (Needs Improvement)';
         }
-    }
-
     /**
      * @param array $criticalIssues
      */
@@ -544,12 +524,9 @@ class SecurityTestService implements SecurityTestInterface
             foreach ($criticalIssues as $issue) {
                 $recommendations[] = "{$issue['category']}: {$issue['message']}";
             }
-        }
-
         $recommendations[] = '定期更新相依套件和安全補丁';
         $recommendations[] = '實施定期的滲透測試和漏洞掃描';
         $recommendations[] = '確保所有開發人員接受安全培訓';
 
         return $recommendations;
     }
-}

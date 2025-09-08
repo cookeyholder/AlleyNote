@@ -80,7 +80,7 @@ class IpService implements IpServiceInterface
      */
     private function logIpRuleEvent(IpList $ipRule, bool $isBlocked): void
     {
-        try { /* empty */ }
+        try {
             $activityType = $isBlocked ? ActivityType::IP_BLOCKED : ActivityType::IP_UNBLOCKED;
             $description = $isBlocked
                 ? "IP 位址已被封鎖: {$ipRule->getIpAddress()}"
@@ -98,5 +98,4 @@ class IpService implements IpServiceInterface
             );
 
             $this->activityLogger->log($dto);
-        } 
-}
+        }

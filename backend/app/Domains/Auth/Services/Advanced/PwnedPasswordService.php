@@ -42,7 +42,7 @@ class PwnedPasswordService
      */
     public function isPasswordPwned(string $password): array
     {
-        try { /* empty */ }
+        try {
             // 計算密碼的 SHA-1 雜湊值
             $sha1Hash = strtoupper(sha1($password));
             $prefix = substr($sha1Hash, 0, 5);
@@ -58,8 +58,6 @@ class PwnedPasswordService
                 if ($hashList !== null) {
                     $this->setCache($cacheKey, $hashList);
                 }
-            }
-
             if ($hashList == null) {
                 return [
                     'is_leaked' => false,
@@ -85,7 +83,7 @@ class PwnedPasswordService
      */
     private function fetchHashesFromApi(string $prefix): ?string
     {
-        try { /* empty */ }
+        try {
             $response = $this->httpClient->get(self::HIBP_API_URL . $prefix);
 
             if ($response->getStatusCode() === 200) {
@@ -108,8 +106,6 @@ class PwnedPasswordService
             if (count($parts) === 2 && $parts[0] === $suffix) {
                 return (int) $parts[1];
             }
-        }
-
         return 0;
     }
 
@@ -149,7 +145,7 @@ class PwnedPasswordService
      */
     public function getApiStatus(): array
     {
-        try { /* empty */ }
+        try {
             $response = $this->httpClient->get(self::HIBP_API_URL . '00000');
 
             return [
@@ -177,8 +173,5 @@ class PwnedPasswordService
             if (count($passwords) > 1) {
                 usleep(100000); // 0.1 秒
             }
-        }
-
         return $results;
     }
-}

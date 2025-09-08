@@ -147,8 +147,6 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             } else {
                 $sanitized[$key] = $value;
             }
-        }
-
         return $sanitized;
     }
 
@@ -266,8 +264,6 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
             $this->globalExceptionHandler($exception);
         }
-
-    }
     private function logException(Throwable $e): void
     {
         $context = [
@@ -311,8 +307,6 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             if (str_contains($key, strtolower($sensitiveKey))) {
                 return true;
             }
-        }
-
         return false;
     }
 
@@ -344,4 +338,3 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
         return $string;
     }
-}

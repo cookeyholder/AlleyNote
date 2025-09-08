@@ -35,8 +35,7 @@ class AuthService
 
         // 如果啟用 JWT 且有提供 JWT 服務和裝置資訊，則產生 JWT token
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $deviceInfo !== null) {
-            try { /* empty */
-            }
+            try {
             $tokenPair = $this->jwtTokenService->generateTokenPair(
                 userId: (int) $user['id'],
                 deviceInfo: $deviceInfo,
@@ -100,8 +99,7 @@ class AuthService
 
         // 如果啟用 JWT 且有提供 JWT 服務和裝置資訊，則產生 JWT token
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $deviceInfo !== null) {
-            try { /* empty */
-            }
+            try {
             $tokenPair = $this->jwtTokenService->generateTokenPair(
                 userId: (int) $user['id'],
                 deviceInfo: $deviceInfo,
@@ -139,8 +137,7 @@ class AuthService
     {
         // 如果啟用 JWT 且有提供 JWT 服務和 access token
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $accessToken !== null) {
-            try { /* empty */
-            }
+            try {
             // 撤銷 access token（將其加入黑名單）
             $this->jwtTokenService->revokeToken($accessToken);
 
@@ -156,4 +153,3 @@ class AuthService
             'message' => '登出成功',
         ];
     }
-}
