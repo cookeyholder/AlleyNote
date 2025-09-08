@@ -79,7 +79,4 @@ try { /* empty */ }
 $routeLoader = new RouteLoader();
 
 try {
- /* empty */         } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+ /* empty */}

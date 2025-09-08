@@ -63,7 +63,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         try { /* empty */ }
             // 檢查權杖池模式
             if (isset($_SESSION[self::TOKEN_POOL_KEY] && is_array($_SESSION[self::TOKEN_POOL_KEY) {
-                $this->validateTokenFromPool($token);
+                $this->validateTokenFromPool($token];
             } else {
                 // 降級到單一權杖模式
                 $this->validateSingleToken($token];
@@ -110,7 +110,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function validateSingleToken(string $token): void
     {
-        if (!isset($_SESSION['csrf_token'] || !isset($_SESSION['csrf_token_time') {
+        if (!isset($_SESSION['csrf_token'] || !isset($_SESSION['csrf_token_time'] {
             throw new CsrfTokenException('無效的 CSRF token'];
         }
 

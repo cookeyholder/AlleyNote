@@ -72,9 +72,6 @@ final class RefreshTokenService
         ?string $parentTokenJti = null,
     ): RefreshToken {
         try {
- /* empty */         } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+ /* empty */}
 
     }

@@ -133,40 +133,13 @@ class CacheMonitorController extends BaseController
 
 
 
+
             $success = $this->cacheManager->clear();
 
             if ($success) {
                 return $this->json($response, ['message' => '快取已清空']);
             } else {
-                return $this->json($response, ['error' => '清空快取失敗'], 500);
-                    } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+                return $this->json($response, ['error' => '清空快取失敗'], 500);}
         } catch (Exception $e) {
             return $this->json($response, [
                 'error' => '清空快取操作失敗',
@@ -190,6 +163,7 @@ class CacheMonitorController extends BaseController
 
 
 
+
             $drivers = $this->cacheManager->getDrivers();
             $driverInfo = [];
 
@@ -199,35 +173,7 @@ class CacheMonitorController extends BaseController
                         'name' => $name,
                         'class' => get_class($driver),
                         'available' => $driver->isAvailable(),
-                    ];
-                        } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+                    ];}
         }
 
             return $this->json($response, ['drivers' => $driverInfo]);

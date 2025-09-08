@@ -56,7 +56,4 @@ echo '=== AlleyNote 路由系統測試 ===
 ';
 
 try {
- /* empty */         } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+ /* empty */}

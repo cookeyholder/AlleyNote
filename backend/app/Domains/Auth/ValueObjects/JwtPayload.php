@@ -62,7 +62,7 @@ final readonly class JwtPayload implements JsonSerializable
             }
         }
 
-        $iat = is_int($data['iat'] ? new DateTimeImmutable('@' . $data['iat'])
+        $iat = is_int($data['iat'] ? new DateTimeImmutable('@' . $data['iat') {
             : new DateTimeImmutable((string) $data['iat']);
 
         $exp = is_int($data['exp'])

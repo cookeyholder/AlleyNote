@@ -148,17 +148,14 @@ class Application
         // 記錄錯誤到監控系統
         try {
 
+
             $errorTracker = $this->container->get(ErrorTrackerInterface::class);
             if ($errorTracker instanceof ErrorTrackerInterface) {
                 $errorTracker->recordCriticalError($e, [
                     'context' => 'application_exception',
                     'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
                     'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
-                ]);
-                    } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+                ]);}
         } catch (Exception $monitoringException) {
             // 如果監控系統本身出錯，記錄到錯誤日誌
             error_log('Monitoring system error: ' . $monitoringException->getMessage());

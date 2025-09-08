@@ -530,7 +530,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array $parameters
      */
-    private function validateDifferent(mixed $value, array $parameters, array $allData = []): bool
+    private function validateDifferent(mixed $value, array $parameters, array $allData = [): bool
     {
         if (empty($parameters)) {
             return true;
@@ -551,7 +551,7 @@ class Validator implements ValidatorInterface
     /**
      * @param array $parameters
      */
-    private function validateSame(mixed $value, array $parameters, array $allData = []): bool
+    private function validateSame(mixed $value, array $parameters, array $allData = [): bool
     {
         if (empty($parameters)) {
             return true;

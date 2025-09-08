@@ -1,80 +1,80 @@
 # 語法錯誤統計報告
 
-> **生成時間**: 2025-09-08 21:32:50
-> **總錯誤數**: 852
+> **生成時間**: 2025-09-08 22:08:49
+> **總錯誤數**: 865
 > **受影響檔案**: 133
 
 ## 📊 錯誤類型統計
 
 | 錯誤類型 | 數量 | 百分比 | 修復建議 |
 |----------|------|--------|----------|
-| 不完整的 try-catch 結構 | 241 | 28.3% | 腳本修復 |
-| 括號不匹配 | 233 | 27.3% | 腳本修復 |
-| 其他語法錯誤 | 160 | 18.8% | 手動檢查 |
-| 陣列語法錯誤 | 137 | 16.1% | 腳本修復 |
-| 意外的語言關鍵字 | 69 | 8.1% | 手動檢查 |
-| 檔案結尾錯誤 | 8 | 0.9% | 手動檢查 |
+| 括號不匹配 | 285 | 32.9% | 腳本修復 |
+| 不完整的 try-catch 結構 | 198 | 22.9% | 腳本修復 |
+| 其他語法錯誤 | 160 | 18.5% | 手動檢查 |
+| 陣列語法錯誤 | 142 | 16.4% | 腳本修復 |
+| 意外的語言關鍵字 | 69 | 8% | 手動檢查 |
+| 檔案結尾錯誤 | 7 | 0.8% | 手動檢查 |
 | 字串語法錯誤 | 4 | 0.5% | 手動檢查 |
 
 ## 📁 問題檔案清單
 
 | 檔案 | 錯誤數 |
 |------|--------|
-| `SuspiciousActivityDetector.php` | 22 |
-| `RefreshTokenRepository.php` | 21 |
+| `SuspiciousActivityDetector.php` | 25 |
+| `MemoryTagRepository.php` | 23 |
+| `ErrorTrackerService.php` | 22 |
+| `SwaggerController.php` | 20 |
 | `StatisticsQueryService.php` | 20 |
-| `CacheMonitorController.php` | 18 |
-| `SwaggerController.php` | 18 |
-| `PasswordSecurityService.php` | 18 |
+| `RefreshTokenRepository.php` | 20 |
+| `PasswordSecurityService.php` | 19 |
 | `SecurityServiceProvider.php` | 18 |
-| `TagManagementController.php` | 17 |
 | `AuthenticationService.php` | 17 |
-| `AttachmentController.php` | 16 |
-| `CSPReportController.php` | 16 |
+| `JwtTokenService.php` | 16 |
 | `StatisticsCalculationService.php` | 16 |
-| `CacheMonitor.php` | 16 |
-| `JwtTokenService.php` | 15 |
+| `AuthController.php` | 15 |
 | `PostStatisticsService.php` | 15 |
 | `CacheServiceProvider.php` | 15 |
-| `AuthController.php` | 14 |
+| `CacheMonitor.php` | 15 |
 | `TokenBlacklistService.php` | 14 |
 | `DeviceInfo.php` | 14 |
 | `StatisticsCacheService.php` | 14 |
 | `ActivityLoggingServiceTest.php` | 14 |
+| `CSPReportController.php` | 13 |
 | `SecurityHeaderService.php` | 13 |
 | `StatisticsRepository.php` | 13 |
 | `MemoryCacheDriver.php` | 13 |
 | `UserActivityDTO.php` | 12 |
+| `SessionSecurityService.php` | 11 |
 | `Router.php` | 11 |
 | `DefaultCacheStrategy.php` | 11 |
 | `DefaultCacheStrategy.php` | 11 |
 | `SystemMonitorService.php` | 11 |
+| `JwtAuthorizationMiddleware.php` | 10 |
 | `StatisticsApplicationService.php` | 10 |
-| `SessionSecurityService.php` | 10 |
 | `RoutingServiceProvider.php` | 10 |
-| `FileCacheDriver.php` | 10 |
 | `TokenBlacklistRepository.php` | 9 |
+| `FileCacheDriver.php` | 9 |
 | `BaseDTOTest.php` | 9 |
+| `IpController.php` | 8 |
 | `PostController.php` | 8 |
 | `PostStatisticsDTO.php` | 8 |
-| `JwtAuthorizationMiddleware.php` | 8 |
 | `RouteCollection.php` | 8 |
 | `RedisTagRepository.php` | 8 |
-| `PerformanceMonitorService.php` | 8 |
-| `PostRequestSchema.php` | 8 |
+| `Validator.php` | 8 |
 | `FileSystemBackupTest.php` | 8 |
-| `IpController.php` | 7 |
+| `AttachmentController.php` | 7 |
 | `JwtException.php` | 7 |
 | `RouteCacheFactory.php` | 7 |
 | `RedisCacheDriver.php` | 7 |
 | `CacheGroupManager.php` | 7 |
+| `PerformanceMonitorService.php` | 7 |
+| `PostRequestSchema.php` | 7 |
 | `SimpleUserActivityLogPerformanceTest.php` | 7 |
+| `JwtAuthenticationMiddleware.php` | 6 |
 | `AuthorizationService.php` | 6 |
 | `UpdatePostDTO.php` | 6 |
 | `StatisticsCalculationCommand.php` | 6 |
-| `CacheManager.php` | 6 |
-| `EnvironmentConfig.php` | 6 |
-| `Validator.php` | 6 |
+| `StatisticsCalculationConsole.php` | 6 |
 | `UITestCase.php` | 6 |
 | `FileSecurityService.php` | 5 |
 | `PostService.php` | 5 |
@@ -82,15 +82,15 @@
 | `LoggingSecurityService.php` | 5 |
 | `Uri.php` | 5 |
 | `RedisRouteCache.php` | 5 |
+| `CacheManager.php` | 5 |
+| `EnvironmentConfig.php` | 5 |
 | `AuthEndpointTest.php` | 5 |
 | `JwtExceptionTest.php` | 5 |
-| `JwtAuthenticationMiddleware.php` | 4 |
 | `TokenBlacklistEntry.php` | 4 |
 | `PostRepository.php` | 4 |
 | `PostCacheKeyService.php` | 4 |
 | `CreateActivityLogDTO.php` | 4 |
 | `SecurityTestService.php` | 4 |
-| `CsrfProtectionService.php` | 4 |
 | `CacheKeys.php` | 4 |
 | `Response.php` | 4 |
 | `JwtConfig.php` | 4 |
@@ -104,8 +104,10 @@
 | `PwnedPasswordService.php` | 3 |
 | `JwtPayload.php` | 3 |
 | `RichTextProcessorService.php` | 3 |
+| `CsrfProtectionService.php` | 3 |
 | `ErrorHandlerService.php` | 3 |
 | `IpService.php` | 3 |
+| `SecretsManager.php` | 3 |
 | `SourceStatistics.php` | 3 |
 | `FirebaseJwtProvider.php` | 3 |
 | `CacheManager.php` | 3 |
@@ -118,11 +120,11 @@
 | `SourceDistributionDTO.php` | 2 |
 | `RateLimitMiddleware.php` | 2 |
 | `AuthService.php` | 2 |
+| `RefreshTokenService.php` | 2 |
 | `CreatePostDTO.php` | 2 |
 | `ContentModerationService.php` | 2 |
 | `ActivityLogRepository.php` | 2 |
-| `IpRepository.php` | 2 |
-| `SecretsManager.php` | 2 |
+| `XssProtectionService.php` | 2 |
 | `Route.php` | 2 |
 | `MiddlewareDispatcher.php` | 2 |
 | `CacheService.php` | 2 |
@@ -133,12 +135,10 @@
 | `DTOValidationIntegrationTest.php` | 2 |
 | `XssPreventionTest.php` | 2 |
 | `CacheTagTest.php` | 2 |
-| `Application.php` | 1 |
 | `StatisticsOverviewDTO.php` | 1 |
 | `UserRepository.php` | 1 |
-| `RefreshTokenService.php` | 1 |
 | `PostValidator.php` | 1 |
-| `XssProtectionService.php` | 1 |
+| `IpRepository.php` | 1 |
 | `StatisticsSnapshot.php` | 1 |
 | `Stream.php` | 1 |
 | `RouteLoader.php` | 1 |

@@ -110,6 +110,7 @@ class PostController extends BaseController
 
 
 
+
             $queryParams = $request->getQueryParams();
 
             // 安全地獲取page參數
@@ -138,35 +139,7 @@ class PostController extends BaseController
                 || !array_key_exists('total', $result)
                 || !array_key_exists('page', $result)
                 || !array_key_exists('per_page', $result)) {
-                throw new Exception('Invalid service response format');
-                    } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+                throw new Exception('Invalid service response format');}
         }
     }
     }

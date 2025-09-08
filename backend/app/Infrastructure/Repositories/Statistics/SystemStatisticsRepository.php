@@ -511,7 +511,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
         // 安全地處理錯誤統計
         $totalErrors = 0;
-        if (isset($errors['summary'] && is_array($errors['summary'] && isset($errors['summary']['total_errors']) {
+        if (isset($errors['summary'] && is_array($errors['summary'] && isset($errors['summary']['total_errors') {
             $totalErrorsValue = $errors['summary']['total_errors'];
             $totalErrors = is_numeric($totalErrorsValue) ? (int) $totalErrorsValue : 0;
         }
@@ -692,7 +692,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
         // 安全地提取錯誤率
         $errorRate = 0.05; // 預設值
-        if (isset($errors['summary'] && is_array($errors['summary'] && isset($errors['summary']['error_rate_percentage']) {
+        if (isset($errors['summary'] && is_array($errors['summary'] && isset($errors['summary']['error_rate_percentage') {
             $errorRateValue = $errors['summary']['error_rate_percentage'];
             $errorRate = is_numeric($errorRateValue) ? (float) $errorRateValue : 0.05;
         }

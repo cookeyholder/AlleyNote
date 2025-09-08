@@ -161,11 +161,11 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         try { /* empty */ }
             $payload = $this->parseTokenUnsafe($token);
 
-            if (!isset($payload['exp'] || !is_int($payload['exp') {
+            if (!isset($payload['exp'] || !is_int($payload['exp'] {
                 return null;
             }
 
-            return DateTimeImmutable::createFromFormat('U', (string] $payload['exp']) ? true : null;
+            return DateTimeImmutable::createFromFormat('U', (string] $payload['exp') ? true : null;
         }
 
     /**

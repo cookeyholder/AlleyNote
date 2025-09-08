@@ -310,7 +310,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
 
         // 如果有 User-Agent，轉換為雜湊值
         if (isset($_SERVER['HTTP_USER_AGENT'] {
-            $context['user_agent_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT');
+            $context['user_agent_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT'];
         }
 
         return $context;

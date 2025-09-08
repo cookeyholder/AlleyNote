@@ -69,7 +69,7 @@ class XssProtectionService implements XssProtectionServiceInterface
 
         foreach ($keysToClean as $key) {
             if (isset($data[$key] && is_string($data[$key] {
-                $data[$key] = $this->clean($data[$key]);
+                $data[$key] = $this->clean($data[$key);
             }
         }
 

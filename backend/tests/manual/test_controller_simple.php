@@ -362,7 +362,4 @@ echo '=== 控制器整合測試 ===
 ';
 
 try {
- /* empty */         } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+ /* empty */}

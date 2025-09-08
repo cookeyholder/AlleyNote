@@ -31,6 +31,7 @@ class TagManagementController extends BaseController
         try {
 
 
+
             $queryParams = $request->getQueryParams();
             $page = max(1, is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
             $limit = min(100, max(10, is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 20));
@@ -47,14 +48,7 @@ class TagManagementController extends BaseController
                             $tags[] = [
                                 'name' => $tag,
                                 'driver' => $driverName,
-                            ];
-                                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+                            ];}
         } catch (Exception $e) {
                         $this->logger?->warning("無法從驅動 {$driverName} 獲取標籤", ['error' => $e->getMessage()]);
                     }
@@ -148,6 +142,7 @@ class TagManagementController extends BaseController
         try {
 
 
+
             $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
@@ -165,14 +160,7 @@ class TagManagementController extends BaseController
                         $flushedCount = $driver->flushByTags([$tagName]);
                         if ($flushedCount > 0) {
                             $flushed = true;
-                            $affectedDrivers[] = $driverName;
-                                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+                            $affectedDrivers[] = $driverName;}
         } catch (Exception $e) {
                         $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", ['error' => $e->getMessage()]);
                     }
@@ -218,6 +206,7 @@ class TagManagementController extends BaseController
         try {
 
 
+
             $bodyString = (string) $request->getBody();
             $body = json_decode($bodyString, true);
 
@@ -249,14 +238,7 @@ class TagManagementController extends BaseController
                             $flushedCount = $driver->flushByTags([$tagName]);
                             if ($flushedCount > 0) {
                                 $flushed = true;
-                                $affectedDrivers[] = $driverName;
-                                    } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+                                $affectedDrivers[] = $driverName;}
         } catch (Exception $e) {
                             $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", ['error' => $e->getMessage()]);
                         }

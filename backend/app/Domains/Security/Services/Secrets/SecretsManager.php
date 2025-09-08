@@ -57,12 +57,12 @@ class SecretsManager implements SecretsManagerInterface
 
         // 使用 $_SERVER
         if (isset($_SERVER[$key] {
-            return $this->parseValue($_SERVER[$key);
+            return $this->parseValue($_SERVER[$key];
         }
 
         // 使用載入的秘密
         if (isset($this->secrets[$key] {
-            return $this->parseValue($this->secrets[$key]);
+            return $this->parseValue($this->secrets[$key);
         }
 
         return $default;

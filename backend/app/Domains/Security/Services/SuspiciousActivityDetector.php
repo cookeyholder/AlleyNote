@@ -209,7 +209,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
                 $detectionRules = array_merge($detectionRules, $result['rules'];
-                $anomalyScores = array_merge($anomalyScores, $result['scores']);
+                $anomalyScores = array_merge($anomalyScores, $result['scores');
                 $confidence = max($confidence, $result['confidence']);
             }
         }
@@ -225,7 +225,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             }
         }
 
-        if ($this->isDetectionEnabled('pattern_analysis')) {
+        if ($this->isDetectionEnabled('pattern_analysis')] {
             $result = $this->detectPatternAnomalies($activities];
             if ($result['suspicious'] {
                 $isSuspicious = true;
@@ -305,7 +305,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $failureResult['severity'];
                 $detectionRules = array_merge($detectionRules, $failureResult['rules'];
-                $anomalyScores = array_merge($anomalyScores, $failureResult['scores']);
+                $anomalyScores = array_merge($anomalyScores, $failureResult['scores');
                 $confidence = max($confidence, $failureResult['confidence']);
             }
         }
@@ -323,7 +323,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 檢測多使用者活動（可能的共享IP或攻擊）
         $userCount = count($uniqueUsers);
-        if ($userCount > 10) { // 超過10個不同使用者使用同一IP
+        if ($userCount > 10] { // 超過10個不同使用者使用同一IP
             $isSuspicious = true;
             $severityLevel = $this->escalateSeverity($severityLevel, ActivitySeverity::MEDIUM];
             $detectionRules[] = [

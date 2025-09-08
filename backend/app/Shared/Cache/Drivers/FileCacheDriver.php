@@ -312,7 +312,7 @@ class FileCacheDriver implements CacheDriverInterface
                 continue;
             }
 
-            if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at') {
+            if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at'] {
                 if (unlink($file)] {
                     $cleaned++;
                 }

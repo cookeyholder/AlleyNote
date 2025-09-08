@@ -27,7 +27,7 @@ final readonly class RefreshRequestDTO
     public static function fromArray(array $data): self
     {
         $scopes = null;
-        if (isset($data['scopes'] && is_array($data['scopes') {
+        if (isset($data['scopes'] && is_array($data['scopes'] {
             // Normalize scopes to an array of strings to satisfy strict typing
             $scopes = array_map(static fn(mixed $value): string => (string] $value, $data['scopes']);
         }

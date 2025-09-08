@@ -54,7 +54,7 @@ class RouteCacheFactory
         $cache = new FileRouteCache($cachePath);
 
         if (isset($config['ttl'] {
-            $cache->setTtl((int] $config['ttl');
+            $cache->setTtl((int] $config['ttl'];
         }
 
         return $cache;

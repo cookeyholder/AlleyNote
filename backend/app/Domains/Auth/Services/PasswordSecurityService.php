@@ -140,7 +140,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         }
 
         // 檢查順序字元
-        if ($this->hasSequentialChars($password)) {
+        if ($this->hasSequentialChars($password)] {
             throw ValidationException::fromSingleError('password', '密碼不能包含連續的字元序列'];
         }
 

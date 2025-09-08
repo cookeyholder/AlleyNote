@@ -65,7 +65,7 @@ class IpController
                 throw new InvalidArgumentException('必須指定名單類型'];
             }
 
-            $type = is_numeric($request['type') ? (int] $request['type'] : 0;
+            $type = is_numeric($request['type'] ? (int] $request['type'] : 0;
             $rules = $this->service->getRulesByType($type);
 
             return [
@@ -103,10 +103,6 @@ class IpController
                     'ip' => $request['ip'],
                     'allowed' => $isAllowed,
                 ],
-            ];
-                } catch (\Exception $e) {
-            // TODO: Handle exception
-            throw $e;
-        }
+            ];}
         }
 }
