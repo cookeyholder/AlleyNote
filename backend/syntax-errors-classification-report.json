@@ -1,16 +1,13 @@
 {
-    "timestamp": "2025-09-09T04:39:35+08:00",
-    "total_syntax_errors": 542,
-    "affected_files": 114,
+    "timestamp": "2025-09-09T04:44:59+08:00",
+    "total_syntax_errors": 503,
+    "affected_files": 111,
     "error_type_stats": {
-        "syntax_general": 443,
-        "try_without_catch": 90,
-        "empty_array_elements": 9
+        "syntax_general": 408,
+        "try_without_catch": 89,
+        "empty_array_elements": 6
     },
     "file_error_counts": {
-        "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/MemoryCacheDriver.php": 14,
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Providers\/RoutingServiceProvider.php": 13,
-        "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/UserActivityDTO.php": 12,
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/SessionSecurityService.php": 12,
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/Advanced\/PwnedPasswordService.php": 11,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/Router.php": 11,
@@ -266,68 +263,6 @@
             {
                 "line": 265,
                 "message": "Syntax error, unexpected ')', expecting ']' on line 265",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/UserActivityDTO.php": [
-            {
-                "line": 407,
-                "message": "Cannot use empty array elements in arrays on line 407",
-                "type": "empty_array_elements"
-            },
-            {
-                "line": 407,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 407",
-                "type": "syntax_general"
-            },
-            {
-                "line": 414,
-                "message": "Cannot use empty array elements in arrays on line 414",
-                "type": "empty_array_elements"
-            },
-            {
-                "line": 414,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 414",
-                "type": "syntax_general"
-            },
-            {
-                "line": 510,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 510",
-                "type": "syntax_general"
-            },
-            {
-                "line": 511,
-                "message": "Syntax error, unexpected ',' on line 511",
-                "type": "syntax_general"
-            },
-            {
-                "line": 512,
-                "message": "Syntax error, unexpected ',' on line 512",
-                "type": "syntax_general"
-            },
-            {
-                "line": 513,
-                "message": "Syntax error, unexpected ',' on line 513",
-                "type": "syntax_general"
-            },
-            {
-                "line": 514,
-                "message": "Syntax error, unexpected ',' on line 514",
-                "type": "syntax_general"
-            },
-            {
-                "line": 515,
-                "message": "Syntax error, unexpected ',' on line 515",
-                "type": "syntax_general"
-            },
-            {
-                "line": 526,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 526",
-                "type": "syntax_general"
-            },
-            {
-                "line": 528,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 528",
                 "type": "syntax_general"
             }
         ],
@@ -1682,73 +1617,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Providers\/RoutingServiceProvider.php": [
-            {
-                "line": 41,
-                "message": "Cannot use empty array elements in arrays on line 41",
-                "type": "empty_array_elements"
-            },
-            {
-                "line": 41,
-                "message": "Syntax error, unexpected ')', expecting ';' on line 41",
-                "type": "syntax_general"
-            },
-            {
-                "line": 41,
-                "message": "Syntax error, unexpected ':' on line 41",
-                "type": "syntax_general"
-            },
-            {
-                "line": 44,
-                "message": "Syntax error, unexpected ':' on line 44",
-                "type": "syntax_general"
-            },
-            {
-                "line": 44,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 44",
-                "type": "syntax_general"
-            },
-            {
-                "line": 47,
-                "message": "Syntax error, unexpected ':' on line 47",
-                "type": "syntax_general"
-            },
-            {
-                "line": 47,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 47",
-                "type": "syntax_general"
-            },
-            {
-                "line": 50,
-                "message": "Syntax error, unexpected ',' on line 50",
-                "type": "syntax_general"
-            },
-            {
-                "line": 50,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 50",
-                "type": "syntax_general"
-            },
-            {
-                "line": 53,
-                "message": "Syntax error, unexpected ':' on line 53",
-                "type": "syntax_general"
-            },
-            {
-                "line": 53,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 53",
-                "type": "syntax_general"
-            },
-            {
-                "line": 123,
-                "message": "Cannot use try without catch or finally on line 123",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 135,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 135",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/RouteDispatcher.php": [
             {
                 "line": 56,
@@ -1865,78 +1733,6 @@
             {
                 "line": 321,
                 "message": "Syntax error, unexpected ']', expecting ')' on line 321",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/MemoryCacheDriver.php": [
-            {
-                "line": 93,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 93",
-                "type": "syntax_general"
-            },
-            {
-                "line": 111,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 111",
-                "type": "syntax_general"
-            },
-            {
-                "line": 262,
-                "message": "Syntax error, unexpected '{' on line 262",
-                "type": "syntax_general"
-            },
-            {
-                "line": 263,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 263",
-                "type": "syntax_general"
-            },
-            {
-                "line": 276,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 276",
-                "type": "syntax_general"
-            },
-            {
-                "line": 301,
-                "message": "Syntax error, unexpected ']' on line 301",
-                "type": "syntax_general"
-            },
-            {
-                "line": 305,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 305",
-                "type": "syntax_general"
-            },
-            {
-                "line": 420,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 420",
-                "type": "syntax_general"
-            },
-            {
-                "line": 441,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 441",
-                "type": "syntax_general"
-            },
-            {
-                "line": 452,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 452",
-                "type": "syntax_general"
-            },
-            {
-                "line": 517,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 517",
-                "type": "syntax_general"
-            },
-            {
-                "line": 523,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 523",
-                "type": "syntax_general"
-            },
-            {
-                "line": 545,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 545",
-                "type": "syntax_general"
-            },
-            {
-                "line": 639,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 639",
                 "type": "syntax_general"
             }
         ],
@@ -3171,9 +2967,6 @@
         "\/var\/www\/html\/tests\/Security\/SqlInjectionTest.php": 4
     },
     "complex_fixes": {
-        "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/MemoryCacheDriver.php": 14,
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Providers\/RoutingServiceProvider.php": 13,
-        "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/UserActivityDTO.php": 12,
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/SessionSecurityService.php": 12,
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/Advanced\/PwnedPasswordService.php": 11,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/Router.php": 11,

@@ -31,9 +31,9 @@ final readonly class UserActivityDTO implements JsonSerializable
      * @param array> $topActiveUsers
      * @param array $engagementMetrics 參與度指標
      */
-    
-    
-    
+
+
+
     public function __construct(
         public StatisticsPeriod $period,
         public StatisticsMetric $totalActiveUsers,
@@ -404,14 +404,14 @@ final readonly class UserActivityDTO implements JsonSerializable
                     'previous' => $other->totalActiveUsers->value,
                     'change' => $this->totalActiveUsers->value - $other->totalActiveUsers->value,
                     'change_percentage' => $other->totalActiveUsers->value > 0
-                        ? round((($this->totalActiveUsers->value - $other->totalActiveUsers->value) / $other->totalActiveUsers->value) * 100, 2)  => 0,
+                        ? round((($this->totalActiveUsers->value - $other->totalActiveUsers->value) / $other->totalActiveUsers->value) * 100, 2) : 0,
                 ],
                 'new_users' => [
                     'current' => $this->newUsers->value,
                     'previous' => $other->newUsers->value,
                     'change' => $this->newUsers->value - $other->newUsers->value,
                     'change_percentage' => $other->newUsers->value > 0
-                        ? round((($this->newUsers->value - $other->newUsers->value) / $other->newUsers->value) * 100, 2)  => 0,
+                        ? round((($this->newUsers->value - $other->newUsers->value) / $other->newUsers->value) * 100, 2) : 0,
                 ],
             ],
             'engagement_changes' => [
@@ -507,7 +507,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         $conversionRateValue = $userStats['conversion_rate'] ?? null;
 
         return [
-            'growth_rate' => is_numeric($growthRateValue) ? (float) $growthRateValue  => 0.0,
+            'growth_rate' => is_numeric($growthRateValue) ? (float) $growthRateValue : 0.0,
             'avg_session_duration' => is_numeric($avgSessionDurationValue) ? (float) $avgSessionDurationValue : 0.0,
             'avg_page_views' => is_numeric($avgPageViewsValue) ? (float) $avgPageViewsValue : 0.0,
             'bounce_rate' => is_numeric($bounceRateValue) ? (float) $bounceRateValue : 0.0,
@@ -523,9 +523,9 @@ final readonly class UserActivityDTO implements JsonSerializable
     private function validateTopActiveUsers(array $topUsers): void
     {
         foreach ($topUsers as $index => $user) {
-            if (!isset($user['user_id'] {
+            if (!isset($user['user_id'])) {
                 throw new InvalidArgumentException(
-                    "最活躍使用者索引 {$index} 必須包含 user_id"];
+                    "最活躍使用者索引 {$index} 必須包含 user_id");
             }
         }
     }

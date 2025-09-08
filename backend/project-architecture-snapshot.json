@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 04:36:33",
+        "scan_time": "2025-09-09 04:41:08",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -798,7 +798,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Core\/XssProtectionService.php",
                                                     "extension": "php",
-                                                    "size": 5192
+                                                    "size": 7619
                                                 },
                                                 "CsrfProtectionService.php": {
                                                     "type": "file",
@@ -858,7 +858,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php",
                                                     "extension": "php",
-                                                    "size": 10286
+                                                    "size": 12275
                                                 }
                                             }
                                         },
@@ -1244,7 +1244,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/ValueObjects\/DeviceInfo.php",
                                             "extension": "php",
-                                            "size": 19106
+                                            "size": 19108
                                         },
                                         "JwtPayload.php": {
                                             "type": "file",
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 135991
+            "size": 128919
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1678113
+            "size": 1678209
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -7855,6 +7855,7 @@
                 "App\\Domains\\Security\\Contracts\\XssProtectionServiceInterface",
                 "App\\Domains\\Security\\DTOs\\CreateActivityLogDTO",
                 "App\\Domains\\Security\\Enums\\ActivityType",
+                "Exception",
                 "HTMLPurifier",
                 "HTMLPurifier_Config"
             ],
@@ -7871,10 +7872,13 @@
                 "cleanForUrl",
                 "initializePurifiers",
                 "cleanArrayRecursive",
-                "logXssAttempt"
+                "logXssAttempt",
+                "containsDangerousPatterns",
+                "getStats",
+                "isHealthy"
             ],
             "constants": [],
-            "lines_of_code": 176
+            "lines_of_code": 266
         },
         "app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php": {
             "path": "app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php",
@@ -8076,7 +8080,8 @@
             "interfaces": [],
             "traits": [],
             "uses": [
-                "App\\Domains\\Security\\Contracts\\SecurityHeaderServiceInterface"
+                "App\\Domains\\Security\\Contracts\\SecurityHeaderServiceInterface",
+                "Exception"
             ],
             "functions": [
                 "__construct",
@@ -8084,16 +8089,18 @@
                 "generateNonce",
                 "getCurrentNonce",
                 "handleCSPReport",
+                "removeServerSignature",
                 "logCSPViolation",
                 "sendToMonitoring",
-                "removeServerSignature",
                 "buildCSP",
                 "buildPermissionsPolicy",
                 "isHTTPS",
-                "getDefaultConfig"
+                "getDefaultConfig",
+                "getStats",
+                "isHealthy"
             ],
             "constants": [],
-            "lines_of_code": 319
+            "lines_of_code": 394
         },
         "app\/Domains\/Security\/Services\/ActivityLoggingService.php": {
             "path": "app\/Domains\/Security\/Services\/ActivityLoggingService.php",
@@ -26396,7 +26403,7 @@
             "avg_classes_per_file": 0.79
         },
         "dependency_metrics": {
-            "total_dependencies": 2324,
+            "total_dependencies": 2326,
             "avg_dependencies_per_file": 3.94
         },
         "maintainability_score": 100,
@@ -28397,6 +28404,11 @@
             },
             {
                 "type": "use",
+                "target": "Exception",
+                "file": null
+            },
+            {
+                "type": "use",
                 "target": "HTMLPurifier",
                 "file": null
             },
@@ -28576,6 +28588,11 @@
                 "type": "use",
                 "target": "App\\Domains\\Security\\Contracts\\SecurityHeaderServiceInterface",
                 "file": "app\/Domains\/Security\/Contracts\/SecurityHeaderServiceInterface.php"
+            },
+            {
+                "type": "use",
+                "target": "Exception",
+                "file": null
             }
         ],
         "app\/Domains\/Security\/Services\/ActivityLoggingService.php": [
