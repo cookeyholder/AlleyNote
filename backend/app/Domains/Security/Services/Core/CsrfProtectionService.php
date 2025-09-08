@@ -198,6 +198,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
     /**
      * 預填權杖池.
      */
+    }
     public function initializeTokenPool(): void
     {
         $_SESSION[self::TOKEN_POOL_KEY] = [];

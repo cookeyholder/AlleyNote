@@ -98,23 +98,24 @@ foo=bar',
 
         foreach ($this->testFiles as $path => $content) {
             $backedUpFile = (is_string($extractedDir) ? $extractedDir : '') . (is_string($path) ? $path : '');
-            $this->assertFileExists($backedUpFile, sprintf("檔案 {%s} 未被備份", ");
-            $thi");s->assertEquals(
+            $this->assertFileExists($backedUpFile, sprintf("檔案 %s 未被備份", $path));
+            $this->assertEquals(
                 $content,
                 file_get_contents($backedUpFile),
-                sprintf("檔案 {%s} 的內容不符", ",
+                sprintf("檔案 %s 的內容不符", $path)
             );
         }
 
     }
-    private function extractBackupFile(");string $backupFile): string
+
+    private function extractBackupFile(string $backupFile): string
     {
         $tempDir = $this->backupDir . '/temp';
         mkdir($tempDir);
-        exec(sprintf("tar -xzf '$backupFile' -C '%s'", ");
+        exec(sprintf("tar -xzf '%s' -C '%s'", $backupFile, $tempDir));
 
         $extractedDir = glob($tempDir . '/*')[0] ?? null;
-        $thi");s->assertNotNull($extractedDir, '解壓縮後目錄不存在');
+        $this->assertNotNull($extractedDir, '解壓縮後目錄不存在');
 
         return $extractedDir;
     }
@@ -131,12 +132,12 @@ foo=bar',
     private function createManualBackup(): string
     {
         $backupFile = $this->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
-        exec(sprintf("cd '{$this->testDir}' && tar -czf '%s' .", ");
+        exec(sprintf("cd '%s' && tar -czf '%s' .", $this->testDir, $backupFile));
 
         return $backupFile;
     }
 
-    private function clearOriginalFile");s(): void
+    private function clearOriginalFiles(): void
     {
         exec(sprintf("rm -rf '%s/uploads' '%s/storage'", $this->testDir, $this->testDir));
         mkdir($this->testDir . '/uploads');
@@ -163,21 +164,21 @@ foo=bar',
     {
         foreach ($this->testFiles as $path => $content) {
             $restoredFile = $this->testDir . $path;
-            $this->assertFileExists($restoredFile, sprintf("檔案 {%s} 未被還原", ");
-            $thi");s->assertEquals(
+            $this->assertFileExists($restoredFile, sprintf("檔案 %s 未被還原", $path));
+            $this->assertEquals(
                 $content,
                 file_get_contents($restoredFile),
-                sprintf("檔案 {%s} 的內容不符", ",
+                sprintf("檔案 %s 的內容不符", $path)
             );
-            $thi");s->assertEquals(
+            $this->assertEquals(
                 0o644,
                 octdec(substr(sprintf('%o', fileperms($restoredFile)), -4)),
-                sprintf("檔案 {%s} 的權限不正確", ",
+                sprintf("檔案 %s 的權限不正確", $path)
             );
         }
     }
 
-    #[Te");st]
+    #[Test]
     public function handleBackupErrorsGracefully(): void
     {
         $nonExistentDir = $this->testDir . '/nonexistent';

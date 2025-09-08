@@ -182,7 +182,7 @@ final class RefreshTokenService
             ]);
 
             return $newTokenPair;
-        } 
+        }
     }
 
     /**
@@ -234,15 +234,23 @@ final class RefreshTokenService
                     $revokedCount++;
                 }
             }
+try {
+    $revokedCount = $this->refreshTokenRepository->revokeAllUserTokens($userId, $reason);
 
-            $this->logger?->info('User tokens revoked', [
-                'user_id' => $userId,
-                'revoked_count' => $revokedCount,
-                'reason' => $reason,
-            ]);
+    $this->logger?->info('All user tokens revoked', [
+        'user_id' => $userId,
+        'revoked_count' => $revokedCount,
+        'reason' => $reason,
+    ]);
 
-            return $revokedCount;
-        }
+    return $revokedCount;
+} catch (\Exception $e) {
+    $this->logger?->error('Failed to revoke all user tokens', [
+        'user_id' => $userId,
+        'error' => $e->getMessage(),
+    ]);
+    return 0;
+}
 
     /**
      * 撤銷裝置的所有 refresh token.
@@ -251,7 +259,7 @@ final class RefreshTokenService
      */
     public function revokeDeviceTokens(string $deviceId, string $reason = RefreshToken::REVOKE_REASON_SECURITY): int
     {
-        try { /* empty */ }
+        try {
             $revokedCount = $this->refreshTokenRepository->revokeAllByDevice(0, $deviceId, $reason);
 
             $this->logger?->info('Device tokens revoked', [
@@ -261,6 +269,12 @@ final class RefreshTokenService
             ]);
 
             return $revokedCount;
+        } catch (\Exception $e) {
+            $this->logger?->error('Failed to revoke device tokens', [
+                'device_id' => $deviceId,
+                'error' => $e->getMessage(),
+            ]);
+            return 0;
         }
 
     /**

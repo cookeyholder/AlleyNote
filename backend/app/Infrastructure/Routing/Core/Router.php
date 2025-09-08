@@ -299,4 +299,5 @@ class Router implements RouterInterface
 
         return $merged;
     }
+    }
 }

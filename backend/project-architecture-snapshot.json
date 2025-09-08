@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-08 19:31:59",
+        "scan_time": "2025-09-08 19:49:07",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -188,7 +188,7 @@
                     "type": "file",
                     "path": "app\/Application.php",
                     "extension": "php",
-                    "size": 10695
+                    "size": 10798
                 },
                 "Domains": {
                     "type": "directory",
@@ -792,7 +792,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php",
                                                     "extension": "php",
-                                                    "size": 8598
+                                                    "size": 8600
                                                 }
                                             }
                                         },
@@ -968,7 +968,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Providers\/AuthServiceProvider.php",
                                             "extension": "php",
-                                            "size": 7659
+                                            "size": 7628
                                         },
                                         "SimpleAuthServiceProvider.php": {
                                             "type": "file",
@@ -1944,7 +1944,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Controllers\/Security\/CSPReportController.php",
                                             "extension": "php",
-                                            "size": 1215
+                                            "size": 1921
                                         }
                                     }
                                 },
@@ -1956,7 +1956,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Controllers\/Web\/SwaggerController.php",
                                             "extension": "php",
-                                            "size": 7884
+                                            "size": 8487
                                         }
                                     }
                                 },
@@ -1968,7 +1968,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Controllers\/Health\/HealthController.php",
                                             "extension": "php",
-                                            "size": 3902
+                                            "size": 4505
                                         }
                                     }
                                 },
@@ -1980,13 +1980,13 @@
                                             "type": "file",
                                             "path": "app\/Application\/Controllers\/Admin\/TagManagementController.php",
                                             "extension": "php",
-                                            "size": 11932
+                                            "size": 12241
                                         },
                                         "CacheMonitorController.php": {
                                             "type": "file",
                                             "path": "app\/Application\/Controllers\/Admin\/CacheMonitorController.php",
                                             "extension": "php",
-                                            "size": 6120
+                                            "size": 6326
                                         }
                                     }
                                 },
@@ -2020,7 +2020,7 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/ActivityLogController.php",
                                                     "extension": "php",
-                                                    "size": 11679
+                                                    "size": 12885
                                                 },
                                                 "ActivityLogController.php.backup.2025-08-30_08-53-31": {
                                                     "type": "file",
@@ -2032,19 +2032,19 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/AuthController.php",
                                                     "extension": "php",
-                                                    "size": 17325
+                                                    "size": 18534
                                                 },
                                                 "PostController.php": {
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/PostController.php",
                                                     "extension": "php",
-                                                    "size": 5315
+                                                    "size": 5422
                                                 },
                                                 "AttachmentController.php": {
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/AttachmentController.php",
                                                     "extension": "php",
-                                                    "size": 14603
+                                                    "size": 15313
                                                 },
                                                 "AttachmentController.php.backup.2025-08-30_08-53-31": {
                                                     "type": "file",
@@ -2062,7 +2062,7 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/Statistics\/StatisticsAdminController.php",
                                                     "extension": "php",
-                                                    "size": 1627
+                                                    "size": 1734
                                                 },
                                                 "StatisticsController.php": {
                                                     "type": "file",
@@ -2358,7 +2358,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Core\/Router.php",
                                             "extension": "php",
-                                            "size": 8348
+                                            "size": 8350
                                         }
                                     }
                                 },
@@ -2625,6 +2625,12 @@
             "path": "phpstan.neon",
             "extension": "neon",
             "size": 2128
+        },
+        "fifth-round-progress-report.md": {
+            "type": "file",
+            "path": "fifth-round-progress-report.md",
+            "extension": "md",
+            "size": 12514
         },
         "tests": {
             "type": "directory",
@@ -3681,7 +3687,7 @@
                             "type": "file",
                             "path": "tests\/Integration\/JwtTokenBlacklistIntegrationTest.php",
                             "extension": "php",
-                            "size": 14324
+                            "size": 14291
                         },
                         "DIValidationIntegrationTest.php": {
                             "type": "file",
@@ -3945,7 +3951,7 @@
                             "type": "file",
                             "path": "tests\/Performance\/SimpleUserActivityLogPerformanceTest.php",
                             "extension": "php",
-                            "size": 14195
+                            "size": 14300
                         }
                     }
                 },
@@ -5211,7 +5217,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1668931
+            "size": 1670300
         },
         "test_private_key.pem": {
             "type": "file",
@@ -5281,13 +5287,13 @@
             "type": "file",
             "path": "syntax-errors-summary.md",
             "extension": "md",
-            "size": 5868
+            "size": 5785
         }
     },
     "file_statistics": {
-        "total_files": 661,
+        "total_files": 662,
         "by_extension": {
-            "md": 15,
+            "md": 16,
             "php": 593,
             "bak": 3,
             "sqlite3": 1,
@@ -5311,7 +5317,7 @@
             "development": 1
         },
         "by_directory": {
-            "\/": 32,
+            "\/": 33,
             "\/database\/migrations": 10,
             "\/database": 2,
             "\/database\/seeds": 3,
@@ -5748,7 +5754,7 @@
                 "41": "getRouter"
             },
             "constants": [],
-            "lines_of_code": 407
+            "lines_of_code": 411
         },
         "app\/Domains\/Statistics\/Contracts\/SystemStatisticsRepositoryInterface.php": {
             "path": "app\/Domains\/Statistics\/Contracts\/SystemStatisticsRepositoryInterface.php",
@@ -12154,7 +12160,7 @@
                 "handleReport"
             ],
             "constants": [],
-            "lines_of_code": 53
+            "lines_of_code": 65
         },
         "app\/Application\/Controllers\/Web\/SwaggerController.php": {
             "path": "app\/Application\/Controllers\/Web\/SwaggerController.php",
@@ -12180,7 +12186,7 @@
                 "info"
             ],
             "constants": [],
-            "lines_of_code": 213
+            "lines_of_code": 225
         },
         "app\/Application\/Controllers\/Health\/HealthController.php": {
             "path": "app\/Application\/Controllers\/Health\/HealthController.php",
@@ -12204,7 +12210,7 @@
                 "check"
             ],
             "constants": [],
-            "lines_of_code": 98
+            "lines_of_code": 110
         },
         "app\/Application\/Controllers\/Admin\/TagManagementController.php": {
             "path": "app\/Application\/Controllers\/Admin\/TagManagementController.php",
@@ -12235,7 +12241,7 @@
                 "flushAllCache"
             ],
             "constants": [],
-            "lines_of_code": 365
+            "lines_of_code": 377
         },
         "app\/Application\/Controllers\/Admin\/CacheMonitorController.php": {
             "path": "app\/Application\/Controllers\/Admin\/CacheMonitorController.php",
@@ -12266,7 +12272,7 @@
                 "getDriverInfo"
             ],
             "constants": [],
-            "lines_of_code": 202
+            "lines_of_code": 210
         },
         "app\/Application\/Controllers\/PostController.php": {
             "path": "app\/Application\/Controllers\/PostController.php",
@@ -12366,7 +12372,7 @@
                 "index"
             ],
             "constants": [],
-            "lines_of_code": 275
+            "lines_of_code": 299
         },
         "app\/Application\/Controllers\/Api\/V1\/AuthController.php": {
             "path": "app\/Application\/Controllers\/Api\/V1\/AuthController.php",
@@ -12408,7 +12414,7 @@
                 "login"
             ],
             "constants": [],
-            "lines_of_code": 420
+            "lines_of_code": 443
         },
         "app\/Application\/Controllers\/Api\/V1\/PostController.php": {
             "path": "app\/Application\/Controllers\/Api\/V1\/PostController.php",
@@ -12445,7 +12451,7 @@
                 "index"
             ],
             "constants": [],
-            "lines_of_code": 152
+            "lines_of_code": 156
         },
         "app\/Application\/Controllers\/Api\/V1\/AttachmentController.php": {
             "path": "app\/Application\/Controllers\/Api\/V1\/AttachmentController.php",
@@ -12475,7 +12481,7 @@
                 "download"
             ],
             "constants": [],
-            "lines_of_code": 361
+            "lines_of_code": 377
         },
         "app\/Application\/Controllers\/Api\/Statistics\/StatisticsAdminController.php": {
             "path": "app\/Application\/Controllers\/Api\/Statistics\/StatisticsAdminController.php",
@@ -12498,7 +12504,7 @@
                 "refresh"
             ],
             "constants": [],
-            "lines_of_code": 61
+            "lines_of_code": 65
         },
         "app\/Application\/Controllers\/Api\/Statistics\/StatisticsController.php": {
             "path": "app\/Application\/Controllers\/Api\/Statistics\/StatisticsController.php",
@@ -19887,7 +19893,7 @@
                 "outputPerformanceReport"
             ],
             "constants": [],
-            "lines_of_code": 498
+            "lines_of_code": 501
         },
         "tests\/E2E\/Shared\/Cache\/CacheSystemE2ETest.php": {
             "path": "tests\/E2E\/Shared\/Cache\/CacheSystemE2ETest.php",
