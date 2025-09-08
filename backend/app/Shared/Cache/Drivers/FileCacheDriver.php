@@ -81,7 +81,7 @@ class FileCacheDriver implements CacheDriverInterface
 
         $data = [
             'value' => $value,
-            'expires_at' => $ttl > 0 ? time() + $ttl  => 0,
+            'expires_at' => $ttl > 0 ? time() + $ttl : 0,
             'created_at' => time(),
         ];
 
@@ -312,8 +312,8 @@ class FileCacheDriver implements CacheDriverInterface
                 continue;
             }
 
-            if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at'] {
-                if (unlink($file)] {
+            if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at']) {
+                if (unlink($file)) {
                     $cleaned++;
                 }
             }
@@ -327,8 +327,8 @@ class FileCacheDriver implements CacheDriverInterface
      */
     private function getCacheFilePath(string $key): string
     {
-        $hash = hash('sha256', $key];
-        $subDir = substr($hash, 0, 2];
+        $hash = hash('sha256', $key);
+        $subDir = substr($hash, 0, 2);
 
         return $this->cachePath . '/' . $subDir . '/' . $hash . self::CACHE_EXTENSION;
     }
@@ -338,7 +338,7 @@ class FileCacheDriver implements CacheDriverInterface
      */
     private function getKeyFromFilePath(string $filePath): string
     {
-        $fileName = basename($filePath, self::CACHE_EXTENSION];
+        $fileName = basename($filePath, self::CACHE_EXTENSION);
 
         return $fileName; // 這裡返回雜湊值，實際應用中可能需要維護鍵對映
     }
@@ -348,8 +348,8 @@ class FileCacheDriver implements CacheDriverInterface
      */
     private function ensureDirectoryExists(string $path): void
     {
-        if (!is_dir($path)] {
-            mkdir($path, 0o755, true];
+        if (!is_dir($path)) {
+            mkdir($path, 0o755, true);
         }
     }
 
@@ -414,7 +414,7 @@ class FileCacheDriver implements CacheDriverInterface
                 continue;
             }
 
-            if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at'] {
+            if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at']) {
                 $expired++;
             }
         }
@@ -436,7 +436,7 @@ class FileCacheDriver implements CacheDriverInterface
     public function setCachePath(string $path): void
     {
         $this->cachePath = $path;
-        $this->ensureDirectoryExists($path];
+        $this->ensureDirectoryExists($path);
     }
 
     /**

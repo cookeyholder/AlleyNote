@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 04:41:08",
+        "scan_time": "2025-09-09 04:46:42",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -1370,7 +1370,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Drivers\/MemoryCacheDriver.php",
                                             "extension": "php",
-                                            "size": 17048
+                                            "size": 17071
                                         },
                                         "FileCacheDriver.php": {
                                             "type": "file",
@@ -1920,7 +1920,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/DTOs\/Statistics\/UserActivityDTO.php",
                                             "extension": "php",
-                                            "size": 18649
+                                            "size": 18633
                                         },
                                         "StatisticsOverviewDTO.php": {
                                             "type": "file",
@@ -2472,7 +2472,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Providers\/RoutingServiceProvider.php",
                                             "extension": "php",
-                                            "size": 4472
+                                            "size": 7446
                                         }
                                     }
                                 },
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 128919
+            "size": 121079
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1678209
+            "size": 1678682
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -14136,8 +14136,8 @@
                 "App\\Infrastructure\\Routing\\RouteDispatcher",
                 "App\\Infrastructure\\Routing\\RouteLoader",
                 "App\\Infrastructure\\Routing\\RouteValidator",
-                "Psr\\Container\\ContainerInterface",
-                "Throwable"
+                "Exception",
+                "Psr\\Container\\ContainerInterface"
             ],
             "functions": [
                 "getDefinitions",
@@ -14147,10 +14147,13 @@
                 "createRouteDispatcher",
                 "getRouteFiles",
                 "loadRoutes",
-                "getRoutingStats"
+                "registerMiddleware",
+                "getRoutingStats",
+                "checkHealth",
+                "getDefaultRouteConfig"
             ],
             "constants": [],
-            "lines_of_code": 149
+            "lines_of_code": 232
         },
         "app\/Infrastructure\/Routing\/Exceptions\/RouteConfigurationException.php": {
             "path": "app\/Infrastructure\/Routing\/Exceptions\/RouteConfigurationException.php",
@@ -32731,12 +32734,12 @@
             },
             {
                 "type": "use",
-                "target": "Psr\\Container\\ContainerInterface",
+                "target": "Exception",
                 "file": null
             },
             {
                 "type": "use",
-                "target": "Throwable",
+                "target": "Psr\\Container\\ContainerInterface",
                 "file": null
             }
         ],

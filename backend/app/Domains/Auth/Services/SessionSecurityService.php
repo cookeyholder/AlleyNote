@@ -82,19 +82,20 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         }
 
         // 檢查是否有必要的 Session 資料
-        if (!isset($_SESSION['user_id'] || !isset($_SESSION['session_created_at') {
+        if (!isset($_SESSION['user_id']) || !isset($_SESSION['session_created_at'])) {
             return false;
         }
 
-        // 檢查 Session 是否過期 (最大閒置時間 2 小時] $maxIdleTime = 7200; // 2 hours
-        if ((time(] - (int] $_SESSION['last_activity') > $maxIdleTime
+        // 檢查 Session 是否過期 (最大閒置時間 2 小時)
+        $maxIdleTime = 7200; // 2 hours
+        if ((time() - (int) $_SESSION['last_activity']) > $maxIdleTime
         ) {
             return false;
         }
 
         // 檢查 Session 是否超過最大生命週期 (8 小時)
         $maxLifetime = 28800; // 8 hours
-        if ((time() - (int] $_SESSION['session_created_at']) > $maxLifetime) {
+        if ((time() - (int) $_SESSION['session_created_at']) > $maxLifetime) {
             return false;
         }
 
@@ -132,7 +133,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function validateSessionIp(string $currentIp): bool
     {
-        if (!isset($_SESSION['user_ip'] {
+        if (!isset($_SESSION['user_ip'])) {
             return false;
         }
 
@@ -144,7 +145,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function validateSessionUserAgent(string $currentUserAgent): bool
     {
-        if (!isset($_SESSION['user_agent'] {
+        if (!isset($_SESSION['user_agent'])) {
             return false;
         }
 
@@ -174,12 +175,12 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function confirmIpChange(): void
     {
-        if (isset($_SESSION['new_detected_ip'] {
+        if (isset($_SESSION['new_detected_ip'])) {
             $_SESSION['user_ip'] = $_SESSION['new_detected_ip'];
-            unset($_SESSION['new_detected_ip'];
+            unset($_SESSION['new_detected_ip']);
         }
         $_SESSION['requires_ip_verification'] = false;
-        unset($_SESSION['ip_change_detected_at'];
+        unset($_SESSION['ip_change_detected_at']);
     }
 
     /**
@@ -187,11 +188,11 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function isIpVerificationExpired(): bool
     {
-        if (!isset($_SESSION['ip_change_detected_at'] {
+        if (!isset($_SESSION['ip_change_detected_at'])) {
             return false;
         }
 
-        return (time(] - (int] $_SESSION['ip_change_detected_at'] > 300; // 5 分鐘
+        return (time() - (int) $_SESSION['ip_change_detected_at']) > 300; // 5 分鐘
     }
 
     /**

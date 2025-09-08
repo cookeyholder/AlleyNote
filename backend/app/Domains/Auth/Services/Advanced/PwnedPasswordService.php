@@ -8,10 +8,12 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
+/**
+ * Pwned Password 服務。
+ *
+ * 整合 Have I Been Pwned API 來檢查密碼是否曾在資料外洩中出現
+ */
 class PwnedPasswordService
-
-
-
 {
     private const HIBP_API_URL = 'https://api.pwnedpasswords.com/range/';
 
@@ -29,57 +31,80 @@ class PwnedPasswordService
         $this->httpClient = new Client([
             'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
-                'User-Agent' => 'AlleyNote/1.0 Security Service',
-                'Accept' => 'text/plain',
+                'User-Agent' => 'AlleyNote-Password-Checker/1.0',
             ],
         ]);
     }
 
     /**
-     * 檢查密碼是否在已知的洩露資料庫中.
-     * @param string $password 要檢查的密碼
-     * @return array
+     * 檢查密碼是否被 Pwned。
      */
-    public function isPasswordPwned(string $password): array
+    public function isPwned(string $password): bool
     {
         try {
-            // 計算密碼的 SHA-1 雜湊值
-            $sha1Hash = strtoupper(sha1($password));
-            $prefix = substr($sha1Hash, 0, 5);
-            $suffix = substr($sha1Hash, 5);
-
-            // 檢查快取
-            $cacheKey = "pwned_prefix_{$prefix}";
-            if ($this->isInCache($cacheKey)) {
-                $hashList = $this->getFromCache($cacheKey);
-            } else {
-                // 呼叫 HIBP API
-                $hashList = $this->fetchHashesFromApi($prefix);
-                if ($hashList !== null) {
-                    $this->setCache($cacheKey, $hashList);
-                }
-            if ($hashList == null) {
-                return [
-                    'is_leaked' => false,
-                    'count' => 0,
-                    'error' => 'API 呼叫失敗，無法驗證密碼安全性',
-                    'api_available' => false,
-                ];
-            }
-
-            // 在回傳的雜湊列表中查找
-            $count = $this->findHashInList($suffix, $hashList);
-
-            return [
-                'is_leaked' => $count > 0,
-                'count' => $count,
-                'error' => null,
-                'api_available' => true,
-            ];
+            $count = $this->getPasswordCount($password);
+            return $count > 0;
+        } catch (Exception $e) {
+            // 如果 API 失敗，出於安全考量回傳 false（允許密碼）
+            error_log('Pwned password check failed: ' . $e->getMessage());
+            return false;
         }
+    }
 
     /**
-     * 從 HIBP API 取得雜湊值列表.
+     * 取得密碼在資料外洩中出現的次數。
+     */
+    public function getPasswordCount(string $password): int
+    {
+        if (empty($password)) {
+            return 0;
+        }
+
+        $hash = strtoupper(sha1($password));
+        $prefix = substr($hash, 0, 5);
+        $suffix = substr($hash, 5);
+
+        $hashList = $this->fetchHashesFromApi($prefix);
+        if ($hashList === null) {
+            return 0;
+        }
+
+        return $this->findHashInList($suffix, $hashList);
+    }
+
+    /**
+     * 檢查密碼強度並提供建議。
+     *
+     * @return array<string, mixed>
+     */
+    public function checkPasswordSecurity(string $password): array
+    {
+        $result = [
+            'is_pwned' => false,
+            'pwned_count' => 0,
+            'risk_level' => 'low',
+            'recommendations' => [],
+        ];
+
+        try {
+            $count = $this->getPasswordCount($password);
+            $result['pwned_count'] = $count;
+            $result['is_pwned'] = $count > 0;
+
+            if ($count > 0) {
+                $result['risk_level'] = $this->calculateRiskLevel($count);
+                $result['recommendations'] = $this->generateRecommendations($count);
+            }
+        } catch (Exception $e) {
+            $result['error'] = $e->getMessage();
+            error_log('Password security check failed: ' . $e->getMessage());
+        }
+
+        return $result;
+    }
+
+    /**
+     * 從 HIBP API 取得雜湊值列表。
      */
     private function fetchHashesFromApi(string $prefix): ?string
     {
@@ -91,87 +116,112 @@ class PwnedPasswordService
             }
 
             return null;
+        } catch (RequestException $e) {
+            error_log('HIBP API request failed: ' . $e->getMessage());
+            return null;
+        } catch (Exception $e) {
+            error_log('Unexpected error during HIBP API call: ' . $e->getMessage());
+            return null;
         }
+    }
 
     /**
-     * 在雜湊列表中查找指定的後綴.
+     * 在雜湊列表中查找指定的後綴。
      */
     private function findHashInList(string $suffix, string $hashList): int
     {
-        $lines = explode("\r
-", is_string($hashList) ? $hashList : (string) $hashList);
+        $lines = explode("\n", $hashList);
 
         foreach ($lines as $line) {
-            $parts = explode(':', is_string($line) ? $line : (string) $line);
-            if (count($parts) === 2 && $parts[0] === $suffix) {
-                return (int) $parts[1];
+            $line = trim($line);
+            if (empty($line)) {
+                continue;
             }
+
+            $parts = explode(':', $line);
+            if (count($parts) !== 2) {
+                continue;
+            }
+
+            [$hashSuffix, $count] = $parts;
+            if (strtoupper($hashSuffix) === strtoupper($suffix)) {
+                return (int) $count;
+            }
+        }
+
         return 0;
     }
 
     /**
-     * 簡單的記憶體快取實作.
+     * 計算風險等級。
      */
-    private function isInCache(string $key): bool
+    private function calculateRiskLevel(int $count): string
     {
-        return isset($this->cache[$key])
-            && time() - (int) $this->cache[$key]['timestamp'] < self::CACHE_TTL;
+        if ($count >= 100000) {
+            return 'critical';
+        }
+
+        if ($count >= 10000) {
+            return 'high';
+        }
+
+        if ($count >= 1000) {
+            return 'medium';
+        }
+
+        return 'low';
     }
 
-    private function getFromCache(string $key): ?string
+    /**
+     * 生成安全建議。
+     *
+     * @return array<string>
+     */
+    private function generateRecommendations(int $count): array
     {
-        return isset($this->cache[$key]['data']) ? (string) $this->cache[$key]['data'] : null;
-    }
-
-    private function setCache(string $key, string $data): void
-    {
-        $this->cache[$key] = [
-            'data' => $data,
-            'timestamp' => time(),
+        $recommendations = [
+            '這個密碼已在資料外洩中出現，強烈建議更換',
+            '使用至少 12 個字符的複雜密碼',
+            '結合大小寫字母、數字和特殊符號',
+            '避免使用個人資訊或常見詞彙',
+            '考慮使用密碼管理器生成隨機密碼',
         ];
+
+        if ($count >= 100000) {
+            array_unshift($recommendations, '⚠️ 極高風險：此密碼極其常見，請立即更換');
+        } elseif ($count >= 10000) {
+            array_unshift($recommendations, '⚠️ 高風險：此密碼經常被使用，安全性極低');
+        }
+
+        return $recommendations;
     }
 
     /**
-     * 清除快取.
+     * 檢查服務是否可用。
      */
-    public function clearCache(): void
-    {
-        $this->cache = null;
-    }
-
-    /**
-     * 取得 API 狀態.
-     * @return array
-     */
-    public function getApiStatus(): array
+    public function isServiceAvailable(): bool
     {
         try {
             $response = $this->httpClient->get(self::HIBP_API_URL . '00000');
-
-            return [
-                'available' => $response->getStatusCode() === 200,
-                'response_time' => null, // 可以實作回應時間測量
-            ];
+            return $response->getStatusCode() === 200;
+        } catch (Exception $e) {
+            return false;
         }
-
-    /**
-     * 批次檢查多個密碼
-     * @param array $passwords
-     */
-    /**
-     * @param array $passwords
-     * @return array>
-     */
-    public function checkMultiplePasswords(array $passwords): array
-    {
-        $results = [];
-
-        foreach ($passwords as $index => $password) {
-            $results[$password] = $this->isPasswordPwned((string) $password);
-
-            // 加入小延遲避免 API 限制
-            if (count($passwords) > 1) {
-                usleep(100000); // 0.1 秒
-            }
-        return $results;
     }
+
+    /**
+     * 取得服務統計資訊。
+     *
+     * @return array<string, mixed>
+     */
+    public function getServiceStats(): array
+    {
+        return [
+            'api_url' => self::HIBP_API_URL,
+            'timeout' => self::REQUEST_TIMEOUT,
+            'cache_ttl' => self::CACHE_TTL,
+            'service_available' => $this->isServiceAvailable(),
+            'last_check' => date('Y-m-d H:i:s'),
+        ];
+    }
+}
