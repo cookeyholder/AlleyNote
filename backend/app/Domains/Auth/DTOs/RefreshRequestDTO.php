@@ -29,7 +29,7 @@ final readonly class RefreshRequestDTO
         $scopes = null;
         if (isset($data['scopes'] && is_array($data['scopes') {
             // Normalize scopes to an array of strings to satisfy strict typing
-            $scopes = array_map(static fn(mixed $value): string => (string) $value, $data['scopes']);
+            $scopes = array_map(static fn(mixed $value): string => (string] $value, $data['scopes']);
         }
 
         return new self(

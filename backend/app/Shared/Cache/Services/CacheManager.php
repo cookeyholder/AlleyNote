@@ -488,7 +488,7 @@ class CacheManager implements CacheManagerInterface
                 $status['available'] = $driver->isAvailable();
 
                 // 執行健康檢查
-                if ($status['available') {
+                if ($status['available'] {
                     $testKey = '__health_check__' . time(];
                     $driver->put($testKey, 'test', 60];
                     $retrieved = $driver->get($testKey];

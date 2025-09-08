@@ -208,7 +208,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             if ($result['suspicious'] {
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
-                $detectionRules = array_merge($detectionRules, $result['rules');
+                $detectionRules = array_merge($detectionRules, $result['rules'];
                 $anomalyScores = array_merge($anomalyScores, $result['scores']);
                 $confidence = max($confidence, $result['confidence']);
             }
@@ -226,13 +226,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         }
 
         if ($this->isDetectionEnabled('pattern_analysis')) {
-            $result = $this->detectPatternAnomalies($activities);
+            $result = $this->detectPatternAnomalies($activities];
             if ($result['suspicious'] {
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
                 $detectionRules[] = $result['rule'];
                 $anomalyScores['pattern'] = $result['score'];
-                $confidence = max($confidence, $result['confidence');
+                $confidence = max($confidence, $result['confidence'];
             }
         }
 
@@ -304,7 +304,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             if ($failureResult['suspicious'] {
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $failureResult['severity'];
-                $detectionRules = array_merge($detectionRules, $failureResult['rules');
+                $detectionRules = array_merge($detectionRules, $failureResult['rules'];
                 $anomalyScores = array_merge($anomalyScores, $failureResult['scores']);
                 $confidence = max($confidence, $failureResult['confidence']);
             }
@@ -325,7 +325,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         $userCount = count($uniqueUsers);
         if ($userCount > 10) { // 超過10個不同使用者使用同一IP
             $isSuspicious = true;
-            $severityLevel = $this->escalateSeverity($severityLevel, ActivitySeverity::MEDIUM);
+            $severityLevel = $this->escalateSeverity($severityLevel, ActivitySeverity::MEDIUM];
             $detectionRules[] = [
                 'type' => 'multiple_users_same_ip',
                 'message' => "單一IP位址有 {$userCount} 個不同使用者活動",

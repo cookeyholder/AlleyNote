@@ -81,7 +81,7 @@ class UpdatePostDTO extends BaseDTO
 
         // 處理狀態
         if (isset($validatedData['status'] {
-            $this->status = PostStatus::from((string] $validatedData['status');
+            $this->status = PostStatus::from((string] $validatedData['status'];
         } else {
             $this->status = null;
         }

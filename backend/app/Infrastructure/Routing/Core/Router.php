@@ -272,13 +272,13 @@ class Router implements RouterInterface
         // 合併前綴
         if (!empty($new['prefix'] {
             $existingPrefix = $merged['prefix'] ?? '';
-            $merged['prefix'] = $this->applyPrefix($existingPrefix, $new['prefix');
+            $merged['prefix'] = $this->applyPrefix($existingPrefix, $new['prefix'];
         }
 
         // 合併中間件
         if (!empty($new['middleware'] {
             $existingMiddleware = $merged['middleware'] ?? [];
-            $newMiddleware = is_array($new['middleware') ? $new['middleware'] : [$new['middleware']];
+            $newMiddleware = is_array($new['middleware'] ? $new['middleware'] : [$new['middleware']];
             $merged['middleware'] = array_merge($existingMiddleware, $newMiddleware);
         }
 

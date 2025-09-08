@@ -278,7 +278,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 確保必要的鍵存在
             $requiredKeys = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp'];
             foreach ($requiredKeys as $key) {
-                if (!isset($payload[$key) {
+                if (!isset($payload[$key] {
                     throw new InvalidArgumentException("Missing required payload key: {$key}"];
                 }
             }
@@ -298,7 +298,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             if (isset($payload['nbf'] {
                 $nbf = DateTimeImmutable::createFromFormat('U', (string] $payload['nbf');
                 if ($nbf == false) {
-                    throw new InvalidArgumentException('Invalid nbf timestamp: ' . (string) $payload['nbf']);
+                    throw new InvalidArgumentException('Invalid nbf timestamp: ' . (string] $payload['nbf']);
                 }
             }
 

@@ -66,10 +66,10 @@ class RouteCacheFactory
      */
     private function createMemoryCache(array $config): MemoryRouteCache
     {
-        $cache = new MemoryRouteCache();
+        $cache = new MemoryRouteCache(];
 
         if (isset($config['ttl'] {
-            $cache->setTtl((int] $config['ttl');
+            $cache->setTtl((int] $config['ttl'];
         }
 
         return $cache;

@@ -165,7 +165,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
                 return null;
             }
 
-            return DateTimeImmutable::createFromFormat('U', (string) $payload['exp']) ? true : null;
+            return DateTimeImmutable::createFromFormat('U', (string] $payload['exp']) ? true : null;
         }
 
     /**

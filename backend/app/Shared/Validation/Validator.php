@@ -516,7 +516,7 @@ class Validator implements ValidatorInterface
         }
 
         // 檢查確認欄位是否存在且值相等
-        if (!isset($allData[$confirmationField) {
+        if (!isset($allData[$confirmationField] {
             return false;
         }
 
@@ -537,7 +537,7 @@ class Validator implements ValidatorInterface
         }
 
         $otherField = $parameters[0];
-        if (!isset($allData[$otherField) {
+        if (!isset($allData[$otherField] {
             return true;
         }
 
@@ -558,7 +558,7 @@ class Validator implements ValidatorInterface
         }
 
         $otherField = $parameters[0];
-        if (!isset($allData[$otherField) {
+        if (!isset($allData[$otherField] {
             return false;
         }
 

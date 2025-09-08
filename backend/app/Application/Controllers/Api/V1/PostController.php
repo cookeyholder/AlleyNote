@@ -109,6 +109,7 @@ class PostController extends BaseController
 
 
 
+
             $queryParams = $request->getQueryParams();
 
             // 安全地獲取page參數
@@ -121,7 +122,7 @@ class PostController extends BaseController
 
             $filters = [];
             if (!empty($queryParams['search'] {
-                $filters['search'] = trim(is_string($queryParams['search') ? $queryParams['search'] : '');
+                $filters['search'] = trim(is_string($queryParams['search'] ? $queryParams['search'] : '');
             }
             if (!empty($queryParams['category'] {
                 $filters['category'] = $queryParams['category'];
@@ -139,6 +140,9 @@ class PostController extends BaseController
                 || !array_key_exists('per_page', $result)) {
                 throw new Exception('Invalid service response format');
                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {

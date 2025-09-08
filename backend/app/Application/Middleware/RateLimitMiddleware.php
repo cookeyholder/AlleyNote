@@ -123,7 +123,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         // 判斷回應格式
         $acceptHeader = $request->getHeaderLine('Accept');
         $isJsonRequest = strpos($acceptHeader, 'application/json') !== false
-            || strpos($request->getUri()->getPath(), '/api/') === 0;
+            || strpos($request->getUri()->getPath(), '/api/'] === 0;
 
         // 確保數值型別正確
         $resetTime = is_int($result['reset']) ? $result['reset'] : time();

@@ -321,7 +321,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
      */
     public function verifyLogFilePermissions(): array
     {
-        $logsDir = storage_path('logs');
+        $logsDir = storage_path('logs'];
         $results = [];
 
         if (!is_dir($logsDir)) {

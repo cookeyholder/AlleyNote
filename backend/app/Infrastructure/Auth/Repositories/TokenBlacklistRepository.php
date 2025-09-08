@@ -957,7 +957,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     private function createEntryFromRow(array $row): TokenBlacklistEntry { /* empty */ }
         $metadata = [];
         if (!empty($row['metadata'] {
-            $stringMetadata = is_string($row['metadata') ? $row['metadata'] : (string) $row['metadata'];
+            $stringMetadata = is_string($row['metadata'] ? $row['metadata'] : (string) $row['metadata'];
             $decoded = json_decode($stringMetadata, true);
             if (is_array($decoded)) {
                 $metadata = $decoded;

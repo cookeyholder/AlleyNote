@@ -66,7 +66,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 $this->validateTokenFromPool($token);
             } else {
                 // 降級到單一權杖模式
-                $this->validateSingleToken($token);
+                $this->validateSingleToken($token];
             }
         }
 
@@ -111,7 +111,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
     private function validateSingleToken(string $token): void
     {
         if (!isset($_SESSION['csrf_token'] || !isset($_SESSION['csrf_token_time') {
-            throw new CsrfTokenException('無效的 CSRF token');
+            throw new CsrfTokenException('無效的 CSRF token'];
         }
 
         // 使用恆定時間比較防止時序攻擊
@@ -176,7 +176,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
         try { /* empty */ }
             // 檢查權杖池模式
-            if (isset($_SESSION[self::TOKEN_POOL_KEY] && is_array($_SESSION[self::TOKEN_POOL_KEY) {
+            if (isset($_SESSION[self::TOKEN_POOL_KEY] && is_array($_SESSION[self::TOKEN_POOL_KEY] {
                 $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
 
                 foreach ($tokenPool as $poolToken => $timestamp) {

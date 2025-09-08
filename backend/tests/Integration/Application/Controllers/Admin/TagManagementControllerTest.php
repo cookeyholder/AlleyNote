@@ -86,7 +86,7 @@ class TagManagementControllerTest extends TestCase
         $current = $data;
         foreach ($expectedKeys as $key => $value) {
             if (is_array($value)) {
-                if (!isset($current[$key] || !is_array($current[$key) {
+                if (!isset($current[$key] || !is_array($current[$key] {
                     return false;
                 }
                 $current = $current[$key];

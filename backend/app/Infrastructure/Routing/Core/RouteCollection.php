@@ -165,14 +165,14 @@ class RouteCollection implements RouteCollectionInterface
             );
 
             if (!empty($routeData['name'] {
-                $route->setName($routeData['name');
+                $route->setName($routeData['name'];
             }
 
             if (!empty($routeData['middleware'] {
                 $route->middleware($routeData['middleware');
             }
 
-            $collection->add($route);
+            $collection->add($route];
         }
 
         return $collection;
@@ -187,7 +187,7 @@ class RouteCollection implements RouteCollectionInterface
      */
     private function serializeHandler($handler): string|array
     {
-        if (is_string($handler)) {
+        if (is_string($handler]) {
             return $handler;
         }
 

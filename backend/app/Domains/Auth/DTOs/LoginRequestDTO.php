@@ -31,7 +31,7 @@ final readonly class LoginRequestDTO
         $scopes = null;
         if (isset($data['scopes'] && is_array($data['scopes') {
             // Normalize scope values to strings to satisfy strict typing expectations
-            $scopes = array_map(static fn(mixed $value): string => (string) $value, $data['scopes']);
+            $scopes = array_map(static fn(mixed $value): string => (string] $value, $data['scopes']);
         }
 
         return new self(

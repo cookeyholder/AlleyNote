@@ -155,7 +155,7 @@ class RouteLoader
 
         // 設定路由名稱（如果有提供）
         if (isset($routeConfig['name'] {
-            $route->setName($routeConfig['name');
+            $route->setName($routeConfig['name'];
         }
 
         // 設定中間件（如果有提供）

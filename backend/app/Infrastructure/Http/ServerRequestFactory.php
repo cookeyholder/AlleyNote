@@ -77,7 +77,7 @@ class ServerRequestFactory
     private static function isDefaultPort(string $scheme, int $port): bool
     {
         return ($scheme === 'http' && $port === 80)
-            || ($scheme === 'https' && $port === 443);
+            || ($scheme === 'https' && $port === 443];
     }
 
     private static function parseHeaders(): array
