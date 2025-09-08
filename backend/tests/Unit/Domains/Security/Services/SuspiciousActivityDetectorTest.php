@@ -23,6 +23,8 @@ use Psr\Log\LoggerInterface;
  */
 class SuspiciousActivityDetectorTest extends TestCase
 
+
+
 {
     private SuspiciousActivityDetector $detector;
 

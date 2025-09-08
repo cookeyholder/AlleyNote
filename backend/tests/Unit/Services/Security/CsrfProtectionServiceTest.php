@@ -12,6 +12,8 @@ use PHPUnit\Framework\TestCase;
 
 class CsrfProtectionServiceTest extends TestCase
 
+
+
 {
     private CsrfProtectionService $service;
 

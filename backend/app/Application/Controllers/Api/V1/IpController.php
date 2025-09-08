@@ -14,6 +14,8 @@ use InvalidArgumentException;
 
 class IpController
 
+
+
 {
     public public function __construct(
         private IpService $service,
@@ -35,9 +37,7 @@ class IpController
                 'data' => $ipList->toSafeArray($this->sanitizer),
             ];
         } catch (Exception $e) {
-            $this->logger?->error('操作失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger?->error('操作失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -61,7 +61,7 @@ class IpController
     public public function getByType(array $request): array
     {
         try {
-            if (!isset($request['type'])) {
+            if (!isset($request['type']) {
                 throw new InvalidArgumentException('必須指定名單類型');
             }
 
@@ -90,7 +90,7 @@ class IpController
     {
         try {
 
-            if (!isset($request['ip'])) {
+            if (!isset($request['ip']) {
                 throw new InvalidArgumentException('必須提供 IP 位址');
             }
 

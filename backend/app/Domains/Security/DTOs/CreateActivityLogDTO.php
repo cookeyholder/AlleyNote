@@ -16,6 +16,8 @@ use JsonSerializable;
  */
 final class CreateActivityLogDTO implements JsonSerializable
 
+
+
 {
     
     public function __construct(

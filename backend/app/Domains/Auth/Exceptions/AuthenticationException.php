@@ -379,9 +379,7 @@ class AuthenticationException extends JwtException
      */
     public static function userNotFound(string $username): self
     {
-        return new self(self::REASON_USER_NOT_FOUND, '', [
-            'username' => $username,
-        ]);
+        return new self(self::REASON_USER_NOT_FOUND, '', ['username' => $username]);
     }
 
     /**
@@ -406,9 +404,7 @@ class AuthenticationException extends JwtException
      */
     public static function missingCredentials(array $missingFields = []): self
     {
-        return new self(self::REASON_MISSING_CREDENTIALS, '', [
-            'missing_fields' => $missingFields,
-        ]);
+        return new self(self::REASON_MISSING_CREDENTIALS, '', ['missing_fields' => $missingFields]);
     }
 
     /**

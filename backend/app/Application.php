@@ -24,6 +24,8 @@ use Psr\Http\Message\StreamInterface;
  */
 class Application
 
+
+
 {
     private ContainerInterface $container;
 
@@ -147,6 +149,8 @@ class Application
         try {
 
 
+
+
             $errorTracker = $this->container->get(ErrorTrackerInterface::class);
             if ($errorTracker instanceof ErrorTrackerInterface) {
                 $errorTracker->recordCriticalError($e, [
@@ -160,6 +164,12 @@ class Application
                 } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
         } catch (Exception $monitoringException) {
             // 如果監控系統本身出錯，記錄到錯誤日誌
@@ -168,6 +178,8 @@ class Application
 
         // 建立基本的錯誤回應（使用匿名類別實作）
         $stream = new class implements StreamInterface 
+
+
 {
     private string $content = '';
 

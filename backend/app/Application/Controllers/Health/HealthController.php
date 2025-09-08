@@ -33,9 +33,7 @@ class HealthController extends BaseController
 
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
-            $this->logger?->error('操作失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger?->error('操作失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -45,6 +43,30 @@ class HealthController extends BaseController
                 ],
                 'timestamp' => time(),
             ], 500);
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         } catch (\Exception $e) {
             error_log('Controller error: ' . $e->getMessage());
             $errorResponse = json_encode([

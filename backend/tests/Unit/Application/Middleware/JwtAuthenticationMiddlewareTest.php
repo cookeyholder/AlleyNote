@@ -27,6 +27,8 @@ use Tests\TestCase;
  */
 class JwtAuthenticationMiddlewareTest extends TestCase
 
+
+
 {
     private JwtTokenServiceInterface|MockInterface $jwtTokenService;
 
@@ -69,6 +71,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
             );
         }
 
+    }
     public function testShouldProcessAuthenticatedPaths(): void
     {
         $authenticatedPaths = [
@@ -87,6 +90,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
             );
         }
 
+    }
     public function testShouldReturnUnauthorizedWhenNoTokenProvided(): void
     {
         $request = new ServerRequest('GET', new Uri('/api/posts'));
@@ -108,9 +112,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $token = 'valid.jwt.token';
         $payload = $this->createValidPayload();
 
-        $request = new ServerRequest('GET', new Uri('/api/posts'), [
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        $request = new ServerRequest('GET', new Uri('/api/posts'), ['Authorization' => 'Bearer ' . $token]);
 
         $this->jwtTokenService
             ->shouldReceive('validateAccessToken')
@@ -188,9 +190,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $token = 'valid.jwt.token';
         $payload = $this->createValidPayload(); // 使用預設 payload，不加 custom claims
 
-        $request = new ServerRequest('GET', new Uri('/api/posts'), [
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        $request = new ServerRequest('GET', new Uri('/api/posts'), ['Authorization' => 'Bearer ' . $token]);
 
         $this->jwtTokenService
             ->shouldReceive('validateAccessToken')
@@ -211,9 +211,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
     public function testShouldReturnUnauthorizedWhenTokenExpired(): void
     {
         $token = 'expired.jwt.token';
-        $request = new ServerRequest('GET', new Uri('/api/posts'), [
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        $request = new ServerRequest('GET', new Uri('/api/posts'), ['Authorization' => 'Bearer ' . $token]);
 
         $this->jwtTokenService
             ->shouldReceive('validateAccessToken')
@@ -233,9 +231,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
     public function testShouldReturnUnauthorizedWhenTokenInvalid(): void
     {
         $token = 'invalid.jwt.token';
-        $request = new ServerRequest('GET', new Uri('/api/posts'), [
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        $request = new ServerRequest('GET', new Uri('/api/posts'), ['Authorization' => 'Bearer ' . $token]);
 
         $this->jwtTokenService
             ->shouldReceive('validateAccessToken')
@@ -258,9 +254,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $token = 'valid.jwt.token';
         $payload = $this->createValidPayload(); // 不包含 ip_address claim
 
-        $request = new ServerRequest('GET', new Uri('/api/posts'), [
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        $request = new ServerRequest('GET', new Uri('/api/posts'), ['Authorization' => 'Bearer ' . $token]);
 
         $this->jwtTokenService
             ->shouldReceive('validateAccessToken')
@@ -310,9 +304,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $token = 'valid.jwt.token';
         $payload = $this->createValidPayload(['ip_address' => '192.168.1.100']);
 
-        $request = new ServerRequest('GET', new Uri('/api/posts'), [
-            'Authorization' => 'Bearer ' . $token,
-        ], null, '1.1', ['REMOTE_ADDR' => '192.168.1.200']);
+        $request = new ServerRequest('GET', new Uri('/api/posts'), ['Authorization' => 'Bearer ' . $token], null, '1.1', ['REMOTE_ADDR' => '192.168.1.200']);
 
         $this->jwtTokenService
             ->shouldReceive('validateAccessToken')
@@ -398,9 +390,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
     public function testShouldHandleGenericExceptionGracefully(): void
     {
         $token = 'valid.jwt.token';
-        $request = new ServerRequest('GET', new Uri('/api/posts'), [
-            'Authorization' => 'Bearer ' . $token,
-        ]);
+        $request = new ServerRequest('GET', new Uri('/api/posts'), ['Authorization' => 'Bearer ' . $token]);
 
         $this->jwtTokenService
             ->shouldReceive('validateAccessToken')
@@ -423,9 +413,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $cookieToken = 'cookie.jwt.token';
         $payload = $this->createValidPayload();
 
-        $request = new ServerRequest('GET', new Uri('/api/posts?token=' . $queryToken), [
-            'Authorization' => 'Bearer ' . $headerToken,
-        ]);
+        $request = new ServerRequest('GET', new Uri('/api/posts?token=' . $queryToken), ['Authorization' => 'Bearer ' . $headerToken]);
         $request = $request->withCookieParams(['access_token' => $cookieToken]);
 
         // 應該使用 header 中的 token

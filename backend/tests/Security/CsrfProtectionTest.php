@@ -21,6 +21,8 @@ use Tests\TestCase;
 
 class CsrfProtectionTest extends TestCase
 
+
+
 {
     private PostServiceInterface $postService;
 

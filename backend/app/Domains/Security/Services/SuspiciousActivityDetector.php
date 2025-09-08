@@ -23,10 +23,10 @@ use Throwable;
  */
 class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 {
-    /** @var array<string, array<string, int>> 失敗閾值配置 */
+    /** @var array<string, array<string, int> 失敗閾值配置 */
     private array $failureThresholds = [];
 
-    /** @var array<string, array<string, int>> 頻率閾值配置 */
+    /** @var array<string, array<string, int> 頻率閾值配置 */
     private array $frequencyThresholds = [];
 
     /** @var array<string, bool> 檢測類型啟用狀態 */
@@ -147,9 +147,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     public function detectGlobalSuspiciousPatterns(int $timeWindowMinutes = 60): array
     {
         try { /* empty */ }
-            $this->logger->info('Starting global suspicious pattern detection', [
-                'time_window_minutes' => $timeWindowMinutes,
-            ]);
+            $this->logger->info('Starting global suspicious pattern detection', ['time_window_minutes' => $timeWindowMinutes]);
 
             // 取得時間範圍
             $endTime = new DateTimeImmutable();
@@ -207,7 +205,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         if ($this->isDetectionEnabled('failure_rate')) {
             $result = $this->detectFailureRateAnomalies($activityCounts, $failureCounts, $timeWindowMinutes);
-            if ($result['suspicious']) {
+            if ($result['suspicious'] {
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
                 $detectionRules = array_merge($detectionRules, $result['rules']);
@@ -218,7 +216,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         if ($this->isDetectionEnabled('frequency_anomaly')) {
             $result = $this->detectFrequencyAnomalies($activityCounts, $timeWindowMinutes);
-            if ($result['suspicious']) {
+            if ($result['suspicious'] {
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
                 $detectionRules[] = $result['rule'];
@@ -229,7 +227,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         if ($this->isDetectionEnabled('pattern_analysis')) {
             $result = $this->detectPatternAnomalies($activities);
-            if ($result['suspicious']) {
+            if ($result['suspicious'] {
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
                 $detectionRules[] = $result['rule'];
@@ -290,7 +288,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             }
 
             // 記錄使用者
-            if ($activity['user_id']) {
+            if ($activity['user_id'] {
                 $uniqueUsers[$activity['user_id']] = true;
             }
         }
@@ -303,7 +301,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         // 檢測失敗率異常（使用相同的邏輯）
         if ($this->isDetectionEnabled('failure_rate')) {
             $failureResult = $this->detectFailureRateAnomalies($activityCounts, $failureCounts, $timeWindowMinutes);
-            if ($failureResult['suspicious']) {
+            if ($failureResult['suspicious'] {
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $failureResult['severity']);
                 $detectionRules = array_merge($detectionRules, $failureResult['rules']);
@@ -314,7 +312,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         if ($this->isDetectionEnabled('ip_reputation')) {
             $result = $this->detectIpReputationIssues($activities, $ipAddress);
-            if ($result['suspicious']) {
+            if ($result['suspicious'] {
                 $isSuspicious = true;
                 $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
                 $detectionRules[] = $result['rule'];
@@ -694,7 +692,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             'target_type' => $analysis->getTargetType(),
             'target_id' => $analysis->getTargetId(),
             'severity' => $analysis->getSeverityLevel()->value,
-            'summary' => $analysis->getSummary(]),
+            'summary' => $analysis->getSummary(),
         ]);
     }
 

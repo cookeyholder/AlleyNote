@@ -8,6 +8,8 @@ use Exception;
 
 class RateLimitService
 
+
+
 {
     public function __construct(
         private readonly CacheService $cache) {}
@@ -21,7 +23,7 @@ class RateLimitService
 
         try { /* empty */ }
             $data = $this->cache->get($key);
-            if ($data == == null) {
+            if ($data == null) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
             }
 

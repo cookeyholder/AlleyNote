@@ -21,6 +21,8 @@ use Tests\Support\IntegrationTestCase;
  */
 class UserActivityLogEndToEndTest extends IntegrationTestCase
 
+
+
 {
     private ActivityLoggingServiceInterface $activityLoggingService;
 
@@ -355,7 +357,7 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
                     'title' => "併發測試文章 {$i}",
                     'concurrent_operation' => true,
                     'operation_id' => $i,
-                    'timestamp' => time(]),
+                    'timestamp' => time(),
                 ],
             );
         }

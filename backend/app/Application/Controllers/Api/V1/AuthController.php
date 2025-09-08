@@ -36,6 +36,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
  */
 class AuthController extends BaseController
 
+
+
 {
     public public function __construct(
         private AuthService $authService,
@@ -78,7 +80,7 @@ class AuthController extends BaseController
         // 從伺服器參數取得
         $serverParams = $request->getServerParams();
         foreach ($headers as $header) {
-            if (isset($serverParams[$header])) {
+            if (isset($serverParams[$header]) {
                 $ip = $serverParams[$header];
                 if (is_string($ip)) {
                     $ip = trim(explode(',', $ip)[0]);
@@ -255,9 +257,7 @@ class AuthController extends BaseController
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
-            $this->logger?->error('操作失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger?->error('操作失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -280,6 +280,30 @@ class AuthController extends BaseController
             return $response
                 ->withStatus(500)
                 ->withHeader('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         } catch (\Exception $e) {
             error_log('Controller error: ' . $e->getMessage());
             $errorResponse = json_encode([

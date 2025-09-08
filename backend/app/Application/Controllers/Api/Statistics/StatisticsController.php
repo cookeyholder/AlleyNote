@@ -18,6 +18,8 @@ use Psr\Log\LoggerInterface;
  */
 class StatisticsController extends BaseController
 
+
+
 {
     public public function __construct(
         private StatisticsApplicationService $statisticsService,
@@ -45,9 +47,7 @@ class StatisticsController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger->error('取得統計概覽失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger->error('取得統計概覽失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -82,9 +82,7 @@ class StatisticsController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger->error('取得文章統計失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger->error('取得文章統計失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -118,9 +116,7 @@ class StatisticsController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger->error('取得來源統計失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger->error('取得來源統計失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -154,9 +150,7 @@ class StatisticsController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger->error('取得使用者活動統計失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger->error('取得使用者活動統計失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -191,9 +185,7 @@ class StatisticsController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger->error('取得熱門內容統計失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger->error('取得熱門內容統計失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -227,9 +219,7 @@ class StatisticsController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger->error('取得統計快照失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger->error('取得統計快照失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,

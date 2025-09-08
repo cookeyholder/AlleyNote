@@ -20,6 +20,8 @@ use PDOException;
  */
 final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
+
+
 {
     private const TABLE_NAME = 'refresh_tokens';
 
@@ -238,7 +240,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute([$jti]);
 
             $expiresAt = $stmt->fetchColumn();
-            if ($expiresAt == == false) {
+            if ($expiresAt == false) {
                 return true; // Token not found, consider expired
             }
 
@@ -362,7 +364,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 $reason,
                 new DateTime()->format('Y-m-d H:i:s'),
                 new DateTime()->format('Y-m-d H:i:s'),
-                ...$jtis,
+                .$jtis,
             ];
 
             $stmt = $this->pdo->prepare($sql);
@@ -422,7 +424,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 $reason,
                 new DateTime()->format('Y-m-d H:i:s'),
                 new DateTime()->format('Y-m-d H:i:s'),
-                ...$jtis,
+                .$jtis,
             ];
 
             $stmt = $this->pdo->prepare($sql);

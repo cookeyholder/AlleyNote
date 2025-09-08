@@ -21,6 +21,8 @@ use Tests\TestCase;
 
 class FileUploadSecurityTest extends TestCase
 
+
+
 {
     protected AttachmentService $service;
 
@@ -233,7 +235,7 @@ class FileUploadSecurityTest extends TestCase
         // 準備測試資料 - 包含路徑遍歷攻擊的檔案名
         $postId = 1;
         $file = $this->createUploadedFileMock(
-            '../../../etc/passwd',
+            './././etc/passwd',
             'text/plain',
             1024,
             UPLOAD_ERR_OK,
@@ -357,13 +359,14 @@ class FileUploadSecurityTest extends TestCase
             $this->removeDirectory($this->uploadDir);
         }
 
+    }
     private function removeDirectory(string $dir): void
     {
         if (!is_dir($dir)) {
             return;
         }
 
-        $files = array_diff(scandir($dir), ['.', '..']);
+        $files = array_diff(scandir($dir), ['.', '.']);
         foreach ($files as $file) {
             $path = $dir . DIRECTORY_SEPARATOR . $file;
             is_dir($path) ? $this->removeDirectory($path) : unlink($path);

@@ -21,6 +21,8 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Router implements RouterInterface
 
+
+
 {
     private RouteCollectionInterface $routes;
 
@@ -90,19 +92,19 @@ class Router implements RouterInterface
     public function map(array $methods, string $pattern, $handler): RouteInterface
     {
         // 套用群組前綴
-        if (!empty($this->currentGroupAttributes['prefix'])) {
+        if (!empty($this->currentGroupAttributes['prefix']) {
             $pattern = $this->applyPrefix($this->currentGroupAttributes['prefix'], $pattern);
         }
 
         // 套用命名空間到處理器
-        if (!empty($this->currentGroupAttributes['namespace']) && is_array($handler)) {
+        if (!empty($this->currentGroupAttributes['namespace') && is_array($handler]) {
             $handler[0] = $this->currentGroupAttributes['namespace'] . '\\' . $handler[0];
         }
 
         $route = new Route($methods, $pattern, $handler);
 
         // 套用群組中間件
-        if (!empty($this->currentGroupAttributes['middleware'])) {
+        if (!empty($this->currentGroupAttributes['middleware']) {
             $route->middleware($this->currentGroupAttributes['middleware']);
         }
 
@@ -149,7 +151,7 @@ class Router implements RouterInterface
         // 尋找匹配的路由
         $matchedRoute = $this->routes->match($request);
 
-        if ($matchedRoute == == null) {
+        if ($matchedRoute == null) {
             return RouteMatchResult::failed('No route matched the request');
         }
 
@@ -171,7 +173,7 @@ class Router implements RouterInterface
     {
         $route = $this->routes->getByName($name);
 
-        if ($route == == null) {
+        if ($route == null) {
             throw new InvalidArgumentException("Route named '{$name}' not found");
         }
 
@@ -268,20 +270,20 @@ class Router implements RouterInterface
         $merged = $previous;
 
         // 合併前綴
-        if (!empty($new['prefix'])) {
+        if (!empty($new['prefix']) {
             $existingPrefix = $merged['prefix'] ?? '';
             $merged['prefix'] = $this->applyPrefix($existingPrefix, $new['prefix']);
         }
 
         // 合併中間件
-        if (!empty($new['middleware'])) {
+        if (!empty($new['middleware']) {
             $existingMiddleware = $merged['middleware'] ?? [];
             $newMiddleware = is_array($new['middleware']) ? $new['middleware'] : [$new['middleware']];
             $merged['middleware'] = array_merge($existingMiddleware, $newMiddleware);
         }
 
         // 合併命名空間
-        if (!empty($new['namespace'])) {
+        if (!empty($new['namespace']) {
             $existingNamespace = $merged['namespace'] ?? '';
             $merged['namespace'] = empty($existingNamespace)
                 ? $new['namespace']

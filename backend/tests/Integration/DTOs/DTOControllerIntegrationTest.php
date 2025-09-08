@@ -19,6 +19,8 @@ use Tests\TestCase;
  */
 class DTOControllerIntegrationTest extends TestCase
 
+
+
 {
     private ValidatorInterface $validator;
 
@@ -115,9 +117,7 @@ class DTOControllerIntegrationTest extends TestCase
     public function testDTOTypeConversion(): void
     {
         // 測試字串轉布林值
-        $updateData = [
-            'title' => '測試標題',
-        ];
+        $updateData = ['title' => '測試標題'];
 
         $dto = new UpdatePostDTO($this->validator, $updateData);
         $this->assertNotNull($dto);

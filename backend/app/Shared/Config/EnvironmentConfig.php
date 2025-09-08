@@ -14,6 +14,8 @@ use InvalidArgumentException;
  */
 final class EnvironmentConfig
 
+
+
 {
     private string $environment;
 
@@ -79,14 +81,14 @@ final class EnvironmentConfig
             return $this->parseValue($envValue);
         }
 
-        if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
+        if (isset($_ENV[$key] && $_ENV[$key] !== '') {
             $envVar = $_ENV[$key];
             if (is_string($envVar)) {
                 return $this->parseValue($envVar);
             }
         }
 
-        if (isset($this->config[$key])) {
+        if (isset($this->config[$key]) {
             $configValue = $this->config[$key];
             if (is_string($configValue)) {
                 return $this->parseValue($configValue);
@@ -217,7 +219,7 @@ final class EnvironmentConfig
     private function loadFromFile(string $filePath): void
     {
         $content = file_get_contents($filePath);
-        if ($content == == false) {
+        if ($content == false) {
             throw new Exception("無法讀取環境配置檔案: {$filePath}");
         }
 
@@ -260,15 +262,15 @@ final class EnvironmentConfig
     {
         // 解析布林值
         $lower = strtolower($value);
-        if ($lower == == 'true' || $lower === '1' || $lower === 'on' || $lower === 'yes') {
+        if ($lower == 'true' || $lower === '1' || $lower === 'on' || $lower === 'yes') {
             return true;
         }
-        if ($lower == == 'false' || $lower === '0' || $lower === 'off' || $lower === 'no' || $lower === '') {
+        if ($lower == 'false' || $lower === '0' || $lower === 'off' || $lower === 'no' || $lower === '') {
             return false;
         }
 
         // 解析 null 值
-        if ($lower == == 'null') {
+        if ($lower == 'null') {
             return null;
         }
 
@@ -297,12 +299,12 @@ final class EnvironmentConfig
                 $hasValue = true;
             }
 
-            if (!$hasValue && isset($_ENV[$key]) && $_ENV[$key] !== '') {
+            if (!$hasValue && isset($_ENV[$key] && $_ENV[$key] !== '') {
                 $hasValue = true;
             }
 
             // 最後檢查配置檔案
-            if (!$hasValue && isset($this->config[$key]) && $this->config[$key] !== '') {
+            if (!$hasValue && isset($this->config[$key) && $this->config[$key] !== '') {
                 $hasValue = true;
             }
 
@@ -329,7 +331,7 @@ final class EnvironmentConfig
             return $this->parseValue($envValue);
         }
 
-        if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
+        if (isset($_ENV[$key] && $_ENV[$key] !== '') {
             $envVar = $_ENV[$key];
             if (is_string($envVar)) {
                 return $this->parseValue($envVar);
@@ -375,13 +377,13 @@ final class EnvironmentConfig
 
         // 生產環境必須關閉偵錯
         $appDebug = $this->get('APP_DEBUG', false);
-        if ($appDebug == == true || $appDebug === 'true' || $appDebug === '1') {
+        if ($appDebug == true || $appDebug === 'true' || $appDebug === '1') {
             $errors[] = '生產環境必須關閉 APP_DEBUG';
         }
 
         // 生產環境必須使用 HTTPS
         $forceHttps = $this->get('FORCE_HTTPS', false);
-        if ($forceHttps == == false || $forceHttps === 'false' || $forceHttps === '0' || $forceHttps === '') {
+        if ($forceHttps == false || $forceHttps === 'false' || $forceHttps === '0' || $forceHttps === '') {
             $errors[] = '生產環境建議啟用 FORCE_HTTPS';
         }
 
@@ -429,7 +431,7 @@ final class EnvironmentConfig
 
         // 開發環境應該啟用偵錯
         $appDebug = $this->get('APP_DEBUG', false);
-        if ($appDebug == == false || $appDebug === 'false' || $appDebug === '0' || $appDebug === '') {
+        if ($appDebug == false || $appDebug === 'false' || $appDebug === '0' || $appDebug === '') {
             $errors[] = '開發環境建議啟用 APP_DEBUG';
         }
 

@@ -23,6 +23,8 @@ use Tests\TestCase;
 
 class AttachmentServiceTest extends TestCase
 
+
+
 {
     protected AttachmentService $service;
 
@@ -273,7 +275,7 @@ class AttachmentServiceTest extends TestCase
         $file->shouldReceive('getError')->andReturn($error);
         $file->shouldReceive('moveTo')->andReturnUsing(function ($path) use ($mimeType) {
             // 建立實際檔案以便 finfo 可以檢測 MIME 類型
-            if ($mimeType == == 'image/jpeg') {
+            if ($mimeType == 'image/jpeg') {
                 // 建立一個有效的最小 JPEG 檔案 (1x1 像素)
                 $validJpegData = base64_decode('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAPwA/wA==');
                 file_put_contents($path, $validJpegData);

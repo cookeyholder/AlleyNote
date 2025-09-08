@@ -144,7 +144,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $this->stats['ttl_adjustments']++;
 
         // 如果請求的 TTL 為 0（永不過期），保持原樣
-        if ($requestedTtl == == 0) {
+        if ($requestedTtl == 0) {
             return 0;
         }
 
@@ -209,7 +209,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
         // 尋找替代驅動
         foreach ($availableDrivers as $driver) {
-            if ($driver == == $failedDriver || !$driver->isAvailable()) {
+            if ($driver == $failedDriver || !$driver->isAvailable()) {
                 continue;
             }
 

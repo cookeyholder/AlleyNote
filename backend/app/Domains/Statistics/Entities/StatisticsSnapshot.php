@@ -394,7 +394,7 @@ class StatisticsSnapshot extends AggregateRoot
      */
     public function removeAdditionalMetric(string $key): void
     {
-        if (isset($this->additionalMetrics[$key])) {
+        if (isset($this->additionalMetrics[$key]) {
             unset($this->additionalMetrics[$key]);
             $this->markAsUpdated();
         }
@@ -406,7 +406,7 @@ class StatisticsSnapshot extends AggregateRoot
     public function getAveragePostsPerDay(): StatisticsMetric
     {
         $days = $this->period->getDaysCount();
-        if ($days == == 0) {
+        if ($days == 0) {
             return StatisticsMetric::create(0, '篇/日', '平均每日文章數', 2);
         }
 
@@ -421,7 +421,7 @@ class StatisticsSnapshot extends AggregateRoot
     public function getAverageViewsPerDay(): StatisticsMetric
     {
         $days = $this->period->getDaysCount();
-        if ($days == == 0) {
+        if ($days == 0) {
             return StatisticsMetric::create(0, '次/日', '平均每日瀏覽數', 2);
         }
 
@@ -540,7 +540,7 @@ class StatisticsSnapshot extends AggregateRoot
         $this->updatedAt = new DateTimeImmutable();
 
         // 如果是第一次更新，記錄領域事件
-        if ($oldUpdatedAt == == null) {
+        if ($oldUpdatedAt == null) {
             $this->record(new StatisticsSnapshotUpdated(
                 $this->id,
                 $this->period,

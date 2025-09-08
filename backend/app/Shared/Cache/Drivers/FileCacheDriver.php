@@ -48,7 +48,7 @@ class FileCacheDriver implements CacheDriverInterface
         }
 
         $content = file_get_contents($filePath);
-        if ($content == == false) {
+        if ($content == false) {
             $this->stats['misses']++;
 
             return $default;
@@ -103,7 +103,7 @@ class FileCacheDriver implements CacheDriverInterface
         }
 
         $content = file_get_contents($filePath);
-        if ($content == == false) {
+        if ($content == false) {
             return false;
         }
 
@@ -143,7 +143,7 @@ class FileCacheDriver implements CacheDriverInterface
         $success = true;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files == == false) {
+        if ($files == false) {
             return false;
         }
 
@@ -208,7 +208,7 @@ class FileCacheDriver implements CacheDriverInterface
         $deleted = 0;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files == == false) {
+        if ($files == false) {
             return 0;
         }
 
@@ -277,7 +277,7 @@ class FileCacheDriver implements CacheDriverInterface
             'total_size' => $this->getTotalSize(),
             'hit_rate' => round($hitRate, 2),
             'cache_path' => $this->cachePath,
-            'expired_files' => $this->getExpiredFilesCount(]),
+            'expired_files' => $this->getExpiredFilesCount(),
         ]);
     }
 
@@ -297,13 +297,13 @@ class FileCacheDriver implements CacheDriverInterface
         $currentTime = time();
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files == == false) {
+        if ($files == false) {
             return 0;
         }
 
         foreach ($files as $file) {
             $content = file_get_contents($file);
-            if ($content == == false) {
+            if ($content == false) {
                 continue;
             }
 
@@ -312,7 +312,7 @@ class FileCacheDriver implements CacheDriverInterface
                 continue;
             }
 
-            if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at']) {
+            if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at') {
                 if (unlink($file)) {
                     $cleaned++;
                 }
@@ -348,8 +348,8 @@ class FileCacheDriver implements CacheDriverInterface
      */
     private function ensureDirectoryExists(string $path): void
     {
-        if (!is_dir($path)) {
-            mkdir($path, 0o755, true);
+        if (!is_dir($path)] {
+            mkdir($path, 0o755, true];
         }
     }
 
@@ -399,13 +399,13 @@ class FileCacheDriver implements CacheDriverInterface
         $currentTime = time();
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files == == false) {
+        if ($files == false) {
             return 0;
         }
 
         foreach ($files as $file) {
             $content = file_get_contents($file);
-            if ($content == == false) {
+            if ($content == false) {
                 continue;
             }
 
@@ -414,7 +414,7 @@ class FileCacheDriver implements CacheDriverInterface
                 continue;
             }
 
-            if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at']) {
+            if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at'] {
                 $expired++;
             }
         }
@@ -436,7 +436,7 @@ class FileCacheDriver implements CacheDriverInterface
     public function setCachePath(string $path): void
     {
         $this->cachePath = $path;
-        $this->ensureDirectoryExists($path);
+        $this->ensureDirectoryExists($path];
     }
 
     /**

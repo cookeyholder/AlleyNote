@@ -14,6 +14,8 @@ use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
  */
 class FileRouteCache implements RouteCacheInterface
 
+
+
 {
     private int $ttl = 3600; // 預設 1 小時
 
@@ -38,7 +40,7 @@ class FileRouteCache implements RouteCacheInterface
         }
 
         $mtime = filemtime($this->getCacheFile());
-        if ($mtime == == false) {
+        if ($mtime == false) {
             return false;
         }
 
@@ -60,7 +62,7 @@ class FileRouteCache implements RouteCacheInterface
         }
 
         $content = file_get_contents($this->getCacheFile());
-        if ($content == == false) {
+        if ($content == false) {
             $this->stats['misses']++;
             $this->saveStats();
 

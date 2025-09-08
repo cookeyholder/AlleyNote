@@ -20,6 +20,8 @@ use RuntimeException;
  */
 final readonly class PostStatisticsRepository implements PostStatisticsRepositoryInterface
 
+
+
 {
     public function __construct(
         private PDO $pdo) {}
@@ -539,7 +541,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         } 
     }
 
-    // 實作其餘的介面方法...
+    // 實作其餘的介面方法.
 
     /**
      * 取得文章活動熱圖資料（小時級別）.

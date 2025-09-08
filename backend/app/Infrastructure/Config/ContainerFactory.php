@@ -14,6 +14,8 @@ use Psr\Container\ContainerInterface;
  */
 class ContainerFactory
 
+
+
 {
     private static ?ContainerInterface $container = null;
 
@@ -29,7 +31,7 @@ class ContainerFactory
             $builder->addDefinitions(__DIR__ . '/container.php');
 
             // 啟用編譯快取以提升效能（生產和開發環境）
-            $cacheDir = __DIR__ . '/../../storage/di-cache';
+            $cacheDir = __DIR__ . '/././storage/di-cache';
             $proxiesDir = $cacheDir . '/proxies';
 
             // 確保快取目錄存在

@@ -17,6 +17,8 @@ use Monolog\Logger;
  */
 class LoggingSecurityService implements LoggingSecurityServiceInterface
 
+
+
 {
     private Logger $logger;
 
@@ -230,7 +232,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $filtered = [];
 
         foreach (self::REQUEST_WHITELIST as $allowedField) {
-            if (isset($data[$allowedField])) {
+            if (isset($data[$allowedField]) {
                 $filtered[$allowedField] = $data[$allowedField];
             }
         }
@@ -292,7 +294,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             $context['session_id'] = session_id();
         }
 
-        if (isset($_SESSION['user_id'])) {
+        if (isset($_SESSION['user_id']) {
             $context['user_id'] = $_SESSION['user_id'];
         }
 
@@ -307,7 +309,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $context['server_time'] = date('Y-m-d H:i:s');
 
         // 如果有 User-Agent，轉換為雜湊值
-        if (isset($_SERVER['HTTP_USER_AGENT'])) {
+        if (isset($_SERVER['HTTP_USER_AGENT']) {
             $context['user_agent_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT']);
         }
 

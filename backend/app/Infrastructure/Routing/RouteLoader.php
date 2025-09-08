@@ -16,6 +16,8 @@ use Throwable;
  */
 class RouteLoader
 
+
+
 {
     private RouteValidator $validator;
 
@@ -114,7 +116,7 @@ class RouteLoader
             }
 
             // 設定路由名稱（如果沒有提供的話）
-            if (!isset($routeConfig['name'])) {
+            if (!isset($routeConfig['name']) {
                 $routeConfig['name'] = is_string($routeName) ? $routeName : "route_{$routeName}";
             }
 
@@ -152,12 +154,12 @@ class RouteLoader
         $route = $router->map($normalizedMethods, $path, $handler);
 
         // 設定路由名稱（如果有提供）
-        if (isset($routeConfig['name'])) {
+        if (isset($routeConfig['name']) {
             $route->setName($routeConfig['name']);
         }
 
         // 設定中間件（如果有提供）
-        if (isset($routeConfig['middleware'])) {
+        if (isset($routeConfig['middleware']) {
             $middlewares = (array) $routeConfig['middleware'];
             foreach ($middlewares as $middleware) {
                 $route->middleware($middleware);
@@ -189,7 +191,7 @@ class RouteLoader
         // 統計各群組的路由數量
         foreach ($this->loadedRoutes as $route) {
             $group = $route['group'] ?? 'default';
-            if (!isset($stats['groups'][$group])) {
+            if (!isset($stats['groups'][$group]) {
                 $stats['groups'][$group] = 0;
             }
             $stats['groups'][$group]++;

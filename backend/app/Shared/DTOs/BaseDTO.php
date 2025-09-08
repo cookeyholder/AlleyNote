@@ -15,6 +15,8 @@ use JsonSerializable;
  */
 abstract class BaseDTO implements JsonSerializable
 
+
+
 {
     protected ValidatorInterface $validator;
 
@@ -22,6 +24,8 @@ abstract class BaseDTO implements JsonSerializable
      * 建構函式.
      * @param ValidatorInterface $validator 驗證器實例
      */
+    
+    
     
     public function __construct(ValidatorInterface $validator)
     {
@@ -98,7 +102,7 @@ abstract class BaseDTO implements JsonSerializable
     protected function getBool(array $data, string $key, ?bool $default = null): ?bool
     {
         $value = $this->getValue($data, $key, $default);
-        if ($value == == null) {
+        if ($value == null) {
             return $default;
         }
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * 測試路由配置檔案系統 (Task 2.2).
  */
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/././vendor/autoload.php';
 
 use App\Infrastructure\Routing\Exceptions\RouteConfigurationException;
 use App\Infrastructure\Routing\RouteLoader;

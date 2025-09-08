@@ -10,6 +10,8 @@ use PDO;
 
 class AuthorizationService implements AuthorizationServiceInterface
 
+
+
 {
     private PDO $db;
 
@@ -206,7 +208,7 @@ class AuthorizationService implements AuthorizationServiceInterface
         /** @var array<string, mixed> $result */
         $result = [];
         foreach ($permissions as $permission) {
-            $result[(string) $permission] = $permission;
+            $result[(string] $permission] = $permission;
         }
 
         return $result;

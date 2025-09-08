@@ -14,6 +14,8 @@ use Predis\Client;
  */
 final class CacheSystemE2ETest extends TestCase
 
+
+
 {
     private Client $redisClient;
 
@@ -61,7 +63,7 @@ final class CacheSystemE2ETest extends TestCase
         return true;
     }
 
-    // Test methods would go here...
+    // Test methods would go here..
     // 由於檔案被破壞，我們現在只需要能夠被解析的基本結構
 
     public function testDummy(): void

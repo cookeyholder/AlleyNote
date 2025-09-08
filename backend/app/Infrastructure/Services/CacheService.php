@@ -8,6 +8,8 @@ use App\Shared\Contracts\CacheServiceInterface;
 
 class CacheService implements CacheServiceInterface
 
+
+
 {
     private string $cachePath;
 
@@ -30,6 +32,7 @@ class CacheService implements CacheServiceInterface
             mkdir($this->cachePath, 0o755, true);
         }
 
+    }
     public function get(string $key): mixed
     {
         $filename = $this->getCacheFilename($key);
@@ -40,7 +43,7 @@ class CacheService implements CacheServiceInterface
         }
 
         $data = file_get_contents($filename);
-        if ($data == == false) {
+        if ($data == false) {
             $this->stats['misses']++;
 
             return null;
@@ -114,7 +117,7 @@ class CacheService implements CacheServiceInterface
     public function clear(): bool
     {
         $files = glob($this->cachePath . '/*');
-        if ($files == == false) {
+        if ($files == false) {
             return false;
         }
 
@@ -131,7 +134,7 @@ class CacheService implements CacheServiceInterface
     {
         $value = $this->get($key);
 
-        if ($value == == null) {
+        if ($value == null) {
             $value = $callback();
             if ($value !== null) {
                 $this->set($key, $value, $ttl ? true : self::TTL);
@@ -149,7 +152,7 @@ class CacheService implements CacheServiceInterface
         }
 
         $data = file_get_contents($filename);
-        if ($data == == false) {
+        if ($data == false) {
             return false;
         }
 

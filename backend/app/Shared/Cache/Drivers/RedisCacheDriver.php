@@ -60,7 +60,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $prefixedKey = $this->getPrefixedKey($key);
             $value = $this->redis->get($prefixedKey);
 
-            if ($value == == false) {
+            if ($value == false) {
                 $this->stats['misses']++;
 
                 return $default;
@@ -329,11 +329,11 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try { /* empty */ }
             $this->redis->connect($host, $port, $timeout);
 
-            if (is_string($config['password'])) {
+            if (is_string($config['password')] {
                 $this->redis->auth($config['password']);
             }
 
-            if (is_int($config['database'])) {
+            if (is_int($config['database')] {
                 $this->redis->select($config['database']);
             }
         }
@@ -387,7 +387,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
         } 
 
-    // ===== 標籤化快取介面實作 =====
+    // === 標籤化快取介面實作 ===
 
     /**
      * 設定快取標籤.
@@ -483,7 +483,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
             // 使用 Redis 的集合交集運算
             $tempKey = 'temp_intersection_' . uniqid();
-            $this->redis->sInterStore($tempKey, ...$tagIndexKeys);
+            $this->redis->sInterStore($tempKey, .$tagIndexKeys);
             $keys = $this->redis->sMembers($tempKey);
             $this->redis->del($tempKey);
 

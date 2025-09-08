@@ -206,7 +206,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         return array_unique($keys);
     }
 
-    // ========== 進階標籤功能實作 ==========
+    // === 進階標籤功能實作 ===
 
     /**
      * 使用指定標籤存放快取項目.
@@ -319,9 +319,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         $cleanedCount = $this->tagRepository->cleanupUnusedTags();
 
         if ($cleanedCount > 0) {
-            $this->logger->info('清除未使用的標籤', [
-                'cleaned_count' => $cleanedCount,
-            ]);
+            $this->logger->info('清除未使用的標籤', ['cleaned_count' => $cleanedCount]);
         }
 
         return $cleanedCount;

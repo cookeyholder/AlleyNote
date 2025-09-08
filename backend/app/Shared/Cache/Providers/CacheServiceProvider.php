@@ -210,7 +210,7 @@ class CacheServiceProvider
         assert(is_array($drivers), 'Drivers config must be an array');
 
         // 記憶體驅動
-        if (is_array($drivers['memory']) && ($drivers['memory']['enabled'] ?? true)) {
+        if (is_array($drivers['memory'] && ($drivers['memory']['enabled'] ?? true)) {
             $driver = $container->get('cache.driver.memory');
             assert($driver instanceof CacheDriverInterface, 'Memory driver must implement CacheDriverInterface');
             $priority = $drivers['memory']['priority'] ?? 90;
@@ -219,7 +219,7 @@ class CacheServiceProvider
         }
 
         // 檔案驅動
-        if (is_array($drivers['file']) && ($drivers['file']['enabled'] ?? true)) {
+        if (is_array($drivers['file'] && ($drivers['file']['enabled'] ?? true)) {
             $driver = $container->get('cache.driver.file');
             assert($driver instanceof CacheDriverInterface, 'File driver must implement CacheDriverInterface');
             $priority = $drivers['file']['priority'] ?? 50;
@@ -501,6 +501,7 @@ class CacheConfigBuilder
     /**
      * 設定預設驅動。
      */
+    }
     public function defaultDriver(string $driver): self
     {
         $this->config['default_driver'] = $driver;
@@ -514,7 +515,7 @@ class CacheConfigBuilder
      */
     public function memoryDriver(array $config = []): self
     {
-        if (!isset($this->config['drivers']) || !is_array($this->config['drivers'])) {
+        if (!isset($this->config['drivers') || !is_array($this->config['drivers'])) {
             $this->config['drivers'] = [];
         }
         $this->config['drivers']['memory'] = array_merge([
@@ -543,7 +544,7 @@ class CacheConfigBuilder
             $defaultConfig['path'] = $path;
         }
 
-        if (!isset($this->config['drivers']) || !is_array($this->config['drivers'])) {
+        if (!isset($this->config['drivers') || !is_array($this->config['drivers'])) {
             $this->config['drivers'] = [];
         }
         $this->config['drivers']['file'] = array_merge($defaultConfig, $config);
@@ -557,7 +558,7 @@ class CacheConfigBuilder
      */
     public function redisDriver(array $config = []): self
     {
-        if (!isset($this->config['drivers']) || !is_array($this->config['drivers'])) {
+        if (!isset($this->config['drivers') || !is_array($this->config['drivers'])) {
             $this->config['drivers'] = [];
         }
         $this->config['drivers']['redis'] = array_merge([

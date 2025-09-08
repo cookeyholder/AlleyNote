@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class PostStatusTest extends TestCase
 
+
+
 {
     public function testGetLabel(): void
     {

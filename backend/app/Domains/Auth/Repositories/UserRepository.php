@@ -12,6 +12,8 @@ use RuntimeException;
 
 class UserRepository
 
+
+
 {
     public function __construct(
         private PDO $db,
@@ -47,7 +49,7 @@ class UserRepository
         ]);
 
         $result = $this->findById((int) $this->db->lastInsertId());
-        if ($result == == null) {
+        if ($result == null) {
             throw new RuntimeException('Failed to create user: could not retrieve created user');
         }
 
@@ -64,7 +66,7 @@ class UserRepository
         $params = ['id' => $id];
 
         foreach ($data as $key => $value) {
-            if (in_array($key, ['username', 'email', 'status', 'password'])) {
+            if (in_array($key, ['username', 'email', 'status', 'password']) {
                 $fields[] = "{$key} = :{$key}";
                 $params[$key] = $key === 'password'
                     ? password_hash((string) $value, PASSWORD_ARGON2ID) : $value;
@@ -73,7 +75,7 @@ class UserRepository
 
         if (empty($fields)) {
             $result = $this->findById((int) $id);
-            if ($result == == null) {
+            if ($result == null) {
                 throw new RuntimeException('User not found');
             }
 
@@ -87,7 +89,7 @@ class UserRepository
         $stmt->execute($params);
 
         $result = $this->findById((int) $id);
-        if ($result == == null) {
+        if ($result == null) {
             throw new RuntimeException('Failed to update user: could not retrieve updated user');
         }
 

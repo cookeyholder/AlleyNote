@@ -32,6 +32,8 @@ use RuntimeException;
  */
 final class AuthenticationServiceTest extends TestCase
 
+
+
 {
     private AuthenticationService $authenticationService;
 

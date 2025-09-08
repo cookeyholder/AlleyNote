@@ -15,6 +15,8 @@ use Tests\TestCase;
 
 class SqlInjectionTest extends TestCase
 
+
+
 {
     protected PostRepository $repository;
 
@@ -158,7 +160,7 @@ class SqlInjectionTest extends TestCase
             ", "'; DROP TABLE po");sts; --",
             "' UNION SELECT * FROM posts --",
             "' OR 1=1 --",
-            "'; INSERT INTO posts VALUES (...); --",
+            "'; INSERT INTO posts VALUES (..); --",
         ];
 
         foreach ($maliciousInputs as $maliciousInput) {

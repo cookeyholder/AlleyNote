@@ -34,6 +34,8 @@ use Throwable;
  */
 final class StatisticsApplicationService
 
+
+
 {
     private const CACHE_TTL = 3600; // 1 小時
 
@@ -68,7 +70,7 @@ final class StatisticsApplicationService
                 if ($existingSnapshot !== null) {
                     $this->logger->info('統計快照已存在', [
                         'period' => $period->getDisplayString(),
-                        'snapshot_id' => $existingSnapshot->getId()->toString(]),
+                        'snapshot_id' => $existingSnapshot->getId()->toString(),
                     ]);
 
                     return $existingSnapshot;
@@ -76,7 +78,7 @@ final class StatisticsApplicationService
             }
 
             $this->logger->info('開始建立統計快照', [
-                'period' => $period->getDisplayString(]),
+                'period' => $period->getDisplayString(),
                 'force_recalculate' => $forceRecalculate,
             ]);
 
@@ -103,7 +105,7 @@ final class StatisticsApplicationService
             $this->clearRelatedCache($period);
 
             $this->logger->info('統計快照建立完成', [
-                'snapshot_id' => $snapshot->getId()->toString(]),
+                'snapshot_id' => $snapshot->getId()->toString(),
                 'total_posts' => $totalPostsCount,
                 'total_views' => $totalViewsCount,
             ]);
@@ -124,19 +126,19 @@ final class StatisticsApplicationService
         // 嘗試從快取取得
         $cached = $this->cacheManager->get($cacheKey);
         if ($cached !== null) {
-            $this->logger->debug('從快取取得統計概覽', ['period' => $period->getDisplayString(])]);
+            $this->logger->debug('從快取取得統計概覽', ['period' => $period->getDisplayString()]);
 
             /** @var array<string, mixed> $cached */
             return $cached;
         }
 
         try { /* empty */ }
-            $this->logger->info('計算統計概覽', ['period' => $period->getDisplayString(])]);
+            $this->logger->info('計算統計概覽', ['period' => $period->getDisplayString()]);
 
             // 取得統計快照
             $snapshot = $this->statisticsRepository->findByPeriod($period);
 
-            if ($snapshot == == null) {
+            if ($snapshot == null) {
                 // 如果快照不存在，建立新的
                 $snapshot = $this->createStatisticsSnapshot($period);
             }
@@ -186,7 +188,7 @@ final class StatisticsApplicationService
             $this->cacheManager->set($cacheKey, $overview, self::CACHE_TTL);
 
             $this->logger->info('統計概覽計算完成', [
-                'period' => $period->getDisplayString(]),
+                'period' => $period->getDisplayString(),
                 'metrics_count' => count($overview['metrics']),
             ]);
 
@@ -212,7 +214,7 @@ final class StatisticsApplicationService
 
         try { /* empty */ }
             $this->logger->info('分析熱門內容', [
-                'period' => $period->getDisplayString(]),
+                'period' => $period->getDisplayString(),
                 'limit' => $limit,
             ]);
 
@@ -239,7 +241,7 @@ final class StatisticsApplicationService
 
         try { /* empty */ }
             $this->logger->info('產生統計報告', [
-                'period' => $period->getDisplayString(]),
+                'period' => $period->getDisplayString(),
                 'options' => $options,
             ]);
 
@@ -308,9 +310,7 @@ final class StatisticsApplicationService
                 $pattern = self::CACHE_PREFIX . ':*:' . $this->getPeriodCacheKey($period) . '*';
                 $this->clearCacheByPattern($pattern);
 
-                $this->logger->info('清除特定週期統計快取', [
-                    'period' => $period->getDisplayString(]),
-                ]);
+                $this->logger->info('清除特定週期統計快取', ['period' => $period->getDisplayString()]);
             } else {
                 // 清除所有統計快取
                 $this->clearCacheByPattern(self::CACHE_PREFIX . ':*');
@@ -435,7 +435,7 @@ final class StatisticsApplicationService
             $this->cacheManager->set($testKey, $testValue, 60);
             $retrieved = $this->cacheManager->get($testKey);
 
-            if ($retrieved == == $testValue) {
+            if ($retrieved == $testValue) {
                 $this->cacheManager->delete($testKey);
 
                 return ['status' => 'ok', 'message' => 'Cache is working'];

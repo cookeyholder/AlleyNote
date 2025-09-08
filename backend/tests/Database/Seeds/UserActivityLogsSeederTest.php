@@ -16,6 +16,8 @@ use Tests\TestCase;
  */
 class UserActivityLogsSeederTest extends TestCase
 
+
+
 {
     private PDO $pdo;
 
@@ -225,7 +227,7 @@ class UserActivityLogsSeederTest extends TestCase
 
         // 由於 SQLite 在測試環境中可能有鎖定問題，這裡只做基本驗證
         // 透過檢查 Seeder 程式碼來確保有 truncate 呼叫
-        $seederFile = __DIR__ . '/../../../database/seeds/UserActivityLogsSeeder.php';
+        $seederFile = __DIR__ . '/./././database/seeds/UserActivityLogsSeeder.php';
         $content = file_get_contents($seederFile);
         $this->assertIsString($content, 'Seeder file should be readable');
 
@@ -249,7 +251,7 @@ class UserActivityLogsSeederTest extends TestCase
         $command = './vendor/bin/phinx seed:run -s UserActivityLogsSeeder 2>&1';
         $output = shell_exec($command);
 
-        if ($output == == null) {
+        if ($output == null) {
             $this->fail('無法執行 Seeder 指令');
         }
 
@@ -332,7 +334,7 @@ class UserActivityLogsSeederTest extends TestCase
      */
     private function assertMetadataIsValidJson(array $record): void
     {
-        if ($record['metadata']) {
+        if ($record['metadata'] {
             $this->assertIsString($record['metadata'], 'metadata should be a string');
             $decodedMetadata = json_decode($record['metadata'], true);
             $this->assertIsArray($decodedMetadata, 'metadata 應為有效的 JSON 格式');
@@ -348,7 +350,7 @@ class UserActivityLogsSeederTest extends TestCase
         $stmt = $this->pdo->query('SELECT * FROM user_activity_logs WHERE action_category = "security"');
         $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
 
-        /** @var array<int, array<string, mixed>> */
+        /** @var array<int, array<string, mixed> */
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

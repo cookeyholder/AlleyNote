@@ -247,9 +247,7 @@ class TokenGenerationException extends JwtException
      */
     public static function payloadInvalid(array $invalidFields, string $tokenType = self::ACCESS_TOKEN): self
     {
-        return new self(self::REASON_PAYLOAD_INVALID, $tokenType, '', [
-            'invalid_fields' => $invalidFields,
-        ]);
+        return new self(self::REASON_PAYLOAD_INVALID, $tokenType, '', ['invalid_fields' => $invalidFields]);
     }
 
     /**
@@ -260,9 +258,7 @@ class TokenGenerationException extends JwtException
      */
     public static function algorithmUnsupported(string $algorithm, string $tokenType = self::ACCESS_TOKEN): self
     {
-        return new self(self::REASON_ALGORITHM_UNSUPPORTED, $tokenType, '', [
-            'algorithm' => $algorithm,
-        ]);
+        return new self(self::REASON_ALGORITHM_UNSUPPORTED, $tokenType, '', ['algorithm' => $algorithm]);
     }
 
     /**
@@ -273,9 +269,7 @@ class TokenGenerationException extends JwtException
      */
     public static function claimsInvalid(array $invalidClaims, string $tokenType = self::ACCESS_TOKEN): self
     {
-        return new self(self::REASON_CLAIMS_INVALID, $tokenType, '', [
-            'invalid_claims' => $invalidClaims,
-        ]);
+        return new self(self::REASON_CLAIMS_INVALID, $tokenType, '', ['invalid_claims' => $invalidClaims]);
     }
 
     /**
@@ -299,9 +293,7 @@ class TokenGenerationException extends JwtException
      */
     public static function resourceExhausted(string $resourceType = 'memory', string $tokenType = self::ACCESS_TOKEN): self
     {
-        return new self(self::REASON_RESOURCE_EXHAUSTED, $tokenType, '', [
-            'resource_type' => $resourceType,
-        ]);
+        return new self(self::REASON_RESOURCE_EXHAUSTED, $tokenType, '', ['resource_type' => $resourceType]);
     }
 
     /**

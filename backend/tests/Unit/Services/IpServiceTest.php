@@ -200,6 +200,7 @@ class IpServiceTest extends TestCase
             $this->assertEquals($range, $result->getIpAddress());
         }
 
+    }
     public function testCanGetRulesByType(): void
     {
         $type = 1; // 白名單

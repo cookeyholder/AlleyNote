@@ -13,6 +13,8 @@ use App\Domains\Auth\ValueObjects\TokenPair;
  */
 final readonly class LoginResponseDTO
 
+
+
 {
     
     public function __construct(

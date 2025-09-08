@@ -13,6 +13,8 @@ use App\Domains\Auth\ValueObjects\TokenPair;
  */
 final readonly class RefreshResponseDTO
 
+
+
 {
     
     public function __construct(

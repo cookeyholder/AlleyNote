@@ -17,7 +17,7 @@ use Throwable;
  */
 class ErrorTrackerService implements ErrorTrackerInterface
 {
-    /** @var array<array<string, mixed>> 錯誤記錄暫存 */
+    /** @var array<array<string, mixed> 錯誤記錄暫存 */
     private array $errorRecords = [];
 
     /** @var array<callable> 錯誤過濾器 */
@@ -43,7 +43,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             'file' => $error->getFile(),
             'line' => $error->getLine(),
             'stack_trace' => $error->getTraceAsString(),
-            'previous' => $error->getPrevious() ? get_class($error->getPrevious()) . ' => ' . $error->getPrevious()->getMessage(]) : null,
+            'previous' => $error->getPrevious() ? get_class($error->getPrevious()) . ' => ' . $error->getPrevious()->getMessage() : null,
         ]), $error);
     }
 
@@ -76,7 +76,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             'file' => $error->getFile(),
             'line' => $error->getLine(),
             'stack_trace' => $error->getTraceAsString(),
-            'previous' => $error->getPrevious() ? get_class($error->getPrevious()) . ' => ' . $error->getPrevious()->getMessage(]) : null,
+            'previous' => $error->getPrevious() ? get_class($error->getPrevious()) . ' => ' . $error->getPrevious()->getMessage() : null,
         ]), $error);
 
         // 觸發所有通知處理器
@@ -110,7 +110,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         // 按等級分組
         foreach ($recentErrors as $record) {
             $level = $record['level'];
-            if (!isset($stats['levels'][$level])) {
+            if (!isset($stats['levels'][$level]) {
                 $stats['levels'][$level] = 0;
             }
             $stats['levels'][$level]++;
@@ -124,9 +124,9 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /** @var array<string, mixed> $context */
             $context = $record['context'];
-            if (is_string($context['exception_class'])) {
+            if (is_string($context['exception_class')] {
                 $type = $context['exception_class'];
-                if (!isset($stats['error_types'][$type])) {
+                if (!isset($stats['error_types'][$type]) {
                     $stats['error_types'][$type] = 0;
                 }
                 $stats['error_types'][$type]++;
@@ -140,9 +140,9 @@ class ErrorTrackerService implements ErrorTrackerInterface
             }
             /** @var array<string, mixed> $context */
             $context = $record['context'];
-            if (is_string($context['file'])) {
+            if (is_string($context['file')] {
                 $file = basename($context['file']);
-                if (!isset($stats['top_error_files'][$file])) {
+                if (!isset($stats['top_error_files'][$file]) {
                     $stats['top_error_files'][$file] = 0;
                 }
                 $stats['top_error_files'][$file]++;
@@ -203,7 +203,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             $timestampValue = $record['timestamp'] ?? 0;
             $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int) $timestampValue : time();
             $date = date('Y-m-d', $timestamp);
-            if (!isset($trends['daily_counts'][$date])) {
+            if (!isset($trends['daily_counts'][$date]) {
                 $trends['daily_counts'][$date] = 0;
             }
             $trends['daily_counts'][$date]++;
@@ -219,10 +219,10 @@ class ErrorTrackerService implements ErrorTrackerInterface
             $date = date('Y-m-d', $timestamp);
             $level = is_string($record['level'] ?? '') ? $record['level'] : 'unknown';
 
-            if (!isset($trends['level_trends'][$level])) {
+            if (!isset($trends['level_trends'][$level]) {
                 $trends['level_trends'][$level] = [];
             }
-            if (!isset($trends['level_trends'][$level][$date])) {
+            if (!isset($trends['level_trends'][$level][$date]) {
                 $trends['level_trends'][$level][$date] = 0;
             }
             $trends['level_trends'][$level][$date]++;
@@ -236,16 +236,16 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /** @var array<string, mixed> $context */
             $context = $record['context'];
-            if (is_string($context['exception_class'])) {
+            if (is_string($context['exception_class')] {
                 $timestampValue = $record['timestamp'] ?? 0;
                 $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int) $timestampValue : time();
                 $date = date('Y-m-d', $timestamp);
                 $type = $context['exception_class'];
 
-                if (!isset($trends['type_trends'][$type])) {
+                if (!isset($trends['type_trends'][$type]) {
                     $trends['type_trends'][$type] = [];
                 }
-                if (!isset($trends['type_trends'][$type][$date])) {
+                if (!isset($trends['type_trends'][$type][$date]) {
                     $trends['type_trends'][$type][$date] = 0;
                 }
                 $trends['type_trends'][$type][$date]++;
@@ -355,7 +355,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $this->notificationHandlers[] = $handler;
     }
 
-    // ===== 私有方法 =====
+    // === 私有方法 ===
 
     /**
      * 記錄錯誤並分配等級。
@@ -483,13 +483,13 @@ class ErrorTrackerService implements ErrorTrackerInterface
     private function fillMissingDates(array $trends, int $days): array
     {
         // 確保必要的陣列結構存在
-        if (!isset($trends['daily_counts']) || !is_array($trends['daily_counts'])) {
+        if (!isset($trends['daily_counts'] || !is_array($trends['daily_counts'])) {
             $trends['daily_counts'] = [];
         }
-        if (!isset($trends['level_trends']) || !is_array($trends['level_trends'])) {
+        if (!isset($trends['level_trends'] || !is_array($trends['level_trends'])) {
             $trends['level_trends'] = [];
         }
-        if (!isset($trends['type_trends']) || !is_array($trends['type_trends'])) {
+        if (!isset($trends['type_trends'] || !is_array($trends['type_trends'])) {
             $trends['type_trends'] = [];
         }
 
@@ -499,11 +499,11 @@ class ErrorTrackerService implements ErrorTrackerInterface
         for ($timestamp = $startDate; $timestamp <= $endDate; $timestamp += 24 * 3600) {
             $date = date('Y-m-d', $timestamp);
 
-            if (!isset($trends['daily_counts'][$date])) {
+            if (!isset($trends['daily_counts'][$date]) {
                 $trends['daily_counts'][$date] = 0;
             }
 
-            if (is_array($trends['level_trends'])) {
+            if (is_array($trends['level_trends')] {
                 foreach ($trends['level_trends'] as $level => &$levelData) {
                     if (is_array($levelData) && !isset($levelData[$date])) {
                         $levelData[$date] = 0;
@@ -511,7 +511,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
                 }
             }
 
-            if (is_array($trends['type_trends'])) {
+            if (is_array($trends['type_trends')] {
                 foreach ($trends['type_trends'] as $type => &$typeData) {
                     if (is_array($typeData) && !isset($typeData[$date])) {
                         $typeData[$date] = 0;
@@ -521,17 +521,17 @@ class ErrorTrackerService implements ErrorTrackerInterface
         }
 
         // 排序日期
-        if (is_array($trends['daily_counts'])) {
+        if (is_array($trends['daily_counts')] {
             ksort($trends['daily_counts']);
         }
-        if (is_array($trends['level_trends'])) {
+        if (is_array($trends['level_trends')] {
             foreach ($trends['level_trends'] as &$levelData) {
                 if (is_array($levelData)) {
                     ksort($levelData);
                 }
             }
         }
-        if (is_array($trends['type_trends'])) {
+        if (is_array($trends['type_trends')] {
             foreach ($trends['type_trends'] as &$typeData) {
                 if (is_array($typeData)) {
                     ksort($typeData);

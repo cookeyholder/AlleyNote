@@ -13,6 +13,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class DeviceInfoTest extends TestCase
 
+
+
 {
     private string $validDeviceId;
 

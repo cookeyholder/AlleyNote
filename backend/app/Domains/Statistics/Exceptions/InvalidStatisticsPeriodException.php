@@ -13,6 +13,8 @@ use Throwable;
  */
 class InvalidStatisticsPeriodException extends InvalidArgumentException
 
+
+
 {
     public function __construct(
         string $message = '無效的統計週期',

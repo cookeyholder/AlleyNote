@@ -20,6 +20,8 @@ use Psr\Log\NullLogger;
  */
 class AttachmentActivityLoggingTest extends TestCase
 
+
+
 {
     private PDO $pdo;
 
@@ -30,7 +32,7 @@ class AttachmentActivityLoggingTest extends TestCase
         parent::setUp();
 
         // 使用測試資料庫
-        $this->pdo = new PDO('sqlite:' . dirname(__DIR__, 1) . '/../database/alleynote.sqlite3');
+        $this->pdo = new PDO('sqlite:' . dirname(__DIR__, 1) . '/./database/alleynote.sqlite3');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // 清除測試數據

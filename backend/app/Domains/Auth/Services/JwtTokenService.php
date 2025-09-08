@@ -28,6 +28,8 @@ use Throwable;
  */
 final class JwtTokenService implements JwtTokenServiceInterface
 
+
+
 {
     public function __construct(
         private readonly JwtProviderInterface $jwtProvider,
@@ -52,7 +54,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 'ip_address' => $deviceInfo->getIpAddress(),
                 'user_agent' => $deviceInfo->getUserAgent(),
                 'platform' => $deviceInfo->getPlatform(),
-                'browser' => $deviceInfo->getBrowser(]),
+                'browser' => $deviceInfo->getBrowser(),
                 'type' => 'access',
             ]);
 
@@ -136,7 +138,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
         $jwtPayload = $this->createJwtPayloadFromArray($payload);
         $refreshTokenRecord = $this->refreshTokenRepository->findByJti($jwtPayload->getJti());
 
-        if ($refreshTokenRecord == == null) {
+        if ($refreshTokenRecord == null) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_CLAIMS_INVALID,
                 InvalidTokenException::REFRESH_TOKEN,
@@ -276,26 +278,26 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 確保必要的鍵存在
             $requiredKeys = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp'];
             foreach ($requiredKeys as $key) {
-                if (!isset($payload[$key])) {
+                if (!isset($payload[$key]) {
                     throw new InvalidArgumentException("Missing required payload key: {$key}");
                 }
             }
 
             // 安全地建立 DateTimeImmutable 物件
             $iat = DateTimeImmutable::createFromFormat('U', (string) $payload['iat']);
-            if ($iat == == false) {
+            if ($iat == false) {
                 throw new InvalidArgumentException('Invalid iat timestamp: ' . (string) $payload['iat']);
             }
 
             $exp = DateTimeImmutable::createFromFormat('U', (string) $payload['exp']);
-            if ($exp == == false) {
+            if ($exp == false) {
                 throw new InvalidArgumentException('Invalid exp timestamp: ' . (string) $payload['exp']);
             }
 
             $nbf = null;
-            if (isset($payload['nbf'])) {
+            if (isset($payload['nbf']) {
                 $nbf = DateTimeImmutable::createFromFormat('U', (string) $payload['nbf']);
-                if ($nbf == == false) {
+                if ($nbf == false) {
                     throw new InvalidArgumentException('Invalid nbf timestamp: ' . (string) $payload['nbf']);
                 }
             }

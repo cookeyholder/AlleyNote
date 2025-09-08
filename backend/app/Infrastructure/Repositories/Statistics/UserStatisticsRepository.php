@@ -19,6 +19,8 @@ use RuntimeException;
  */
 final readonly class UserStatisticsRepository implements UserStatisticsRepositoryInterface
 
+
+
 {
     public function __construct(
         private PDO $pdo) {}
@@ -338,7 +340,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $bounceResult = $stmt->fetch(PDO::FETCH_ASSOC);
             $bounceRate = 0.0;
-            if (is_array($bounceResult)
+            if (is_array($bounceResult) {
                 && isset($bounceResult['single_page_sessions'], $bounceResult['total_sessions'])
                 && is_numeric($bounceResult['single_page_sessions']) && is_numeric($bounceResult['total_sessions'])
                 && (int) $bounceResult['total_sessions'] > 0) {
@@ -396,7 +398,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $conversionResult = $stmt->fetch(PDO::FETCH_ASSOC);
             $conversionRate = 0.0;
-            if (is_array($conversionResult)
+            if (is_array($conversionResult) {
                 && isset($conversionResult['users_with_posts'], $conversionResult['total_active_users'])
                 && is_numeric($conversionResult['users_with_posts']) && is_numeric($conversionResult['total_active_users'])
                 && (int) $conversionResult['total_active_users'] > 0) {
@@ -491,7 +493,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             ]);
             $totalNewUsers = (int) $stmt->fetchColumn();
 
-            if ($totalNewUsers == == 0) {
+            if ($totalNewUsers == 0) {
                 return [
                     'total_new_users' => 0,
                     'retained_users' => 0,
@@ -629,7 +631,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             $stmt->execute(['start_date' => $period->startDate->format('Y-m-d H => i:s')]);
             $totalUsers = (int) $stmt->fetchColumn();
 
-            if ($totalUsers == == 0) {
+            if ($totalUsers == 0) {
                 return [
                     'total_users' => 0,
                     'churned_users' => 0,
@@ -678,7 +680,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
         } 
     }
 
-    // 其餘介面方法的簡化實作...
+    // 其餘介面方法的簡化實作.
 
     /**
      * 取得新使用者首次活動分析.
@@ -718,10 +720,10 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             $avgDaysToFirstActivity = 0.0;
 
             if (is_array($result)) {
-                if (isset($result['total_new_users_with_activity']) && is_numeric($result['total_new_users_with_activity'])) {
+                if (isset($result['total_new_users_with_activity'] && is_numeric($result['total_new_users_with_activity'])) {
                     $totalNewUsersWithActivity = (int) $result['total_new_users_with_activity'];
                 }
-                if (isset($result['avg_days_to_first_activity']) && is_numeric($result['avg_days_to_first_activity'])) {
+                if (isset($result['avg_days_to_first_activity'] && is_numeric($result['avg_days_to_first_activity'])) {
                     $avgDaysToFirstActivity = (float) $result['avg_days_to_first_activity'];
                 }
             }

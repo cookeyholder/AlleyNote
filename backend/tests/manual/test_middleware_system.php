@@ -8,7 +8,7 @@ declare(strict_types=1);
  * 測試中介軟體管理器、執行器和路由整合
  */
 // 自動載入 Composer 依賴
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/././vendor/autoload.php';
 
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use App\Infrastructure\Routing\Core\Route;
@@ -22,6 +22,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 // 建立模擬的 PSR-7 請求和回應
 $request = new class implements ServerRequestInterface 
+
+
 {
     private array $attributes = [];
 
@@ -33,6 +35,8 @@ $request = new class implements ServerRequestInterface
     public function getUri()
     {
         return new class {
+    }
+    }
             public function getPath(): string
             {
                 return '/users/123';
@@ -107,6 +111,8 @@ $request = new class implements ServerRequestInterface
     public function getBody()
     {
         return new class {
+    }
+    }
             public function __toString(): string
             {
                 return '';
@@ -191,9 +197,12 @@ $request = new class implements ServerRequestInterface
 };
 
 $response = new class implements ResponseInterface 
+
+
 {
     private string $body = '';
 
+    }
     public function __construct(string $body = '')
     {
         $this->body = $body;
@@ -202,6 +211,8 @@ $response = new class implements ResponseInterface
     public function getBody()
     {
         return new class ($this->body) {
+    }
+    }
             public function __construct(private string $content) {}
 
     public function __toString(): string
@@ -281,7 +292,10 @@ $response = new class implements ResponseInterface
 // 建立測試中介軟體
 class LoggingMiddleware extends AbstractMiddleware
 
+
+
 {
+    }
     public function __construct(private string $message, int $priority = 0)
     {
         parent::__construct('logging-' . md5($message), $priority);
@@ -301,7 +315,10 @@ class LoggingMiddleware extends AbstractMiddleware
 
 class AuthMiddleware extends AbstractMiddleware
 
+
+
 {
+    }
     public function __construct(int $priority = 10)
     {
         parent::__construct('auth', $priority);
@@ -309,7 +326,7 @@ class AuthMiddleware extends AbstractMiddleware
 
     protected function execute(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        echo '檢查認證...
+        echo '檢查認證..
 ';
         $request = $request->withAttribute('user_id', 123);
 
@@ -319,7 +336,10 @@ class AuthMiddleware extends AbstractMiddleware
 
 // 建立最終處理器
 $finalHandler = new class implements RequestHandlerInterface 
+
+
 {
+    }
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         echo '執行最終處理器
@@ -328,10 +348,16 @@ $finalHandler = new class implements RequestHandlerInterface
 ';
 
         return new class implements ResponseInterface 
+
+
 {
+    }
+    }
     public function getBody()
             {
                 return new class {
+    }
+    }
                     public function __toString(): string
                     {
                         return 'Hello, World!';
@@ -415,7 +441,7 @@ echo '=== 路由中介軟體系統測試 ===
 // 1. 測試中介軟體基本功能
 echo '1. 測試中介軟體基本功能
 ';
-echo '----------------------------
+echo '--------------
 ';
 
 $dispatcher = new MiddlewareDispatcher();
@@ -436,7 +462,7 @@ echo '
 // 2. 測試中介軟體執行順序
 echo '2. 測試中介軟體執行順序 (按優先順序)
 ';
-echo '---------------------------------------
+echo '---------------------
 ';
 
 $response = $manager->process($request, $finalHandler);
@@ -446,7 +472,7 @@ echo '
 // 3. 測試路由參數中介軟體
 echo '3. 測試路由參數中介軟體
 ';
-echo '--------------------------
+echo '--------------
 ';
 
 $routeParamsMiddleware = new RouteParametersMiddleware([
@@ -464,7 +490,7 @@ echo '
 // 4. 測試路由資訊中介軟體
 echo '4. 測試路由資訊中介軟體
 ';
-echo '--------------------------
+echo '--------------
 ';
 
 $routeInfoMiddleware = new RouteInfoMiddleware(
@@ -484,7 +510,7 @@ echo '
 // 5. 測試路由與中介軟體整合
 echo '5. 測試路由與中介軟體整合
 ';
-echo '----------------------------
+echo '--------------
 ';
 
 $route = new Route(['GET'], '/users/{id}', function () {
@@ -508,6 +534,7 @@ echo '路由匹配: ' . ($matchResult->isMatched() ? '成功' : '失敗') . '
 if ($matchResult->isMatched()) {
     echo '路由參數: ' . json_encode($matchResult->getParameters(), JSON_UNESCAPED_UNICODE) . '
 ';
+    }
 }
 echo '
 ';
@@ -515,7 +542,7 @@ echo '
 // 6. 測試 URL 生成
 echo '6. 測試 URL 生成
 ';
-echo '-----------------
+echo '---------
 ';
 
 $route2 = new Route(['GET'], '/posts/{slug}/comments/{id}', 'handler');
@@ -537,7 +564,7 @@ echo '
 // 7. 測試中介軟體狀態管理
 echo '7. 測試中介軟體狀態管理
 ';
-echo '--------------------------
+echo '--------------
 ';
 
 $middleware1 = new LoggingMiddleware('可停用的中介軟體');

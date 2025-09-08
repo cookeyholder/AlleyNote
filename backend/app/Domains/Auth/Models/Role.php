@@ -6,6 +6,8 @@ namespace App\Domains\Auth\Models;
 
 class Role
 
+
+
 {
     private int $id;
 

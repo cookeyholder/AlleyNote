@@ -20,6 +20,8 @@ use ReflectionObject;
  */
 class ActivityLog
 
+
+
 {
     private ?int $id = null;
 

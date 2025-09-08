@@ -17,6 +17,8 @@ use Psr\Log\LoggerInterface;
  */
 class SystemMonitorService implements SystemMonitorInterface
 
+
+
 {
     public function __construct(
         private LoggerInterface $logger,
@@ -306,7 +308,7 @@ class SystemMonitorService implements SystemMonitorInterface
         ];
     }
 
-    // ===== 私有方法 =====
+    // === 私有方法 ===
 
     /**
      * 取得載入的 PHP 擴充功能。
@@ -327,7 +329,7 @@ class SystemMonitorService implements SystemMonitorInterface
     {
         $memoryLimit = trim($memoryLimit);
 
-        if ($memoryLimit == == '-1') {
+        if ($memoryLimit == '-1') {
             return PHP_INT_MAX;
         }
 

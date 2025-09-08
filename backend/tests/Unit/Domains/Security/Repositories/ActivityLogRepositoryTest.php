@@ -21,6 +21,8 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(ActivityLogRepository::class)]
 class ActivityLogRepositoryTest extends TestCase
 
+
+
 {
     private PDO|MockObject $pdo;
 
@@ -682,7 +684,7 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(3))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) use ($searchTerm) {
-                if ($param == == ':search_term') {
+                if ($param == ':search_term') {
                     $this->assertEquals('%' . $searchTerm . '%', $value);
                 } else {
                     $this->assertTrue(in_array($param, [' => limit', ':offset'], true));

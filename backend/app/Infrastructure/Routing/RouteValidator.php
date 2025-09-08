@@ -184,7 +184,7 @@ class RouteValidator
             $method = strtoupper(trim($method));
             $key = "{$method}:{$path}";
 
-            if (isset($this->registeredRoutes[$key])) {
+            if (isset($this->registeredRoutes[$key]) {
                 throw RouteConfigurationException::duplicateRoute($method, $path);
             }
 

@@ -59,7 +59,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
         parent::setUp();
 
         // 首先設定 JWT 環境變數，確保在建立服務前就已設定
-        $_ENV['JWT_PRIVATE_KEY'] = '-----BEGIN PRIVATE KEY-----
+        $_ENV['JWT_PRIVATE_KEY'] = '---BEGIN PRIVATE KEY---
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCEd1LvGZVBEKkp
 pJV2aGLBoTGvxSHhCQ3ZRGDwVUPv8w7Y0l/xBLhSbh2/iQGfX/bu7kA3kBvY2uH6
 HF1LPTbmF4EtWITExDkM/A3r6nuizYdVBNYM72yriDQPUveg6PAjataamKliexDF
@@ -86,8 +86,8 @@ NQOi9KIz3nfGEpbwZmjXA4SBR5o0bdcjdxyJhFT1AoGAQb3Kw59mlGkDRf6aAmUE
 Z9JBfelirgrQ69ZKCKCVvZG/4mEDmU9E+6kHrf9Hbk1xOuGhY0+tSokLZQVY0+YS
 TcRRp/F1/kf6XHPlpHsaRn0phSKHSXxxXZ23w4Jqc9cDhTpfYZMsAQGacxKg/nNy
 mo0TtZZCNgLlXOCjt0o4Fpc=
------END PRIVATE KEY-----';
-        $_ENV['JWT_PUBLIC_KEY'] = '-----BEGIN PUBLIC KEY-----
+---END PRIVATE KEY---';
+        $_ENV['JWT_PUBLIC_KEY'] = '---BEGIN PUBLIC KEY---
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhHdS7xmVQRCpKaSVdmhi
 waExr8Uh4QkN2URg8FVD7/MO2NJf8QS4Um4dv4kBn1/27u5AN5Ab2Nrh+hxdSz02
 5heBLViExMQ5DPwN6+p7os2HVQTWDO9sq4g0D1L3oOjwI2rWmpipYnsQxWgQFvHf
@@ -95,7 +95,7 @@ nrPXxQ4EbVo+KmzvllLNr7n34yOkj7h17daXYILvzRgQTEr/eluWOpZgPoOEIn+B
 gEJ/JykvuZ76f3vNEaumCiK+Zhco4KSAg7t0awAE5jyoSno+hYA2aevY92YkFnMs
 Alrd68DAtk8/Q33YSncA88Ci+IJ7dZOeR2bfcQHoFlK6BLV8zZxy+7SfSCNQslA2
 kwIDAQAB
------END PUBLIC KEY-----';
+---END PUBLIC KEY---';
         $_ENV['JWT_ISSUER'] = 'alleynote-api';
         $_ENV['JWT_AUDIENCE'] = 'alleynote-client';
         $_ENV['JWT_ACCESS_TOKEN_TTL'] = '3600';
@@ -448,7 +448,7 @@ kwIDAQAB
         // 設定成功的憑證驗證
         $this->userRepository->shouldReceive('validateCredentials')
             ->andReturnUsing(function ($email, $password) {
-                if ($email == == 'test@example.com' && $password === 'password123') {
+                if ($email == 'test@example.com' && $password === 'password123') {
                     return [
                         'id' => 1,
                         'email' => 'test@example.com',
@@ -468,7 +468,7 @@ kwIDAQAB
         // 其他可能需要的方法
         $this->userRepository->shouldReceive('findById')
             ->andReturnUsing(function ($id) {
-                if ($id == == 1) {
+                if ($id == 1) {
                     return [
                         'id' => 1,
                         'email' => 'test@example.com',
@@ -514,7 +514,7 @@ kwIDAQAB
      */
     private function generateTestPrivateKey(): string
     {
-        return '-----BEGIN RSA PRIVATE KEY-----
+        return '---BEGIN RSA PRIVATE KEY---
 MIIEowIBAAKCAQEA4f5wg5l2hKsTeNem/V41fGnJm6gOdrj8ym3rFkEjWT2btYEt
 YUDzWmNfflgKkZwSNgUVFm1JgqGnJkF7xT8w7ZQe2nrjT5e7xzp6UOpG6U3XdMnm
 CJc3g8g5x9x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
@@ -524,7 +524,7 @@ x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
------END RSA PRIVATE KEY-----';
+---END RSA PRIVATE KEY---';
     }
 
     /**
@@ -532,7 +532,7 @@ x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
      */
     private function generateTestPublicKey(): string
     {
-        return '-----BEGIN PUBLIC KEY-----
+        return '---BEGIN PUBLIC KEY---
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4f5wg5l2hKsTeNem/V41
 fGnJm6gOdrj8ym3rFkEjWT2btYEtYUDzWmNfflgKkZwSNgUVFm1JgqGnJkF7xT8w
 7ZQe2nrjT5e7xzp6UOpG6U3XdMnmCJc3g8g5x9x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
@@ -541,6 +541,6 @@ x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
 QIDAQAB
------END PUBLIC KEY-----';
+---END PUBLIC KEY---';
     }
 }

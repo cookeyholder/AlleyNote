@@ -173,8 +173,8 @@ AlleyNote 公布欄系統 API 文件
     properties: [
         new OA\Property(property => 'success', type: 'boolean', example: true),
         new OA\Property(property: 'message', type: 'string', example: '登入成功'),
-        new OA\Property(property: 'access_token', type: 'string', example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...'),
-        new OA\Property(property: 'refresh_token', type: 'string', example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...'),
+        new OA\Property(property: 'access_token', type: 'string', example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.'),
+        new OA\Property(property: 'refresh_token', type: 'string', example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.'),
         new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
         new OA\Property(property: 'expires_in', type: 'integer', description: 'Token 有效期（秒）', example: 3600),
         new OA\Property(property: 'expires_at', type: 'integer', description: 'Token 過期時間戳', example: 1704067200),

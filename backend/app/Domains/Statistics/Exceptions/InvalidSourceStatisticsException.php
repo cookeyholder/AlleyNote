@@ -13,6 +13,8 @@ use Throwable;
  */
 class InvalidSourceStatisticsException extends InvalidArgumentException
 
+
+
 {
     public function __construct(
         string $message = '無效的來源統計',

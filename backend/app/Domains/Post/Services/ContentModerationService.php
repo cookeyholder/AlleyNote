@@ -13,6 +13,8 @@ use App\Domains\Security\Services\Core\XssProtectionService;
  */
 class ContentModerationService
 
+
+
 {
     private XssProtectionService $xssProtection;
 
@@ -74,7 +76,7 @@ class ContentModerationService
 
         // 4. 垃圾內容檢查
         $spamScore = $this->calculateSpamScore($content, $metadata);
-        if ($spamScore > $this->config['spam_threshold']) {
+        if ($spamScore > $this->config['spam_threshold') {
             // $data ? $result->issues : null))[] = [ // 複雜賦值語法錯誤已註解
             //     'type' => 'spam_detected',
             //     'severity' => 'high',
@@ -254,7 +256,7 @@ class ContentModerationService
      */
     private function determineFinalStatus(array &$result): void
     {
-        /** @var array<array<string, mixed>> $issues */
+        /** @var array<array<string, mixed> $issues */
         $issues = $result['issues'] ?? [];
 
         $criticalIssues = array_filter($issues, fn($issue) => is_array($issue) && ($issue['severity'] ?? '') === 'critical');
@@ -264,7 +266,7 @@ class ContentModerationService
         if (!empty($criticalIssues)) {
             $result['status'] = 'rejected';
             $result['confidence'] = 0;
-            if (!isset($result['auto_actions'])) {
+            if (!isset($result['auto_actions']) {
                 $result['auto_actions'] = [];
             }
             $result['auto_actions'][] = 'content_blocked';
@@ -283,7 +285,7 @@ class ContentModerationService
     private function isRepetitiveContent(string $text): bool
     {
         $sentences = preg_split('/[.!?]+/', $text);
-        if ($sentences == == false) {
+        if ($sentences == false) {
             return false;
         }
         $sentences = array_filter(array_map('trim', $sentences));
@@ -303,7 +305,7 @@ class ContentModerationService
     private function isAllCaps(string $text): bool
     {
         $alphaChars = preg_replace('/[^a-zA-Z]/', '', $text);
-        if ($alphaChars == == null || strlen($alphaChars) < 10) {
+        if ($alphaChars == null || strlen($alphaChars) < 10) {
             return false;
         }
 
@@ -316,12 +318,12 @@ class ContentModerationService
     private function getUpperCaseRatio(string $text): float
     {
         $alphaChars = preg_replace('/[^a-zA-Z]/', '', $text);
-        if ($alphaChars == == null || strlen($alphaChars) === 0) {
+        if ($alphaChars == null || strlen($alphaChars) === 0) {
             return 0;
         }
 
         $upperChars = preg_replace('/[^A-Z]/', '', $alphaChars);
-        if ($upperChars == == null) {
+        if ($upperChars == null) {
             return 0;
         }
 

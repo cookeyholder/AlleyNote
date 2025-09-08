@@ -98,7 +98,7 @@ use OpenApi\Attributes as OA;
             property: 'token',
             type: 'string',
             description: 'JWT Token',
-            example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...',
+            example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.',
         ),
         new OA\Property(
             property: 'user',

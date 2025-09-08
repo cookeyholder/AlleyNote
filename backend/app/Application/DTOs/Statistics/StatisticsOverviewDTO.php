@@ -33,6 +33,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      * @param array $additionalMetrics 額外指標
      */
     
+    
+    
     public function __construct(
         public StatisticsPeriod $period,
         public StatisticsMetric $totalPosts,
@@ -115,7 +117,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
         // 來源統計資料
         $sourceStatsDataRaw = $data['source_statistics'] ?? [];
-        /** @var array<array<string, mixed>> $sourceStatsData */
+        /** @var array<array<string, mixed> $sourceStatsData */
         $sourceStatsData = is_array($sourceStatsDataRaw) ? array_filter($sourceStatsDataRaw, 'is_array') : [];
 
         /** @var array<SourceStatistics> $sourceStatistics */
@@ -260,7 +262,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
     public function hasGrowth(): bool
     {
         // 如果有額外指標包含成長率資訊
-        if (isset($this->additionalMetrics['growth_rate'])) {
+        if (isset($this->additionalMetrics['growth_rate']) {
             return $this->additionalMetrics['growth_rate'] > 0;
         }
 

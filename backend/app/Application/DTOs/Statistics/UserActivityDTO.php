@@ -32,12 +32,14 @@ final readonly class UserActivityDTO implements JsonSerializable
      * @param array $engagementMetrics 參與度指標
      */
     
+    
+    
     public function __construct(
         public StatisticsPeriod $period,
         public StatisticsMetric $totalActiveUsers,
         public StatisticsMetric $newUsers,
         public StatisticsMetric $returningUsers,
-        /** @var array<array<string, mixed>> */
+        /** @var array<array<string, mixed> */
         public array $topActiveUsers,
         /** @var array<string, mixed> */
         public array $activityPatterns,
@@ -61,7 +63,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         StatisticsPeriod $period,
         /** @var array<string, mixed> */
         array $userStats,
-        /** @var array<array<string, mixed>> */
+        /** @var array<array<string, mixed> */
         array $topUsers = [],
         /** @var array<string, mixed> */
         array $patterns = [],
@@ -144,7 +146,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         );
 
         $topActiveUsersRaw = $data['top_active_users'] ?? [];
-        /** @var array<array<string, mixed>> $topActiveUsers */
+        /** @var array<array<string, mixed> $topActiveUsers */
         $topActiveUsers = is_array($topActiveUsersRaw) ? array_filter($topActiveUsersRaw, 'is_array') : [];
 
         $activityPatternsRaw = $data['activity_patterns'] ?? [];
@@ -314,7 +316,7 @@ final readonly class UserActivityDTO implements JsonSerializable
                 ? ((int) $countB <=> (int) $countA) : 0;
         });
 
-        /** @var array<int, array<string, mixed>> $timeAnalysis */
+        /** @var array<int, array<string, mixed> $timeAnalysis */
         return array_slice($timeAnalysis, 0, 3, true);
     }
 
@@ -521,7 +523,7 @@ final readonly class UserActivityDTO implements JsonSerializable
     private function validateTopActiveUsers(array $topUsers): void
     {
         foreach ($topUsers as $index => $user) {
-            if (!isset($user['user_id'])) {
+            if (!isset($user['user_id']) {
                 throw new InvalidArgumentException(
                     "最活躍使用者索引 {$index} 必須包含 user_id");
             }

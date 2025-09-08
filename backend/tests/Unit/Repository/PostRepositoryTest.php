@@ -19,6 +19,8 @@ use Tests\TestCase;
 
 class PostRepositoryTest extends TestCase
 
+
+
 {
     private PostRepository $repository;
 
@@ -233,6 +235,7 @@ class PostRepositoryTest extends TestCase
             $this->assertTrue($post->getIsPinned());
         }
 
+    }
     public function testCanSetPinnedStatus(): void
     {
         $post = $this->repository->create(PostFactory::make(['is_pinned' => false]));

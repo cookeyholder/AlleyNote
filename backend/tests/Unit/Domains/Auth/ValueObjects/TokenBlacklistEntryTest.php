@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class TokenBlacklistEntryTest extends TestCase
 
+
+
 {
     private DateTimeImmutable $now;
 
@@ -713,6 +715,7 @@ final class TokenBlacklistEntryTest extends TestCase
             fclose($resource);
         }
 
+    }
     public function testForAccountChangeWithInvalidChangeType(): void
     {
         $this->expectException(InvalidArgumentException::class);

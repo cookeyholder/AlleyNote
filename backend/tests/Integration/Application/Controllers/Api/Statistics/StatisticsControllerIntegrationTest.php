@@ -216,11 +216,11 @@ final class StatisticsControllerIntegrationTest extends TestCase
         foreach ($expectedStructure as $key => $expectedType) {
             $this->assertArrayHasKey($key, $mockResponse);
 
-            if ($expectedType == == 'boolean') {
+            if ($expectedType == 'boolean') {
                 $this->assertIsBool($mockResponse[$key]);
-            } elseif ($expectedType == == 'array') {
+            } elseif ($expectedType == 'array') {
                 $this->assertIsArray($mockResponse[$key]);
-            } elseif ($expectedType == == 'string') {
+            } elseif ($expectedType == 'string') {
                 $this->assertIsString($mockResponse[$key]);
             }
         }

@@ -12,6 +12,8 @@ use Tests\Support\IntegrationTestCase;
  */
 class IntegrationTestExampleTest extends IntegrationTestCase
 
+
+
 {
     public function testDatabaseIntegration(): void
     {

@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class PwnedPasswordServiceTest extends TestCase
 
+
+
 {
     private PwnedPasswordService $service;
 
@@ -23,7 +25,7 @@ class PwnedPasswordServiceTest extends TestCase
         $result = $this->service->isPasswordPwned('password');
 
         // 如果 API 可用，應該檢測到這是被洩露的密碼
-        if ($result['api_available']) {
+        if ($result['api_available'] {
             $this->assertTrue($result['is_leaked']);
             $this->assertGreaterThan(0, $result['count']);
             $this->assertNull($result['error']);
@@ -34,6 +36,7 @@ class PwnedPasswordServiceTest extends TestCase
             $this->assertNotNull($result['error']);
         }
 
+    }
     public function testShouldNotDetectSecurePassword(): void
     {
         // 使用一個足夠複雜且不太可能被洩露的密碼
@@ -41,12 +44,13 @@ class PwnedPasswordServiceTest extends TestCase
         $result = $this->service->isPasswordPwned($securePassword);
 
         // 如果 API 可用，這個密碼應該不在洩露清單中
-        if ($result['api_available']) {
+        if ($result['api_available'] {
             $this->assertFalse($result['is_leaked']);
             $this->assertEquals(0, $result['count']);
             $this->assertNull($result['error']);
         }
 
+    }
     public function testShouldHandleApiFailureGracefully(): void
     {
         // 測試 API 失敗時的處理
@@ -85,6 +89,7 @@ class PwnedPasswordServiceTest extends TestCase
             $this->assertArrayHasKey('api_available', $result);
         }
 
+    }
     public function testShouldCacheResults(): void
     {
         // 第一次呼叫

@@ -8,7 +8,7 @@ declare(strict_types=1);
  * 測試各種快取實作的功能
  */
 // 自動載入 Composer 依賴
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/././vendor/autoload.php';
 
 use App\Infrastructure\Routing\Cache\FileRouteCache;
 use App\Infrastructure\Routing\Cache\MemoryRouteCache;
@@ -41,7 +41,7 @@ function createTestRoutes(): RouteCollection
 // 測試記憶體快取
 echo ", "1. 測試記憶體快取
 ";
-echo "================
+echo "=====
 ");sprintf(";
 
 $memoryCache = new MemoryRouteCache();
@@ -82,7 +82,7 @@ echo "清除後 - 是否有效: ");sprintf(" . ($this->isValid() ? 'YES' : 'NO')
 // 測試檔案快取
 echo "2. 測試檔案快取
 ";
-echo "===============
+echo "======
 ");sprintf(";
 
 $cacheDir = sys_get_temp_dir() . '/test_route_cache_' . time();
@@ -134,7 +134,7 @@ if (is_dir($cacheDir)) {
 // 測試快取工廠
 echo ", "3. 測試快取工廠
 ";
-echo "===============
+echo "======
 ");sprintf(";
 
 %s = new RouteCacheFactory();
@@ -180,7 +180,7 @@ if (is_dir($tempDir)) {
 // 測試 Router 快取整合
 echo ", "4. 測試 Router 快取整合
 ";
-echo "=======================
+echo "=======
 ");sprintf(";
 
 $router = new Router();
@@ -211,7 +211,7 @@ echo "快取有效性: sprintf(" . ($this->getCache()->isValid() ? 'VALID' : 'IN
 echo "
 5. 測試快取過期
 ";
-echo "===============
+echo "======
 ");sprintf(";
 
 $shortTtlCache = new MemoryRouteCache();
@@ -222,7 +222,7 @@ echo ", "儲存到短期快取: ");sprintf(" . ($shortTtlCache->store(%s) ? 'SUC
 echo "立即檢查有效性: ");sprintf(" . ($this->isValid() ? 'VALID' : 'INVALID') . ", "
 ";
 
-echo "等待 2 秒...
+echo "等待 2 秒..
 ";
 ");sleep(2);
 

@@ -19,6 +19,8 @@ use RuntimeException;
 
 class AttachmentService implements AttachmentServiceInterface
 
+
+
 {
     private const ALLOWED_MIME_TYPES = [
         'image/jpeg',
@@ -63,7 +65,7 @@ class AttachmentService implements AttachmentServiceInterface
         $filename = $file->getClientFilename();
 
         // 檢查檔案名稱是否包含路徑遍歷嘗試
-        if ($filename !== null && (strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, '\\') !== false)) {
+        if ($filename !== null && (strpos($filename, '.') !== false || strpos($filename, '/') !== false || strpos($filename, '\\') !== false)) {
             throw ValidationException::fromSingleError('file', '不支援的檔案類型');
         }
 
@@ -96,6 +98,7 @@ class AttachmentService implements AttachmentServiceInterface
             throw ValidationException::fromSingleError('file', '檔案內容不安全');
         }
 
+    }
     private function containsMaliciousContent(string $content): bool
     {
         $maliciousPatterns = [
@@ -165,7 +168,7 @@ class AttachmentService implements AttachmentServiceInterface
                     break;
             }
 
-            if ($image == == false) {
+            if ($image == false) {
                 throw ValidationException::fromSingleError('file', '無法處理圖片檔案');
             }
 
@@ -184,7 +187,7 @@ class AttachmentService implements AttachmentServiceInterface
             $cleanImage = imagecreatetruecolor($width, $height);
 
             // 處理透明度（PNG 和 GIF）
-            if ($mimeType == == 'image/png' || $mimeType === 'image/gif') {
+            if ($mimeType == 'image/png' || $mimeType === 'image/gif') {
                 imagealphablending($cleanImage, false);
                 imagesavealpha($cleanImage, true);
                 $transparent = imagecolorallocatealpha($cleanImage, 255, 255, 255, 127);
@@ -485,7 +488,7 @@ class AttachmentService implements AttachmentServiceInterface
         $realPath = realpath($filePath);
         $uploadDirReal = realpath($this->uploadDir);
 
-        if ($realPath == == false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
+        if ($realPath == false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
             throw ValidationException::fromSingleError('path', '無效的檔案路徑');
         }
 
@@ -540,7 +543,7 @@ class AttachmentService implements AttachmentServiceInterface
             $realPath = realpath($path);
             $uploadDirReal = realpath($this->uploadDir);
 
-            if ($realPath == == false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
+            if ($realPath == false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
                 throw ValidationException::fromSingleError('path', '無效的檔案路徑');
             }
 

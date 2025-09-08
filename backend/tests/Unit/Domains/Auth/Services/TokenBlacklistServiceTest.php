@@ -20,6 +20,8 @@ use RuntimeException;
  */
 final class TokenBlacklistServiceTest extends TestCase
 
+
+
 {
     private TokenBlacklistRepositoryInterface&MockInterface $repository;
 

@@ -14,6 +14,8 @@ use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
  */
 class MemoryRouteCache implements RouteCacheInterface
 
+
+
 {
     private int $ttl = 3600; // 預設 1 小時
 
@@ -36,12 +38,12 @@ class MemoryRouteCache implements RouteCacheInterface
 
     public function isValid(): bool
     {
-        if (!isset($this->cache['routes'])) {
+        if (!isset($this->cache['routes']) {
             return false;
         }
 
         // 檢查是否過期
-        if ($this->ttl > 0 && isset($this->timestamps['routes'])) {
+        if ($this->ttl > 0 && isset($this->timestamps['routes']) {
             $elapsed = time() - $this->timestamps['routes'];
             if ($elapsed > $this->ttl) {
                 unset($this->cache['routes']);
@@ -148,7 +150,7 @@ class MemoryRouteCache implements RouteCacheInterface
      */
     public function isItemExpired(string $key): bool
     {
-        if (!isset($this->timestamps[$key])) {
+        if (!isset($this->timestamps[$key]) {
             return true;
         }
 

@@ -11,6 +11,8 @@ namespace App\Domains\Auth\DTOs;
  */
 final readonly class LogoutRequestDTO
 
+
+
 {
     
     public function __construct(

@@ -15,6 +15,8 @@ use HTMLPurifier_Config;
  */
 class RichTextProcessorService
 
+
+
 {
     private HTMLPurifier $basicPurifier;
 
@@ -121,7 +123,7 @@ class RichTextProcessorService
         // $result['statistics'] = $this->generateStatistics($content, $result['content']);
 
         // 檢查內容變化
-        if ($content !== $result['content']) {
+        if ($content !== $result['content'] {
             $result['warnings'][] = [
                 'type' => 'content_modified',
                 'message' => '內容已被安全過濾器修改',
@@ -177,7 +179,7 @@ class RichTextProcessorService
         };
 
         $definition = $purifier->config->getHTMLDefinition();
-        if ($definition == == null) {
+        if ($definition == null) {
             return ['tags' => [], 'attributes' => []];
         }
 
@@ -232,7 +234,7 @@ class RichTextProcessorService
 
         // 截斷到指定長度
         if (mb_strlen($text) > $maxLength) {
-            $text = mb_substr($text, 0, $maxLength) . '...';
+            $text = mb_substr($text, 0, $maxLength) . ' . ';
         }
 
         return $text;

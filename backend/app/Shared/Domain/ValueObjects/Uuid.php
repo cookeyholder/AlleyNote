@@ -15,6 +15,8 @@ use Stringable;
  */
 readonly class Uuid implements Stringable
 
+
+
 {
     private function __construct(
         private UuidInterface $value,

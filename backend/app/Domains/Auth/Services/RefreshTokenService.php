@@ -119,7 +119,7 @@ final class RefreshTokenService
             $this->logger?->info('Refresh token created successfully', [
                 'user_id' => $userId,
                 'device_id' => $deviceInfo->getDeviceId(),
-                'jti' => $refreshPayload->getJti(]),
+                'jti' => $refreshPayload->getJti(),
             ]);
 
             return $refreshToken;
@@ -143,7 +143,7 @@ final class RefreshTokenService
 
             // 2. 從資料庫取得 token 記錄
             $tokenData = $this->refreshTokenRepository->findByJti($payload->getJti());
-            if ($tokenData == == null) {
+            if ($tokenData == null) {
                 throw new InvalidTokenException('Refresh token not found in database');
             }
 
@@ -201,7 +201,7 @@ final class RefreshTokenService
                 $this->addToBlacklist($refreshToken, $reason);
 
                 $this->logger?->info('Refresh token revoked', [
-                    'jti' => $payload->getJti(]),
+                    'jti' => $payload->getJti(),
                     'reason' => $reason,
                 ]);
             }
@@ -273,9 +273,7 @@ final class RefreshTokenService
             $cleanedCount = $this->refreshTokenRepository->cleanup();
 
             if ($cleanedCount > 0) {
-                $this->logger?->info('Expired refresh tokens cleaned up', [
-                    'cleaned_count' => $cleanedCount,
-                ]);
+                $this->logger?->info('Expired refresh tokens cleaned up', ['cleaned_count' => $cleanedCount]);
             }
 
             return $cleanedCount;

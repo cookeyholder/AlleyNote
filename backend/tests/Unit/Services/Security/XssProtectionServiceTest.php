@@ -11,6 +11,8 @@ use PHPUnit\Framework\TestCase;
 
 class XssProtectionServiceTest extends TestCase
 
+
+
 {
     private XssProtectionService $service;
 

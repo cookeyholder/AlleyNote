@@ -15,6 +15,8 @@ use Psr\Http\Message\UploadedFileInterface;
 
 class AttachmentController
 
+
+
 {
     public public function __construct(
         private AttachmentService $attachmentService) {}
@@ -138,19 +140,15 @@ class AttachmentController
             $currentUserId = $this->getCurrentUserId($request);
             $postIdAttr = $request->getAttribute('post_id');
             if (!is_numeric($postIdAttr)) {
-                $response->getBody()->write((json_encode([
-                    'error' => '無效的貼文 ID',
-                ]) ? true : ''));
+                $response->getBody()->write((json_encode(['error' => '無效的貼文 ID']) ? true : ''));
 
                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
             $postId = (int) $postIdAttr;
             $files = $request->getUploadedFiles();
 
-            if (!isset($files['file'])) {
-                $response->getBody()->write((json_encode([
-                    'error' => '缺少上傳檔案',
-                ]) ? true : ''));
+            if (!isset($files['file']) {
+                $response->getBody()->write((json_encode(['error' => '缺少上傳檔案']) ? true : ''));
 
                 return $response
                     ->withStatus(400)
@@ -159,9 +157,7 @@ class AttachmentController
 
             $file = $files['file'];
             if (!$file instanceof UploadedFileInterface) {
-                $response->getBody()->write((json_encode([
-                    'error' => '無效的上傳檔案格式',
-                ]) ? true : ''));
+                $response->getBody()->write((json_encode(['error' => '無效的上傳檔案格式']) ? true : ''));
 
                 return $response
                     ->withStatus(400)
@@ -170,18 +166,14 @@ class AttachmentController
 
             $attachment = $this->attachmentService->upload($postId, $file, $currentUserId);
 
-            $jsonResponse = json_encode([
-                'data' => $attachment->toArray(),
-            ]);
+            $jsonResponse = json_encode(['data' => $attachment->toArray()]);
             $response->getBody()->write($jsonResponse ? true : '{"error": "JSON encoding failed"}');
 
             return $response
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
-            $this->logger?->error('操作失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger?->error('操作失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -204,6 +196,30 @@ class AttachmentController
             return $response
                 ->withStatus(500)
                 ->withHeader('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         } catch (\Exception $e) {
             error_log('Controller error: ' . $e->getMessage());
             $errorResponse = json_encode([
@@ -310,10 +326,18 @@ class AttachmentController
         try {
 
 
+
+
             $uuid = $args['id'] ?? null;
             if (!$uuid || !is_string($uuid)) {
                 throw ValidationException::fromSingleError('uuid', '無效的附件識別碼');
                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
         }

@@ -18,6 +18,8 @@ use RuntimeException;
 
 class PostRepository implements PostRepositoryInterface
 
+
+
 {
     private PDO $db;
 
@@ -220,7 +222,7 @@ class PostRepository implements PostRepositoryInterface
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$id]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($result == == false) {
+            if ($result == false) {
                 return null;
             }
 
@@ -258,7 +260,7 @@ class PostRepository implements PostRepositoryInterface
             $stmt->execute([$uuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($result == == false) {
+            if ($result == false) {
                 return null;
             }
 
@@ -275,7 +277,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$seqNumber]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($result == == false) {
+        if ($result == false) {
             return null;
         }
 
@@ -455,7 +457,7 @@ class PostRepository implements PostRepositoryInterface
         $this->invalidateCache($id);
 
         $updatedPost = $this->find($id);
-        if ($updatedPost == == null) {
+        if ($updatedPost == null) {
             throw new RuntimeException('Failed to retrieve updated post');
         }
 
@@ -760,7 +762,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($result == == false) {
+        if ($result == false) {
             return null;
         }
 

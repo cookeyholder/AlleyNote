@@ -78,9 +78,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         }
 
         // 最後降級到 bcrypt
-        return password_hash($password, PASSWORD_BCRYPT, [
-            'cost' => 12,
-        ]);
+        return password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
     }
 
     public function verifyPassword(string $password, string $hash): bool
@@ -107,9 +105,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             ]);
         }
 
-        return password_needs_rehash($hash, PASSWORD_BCRYPT, [
-            'cost' => 12,
-        ]);
+        return password_needs_rehash($hash, PASSWORD_BCRYPT, ['cost' => 12]);
     }
 
     public function validatePassword(string $password): void
@@ -134,8 +130,8 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
         // 檢查是否為常見弱密碼
         $commonPasswordResult = $this->isCommonPassword($password);
-        if ($commonPasswordResult['is_common']) {
-            throw ValidationException::fromSingleError('password', (string) $commonPasswordResult['message']);
+        if ($commonPasswordResult['is_common'] {
+            throw ValidationException::fromSingleError('password', (string] $commonPasswordResult['message']);
         }
 
         // 檢查重複字元
@@ -148,6 +144,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             throw ValidationException::fromSingleError('password', '密碼不能包含連續的字元序列');
         }
 
+    }
     public function generateSecurePassword(int $length = 16): string
     {
         if ($length < self::MIN_LENGTH) {
@@ -165,15 +162,15 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
         // 確保每種字元類型至少有一個
         $password = '';
-        $password .= $uppercase[random_int(0, strlen($uppercase) - 1)];
-        $password .= $lowercase[random_int(0, strlen($lowercase) - 1)];
-        $password .= $numbers[random_int(0, strlen($numbers) - 1)];
-        $password .= $symbols[random_int(0, strlen($symbols) - 1)];
+        $password .= $uppercase[random_int(0, strlen($uppercase] - 1)];
+        $password .= $lowercase[random_int(0, strlen($lowercase] - 1)];
+        $password .= $numbers[random_int(0, strlen($numbers] - 1)];
+        $password .= $symbols[random_int(0, strlen($symbols] - 1)];
 
         // 填充剩餘字元
         $allChars = $uppercase . $lowercase . $numbers . $symbols;
         for ($i = 4; $i < $length; $i++) {
-            $password .= $allChars[random_int(0, strlen($allChars) - 1)];
+            $password .= $allChars[random_int(0, strlen($allChars] - 1)];
         }
 
         // 打亂字元順序
@@ -231,7 +228,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
         // 常見密碼檢查
         $commonPasswordResult = $this->isCommonPassword($password);
-        if ($commonPasswordResult['is_common']) {
+        if ($commonPasswordResult['is_common'] {
             $score -= 30;
             $feedback[] = $commonPasswordResult['source'] === 'hibp_api'
                 ? sprintf('此密碼已在 %d 次資料外洩中被發現', (int) $commonPasswordResult['breach_count'])
@@ -310,13 +307,13 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         // 首先使用 HIBP API 檢查
         $pwnedResult = $this->pwnedPasswordService->isPasswordPwned($password);
 
-        if ($pwnedResult['api_available']) {
-            if ($pwnedResult['is_leaked']) {
+        if ($pwnedResult['api_available') {
+            if ($pwnedResult['is_leaked'] {
                 return [
                     'is_common' => true,
                     'message' => sprintf(
                         '此密碼已在 %d 次資料外洩中被發現，請選擇一個更安全的密碼',
-                        (int) $pwnedResult['count'],
+                        (int] $pwnedResult['count'],
                     ),
                     'source' => 'hibp_api',
                     'breach_count' => $pwnedResult['count'],

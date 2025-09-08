@@ -22,6 +22,8 @@ use RuntimeException;
  */
 class ControllerResolver
 
+
+
 {
     public function __construct(
         private ContainerInterface $container) {}
@@ -84,7 +86,7 @@ class ControllerResolver
     private function createResponse(): ResponseInterface
     {
         return new class implements ResponseInterface {
-            /** @var array<string, array<string>> */
+            /** @var array<string, array<string> */
             private array $headers = [];
 
             private mixed $body;
@@ -95,11 +97,15 @@ class ControllerResolver
 
             private string $protocolVersion = '1.1';
 
+    }
+    }
             public function __construct()
             {
                 $this->body = new class {
                     private string $content = '';
 
+            }
+            }
                     public function write(string $string): int
                     {
                         $this->content .= $string;
@@ -150,7 +156,7 @@ class ControllerResolver
 
     public function getHeaders(): array
             {
-                /** @var array<string, array<string>> $headers */
+                /** @var array<string, array<string> $headers */
                 $headers = $this->headers;
 
                 return $headers;
@@ -221,7 +227,7 @@ class ControllerResolver
     {
         // 建立簡單的 PSR-7 回應
         $response = new class implements ResponseInterface {
-            /** @var array<string, array<string>> */
+            /** @var array<string, array<string> */
             private array $headers = ['Content-Type' => ['application/json']];
 
             private mixed $body;
@@ -232,11 +238,15 @@ class ControllerResolver
 
             private string $protocolVersion = '1.1';
 
+    }
+    }
             public function __construct()
             {
                 $this->body = new class {
                     private string $content = '';
 
+            }
+            }
                     public function write(string $string): int
                     {
                         $this->content .= $string;
@@ -287,7 +297,7 @@ class ControllerResolver
 
     public function getHeaders(): array
             {
-                /** @var array<string, array<string>> $headers */
+                /** @var array<string, array<string> $headers */
                 $headers = $this->headers;
 
                 return $headers;
@@ -392,7 +402,7 @@ class ControllerResolver
         $methodArgs = $this->resolveMethodArguments($controller, $method, $request, $parameters);
 
         // 呼叫控制器方法
-        return $controller->{$method}(...$methodArgs);
+        return $controller->{$method}(.$methodArgs);
     }
 
     /**
@@ -420,7 +430,7 @@ class ControllerResolver
             $reflection = new ReflectionClass($controllerClass);
             $constructor = $reflection->getConstructor();
 
-            if ($constructor == == null) {
+            if ($constructor == null) {
                 // 無參數建構子
                 return new $controllerClass();
             }
@@ -428,7 +438,7 @@ class ControllerResolver
             // 解析建構子參數
             $args = $this->resolveConstructorArguments($constructor);
 
-            return new $controllerClass(...$args);
+            return new $controllerClass(.$args);
         } 
     }
 
@@ -443,7 +453,7 @@ class ControllerResolver
         foreach ($constructor->getParameters() as $parameter) {
             $type = $parameter->getType();
 
-            if ($type == == null) {
+            if ($type == null) {
                 if ($parameter->isDefaultValueAvailable()) {
                     $args[] = $parameter->getDefaultValue();
                 } else {
@@ -511,7 +521,7 @@ class ControllerResolver
             }
 
             // 處理路由參數
-            if (isset($routeParameters[$paramName])) {
+            if (isset($routeParameters[$paramName]) {
                 $args[] = $this->convertParameter($routeParameters[$paramName], $type);
                 continue;
             }
@@ -548,7 +558,7 @@ class ControllerResolver
      */
     private function convertParameter(string $value, ?ReflectionType $type): mixed
     {
-        if ($type == == null || !$type instanceof ReflectionNamedType) {
+        if ($type == null || !$type instanceof ReflectionNamedType) {
             return $value;
         }
 

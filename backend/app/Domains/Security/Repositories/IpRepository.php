@@ -13,6 +13,8 @@ use PDO;
 
 class IpRepository implements IpRepositoryInterface
 
+
+
 {
     private const CACHE_TTL = 3600; // 1小時
 
@@ -69,7 +71,7 @@ class IpRepository implements IpRepositoryInterface
         [$subnet, $bits] = explode('/', is_string($cidr) ? $cidr : (string) $cidr);
         $ip = ip2long($ip);
         $subnet = ip2long($subnet);
-        $mask = -1 << (32 - (int) $bits);
+        $mask = -1 < (32 - (int) $bits);
         $subnet &= $mask;
 
         return ($ip & $mask) === $subnet;
@@ -186,7 +188,7 @@ class IpRepository implements IpRepositoryInterface
 
     public function update(int $id, /** @var array<string, mixed> */ array $data): IpList
     {
-        if (isset($data['ip_address'])) {
+        if (isset($data['ip_address']) {
             $this->validateIpAddress($data['ip_address']);
         }
 

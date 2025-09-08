@@ -15,19 +15,19 @@ use Ramsey\Uuid\Uuid;
  */
 class PerformanceMonitorService implements PerformanceMonitorInterface
 {
-    /** @var array<string, array<string, mixed>> 進行中的監控會話 */
+    /** @var array<string, array<string, mixed> 進行中的監控會話 */
     private array $activeMonitoringSessions = [];
 
-    /** @var array<string, array<int, array<string, mixed>>> 效能指標暫存 */
+    /** @var array<string, array<int, array<string, mixed> 效能指標暫存 */
     private array $metrics = [];
 
     /** @var array<string, int> 計數器暫存 */
     private array $counters = [];
 
-    /** @var array<string, array<int, array<string, mixed>>> 直方圖資料暫存 */
+    /** @var array<string, array<int, array<string, mixed> 直方圖資料暫存 */
     private array $histograms = [];
 
-    /** @var array<array<string, mixed>> 慢查詢記錄 */
+    /** @var array<array<string, mixed> 慢查詢記錄 */
     private array $slowQueries = [];
 
     /** @var float 慢查詢閾值（毫秒） */
@@ -82,7 +82,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      */
     public function endMonitoring(string $monitoringId, /** @var array<string, mixed> */ array $context = []): void
     {
-        if (!isset($this->activeMonitoringSessions[$monitoringId])) {
+        if (!isset($this->activeMonitoringSessions[$monitoringId]) {
             $this->logger->warning("Attempted to end non-existent monitoring session: {$monitoringId}");
 
             return;
@@ -112,13 +112,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $memoryDiff = $endMemory - $startMemory;
 
         // 記錄效能指標
-        $this->recordMetric("operation.{$operation}.duration", $duration, 'ms', [
-            'operation' => $operation,
-        ]);
+        $this->recordMetric("operation.{$operation}.duration", $duration, 'ms', ['operation' => $operation]);
 
-        $this->recordMetric("operation.{$operation}.memory_delta", $memoryDiff, 'bytes', [
-            'operation' => $operation,
-        ]);
+        $this->recordMetric("operation.{$operation}.memory_delta", $memoryDiff, 'bytes', ['operation' => $operation]);
 
         // 檢查是否為慢操作
         if ($duration > $this->slowQueryThreshold) {
@@ -146,7 +142,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $metricKey = $this->buildMetricKey($name, $tags);
 
-        if (!isset($this->metrics[$metricKey])) {
+        if (!isset($this->metrics[$metricKey]) {
             $this->metrics[$metricKey] = [];
         }
 
@@ -175,7 +171,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $counterKey = $this->buildMetricKey($name, $tags);
 
-        if (!isset($this->counters[$counterKey])) {
+        if (!isset($this->counters[$counterKey]) {
             $this->counters[$counterKey] = 0;
         }
 
@@ -206,7 +202,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $histogramKey = $this->buildMetricKey($name, $tags);
 
-        if (!isset($this->histograms[$histogramKey])) {
+        if (!isset($this->histograms[$histogramKey]) {
             $this->histograms[$histogramKey] = [];
         }
 
@@ -342,7 +338,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $cleanedCount += $originalMetricCount - count($this->metrics[$key]);
 
             // 如果指標陣列為空，移除整個鍵
-            if (empty($this->metrics[$key])) {
+            if (empty($this->metrics[$key]) {
                 unset($this->metrics[$key]);
             }
         }
@@ -358,7 +354,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $cleanedCount += $originalHistogramCount - count($this->histograms[$key]);
 
             // 如果直方圖陣列為空，移除整個鍵
-            if (empty($this->histograms[$key])) {
+            if (empty($this->histograms[$key]) {
                 unset($this->histograms[$key]);
             }
         }
@@ -371,7 +367,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         return $cleanedCount;
     }
 
-    // ===== 私有方法 =====
+    // === 私有方法 ===
 
     /**
      * 建立指標鍵名。
@@ -515,7 +511,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private function percentile(array $values, int $percentile): float
     {
         $count = count($values);
-        if ($count == == 0) {
+        if ($count == 0) {
             return 0.0;
         }
 
@@ -523,7 +519,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $lower = (int) floor($index);
         $upper = (int) ceil($index);
 
-        if ($lower == == $upper) {
+        if ($lower == $upper) {
             $value = $values[$lower] ?? 0;
 
             return is_numeric($value) ? (float) $value : 0.0;
@@ -548,7 +544,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $memoryLimit = trim($memoryLimit);
 
-        if ($memoryLimit == == '-1') {
+        if ($memoryLimit == '-1') {
             return 0;
         }
 

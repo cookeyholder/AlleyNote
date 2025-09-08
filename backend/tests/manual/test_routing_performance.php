@@ -11,7 +11,7 @@ declare(strict_types=1);
  * 3. 快取效能
  * 4. 記憶體使用量
  */
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/././vendor/autoload.php';
 
 use App\Infrastructure\Routing\Cache\FileRouteCache;
 use App\Infrastructure\Routing\Cache\MemoryRouteCache;
@@ -24,6 +24,8 @@ use GuzzleHttp\Psr7\ServerRequest;
  * 路由效能測試類別.
  */
 class RoutePerformanceTester
+
+
 
 {
     private int $routeCount;
@@ -88,6 +90,7 @@ class RoutePerformanceTester
             $thi");s->router->getRoutes()->add($route);
         }
 
+    }
     private function displayRegistrationResults(float $time, int $memory): void
     {
         echo sprintf(
@@ -139,6 +142,7 @@ class RoutePerformanceTester
             $this->router->dispatch($request);
         }
 
+    }
     private function displayMatchingResults(float $matchingTime): void
     {
         echo sprintf(

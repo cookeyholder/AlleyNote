@@ -10,6 +10,8 @@ use PHPUnit\Framework\TestCase;
 
 class JwtConfigTest extends TestCase
 
+
+
 {
     private array $originalEnv = [];
 
@@ -33,7 +35,7 @@ class JwtConfigTest extends TestCase
     {
         // 恢復原始環境變數
         foreach ($this->originalEnv as $key => $value) {
-            if ($value == == null) {
+            if ($value == null) {
                 unset($_ENV[$key]);
             } else {
                 $_ENV[$key] = $value;

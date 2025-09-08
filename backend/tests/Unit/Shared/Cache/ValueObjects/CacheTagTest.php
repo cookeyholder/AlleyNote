@@ -13,6 +13,8 @@ use PHPUnit\Framework\TestCase;
  */
 class CacheTagTest extends TestCase
 
+
+
 {
     public function testCreateUserTag(): void
     {
@@ -62,7 +64,7 @@ class CacheTagTest extends TestCase
 
     public function testTagNormalization(): void
     {
-        $tag = new CacheTag('Test  Tag__With--Special  Characters!!!');
+        $tag = new CacheTag('Test  Tag__With--Special  Characters!!');
 
         $this->assertEquals('test_tag_with--special_characters', $tag->getName());
     }
@@ -206,6 +208,7 @@ class CacheTagTest extends TestCase
             $this->assertEquals($expected, $tag->getName(), "Input: '$input'");
         }
 
+    }
     public function testValidationErrorMessages(): void
     {
         // 測試不同的驗證錯誤

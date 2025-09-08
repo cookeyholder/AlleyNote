@@ -65,7 +65,7 @@ interface TaggedCacheInterface
      */
     public function getTaggedKeys(): array;
 
-    // ========== 新增的進階標籤功能 ==========
+    // === 新增的進階標籤功能 ===
 
     /**
      * 使用指定標籤存放快取項目.

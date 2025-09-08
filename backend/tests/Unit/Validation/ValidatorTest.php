@@ -17,6 +17,8 @@ use Tests\TestCase;
  */
 class ValidatorTest extends TestCase
 
+
+
 {
     private ValidatorInterface $validator;
 
@@ -132,7 +134,7 @@ class ValidatorTest extends TestCase
             'invalid-email',
             '@domain.com',
             'user@',
-            'user..name@domain.com',
+            'user.name@domain.com',
             'user name@domain.com',
             'user@domain',
             '.user@domain.com',

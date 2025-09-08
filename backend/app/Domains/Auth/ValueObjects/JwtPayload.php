@@ -57,7 +57,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         $requiredFields = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp'];
         foreach ($requiredFields as $field) {
-            if (!isset($data[$field])) {
+            if (!isset($data[$field]) {
                 throw new InvalidArgumentException("Missing required field: {$field}");
             }
         }
@@ -315,7 +315,7 @@ final readonly class JwtPayload implements JsonSerializable
      */
     private function validateSub(string $sub): void
     {
-        if ($sub == == '') {
+        if ($sub == '') {
             throw new InvalidArgumentException('Subject (sub) cannot be empty');
         }
 

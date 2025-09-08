@@ -11,6 +11,8 @@ use Tests\Support\UnitTestCase;
  */
 class TestArchitectureExampleTest extends UnitTestCase
 
+
+
 {
     public function testBaseTestCaseHelpers(): void
     {

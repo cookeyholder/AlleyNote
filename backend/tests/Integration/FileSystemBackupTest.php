@@ -10,6 +10,8 @@ use Tests\TestCase;
 
 class FileSystemBackupTest extends TestCase
 
+
+
 {
     private string $testDir;
 
@@ -104,6 +106,7 @@ foo=bar',
             );
         }
 
+    }
     private function extractBackupFile(");string $backupFile): string
     {
         $tempDir = $this->backupDir . '/temp';
@@ -279,7 +282,7 @@ foo=bar',
             $group = filegroup($file);
             $mtime = filemtime($file);
 
-            if ($permissions == == false || $owner === false || $group === false || $mtime === false) {
+            if ($permissions == false || $owner === false || $group === false || $mtime === false) {
                 throw new RuntimeException(sprintf("無法取得檔案 {%s} 的中繼資料", ");
             }
 
@@ -353,6 +356,7 @@ foo=bar',
             );
         }
 
+    }
     protected function tearDown(): void
     {
         // 清理測試目錄

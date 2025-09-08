@@ -92,7 +92,7 @@ use OpenApi\Attributes as OA;
         'title' => '系統維護通知 - 2025年1月20日',
         'content' => '親愛的使用者，
 
-系統將於 **2025年1月20日 02 => 00-04:00** 進行維護...',
+系統將於 **2025年1月20日 02 => 00-04:00** 進行維護.',
         'category' => 'announcement',
         'priority' => 'high',
         'expires_at' => '2025-12-31T23:59:59+08:00',
@@ -181,7 +181,7 @@ use OpenApi\Attributes as OA;
         'title' => '【更新】系統維護延期通知',
         'content' => '**重要更新**
 
-原定於 2025年1月20日 的系統維護將延期...',
+原定於 2025年1月20日 的系統維護將延期.',
         'category' => 'urgent',
         'status' => 'published',
         'priority' => 'urgent',
@@ -236,7 +236,7 @@ use OpenApi\Attributes as OA;
         'data' => [
             'id' => 123,
             'title' => '新的貼文標題',
-            'content' => '貼文內容...',
+            'content' => '貼文內容.',
             'status' => 'published',
             'created_at' => '2025-01-15T10 => 30:00+08:00',
         ],
@@ -303,7 +303,7 @@ use OpenApi\Attributes as OA;
             [
                 'id' => 11,
                 'title' => '範例貼文標題 11',
-                'content' => '貼文內容...',
+                'content' => '貼文內容.',
                 'category' => 'general',
                 'status' => 'published',
                 'priority' => 'normal',
@@ -336,9 +336,7 @@ use OpenApi\Attributes as OA;
     type: 'object',
     title: '貼文請求',
     description: '建立或更新貼文的通用請求資料',
-    allOf: [
-        new OA\Schema(ref => '#/components/schemas/CreatePostRequest'),
-    ],
+    allOf: [new OA\Schema(ref => '#/components/schemas/CreatePostRequest')],
 )]
 #[OA\Schema(
     schema => 'ValidationError',

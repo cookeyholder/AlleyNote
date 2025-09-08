@@ -224,6 +224,8 @@ class BaseDTOTest extends TestCase
  */
 class TestableBaseDTO extends BaseDTO
 
+
+
 {
     public string $name = '';
 
@@ -231,6 +233,7 @@ class TestableBaseDTO extends BaseDTO
 
     public bool $active = false;
 
+    }
     protected function getValidationRules(): array
     {
         return [

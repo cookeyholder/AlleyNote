@@ -30,10 +30,10 @@ class RouteCacheFactory
     {
         $driver = $config['driver'];
 
-        if (!isset(self::SUPPORTED_DRIVERS[$driver])) {
+        if (!isset(self::SUPPORTED_DRIVERS[$driver]) {
             throw new InvalidArgumentException(
                 "Unsupported cache driver: {$driver}. Supported drivers: "
-                    . implode(', ', array_keys(self::SUPPORTED_DRIVERS)),
+                    . implode(', ', array_keys(self::SUPPORTED_DRIVERS]),
             );
         }
 
@@ -53,7 +53,7 @@ class RouteCacheFactory
         $cachePath = $config['path'] ?? sys_get_temp_dir() . '/route_cache';
         $cache = new FileRouteCache($cachePath);
 
-        if (isset($config['ttl'])) {
+        if (isset($config['ttl']) {
             $cache->setTtl((int) $config['ttl']);
         }
 
@@ -68,7 +68,7 @@ class RouteCacheFactory
     {
         $cache = new MemoryRouteCache();
 
-        if (isset($config['ttl'])) {
+        if (isset($config['ttl']) {
             $cache->setTtl((int) $config['ttl']);
         }
 
@@ -119,7 +119,7 @@ class RouteCacheFactory
 
         if (!array_key_exists('driver', $config)) {
             $errors[] = 'Cache driver is required';
-        } elseif (!self::isDriverSupported($config['driver'])) {
+        } elseif (!self::isDriverSupported($config['driver')] {
             $errors[] = sprintf(
                 'Unsupported cache driver: %s. Supported drivers: %s',
                 $config['driver'],

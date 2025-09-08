@@ -16,6 +16,8 @@ use RedisException;
  */
 class RedisRouteCache implements RouteCacheInterface
 
+
+
 {
     private const CACHE_KEY_PREFIX = 'route_cache:';
 
@@ -53,7 +55,7 @@ class RedisRouteCache implements RouteCacheInterface
             $cacheKey = $this->getCacheKey();
             $content = $this->redis->get($cacheKey);
 
-            if ($content == == false) {
+            if ($content == false) {
                 $this->stats['misses']++;
                 $this->saveStats();
 

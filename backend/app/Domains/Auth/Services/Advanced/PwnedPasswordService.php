@@ -10,6 +10,8 @@ use GuzzleHttp\Exception\RequestException;
 
 class PwnedPasswordService
 
+
+
 {
     private const HIBP_API_URL = 'https://api.pwnedpasswords.com/range/';
 
@@ -58,7 +60,7 @@ class PwnedPasswordService
                 }
             }
 
-            if ($hashList == == null) {
+            if ($hashList == null) {
                 return [
                     'is_leaked' => false,
                     'count' => 0,

@@ -6,6 +6,8 @@ namespace App\Domains\Attachment\Models;
 
 class Attachment
 
+
+
 {
     private ?int $id = null;
 

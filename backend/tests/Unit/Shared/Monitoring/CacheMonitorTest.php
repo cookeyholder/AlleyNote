@@ -10,6 +10,8 @@ use Psr\Log\NullLogger;
 
 class CacheMonitorTest extends TestCase
 
+
+
 {
     private CacheMonitor $cacheMonitor;
 
@@ -69,9 +71,7 @@ class CacheMonitorTest extends TestCase
 
     public function test_record_error_increases_error_count(): void
     {
-        $this->cacheMonitor->recordError('redis', 'get', 'Connection failed', [
-            'key' => 'test_key',
-        ]);
+        $this->cacheMonitor->recordError('redis', 'get', 'Connection failed', ['key' => 'test_key']);
 
         $metrics = $this->cacheMonitor->getMetrics();
         $this->assertEquals(1, $metrics['total_errors']);

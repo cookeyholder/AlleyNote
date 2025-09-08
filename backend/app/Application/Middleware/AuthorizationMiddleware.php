@@ -8,6 +8,8 @@ use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 
 class AuthorizationMiddleware
 
+
+
 {
     private AuthorizationServiceInterface $authorizationService;
 
@@ -33,6 +35,7 @@ class AuthorizationMiddleware
             exit;
         }
 
+    }
     public function requireRole(int $userId, string $roleName): void
     {
         if (!$this->authorizationService->hasRole($userId, $roleName)) {
@@ -45,6 +48,7 @@ class AuthorizationMiddleware
             exit;
         }
 
+    }
     public function extractResourceFromPath(string $path): string
     {
         if (str_contains($path, '/posts')) {

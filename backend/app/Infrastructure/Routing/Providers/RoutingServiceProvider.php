@@ -105,10 +105,10 @@ class RoutingServiceProvider
     public static function getRouteFiles(): array
     {
         return [
-            'api' => __DIR__ . '/../../../../config/routes/api.php',
-            'web' => __DIR__ . '/../../../../config/routes/web.php',
-            'auth' => __DIR__ . '/../../../../config/routes/auth.php',
-            'admin' => __DIR__ . '/../../../../config/routes/admin.php',
+            'api' => __DIR__ . '/././././config/routes/api.php',
+            'web' => __DIR__ . '/././././config/routes/web.php',
+            'auth' => __DIR__ . '/././././config/routes/auth.php',
+            'admin' => __DIR__ . '/././././config/routes/admin.php',
         ];
     }
 

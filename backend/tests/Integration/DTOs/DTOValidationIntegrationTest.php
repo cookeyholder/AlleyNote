@@ -21,6 +21,8 @@ use Tests\TestCase;
  */
 class DTOValidationIntegrationTest extends TestCase
 
+
+
 {
     private ValidatorInterface $validator;
 
@@ -91,9 +93,7 @@ class DTOValidationIntegrationTest extends TestCase
     public function testUpdatePostDTOValidationIntegration(): void
     {
         // 測試部分更新
-        $partialData = [
-            'title' => '更新的標題',
-        ];
+        $partialData = ['title' => '更新的標題'];
 
         $dto = new UpdatePostDTO($this->validator, $partialData);
         $this->assertNotNull($dto);

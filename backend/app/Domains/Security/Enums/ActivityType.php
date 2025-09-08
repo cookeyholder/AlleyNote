@@ -218,7 +218,7 @@ enum ActivityType: string
             self::ATTACHMENT_PERMISSION_DENIED => '附件權限被拒',
             self::SUSPICIOUS_ACTIVITY_DETECTED => '檢測到可疑活動',
             self::SECURITY_ACTIVITY_SCAN_COMPLETED => '安全掃描完成',
-            // ... 可以繼續添加更多描述
+            // . 可以繼續添加更多描述
             default => $this->value,
         };
     }

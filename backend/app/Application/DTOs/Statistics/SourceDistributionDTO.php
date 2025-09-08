@@ -32,6 +32,8 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * @param DateTimeImmutable $generatedAt 產生時間
      */
     
+    
+    
     public function __construct(
         public StatisticsPeriod $period,
         /** @var array<SourceStatistics> */
@@ -95,7 +97,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
         // 確保來源統計資料是陣列
         $sourceStatsDataRaw = $data['source_statistics'] ?? [];
-        /** @var array<array<string, mixed>> $sourceStatsData */
+        /** @var array<array<string, mixed> $sourceStatsData */
         $sourceStatsData = is_array($sourceStatsDataRaw) ? array_filter($sourceStatsDataRaw, 'is_array') : [];
 
         /** @var array<SourceStatistics> $sourceStatistics */
@@ -252,7 +254,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         $sorted = $this->sourceStatistics;
         usort($sorted, fn(SourceStatistics $a, SourceStatistics $b): int => $b->count->value <=> $a->count->value);
 
-        /** @var array<int, array<string, mixed>> */
+        /** @var array<int, array<string, mixed> */
         return array_map(
             fn(SourceStatistics $source, int $index): array => [
                 'rank' => $index + 1,

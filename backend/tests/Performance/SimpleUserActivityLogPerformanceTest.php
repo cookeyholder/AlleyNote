@@ -18,6 +18,8 @@ use PHPUnit\Framework\TestCase;
 #[Group('performance')]
 class SimpleUserActivityLogPerformanceTest extends TestCase
 
+
+
 {
     private PDO $pdo;
 
@@ -163,12 +165,12 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     private function verifyInsertedData(int $expectedCount): void
     {
 $countStmt = $this->pdo->query('SELECT COUNT(*) FROM user_activity_logs WHERE description LIKE "批次測試記錄%sprintf("');
-        if ($countStmt == == false) {
+        if ($countStmt == false) {
             $this->fail('無法執行計數查詢');
         }
 
         $count = $countStmt->fetchColumn();
-        if ($count == == false) {
+        if ($count == false) {
             $this->fail('無法取得計數結果');
         }
 
@@ -232,7 +234,7 @@ $countStmt = $this->pdo->query('SELECT COUNT(*) FROM user_activity_logs WHERE de
     {
         for ($i = 0; $i < $iterations; $i++) {
             $stmt = $this->pdo->query($query);
-            if ($stmt == == false) {
+            if ($stmt == false) {
 $this->fail("查詢執行失敗: {$scenario}");
             }
 
@@ -321,7 +323,7 @@ $this->fail("查詢執行失敗: {$scenario}");
             'SELECT * FROM user_activity_logs WHERE user_id = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?');
         $stmt->execute([$pageSize, $offset]);
 
-        /** @var array<int, array<string, mixed>> */
+        /** @var array<int, array<string, mixed> */
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

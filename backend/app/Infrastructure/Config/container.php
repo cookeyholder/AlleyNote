@@ -86,7 +86,7 @@ return [
         ->constructorParameter('postRepo', DI\get(PostRepositoryInterface::class))
         ->constructorParameter('cache', DI\get(CacheServiceInterface::class))
         ->constructorParameter('authService', DI\get(AuthorizationServiceInterface::class))
-        ->constructorParameter('uploadDir', __DIR__ . '/../../../storage/uploads'),
+        ->constructorParameter('uploadDir', __DIR__ . '/./././storage/uploads'),
 
     IpService::class => DI\autowire(IpService::class)
         ->constructorParameter('ipRepository', DI\get(IpRepositoryInterface::class)),
@@ -135,12 +135,8 @@ return [
                 'enabled' => true,
                 'value' => 'DENY',
             ],
-            'content_type_options' => [
-                'enabled' => true,
-            ],
-            'xss_protection' => [
-                'enabled' => true,
-            ],
+            'content_type_options' => ['enabled' => true],
+            'xss_protection' => ['enabled' => true],
         ]),
 
     // Validation Services

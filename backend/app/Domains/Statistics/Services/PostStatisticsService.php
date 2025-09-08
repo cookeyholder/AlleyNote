@@ -27,6 +27,8 @@ use Throwable;
  */
 final class PostStatisticsService
 
+
+
 {
     public function __construct(
         private readonly PostStatisticsRepositoryInterface $postStatisticsRepository) {}
@@ -309,10 +311,10 @@ final class PostStatisticsService
             $day = $post['publish_day'];
             $performance = $post['avg_views'];
 
-            if (!isset($hourlyStats[$hour])) {
+            if (!isset($hourlyStats[$hour]) {
                 $hourlyStats[$hour] = [];
             }
-            if (!isset($dailyStats[$day])) {
+            if (!isset($dailyStats[$day]) {
                 $dailyStats[$day] = [];
             }
 
@@ -361,7 +363,7 @@ final class PostStatisticsService
     {
         $total = array_sum($distribution);
 
-        if ($total == == 0) {
+        if ($total == 0) {
             return 0.0;
         }
 
@@ -417,7 +419,7 @@ final class PostStatisticsService
         $performances = array_column($historicalData, 'daily_views');
         $mean = array_sum($performances) / count($performances);
 
-        if ($mean == == 0) {
+        if ($mean == 0) {
             return 0.0;
         }
 

@@ -13,6 +13,8 @@ use const n;
 
 class CSPReportController
 
+
+
 {
     private LoggingSecurityServiceInterface $logger;
 
@@ -28,10 +30,18 @@ class CSPReportController
     {
         try {
 
+
+
             // 檢查請求方法
             if ($request->getMethod() !== 'POST') {
                 return $response->withStatus(405);
                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
         }

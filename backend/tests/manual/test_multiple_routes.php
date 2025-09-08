@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * 測試多種路由配置 (Task 2.2 進階測試).
  */
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/././vendor/autoload.php';
 
 use App\Application;
 use Psr\Http\Message\ServerRequestInterface;
@@ -173,6 +173,8 @@ foreach ($testCases as $index => $testCase) {
             return new class ($this->uri) {
                 private string $uri;
 
+    }
+    }
                 public function __construct(string $uri)
                 {
                     $this->uri = $uri;
@@ -313,6 +315,8 @@ foreach ($testCases as $index => $testCase) {
     public function getBody()
         {
             return new class {
+    }
+    }
                 public function __toString(): string
                 {
                     return '';
@@ -395,7 +399,7 @@ foreach ($testCases as $index => $testCase) {
     echo '   📄 內容: ' . substr(str_replace(['
 ', '    '], [' ', ' '], $bodyContent), 0, 100);
     if (strlen(is_string($bodyContent) ? $bodyContent : '') >= 0) {
-        echo '...';
+        echo ' . ';
     }
     echo '
 ';

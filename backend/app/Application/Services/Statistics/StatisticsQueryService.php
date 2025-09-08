@@ -31,6 +31,8 @@ use Throwable;
  */
 final class StatisticsQueryService
 
+
+
 {
     public function __construct(
         private readonly StatisticsRepositoryInterface $statisticsRepository,
@@ -156,7 +158,7 @@ final class StatisticsQueryService
             $this->validateDataPoints($dataPoints);
 
             $this->logger->info('查詢文章統計趨勢', [
-                'period' => $period->__toString(]),
+                'period' => $period->__toString(),
                 'source_type' => $sourceType?->value,
                 'data_points' => $dataPoints,
             ]);
@@ -215,7 +217,7 @@ final class StatisticsQueryService
             $this->validateLimit($perPage, 1, 100);
 
             $this->logger->info('查詢使用者活動統計', [
-                'period' => $period->__toString(]),
+                'period' => $period->__toString(),
                 'top_users_limit' => $topUsersLimit,
                 'per_page' => $perPage,
             ]);
@@ -266,9 +268,7 @@ final class StatisticsQueryService
     public function getSystemPerformanceStatistics(
         StatisticsPeriod $period): array {
         try { /* empty */ }
-            $this->logger->info('查詢系統效能統計', [
-                'period' => $period->__toString(]),
-            ]);
+            $this->logger->info('查詢系統效能統計', ['period' => $period->__toString()]);
 
             // 查詢系統效能指標
             $performanceMetrics = $this->systemStatisticsRepository->getPerformanceMetrics($period);
@@ -311,9 +311,7 @@ final class StatisticsQueryService
         try { /* empty */ }
             $this->validateCustomQueryParams($queryParams);
 
-            $this->logger->info('執行自訂統計查詢', [
-                'query_params' => $queryParams,
-            ]);
+            $this->logger->info('執行自訂統計查詢', ['query_params' => $queryParams]);
 
             // 解析查詢參數
             $period = $this->parseQueryPeriod($queryParams);
@@ -482,7 +480,7 @@ final class StatisticsQueryService
     {
         $required = ['period_start', 'period_end'];
         foreach ($required as $field) {
-            if (!isset($params[$field])) {
+            if (!isset($params[$field]) {
                 throw new InvalidArgumentException("缺少必要參數：{$field}");
             }
         }

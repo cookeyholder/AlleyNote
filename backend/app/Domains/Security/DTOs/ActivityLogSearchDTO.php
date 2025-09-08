@@ -17,6 +17,8 @@ use InvalidArgumentException;
  */
 class ActivityLogSearchDTO
 
+
+
 {
     private const DEFAULT_PAGE = 1;
 
@@ -28,6 +30,8 @@ class ActivityLogSearchDTO
 
     private const DEFAULT_SORT_ORDER = 'desc';
 
+    
+    
     
     public function __construct(
         private readonly ?int $userId = null,

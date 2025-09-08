@@ -24,6 +24,8 @@ use Tests\TestCase;
 
 class PostServiceTest extends TestCase
 
+
+
 {
     private PostRepositoryInterface|MockInterface $repository;
 
@@ -171,9 +173,7 @@ class PostServiceTest extends TestCase
             'updated_at' => null,
         ]);
 
-        $updateData = [
-            'status' => PostStatus::DRAFT->value,
-        ];
+        $updateData = ['status' => PostStatus::DRAFT->value];
 
         $this->validator->shouldReceive('validateOrFail')
             ->once()

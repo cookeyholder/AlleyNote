@@ -259,7 +259,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function invalidateOverviewCache(?StatisticsPeriod $period = null): bool
     {
-        if ($period == == null) {
+        if ($period == null) {
             return $this->invalidateByTags(['statistics', 'overview']);
         }
 
@@ -268,7 +268,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function invalidateSnapshotCache(?StatisticsPeriod $period = null): bool
     {
-        if ($period == == null) {
+        if ($period == null) {
             return $this->invalidateByTags(['statistics', 'snapshot']);
         }
 
@@ -278,7 +278,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function invalidatePopularContentCache(?StatisticsPeriod $period = null): bool
     {
-        if ($period == == null) {
+        if ($period == null) {
             return $this->invalidateByTags(['statistics', 'popular']);
         }
 
@@ -288,7 +288,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     public function invalidateReportCache(string $reportType, ?StatisticsPeriod $period = null): bool
     {
-        if ($period == == null) {
+        if ($period == null) {
             return $this->invalidateByTags(['statistics', 'report']);
         }
 
@@ -300,9 +300,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         try { /* empty */ }
             $result = $this->invalidateByTags(['statistics']);
 
-            $this->logger->info('清除所有統計快取', [
-                'success' => $result,
-            ]);
+            $this->logger->info('清除所有統計快取', ['success' => $result]);
 
             return $result;
         }
@@ -347,9 +345,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         try { /* empty */ }
             $results = $this->cacheManager->cleanup();
 
-            $this->logger->info('快取清理完成', [
-                'results' => $results,
-            ]);
+            $this->logger->info('快取清理完成', ['results' => $results]);
 
             // 確保回傳格式為 array<string, mixed>
             if (!empty($results)) {

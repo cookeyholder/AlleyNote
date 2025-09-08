@@ -82,7 +82,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         }
 
         // 檢查是否有必要的 Session 資料
-        if (!isset($_SESSION['user_id']) || !isset($_SESSION['session_created_at'])) {
+        if (!isset($_SESSION['user_id'] || !isset($_SESSION['session_created_at'])) {
             return false;
         }
 
@@ -134,7 +134,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function validateSessionIp(string $currentIp): bool
     {
-        if (!isset($_SESSION['user_ip'])) {
+        if (!isset($_SESSION['user_ip']) {
             return false;
         }
 
@@ -146,7 +146,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function validateSessionUserAgent(string $currentUserAgent): bool
     {
-        if (!isset($_SESSION['user_agent'])) {
+        if (!isset($_SESSION['user_agent']) {
             return false;
         }
 
@@ -176,7 +176,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function confirmIpChange(): void
     {
-        if (isset($_SESSION['new_detected_ip'])) {
+        if (isset($_SESSION['new_detected_ip']) {
             $_SESSION['user_ip'] = $_SESSION['new_detected_ip'];
             unset($_SESSION['new_detected_ip']);
         }
@@ -189,7 +189,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function isIpVerificationExpired(): bool
     {
-        if (!isset($_SESSION['ip_change_detected_at'])) {
+        if (!isset($_SESSION['ip_change_detected_at']) {
             return false;
         }
 

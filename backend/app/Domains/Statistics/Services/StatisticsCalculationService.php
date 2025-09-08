@@ -25,6 +25,8 @@ use Throwable;
  */
 final class StatisticsCalculationService
 
+
+
 {
     public function __construct(
         private readonly UserStatisticsRepositoryInterface $userStatisticsRepository) {}
@@ -39,7 +41,7 @@ final class StatisticsCalculationService
         $totalPosts = $snapshot->getTotalPosts()->value;
         $totalViews = $snapshot->getTotalViews()->value;
 
-        if ($totalPosts == == 0) {
+        if ($totalPosts == 0) {
             return 0.0;
         }
 
@@ -256,7 +258,7 @@ final class StatisticsCalculationService
             $month = $snapshot->getPeriod()->startDate->format('m');
             $views = $snapshot->getTotalViews()->value;
 
-            if (!isset($monthlyData[$month])) {
+            if (!isset($monthlyData[$month]) {
                 $monthlyData[$month] = [];
             }
 
@@ -277,7 +279,7 @@ final class StatisticsCalculationService
             }
         }
 
-        if ($totalMonths == == 0) {
+        if ($totalMonths == 0) {
             return [];
         }
 
@@ -329,7 +331,7 @@ final class StatisticsCalculationService
             $currentUsers = $this->userStatisticsRepository
                 ->countNewUsersByPeriod($currentPeriod);
 
-            if ($previousUsers == == 0) {
+            if ($previousUsers == 0) {
                 return $currentUsers > 0 ? 100.0 : 0.0;
             }
 

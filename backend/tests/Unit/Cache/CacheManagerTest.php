@@ -10,6 +10,8 @@ use PHPUnit\Framework\TestCase;
 
 class CacheManagerTest extends TestCase
 
+
+
 {
     private CacheManager $cacheManager;
 
@@ -172,6 +174,7 @@ class CacheManagerTest extends TestCase
             $this->assertEquals($expectedValue, $this->cacheManager->get($key));
         }
 
+    }
     public function testDeletePattern(): void
     {
         // 設定一些測試快取

@@ -12,6 +12,8 @@ namespace App\Domains\Statistics\Exceptions;
  */
 final class StatisticsCalculationException extends StatisticsException
 
+
+
 {
     public static function insufficientData(string $operation, int $required, int $actual): self
     {

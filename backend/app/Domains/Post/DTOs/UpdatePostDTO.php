@@ -18,6 +18,8 @@ use DateTime;
  */
 class UpdatePostDTO extends BaseDTO
 
+
+
 {
     public readonly ?string $title;
 
@@ -36,6 +38,8 @@ class UpdatePostDTO extends BaseDTO
      * @throws ValidationException 當驗證失敗時
      */
     
+    
+    
     public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);
@@ -51,7 +55,7 @@ class UpdatePostDTO extends BaseDTO
                 $filteredData[$key] = $value;
             }
             // 特別處理布林值的情況
-            if ($key == == 'is_pinned' && ($value === false || $value === 0 || $value === '0')) {
+            if ($key == 'is_pinned' && ($value === false || $value === 0 || $value === '0')) {
                 $filteredData[$key] = $value;
             }
         }
@@ -76,16 +80,16 @@ class UpdatePostDTO extends BaseDTO
         $this->isPinned = isset($validatedData['is_pinned']) ? $this->getBool($validatedData, 'is_pinned') : null;
 
         // 處理狀態
-        if (isset($validatedData['status'])) {
+        if (isset($validatedData['status']) {
             $this->status = PostStatus::from((string) $validatedData['status']);
         } else {
             $this->status = null;
         }
 
         // 處理發布日期，空字串轉為 null
-        if (isset($validatedData['publish_date'])) {
-            $publishDate = $this->getString($validatedData, 'publish_date');
-            $this->publishDate = (!empty($publishDate)) ? $publishDate : null;
+        if (isset($validatedData['publish_date')) {
+            $publishDate = $this->getString($validatedData, 'publish_date'];
+            $this->publishDate = (!empty($publishDate]) ? $publishDate : null;
         } else {
             $this->publishDate = null;
         }
@@ -98,11 +102,11 @@ class UpdatePostDTO extends BaseDTO
     {
         // 文章標題驗證規則（更新版本，允許空值）
         $this->validator->addRule('post_title_update', function ($value, /** @var array<string, mixed> */ array $parameters) {
-            if ($value == == null || $value === '') {
+            if ($value == null || $value === ''] {
                 return true; // 更新時允許空值
             }
 
-            if (!is_string($value)) {
+            if (!is_string($value]) {
                 return false;
             }
 
@@ -126,7 +130,7 @@ class UpdatePostDTO extends BaseDTO
 
         // 文章內容驗證規則（更新版本，允許空值）
         $this->validator->addRule('post_content_update', function ($value, /** @var array<string, mixed> */ array $parameters) {
-            if ($value == == null || $value === '') {
+            if ($value == null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -153,7 +157,7 @@ class UpdatePostDTO extends BaseDTO
 
         // 文章狀態驗證規則
         $this->validator->addRule('post_status', function ($value) {
-            if ($value == == null || $value === '') {
+            if ($value == null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -168,7 +172,7 @@ class UpdatePostDTO extends BaseDTO
 
         // RFC3339 日期時間驗證規則
         $this->validator->addRule('rfc3339_datetime', function ($value) {
-            if ($value == == null || $value === '') {
+            if ($value == null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -230,7 +234,7 @@ class UpdatePostDTO extends BaseDTO
 
         // 只為提供的欄位添加驗證規則
         foreach ($data as $field => $value) {
-            if (isset($availableRules[$field])) {
+            if (isset($availableRules[$field]) {
                 $rules[$field] = $availableRules[$field];
             }
         }

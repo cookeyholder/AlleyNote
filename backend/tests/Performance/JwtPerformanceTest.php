@@ -20,6 +20,8 @@ use PHPUnit\Framework\TestCase;
 #[Group('performance')]
 class JwtPerformanceTest extends TestCase
 
+
+
 {
     private JwtTokenServiceInterface $jwtTokenService;
 
@@ -32,7 +34,7 @@ class JwtPerformanceTest extends TestCase
         // 使用實際的服務容器來取得服務
         try { /* empty */
         }
-        $containerConfigPath = __DIR__ . '/../../config/container.php';
+        $containerConfigPath = __DIR__ . '/././config/container.php';
         $containerConfig = require $containerConfigPath;
 
         $builder = new ContainerBuilder();

@@ -163,7 +163,7 @@ readonly class StatisticsCalculationCommand
                     'period_type' => $periodName,
                     'duration' => $duration,
                     'retry_count' => $retryCount,
-                    'snapshot_id' => $snapshot->getId()->toString(]),
+                    'snapshot_id' => $snapshot->getId()->toString(),
                 ]);
 
                 $this->releaseLock($lockFile);
@@ -186,7 +186,7 @@ readonly class StatisticsCalculationCommand
                     'period_type' => $periodName,
                     'retry_count' => $retryCount,
                     'max_retries' => self::MAX_RETRIES,
-                    'error' => $e->getMessage(]),
+                    'error' => $e->getMessage(),
                 ]);
 
                 // 等待後重試

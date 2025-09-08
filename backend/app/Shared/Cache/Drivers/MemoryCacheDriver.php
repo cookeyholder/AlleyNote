@@ -18,7 +18,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     /** @var array<string, array{value: mixed, expires_at: int}> 快取資料 */
     private array $cache = [];
 
-    /** @var array<string, array<string>> 標籤索引 */
+    /** @var array<string, array<string> 標籤索引 */
     private array $tagIndex = [];
 
     /** @var array<string> 當前標籤 */
@@ -43,7 +43,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     public function get(string $key, mixed $default = null): mixed
     {
-        if (!isset($this->cache[$key])) {
+        if (!isset($this->cache[$key]) {
             $this->stats['misses']++;
 
             return $default;
@@ -90,7 +90,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     public function has(string $key): bool
     {
-        if (!isset($this->cache[$key])) {
+        if (!isset($this->cache[$key]) {
             return false;
         }
 
@@ -108,7 +108,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     public function forget(string $key): bool
     {
-        if (isset($this->cache[$key])) {
+        if (isset($this->cache[$key]) {
             unset($this->cache[$key]);
             $this->removeKeyFromAllTags($key);
             $this->stats['deletes']++;
@@ -239,7 +239,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             'max_items' => $this->maxItems,
             'hit_rate' => round($hitRate, 2),
             'memory_usage' => $this->getMemoryUsage(),
-            'expired_items' => $this->getExpiredItemsCount(]),
+            'expired_items' => $this->getExpiredItemsCount(),
         ]);
     }
 
@@ -259,7 +259,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         $currentTime = time();
 
         foreach ($this->cache as $key => $item) {
-            if ($item['expires_at'] !== 0 && $currentTime > $item['expires_at']) {
+            if ($item['expires_at'] !== 0 && $currentTime > $item['expires_at'] {
                 unset($this->cache[$key]);
                 $cleaned++;
             }
@@ -285,7 +285,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         $currentTime = time();
 
         foreach ($this->cache as $item) {
-            if ($item['expires_at'] !== 0 && $currentTime > $item['expires_at']) {
+            if ($item['expires_at'] !== 0 && $currentTime > $item['expires_at') {
                 $expired++;
             }
         }
@@ -298,11 +298,11 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      */
     private function evictOldest(): void
     {
-        if (empty($this->cache)) {
+        if (empty($this->cache)] {
             return;
         }
 
-        $oldestKey = array_key_first($this->cache);
+        $oldestKey = array_key_first($this->cache];
         unset($this->cache[$oldestKey]);
         $this->stats['deletes']++;
     }
@@ -417,7 +417,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      */
     public function addTagsToKey(string $key, string|array $tags): bool
     {
-        if (!isset($this->cache[$key])) {
+        if (!isset($this->cache[$key]) {
             return false;
         }
 
@@ -438,7 +438,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         $removed = false;
 
         foreach ($tagsArray as $tag) {
-            if (!isset($this->tagIndex[$tag])) {
+            if (!isset($this->tagIndex[$tag]) {
                 continue;
             }
 
@@ -449,7 +449,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $removed = true;
 
                 // 如果標籤下沒有鍵了，移除標籤
-                if (empty($this->tagIndex[$tag])) {
+                if (empty($this->tagIndex[$tag]) {
                     unset($this->tagIndex[$tag]);
                 }
             }
@@ -514,13 +514,13 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         $deletedCount = 0;
 
         foreach ($tagsArray as $tag) {
-            if (!isset($this->tagIndex[$tag])) {
+            if (!isset($this->tagIndex[$tag]) {
                 continue;
             }
 
             $keys = $this->tagIndex[$tag];
             foreach ($keys as $key) {
-                if (isset($this->cache[$key])) {
+                if (isset($this->cache[$key]) {
                     unset($this->cache[$key]);
                     $deletedCount++;
                 }
@@ -542,7 +542,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      */
     public function getKeysByTag(string $tag): array
     {
-        if (!isset($this->tagIndex[$tag])) {
+        if (!isset($this->tagIndex[$tag]) {
             return [];
         }
 
@@ -573,7 +573,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         foreach ($tags as $tag) {
             $tagKeys = $this->getKeysByTag($tag);
 
-            if ($commonKeys == == null) {
+            if ($commonKeys == null) {
                 $commonKeys = $tagKeys;
             } else {
                 $commonKeys = array_intersect($commonKeys, $tagKeys);
@@ -636,7 +636,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     private function addKeyToTags(string $key, array $tags): void
     {
         foreach ($tags as $tag) {
-            if (!isset($this->tagIndex[$tag])) {
+            if (!isset($this->tagIndex[$tag]) {
                 /** @var array<string> $emptyArray */
                 $emptyArray = [];
                 $this->tagIndex[$tag] = $emptyArray;
@@ -669,7 +669,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         unset($keys);
     }
 
-    // ===== 標籤化快取介面實作 =====
+    // === 標籤化快取介面實作 ===
 
     /**
      * 設定快取標籤.

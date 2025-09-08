@@ -16,6 +16,8 @@ use RuntimeException;
 
 class TagManagementController extends BaseController
 
+
+
 {
     public public function __construct(
         private CacheManagerInterface $cacheManager,
@@ -30,6 +32,8 @@ class TagManagementController extends BaseController
     public public function listTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
+
+
 
             $queryParams = $request->getQueryParams();
             $page = max(1, is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
@@ -51,11 +55,15 @@ class TagManagementController extends BaseController
                                 } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
         } catch (Exception $e) {
-                        $this->logger?->warning("無法從驅動 {$driverName} 獲取標籤", [
-                            'error' => $e->getMessage(),
-                        ]);
+                        $this->logger?->warning("無法從驅動 {$driverName} 獲取標籤", ['error' => $e->getMessage()]);
                     }
                 }
             }
@@ -88,9 +96,7 @@ class TagManagementController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger?->error('獲取標籤列表失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger?->error('獲取標籤列表失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -125,9 +131,7 @@ class TagManagementController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger?->error('獲取標籤群組失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger?->error('獲取標籤群組失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -150,6 +154,8 @@ class TagManagementController extends BaseController
     {
         try {
 
+
+
             $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
@@ -171,11 +177,15 @@ class TagManagementController extends BaseController
                                 } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
         } catch (Exception $e) {
-                        $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", [
-                            'error' => $e->getMessage(),
-                        ]);
+                        $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", ['error' => $e->getMessage()]);
                     }
                 }
             }
@@ -196,9 +206,7 @@ class TagManagementController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger?->error("清除標籤失敗: {$tagName}", [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger?->error("清除標籤失敗: {$tagName}", ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -219,6 +227,8 @@ class TagManagementController extends BaseController
     public public function flushTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
+
+
 
             $bodyString = (string) $request->getBody();
             $body = json_decode($bodyString, true);
@@ -255,11 +265,15 @@ class TagManagementController extends BaseController
                                     } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
         } catch (Exception $e) {
-                            $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", [
-                                'error' => $e->getMessage(),
-                            ]);
+                            $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", ['error' => $e->getMessage()]);
                         }
                     }
                 }
@@ -288,9 +302,7 @@ class TagManagementController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger?->error('批量清除標籤失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger?->error('批量清除標籤失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,
@@ -316,9 +328,7 @@ class TagManagementController extends BaseController
             if ($success) {
                 $responseData = [
                     'success' => true,
-                    'data' => [
-                        'message' => '所有快取已成功清空',
-                    ],
+                    'data' => ['message' => '所有快取已成功清空'],
                     'timestamp' => time(),
                 ];
             } else {
@@ -327,9 +337,7 @@ class TagManagementController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $this->logger?->error('清空所有快取失敗', [
-                'error' => $e->getMessage(),
-            ]);
+            $this->logger?->error('清空所有快取失敗', ['error' => $e->getMessage()]);
 
             return $this->json($response, [
                 'success' => false,

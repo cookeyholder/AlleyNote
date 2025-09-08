@@ -12,6 +12,8 @@ use PHPUnit\Framework\TestCase;
 
 class UpdatePostDTOTest extends TestCase
 
+
+
 {
     private Validator $validator;
 
@@ -43,9 +45,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testCanCreateDTOWithPartialUpdate(): void
     {
-        $data = [
-            'title' => '只更新標題',
-        ];
+        $data = ['title' => '只更新標題'];
 
         $dto = new UpdatePostDTO($this->validator, $data);
 
@@ -59,9 +59,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testCanCreateDTOWithContentOnlyUpdate(): void
     {
-        $data = [
-            'content' => '只更新內容',
-        ];
+        $data = ['content' => '只更新內容'];
 
         $dto = new UpdatePostDTO($this->validator, $data);
 
@@ -75,9 +73,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testCanCreateDTOWithStatusOnlyUpdate(): void
     {
-        $data = [
-            'status' => 'archived',
-        ];
+        $data = ['status' => 'archived'];
 
         $dto = new UpdatePostDTO($this->validator, $data);
 
@@ -91,9 +87,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testCanCreateDTOWithPinnedOnlyUpdate(): void
     {
-        $data = [
-            'is_pinned' => false,
-        ];
+        $data = ['is_pinned' => false];
 
         $dto = new UpdatePostDTO($this->validator, $data);
 
@@ -108,9 +102,7 @@ class UpdatePostDTOTest extends TestCase
     public function testCanCreateDTOWithPublishDateOnlyUpdate(): void
     {
         $publishDate = '2024-12-01T15:30:00+00:00';
-        $data = [
-            'publish_date' => $publishDate,
-        ];
+        $data = ['publish_date' => $publishDate];
 
         $dto = new UpdatePostDTO($this->validator, $data);
 
@@ -212,9 +204,7 @@ class UpdatePostDTOTest extends TestCase
     {
         $this->expectException(ValidationException::class);
 
-        $data = [
-            'status' => 'invalid_status',
-        ];
+        $data = ['status' => 'invalid_status'];
 
         new UpdatePostDTO($this->validator, $data);
     }
@@ -223,9 +213,7 @@ class UpdatePostDTOTest extends TestCase
     {
         $this->expectException(ValidationException::class);
 
-        $data = [
-            'publish_date' => 'invalid-date-format',
-        ];
+        $data = ['publish_date' => 'invalid-date-format'];
 
         new UpdatePostDTO($this->validator, $data);
     }
@@ -246,13 +234,12 @@ class UpdatePostDTOTest extends TestCase
         $validStatuses = ['draft', 'published', 'archived'];
 
         foreach ($validStatuses as $status) {
-            $data = [
-                'status' => $status,
-            ];
+            $data = ['status' => $status];
 
             $dto = new UpdatePostDTO($this->validator, $data);
             $this->assertEquals(PostStatus::from($status), $dto->status);
         }
+    }
 
     public function testHandlesBooleanValues(): void
     {
@@ -270,13 +257,12 @@ class UpdatePostDTOTest extends TestCase
         ];
 
         foreach ($testCases as [$input, $expected]) {
-            $data = [
-                'is_pinned' => $input,
-            ];
+            $data = ['is_pinned' => $input];
 
             $dto = new UpdatePostDTO($this->validator, $data);
             $this->assertEquals($expected, $dto->isPinned, 'Failed for input: ' . var_export($input, true));
         }
+    }
 
     public function testToArrayReturnsOnlyChangedFields(): void
     {
@@ -335,9 +321,7 @@ class UpdatePostDTOTest extends TestCase
 
     public function testHasChangesReturnsTrueWhenDataExists(): void
     {
-        $data = [
-            'title' => '有變更',
-        ];
+        $data = ['title' => '有變更'];
 
         $dto = new UpdatePostDTO($this->validator, $data);
 
@@ -391,14 +375,13 @@ class UpdatePostDTOTest extends TestCase
         ];
 
         foreach ($validDates as $date) {
-            $data = [
-                'publish_date' => $date,
-            ];
+            $data = ['publish_date' => $date];
 
             $dto = new UpdatePostDTO($this->validator, $data);
             $this->assertEquals($date, $dto->publishDate, "Failed for date: {$date}");
         }
 
+    }
     public function testHandlesWhitespaceInStringFields(): void
     {
         $data = [

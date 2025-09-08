@@ -9,6 +9,8 @@ use Symfony\Component\Process\Process;
 
 abstract class UITestCase extends TestCase
 
+
+
 {
     protected static ?Process $serverProcess = null;
 

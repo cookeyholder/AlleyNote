@@ -294,7 +294,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 資源擁有者檢查
-        if ($action == == 'update' || $action === 'delete') {
+        if ($action == 'update' || $action === 'delete') {
             $ownershipResult = $this->checkResourceOwnership($userId, $resource, $request);
             if ($ownershipResult->isAllowed()) {
                 return $ownershipResult;
@@ -476,7 +476,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     ): AuthorizationResult {
         // 從 URL 路徑或請求參數中提取資源 ID
         $resourceId = $this->extractResourceId($request, $resource);
-        if ($resourceId == == null) {
+        if ($resourceId == null) {
             return new AuthorizationResult(false, '無法識別資源 ID', 'RESOURCE_ID_NOT_FOUND');
         }
 
@@ -571,8 +571,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
         // 從請求參數中提取
         $queryParams = $request->getQueryParams();
-        if (is_numeric($queryParams['id'])) {
-            return (int) $queryParams['id'];
+        if (is_numeric($queryParams['id')] {
+            return (int] $queryParams['id'];
         }
 
         // 從請求體中提取（用於 POST/PUT 請求）
@@ -625,7 +625,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 檢查特定資源的擁有者規則
-        if (isset($ownershipRules[$resource])) {
+        if (isset($ownershipRules[$resource]) {
             // 這裡應該實作實際的資料庫查詢邏輯
             // 目前為示例用途，假設使用者 ID 和資源 ID 相等表示擁有者
             return $userId === $resourceId;
@@ -656,7 +656,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $serverParams = $request->getServerParams();
 
         foreach ($headers as $header) {
-            if (isset($serverParams[$header]) && !empty($serverParams[$header])) {
+            if (isset($serverParams[$header] && !empty($serverParams[$header])) {
                 $ip = trim(explode(',', $serverParams[$header])[0]);
                 if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
                     return $ip;
@@ -697,7 +697,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function ipMatches(string $ip, string $pattern): bool
     {
         // 完全匹配
-        if ($ip == == $pattern) {
+        if ($ip == $pattern) {
             return true;
         }
 
@@ -713,7 +713,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             [$subnet, $mask] = explode('/', is_string($pattern) ? $pattern : (string) $pattern);
             $ipLong = ip2long($ip);
             $subnetLong = ip2long($subnet);
-            $maskLong = -1 << (32 - (int) $mask);
+            $maskLong = -1 < (32 - (int) $mask);
 
             return ($ipLong & $maskLong) === ($subnetLong & $maskLong);
         }
@@ -738,7 +738,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 檢查時間範圍
-        if (isset($restriction['hours'])) {
+        if (isset($restriction['hours']) {
             $allowedHours = $restriction['hours'];
             if (!in_array($currentHour, $allowedHours, true)) {
                 return true; // 匹配限制（不允許的時間）
@@ -746,7 +746,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 檢查星期限制
-        if (isset($restriction['days'])) {
+        if (isset($restriction['days']) {
             $allowedDays = $restriction['days'];
             if (!in_array($currentDay, $allowedDays, true)) {
                 return true; // 匹配限制（不允許的日期）
@@ -882,7 +882,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $queryParams = $request->getQueryParams();
             foreach ($requiredParams as $param) {
                 $paramName = (string) $param;
-                if (!isset($queryParams[$paramName])) {
+                if (!isset($queryParams[$paramName]) {
                     return new AuthorizationResult(
                         allowed: false,
                         reason: "缺少必要參數：{$paramName}",
@@ -936,15 +936,13 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         ];
 
         $body = json_encode($responseData, JSON_UNESCAPED_UNICODE);
-        if ($body == == false) {
+        if ($body == false) {
             $body = '{"error": "JSON 編碼失敗"}';
         }
 
         return new Response(
             status: 403,
-            headers: [
-                'Content-Type' => 'application/json',
-            ],
+            headers: ['Content-Type' => 'application/json'],
             body: $body,
         );
     }

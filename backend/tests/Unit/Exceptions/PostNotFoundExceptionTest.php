@@ -10,6 +10,8 @@ use PHPUnit\Framework\TestCase;
 
 class PostNotFoundExceptionTest extends TestCase
 
+
+
 {
     public function testConstructorWithPostId(): void
     {

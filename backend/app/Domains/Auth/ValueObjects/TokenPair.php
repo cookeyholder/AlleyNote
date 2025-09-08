@@ -230,8 +230,8 @@ final readonly class TokenPair implements JsonSerializable
      */
     public function toString(): string
     {
-        $accessTokenPreview = substr($this->accessToken, 0, 20) . '...';
-        $refreshTokenPreview = substr($this->refreshToken, 0, 20) . '...';
+        $accessTokenPreview = substr($this->accessToken, 0, 20) . ' . ';
+        $refreshTokenPreview = substr($this->refreshToken, 0, 20) . '.';
 
         return sprintf(
             'TokenPair(accessToken=%s, refreshToken=%s, tokenType=%s, accessExpiresAt=%s, refreshExpiresAt=%s)',

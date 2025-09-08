@@ -16,6 +16,8 @@ use Exception;
 
 class SecurityTestService implements SecurityTestInterface
 
+
+
 {
     private SessionSecurityServiceInterface $sessionService;
 
@@ -259,7 +261,7 @@ class SecurityTestService implements SecurityTestInterface
             $exception = new Exception('Test exception');
             $response = $this->errorService->handleException($exception, false);
 
-            if (isset($response['error'])) {
+            if (isset($response['error']) {
                 $results['tests'][] = [
                     'name' => '錯誤處理',
                     'status' => 'PASS',
@@ -485,6 +487,8 @@ class SecurityTestService implements SecurityTestInterface
     {
         // 建立簡單的模擬檔案物件
         return new class {
+    }
+    }
             public function getClientFilename(): string
             {
                 return 'test.txt';

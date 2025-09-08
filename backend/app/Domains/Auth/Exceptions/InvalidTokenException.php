@@ -298,9 +298,7 @@ class InvalidTokenException extends JwtException
      */
     public static function claimsInvalid(array $invalidClaims, string $tokenType = self::ACCESS_TOKEN): self
     {
-        return new self(self::REASON_CLAIMS_INVALID, $tokenType, '', [
-            'invalid_claims' => $invalidClaims,
-        ]);
+        return new self(self::REASON_CLAIMS_INVALID, $tokenType, '', ['invalid_claims' => $invalidClaims]);
     }
 
     /**
@@ -311,9 +309,7 @@ class InvalidTokenException extends JwtException
      */
     public static function blacklisted(string $tokenId, string $tokenType = self::ACCESS_TOKEN): self
     {
-        return new self(self::REASON_BLACKLISTED, $tokenType, '', [
-            'token_id' => $tokenId,
-        ]);
+        return new self(self::REASON_BLACKLISTED, $tokenType, '', ['token_id' => $tokenId]);
     }
 
     /**

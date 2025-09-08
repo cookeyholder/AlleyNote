@@ -322,6 +322,7 @@ class PostRepositoryTest extends TestCase
             $this->assertInstanceOf(Post::class, $post);
         }
 
+    }
     public function testGetPinnedPosts(): void
     {
         // 建立普通文章
@@ -352,9 +353,7 @@ class PostRepositoryTest extends TestCase
     public function testSetPinned(): void
     {
         // 建立測試文章
-        $data = $this->createTestPost([
-            'status' => PostStatus::PUBLISHED->value,
-        ]);
+        $data = $this->createTestPost(['status' => PostStatus::PUBLISHED->value]);
         $post = $this->repository->create($data);
         $id = $post->getId();
 
@@ -380,9 +379,7 @@ class PostRepositoryTest extends TestCase
     public function testIncrementViews(): void
     {
         // 建立測試文章
-        $data = $this->createTestPost([
-            'status' => PostStatus::PUBLISHED->value,
-        ]);
+        $data = $this->createTestPost(['status' => PostStatus::PUBLISHED->value]);
         $post = $this->repository->create($data);
         $id = $post->getId();
 
@@ -437,9 +434,7 @@ class PostRepositoryTest extends TestCase
     public function testGetPostsByTag(): void
     {
         // 建立測試文章
-        $data = $this->createTestPost([
-            'status' => PostStatus::PUBLISHED->value,
-        ]);
+        $data = $this->createTestPost(['status' => PostStatus::PUBLISHED->value]);
         $post = $this->repository->create($data);
         $postId = $post->getId();
 
@@ -470,9 +465,7 @@ class PostRepositoryTest extends TestCase
             ->with('Attempt to query with disallowed field', Mockery::any());
 
         // 嘗試使用不允許的欄位進行查詢
-        $result = $this->repository->paginate(1, 10, [
-            'malicious_field' => 'value',
-        ]);
+        $result = $this->repository->paginate(1, 10, ['malicious_field' => 'value']);
 
         // 查詢仍應成功，但會記錄安全事件
         $this->assertIsArray($result);

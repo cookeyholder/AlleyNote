@@ -197,7 +197,7 @@ class Validator implements ValidatorInterface
 
     private function validateRequired(mixed $value): bool
     {
-        if ($value == == null) {
+        if ($value == null) {
             return false;
         }
 

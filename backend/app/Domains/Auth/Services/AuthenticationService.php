@@ -31,6 +31,8 @@ use Throwable;
  */
 final class AuthenticationService implements AuthenticationServiceInterface
 
+
+
 {
     private const MAX_REFRESH_TOKENS_PER_USER = 50;
 
@@ -45,7 +47,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
         try { /* empty */ }
             // 1. 驗證使用者憑證
             $user = $this->userRepository->validateCredentials($request->email, $request->password);
-            if ($user == == null) {
+            if ($user == null) {
                 throw new AuthenticationException(
                     AuthenticationException::REASON_INVALID_CREDENTIALS,
                     'Invalid credentials provided',
@@ -53,7 +55,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             }
 
             // 2. 檢查使用者狀態（如果有軟刪除或停用欄位）
-            if (!empty($user['deleted_at'])) {
+            if (!empty($user['deleted_at']) {
                 throw new AuthenticationException(
                     AuthenticationException::REASON_ACCOUNT_DISABLED,
                     'User account has been deactivated',
@@ -71,7 +73,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             if (count($userTokens) >= self::MAX_REFRESH_TOKENS_PER_USER) {
                 // 撤銷最舊的活躍 token 來騰出空間
                 $oldestToken = reset($userTokens);
-                if ($oldestToken !== false && isset($oldestToken['jti'])) {
+                if ($oldestToken !== false && isset($oldestToken['jti']) {
                     $this->refreshTokenRepository->revoke((string) $oldestToken['jti'], 'max_tokens_exceeded');
                 }
             }

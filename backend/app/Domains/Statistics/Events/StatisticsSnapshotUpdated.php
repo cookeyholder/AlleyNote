@@ -15,6 +15,8 @@ use DateTimeImmutable;
  */
 readonly class StatisticsSnapshotUpdated
 
+
+
 {
     public function __construct(
         public Uuid $id,

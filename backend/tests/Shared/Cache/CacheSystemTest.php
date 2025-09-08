@@ -13,6 +13,8 @@ use Psr\Log\NullLogger;
 
 class CacheSystemTest extends TestCase
 
+
+
 {
     private CacheManager $cacheManager;
 
@@ -50,6 +52,7 @@ class CacheSystemTest extends TestCase
             rmdir($this->tempDir);
         }
 
+    }
     public function testCacheManagerBasicOperations(): void
     {
         // 測試基本儲存和取得
@@ -105,6 +108,7 @@ class CacheSystemTest extends TestCase
             $this->assertFalse($this->cacheManager->has($key));
         }
 
+    }
     public function testCacheStrategyFiltering(): void
     {
         // 新增排除模式

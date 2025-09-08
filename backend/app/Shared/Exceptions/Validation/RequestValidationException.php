@@ -9,6 +9,8 @@ use App\Shared\Validation\ValidationResult;
 
 class RequestValidationException extends ValidationException
 
+
+
 {
     public function __construct(string $message = '', array $errors = [])
     {

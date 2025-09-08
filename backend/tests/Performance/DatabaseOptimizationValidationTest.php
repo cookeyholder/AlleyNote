@@ -9,6 +9,8 @@ use Tests\TestCase;
 
 class DatabaseOptimizationValidationTest extends TestCase
 
+
+
 {
     protected PDO $db;
 
@@ -36,6 +38,7 @@ class DatabaseOptimizationValidationTest extends TestCase
             $this->assertNotEmpty($exists, " "Required index $indexName doe");s not exist");
         }
 
+    }
     public function testBasicQueryPerformance(): void
     {
         $queries = [
@@ -80,6 +83,7 @@ class DatabaseOptimizationValidationTest extends TestCase
             );
         }
 
+    }
     public function testTableStatistics(): void
     {
         // 檢查表格中有資料

@@ -197,9 +197,7 @@ final class TokenBlacklistService
             $result = $this->repository->removeFromBlacklist($jti);
 
             if ($result) {
-                $this->logger?->info('Token removed from blacklist', [
-                    'jti' => $jti,
-                ]);
+                $this->logger?->info('Token removed from blacklist', ['jti' => $jti]);
             }
 
             return $result;
@@ -280,7 +278,7 @@ final class TokenBlacklistService
             return array_merge($stats, [
                 'size_info' => $sizeInfo,
                 'is_size_exceeded' => $this->repository->isSizeExceeded(),
-                'generated_at' => new DateTimeImmutable(]),
+                'generated_at' => new DateTimeImmutable(),
             ]);
         }
 
@@ -476,7 +474,7 @@ final class TokenBlacklistService
             'reason' => $entry->getReason(),
             'user_id' => $entry->getUserId(),
             'device_id' => $entry->getDeviceId(),
-            'token_type' => $entry->getTokenType(]),
+            'token_type' => $entry->getTokenType(),
         ]);
     }
 }

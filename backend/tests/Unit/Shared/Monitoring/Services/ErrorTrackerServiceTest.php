@@ -14,6 +14,8 @@ use Psr\Log\LoggerInterface;
  */
 class ErrorTrackerServiceTest extends TestCase
 
+
+
 {
     private ErrorTrackerService $errorTracker;
 

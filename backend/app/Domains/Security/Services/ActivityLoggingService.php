@@ -94,9 +94,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
         try { /* empty */ }
             // 檢查是否啟用記錄
             if (!$this->isLoggingEnabled($dto->getActionType())) {
-                $this->logger->warning('Logging disabled for action type', [
-                    'action_type' => $dto->getActionType(])->value,
-                ]);
+                $this->logger->warning('Logging disabled for action type', ['action_type' => $dto->getActionType()->value]);
 
                 return false;
             }
@@ -109,10 +107,10 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             // 記錄到資料庫
             $result = $this->repository->create($dto);
 
-            if ($result == == null) {
+            if ($result == null) {
                 $this->logger->error('Repository returned null for activity log creation', [
                     'action_type' => $dto->getActionType()->value,
-                    'user_id' => $dto->getUserId(]),
+                    'user_id' => $dto->getUserId(),
                 ]);
 
                 return false;
@@ -235,7 +233,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      *         'failed_attempts' => 5,
      *         'time_span' => '5 minutes',
      *         'ip_address' => '192.168.1.100',
-     *         'user_agent' => 'Mozilla/5.0...',
+     *         'user_agent' => 'Mozilla/5.0.',
      *         'risk_score' => 85
      *     ]
      * );

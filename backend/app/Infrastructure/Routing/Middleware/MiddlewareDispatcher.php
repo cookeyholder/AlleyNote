@@ -17,6 +17,8 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class MiddlewareDispatcher implements MiddlewareDispatcherInterface
 
+
+
 {
     public function dispatch(
         ServerRequestInterface $request,
@@ -56,6 +58,8 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
         RequestHandlerInterface $nextHandler,
     ): RequestHandlerInterface {
         return new class ($middleware, $nextHandler) implements RequestHandlerInterface {
+    }
+    }
             public function __construct(
                 private MiddlewareInterface $middleware,
                 private RequestHandlerInterface $nextHandler,

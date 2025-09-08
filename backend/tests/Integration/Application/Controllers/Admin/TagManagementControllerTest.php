@@ -21,6 +21,8 @@ use RuntimeException;
  */
 class TagManagementControllerTest extends TestCase
 
+
+
 {
     private TagManagementController $controller;
 
@@ -77,19 +79,19 @@ class TagManagementControllerTest extends TestCase
      */
     private function validateResponse(array $data, array $expectedKeys): bool
     {
-        if (!isset($data['success']) || $data['success'] !== true) {
+        if (!isset($data['success'] || $data['success'] !== true) {
             return false;
         }
 
         $current = $data;
         foreach ($expectedKeys as $key => $value) {
             if (is_array($value)) {
-                if (!isset($current[$key]) || !is_array($current[$key])) {
+                if (!isset($current[$key] || !is_array($current[$key])) {
                     return false;
                 }
                 $current = $current[$key];
             } else {
-                if (!isset($current[$key]) || $current[$key] !== $value) {
+                if (!isset($current[$key] || $current[$key] !== $value) {
                     return false;
                 }
             }

@@ -18,6 +18,8 @@ use Tests\TestCase;
  */
 final class JwtAuthorizationMiddlewareTest extends TestCase
 
+
+
 {
     private JwtAuthorizationMiddleware $middleware;
 

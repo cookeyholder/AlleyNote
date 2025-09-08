@@ -147,6 +147,7 @@ class SecurityServiceProvider
         $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
 
         return new CsrfProtectionService($activityLogger);
+            }
     }
 
     /**

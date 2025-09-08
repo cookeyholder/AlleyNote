@@ -35,6 +35,8 @@ final readonly class PostStatisticsDTO implements JsonSerializable
      * @param DateTimeImmutable $updatedAt 更新時間
      */
     
+    
+    
     public function __construct(
         public Uuid $postId,
         public string $title,
@@ -61,12 +63,12 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     {
         // 確保必要欄位存在且型別正確
         $id = is_string($postData['id'] ?? null) ? $postData['id'] : '';
-        if ($id == == '') {
+        if ($id == '') {
             throw new InvalidArgumentException('文章 ID 不能為空');
         }
 
         $title = is_string($postData['title'] ?? null) ? $postData['title'] : '';
-        if ($title == == '') {
+        if ($title == '') {
             throw new InvalidArgumentException('文章標題不能為空');
         }
 
@@ -84,7 +86,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
         $additionalMetrics = is_array($postData['additional_metrics'] ?? null) ? $postData['additional_metrics'] : [];
 
         $publishedAt = is_string($postData['published_at'] ?? null) ? $postData['published_at'] : '';
-        if ($publishedAt == == '') {
+        if ($publishedAt == '') {
             throw new InvalidArgumentException('發布時間不能為空');
         }
 
@@ -348,7 +350,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     {
         return sprintf(
             'PostStatistics[%s => %d views, %.2f%% engagement]',
-            substr($this->title, 0, 30) . (strlen($this->title) > 30 ? '...' : ''),
+            substr($this->title, 0, 30) . (strlen($this->title) > 30 ? ' . ' : ''),
             $this->viewCount->value,
             $this->getEngagementRate(),
         );
@@ -361,7 +363,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     private static function calculateEngagementRate(array $metrics): float
     {
         $views = is_numeric($metrics['views'] ?? 0) ? (int) ($metrics['views'] ?? 0) : 0;
-        if ($views == == 0) {
+        if ($views == 0) {
             return 0.0;
         }
 

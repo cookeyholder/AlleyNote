@@ -19,6 +19,8 @@ use ReflectionClass;
  */
 class JwtTokenServiceInterfaceTest extends TestCase
 
+
+
 {
     private ReflectionClass $interfaceReflection;
 
@@ -324,6 +326,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
             $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
         }
 
+    }
     public function testInterfaceHasCorrectDocumentation(): void
     {
         $docComment = $this->interfaceReflection->getDocComment();

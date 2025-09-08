@@ -9,6 +9,8 @@ use DateTimeInterface;
 
 class PostFactory
 
+
+
 {
     public static function make(array $attributes = []): array
     {

@@ -18,6 +18,8 @@ use ReflectionClass;
  */
 class TokenBlacklistRepositoryInterfaceTest extends TestCase
 
+
+
 {
     private ReflectionClass $interfaceReflection;
 
@@ -477,6 +479,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
             $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
         }
 
+    }
     public function testInterfaceHasCorrectDocumentation(): void
     {
         $docComment = $this->interfaceReflection->getDocComment();
@@ -499,6 +502,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
             $this->assertFalse($method->isStatic(), "Method {$method->getName()} should not be static");
         }
 
+    }
     public function testInterfaceExtendsNoOtherInterface(): void
     {
         $interfaces = $this->interfaceReflection->getInterfaces();

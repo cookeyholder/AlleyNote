@@ -15,6 +15,8 @@ use App\Domains\Security\Services\Core\XssProtectionService;
  */
 class XssProtectionExtensionService
 
+
+
 {
     private XssProtectionService $baseXssProtection;
 
@@ -109,7 +111,7 @@ class XssProtectionExtensionService
             'security_score' => $this->calculateSecurityScore($input, $processResult['content']),
         ];
 
-        if ($input !== $processResult['content']) {
+        if ($input !== $processResult['content'] {
             $result['modifications'][] = [
                 'type' => 'html_sanitization',
                 'description' => 'HTML 內容已經過安全過濾',
@@ -214,7 +216,7 @@ class XssProtectionExtensionService
 
         // 長度限制
         if (strlen($cleaned) > $this->config['max_comment_length']) {
-            $cleaned = mb_substr($cleaned, 0, $this->config['max_comment_length']) . '...';
+            $cleaned = mb_substr($cleaned, 0, $this->config['max_comment_length']) . ' . ';
         }
 
         return [
@@ -382,7 +384,7 @@ class XssProtectionExtensionService
         $cleaned = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $filename);
 
         // 防止目錄遍歷
-        $cleaned = str_replace(['../', '..\\', '../'], '', $cleaned);
+        $cleaned = str_replace(['./', '.\\', './'], '', $cleaned);
 
         // 確保檔名不為空
         if (empty($cleaned)) {
@@ -397,14 +399,14 @@ class XssProtectionExtensionService
      */
     private function calculateSecurityScore(string $original, string $filtered): int
     {
-        if ($original == == $filtered) {
+        if ($original == $filtered) {
             return 100;
         }
 
         $originalLength = strlen($original);
         $filteredLength = strlen($filtered);
 
-        if ($originalLength == == 0) {
+        if ($originalLength == 0) {
             return 100;
         }
 

@@ -23,6 +23,8 @@ use Psr\Log\NullLogger;
  */
 class TaggedCacheIntegrationTest extends TestCase
 
+
+
 {
     private TaggedCacheInterface $taggedCache;
 
@@ -52,7 +54,11 @@ class TaggedCacheIntegrationTest extends TestCase
     private function createTestCacheStrategy(): CacheStrategyInterface
     {
         return new class implements CacheStrategyInterface 
+
+
 {
+    }
+    }
     public function shouldCache(string $key, mixed $value, int $ttl): bool
             {
                 return true;
@@ -230,6 +236,7 @@ class TaggedCacheIntegrationTest extends TestCase
             $this->assertEquals($expectedCount, $stats[$tag]);
         }
 
+    }
     public function testTaggingWithComplexValues(): void
     {
         $testData = $this->createComplexValueTestData();
@@ -279,6 +286,7 @@ class TaggedCacheIntegrationTest extends TestCase
             $this->assertArrayHasKey($testData['key'], array_flip($keys));
         }
 
+    }
     public function testTagExpiration(): void
     {
         $testData = $this->createTagExpirationTestData();

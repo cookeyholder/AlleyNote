@@ -17,6 +17,8 @@ use DateTime;
  */
 class CreatePostDTO extends BaseDTO
 
+
+
 {
     public readonly string $title;
 
@@ -39,6 +41,8 @@ class CreatePostDTO extends BaseDTO
      * @throws ValidationException 當驗證失敗時
      */
     
+    
+    
     public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);
@@ -47,12 +51,12 @@ class CreatePostDTO extends BaseDTO
         $this->addPostValidationRules();
 
         // 預處理 is_pinned 預設值
-        if (!isset($data['is_pinned'])) {
+        if (!isset($data['is_pinned']) {
             $data['is_pinned'] = false;
         }
 
         // 預處理狀態值
-        if (!isset($data['status'])) {
+        if (!isset($data['status']) {
             $data['status'] = PostStatus::DRAFT->value;
         }
 
@@ -149,7 +153,7 @@ class CreatePostDTO extends BaseDTO
 
         // RFC3339 日期時間驗證規則
         $this->validator->addRule('rfc3339_datetime', function ($value) {
-            if ($value == == null || $value === '') {
+            if ($value == null || $value === '') {
                 return true; // 允許空值
             }
 

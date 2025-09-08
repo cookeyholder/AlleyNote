@@ -16,19 +16,19 @@ use Psr\Log\NullLogger;
  */
 class CacheMonitor implements CacheMonitorInterface
 {
-    /** @var array<string, array<string, mixed>> 快取操作統計 */
+    /** @var array<string, array<string, mixed> 快取操作統計 */
     private array $operationStats = [];
 
-    /** @var array<string, array<string, mixed>> 快取命中統計 */
+    /** @var array<string, array<string, mixed> 快取命中統計 */
     private array $hitStats = [];
 
-    /** @var array<string, array<string, mixed>> 快取錯誤統計 */
+    /** @var array<string, array<string, mixed> 快取錯誤統計 */
     private array $errorStats = [];
 
-    /** @var array<string, array<string, mixed>> 健康狀態記錄 */
+    /** @var array<string, array<string, mixed> 健康狀態記錄 */
     private array $healthRecords = [];
 
-    /** @var array<array<string, mixed>> 操作歷史記錄 */
+    /** @var array<array<string, mixed> 操作歷史記錄 */
     private array $operationHistory = [];
 
     /** @var LoggerInterface 記錄器 */
@@ -63,7 +63,7 @@ class CacheMonitor implements CacheMonitorInterface
         $timestamp = microtime(true);
 
         // 更新操作統計
-        if (!isset($this->operationStats[$driver])) {
+        if (!isset($this->operationStats[$driver]) {
             $this->initializeDriverStats($driver);
         }
 
@@ -142,9 +142,10 @@ class CacheMonitor implements CacheMonitorInterface
             ]);
         }
 
+    }
     public function recordHit(string $driver, string $key, float $duration): void
     {
-        if (!isset($this->hitStats[$driver])) {
+        if (!isset($this->hitStats[$driver]) {
             $this->hitStats[$driver] = [
                 'hits' => 0,
                 'misses' => 0,
@@ -178,7 +179,7 @@ class CacheMonitor implements CacheMonitorInterface
 
     public function recordMiss(string $driver, string $key, float $duration = 0.0): void
     {
-        if (!isset($this->hitStats[$driver])) {
+        if (!isset($this->hitStats[$driver]) {
             $this->hitStats[$driver] = [
                 'hits' => 0,
                 'misses' => 0,
@@ -209,7 +210,7 @@ class CacheMonitor implements CacheMonitorInterface
     {
         $timestamp = microtime(true);
 
-        if (!isset($this->errorStats[$driver])) {
+        if (!isset($this->errorStats[$driver]) {
             $this->errorStats[$driver] = [
                 'total_errors' => 0,
                 'errors_by_operation' => [],
@@ -228,7 +229,7 @@ class CacheMonitor implements CacheMonitorInterface
         $errorStats['errors_by_operation'] = $errorsByOp;
 
         // 保留最近的錯誤記錄
-        /** @var array<array<string, mixed>> $recentErrors */
+        /** @var array<array<string, mixed> $recentErrors */
         $recentErrors = $errorStats['recent_errors'] ?? [];
         /** @var int $maxRecentErrors */
         $maxRecentErrors = $this->config['max_recent_errors'] ?? 10;
@@ -624,7 +625,7 @@ class CacheMonitor implements CacheMonitorInterface
      */
     private function updateHitRate(string $driver): void
     {
-        if (!isset($this->hitStats[$driver])) {
+        if (!isset($this->hitStats[$driver]) {
             return;
         }
 

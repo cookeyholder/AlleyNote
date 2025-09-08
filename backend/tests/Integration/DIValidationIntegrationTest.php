@@ -18,6 +18,8 @@ use Tests\TestCase;
  */
 class DIValidationIntegrationTest extends TestCase
 
+
+
 {
     private Container $container;
 
@@ -27,7 +29,7 @@ class DIValidationIntegrationTest extends TestCase
 
         // 載入 DI 容器配置
         $containerBuilder = new ContainerBuilder();
-        $definitions = require __DIR__ . '/../../app/Infrastructure/Config/container.php';
+        $definitions = require __DIR__ . '/././app/Infrastructure/Config/container.php';
         $containerBuilder->addDefinitions($definitions);
         $this->container = $containerBuilder->build();
     }
@@ -129,12 +131,8 @@ class DIValidationIntegrationTest extends TestCase
         $standardValidator = $factory->create();
         $dtoValidator = $factory->createForDTO();
         $customValidator = $factory->createWithConfig([
-            'messages' => [
-                'required' => '自訂必填錯誤訊息  => field',
-            ],
-            'rules' => [
-                'custom_test' => fn($value) => $value === 'test',
-            ],
+            'messages' => ['required' => '自訂必填錯誤訊息  => field'],
+            'rules' => ['custom_test' => fn($value) => $value === 'test'],
         ]);
 
         // Assert
@@ -167,9 +165,7 @@ class DIValidationIntegrationTest extends TestCase
         ];
 
         // 驗證相符的密碼確認
-        $result = $validator->validate($validData, [
-            'password_confirmation' => 'password_confirmed',
-        ]);
+        $result = $validator->validate($validData, ['password_confirmation' => 'password_confirmed']);
 
         $this->assertTrue($result->isValid());
 
@@ -181,9 +177,7 @@ class DIValidationIntegrationTest extends TestCase
             'password_confirmation' => 'DifferentPassword456',
         ];
 
-        $validator->validateOrFail($invalidData, [
-            'password_confirmation' => 'password_confirmed',
-        ]);
+        $validator->validateOrFail($invalidData, ['password_confirmation' => 'password_confirmed']);
     }
 
     /**

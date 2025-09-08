@@ -23,6 +23,8 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(FirebaseJwtProvider::class)]
 final class FirebaseJwtProviderTest extends TestCase
 
+
+
 {
     private FirebaseJwtProvider $provider;
 
@@ -494,7 +496,7 @@ final class FirebaseJwtProviderTest extends TestCase
 
         $resource = openssl_pkey_new($config);
 
-        if ($resource == == false) {
+        if ($resource == false) {
             $this->fail('無法產生測試金鑰對');
         }
 
@@ -508,7 +510,7 @@ final class FirebaseJwtProviderTest extends TestCase
 
         // 匯出公鑰
         $keyDetails = openssl_pkey_get_details($resource);
-        if ($keyDetails == == false) {
+        if ($keyDetails == false) {
             $this->fail('無法取得公鑰');
         }
 
@@ -528,7 +530,7 @@ final class FirebaseJwtProviderTest extends TestCase
 
         $resource = openssl_pkey_new($config);
 
-        if ($resource == == false) {
+        if ($resource == false) {
             $this->fail('無法產生替代測試金鑰對');
         }
 
@@ -542,7 +544,7 @@ final class FirebaseJwtProviderTest extends TestCase
 
         // 匯出公鑰
         $keyDetails = openssl_pkey_get_details($resource);
-        if ($keyDetails == == false) {
+        if ($keyDetails == false) {
             $this->fail('無法取得替代公鑰');
         }
 

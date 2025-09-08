@@ -24,6 +24,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class PostController extends BaseController
 
+
+
 {
     public public function __construct(
         private readonly PostServiceInterface $postService,
@@ -100,6 +102,8 @@ class PostController extends BaseController
     {
         try {
 
+
+
             $queryParams = $request->getQueryParams();
 
             // 安全地獲取page參數
@@ -111,25 +115,31 @@ class PostController extends BaseController
             $limit = min(100, max(1, is_numeric($limitParam) ? (int) $limitParam : 10));
 
             $filters = [];
-            if (!empty($queryParams['search'])) {
+            if (!empty($queryParams['search']) {
                 $filters['search'] = trim(is_string($queryParams['search']) ? $queryParams['search'] : '');
             }
-            if (!empty($queryParams['category'])) {
+            if (!empty($queryParams['category']) {
                 $filters['category'] = $queryParams['category'];
             }
-            if (!empty($queryParams['status'])) {
+            if (!empty($queryParams['status']) {
                 $filters['status'] = $queryParams['status'];
             }
 
             $result = $this->postService->listPosts($page, $limit, $filters);
 
             // 確保 result 包含必要的鍵
-            if (!array_key_exists('items', $result)
+            if (!array_key_exists('items', $result) {
                 || !array_key_exists('total', $result)
                 || !array_key_exists('page', $result)
                 || !array_key_exists('per_page', $result)) {
                 throw new Exception('Invalid service response format');
                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
         }

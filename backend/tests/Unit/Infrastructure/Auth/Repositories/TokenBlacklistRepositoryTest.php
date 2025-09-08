@@ -26,6 +26,8 @@ use ReflectionProperty;
  */
 class TokenBlacklistRepositoryTest extends TestCase
 
+
+
 {
     private TokenBlacklistRepository $repository;
 
@@ -1234,7 +1236,7 @@ class TokenBlacklistRepositoryTest extends TestCase
             $this->mockStatement
                 ->expects($this->exactly($executeCount))
                 ->method('execute')
-                ->willReturnOnConsecutiveCalls(...$executeResults);
+                ->willReturnOnConsecutiveCalls(..$executeResults);
         }
 
         $this->mockPdo
@@ -1288,13 +1290,12 @@ class TokenBlacklistRepositoryTest extends TestCase
             }
 
             for ($i = 0; $i < count($expectedJtis); $i++) {
-                if ($params[$i] !== $expectedJtis[$i]) {
+                if ($params[$i] !== $expectedJtis[$i] {
                     return false;
                 }
             }
 
-            // 最後一個參數應該是 current_time (字串)
-            return is_string($params[count($expectedJtis)]);
+            // 最後一個參數應該是 current_time (字串] return is_string($params[count($expectedJtis)]);
         };
     }
 

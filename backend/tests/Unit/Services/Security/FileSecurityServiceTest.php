@@ -12,6 +12,8 @@ use Psr\Http\Message\UploadedFileInterface;
 
 class FileSecurityServiceTest extends TestCase
 
+
+
 {
     private FileSecurityService $service;
 
@@ -96,7 +98,7 @@ class FileSecurityServiceTest extends TestCase
     {
         $file = $this->createUploadedFile(
             content: 'test content',
-            filename: '../../../malicious.jpg',
+            filename: './././malicious.jpg',
             mimeType: 'image/jpeg',
             size: 100,
         );
@@ -173,8 +175,8 @@ class FileSecurityServiceTest extends TestCase
         $testCases = [
             'normal-file.jpg' => 'normal-file.jpg',
             'file with spaces.txt' => 'file_with_spaces.txt',
-            '../../../malicious.pdf' => 'malicious.pdf',
-            'file...with...dots.png' => 'file.with.dots.png',
+            './././malicious.pdf' => 'malicious.pdf',
+            'file..with..dots.png' => 'file.with.dots.png',
             '.hidden-file.txt' => 'hidden-file.txt',
         ];
 

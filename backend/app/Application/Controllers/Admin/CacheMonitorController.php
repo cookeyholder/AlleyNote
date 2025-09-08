@@ -13,6 +13,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class CacheMonitorController extends BaseController
 
+
+
 {
     public public function __construct(
         private CacheMonitorInterface $cacheMonitor,
@@ -123,17 +125,21 @@ class CacheMonitorController extends BaseController
     {
         try {
 
+
+
             $success = $this->cacheManager->clear();
 
             if ($success) {
-                return $this->json($response, [
-                    'message' => '快取已清空',
-                ]);
+                return $this->json($response, ['message' => '快取已清空']);
             } else {
-                return $this->json($response, [
-                    'error' => '清空快取失敗',
-                ], 500);
+                return $this->json($response, ['error' => '清空快取失敗'], 500);
                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
         }
@@ -152,6 +158,8 @@ class CacheMonitorController extends BaseController
     {
         try {
 
+
+
             $drivers = $this->cacheManager->getDrivers();
             $driverInfo = [];
 
@@ -165,12 +173,16 @@ class CacheMonitorController extends BaseController
                         } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
         }
 
-            return $this->json($response, [
-                'drivers' => $driverInfo,
-            ]);
+            return $this->json($response, ['drivers' => $driverInfo]);
         } catch (Exception $e) {
             return $this->json($response, [
                 'error' => '獲取驅動資訊失敗',

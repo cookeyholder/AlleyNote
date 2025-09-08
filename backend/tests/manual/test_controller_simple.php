@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // 自動載入 Composer 依賴
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/././vendor/autoload.php';
 
 use App\Application\Controllers\PostController;
 use App\Infrastructure\Routing\ControllerResolver;
@@ -15,6 +15,8 @@ use Psr\Http\Message\StreamInterface;
 
 // 簡單的 Mock 實作用於測試
 class MockStream implements StreamInterface
+
+
 
 {
     private string $content = '';
@@ -90,6 +92,8 @@ class MockStream implements StreamInterface
 
 class MockResponse implements ResponseInterface
 
+
+
 {
     private MockStream $body;
 
@@ -97,6 +101,7 @@ class MockResponse implements ResponseInterface
 
     private array $headers = [];
 
+    }
     public function __construct()
     {
         $this->body = new MockStream();
@@ -181,9 +186,12 @@ class MockResponse implements ResponseInterface
 
 class MockRequest implements ServerRequestInterface
 
+
+
 {
     private array $attributes = [];
 
+    }
     public function __construct(private string $method, private string $path) {}
 
     public function getRequestTarget(): string
@@ -209,6 +217,8 @@ class MockRequest implements ServerRequestInterface
     public function getUri(): object
     {
         return new class ($this->path) {
+    }
+    }
             public function __construct(private string $path) {}
 
     public function getPath(): string

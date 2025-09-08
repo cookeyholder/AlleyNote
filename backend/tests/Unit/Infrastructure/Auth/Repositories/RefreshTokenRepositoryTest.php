@@ -27,6 +27,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class RefreshTokenRepositoryTest extends TestCase
 
+
+
 {
     private RefreshTokenRepository $repository;
 
@@ -60,7 +62,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->futureDate = new DateTime('+1 hour');
     }
 
-    // ========== CREATE 測試 ==========
+    // === CREATE 測試 ===
 
     public function testCreate_ShouldReturnTrue_WhenTokenCreatedSuccessfully(): void
     {
@@ -144,7 +146,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertTrue($result);
     }
 
-    // ========== FIND BY JTI 測試 ==========
+    // === FIND BY JTI 測試 ===
 
     public function testFindByJti_ShouldReturnArray_WhenTokenExists(): void
     {
@@ -185,7 +187,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->repository->findByJti('test-jti');
     }
 
-    // ========== FIND BY TOKEN HASH 測試 ==========
+    // === FIND BY TOKEN HASH 測試 ===
 
     public function testFindByTokenHash_ShouldReturnArray_WhenTokenExists(): void
     {
@@ -214,7 +216,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertNull($result);
     }
 
-    // ========== FIND BY USER ID 測試 ==========
+    // === FIND BY USER ID 測試 ===
 
     public function testFindByUserId_ShouldReturnArray_WhenTokensExist(): void
     {
@@ -306,7 +308,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertEquals([], $result);
     }
 
-    // ========== FIND BY USER ID AND DEVICE 測試 ==========
+    // === FIND BY USER ID AND DEVICE 測試 ===
 
     public function testFindByUserIdAndDevice_ShouldReturnArray_WhenTokensExist(): void
     {
@@ -340,7 +342,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertEquals($expectedData, $result);
     }
 
-    // ========== UPDATE LAST USED 測試 ==========
+    // === UPDATE LAST USED 測試 ===
 
     public function testUpdateLastUsed_ShouldReturnTrue_WhenUpdateSuccessful(): void
     {
@@ -393,7 +395,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertTrue($result);
     }
 
-    // ========== REVOKE 測試 ==========
+    // === REVOKE 測試 ===
 
     public function testRevoke_ShouldReturnTrue_WhenRevocationSuccessful(): void
     {
@@ -444,7 +446,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertTrue($result);
     }
 
-    // ========== REVOKE ALL BY USER ID 測試 ==========
+    // === REVOKE ALL BY USER ID 測試 ===
 
     public function testRevokeAllByUserId_ShouldReturnRevokedCount_WhenSuccessful(): void
     {
@@ -510,7 +512,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertEquals(2, $result);
     }
 
-    // ========== REVOKE ALL BY DEVICE 測試 ==========
+    // === REVOKE ALL BY DEVICE 測試 ===
 
     public function testRevokeAllByDevice_ShouldReturnRevokedCount_WhenSuccessful(): void
     {
@@ -548,7 +550,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertEquals($expectedCount, $result);
     }
 
-    // ========== DELETE 測試 ==========
+    // === DELETE 測試 ===
 
     public function testDelete_ShouldReturnTrue_WhenDeletionSuccessful(): void
     {
@@ -597,7 +599,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertFalse($result);
     }
 
-    // ========== IS REVOKED 測試 ==========
+    // === IS REVOKED 測試 ===
 
     public function testIsRevoked_ShouldReturnTrue_WhenTokenIsRevoked(): void
     {
@@ -648,7 +650,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertFalse($result);
     }
 
-    // ========== IS EXPIRED 測試 ==========
+    // === IS EXPIRED 測試 ===
 
     public function testIsExpired_ShouldReturnTrue_WhenTokenIsExpired(): void
     {
@@ -718,7 +720,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertTrue($result); // Token not found, consider expired
     }
 
-    // ========== IS VALID 測試 ==========
+    // === IS VALID 測試 ===
 
     public function testIsValid_ShouldReturnTrue_WhenTokenIsValidAndNotRevoked(): void
     {
@@ -750,7 +752,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertTrue($result);
     }
 
-    // ========== CLEANUP 測試 ==========
+    // === CLEANUP 測試 ===
 
     public function testCleanup_ShouldReturnCleanedCount_WhenSuccessful(): void
     {
@@ -790,7 +792,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertEquals(0, $result);
     }
 
-    // ========== CLEANUP REVOKED 測試 ==========
+    // === CLEANUP REVOKED 測試 ===
 
     public function testCleanupRevoked_ShouldReturnCleanedCount_WhenSuccessful(): void
     {
@@ -814,7 +816,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertEquals($expectedCount, $result);
     }
 
-    // ========== GET USER TOKEN STATS 測試 ==========
+    // === GET USER TOKEN STATS 測試 ===
 
     public function testGetUserTokenStats_ShouldReturnStatsArray_WhenSuccessful(): void
     {
@@ -839,7 +841,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertEquals($expectedStats, $result);
     }
 
-    // ========== GET SYSTEM STATS 測試 ==========
+    // === GET SYSTEM STATS 測試 ===
 
     public function testGetSystemStats_ShouldReturnSystemStatsArray_WhenSuccessful(): void
     {
@@ -861,7 +863,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertEquals($expectedStats, $result);
     }
 
-    // ========== BATCH CREATE 測試 ==========
+    // === BATCH CREATE 測試 ===
 
     public function testBatchCreate_ShouldReturnCreatedCount_WhenSuccessful(): void
     {
@@ -913,7 +915,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->repository->batchCreate($tokens);
     }
 
-    // ========== BATCH REVOKE 測試 ==========
+    // === BATCH REVOKE 測試 ===
 
     public function testBatchRevoke_ShouldReturnRevokedCount_WhenSuccessful(): void
     {
@@ -957,7 +959,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertEquals(0, $result);
     }
 
-    // ========== GET TOKENS NEAR EXPIRY 測試 ==========
+    // === GET TOKENS NEAR EXPIRY 測試 ===
 
     public function testGetTokensNearExpiry_ShouldReturnArray_WhenTokensFound(): void
     {
@@ -994,7 +996,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->assertEquals($expectedTokens, $result);
     }
 
-    // ========== 錯誤處理測試 ==========
+    // === 錯誤處理測試 ===
 
     public function testFindByTokenHash_ShouldThrowException_WhenDatabaseFails(): void
     {
@@ -1185,7 +1187,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->repository->getTokensNearExpiry();
     }
 
-    // ========== 輔助方法 ==========
+    // === 輔助方法 ===
 
     /**
      * 設定成功的 PDO prepare 和 execute Mock.

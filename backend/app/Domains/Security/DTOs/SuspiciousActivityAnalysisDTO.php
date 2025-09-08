@@ -20,6 +20,8 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
      * @param array $failureCounts 各活動類型失敗計數
      */
     
+    
+    
     public function __construct(
         private readonly string $analysisId,
         private readonly string $targetType,
@@ -269,7 +271,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     public function getFailureRate(): float
     {
         $totalActivities = $this->getTotalActivityCount();
-        if ($totalActivities == == 0) {
+        if ($totalActivities == 0) {
             return 0.0;
         }
 

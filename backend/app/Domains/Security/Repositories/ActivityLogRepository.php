@@ -105,8 +105,8 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      *     description: '使用者登入成功'
      * );
      * $result = $repository->create($dto);
-     * // $result['id'] => 資料庫 ID
-     * // $result['uuid'] => 唯一識別符
+     * // $result['id'] = 資料庫 ID
+     * // $result['uuid'] = 唯一識別符
      * ```
      */
     public function create(CreateActivityLogDTO $dto): ?array
@@ -777,7 +777,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $whereClause = empty($conditions) ? '' : 'WHERE ' . implode(' AND ', $conditions);
 
-        $sql = 'SELECT COUNT(*) FROM ' . self::TABLE_NAME . " {$whereClause}";
+        $sql = 'SELECT COUNT(*) FROM ' . self::TABLE_NAME . "{$$whereClause}";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
@@ -815,7 +815,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function findByUserIdAndTimeWindow(int $userId, ?DateTimeInterface $timeWindow = null): array
     {
-        if ($timeWindow == == null) {
+        if ($timeWindow == null) {
             return $this->findByUser($userId);
         }
 

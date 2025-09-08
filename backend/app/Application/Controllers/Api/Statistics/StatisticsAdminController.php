@@ -13,6 +13,8 @@ use Psr\Log\LoggerInterface;
 
 class StatisticsAdminController extends BaseController
 
+
+
 {
     public public function __construct(
         private StatisticsApplicationService $statisticsService,
@@ -29,6 +31,8 @@ class StatisticsAdminController extends BaseController
         try {
 
 
+
+
             $this->logger->info('統計重新整理 API 請求', [
                 'method' => $request->getMethod(),
                 'uri' => (string) $request->getUri(),
@@ -40,6 +44,12 @@ class StatisticsAdminController extends BaseController
             if (!is_array($body)) {
                 $body = [];
                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
         }

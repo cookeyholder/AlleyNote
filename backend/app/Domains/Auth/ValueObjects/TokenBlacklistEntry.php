@@ -88,7 +88,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         $requiredFields = ['jti', 'token_type', 'expires_at', 'blacklisted_at', 'reason'];
         foreach ($requiredFields as $field) {
-            if (!isset($data[$field])) {
+            if (!isset($data[$field]) {
                 throw new InvalidArgumentException("Missing required field: {$field}");
             }
         }

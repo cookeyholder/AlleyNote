@@ -17,6 +17,8 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Route implements RouteInterface
 
+
+
 {
     private ?string $name = null;
 
@@ -158,11 +160,11 @@ class Route implements RouteInterface
     {
         $clone = clone $this;
 
-        if (isset($attributes['name'])) {
+        if (isset($attributes['name']) {
             $clone->name = $attributes['name'];
         }
 
-        if (is_array($attributes['middlewares'])) {
+        if (is_array($attributes['middlewares')] {
             $clone->middlewares = [];
             $clone->addMiddlewares($attributes['middlewares']);
         }

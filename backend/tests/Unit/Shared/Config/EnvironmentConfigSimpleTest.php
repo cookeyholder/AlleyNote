@@ -10,6 +10,8 @@ use PHPUnit\Framework\TestCase;
 
 final class EnvironmentConfigSimpleTest extends TestCase
 
+
+
 {
     private string $testConfigPath;
 
@@ -135,7 +137,7 @@ JWT_PUBLIC_KEY=test-pub
             return;
         }
 
-        $files = array_diff(scandir($dir), ['.', '..']);
+        $files = array_diff(scandir($dir), ['.', '.']);
         foreach ($files as $file) {
             $path = $dir . '/' . $file;
             is_dir($path) ? $this->removeDirectory($path) : unlink($path);

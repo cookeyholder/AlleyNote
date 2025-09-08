@@ -23,6 +23,8 @@ use Psr\Http\Message\ResponseInterface;
 #[Group('api')]
 class AuthEndpointTest extends TestCase
 
+
+
 {
     private Application $app;
 
@@ -42,17 +44,17 @@ class AuthEndpointTest extends TestCase
         $_ENV['DB_DATABASE'] = ':memory:';
 
         // 設定 JWT 測試環境變數
-        $_ENV['JWT_PRIVATE_KEY'] = '-----BEGIN PRIVATE KEY-----
+        $_ENV['JWT_PRIVATE_KEY'] = '---BEGIN PRIVATE KEY---
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDGtJKKZEZagjhB
 xWiKbECh8RSEyM3BhDqkLn7LYQYqWNrHY4Ghe1q5LiMXl5CQ9EpG5jhVq4hE6LMa
 test_key_content_for_jwt_testing_purposes_only_not_for_production_use_case
------END PRIVATE KEY-----';
+---END PRIVATE KEY---';
 
-        $_ENV['JWT_PUBLIC_KEY'] = '-----BEGIN PUBLIC KEY-----
+        $_ENV['JWT_PUBLIC_KEY'] = '---BEGIN PUBLIC KEY---
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxrSSimRGWoI4QcVoimxA
 ofEUhMjNwYQ6pC5+y2EGKljax2OBoXtauS4jF5eQkPRKRuY4VauIROizGmfNlVGZ
 test_public_key_content_for_jwt_testing_purposes_only_not_for_production
------END PUBLIC KEY-----';
+---END PUBLIC KEY---';
 
         $_ENV['JWT_ALGORITHM'] = 'RS256';
         $_ENV['JWT_ISSUER'] = 'alleynote-test';
@@ -176,9 +178,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
      */
     public function testProtectedEndpointWithInvalidToken(): void
     {
-        $headers = [
-            'Authorization' => 'Bearer fake.invalid.token',
-        ];
+        $headers = ['Authorization' => 'Bearer fake.invalid.token'];
 
         try { /* empty */
         }
@@ -330,9 +330,7 @@ test_public_key_content_for_jwt_testing_purposes_only_not_for_production
      */
     private function getTestRefreshData(): array
     {
-        return [
-            'refresh_token' => 'fake.refresh.token',
-        ];
+        return ['refresh_token' => 'fake.refresh.token'];
     }
 
     /**

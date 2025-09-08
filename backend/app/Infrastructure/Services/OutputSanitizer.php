@@ -60,7 +60,7 @@ class OutputSanitizer
     {
         $sanitized = htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
         if (mb_strlen($sanitized) > $length) {
-            return mb_substr($sanitized, 0, $length) . '...';
+            return mb_substr($sanitized, 0, $length) . ' . ';
         }
 
         return $sanitized;
@@ -120,7 +120,7 @@ class OutputSanitizerService implements OutputSanitizerInterface
     {
         $sanitized = htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
         if (mb_strlen($sanitized) > $length) {
-            return mb_substr($sanitized, 0, $length) . '...';
+            return mb_substr($sanitized, 0, $length) . '.';
         }
 
         return $sanitized;

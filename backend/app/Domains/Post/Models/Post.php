@@ -9,6 +9,8 @@ use JsonSerializable;
 
 class Post implements JsonSerializable
 
+
+
 {
     private int $id;
 

@@ -13,6 +13,8 @@ use Throwable;
  */
 class InvalidStatisticsSnapshotException extends InvalidArgumentException
 
+
+
 {
     public function __construct(
         string $message = '無效的統計快照',

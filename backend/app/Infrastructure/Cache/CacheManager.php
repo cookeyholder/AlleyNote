@@ -6,6 +6,8 @@ namespace App\Infrastructure\Cache;
 
 class CacheManager
 
+
+
 {
     private array $cache = [];
 
@@ -48,11 +50,11 @@ class CacheManager
      */
     public function has(string $key): bool
     {
-        if (!isset($this->cache[$key])) {
+        if (!isset($this->cache[$key]) {
             return false;
         }
 
-        if (isset($this->expiry[$key]) && time() > $this->expiry[$key]) {
+        if (isset($this->expiry[$key) && time() > $this->expiry[$key]) {
             $this->delete($key);
 
             return false;

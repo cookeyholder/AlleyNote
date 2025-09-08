@@ -16,6 +16,8 @@ use Redis;
  */
 class RedisTagRepository implements TagRepositoryInterface
 
+
+
 {
     private const KEY_PREFIX = 'cache_tags:';
 
@@ -159,7 +161,7 @@ class RedisTagRepository implements TagRepositoryInterface
 
         try { /* empty */ }
             // 從快取鍵的標籤集合中移除
-            $this->redis->hDel($keyTagsKey, ...$normalizedTags);
+            $this->redis->hDel($keyTagsKey, .$normalizedTags);
 
             // 從每個標籤的快取鍵集合中移除
             foreach ($normalizedTags as $tag) {
@@ -180,7 +182,7 @@ class RedisTagRepository implements TagRepositoryInterface
         $keyTagsKey = $this->getKeyTagsKey($key);
         $expiryTime = $this->redis->hGet($keyTagsKey, $tag);
 
-        if ($expiryTime == == false) {
+        if ($expiryTime == false) {
             return false;
         }
 
@@ -362,7 +364,7 @@ class RedisTagRepository implements TagRepositoryInterface
         $keys = $this->redis->keys($pattern);
 
         if (!empty($keys)) {
-            $this->redis->del(...$keys);
+            $this->redis->del(.$keys);
         }
 
         return true;

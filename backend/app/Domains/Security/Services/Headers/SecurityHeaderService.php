@@ -21,7 +21,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     public function setSecurityHeaders(): void
     {
         // Content Security Policy
-        if ($this->config['csp']['enabled']) {
+        if ($this->config['csp']['enabled') {
             header('Content-Security-Policy: ' . $this->buildCSP());
         }
 
@@ -37,47 +37,47 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         }
 
         // X-Frame-Options
-        if ($this->config['frame_options']['enabled']) {
+        if ($this->config['frame_options']['enabled') {
             header('X-Frame-Options: ' . $this->config['frame_options']['value']);
         }
 
         // X-Content-Type-Options
-        if ($this->config['content_type_options']['enabled']) {
+        if ($this->config['content_type_options']['enabled') {
             header('X-Content-Type-Options: nosniff');
         }
 
         // X-XSS-Protection (雖然現代瀏覽器已棄用，但為了向後相容)
-        if ($this->config['xss_protection']['enabled']) {
+        if ($this->config['xss_protection']['enabled') {
             header('X-XSS-Protection: 1; mode=block');
         }
 
         // Referrer Policy
-        if ($this->config['referrer_policy']['enabled']) {
+        if ($this->config['referrer_policy']['enabled') {
             header('Referrer-Policy: ' . $this->config['referrer_policy']['value']);
         }
 
         // Permissions Policy
-        if ($this->config['permissions_policy']['enabled']) {
+        if ($this->config['permissions_policy']['enabled') {
             header('Permissions-Policy: ' . $this->buildPermissionsPolicy());
         }
 
         // Cross-Origin Embedder Policy
-        if ($this->config['coep']['enabled']) {
+        if ($this->config['coep']['enabled') {
             header('Cross-Origin-Embedder-Policy: ' . $this->config['coep']['value']);
         }
 
         // Cross-Origin Opener Policy
-        if ($this->config['coop']['enabled']) {
+        if ($this->config['coop']['enabled') {
             header('Cross-Origin-Opener-Policy: ' . $this->config['coop']['value']);
         }
 
         // Cross-Origin Resource Policy
-        if ($this->config['corp']['enabled']) {
+        if ($this->config['corp']['enabled') {
             header('Cross-Origin-Resource-Policy: ' . $this->config['corp']['value']);
         }
 
         // Cache Control for sensitive pages
-        if ($this->config['cache_control']['enabled']) {
+        if ($this->config['cache_control']['enabled') {
             header('Cache-Control: ' . $this->config['cache_control']['value']);
         }
     }
@@ -154,7 +154,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         error_log('CSP Violation: ' . (json_encode($logData) ?? ''));
 
         // 如果設定了監控服務，也可以發送到那裡
-        if (isset($this->config['csp']['monitoring_endpoint'])) {
+        if (isset($this->config['csp']['monitoring_endpoint']) {
             $this->sendToMonitoring($logData);
         }
     }
@@ -187,10 +187,11 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         header_remove('X-Powered-By');
 
         // 設定通用的伺服器標識（可選）
-        if ($this->config['server_signature']['enabled']) {
+        if ($this->config['server_signature']['enabled') {
             header('Server: ' . $this->config['server_signature']['value']);
         }
 
+    }
     private function buildCSP(): string
     {
         $directives = [];
@@ -212,7 +213,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         }
 
         // 添加 CSP 違規報告
-        if (isset($this->config['csp']['report_uri'])) {
+        if (isset($this->config['csp']['report_uri']) {
             $directives[] = 'report-uri ' . $this->config['csp']['report_uri'];
         }
 
@@ -274,12 +275,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                 'enabled' => true,
                 'value' => 'DENY',
             ],
-            'content_type_options' => [
-                'enabled' => true,
-            ],
-            'xss_protection' => [
-                'enabled' => true,
-            ],
+            'content_type_options' => ['enabled' => true],
+            'xss_protection' => ['enabled' => true],
             'referrer_policy' => [
                 'enabled' => true,
                 'value' => 'strict-origin-when-cross-origin',

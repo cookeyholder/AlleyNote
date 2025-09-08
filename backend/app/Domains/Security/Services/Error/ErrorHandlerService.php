@@ -15,6 +15,8 @@ use Throwable;
 
 class ErrorHandlerService implements ErrorHandlerServiceInterface
 
+
+
 {
     private Logger $logger;
 
@@ -51,7 +53,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'authorization',
         ], $sensitiveKeys);
 
-        $this->initializeLogger($logPath ? true : __DIR__ . '/../../../storage/logs');
+        $this->initializeLogger($logPath ? true : __DIR__ . '/./././storage/logs');
         $this->registerErrorHandlers();
     }
 
@@ -242,7 +244,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $exception = new ErrorException($message, 0, $severity, $file, $line);
         $this->logException($exception);
 
-        if ($severity == == E_ERROR || $severity === E_CORE_ERROR || $severity === E_COMPILE_ERROR) {
+        if ($severity == E_ERROR || $severity === E_CORE_ERROR || $severity === E_COMPILE_ERROR) {
             $this->globalExceptionHandler($exception);
         }
 
@@ -253,7 +255,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     {
         $error = error_get_last();
 
-        if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE])) {
+        if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE]) {
             $exception = new ErrorException(
                 $error['message'],
                 0,
@@ -265,6 +267,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             $this->globalExceptionHandler($exception);
         }
 
+    }
     private function logException(Throwable $e): void
     {
         $context = [
@@ -336,7 +339,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     private function truncateString(string $string, int $maxLength = 1000): string
     {
         if (strlen($string) > $maxLength) {
-            return substr($string, 0, $maxLength) . '... [truncated]';
+            return substr($string, 0, $maxLength) . '. [truncated]';
         }
 
         return $string;

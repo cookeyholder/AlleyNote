@@ -12,6 +12,8 @@ use PHPUnit\Framework\TestCase;
  */
 class MemoryTagRepositoryTest extends TestCase
 
+
+
 {
     private MemoryTagRepository $repository;
 
@@ -117,6 +119,7 @@ class MemoryTagRepositoryTest extends TestCase
             $this->assertNotContains($key, $keysForTag);
         }
 
+    }
     public function testGetAllTags(): void
     {
         $testData = [
@@ -137,6 +140,7 @@ class MemoryTagRepositoryTest extends TestCase
             $this->assertArrayHasKey($expectedTag, array_flip($allTags));
         }
 
+    }
     public function testTagExists(): void
     {
         $key = 'test_key';

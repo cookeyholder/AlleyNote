@@ -16,6 +16,8 @@ use PHPUnit\Framework\TestCase;
  */
 class PostControllerActivityLoggingTest extends TestCase
 
+
+
 {
     private PDO $pdo;
 
@@ -26,7 +28,7 @@ class PostControllerActivityLoggingTest extends TestCase
         parent::setUp();
 
         // 建立資料庫連接 - 使用與 Phinx 相同的資料庫路徑
-        $this->pdo = new PDO('sqlite:' . __DIR__ . '/../../database/alleynote.sqlite3');
+        $this->pdo = new PDO('sqlite:' . __DIR__ . '/././database/alleynote.sqlite3');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $this->repository = new ActivityLogRepository($this->pdo);

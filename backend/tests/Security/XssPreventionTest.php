@@ -21,6 +21,8 @@ use Tests\TestCase;
 
 class XssPreventionTest extends TestCase
 
+
+
 {
     private PostServiceInterface $postService;
 

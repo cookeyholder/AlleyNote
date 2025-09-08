@@ -27,6 +27,8 @@ use UnexpectedValueException;
  */
 final class FirebaseJwtProvider implements JwtProviderInterface
 
+
+
 {
     private JwtConfig $config;
 
@@ -159,7 +161,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         try { /* empty */ }
             $payload = $this->parseTokenUnsafe($token);
 
-            if (!isset($payload['exp']) || !is_int($payload['exp'])) {
+            if (!isset($payload['exp'] || !is_int($payload['exp'])) {
                 return null;
             }
 
@@ -175,7 +177,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     {
         $expiration = $this->getTokenExpiration($token);
 
-        if ($expiration == == null) {
+        if ($expiration == null) {
             return false; // 無法確定過期時間，假設未過期
         }
 
@@ -206,7 +208,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     {
         // 檢查私鑰
         $privateKeyResource = openssl_pkey_get_private($this->privateKey);
-        if ($privateKeyResource == == false) {
+        if ($privateKeyResource == false) {
             throw new JwtConfigurationException(
                 '私鑰格式無效',
                 JwtConfigurationException::INVALID_PRIVATE_KEY_FORMAT,
@@ -215,7 +217,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
         // 檢查公鑰
         $publicKeyResource = openssl_pkey_get_public($this->publicKey);
-        if ($publicKeyResource == == false) {
+        if ($publicKeyResource == false) {
             throw new JwtConfigurationException(
                 '公鑰格式無效',
                 JwtConfigurationException::INVALID_PUBLIC_KEY_FORMAT,
@@ -326,7 +328,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
      */
     private function validateTokenType(array $payload, string $expectedType): void
     {
-        if (!isset($payload['type']) || $payload['type'] !== $expectedType) {
+        if (!isset($payload['type'] || $payload['type'] !== $expectedType) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_CLAIMS_INVALID,
                 InvalidTokenException::ACCESS_TOKEN,
@@ -344,7 +346,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     private function validateIssuerAndAudience(array $payload): void
     {
         // 驗證 issuer
-        if (!isset($payload['iss']) || $payload['iss'] !== $this->config->getIssuer()) {
+        if (!isset($payload['iss'] || $payload['iss'] !== $this->config->getIssuer()) {
             throw new TokenValidationException(
                 'Token issuer 無效',
                 TokenValidationException::INVALID_ISSUER,
@@ -352,7 +354,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         }
 
         // 驗證 audience
-        if (!isset($payload['aud']) || $payload['aud'] !== $this->config->getAudience()) {
+        if (!isset($payload['aud'] || $payload['aud'] !== $this->config->getAudience()) {
             throw new TokenValidationException(
                 'Token audience 無效',
                 TokenValidationException::INVALID_AUDIENCE,

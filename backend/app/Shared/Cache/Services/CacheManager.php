@@ -96,12 +96,10 @@ class CacheManager implements CacheManagerInterface
 
     public function removeDriver(string $name): bool
     {
-        if (isset($this->drivers[$name])) {
+        if (isset($this->drivers[$name]) {
             unset($this->drivers[$name], $this->driverPriority[$name]);
 
-            $this->logger->debug('快取驅動已移除', [
-                'driver_name' => $name,
-            ]);
+            $this->logger->debug('快取驅動已移除', ['driver_name' => $name]);
 
             return true;
         }
@@ -132,15 +130,13 @@ class CacheManager implements CacheManagerInterface
 
     public function setDefaultDriver(string $name): void
     {
-        if (!isset($this->drivers[$name])) {
+        if (!isset($this->drivers[$name]) {
             throw new InvalidArgumentException("驅動 '{$name}' 不存在");
         }
 
         $this->defaultDriver = $name;
 
-        $this->logger->debug('預設快取驅動已設定', [
-            'driver_name' => $name,
-        ]);
+        $this->logger->debug('預設快取驅動已設定', ['driver_name' => $name]);
     }
 
     public function getDefaultDriver(): string
@@ -315,9 +311,7 @@ class CacheManager implements CacheManagerInterface
 
                 // 記錄監控資料
                 if ($this->monitor) {
-                    $this->monitor->recordOperation('delete', $name, $result, $duration, [
-                        'key' => $key,
-                    ]);
+                    $this->monitor->recordOperation('delete', $name, $result, $duration, ['key' => $key]);
                 }
 
                 if (!$result) {
@@ -350,9 +344,7 @@ class CacheManager implements CacheManagerInterface
 
                 // 記錄監控資料
                 if ($this->monitor) {
-                    $this->monitor->recordOperation('flush', $name, $result, $duration, [
-                        'driver' => $name,
-                    ]);
+                    $this->monitor->recordOperation('flush', $name, $result, $duration, ['driver' => $name]);
                 }
 
                 if (!$result) {
@@ -463,13 +455,13 @@ class CacheManager implements CacheManagerInterface
 
     public function driver(?string $driver = null): CacheDriverInterface
     {
-        if ($driver == == null) {
+        if ($driver == null) {
             $driver = $this->defaultDriver;
         }
 
         $driverInstance = $this->getDriver($driver);
 
-        if ($driverInstance == == null) {
+        if ($driverInstance == null) {
             throw new InvalidArgumentException("驅動 '{$driver}' 不存在");
         }
 
@@ -496,13 +488,13 @@ class CacheManager implements CacheManagerInterface
                 $status['available'] = $driver->isAvailable();
 
                 // 執行健康檢查
-                if ($status['available']) {
+                if ($status['available') {
                     $testKey = '__health_check__' . time();
                     $driver->put($testKey, 'test', 60);
                     $retrieved = $driver->get($testKey);
-                    $driver->forget($testKey);
+                    $driver->forget($testKey];
 
-                    if ($retrieved !== 'test') {
+                    if ($retrieved !== 'test'] {
                         $status['available'] = false;
                         $status['error'] = '讀寫測試失敗';
                     }
@@ -623,7 +615,7 @@ class CacheManager implements CacheManagerInterface
         return array_merge($this->stats, [
             'hit_rate' => round($hitRate, 2),
             'drivers' => $driverStats,
-            'strategy_stats' => $this->strategy->getStats(]),
+            'strategy_stats' => $this->strategy->getStats(),
             'config' => $this->config,
         ]);
     }
@@ -675,7 +667,7 @@ class CacheManager implements CacheManagerInterface
      */
     private function syncCacheToHigherPriorityDrivers(string $key, mixed $value, string $currentDriver): void
     {
-        if (!$this->config['enable_sync']) {
+        if (!$this->config['enable_sync') {
             return;
         }
 
@@ -708,7 +700,7 @@ class CacheManager implements CacheManagerInterface
         $this->logger->error('快取驅動錯誤', [
             'driver' => $driverName,
             'operation' => $operation,
-            'error' => $error->getMessage(]),
+            'error' => $error->getMessage(),
             'params' => $params,
         ]);
 
@@ -753,9 +745,7 @@ class CacheManager implements CacheManagerInterface
         $mergedConfig = array_merge($this->config, $config);
         $this->config = $mergedConfig;
 
-        $this->logger->debug('快取管理器設定已更新', [
-            'config' => $config,
-        ]);
+        $this->logger->debug('快取管理器設定已更新', ['config' => $config]);
     }
 
     /**

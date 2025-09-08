@@ -11,6 +11,8 @@ use ReflectionClass;
 
 class LoggingSecurityServiceTest extends TestCase
 
+
+
 {
     private LoggingSecurityService $service;
 
@@ -49,6 +51,7 @@ class LoggingSecurityServiceTest extends TestCase
             $this->recursiveDelete($this->tempLogsDir);
         }
 
+    }
     private function recursiveDelete(string $dir): void
     {
         if (!is_dir($dir)) {
@@ -57,7 +60,7 @@ class LoggingSecurityServiceTest extends TestCase
 
         $files = scandir($dir);
         foreach ($files as $file) {
-            if ($file == == '.' || $file === '..') {
+            if ($file == '.' || $file === '.') {
                 continue;
             }
 

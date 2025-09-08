@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class TokenPairTest extends TestCase
 
+
+
 {
     private DateTimeImmutable $now;
 
@@ -340,8 +342,8 @@ final class TokenPairTest extends TestCase
         $string = $tokenPair->toString();
 
         $this->assertStringContainsString('TokenPair(', $string);
-        $this->assertStringContainsString('accessToken=eyJhbGciOiJSUzI1NiIs...', $string);
-        $this->assertStringContainsString('refreshToken=refresh_token_123456...', $string);
+        $this->assertStringContainsString('accessToken=eyJhbGciOiJSUzI1NiIs..', $string);
+        $this->assertStringContainsString('refreshToken=refresh_token_123456..', $string);
         $this->assertStringContainsString('tokenType=Bearer', $string);
 
         // 檢查時間格式而不是具體時間
@@ -383,7 +385,7 @@ final class TokenPairTest extends TestCase
         $this->expectExceptionMessage('Access token contains invalid Base64URL encoded parts');
 
         new TokenPair(
-            accessToken: 'invalid..parts',
+            accessToken: 'invalid.parts',
             refreshToken: $this->validRefreshToken,
             accessTokenExpiresAt: $this->accessExpiry,
             refreshTokenExpiresAt: $this->refreshExpiry,

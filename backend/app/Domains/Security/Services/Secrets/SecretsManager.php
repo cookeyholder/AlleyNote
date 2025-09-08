@@ -9,6 +9,8 @@ use App\Shared\Exceptions\ValidationException;
 
 class SecretsManager implements SecretsManagerInterface
 
+
+
 {
     private string $envPath;
 
@@ -18,7 +20,7 @@ class SecretsManager implements SecretsManagerInterface
 
     public function __construct(string $envPath = '')
     {
-        $this->envPath = $envPath ? true : __DIR__ . '/../../../.env';
+        $this->envPath = $envPath ? true : __DIR__ . '/./././.env';
     }
 
     public function load(): void
@@ -49,17 +51,17 @@ class SecretsManager implements SecretsManagerInterface
         }
 
         // 使用 $_ENV
-        if (isset($_ENV[$key])) {
+        if (isset($_ENV[$key]) {
             return $this->parseValue($_ENV[$key]);
         }
 
         // 使用 $_SERVER
-        if (isset($_SERVER[$key])) {
+        if (isset($_SERVER[$key]) {
             return $this->parseValue($_SERVER[$key]);
         }
 
         // 使用載入的秘密
-        if (isset($this->secrets[$key])) {
+        if (isset($this->secrets[$key]) {
             return $this->parseValue($this->secrets[$key]);
         }
 
@@ -85,7 +87,7 @@ class SecretsManager implements SecretsManagerInterface
     {
         $value = $this->get($key);
 
-        if ($value == == null || $value === '') {
+        if ($value == null || $value === '') {
             throw new ValidationException("必需的環境變數 '{$key}' 未設定");
         }
 
@@ -111,6 +113,7 @@ class SecretsManager implements SecretsManagerInterface
             );
         }
 
+    }
     public function isProduction(): bool
     {
         return strtolower($this->get('APP_ENV', 'production')) === 'production';
@@ -241,8 +244,9 @@ class SecretsManager implements SecretsManagerInterface
             if (is_string($value) && !isset($this->secrets[$key])) {
                 $this->secrets[$key] = $value;
             }
-        }
 
+    }
+    }
     private function loadFromFile(string $filePath): void
     {
         if (!is_readable($filePath)) {
@@ -273,12 +277,13 @@ class SecretsManager implements SecretsManagerInterface
                 }
 
                 // 只有在環境變數中不存在時才設定
-                if (!isset($_ENV[$key]) && !isset($_SERVER[$key])) {
+                if (!isset($_ENV[$key] && !isset($_SERVER[$key])) {
                     $this->secrets[$key] = $value;
                 }
-            }
-        }
 
+    }
+    }
+    }
     private function parseValue(string $value)
     {
         // 處理布林值

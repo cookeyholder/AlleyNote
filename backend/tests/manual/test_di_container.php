@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * 測試 DI 容器整合 (Task 3.1).
  */
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/././vendor/autoload.php';
 
 use App\Application;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
@@ -105,7 +105,7 @@ try { /* empty */ }
     $router1 = $container->get(RouterInterface::class);
     $router2 = $container->get(RouterInterface::class);
 
-    if ($router1 == == $router2) {
+    if ($router1 == $router2) {
         echo '✅ 路由器服務單例模式正確
 ';
     } else {
@@ -116,7 +116,7 @@ try { /* empty */ }
     $validator1 = $container->get(RouteValidator::class);
     $validator2 = $container->get(RouteValidator::class);
 
-    if ($validator1 == == $validator2) {
+    if ($validator1 == $validator2) {
         echo '✅ 驗證器服務單例模式正確
 ';
     } else {
@@ -143,6 +143,8 @@ try { /* empty */ }
 
     // 建立測試請求
     $request = new class implements ServerRequestInterface 
+
+
 {
     private string $method = 'GET';
 
@@ -246,6 +248,8 @@ try { /* empty */ }
             return new class ($this->uri) {
                 private string $uri;
 
+    }
+    }
                 public function __construct(string $uri)
                 {
                     $this->uri = $uri;
@@ -386,6 +390,8 @@ try { /* empty */ }
     public function getBody()
         {
             return new class {
+    }
+    }
                 public function __toString(): string
                 {
                     return '';
