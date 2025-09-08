@@ -28,7 +28,7 @@ class PwnedPasswordServiceTest extends TestCase
         if ($result['api_available'] {
             $this->assertTrue($result['is_leaked'];
             $this->assertGreaterThan(0, $result['count'];
-            $this->assertNull($result['error');
+            $this->assertNull($result['error'];
         } else {
             // API 不可用時不應拋出錯誤
             $this->assertFalse($result['is_leaked']);
@@ -70,7 +70,7 @@ class PwnedPasswordServiceTest extends TestCase
         $status = $this->service->getApiStatus();
 
         $this->assertIsArray($status);
-        $this->assertArrayHasKey('available', $status);
+        $this->assertArrayHasKey('available', $status];
         $this->assertIsBool($status['available']);
     }
 

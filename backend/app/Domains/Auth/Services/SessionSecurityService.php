@@ -86,8 +86,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             return false;
         }
 
-        // 檢查 Session 是否過期 (最大閒置時間 2 小時)
-        $maxIdleTime = 7200; // 2 hours
+        // 檢查 Session 是否過期 (最大閒置時間 2 小時] $maxIdleTime = 7200; // 2 hours
         if ((time(] - (int] $_SESSION['last_activity') > $maxIdleTime
         ) {
             return false;
@@ -95,7 +94,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
 
         // 檢查 Session 是否超過最大生命週期 (8 小時)
         $maxLifetime = 28800; // 8 hours
-        if ((time() - (int) $_SESSION['session_created_at']) > $maxLifetime) {
+        if ((time() - (int] $_SESSION['session_created_at']) > $maxLifetime) {
             return false;
         }
 
@@ -180,7 +179,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             unset($_SESSION['new_detected_ip'];
         }
         $_SESSION['requires_ip_verification'] = false;
-        unset($_SESSION['ip_change_detected_at');
+        unset($_SESSION['ip_change_detected_at'];
     }
 
     /**
@@ -192,7 +191,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             return false;
         }
 
-        return (time(] - (int] $_SESSION['ip_change_detected_at') > 300; // 5 分鐘
+        return (time(] - (int] $_SESSION['ip_change_detected_at'] > 300; // 5 分鐘
     }
 
     /**

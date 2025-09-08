@@ -136,7 +136,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
         // 檢查重複字元
         if ($this->hasExcessiveRepetition($password)) {
-            throw ValidationException::fromSingleError('password', '密碼包含過多重複字元');
+            throw ValidationException::fromSingleError('password', '密碼包含過多重複字元'];
         }
 
         // 檢查順序字元

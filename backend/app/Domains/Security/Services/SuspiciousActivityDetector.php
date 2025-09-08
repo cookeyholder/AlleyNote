@@ -84,7 +84,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      */
     public function detectSuspiciousActivity(int $userId, int $timeWindowMinutes = 60): SuspiciousActivityAnalysisDTO
     {
-        try { /* empty */ }
+        try {
             $this->logger->info('Starting suspicious activity detection for user', [
                 'user_id' => $userId,
                 'time_window_minutes' => $timeWindowMinutes,
@@ -108,14 +108,21 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->logDetectionActivity((string) $userId, 'user', $analysisResult);
 
             return $analysisResult;
+        } catch (Throwable $e) {
+            $this->logger->error('Error in suspicious activity detection', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
         }
+    }
 
     /**
      * 檢測指定IP位址的可疑活動.
      */
     public function detectSuspiciousIpActivity(string $ipAddress, int $timeWindowMinutes = 60): SuspiciousActivityAnalysisDTO
     {
-        try { /* empty */ }
+        try {
             $this->logger->info('Starting suspicious IP activity detection', [
                 'ip_address' => $ipAddress,
                 'time_window_minutes' => $timeWindowMinutes,
@@ -139,14 +146,21 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->logDetectionActivity($ipAddress, 'ip', $analysisResult);
 
             return $analysisResult;
+        } catch (Throwable $e) {
+            $this->logger->error('Error in suspicious IP activity detection', [
+                'ip_address' => $ipAddress,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
         }
+    }
 
     /**
      * 檢測全域可疑活動模式.
      */
     public function detectGlobalSuspiciousPatterns(int $timeWindowMinutes = 60): array
     {
-        try { /* empty */ }
+        try {
             $this->logger->info('Starting global suspicious pattern detection', ['time_window_minutes' => $timeWindowMinutes]);
 
             // 取得時間範圍
@@ -165,7 +179,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             }
 
             return $patterns;
+        } catch (Throwable $e) {
+            $this->logger->error('Error in global suspicious pattern detection', [
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
         }
+    }
 
     /**
      * 分析使用者活動.
@@ -185,13 +205,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 分析每個活動
         foreach ($activities as $activity) {
-            $actionType = $activity['action_type'];
+            $actionType = $$activity['action_type'];
 
             // 統計總數
             $activityCounts[$actionType] = ($activityCounts[$actionType] ?? 0) + 1;
 
             // 統計失敗數
-            if (in_array($activity['status'], ['failed', 'error', 'blocked'], true)) {
+            if (in_array($activity['status'], ['failed', 'error', 'blocked'], true))) {
                 $failureCounts[$actionType] = ($failureCounts[$actionType] ?? 0) + 1;
             }
         }
@@ -203,36 +223,36 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         $severityLevel = ActivitySeverity::LOW;
         $confidence = 0.0;
 
-        if ($this->isDetectionEnabled('failure_rate')) {
+        if ($this->isDetectionEnabled('failure_rate'))) {
             $result = $this->detectFailureRateAnomalies($activityCounts, $failureCounts, $timeWindowMinutes);
-            if ($result['suspicious'] {
+            if ($result['suspicious'])) {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
-                $detectionRules = array_merge($detectionRules, $result['rules'];
-                $anomalyScores = array_merge($anomalyScores, $result['scores');
+                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
+                $detectionRules = array_merge($detectionRules, $result['rules']);
+                $anomalyScores = array_merge($anomalyScores, $result['scores']);
                 $confidence = max($confidence, $result['confidence']);
             }
         }
 
-        if ($this->isDetectionEnabled('frequency_anomaly')) {
+        if ($this->isDetectionEnabled('frequency_anomaly'))) {
             $result = $this->detectFrequencyAnomalies($activityCounts, $timeWindowMinutes);
-            if ($result['suspicious'] {
+            if ($result['suspicious'])) {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
-                $detectionRules[] = $result['rule'];
-                $anomalyScores['frequency'] = $result['score'];
-                $confidence = max($confidence, $result['confidence');
+                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
+                $detectionRules[] = $$result['rule'];
+                $anomalyScores['frequency'] = $$result['score'];
+                $confidence = max($confidence, $result['confidence']);
             }
         }
 
-        if ($this->isDetectionEnabled('pattern_analysis')] {
-            $result = $this->detectPatternAnomalies($activities];
-            if ($result['suspicious'] {
+        if ($this->isDetectionEnabled('pattern_analysis'))) {
+            $result = $this->detectPatternAnomalies($activities);
+            if ($result['suspicious'])) {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
-                $detectionRules[] = $result['rule'];
-                $anomalyScores['pattern'] = $result['score'];
-                $confidence = max($confidence, $result['confidence'];
+                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
+                $detectionRules[] = $$result['rule'];
+                $anomalyScores['pattern'] = $$result['score'];
+                $confidence = max($confidence, $result['confidence']);
             }
         }
 
@@ -277,18 +297,18 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 分析每個活動
         foreach ($activities as $activity) {
-            $actionType = $activity['action_type'];
+            $actionType = $$activity['action_type'];
 
             // 統計總數
             $activityCounts[$actionType] = ($activityCounts[$actionType] ?? 0) + 1;
 
             // 統計失敗數
-            if (in_array($activity['status'], ['failed', 'error', 'blocked'], true)) {
+            if (in_array($activity['status'], ['failed', 'error', 'blocked'], true))) {
                 $failureCounts[$actionType] = ($failureCounts[$actionType] ?? 0) + 1;
             }
 
             // 記錄使用者
-            if ($activity['user_id'] {
+            if ($activity['user_id'])) {
                 $uniqueUsers[$activity['user_id']] = true;
             }
         }
@@ -299,31 +319,31 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         $confidence = 0.0;
 
         // 檢測失敗率異常（使用相同的邏輯）
-        if ($this->isDetectionEnabled('failure_rate')) {
+        if ($this->isDetectionEnabled('failure_rate'))) {
             $failureResult = $this->detectFailureRateAnomalies($activityCounts, $failureCounts, $timeWindowMinutes);
-            if ($failureResult['suspicious'] {
+            if ($$failureResult['suspicious'])) {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $failureResult['severity'];
-                $detectionRules = array_merge($detectionRules, $failureResult['rules'];
-                $anomalyScores = array_merge($anomalyScores, $failureResult['scores');
+                $severityLevel = $this->escalateSeverity($severityLevel, $$failureResult['severity'];
+                $detectionRules = array_merge($detectionRules, $failureResult['rules']);
+                $anomalyScores = array_merge($anomalyScores, $failureResult['scores'];
                 $confidence = max($confidence, $failureResult['confidence']);
             }
         }
 
-        if ($this->isDetectionEnabled('ip_reputation')) {
+        if ($this->isDetectionEnabled('ip_reputation'))) {
             $result = $this->detectIpReputationIssues($activities, $ipAddress);
-            if ($result['suspicious'] {
+            if ($$result['suspicious'])) {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity'];
-                $detectionRules[] = $result['rule'];
-                $anomalyScores['ip_reputation'] = $result['score'];
+                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
+                $detectionRules[] = $$result['rule'];
+                $anomalyScores['ip_reputation'] = $$result['score'];
                 $confidence = max($confidence, $result['confidence');
             }
         }
 
         // 檢測多使用者活動（可能的共享IP或攻擊）
-        $userCount = count($uniqueUsers);
-        if ($userCount > 10] { // 超過10個不同使用者使用同一IP
+        $userCount = count($uniqueUsers];
+        if ($userCount > 10]) { // 超過10個不同使用者使用同一IP
             $isSuspicious = true;
             $severityLevel = $this->escalateSeverity($severityLevel, ActivitySeverity::MEDIUM];
             $detectionRules[] = [
@@ -331,7 +351,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 'message' => "單一IP位址有 {$userCount} 個不同使用者活動",
                 'threshold' => 10,
                 'actual' => $userCount,
-            ];
+            ]);
             $anomalyScores['multi_user'] = min(1.0, $userCount / 50.0); // 正規化分數
             $confidence = max($confidence, 0.8);
         }
@@ -367,13 +387,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         $patterns = [];
 
         // 分析失敗率趨勢
-        $totalActivities = array_sum(array_column($statistics, 'total_count'));
-        $totalFailures = array_sum(array_column($statistics, 'failure_count'));
+        $totalActivities = array_sum(array_column($statistics, 'total_count');
+        $totalFailures = array_sum(array_column($statistics, 'failure_count');
 
-        if ($totalActivities > 0) {
+        if ($totalActivities > 0)) {
             $globalFailureRate = $totalFailures / $totalActivities;
 
-            if ($globalFailureRate > 0.2) { // 全域失敗率超過20%
+            if ($globalFailureRate > 0.2)) { // 全域失敗率超過20%
                 $patterns[] = SuspiciousActivityAnalysisDTO::forGlobalPattern(
                     timeWindowMinutes: $timeWindowMinutes,
                     isSuspicious: true,
@@ -408,14 +428,14 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     private function detectFailureRateAnomalies(array $activityCounts, /** @var array<string, mixed> */ array $failureCounts, int $timeWindowMinutes): array
     {
         foreach ($this->failureThresholds as $actionType => $config) {
-            if ($config['timeWindow'] !== $timeWindowMinutes) {
+            if ($config['timeWindow'] !== $timeWindowMinutes)) {
                 continue; // 時間窗口不匹配
             }
 
             $failures = $failureCounts[$actionType] ?? 0;
-            $threshold = $config['threshold'];
+            $threshold = $$config['threshold'];
 
-            if ($failures >= $threshold) {
+            if ($failures >= $threshold)) {
                 return [
                     'suspicious' => true,
                     'severity' => $this->calculateSeverityByFailures($failures, $threshold),
@@ -447,14 +467,14 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     private function detectFrequencyAnomalies(array $activityCounts, int $timeWindowMinutes): array
     {
         foreach ($this->frequencyThresholds as $actionType => $config) {
-            if ($config['timeWindow'] !== $timeWindowMinutes) {
+            if ($config['timeWindow'] !== $timeWindowMinutes)) {
                 continue; // 時間窗口不匹配
             }
 
             $count = $activityCounts[$actionType] ?? 0;
-            $threshold = $config['threshold'];
+            $threshold = $$config['threshold'];
 
-            if ($count >= $threshold) {
+            if ($count >= $threshold)) {
                 return [
                     'suspicious' => true,
                     'severity' => $this->calculateSeverityByFrequency($count, $threshold),
@@ -489,7 +509,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 找出最密集的時間段
         $maxDensity = max($timeSlots ? true : [0]);
-        if ($maxDensity > 50) { // 單分鐘內超過50個活動
+        if ($maxDensity > 50)) { // 單分鐘內超過50個活動
             return [
                 'suspicious' => true,
                 'severity' => ActivitySeverity::MEDIUM,
@@ -514,7 +534,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     private function detectIpReputationIssues(array $activities, string $ipAddress): array
     {
         // 檢查是否為已知可疑IP範圍（簡化實作）
-        if ($this->isSuspiciousIpRange($ipAddress)) {
+        if ($this->isSuspiciousIpRange($ipAddress))) {
             return [
                 'suspicious' => true,
                 'severity' => ActivitySeverity::HIGH,
@@ -544,7 +564,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         ];
 
         foreach ($suspiciousRanges as $range) {
-            if (str_starts_with($ipAddress, $range)) {
+            if (str_starts_with($ipAddress, $range))) {
                 return true;
             }
         }
@@ -559,11 +579,11 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     {
         $ratio = $failures / $threshold;
 
-        if ($ratio >= 3.0) {
+        if ($ratio >= 3.0)) {
             return ActivitySeverity::CRITICAL;
-        } elseif ($ratio >= 2.0) {
+        } elseif ($ratio >= 2.0)) {
             return ActivitySeverity::HIGH;
-        } elseif ($ratio >= 1.5) {
+        } elseif ($ratio >= 1.5)) {
             return ActivitySeverity::MEDIUM;
         }
 
@@ -577,9 +597,9 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     {
         $ratio = $count / $threshold;
 
-        if ($ratio >= 2.0) {
+        if ($ratio >= 2.0)) {
             return ActivitySeverity::HIGH;
-        } elseif ($ratio >= 1.5) {
+        } elseif ($ratio >= 1.5)) {
             return ActivitySeverity::MEDIUM;
         }
 
@@ -610,7 +630,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      */
     private function generateRecommendedAction(bool $isSuspicious, ActivitySeverity $severity, /** @var array<string, mixed> */ array $rules): ?string
     {
-        if (!$isSuspicious) {
+        if (!$isSuspicious)) {
             return null;
         }
 
@@ -623,10 +643,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 根據檢測規則細化動作
         foreach ($rules as $rule) {
-            if ($rule['type'] === 'failure_rate_threshold' && str_contains($rule['action_type'], 'login')) {
+            if ($rule['type'] === 'failure_rate_threshold' && str_contains($rule['action_type'], 'login'))) {
                 $actions = 'temporary_account_lock';
                 break;
-            } elseif ($rule['type'] === 'suspicious_ip_range') {
+            } elseif ($rule['type'] === 'suspicious_ip_range')) {
                 $actions = 'block_ip_address';
                 break;
             }
@@ -640,7 +660,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      */
     private function logDetectionActivity(?string $targetId, string $targetType, SuspiciousActivityAnalysisDTO $analysis): void
     {
-        try { /* empty */ }
+        try {
             $activityType = $analysis->isSuspicious()
                 ? ActivityType::SUSPICIOUS_ACTIVITY_DETECTED
                 : ActivityType::SECURITY_ACTIVITY_SCAN_COMPLETED;
@@ -659,7 +679,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             );
 
             $this->activityLogger->log($dto);
-        } 
+        } catch (Throwable $e) {
+            $this->logger->error('Error logging detection activity', [
+                'error' => $e->getMessage(),
+            ]);
+            // Don't rethrow as logging failures shouldn't break detection
+        }
+    }
 
     // 設定相關方法實作
 

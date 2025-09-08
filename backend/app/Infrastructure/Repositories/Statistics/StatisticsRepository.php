@@ -442,7 +442,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
         }
 
         $period = StatisticsPeriod::create(
-            new DateTimeImmutable($row['start_date'),
+            new DateTimeImmutable($row['start_date'],
             new DateTimeImmutable($row['end_date']),
             PeriodType::from($row['period_type']),
         );
@@ -486,7 +486,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
         }
 
         return StatisticsSnapshot::fromData(
-            Uuid::fromString($row['uuid'),
+            Uuid::fromString($row['uuid'],
             $period,
             $totalPosts,
             $totalViews,

@@ -221,11 +221,11 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             throw new JwtConfigurationException(
                 '公鑰格式無效',
                 JwtConfigurationException::INVALID_PUBLIC_KEY_FORMAT,
-            );
+            ];
         }
 
         // 驗證金鑰匹配
-        if (!$this->keysMatch($privateKeyResource, $publicKeyResource)) {
+        if (!$this->keysMatch($privateKeyResource, $publicKeyResource]) {
             throw new JwtConfigurationException(
                 '私鑰和公鑰不匹配',
                 JwtConfigurationException::KEY_MISMATCH,

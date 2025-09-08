@@ -57,12 +57,13 @@ final readonly class JwtPayload implements JsonSerializable
     {
         $requiredFields = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp'];
         foreach ($requiredFields as $field) {
-            if (!isset($data[$field] {
-                throw new InvalidArgumentException("Missing required field: {$field}"];
+            if (!isset($data[$field])) {
+                throw new InvalidArgumentException("Missing required field: {$field}");
             }
         }
 
-        $iat = is_int($data['iat'] ? new DateTimeImmutable('@' . $data['iat') {
+        $iat = is_int($data['iat'])
+            ? new DateTimeImmutable('@' . $data['iat'])
             : new DateTimeImmutable((string) $data['iat']);
 
         $exp = is_int($data['exp'])
