@@ -152,6 +152,7 @@ class Application
 
 
 
+
             $errorTracker = $this->container->get(ErrorTrackerInterface::class);
             if ($errorTracker instanceof ErrorTrackerInterface) {
                 $errorTracker->recordCriticalError($e, [
@@ -160,6 +161,9 @@ class Application
                     'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
                 ]);
                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {

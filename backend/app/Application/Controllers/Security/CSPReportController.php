@@ -29,10 +29,6 @@ class CSPReportController
     public function handleReport(Request $request, Response $response): Response
     {
         try {
-
-
-
-
             // 檢查請求方法
             if ($request->getMethod() !== 'POST') {
                 return $response->withStatus(405);
@@ -48,6 +44,22 @@ class CSPReportController
                 } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+        } catch (\Exception $e) {
+            error_log('Controller error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        } catch (\Exception $e) {
+            error_log('Operation failed: ' . $e->getMessage());
+            throw $e;
         }
-    }
+
+        }
     }

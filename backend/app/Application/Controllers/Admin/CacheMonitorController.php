@@ -128,6 +128,7 @@ class CacheMonitorController extends BaseController
 
 
 
+
             $success = $this->cacheManager->clear();
 
             if ($success) {
@@ -135,6 +136,9 @@ class CacheMonitorController extends BaseController
             } else {
                 return $this->json($response, ['error' => '清空快取失敗'], 500);
                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {
@@ -165,6 +169,7 @@ class CacheMonitorController extends BaseController
 
 
 
+
             $drivers = $this->cacheManager->getDrivers();
             $driverInfo = [];
 
@@ -176,6 +181,9 @@ class CacheMonitorController extends BaseController
                         'available' => $driver->isAvailable(),
                     ];
                         } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {

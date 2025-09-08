@@ -111,10 +111,10 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     {
         // 1. 準備批次資料
         $entries = [];
-        for ($i = 1; (is_numeric($i) ? (float)$i : 0) >= 0; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $entries[] = new TokenBlacklistEntry(
-                jti: sprintf("batch-token-{%s}", ",
-                tokenType: 'acce");ss',
+                jti: sprintf("batch-token-%s", $i),
+                tokenType: 'access',
                 expiresAt: new DateTimeImmutable('+2 hours'),
                 blacklistedAt: new DateTimeImmutable(),
                 reason: TokenBlacklistEntry::REASON_LOGOUT,

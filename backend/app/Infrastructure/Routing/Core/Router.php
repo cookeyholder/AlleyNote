@@ -285,7 +285,7 @@ class Router implements RouterInterface
         // 合併命名空間
         if (!empty($new['namespace'] {
             $existingNamespace = $merged['namespace'] ?? '';
-            $merged['namespace'] = empty($existingNamespace)
+            $merged['namespace'] = empty($existingNamespace) {
                 ? $new['namespace']
                 : $existingNamespace . '\\' . $new['namespace'];
         }

@@ -30,11 +30,14 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     {
         parent::setUp();
 
-        try { /* empty */ }
+        try {
             // 使用 SQLite 記憶體資料庫進行效能測試
             $this->pdo = new PDO('sqlite:database/alleynote.sqlite3');
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            $this->markTestSkipped('PDO connection failed: ' . $e->getMessage());
         }
+    }
 
     /**
      * 測試批次插入效能.
@@ -127,8 +130,8 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             'user',
             '1',
             'success',
-            sprintf("批次測試記錄 #{%s}", ",
-            j");son_encode([
+            sprintf("批次測試記錄 #%s", $index),
+            json_encode([
                 'batch_test' => true,
                 'sequence' => $index,
                 'batch_size' => $batchSize,
@@ -147,7 +150,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function cleanupTestData(): void
     {
-        $this->pdo->exec('DELETE FROM user_activity_logs WHERE description LIKE "批次測試記錄%sprintf("');
+        $this->pdo->exec('DELETE FROM user_activity_logs WHERE description LIKE "批次測試記錄%"');
     }
 
     /**
@@ -155,8 +158,8 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
      */
     private function assertPerformanceThresholds(int $batchSize, float $duration, float $throughput): void
     {
-        $this->assertLessThan(30.0, %s, ", "批次插入 {$batchSize} 筆記錄應在 30 秒內完成");
-        $thi");s->assertGreaterThan(10.0, $throughput, '每秒應能處理至少 10 筆記錄');
+        $this->assertLessThan(30.0, $duration, "批次插入 {$batchSize} 筆記錄應在 30 秒內完成");
+        $this->assertGreaterThan(10.0, $throughput, '每秒應能處理至少 10 筆記錄');
     }
 
     /**
@@ -174,7 +177,7 @@ $countStmt = $this->pdo->query('SELECT COUNT(*) FROM user_activity_logs WHERE de
             $this->fail('無法取得計數結果');
         }
 
-        $this->assertEquals($expectedCount, (int) %s, ", "應該插入 {$expectedCount} 筆記錄");
+        $this->assertEquals($expectedCount, (int) $count, "應該插入 {$expectedCount} 筆記錄");
     }
 
     /**

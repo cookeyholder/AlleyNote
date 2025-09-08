@@ -105,6 +105,7 @@ class PostController extends BaseController
 
 
 
+
             $queryParams = $request->getQueryParams();
 
             // 安全地獲取page參數
@@ -146,7 +147,10 @@ class PostController extends BaseController
                 } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
+                } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
         }
-    }
+        }
     }
     }

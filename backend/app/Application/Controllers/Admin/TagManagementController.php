@@ -36,6 +36,7 @@ class TagManagementController extends BaseController
 
 
 
+
             $queryParams = $request->getQueryParams();
             $page = max(1, is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
             $limit = min(100, max(10, is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 20));
@@ -54,6 +55,9 @@ class TagManagementController extends BaseController
                                 'driver' => $driverName,
                             ];
                                 } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {
@@ -161,6 +165,7 @@ class TagManagementController extends BaseController
 
 
 
+
             $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
@@ -180,6 +185,9 @@ class TagManagementController extends BaseController
                             $flushed = true;
                             $affectedDrivers[] = $driverName;
                                 } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {
@@ -239,6 +247,7 @@ class TagManagementController extends BaseController
 
 
 
+
             $bodyString = (string) $request->getBody();
             $body = json_decode($bodyString, true);
 
@@ -272,6 +281,9 @@ class TagManagementController extends BaseController
                                 $flushed = true;
                                 $affectedDrivers[] = $driverName;
                                     } catch (\Exception $e) {
+            // TODO: Handle exception
+            throw $e;
+                } catch (\Exception $e) {
             // TODO: Handle exception
             throw $e;
                 } catch (\Exception $e) {
