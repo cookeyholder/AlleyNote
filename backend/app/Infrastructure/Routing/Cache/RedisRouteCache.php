@@ -10,14 +10,11 @@ use Redis;
 use RedisException;
 
 /**
- * Redis 快取實作.
+ * Redis 快取實作
  *
  * 使用 Redis 存儲路由快取資料，提供更好的效能和分散式支援
  */
 class RedisRouteCache implements RouteCacheInterface
-
-
-
 {
     private const CACHE_KEY_PREFIX = 'route_cache:';
 
@@ -42,20 +39,23 @@ class RedisRouteCache implements RouteCacheInterface
 
     public function isValid(): bool
     {
-        try { /* empty */ }
+        try {
             $cacheKey = $this->getCacheKey();
             $exists = $this->redis->exists($cacheKey);
 
             return is_int($exists) && $exists > 0;
+        } catch (RedisException $e) {
+            return false;
         }
+    }
 
     public function load(): ?RouteCollectionInterface
     {
-        try { /* empty */ }
+        try {
             $cacheKey = $this->getCacheKey();
             $content = $this->redis->get($cacheKey);
 
-            if ($content == false) {
+            if ($content === false) {
                 $this->stats['misses']++;
                 $this->saveStats();
 
@@ -75,11 +75,17 @@ class RedisRouteCache implements RouteCacheInterface
             $this->saveStats();
 
             return $data;
+        } catch (RedisException $e) {
+            $this->stats['misses']++;
+            $this->saveStats();
+
+            return null;
         }
+    }
 
     public function store(RouteCollectionInterface $routes): bool
     {
-        try { /* empty */ }
+        try {
             $cacheKey = $this->getCacheKey();
             $content = serialize($routes);
 
@@ -96,11 +102,14 @@ class RedisRouteCache implements RouteCacheInterface
             }
 
             return false;
+        } catch (RedisException $e) {
+            return false;
         }
+    }
 
     public function clear(): bool
     {
-        try { /* empty */ }
+        try {
             $cacheKey = $this->getCacheKey();
             $statsKey = self::STATS_KEY;
 
@@ -120,7 +129,10 @@ class RedisRouteCache implements RouteCacheInterface
             ];
 
             return is_array($results) && count($results) === 2;
+        } catch (RedisException $e) {
+            return false;
         }
+    }
 
     public function getCachePath(): string
     {
@@ -137,13 +149,16 @@ class RedisRouteCache implements RouteCacheInterface
         return $this->ttl;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getStats(): array
     {
         return $this->stats;
     }
 
     /**
-     * 取得 Redis 連線物件.
+     * 取得 Redis 連線物件
      */
     public function getRedis(): Redis
     {
@@ -151,16 +166,19 @@ class RedisRouteCache implements RouteCacheInterface
     }
 
     /**
-     * 檢查 Redis 連線狀態.
+     * 檢查 Redis 連線狀態
      */
     public function isConnected(): bool
     {
-        try { /* empty */ }
+        try {
             return $this->redis->ping() === '+PONG';
+        } catch (RedisException $e) {
+            return false;
         }
+    }
 
     /**
-     * 取得快取鍵名.
+     * 取得快取鍵名
      */
     private function getCacheKey(): string
     {
@@ -168,11 +186,11 @@ class RedisRouteCache implements RouteCacheInterface
     }
 
     /**
-     * 載入統計資料.
+     * 載入統計資料
      */
     private function loadStats(): void
     {
-        try { /* empty */ }
+        try {
             $content = $this->redis->get(self::STATS_KEY);
             if ($content !== false) {
                 $stats = json_decode(is_string($content) ? $content : (string) $content, true);
@@ -180,15 +198,23 @@ class RedisRouteCache implements RouteCacheInterface
                     $this->stats = array_merge($this->stats, $stats);
                 }
             }
+        } catch (RedisException $e) {
+            // 如果無法載入統計資料，使用預設值
         }
+    }
 
     /**
-     * 儲存統計資料.
+     * 儲存統計資料
      */
     private function saveStats(): void
     {
-        try { /* empty */ }
-            $content = (json_encode($this->stats) ?? '') ? true : '';
-            $this->redis->set(self::STATS_KEY, $content);
-        } 
+        try {
+            $content = json_encode($this->stats);
+            if ($content !== false) {
+                $this->redis->set(self::STATS_KEY, $content);
+            }
+        } catch (RedisException $e) {
+            // 如果無法儲存統計資料，忽略錯誤
+        }
+    }
 }

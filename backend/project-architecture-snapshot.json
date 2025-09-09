@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 08:17:52",
+        "scan_time": "2025-09-09 08:42:15",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -566,7 +566,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Services\/RichTextProcessorService.php",
                                             "extension": "php",
-                                            "size": 10187
+                                            "size": 10383
                                         },
                                         "PostCacheKeyService.php": {
                                             "type": "file",
@@ -1040,7 +1040,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Exceptions\/JwtException.php",
                                             "extension": "php",
-                                            "size": 3614
+                                            "size": 3807
                                         },
                                         "ForbiddenException.php": {
                                             "type": "file",
@@ -1460,7 +1460,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Repositories\/RedisTagRepository.php",
                                             "extension": "php",
-                                            "size": 12521
+                                            "size": 14528
                                         },
                                         "MemoryTagRepository.php": {
                                             "type": "file",
@@ -1484,7 +1484,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Services\/CacheGroupManager.php",
                                             "extension": "php",
-                                            "size": 13566
+                                            "size": 14320
                                         },
                                         "TaggedCacheManager.php": {
                                             "type": "file",
@@ -1642,7 +1642,7 @@
                                     "type": "file",
                                     "path": "app\/Shared\/Schemas\/PostRequestSchema.php",
                                     "extension": "php",
-                                    "size": 15704
+                                    "size": 15685
                                 },
                                 "AuthSchema.php": {
                                     "type": "file",
@@ -1742,7 +1742,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Services\/PerformanceMonitorService.php",
                                             "extension": "php",
-                                            "size": 17900
+                                            "size": 18700
                                         },
                                         "ErrorTrackerService.php": {
                                             "type": "file",
@@ -1804,7 +1804,7 @@
                                     "type": "file",
                                     "path": "app\/Shared\/Validation\/Validator.php",
                                     "extension": "php",
-                                    "size": 18446
+                                    "size": 18297
                                 },
                                 "ValidationResult.php": {
                                     "type": "file",
@@ -1938,7 +1938,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php",
                                             "extension": "php",
-                                            "size": 15158
+                                            "size": 15539
                                         }
                                     }
                                 }
@@ -2026,7 +2026,7 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/IpController.php",
                                                     "extension": "php",
-                                                    "size": 2865
+                                                    "size": 2833
                                                 },
                                                 "ActivityLogController.php": {
                                                     "type": "file",
@@ -2050,7 +2050,7 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/PostController.php",
                                                     "extension": "php",
-                                                    "size": 4903
+                                                    "size": 14280
                                                 },
                                                 "AttachmentController.php": {
                                                     "type": "file",
@@ -2112,7 +2112,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php",
                                             "extension": "php",
-                                            "size": 19003
+                                            "size": 19151
                                         }
                                     }
                                 }
@@ -2202,7 +2202,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php",
                                             "extension": "php",
-                                            "size": 32899
+                                            "size": 24145
                                         }
                                     }
                                 }
@@ -2388,7 +2388,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Cache\/RouteCacheFactory.php",
                                             "extension": "php",
-                                            "size": 4102
+                                            "size": 4314
                                         },
                                         "RedisRouteCache.php": {
                                             "type": "file",
@@ -3176,7 +3176,7 @@
                                     "type": "file",
                                     "path": "tests\/Unit\/DTOs\/BaseDTOTest.php",
                                     "extension": "php",
-                                    "size": 8525
+                                    "size": 8488
                                 },
                                 "DTOValidationTest.php": {
                                     "type": "file",
@@ -3783,7 +3783,7 @@
                             "type": "file",
                             "path": "tests\/Integration\/FileSystemBackupTest.php",
                             "extension": "php",
-                            "size": 11907
+                            "size": 12998
                         },
                         "DatabaseBackupTest.php": {
                             "type": "file",
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 101755
+            "size": 75602
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1678670
+            "size": 1677985
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -7035,7 +7035,7 @@
                 "getCachePath"
             ],
             "constants": [],
-            "lines_of_code": 296
+            "lines_of_code": 305
         },
         "app\/Domains\/Post\/Services\/PostCacheKeyService.php": {
             "path": "app\/Domains\/Post\/Services\/PostCacheKeyService.php",
@@ -8806,7 +8806,7 @@
                 "__toString"
             ],
             "constants": [],
-            "lines_of_code": 158
+            "lines_of_code": 167
         },
         "app\/Domains\/Auth\/Exceptions\/ForbiddenException.php": {
             "path": "app\/Domains\/Auth\/Exceptions\/ForbiddenException.php",
@@ -10663,7 +10663,7 @@
                 "TAG_PREFIX",
                 "KEY_TAG_PREFIX"
             ],
-            "lines_of_code": 478
+            "lines_of_code": 543
         },
         "app\/Shared\/Cache\/Repositories\/MemoryTagRepository.php": {
             "path": "app\/Shared\/Cache\/Repositories\/MemoryTagRepository.php",
@@ -10771,7 +10771,7 @@
                 "matchPattern"
             ],
             "constants": [],
-            "lines_of_code": 453
+            "lines_of_code": 491
         },
         "app\/Shared\/Cache\/Services\/TaggedCacheManager.php": {
             "path": "app\/Shared\/Cache\/Services\/TaggedCacheManager.php",
@@ -11608,7 +11608,7 @@
                 "parseMemoryLimit"
             ],
             "constants": [],
-            "lines_of_code": 562
+            "lines_of_code": 590
         },
         "app\/Shared\/Monitoring\/Services\/ErrorTrackerService.php": {
             "path": "app\/Shared\/Monitoring\/Services\/ErrorTrackerService.php",
@@ -11769,7 +11769,7 @@
                 "replacePlaceholders"
             ],
             "constants": [],
-            "lines_of_code": 614
+            "lines_of_code": 609
         },
         "app\/Shared\/Validation\/ValidationResult.php": {
             "path": "app\/Shared\/Validation\/ValidationResult.php",
@@ -12203,7 +12203,7 @@
                 "validateAdditionalMetrics"
             ],
             "constants": [],
-            "lines_of_code": 436
+            "lines_of_code": 446
         },
         "app\/Application\/Controllers\/Security\/CSPReportController.php": {
             "path": "app\/Application\/Controllers\/Security\/CSPReportController.php",
@@ -12421,7 +12421,7 @@
                 "checkAccess"
             ],
             "constants": [],
-            "lines_of_code": 109
+            "lines_of_code": 105
         },
         "app\/Application\/Controllers\/Api\/V1\/ActivityLogController.php": {
             "path": "app\/Application\/Controllers\/Api\/V1\/ActivityLogController.php",
@@ -12531,10 +12531,14 @@
             ],
             "functions": [
                 "__construct",
-                "index"
+                "index",
+                "create",
+                "show",
+                "update",
+                "delete"
             ],
             "constants": [],
-            "lines_of_code": 145
+            "lines_of_code": 415
         },
         "app\/Application\/Controllers\/Api\/V1\/AttachmentController.php": {
             "path": "app\/Application\/Controllers\/Api\/V1\/AttachmentController.php",
@@ -12701,8 +12705,8 @@
                 "App\\Shared\\Cache\\Contracts\\CacheManagerInterface",
                 "App\\Shared\\Domain\\ValueObjects\\Uuid",
                 "DateTimeImmutable",
-                "Psr\\Log\\LoggerInterface",
-                "Throwable"
+                "Exception",
+                "Psr\\Log\\LoggerInterface"
             ],
             "functions": [
                 "__construct",
@@ -12724,7 +12728,7 @@
                 "CACHE_TTL",
                 "CACHE_PREFIX"
             ],
-            "lines_of_code": 522
+            "lines_of_code": 533
         },
         "app\/Infrastructure\/Database\/DatabaseConnection.php": {
             "path": "app\/Infrastructure\/Database\/DatabaseConnection.php",
@@ -13013,9 +13017,9 @@
                 "App\\Domains\\Auth\\ValueObjects\\TokenBlacklistEntry",
                 "DateTime",
                 "DateTimeImmutable",
+                "Exception",
                 "PDO",
-                "PDOException",
-                "Throwable"
+                "PDOException"
             ],
             "functions": [
                 "__construct",
@@ -13028,28 +13032,20 @@
                 "findByDeviceId",
                 "findByTokenType",
                 "findByReason",
-                "batchAddToBlacklist",
-                "batchIsBlacklisted",
-                "batchRemoveFromBlacklist",
-                "blacklistAllUserTokens",
-                "blacklistAllDeviceTokens",
-                "cleanup",
+                "findByDateRange",
+                "findAll",
                 "cleanupExpiredEntries",
                 "cleanupOldEntries",
-                "getBlacklistStats",
-                "getUserBlacklistStats",
-                "getRecentBlacklistEntries",
-                "getHighPriorityEntries",
-                "search",
-                "countSearch",
-                "isSizeExceeded",
+                "revokeAllUserTokens",
+                "revokeAllDeviceTokens",
+                "getStatistics",
                 "getSizeInfo",
                 "optimize",
                 "createEntryFromRow",
                 "isDuplicateKeyError"
             ],
             "constants": [],
-            "lines_of_code": 990
+            "lines_of_code": 721
         },
         "app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": {
             "path": "app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php",
@@ -13822,7 +13818,7 @@
             "constants": [
                 "SUPPORTED_DRIVERS"
             ],
-            "lines_of_code": 148
+            "lines_of_code": 159
         },
         "app\/Infrastructure\/Routing\/Cache\/RedisRouteCache.php": {
             "path": "app\/Infrastructure\/Routing\/Cache\/RedisRouteCache.php",
@@ -16734,7 +16730,7 @@
                 "testGetValidationRules"
             ],
             "constants": [],
-            "lines_of_code": 285
+            "lines_of_code": 280
         },
         "tests\/Unit\/DTOs\/DTOValidationTest.php": {
             "path": "tests\/Unit\/DTOs\/DTOValidationTest.php",
@@ -19001,13 +18997,14 @@
                 "maintainFileMetadataDuringBackupRestore",
                 "recordOriginalFileMetadata",
                 "performFullBackupRestore",
-                "executeManualBackup",
-                "executeManualRestore",
                 "assertFileMetadataPreserved",
+                "handleLargeFileBackup",
+                "handleEmptyDirectories",
+                "handleSpecialCharactersInFilenames",
                 "tearDown"
             ],
             "constants": [],
-            "lines_of_code": 375
+            "lines_of_code": 393
         },
         "tests\/Integration\/DatabaseBackupTest.php": {
             "path": "tests\/Integration\/DatabaseBackupTest.php",
@@ -31636,12 +31633,12 @@
             },
             {
                 "type": "use",
-                "target": "Psr\\Log\\LoggerInterface",
+                "target": "Exception",
                 "file": null
             },
             {
                 "type": "use",
-                "target": "Throwable",
+                "target": "Psr\\Log\\LoggerInterface",
                 "file": null
             }
         ],
@@ -32020,17 +32017,17 @@
             },
             {
                 "type": "use",
+                "target": "Exception",
+                "file": null
+            },
+            {
+                "type": "use",
                 "target": "PDO",
                 "file": null
             },
             {
                 "type": "use",
                 "target": "PDOException",
-                "file": null
-            },
-            {
-                "type": "use",
-                "target": "Throwable",
                 "file": null
             }
         ],
