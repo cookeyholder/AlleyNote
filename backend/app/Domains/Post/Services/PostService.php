@@ -73,9 +73,13 @@ class PostService implements PostServiceInterface
 
     public function deletePost(int $id): bool
     {
-        try { /* empty */ }
+        try {
             return $this->repository->safeDelete($id);
+        } catch (Exception $e) {
+            // 記錄錯誤但不拋出異常，讓呼叫方處理
+            return false;
         }
+    }
 
     public function findById(int $id): Post
     {
@@ -119,9 +123,12 @@ class PostService implements PostServiceInterface
 
     public function setPinned(int $id, bool $isPinned): bool
     {
-        try { /* empty */ }
+        try {
             return $this->repository->safeSetPinned($id, $isPinned);
-        } 
+        } catch (Exception $e) {
+            // 記錄錯誤但不拋出異常，讓呼叫方處理
+            return false;
+        }
     }
 
     /**

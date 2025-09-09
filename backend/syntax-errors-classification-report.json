@@ -1,19 +1,13 @@
 {
-    "timestamp": "2025-09-09T19:50:18+08:00",
-    "total_syntax_errors": 191,
-    "affected_files": 74,
+    "timestamp": "2025-09-09T20:06:09+08:00",
+    "total_syntax_errors": 161,
+    "affected_files": 68,
     "error_type_stats": {
-        "syntax_general": 150,
-        "try_without_catch": 39,
+        "syntax_general": 127,
+        "try_without_catch": 32,
         "empty_array_elements": 2
     },
     "file_error_counts": {
-        "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostService.php": 5,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php": 5,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": 5,
-        "\/var\/www\/html\/tests\/Integration\/ActivityLogging\/UserActivityLogEndToEndTest.php": 5,
-        "\/var\/www\/html\/tests\/Integration\/Api\/V1\/AuthEndpointTest.php": 5,
-        "\/var\/www\/html\/tests\/Unit\/Services\/Security\/PwnedPasswordServiceTest.php": 5,
         "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php": 4,
         "\/var\/www\/html\/app\/Domains\/Post\/Repositories\/PostRepository.php": 4,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostCacheKeyService.php": 4,
@@ -212,33 +206,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostService.php": [
-            {
-                "line": 76,
-                "message": "Cannot use try without catch or finally on line 76",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 122,
-                "message": "Cannot use try without catch or finally on line 122",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 131,
-                "message": "Syntax error, unexpected T_PUBLIC on line 131",
-                "type": "syntax_general"
-            },
-            {
-                "line": 144,
-                "message": "Syntax error, unexpected T_PUBLIC on line 144",
-                "type": "syntax_general"
-            },
-            {
-                "line": 160,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 160",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Domains\/Post\/Validation\/PostValidator.php": [
             {
                 "line": 248,
@@ -357,60 +324,6 @@
             {
                 "line": 101,
                 "message": "Syntax error, unexpected EOF on line 101",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php": [
-            {
-                "line": 235,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 235",
-                "type": "syntax_general"
-            },
-            {
-                "line": 297,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 297",
-                "type": "syntax_general"
-            },
-            {
-                "line": 312,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 312",
-                "type": "syntax_general"
-            },
-            {
-                "line": 313,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 313",
-                "type": "syntax_general"
-            },
-            {
-                "line": 324,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 324",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": [
-            {
-                "line": 55,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 55",
-                "type": "syntax_general"
-            },
-            {
-                "line": 60,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 60",
-                "type": "syntax_general"
-            },
-            {
-                "line": 64,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 64",
-                "type": "syntax_general"
-            },
-            {
-                "line": 65,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 65",
-                "type": "syntax_general"
-            },
-            {
-                "line": 280,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 280",
                 "type": "syntax_general"
             }
         ],
@@ -858,60 +771,6 @@
                 "type": "try_without_catch"
             }
         ],
-        "\/var\/www\/html\/tests\/Integration\/ActivityLogging\/UserActivityLogEndToEndTest.php": [
-            {
-                "line": 281,
-                "message": "Syntax error, unexpected ':' on line 281",
-                "type": "syntax_general"
-            },
-            {
-                "line": 292,
-                "message": "Syntax error, unexpected ',' on line 292",
-                "type": "syntax_general"
-            },
-            {
-                "line": 304,
-                "message": "Syntax error, unexpected ',' on line 304",
-                "type": "syntax_general"
-            },
-            {
-                "line": 316,
-                "message": "Syntax error, unexpected ',' on line 316",
-                "type": "syntax_general"
-            },
-            {
-                "line": 328,
-                "message": "Syntax error, unexpected ',' on line 328",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/tests\/Integration\/Api\/V1\/AuthEndpointTest.php": [
-            {
-                "line": 118,
-                "message": "Cannot use try without catch or finally on line 118",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 131,
-                "message": "Cannot use try without catch or finally on line 131",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 144,
-                "message": "Cannot use try without catch or finally on line 144",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 155,
-                "message": "Cannot use try without catch or finally on line 155",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 183,
-                "message": "Cannot use try without catch or finally on line 183",
-                "type": "try_without_catch"
-            }
-        ],
         "\/var\/www\/html\/tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php": [
             {
                 "line": 82,
@@ -1143,33 +1002,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/tests\/Unit\/Services\/Security\/PwnedPasswordServiceTest.php": [
-            {
-                "line": 28,
-                "message": "Syntax error, unexpected '{' on line 28",
-                "type": "syntax_general"
-            },
-            {
-                "line": 29,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 29",
-                "type": "syntax_general"
-            },
-            {
-                "line": 30,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 30",
-                "type": "syntax_general"
-            },
-            {
-                "line": 31,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 31",
-                "type": "syntax_general"
-            },
-            {
-                "line": 32,
-                "message": "Syntax error, unexpected T_ELSE, expecting '}' on line 32",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/tests\/Unit\/Shared\/Cache\/ValueObjects\/CacheTagTest.php": [
             {
                 "line": 215,
@@ -1245,12 +1077,6 @@
         "\/var\/www\/html\/tests\/Unit\/Services\/AttachmentServiceTest.php": 1
     },
     "medium_fixes": {
-        "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostService.php": 5,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php": 5,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": 5,
-        "\/var\/www\/html\/tests\/Integration\/ActivityLogging\/UserActivityLogEndToEndTest.php": 5,
-        "\/var\/www\/html\/tests\/Integration\/Api\/V1\/AuthEndpointTest.php": 5,
-        "\/var\/www\/html\/tests\/Unit\/Services\/Security\/PwnedPasswordServiceTest.php": 5,
         "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php": 4,
         "\/var\/www\/html\/app\/Domains\/Post\/Repositories\/PostRepository.php": 4,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostCacheKeyService.php": 4,

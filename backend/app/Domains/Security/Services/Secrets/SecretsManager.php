@@ -6,21 +6,20 @@ namespace App\Domains\Security\Services\Secrets;
 
 use App\Domains\Security\Contracts\SecretsManagerInterface;
 use App\Shared\Exceptions\ValidationException;
+use App\Shared\Validation\ValidationResult;
 
 class SecretsManager implements SecretsManagerInterface
-
-
-
 {
     private string $envPath;
 
+    /** @var array<string, mixed> */
     private array $secrets = [];
 
     private bool $loaded = false;
 
     public function __construct(string $envPath = '')
     {
-        $this->envPath = $envPath ? true : __DIR__ . '/./././.env';
+        $this->envPath = $envPath ?: __DIR__ . '/../../../../../.env';
     }
 
     public function load(): void
@@ -40,7 +39,7 @@ class SecretsManager implements SecretsManagerInterface
         $this->loaded = true;
     }
 
-    public function get(string $key, mixed $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         $this->load();
 
@@ -51,18 +50,18 @@ class SecretsManager implements SecretsManagerInterface
         }
 
         // 使用 $_ENV
-        if (isset($_ENV[$key] {
-            return $this->parseValue($_ENV[$key];
+        if (isset($_ENV[$key])) {
+            return $this->parseValue($_ENV[$key]);
         }
 
         // 使用 $_SERVER
-        if (isset($_SERVER[$key] {
-            return $this->parseValue($_SERVER[$key];
+        if (isset($_SERVER[$key])) {
+            return $this->parseValue($_SERVER[$key]);
         }
 
         // 使用載入的秘密
-        if (isset($this->secrets[$key] {
-            return $this->parseValue($this->secrets[$key);
+        if (isset($this->secrets[$key])) {
+            return $this->parseValue($this->secrets[$key]);
         }
 
         return $default;
@@ -87,45 +86,57 @@ class SecretsManager implements SecretsManagerInterface
     {
         $value = $this->get($key);
 
-        if ($value == null || $value === '') {
-            throw new ValidationException("必需的環境變數 '{$key}' 未設定");
+        if ($value === null || $value === '') {
+            throw ValidationException::fromSingleError(
+                $key,
+                "必需的環境變數 '{$key}' 未設定",
+                'required'
+            );
         }
 
         return (string) $value;
     }
 
     /**
-     * @param array $requiredKeys
+     * @param array<string> $requiredKeys
      */
     public function validateRequiredSecrets(array $requiredKeys): void
     {
         $missing = [];
+        $errors = [];
+        $failedRules = [];
 
         foreach ($requiredKeys as $key) {
             if (!$this->has($key) || $this->get($key) === '') {
                 $missing[] = $key;
+                $errors[$key] = ["環境變數 '{$key}' 為必需但未設定"];
+                $failedRules[$key] = ['required'];
             }
         }
 
         if (!empty($missing)) {
-            throw new ValidationException(
-                '缺少必需的環境變數: ' . implode(', ', $missing),
+            throw ValidationException::fromErrors(
+                $errors,
+                $failedRules,
+                '缺少必需的環境變數: ' . implode(', ', $missing)
             );
         }
-
     }
+
     public function isProduction(): bool
     {
-        return strtolower($this->get('APP_ENV', 'production')) === 'production';
+        $appEnv = $this->get('APP_ENV', 'production');
+        return strtolower((string) $appEnv) === 'production';
     }
 
     public function isDevelopment(): bool
     {
-        return strtolower($this->get('APP_ENV', 'production')) === 'development';
+        $appEnv = $this->get('APP_ENV', 'production');
+        return strtolower((string) $appEnv) === 'development';
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getSecretsSummary(): array
     {
@@ -169,20 +180,22 @@ class SecretsManager implements SecretsManagerInterface
 
     public function generateSecret(int $length = 32): string
     {
+        if ($length <= 0) {
+            $length = 32;
+        }
         return bin2hex(random_bytes($length));
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function validateEnvFile(string $filePath = ''): array
     {
-        $filePath = $filePath ? true : $this->envPath;
+        $filePath = $filePath ?: $this->envPath;
         $issues = [];
 
         if (!file_exists($filePath)) {
             $issues[] = '.env 檔案不存在';
-
             return $issues;
         }
 
@@ -194,8 +207,7 @@ class SecretsManager implements SecretsManagerInterface
 
         // 檢查檔案內容
         $content = file_get_contents($filePath);
-        $lines = explode('
-', is_string($content) ? $content : (string) $content);
+        $lines = explode("\n", is_string($content) ? $content : '');
 
         foreach ($lines as $lineNumber => $line) {
             $line = trim($line);
@@ -236,26 +248,32 @@ class SecretsManager implements SecretsManagerInterface
     private function loadFromEnvironment(): void
     {
         // 載入所有環境變數
+        // 載入所有環境變數
         foreach ($_ENV as $key => $value) {
-            $this->secrets[$key] = $value;
+            if (is_string($key)) {
+                $this->secrets[$key] = $value;
+            }
         }
 
         foreach ($_SERVER as $key => $value) {
-            if (is_string($value) && !isset($this->secrets[$key])) {
+            if (is_string($key) && is_string($value) && !isset($this->secrets[$key])) {
                 $this->secrets[$key] = $value;
             }
+        }
+    }
 
-    }
-    }
     private function loadFromFile(string $filePath): void
     {
         if (!is_readable($filePath)) {
-            throw new ValidationException("無法讀取環境設定檔案: {$filePath}");
+            throw ValidationException::fromSingleError(
+                'file',
+                "無法讀取環境設定檔案: {$filePath}",
+                'readable'
+            );
         }
 
         $content = file_get_contents($filePath);
-        $lines = explode('
-', is_string($content) ? $content : (string) $content);
+        $lines = explode("\n", is_string($content) ? $content : '');
 
         foreach ($lines as $line) {
             $line = trim($line);
@@ -277,17 +295,21 @@ class SecretsManager implements SecretsManagerInterface
                 }
 
                 // 只有在環境變數中不存在時才設定
-                if (!isset($_ENV[$key] && !isset($_SERVER[$key] {
+                if (!isset($_ENV[$key]) && !isset($_SERVER[$key])) {
                     $this->secrets[$key] = $value;
                 }
+            }
+        }
+    }
 
-    }
-    }
-    }
-    private function parseValue(string $value)
+    private function parseValue(mixed $value): mixed
     {
+        if (!is_string($value)) {
+            return $value;
+        }
+
         // 處理布林值
-        if (in_array(strtolower($value), ['true', 'false'])) {
+        if (in_array(strtolower($value), ['true', 'false'], true)) {
             return strtolower($value) === 'true';
         }
 

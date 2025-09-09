@@ -11,14 +11,11 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 /**
- * 安全日誌記錄服務.
+ * 安全日誌記錄服務
  *
  * 提供安全的日誌記錄功能，包含資料淨化和權限控制
  */
 class LoggingSecurityService implements LoggingSecurityServiceInterface
-
-
-
 {
     private Logger $logger;
 
@@ -27,7 +24,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     private Logger $auditLogger;
 
     /**
-     * 請求資料白名單 - 只記錄這些安全的欄位.
+     * 請求資料白名單 - 只記錄這些安全的欄位
      */
     private const REQUEST_WHITELIST = [
         'method',
@@ -42,7 +39,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     ];
 
     /**
-     * 敏感資料清單 - 這些欄位需要被遮罩或移除.
+     * 敏感資料清單 - 這些欄位需要被遮罩或移除
      */
     private const SENSITIVE_FIELDS = [
         'password',
@@ -63,7 +60,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 初始化日誌記錄器.
+     * 初始化日誌記錄器
      */
     private function initializeLoggers(): void
     {
@@ -106,7 +103,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 確保日誌目錄存在且權限正確.
+     * 確保日誌目錄存在且權限正確
      */
     private function ensureLogDirectory(string $path): void
     {
@@ -117,7 +114,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 設定日誌檔案權限為 0640.
+     * 設定日誌檔案權限為 0640
      */
     private function setLogFilePermissions(string $logsDir): void
     {
@@ -137,36 +134,48 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
 
         // 也處理輪轉的日誌檔案
         $rotatedFiles = glob($logsDir . '/*.log-*');
-        foreach ($rotatedFiles as $file) {
-            chmod($file, 0o640);
+        if (is_array($rotatedFiles)) {
+            foreach ($rotatedFiles as $file) {
+                chmod($file, 0o640);
+            }
         }
     }
 
     /**
-     * 記錄一般應用日誌.
+     * 記錄一般應用日誌
+     *
+     * @param array<string, mixed> $context
      */
-    public function info(string $message, /** @var array<string, mixed> */ array $context = []): void
+    public function info(string $message, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->info($message, $sanitizedContext);
     }
 
-    public function warning(string $message, /** @var array<string, mixed> */ array $context = []): void
+    /**
+     * @param array<string, mixed> $context
+     */
+    public function warning(string $message, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->warning($message, $sanitizedContext);
     }
 
-    public function error(string $message, /** @var array<string, mixed> */ array $context = []): void
+    /**
+     * @param array<string, mixed> $context
+     */
+    public function error(string $message, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->error($message, $sanitizedContext);
     }
 
     /**
-     * 記錄安全事件.
+     * 記錄安全事件
+     *
+     * @param array<string, mixed> $context
      */
-    public function logSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void
+    public function logSecurityEvent(string $event, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
@@ -175,9 +184,11 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄高風險安全事件.
+     * 記錄高風險安全事件
+     *
+     * @param array<string, mixed> $context
      */
-    public function logCriticalSecurityEvent(string $event, /** @var array<string, mixed> */ array $context = []): void
+    public function logCriticalSecurityEvent(string $event, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
@@ -189,7 +200,9 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄請求日誌（使用白名單模式）.
+     * 記錄請求日誌（使用白名單模式）
+     *
+     * @param array<string, mixed> $requestData
      */
     public function logRequest(array $requestData): void
     {
@@ -200,9 +213,11 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄驗證失敗事件.
+     * 記錄驗證失敗事件
+     *
+     * @param array<string, mixed> $context
      */
-    public function logAuthenticationFailure(string $reason, /** @var array<string, mixed> */ array $context = []): void
+    public function logAuthenticationFailure(string $reason, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
@@ -211,9 +226,11 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄授權失敗事件.
+     * 記錄授權失敗事件
+     *
+     * @param array<string, mixed> $context
      */
-    public function logAuthorizationFailure(string $resource, string $action, /** @var array<string, mixed> */ array $context = []): void
+    public function logAuthorizationFailure(string $resource, string $action, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
@@ -225,14 +242,17 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 應用請求資料白名單.
+     * 應用請求資料白名單
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     private function applyRequestWhitelist(array $data): array
     {
         $filtered = [];
 
         foreach (self::REQUEST_WHITELIST as $allowedField) {
-            if (isset($data[$allowedField] {
+            if (isset($data[$allowedField])) {
                 $filtered[$allowedField] = $data[$allowedField];
             }
         }
@@ -241,7 +261,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 淨化上下文資料，移除敏感資訊.
+     * 淨化上下文資料，移除敏感資訊
+     *
+     * @param array<string, mixed> $context
+     * @return array<string, mixed>
      */
     private function sanitizeContext(array $context): array
     {
@@ -249,14 +272,17 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 遞迴淨化陣列，移除敏感資料.
+     * 遞迴淨化陣列，移除敏感資料
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     private function recursiveSanitize(array $data): array
     {
         $sanitized = [];
 
         foreach ($data as $key => $value) {
-            $lowercaseKey = strtolower($key);
+            $lowercaseKey = strtolower((string) $key);
 
             // 檢查是否為敏感欄位
             $isSensitive = false;
@@ -270,6 +296,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             if ($isSensitive) {
                 $sanitized[$key] = '[REDACTED]';
             } elseif (is_array($value)) {
+                /** @var array<string, mixed> $value */
                 $sanitized[$key] = $this->recursiveSanitize($value);
             } elseif (is_string($value) && strlen($value) > 1000) {
                 // 截斷過長的字串
@@ -283,7 +310,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 豐富安全上下文資訊.
+     * 豐富安全上下文資訊
+     *
+     * @param array<string, mixed> $context
+     * @return array<string, mixed>
      */
     private function enrichSecurityContext(array $context): array
     {
@@ -294,7 +324,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             $context['session_id'] = session_id();
         }
 
-        if (isset($_SESSION['user_id'] {
+        if (isset($_SESSION['user_id'])) {
             $context['user_id'] = $_SESSION['user_id'];
         }
 
@@ -302,26 +332,31 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 豐富請求上下文資訊.
+     * 豐富請求上下文資訊
+     *
+     * @param array<string, mixed> $context
+     * @return array<string, mixed>
      */
     private function enrichRequestContext(array $context): array
     {
         $context['server_time'] = date('Y-m-d H:i:s');
 
         // 如果有 User-Agent，轉換為雜湊值
-        if (isset($_SERVER['HTTP_USER_AGENT'] {
-            $context['user_agent_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT'];
+        if (isset($_SERVER['HTTP_USER_AGENT']) && is_string($_SERVER['HTTP_USER_AGENT'])) {
+            $context['user_agent_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT']);
         }
 
         return $context;
     }
 
     /**
-     * 檢查並修正日誌檔案權限.
+     * 檢查並修正日誌檔案權限
+     *
+     * @return array<string, mixed>
      */
     public function verifyLogFilePermissions(): array
     {
-        $logsDir = storage_path('logs'];
+        $logsDir = storage_path('logs');
         $results = [];
 
         if (!is_dir($logsDir)) {
@@ -329,6 +364,9 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         }
 
         $logFiles = glob($logsDir . '/*.log*');
+        if (!is_array($logFiles)) {
+            return ['error' => 'Unable to read log files'];
+        }
 
         foreach ($logFiles as $file) {
             $perms = fileperms($file) & 0o777;
@@ -342,11 +380,9 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
 
             // 如果權限不正確，嘗試修正
             if ($perms !== $expected) {
-                if (chmod($file, $expected)) {
-                    $results[basename($file)]['corrected'] = true;
-                } else {
-                    $results[basename($file)]['correction_failed'] = true;
-                }
+                $fixed = chmod($file, $expected);
+                $results[basename($file)]['fix_attempted'] = true;
+                $results[basename($file)]['fix_successful'] = $fixed;
             }
         }
 
@@ -354,7 +390,9 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 取得日誌統計資訊.
+     * 取得日誌檔案統計資訊
+     *
+     * @return array<string, mixed>
      */
     public function getLogStatistics(): array
     {
@@ -366,12 +404,16 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         ];
 
         $logFiles = glob($logsDir . '/*.log*');
+        if (!is_array($logFiles)) {
+            return $stats;
+        }
 
         foreach ($logFiles as $file) {
+            $modifiedTime = filemtime($file);
             $stats['files'][basename($file)] = [
                 'size' => filesize($file),
                 'permissions' => sprintf('%o', fileperms($file) & 0o777),
-                'last_modified' => date('Y-m-d H => i:s', filemtime($file)),
+                'last_modified' => $modifiedTime !== false ? date('Y-m-d H:i:s', $modifiedTime) : 'Unknown',
             ];
         }
 
