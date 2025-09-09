@@ -86,7 +86,7 @@ class BaseDTOTest extends TestCase
         $dto = $this->createTestDTO();
         $data = ['name' => 'John', 'age' => 30, 'active' => true];
         $expectedRules = [
-            'name' => 'required|string|min_length => 2|max_length:50',
+            'name' => 'required|string|min_length:2|max_length:50',
             'age' => 'required|integer|min:0|max:120',
             'active' => 'boolean',
         ];
@@ -106,8 +106,7 @@ class BaseDTOTest extends TestCase
         $dto = $this->createTestDTO();
         $data = ['name' => '', 'age' => -1];
 
-        /** @var ValidationException::class|MockInterface */
-        /** @var mixed */
+        /** @var ValidationException&MockInterface $exception */
         $exception = Mockery::mock(ValidationException::class);
 
         $this->validator
@@ -223,9 +222,6 @@ class BaseDTOTest extends TestCase
  * 測試用的 BaseDTO 具體實作.
  */
 class TestableBaseDTO extends BaseDTO
-
-
-
 {
     public string $name = '';
 
@@ -233,11 +229,10 @@ class TestableBaseDTO extends BaseDTO
 
     public bool $active = false;
 
-    }
     protected function getValidationRules(): array
     {
         return [
-            'name' => 'required|string|min_length => 2|max_length:50',
+            'name' => 'required|string|min_length:2|max_length:50',
             'age' => 'required|integer|min:0|max:120',
             'active' => 'boolean',
         ];

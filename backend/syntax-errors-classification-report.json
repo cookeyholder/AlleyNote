@@ -1,18 +1,13 @@
 {
-    "timestamp": "2025-09-09T08:12:45+08:00",
-    "total_syntax_errors": 410,
-    "affected_files": 102,
+    "timestamp": "2025-09-09T08:25:27+08:00",
+    "total_syntax_errors": 360,
+    "affected_files": 97,
     "error_type_stats": {
-        "syntax_general": 334,
-        "try_without_catch": 73,
+        "syntax_general": 294,
+        "try_without_catch": 63,
         "empty_array_elements": 3
     },
     "file_error_counts": {
-        "\/var\/www\/html\/app\/Application\/Services\/Statistics\/StatisticsApplicationService.php": 13,
-        "\/var\/www\/html\/app\/Shared\/Validation\/Validator.php": 10,
-        "\/var\/www\/html\/app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": 9,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": 9,
-        "\/var\/www\/html\/tests\/Unit\/DTOs\/BaseDTOTest.php": 9,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/IpController.php": 8,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/PostController.php": 8,
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php": 8,
@@ -286,73 +281,6 @@
             {
                 "line": 224,
                 "message": "Syntax error, unexpected ')', expecting ']' on line 224",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Application\/Services\/Statistics\/StatisticsApplicationService.php": [
-            {
-                "line": 128,
-                "message": "Syntax error, unexpected T_PUBLIC on line 128",
-                "type": "syntax_general"
-            },
-            {
-                "line": 216,
-                "message": "Syntax error, unexpected T_PUBLIC on line 216",
-                "type": "syntax_general"
-            },
-            {
-                "line": 257,
-                "message": "Syntax error, unexpected T_PUBLIC on line 257",
-                "type": "syntax_general"
-            },
-            {
-                "line": 330,
-                "message": "Syntax error, unexpected T_PUBLIC on line 330",
-                "type": "syntax_general"
-            },
-            {
-                "line": 358,
-                "message": "Syntax error, unexpected T_PUBLIC on line 358",
-                "type": "syntax_general"
-            },
-            {
-                "line": 403,
-                "message": "Syntax error, unexpected T_PRIVATE on line 403",
-                "type": "syntax_general"
-            },
-            {
-                "line": 425,
-                "message": "Syntax error, unexpected T_PRIVATE on line 425",
-                "type": "syntax_general"
-            },
-            {
-                "line": 438,
-                "message": "Syntax error, unexpected T_PRIVATE on line 438",
-                "type": "syntax_general"
-            },
-            {
-                "line": 456,
-                "message": "Syntax error, unexpected T_PRIVATE on line 456",
-                "type": "syntax_general"
-            },
-            {
-                "line": 468,
-                "message": "Syntax error, unexpected T_PRIVATE on line 468",
-                "type": "syntax_general"
-            },
-            {
-                "line": 493,
-                "message": "Syntax error, unexpected T_PRIVATE on line 493",
-                "type": "syntax_general"
-            },
-            {
-                "line": 509,
-                "message": "Syntax error, unexpected T_PRIVATE on line 509",
-                "type": "syntax_general"
-            },
-            {
-                "line": 522,
-                "message": "Syntax error, unexpected EOF on line 522",
                 "type": "syntax_general"
             }
         ],
@@ -999,53 +927,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": [
-            {
-                "line": 40,
-                "message": "Cannot use try without catch or finally on line 40",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 73,
-                "message": "Cannot use try without catch or finally on line 73",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 96,
-                "message": "Syntax error, unexpected T_PUBLIC on line 96",
-                "type": "syntax_general"
-            },
-            {
-                "line": 98,
-                "message": "Cannot use try without catch or finally on line 98",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 122,
-                "message": "Syntax error, unexpected T_PUBLIC on line 122",
-                "type": "syntax_general"
-            },
-            {
-                "line": 124,
-                "message": "Cannot use try without catch or finally on line 124",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 137,
-                "message": "Syntax error, unexpected T_PUBLIC on line 137",
-                "type": "syntax_general"
-            },
-            {
-                "line": 138,
-                "message": "Cannot use try without catch or finally on line 138",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 154,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 154",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheKeys.php": [
             {
                 "line": 214,
@@ -1499,53 +1380,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": [
-            {
-                "line": 50,
-                "message": "Cannot use try without catch or finally on line 50",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 129,
-                "message": "Cannot use try without catch or finally on line 129",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 162,
-                "message": "Cannot use try without catch or finally on line 162",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 164,
-                "message": "Syntax error, unexpected ')' on line 164",
-                "type": "syntax_general"
-            },
-            {
-                "line": 164,
-                "message": "Syntax error, unexpected '.', expecting ')' on line 164",
-                "type": "syntax_general"
-            },
-            {
-                "line": 338,
-                "message": "Cannot use try without catch or finally on line 338",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 367,
-                "message": "Syntax error, unexpected ')' on line 367",
-                "type": "syntax_general"
-            },
-            {
-                "line": 367,
-                "message": "Syntax error, unexpected '.' on line 367",
-                "type": "syntax_general"
-            },
-            {
-                "line": 413,
-                "message": "Cannot use try without catch or finally on line 413",
-                "type": "try_without_catch"
-            }
-        ],
         "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheGroupManager.php": [
             {
                 "line": 85,
@@ -1810,58 +1644,6 @@
             {
                 "line": 203,
                 "message": "Syntax error, unexpected ')', expecting ']' on line 203",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Shared\/Validation\/Validator.php": [
-            {
-                "line": 142,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 142",
-                "type": "syntax_general"
-            },
-            {
-                "line": 519,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 519",
-                "type": "syntax_general"
-            },
-            {
-                "line": 533,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 533",
-                "type": "syntax_general"
-            },
-            {
-                "line": 535,
-                "message": "Syntax error, unexpected ']' on line 535",
-                "type": "syntax_general"
-            },
-            {
-                "line": 540,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 540",
-                "type": "syntax_general"
-            },
-            {
-                "line": 554,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 554",
-                "type": "syntax_general"
-            },
-            {
-                "line": 556,
-                "message": "Syntax error, unexpected ']' on line 556",
-                "type": "syntax_general"
-            },
-            {
-                "line": 561,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 561",
-                "type": "syntax_general"
-            },
-            {
-                "line": 576,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 576",
-                "type": "syntax_general"
-            },
-            {
-                "line": 580,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 580",
                 "type": "syntax_general"
             }
         ],
@@ -2191,53 +1973,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/tests\/Unit\/DTOs\/BaseDTOTest.php": [
-            {
-                "line": 237,
-                "message": "Syntax error, unexpected T_PROTECTED on line 237",
-                "type": "syntax_general"
-            },
-            {
-                "line": 246,
-                "message": "Syntax error, unexpected T_PUBLIC on line 246",
-                "type": "syntax_general"
-            },
-            {
-                "line": 255,
-                "message": "Syntax error, unexpected T_PUBLIC on line 255",
-                "type": "syntax_general"
-            },
-            {
-                "line": 260,
-                "message": "Syntax error, unexpected T_PUBLIC on line 260",
-                "type": "syntax_general"
-            },
-            {
-                "line": 265,
-                "message": "Syntax error, unexpected T_PUBLIC on line 265",
-                "type": "syntax_general"
-            },
-            {
-                "line": 270,
-                "message": "Syntax error, unexpected T_PUBLIC on line 270",
-                "type": "syntax_general"
-            },
-            {
-                "line": 275,
-                "message": "Syntax error, unexpected T_PUBLIC on line 275",
-                "type": "syntax_general"
-            },
-            {
-                "line": 280,
-                "message": "Syntax error, unexpected T_PUBLIC on line 280",
-                "type": "syntax_general"
-            },
-            {
-                "line": 284,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 284",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/tests\/Unit\/DTOs\/DTOValidationTest.php": [
             {
                 "line": 606,
@@ -2424,10 +2159,6 @@
         "\/var\/www\/html\/tests\/Unit\/Services\/AttachmentServiceTest.php": 1
     },
     "medium_fixes": {
-        "\/var\/www\/html\/app\/Shared\/Validation\/Validator.php": 10,
-        "\/var\/www\/html\/app\/Infrastructure\/Auth\/Repositories\/TokenBlacklistRepository.php": 9,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Repositories\/RedisTagRepository.php": 9,
-        "\/var\/www\/html\/tests\/Unit\/DTOs\/BaseDTOTest.php": 9,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/IpController.php": 8,
         "\/var\/www\/html\/app\/Application\/Controllers\/Api\/V1\/PostController.php": 8,
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/PostStatisticsDTO.php": 8,
@@ -2472,7 +2203,5 @@
         "\/var\/www\/html\/tests\/Performance\/DatabaseOptimizationValidationTest.php": 4,
         "\/var\/www\/html\/tests\/Security\/SqlInjectionTest.php": 4
     },
-    "complex_fixes": {
-        "\/var\/www\/html\/app\/Application\/Services\/Statistics\/StatisticsApplicationService.php": 13
-    }
+    "complex_fixes": []
 }

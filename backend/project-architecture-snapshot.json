@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 07:58:47",
+        "scan_time": "2025-09-09 08:17:52",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -1400,7 +1400,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Strategies\/DefaultCacheStrategy.php",
                                             "extension": "php",
-                                            "size": 9559
+                                            "size": 9309
                                         }
                                     }
                                 },
@@ -1730,7 +1730,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Monitoring\/Services\/SystemMonitorService.php",
                                             "extension": "php",
-                                            "size": 16389
+                                            "size": 14020
                                         },
                                         "CacheMonitor.php": {
                                             "type": "file",
@@ -1898,7 +1898,7 @@
                                     "type": "file",
                                     "path": "app\/Application\/Middleware\/JwtAuthorizationMiddleware.php",
                                     "extension": "php",
-                                    "size": 35907
+                                    "size": 36119
                                 },
                                 "RateLimitMiddleware.php": {
                                     "type": "file",
@@ -2112,7 +2112,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php",
                                             "extension": "php",
-                                            "size": 17220
+                                            "size": 19003
                                         }
                                     }
                                 }
@@ -2824,7 +2824,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Unit\/Domains\/Security\/Services\/SuspiciousActivityDetectorTest.php",
                                                     "extension": "php",
-                                                    "size": 13078
+                                                    "size": 13105
                                                 },
                                                 "ActivityLoggingServiceTest.php": {
                                                     "type": "file",
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 110010
+            "size": 101755
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1678792
+            "size": 1678670
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -10397,8 +10397,7 @@
             "uses": [
                 "App\\Shared\\Cache\\Contracts\\CacheDriverInterface",
                 "App\\Shared\\Cache\\Contracts\\CacheStrategyInterface",
-                "Exception",
-                "InvalidArgumentException"
+                "Exception"
             ],
             "functions": [
                 "__construct",
@@ -10409,15 +10408,17 @@
                 "handleDriverFailure",
                 "getStats",
                 "resetStats",
+                "getConfig",
+                "updateConfig",
+                "isExcluded",
+                "isValueSizeAcceptable",
+                "adjustTtlByKeyPattern",
                 "matchesPattern",
-                "addExcludePattern",
-                "removeExcludePattern",
-                "getExcludePatterns",
-                "setTtlRange",
-                "setMaxValueSize"
+                "initializeFromConfig",
+                "getDefaultConfig"
             ],
             "constants": [],
-            "lines_of_code": 340
+            "lines_of_code": 329
         },
         "app\/Shared\/Cache\/Contracts\/TagRepositoryInterface.php": {
             "path": "app\/Shared\/Cache\/Contracts\/TagRepositoryInterface.php",
@@ -11494,26 +11495,24 @@
             "interfaces": [],
             "traits": [],
             "uses": [
-                "App\\Shared\\Config\\EnvironmentConfig",
-                "App\\Shared\\Monitoring\\Contracts\\SystemMonitorInterface",
                 "Exception",
                 "PDO",
                 "Psr\\Log\\LoggerInterface"
             ],
             "functions": [
                 "__construct",
-                "getSystemInfo",
+                "getAllMetrics",
                 "getMemoryUsage",
                 "getCpuUsage",
                 "getDiskUsage",
                 "getDatabaseStatus",
                 "getHealthCheck",
                 "logSystemMetrics",
-                "isSystemHealthy",
-                "getAllMetrics",
-                "getLoadedExtensions",
+                "hasAnyIssues",
+                "getResourceWarnings",
+                "getDefaultConfig",
                 "parseMemoryLimit",
-                "getCpuCount",
+                "getCpuCoreCount",
                 "getSqliteStats",
                 "checkDatabaseHealth",
                 "checkMemoryHealth",
@@ -11522,7 +11521,7 @@
                 "checkLogHealth"
             ],
             "constants": [],
-            "lines_of_code": 505
+            "lines_of_code": 445
         },
         "app\/Shared\/Monitoring\/Services\/CacheMonitor.php": {
             "path": "app\/Shared\/Monitoring\/Services\/CacheMonitor.php",
@@ -12002,7 +12001,7 @@
                 "DEFAULT_POLICY",
                 "ADMIN_ROLES"
             ],
-            "lines_of_code": 1092
+            "lines_of_code": 1096
         },
         "app\/Application\/Middleware\/RateLimitMiddleware.php": {
             "path": "app\/Application\/Middleware\/RateLimitMiddleware.php",
@@ -12725,7 +12724,7 @@
                 "CACHE_TTL",
                 "CACHE_PREFIX"
             ],
-            "lines_of_code": 475
+            "lines_of_code": 522
         },
         "app\/Infrastructure\/Database\/DatabaseConnection.php": {
             "path": "app\/Infrastructure\/Database\/DatabaseConnection.php",
@@ -15156,7 +15155,7 @@
                 "it_returns_empty_array_when_global_detection_fails"
             ],
             "constants": [],
-            "lines_of_code": 329
+            "lines_of_code": 335
         },
         "tests\/Unit\/Domains\/Security\/Services\/ActivityLoggingServiceTest.php": {
             "path": "tests\/Unit\/Domains\/Security\/Services\/ActivityLoggingServiceTest.php",
@@ -26406,7 +26405,7 @@
             "avg_classes_per_file": 0.79
         },
         "dependency_metrics": {
-            "total_dependencies": 2325,
+            "total_dependencies": 2322,
             "avg_dependencies_per_file": 3.94
         },
         "maintainability_score": 100,
@@ -29961,11 +29960,6 @@
                 "type": "use",
                 "target": "Exception",
                 "file": null
-            },
-            {
-                "type": "use",
-                "target": "InvalidArgumentException",
-                "file": null
             }
         ],
         "app\/Shared\/Cache\/Contracts\/TagRepositoryInterface.php": [],
@@ -30486,16 +30480,6 @@
             }
         ],
         "app\/Shared\/Monitoring\/Services\/SystemMonitorService.php": [
-            {
-                "type": "use",
-                "target": "App\\Shared\\Config\\EnvironmentConfig",
-                "file": "app\/Shared\/Config\/EnvironmentConfig.php"
-            },
-            {
-                "type": "use",
-                "target": "App\\Shared\\Monitoring\\Contracts\\SystemMonitorInterface",
-                "file": "app\/Shared\/Monitoring\/Contracts\/SystemMonitorInterface.php"
-            },
             {
                 "type": "use",
                 "target": "Exception",

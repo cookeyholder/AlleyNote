@@ -17,8 +17,8 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Domain\ValueObjects\Uuid;
 use DateTimeImmutable;
+use Exception;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 /**
  * 統計應用服務.
@@ -33,9 +33,6 @@ use Throwable;
  * - 統一錯誤處理和日誌記錄
  */
 final class StatisticsApplicationService
-
-
-
 {
     private const CACHE_TTL = 3600; // 1 小時
 
@@ -45,7 +42,6 @@ final class StatisticsApplicationService
         private readonly StatisticsRepositoryInterface $statisticsRepository,
         private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
         private readonly UserStatisticsRepositoryInterface $userStatisticsRepository,
-        /** @phpstan-ignore-next-line property.onlyWritten */
         private readonly SystemStatisticsRepositoryInterface $systemStatisticsRepository,
         private readonly StatisticsCalculationService $calculationService,
         private readonly PostStatisticsService $postStatisticsService,
@@ -118,12 +114,14 @@ final class StatisticsApplicationService
             ]);
             throw $e;
         }
+    }
 
     /**
      * 取得統計概覽.
      *
      * 提供統計資料的概覽資訊，包含快取機制。
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     public function getStatisticsOverview(StatisticsPeriod $period): array
     {
@@ -144,7 +142,7 @@ final class StatisticsApplicationService
             // 取得統計快照
             $snapshot = $this->statisticsRepository->findByPeriod($period);
 
-            if ($snapshot == null) {
+            if ($snapshot === null) {
                 // 如果快照不存在，建立新的
                 $snapshot = $this->createStatisticsSnapshot($period);
             }
@@ -155,7 +153,7 @@ final class StatisticsApplicationService
 
             $overview = [
                 'period' => [
-                    'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H => i:s'),
+                    'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H:i:s'),
                     'end_date' => $snapshot->getPeriod()->endDate->format('Y-m-d H:i:s'),
                     'type' => $snapshot->getPeriod()->type->value,
                 ],
@@ -206,12 +204,14 @@ final class StatisticsApplicationService
             ]);
             throw $e;
         }
+    }
 
     /**
      * 分析熱門內容.
      *
      * 分析指定週期內的熱門內容，提供詳細的分析資料。
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 20): array
     {
@@ -246,15 +246,17 @@ final class StatisticsApplicationService
             ]);
             throw $e;
         }
+    }
 
     /**
      * 產生統計報告.
      *
      * 產生指定週期的完整統計報告。
-     * @param array $options
-     * @return array
+     *
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    public function generateStatisticsReport(StatisticsPeriod $period, /** @var array<string, mixed> */ array $options = []): array
+    public function generateStatisticsReport(StatisticsPeriod $period, array $options = []): array
     {
         $cacheKey = self::CACHE_PREFIX . ':report:' . $this->getPeriodCacheKey($period) . ':' . md5(serialize($options));
 
@@ -321,6 +323,7 @@ final class StatisticsApplicationService
             ]);
             throw $e;
         }
+    }
 
     /**
      * 清除統計快取.
@@ -353,7 +356,8 @@ final class StatisticsApplicationService
 
     /**
      * 檢查統計服務健康狀態.
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     public function checkHealthStatus(): array
     {
@@ -377,7 +381,7 @@ final class StatisticsApplicationService
             // 判斷整體狀態
             $allHealthy = array_reduce(
                 $status['checks'],
-                fn(bool $carry, /** @var array<string, mixed> */ array $check): bool => $carry && $check['status'] === 'ok',
+                fn(bool $carry, array $check): bool => $carry && $check['status'] === 'ok',
                 true,
             );
 
@@ -390,15 +394,17 @@ final class StatisticsApplicationService
             return [
                 'service' => 'StatisticsApplicationService',
                 'status' => 'unhealthy',
-                'timestamp' => time(),
+                'timestamp' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
                 'error' => $e->getMessage(),
                 'checks' => ['error' => $e->getMessage()],
             ];
         }
+    }
 
     /**
      * 計算來源統計.
-     * @return array
+     *
+     * @return array<int, SourceStatistics>
      */
     private function calculateSourceStatistics(StatisticsPeriod $period): array
     {
@@ -463,7 +469,8 @@ final class StatisticsApplicationService
 
     /**
      * 檢查快取健康狀態.
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     private function checkCacheHealth(): array
     {
@@ -485,10 +492,12 @@ final class StatisticsApplicationService
         } catch (Exception $e) {
             return ['status' => 'error', 'message' => 'Cache test failed: ' . $e->getMessage()];
         }
+    }
 
     /**
      * 檢查資料庫健康狀態.
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     private function checkDatabaseHealth(): array
     {
@@ -501,10 +510,12 @@ final class StatisticsApplicationService
         } catch (Exception $e) {
             return ['status' => 'error', 'message' => 'Database test failed: ' . $e->getMessage()];
         }
+    }
 
     /**
      * 檢查計算服務健康狀態.
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     private function checkCalculationHealth(): array
     {
