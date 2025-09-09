@@ -9,14 +9,12 @@ use RuntimeException;
 use Tests\TestCase;
 
 class FileSystemBackupTest extends TestCase
-
-
-
 {
     private string $testDir;
 
     private string $backupDir;
 
+    /** @var array<string, string> */
     private array $testFiles = [];
 
     protected function setUp(): void
@@ -46,8 +44,7 @@ class FileSystemBackupTest extends TestCase
             '/uploads/image1.jpg' => str_repeat('x', 1024),  // 1KB
             '/uploads/document.pdf' => str_repeat('y', 2048),  // 2KB
             '/storage/data.json' => json_encode(['test' => 'data']),
-            '/storage/config.ini' => 'key=value
-foo=bar',
+            '/storage/config.ini' => "key=value\nfoo=bar",
         ];
 
         foreach ($this->testFiles as $path => $content) {
@@ -74,11 +71,10 @@ foo=bar',
             '/bin/bash %s/scripts/backup_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($this->testDir),
-            escapeshellarg($this->backupDir),
+            escapeshellarg($this->backupDir)
         ), $output, $returnVar);
 
-        $this->assertEquals(0, $returnVar, '備份腳本執行失敗: ' . implode('
-', $output));
+        $this->assertEquals(0, $returnVar, '備份腳本執行失敗: ' . implode("\n", $output));
 
         $backupFiles = glob($this->backupDir . '/files_*.tar.gz');
         rsort($backupFiles);
@@ -97,7 +93,7 @@ foo=bar',
         $extractedDir = $this->extractBackupFile($backupFile);
 
         foreach ($this->testFiles as $path => $content) {
-            $backedUpFile = (is_string($extractedDir) ? $extractedDir : '') . (is_string($path) ? $path : '');
+            $backedUpFile = $extractedDir . $path;
             $this->assertFileExists($backedUpFile, sprintf("檔案 %s 未被備份", $path));
             $this->assertEquals(
                 $content,
@@ -105,7 +101,6 @@ foo=bar',
                 sprintf("檔案 %s 的內容不符", $path)
             );
         }
-
     }
 
     private function extractBackupFile(string $backupFile): string
@@ -153,11 +148,10 @@ foo=bar',
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->testDir),
+            escapeshellarg($this->testDir)
         ), $output, $returnVar);
 
-        $this->assertEquals(0, $returnVar, '還原腳本執行失敗: ' . implode('
-', $output));
+        $this->assertEquals(0, $returnVar, '還原腳本執行失敗: ' . implode("\n", $output));
     }
 
     private function assertAllFilesRestored(): void
@@ -208,12 +202,11 @@ foo=bar',
             '/bin/bash %s/scripts/backup_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($sourceDir),
-            escapeshellarg($this->backupDir),
+            escapeshellarg($this->backupDir)
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $this->assertStringContainsString('錯誤', implode('
-', $output), '應該輸出錯誤訊息');
+        $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
     private function executeRestoreScriptWithExpectedError(string $backupFile): void
@@ -225,12 +218,11 @@ foo=bar',
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->testDir),
+            escapeshellarg($this->testDir)
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $this->assertStringContainsString('錯誤', implode('
-', $output), '應該輸出錯誤訊息');
+        $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
     private function ensureBackupFileDoesNotExist(): string
@@ -253,12 +245,11 @@ foo=bar',
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->testDir),
+            escapeshellarg($this->testDir)
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
-        $outputString = implode('
-', $output);
+        $outputString = implode("\n", $output);
         $this->assertStringContainsString($expectedErrorMessage, $outputString, '應該輸出檔案不存在錯誤訊息');
     }
 
@@ -270,7 +261,8 @@ foo=bar',
         $this->assertFileMetadataPreserved($originalMetadata);
     }
 
-    /**\n      * @return array
+    /**
+     * @return array<string, array{permissions: int, owner: int, group: int, mtime: int}>
      */
     private function recordOriginalFileMetadata(): array
     {
@@ -283,86 +275,112 @@ foo=bar',
             $group = filegroup($file);
             $mtime = filemtime($file);
 
-            if ($permissions == false || $owner === false || $group === false || $mtime === false) {
-                throw new RuntimeException(sprintf("無法取得檔案 {%s} 的中繼資料", ");
+            if ($permissions === false || $owner === false || $group === false || $mtime === false) {
+                throw new RuntimeException(sprintf("無法取得檔案 %s 的中繼資料", $path));
             }
 
             $originalMetadata[$path] = [
-                'permi");ssions' => $permissions,
+                'permissions' => $permissions,
                 'owner' => $owner,
                 'group' => $group,
                 'mtime' => $mtime,
             ];
         }
 
-    /** @var array<string, array{permissions: int, owner: int, group: int, mtime: int}> */
         return $originalMetadata;
     }
 
     private function performFullBackupRestore(): string
     {
-        $backupFile = $this->backupDir . '/files_backup.tar.gz';
-
-        $this->executeManualBackup($backupFile);
+        $backupFile = $this->executeBackupScript();
         $this->clearOriginalFiles();
-        $this->executeManualRestore($backupFile);
+        $this->executeRestoreScript($backupFile);
 
         return $backupFile;
     }
 
-    private function executeManualBackup(string $backupFile): void
-    {
-        exec(sprintf(
-            '/bin/bash %s/scripts/backup_files.sh %s %s',
-            escapeshellarg(dirname(__DIR__, 2)),
-            escapeshellarg($this->testDir),
-            escapeshellarg($backupFile),
-        ));
-    }
-
-    private function executeManualRestore(string $backupFile): void
-    {
-        exec(sprintf(
-            '/bin/bash %s/scripts/restore_files.sh %s %s',
-            escapeshellarg(dirname(__DIR__, 2)),
-            escapeshellarg($backupFile),
-            escapeshellarg($this->testDir),
-        ));
-    }
-
-    /**\n      * @param array $originalMetadata
+    /**
+     * @param array<string, array{permissions: int, owner: int, group: int, mtime: int}> $originalMetadata
      */
     private function assertFileMetadataPreserved(array $originalMetadata): void
     {
-        foreach ($this->testFiles as $path => $content) {
-            $file = $this->testDir . $path;
-            if (!file_exists($file)) {
-                $this->markTestSkipped('此測試暫時跳過等待實現');
-                continue;
-            }
+        foreach ($originalMetadata as $path => $metadata) {
+            $restoredFile = $this->testDir . $path;
+            $this->assertFileExists($restoredFile, sprintf("檔案 %s 未被還原", $path));
+
+            // 檢查權限（只檢查使用者權限部分）
+            $restoredPermissions = fileperms($restoredFile);
+            $this->assertNotFalse($restoredPermissions, sprintf("無法取得檔案 %s 的權限", $path));
+
+            $expectedUserPerms = ($metadata['permissions'] & 0o700) >> 6;
+            $actualUserPerms = ($restoredPermissions & 0o700) >> 6;
             $this->assertEquals(
-                $originalMetadata[$path]['permissions'],
-                fileperms($file),
-                sprintf("檔案 {%s} 的權限不符", ",
-            );
-            $thi");s->assertEquals(
-                $originalMetadata[$path]['owner'],
-                fileowner($file),
-                sprintf("檔案 {%s} 的擁有者不符", ",
-            );
-            $thi");s->assertEquals(
-                $originalMetadata[$path]['group'],
-                filegroup($file),
-                sprintf("檔案 {%s} 的群組不符", ",
+                $expectedUserPerms,
+                $actualUserPerms,
+                sprintf("檔案 %s 的使用者權限不符", $path)
             );
         }
-
     }
+
+    #[Test]
+    public function handleLargeFileBackup(): void
+    {
+        $largeFileName = '/uploads/large_file.bin';
+        $largeFileContent = str_repeat('Z', 1024 * 1024); // 1MB
+        $largeFilePath = $this->testDir . $largeFileName;
+
+        file_put_contents($largeFilePath, $largeFileContent);
+        $this->testFiles[$largeFileName] = $largeFileContent;
+
+        $backupFile = $this->executeBackupScript();
+        $this->assertBackupFileCreated($backupFile);
+
+        // 驗證大檔案是否正確備份
+        $extractedDir = $this->extractBackupFile($backupFile);
+        $backedUpLargeFile = $extractedDir . $largeFileName;
+        $this->assertFileExists($backedUpLargeFile, '大檔案未被正確備份');
+        $this->assertEquals(
+            strlen($largeFileContent),
+            filesize($backedUpLargeFile),
+            '大檔案大小不符'
+        );
+    }
+
+    #[Test]
+    public function handleEmptyDirectories(): void
+    {
+        $emptyDir = $this->testDir . '/empty';
+        mkdir($emptyDir);
+
+        $backupFile = $this->executeBackupScript();
+        $extractedDir = $this->extractBackupFile($backupFile);
+
+        $this->assertDirectoryExists($extractedDir . '/empty', '空目錄未被保留');
+    }
+
+    #[Test]
+    public function handleSpecialCharactersInFilenames(): void
+    {
+        $specialFiles = [
+            '/storage/file with spaces.txt' => 'content with spaces',
+            '/storage/file-with-dashes.log' => 'content with dashes',
+            '/storage/file_with_underscores.cfg' => 'content with underscores',
+        ];
+
+        foreach ($specialFiles as $path => $content) {
+            $fullPath = $this->testDir . $path;
+            file_put_contents($fullPath, $content);
+            $this->testFiles[$path] = $content;
+        }
+
+        $backupFile = $this->executeBackupScript();
+        $this->assertBackupContainsAllFiles($backupFile);
+    }
+
     protected function tearDown(): void
     {
         // 清理測試目錄
-        if (i");s_dir($this->testDir)) {
-            exec(sprintf("chmod -R 755 '%s'", $this->testDir)); // 確保有權限刪除
+        if (is_dir($this->testDir)) {
             exec(sprintf("rm -rf '%s'", $this->testDir));
         }
         if (is_dir($this->backupDir)) {

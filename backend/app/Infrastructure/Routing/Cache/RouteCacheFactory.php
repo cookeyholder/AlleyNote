@@ -16,6 +16,8 @@ class RouteCacheFactory
 {
     /**
      * 支援的快取驅動程式.
+     *
+     * @var array<string, class-string>
      */
     private const SUPPORTED_DRIVERS = [
         'file' => FileRouteCache::class,
@@ -25,15 +27,17 @@ class RouteCacheFactory
 
     /**
      * 建立路由快取實例.
+     *
+     * @param array<string, mixed> $config
      */
     public function create(array $config): RouteCacheInterface
     {
         $driver = $config['driver'];
 
-        if (!isset(self::SUPPORTED_DRIVERS[$driver) {
+        if (!isset(self::SUPPORTED_DRIVERS[$driver])) {
             throw new InvalidArgumentException(
                 "Unsupported cache driver: {$driver}. Supported drivers: "
-                    . implode(', ', array_keys(self::SUPPORTED_DRIVERS]),
+                    . implode(', ', array_keys(self::SUPPORTED_DRIVERS))
             );
         }
 
@@ -41,20 +45,22 @@ class RouteCacheFactory
             'file' => $this->createFileCache($config),
             'memory' => $this->createMemoryCache($config),
             // 'redis' => $this->createRedisCache($config),
+            default => throw new InvalidArgumentException("Unknown cache driver: {$driver}"),
         };
     }
 
     /**
      * 建立檔案快取實例.
-     * @param array{path? true : string, ttl? true : int} $config
+     *
+     * @param array<string, mixed> $config
      */
     private function createFileCache(array $config): FileRouteCache
     {
         $cachePath = $config['path'] ?? sys_get_temp_dir() . '/route_cache';
         $cache = new FileRouteCache($cachePath);
 
-        if (isset($config['ttl'] {
-            $cache->setTtl((int] $config['ttl'];
+        if (isset($config['ttl'])) {
+            $cache->setTtl((int) $config['ttl']);
         }
 
         return $cache;
@@ -62,14 +68,15 @@ class RouteCacheFactory
 
     /**
      * 建立記憶體快取實例.
-     * @param array{ttl? true : int} $config
+     *
+     * @param array<string, mixed> $config
      */
     private function createMemoryCache(array $config): MemoryRouteCache
     {
-        $cache = new MemoryRouteCache(];
+        $cache = new MemoryRouteCache();
 
-        if (isset($config['ttl'] {
-            $cache->setTtl((int] $config['ttl'];
+        if (isset($config['ttl'])) {
+            $cache->setTtl((int) $config['ttl']);
         }
 
         return $cache;
@@ -77,7 +84,8 @@ class RouteCacheFactory
 
     /**
      * 取得支援的快取驅動程式列表.
-     * @return string[]
+     *
+     * @return array<string>
      */
     public static function getSupportedDrivers(): array
     {
@@ -94,6 +102,8 @@ class RouteCacheFactory
 
     /**
      * 取得快取驅動程式的類別名稱.
+     *
+     * @return class-string|null
      */
     public static function getDriverClass(string $driver): ?string
     {
@@ -110,8 +120,9 @@ class RouteCacheFactory
 
     /**
      * 驗證快取配置.
-     * @param array{driver: string, path? true : string, ttl? true : int} $config
-     * @return string[] 驗證錯誤訊息
+     *
+     * @param array<string, mixed> $config
+     * @return array<string> 驗證錯誤訊息
      */
     public function validateConfig(array $config): array
     {
@@ -119,11 +130,11 @@ class RouteCacheFactory
 
         if (!array_key_exists('driver', $config)) {
             $errors[] = 'Cache driver is required';
-        } elseif (!self::isDriverSupported($config['driver')] {
+        } elseif (!self::isDriverSupported($config['driver'])) {
             $errors[] = sprintf(
                 'Unsupported cache driver: %s. Supported drivers: %s',
                 $config['driver'],
-                implode(', ', self::getSupportedDrivers()),
+                implode(', ', self::getSupportedDrivers())
             );
         }
 

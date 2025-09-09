@@ -92,7 +92,7 @@ use OpenApi\Attributes as OA;
         'title' => '系統維護通知 - 2025年1月20日',
         'content' => '親愛的使用者，
 
-系統將於 **2025年1月20日 02 => 00-04:00** 進行維護.',
+系統將於 **2025年1月20日 02:00-04:00** 進行維護.',
         'category' => 'announcement',
         'priority' => 'high',
         'expires_at' => '2025-12-31T23:59:59+08:00',
@@ -185,7 +185,7 @@ use OpenApi\Attributes as OA;
         'category' => 'urgent',
         'status' => 'published',
         'priority' => 'urgent',
-        'expires_at' => '2025-02-28T23 => 59:59+08:00',
+        'expires_at' => '2025-02-28T23:59:59+08:00',
         'tags' => ['維護延期', '重要更新', '緊急通知'],
         'is_pinned' => true,
         'allow_comments' => true,
@@ -214,7 +214,7 @@ use OpenApi\Attributes as OA;
             property: 'data',
             description: '回應資料內容，根據不同 API 會有不同結構',
             oneOf: [
-                new OA\Schema(ref => '#/components/schemas/Post'),
+                new OA\Schema(ref: '#/components/schemas/Post'),
                 new OA\Schema(type: 'array', items: new OA\Items(ref: '#/components/schemas/Post')),
                 new OA\Schema(type: 'object', description: '其他類型的資料'),
             ],
@@ -238,10 +238,10 @@ use OpenApi\Attributes as OA;
             'title' => '新的貼文標題',
             'content' => '貼文內容.',
             'status' => 'published',
-            'created_at' => '2025-01-15T10 => 30:00+08:00',
+            'created_at' => '2025-01-15T10:30:00+08:00',
         ],
         'meta' => [
-            'timestamp' => '2025-01-15T10 => 30:00+08:00',
+            'timestamp' => '2025-01-15T10:30:00+08:00',
             'request_id' => 'req_550e8400e29b41d4a716446655440000',
             'version' => '1.0.0',
         ],
@@ -307,7 +307,7 @@ use OpenApi\Attributes as OA;
                 'category' => 'general',
                 'status' => 'published',
                 'priority' => 'normal',
-                'created_at' => '2025-01-15T10 => 30:00+08:00',
+                'created_at' => '2025-01-15T10:30:00+08:00',
             ],
         ],
         'pagination' => [
@@ -336,7 +336,7 @@ use OpenApi\Attributes as OA;
     type: 'object',
     title: '貼文請求',
     description: '建立或更新貼文的通用請求資料',
-    allOf: [new OA\Schema(ref => '#/components/schemas/CreatePostRequest')],
+    allOf: [new OA\Schema(ref: '#/components/schemas/CreatePostRequest')],
 )]
 #[OA\Schema(
     schema: 'ValidationError',
