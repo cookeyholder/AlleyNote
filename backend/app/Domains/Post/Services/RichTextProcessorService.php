@@ -14,9 +14,6 @@ use HTMLPurifier_Config;
  * 處理來自富文本編輯器的內容，提供多層級的安全清理和驗證
  */
 class RichTextProcessorService
-
-
-
 {
     private HTMLPurifier $basicPurifier;
 
@@ -95,8 +92,10 @@ class RichTextProcessorService
 
     /**
      * 根據使用者層級處理富文本內容.
+     *
+     * @return array<string, mixed>
      */
-    public function processContent(string $content, string $userLevel = 'basic'): mixed
+    public function processContent(string $content, string $userLevel = 'basic'): array
     {
         $result = [
             'content' => '',
@@ -120,10 +119,10 @@ class RichTextProcessorService
         }
 
         // 生成統計資訊
-        // $result['statistics'] = $this->generateStatistics($content, $result['content']);
+        $result['statistics'] = $this->generateStatistics($content, $result['content']);
 
         // 檢查內容變化
-        if ($content !== $result['content'] {
+        if ($content !== $result['content']) {
             $result['warnings'][] = [
                 'type' => 'content_modified',
                 'message' => '內容已被安全過濾器修改',
@@ -137,8 +136,10 @@ class RichTextProcessorService
 
     /**
      * 驗證和清理來自 CKEditor 的內容.
+     *
+     * @return array<string, mixed>
      */
-    public function processCKEditorContent(string $content, string $userLevel = 'basic'): mixed
+    public function processCKEditorContent(string $content, string $userLevel = 'basic'): array
     {
         // CKEditor 特定的前置處理
         $content = $this->preprocessCKEditorContent($content);
@@ -158,17 +159,18 @@ class RichTextProcessorService
         $content = preg_replace('/\sspellcheck="[^"]*"/i', '', $content) ?? $content;
 
         // 正規化換行符號
-        $content = str_replace(["\r\n", "\r"], '\n', $content);
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
 
         // 移除空的段落
-        $content = preg_replace('/<p[^>]*>(\s|&nbsp)*<\/p>/i', '', $content) ?? $content;
+        $content = preg_replace('/<p[^>]*>(\s|&nbsp;)*<\/p>/i', '', $content) ?? $content;
 
         return trim($content);
     }
 
     /**
      * 取得允許的標籤和屬性清單.
-     * @return array>
+     *
+     * @return array<string, array<string>>
      */
     public function getAllowedElements(string $userLevel = 'basic'): array
     {
@@ -179,7 +181,7 @@ class RichTextProcessorService
         };
 
         $definition = $purifier->config->getHTMLDefinition();
-        if ($definition == null) {
+        if ($definition === null) {
             return ['tags' => [], 'attributes' => []];
         }
 
@@ -194,6 +196,8 @@ class RichTextProcessorService
             if (isset($element->attr) && is_array($element->attr)) {
                 $attributes = array_merge($attributes, array_keys($element->attr));
             }
+        }
+
         return [
             'tags' => array_unique($tags),
             'attributes' => array_unique($attributes),
@@ -202,7 +206,8 @@ class RichTextProcessorService
 
     /**
      * 生成內容統計資訊.
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     private function generateStatistics(string $original, string $filtered): array
     {
@@ -211,7 +216,7 @@ class RichTextProcessorService
             'filtered_length' => strlen($filtered),
             'reduction_percentage' => strlen($original) > 0
                 ? round((strlen($original) - strlen($filtered)) / strlen($original) * 100, 2)
-                 => 0,
+                : 0,
             'word_count' => str_word_count(strip_tags($filtered)),
             'tag_count' => substr_count($filtered, '<'),
             'link_count' => substr_count(strtolower($filtered), '<a '),
@@ -232,7 +237,7 @@ class RichTextProcessorService
 
         // 截斷到指定長度
         if (mb_strlen($text) > $maxLength) {
-            $text = mb_substr($text, 0, $maxLength) . ' . ';
+            $text = mb_substr($text, 0, $maxLength) . '...';
         }
 
         return $text;
@@ -240,8 +245,10 @@ class RichTextProcessorService
 
     /**
      * 檢查內容是否安全.
+     *
+     * @return array<array<string, mixed>>
      */
-    public function validateSecurity(string $content): mixed
+    public function validateSecurity(string $content): array
     {
         $issues = [];
 
@@ -294,3 +301,4 @@ class RichTextProcessorService
 
         return $cachePath;
     }
+}

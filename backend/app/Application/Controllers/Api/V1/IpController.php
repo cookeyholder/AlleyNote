@@ -13,15 +13,13 @@ use Exception;
 use InvalidArgumentException;
 
 class IpController
-
-
-
 {
     public function __construct(
         private IpService $service,
         private ValidatorInterface $validator,
         private OutputSanitizerInterface $sanitizer,
-    ) {}
+    ) {
+    }
 
     /**
      * 建立IP規則.
@@ -37,22 +35,15 @@ class IpController
                 'data' => $ipList->toSafeArray($this->sanitizer),
             ];
         } catch (Exception $e) {
-            $this->logger?->error('操作失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
+            return [
+                'status' => 500,
                 'error' => [
                     'message' => '操作失敗',
                     'details' => $e->getMessage(),
                 ],
                 'timestamp' => time(),
-            ], 500);
+            ];
         }
-
-        return [
-            'status' => 400,
-            'error' => $e->getMessage(),
-        ];
     }
 
     /**
@@ -61,11 +52,11 @@ class IpController
     public function getByType(array $request): array
     {
         try {
-            if (!isset($request['type'] {
-                throw new InvalidArgumentException('必須指定名單類型'];
+            if (!isset($request['type'])) {
+                throw new InvalidArgumentException('必須指定名單類型');
             }
 
-            $type = is_numeric($request['type'] ? (int] $request['type'] : 0;
+            $type = is_numeric($request['type']) ? (int) $request['type'] : 0;
             $rules = $this->service->getRulesByType($type);
 
             return [
@@ -89,12 +80,11 @@ class IpController
     public function checkAccess(array $request): array
     {
         try {
-
-            if (!isset($request['ip'] {
-                throw new InvalidArgumentException('必須提供 IP 位址'];
+            if (!isset($request['ip'])) {
+                throw new InvalidArgumentException('必須提供 IP 位址');
             }
 
-            $ip = is_string($request['ip'] ? $request['ip'] : '';
+            $ip = is_string($request['ip']) ? $request['ip'] : '';
             $isAllowed = $this->service->isIpAllowed($ip);
 
             return [
@@ -103,6 +93,12 @@ class IpController
                     'ip' => $request['ip'],
                     'allowed' => $isAllowed,
                 ],
-            ];}
+            ];
+        } catch (Exception $e) {
+            return [
+                'status' => 500,
+                'error' => '檢查 IP 存取權限時發生錯誤',
+            ];
         }
+    }
 }
