@@ -9,7 +9,7 @@ use App\Infrastructure\Routing\Contracts\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * 路由收集器.
+ * 路由收集器
  *
  * 管理和組織所有註冊的路由
  */
@@ -36,7 +36,7 @@ class RouteCollection implements RouteCollectionInterface
         // 按 HTTP 方法建立索引
         foreach ($route->getMethods() as $method) {
             $method = strtoupper($method);
-            if (!isset($this->routesByMethod[$method) {
+            if (!isset($this->routesByMethod[$method])) {
                 $this->routesByMethod[$method] = [];
             }
             $this->routesByMethod[$method][] = $route;
@@ -44,7 +44,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @param array $routes
+     * @param RouteInterface[] $routes
      */
     public function addRoutes(array $routes): void
     {
@@ -52,19 +52,25 @@ class RouteCollection implements RouteCollectionInterface
             if ($route instanceof RouteInterface) {
                 $this->add($route);
             }
+        }
+    }
 
-    }
-    }
     public function getByName(string $name): ?RouteInterface
     {
         return $this->namedRoutes[$name] ?? null;
     }
 
+    /**
+     * @return RouteInterface[]
+     */
     public function all(): array
     {
         return $this->routes;
     }
 
+    /**
+     * @return RouteInterface[]
+     */
     public function getByMethod(string $method): array
     {
         $method = strtoupper($method);
@@ -102,15 +108,15 @@ class RouteCollection implements RouteCollectionInterface
         unset($this->namedRoutes[$name]);
 
         // 從主要路由列表中移除
-        $this->routes = array_filter($this->routes, static fn($r): array => $r !== $route);
+        $this->routes = array_filter($this->routes, static fn($r): bool => $r !== $route);
 
         // 從方法索引中移除
         foreach ($route->getMethods() as $method) {
             $method = strtoupper($method);
-            if (isset($this->routesByMethod[$method) {
+            if (isset($this->routesByMethod[$method])) {
                 $this->routesByMethod[$method] = array_filter(
                     $this->routesByMethod[$method],
-                    static fn($r): array => $r !== $route,
+                    static fn($r): bool => $r !== $route,
                 );
             }
         }
@@ -131,7 +137,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @return array
+     * @return array<int, array<string, mixed>>
      */
     public function toArray(): array
     {
@@ -151,7 +157,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @param array $data
+     * @param array<int, array<string, mixed>> $data
      */
     public static function fromArray(array $data): RouteCollectionInterface
     {
@@ -164,30 +170,31 @@ class RouteCollection implements RouteCollectionInterface
                 $routeData['handler'], // Note: 反序列化處理器可能需要額外邏輯
             );
 
-            if (!empty($routeData['name'] {
-                $route->setName($routeData['name'];
+            if (!empty($routeData['name'])) {
+                $route->setName($routeData['name']);
             }
 
-            if (!empty($routeData['middleware'] {
-                $route->middleware($routeData['middleware'];
+            if (!empty($routeData['middleware'])) {
+                $route->middleware($routeData['middleware']);
             }
 
-            $collection->add($route];
+            $collection->add($route);
         }
 
         return $collection;
     }
 
     /**
-     * 序列化路由處理器.
+     * 序列化路由處理器
      *
      * 注意：這裡的實作是簡化版本，實際使用時可能需要更複雜的序列化邏輯
-     * @param array $handler
-     * @return array
+     *
+     * @param mixed $handler
+     * @return string|array<int, string>
      */
     private function serializeHandler($handler): string|array
     {
-        if (is_string($handler) {
+        if (is_string($handler)) {
             return $handler;
         }
 

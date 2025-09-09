@@ -1,18 +1,13 @@
 {
-    "timestamp": "2025-09-09T08:49:15+08:00",
-    "total_syntax_errors": 252,
-    "affected_files": 83,
+    "timestamp": "2025-09-09T19:32:19+08:00",
+    "total_syntax_errors": 218,
+    "affected_files": 78,
     "error_type_stats": {
-        "syntax_general": 198,
-        "try_without_catch": 52,
+        "syntax_general": 172,
+        "try_without_catch": 44,
         "empty_array_elements": 2
     },
     "file_error_counts": {
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/RouteCollection.php": 7,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php": 7,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheManager.php": 7,
-        "\/var\/www\/html\/tests\/Performance\/SimpleUserActivityLogPerformanceTest.php": 7,
-        "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthenticationMiddleware.php": 6,
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthService.php": 6,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 6,
         "\/var\/www\/html\/app\/Shared\/Config\/EnvironmentConfig.php": 6,
@@ -109,38 +104,6 @@
             {
                 "line": 265,
                 "message": "Syntax error, unexpected ')', expecting ']' on line 265",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthenticationMiddleware.php": [
-            {
-                "line": 60,
-                "message": "Cannot use try without catch or finally on line 60",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 105,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 105",
-                "type": "syntax_general"
-            },
-            {
-                "line": 111,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 111",
-                "type": "syntax_general"
-            },
-            {
-                "line": 223,
-                "message": "Syntax error, unexpected '{' on line 223",
-                "type": "syntax_general"
-            },
-            {
-                "line": 224,
-                "message": "Syntax error, unexpected ')' on line 224",
-                "type": "syntax_general"
-            },
-            {
-                "line": 224,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 224",
                 "type": "syntax_general"
             }
         ],
@@ -801,43 +764,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/RouteCollection.php": [
-            {
-                "line": 39,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 39",
-                "type": "syntax_general"
-            },
-            {
-                "line": 110,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 110",
-                "type": "syntax_general"
-            },
-            {
-                "line": 167,
-                "message": "Syntax error, unexpected '{' on line 167",
-                "type": "syntax_general"
-            },
-            {
-                "line": 168,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 168",
-                "type": "syntax_general"
-            },
-            {
-                "line": 172,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 172",
-                "type": "syntax_general"
-            },
-            {
-                "line": 175,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 175",
-                "type": "syntax_general"
-            },
-            {
-                "line": 190,
-                "message": "Syntax error, unexpected '{' on line 190",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Middleware\/MiddlewareDispatcher.php": [
             {
                 "line": 62,
@@ -909,80 +835,6 @@
             {
                 "line": 321,
                 "message": "Syntax error, unexpected ']', expecting ')' on line 321",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php": [
-            {
-                "line": 59,
-                "message": "Cannot use try without catch or finally on line 59",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 77,
-                "message": "Cannot use try without catch or finally on line 77",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 99,
-                "message": "Cannot use try without catch or finally on line 99",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 108,
-                "message": "Cannot use try without catch or finally on line 108",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 156,
-                "message": "Syntax error, unexpected T_RETURN on line 156",
-                "type": "syntax_general"
-            },
-            {
-                "line": 164,
-                "message": "Cannot use try without catch or finally on line 164",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 196,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 196",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheManager.php": [
-            {
-                "line": 99,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 99",
-                "type": "syntax_general"
-            },
-            {
-                "line": 133,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 133",
-                "type": "syntax_general"
-            },
-            {
-                "line": 169,
-                "message": "Cannot use try without catch or finally on line 169",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 202,
-                "message": "Syntax error, unexpected T_VARIABLE on line 202",
-                "type": "syntax_general"
-            },
-            {
-                "line": 231,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 231",
-                "type": "syntax_general"
-            },
-            {
-                "line": 241,
-                "message": "Cannot use try without catch or finally on line 241",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 266,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 266",
                 "type": "syntax_general"
             }
         ],
@@ -1281,43 +1133,6 @@
                 "type": "try_without_catch"
             }
         ],
-        "\/var\/www\/html\/tests\/Performance\/SimpleUserActivityLogPerformanceTest.php": [
-            {
-                "line": 186,
-                "message": "Syntax error, unexpected '\"', expecting ']' on line 186",
-                "type": "syntax_general"
-            },
-            {
-                "line": 239,
-                "message": "Syntax error, unexpected T_ENCAPSED_AND_WHITESPACE on line 239",
-                "type": "syntax_general"
-            },
-            {
-                "line": 241,
-                "message": "Syntax error, unexpected '}' on line 241",
-                "type": "syntax_general"
-            },
-            {
-                "line": 241,
-                "message": "Syntax error, unexpected T_ENCAPSED_AND_WHITESPACE on line 241",
-                "type": "syntax_general"
-            },
-            {
-                "line": 254,
-                "message": "Syntax error, unexpected ',' on line 254",
-                "type": "syntax_general"
-            },
-            {
-                "line": 255,
-                "message": "Syntax error, unexpected T_CONSTANT_ENCAPSED_STRING, expecting T_VARIABLE or '{' or '$' on line 255",
-                "type": "syntax_general"
-            },
-            {
-                "line": 263,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 263",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/tests\/Security\/SqlInjectionTest.php": [
             {
                 "line": 92,
@@ -1577,11 +1392,6 @@
         "\/var\/www\/html\/tests\/Unit\/Services\/AttachmentServiceTest.php": 1
     },
     "medium_fixes": {
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Core\/RouteCollection.php": 7,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Drivers\/RedisCacheDriver.php": 7,
-        "\/var\/www\/html\/app\/Shared\/Cache\/Services\/CacheManager.php": 7,
-        "\/var\/www\/html\/tests\/Performance\/SimpleUserActivityLogPerformanceTest.php": 7,
-        "\/var\/www\/html\/app\/Application\/Middleware\/JwtAuthenticationMiddleware.php": 6,
         "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthService.php": 6,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 6,
         "\/var\/www\/html\/app\/Shared\/Config\/EnvironmentConfig.php": 6,
