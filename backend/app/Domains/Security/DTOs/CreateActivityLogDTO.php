@@ -19,7 +19,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
 
 {
-    
+
     public function __construct(
         private ActivityType $actionType,
         private ?int $userId = null,
@@ -45,19 +45,26 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @param array $data
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
+        // 處理 metadata 類型安全
+        $metadata = null;
+        if (isset($data['metadata']) && is_array($data['metadata'])) {
+            /** @var array<string, mixed> $metadata */
+            $metadata = $data['metadata'];
+        }
+
         return new self(
-            actionType: ActivityType::from((string) ($data['action_type'] ?? '')),
+            actionType: ActivityType::from((string) $data['action_type']),
             userId: isset($data['user_id']) ? (int) $data['user_id'] : null,
             sessionId: isset($data['session_id']) ? (string) $data['session_id'] : null,
             status: isset($data['status']) ? ActivityStatus::from((string) $data['status']) : ActivityStatus::SUCCESS,
             targetType: isset($data['target_type']) ? (string) $data['target_type'] : null,
             targetId: isset($data['target_id']) ? (string) $data['target_id'] : null,
             description: isset($data['description']) ? (string) $data['description'] : null,
-            metadata: isset($data['metadata']) && is_array($data['metadata']) ? $data['metadata'] : null,
+            metadata: $metadata,
             ipAddress: isset($data['ip_address']) ? (string) $data['ip_address'] : null,
             userAgent: isset($data['user_agent']) ? (string) $data['user_agent'] : null,
             requestMethod: isset($data['request_method']) ? (string) $data['request_method'] : null,
@@ -69,15 +76,14 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * 快速建立成功操作的記錄.
-     * @param array|null $metadata
+     * @param array<string, mixed>|null $metadata
      */
     public static function success(
         ActivityType $actionType,
         ?int $userId = null,
         ?string $targetType = null,
         ?string $targetId = null,
-        ?string $description = null,
+        string $description = '',
         ?array $metadata = null,
     ): self {
         return new self(
@@ -92,15 +98,14 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * 快速建立失敗操作的記錄.
-     * @param array|null $metadata
+     * @param array<string, mixed>|null $metadata
      */
     public static function failure(
         ActivityType $actionType,
         ?int $userId = null,
         ?string $targetType = null,
         ?string $targetId = null,
-        ?string $description = null,
+        string $description = '',
         ?array $metadata = null,
     ): self {
         return new self(
@@ -116,7 +121,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 快速建立安全事件的記錄.
-     * @param array|null $metadata
+     * @param array<string, mixed>|null $metadata
      */
     public static function securityEvent(
         ActivityType $actionType,
@@ -173,7 +178,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array|null
+     * @return array<string, mixed>|null
      */
     public function getMetadata(): ?array
     {
@@ -242,15 +247,15 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @param array $metadata
+     * @param array<string, mixed> $metadata
      */
     public function withMetadata(array $metadata): self
     {
         $this->validateMetadata($metadata);
-        $new = clone $this;
-        $new->metadata = $metadata;
+        $clone = clone $this;
+        $clone->metadata = $metadata;
 
-        return $new;
+        return $clone;
     }
 
     public function addMetadata(string $key, mixed $value): self
@@ -264,8 +269,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * 轉換為資料庫儲存格式.
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -278,7 +282,7 @@ final class CreateActivityLogDTO implements JsonSerializable
             'target_type' => $this->targetType,
             'target_id' => $this->targetId,
             'description' => $this->description ?? $this->actionType->getDescription(),
-            'metadata' => $this->metadata ? (json_encode($this->metadata, JSON_UNESCAPED_UNICODE) ?? '')  => null,
+            'metadata' => $this->metadata ? json_encode($this->metadata, JSON_UNESCAPED_UNICODE) : null,
             'ip_address' => $this->ipAddress,
             'user_agent' => $this->userAgent,
             'request_method' => $this->requestMethod,
@@ -289,7 +293,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -298,14 +302,19 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 驗證 metadata 是否可序列化.
-     * @param array $metadata
+     * @param array<string, mixed> $metadata
      */
     private function validateMetadata(array $metadata): void
     {
-        try { /* empty */ }
-            (json_encode($metadata, JSON_THROW_ON_ERROR) ?? '');
-        }  bytes) exceeds maximum limit (65535 bytes)",
-            );
+        try {
+            $encoded = json_encode($metadata, JSON_THROW_ON_ERROR);
+            if (strlen($encoded) > 65535) {
+                throw new InvalidArgumentException(
+                    "Metadata size (" . strlen($encoded) . " bytes) exceeds maximum limit (65535 bytes)"
+                );
+            }
+        } catch (\JsonException $e) {
+            throw new InvalidArgumentException("Invalid metadata: cannot be JSON encoded");
         }
     }
 }

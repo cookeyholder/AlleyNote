@@ -81,12 +81,16 @@ class PostRepository implements PostRepositoryInterface
     {
         $this->db->beginTransaction();
 
-        try { /* empty */ }
+        try {
             $result = $callback();
             $this->db->commit();
 
             return $result;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw $e;
         }
+    }
 
     private function invalidateCache(int $postId): void
     {
@@ -157,6 +161,10 @@ class PostRepository implements PostRepositoryInterface
      * @param array $result
      * @return array
      */
+    /**
+     * @param array<string, mixed> $result
+     * @return array<string, mixed>
+     */
     private function preparePostData(array $result): array
     {
         return [
@@ -180,6 +188,10 @@ class PostRepository implements PostRepositoryInterface
      * 準備新文章的資料.
      * @param array $data
      * @return array
+     */
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     private function prepareNewPostData(array $data): array
     {
@@ -328,6 +340,9 @@ class PostRepository implements PostRepositoryInterface
     /**
      * @param array $tagIds
      */
+    /**
+     * @param array<int> $tagIds
+     */
     private function tagsExist(array $tagIds): bool
     {
         if (empty($tagIds)) {
@@ -349,7 +364,11 @@ class PostRepository implements PostRepositoryInterface
      * @throws PDOException 當標籤不存在時拋出異常
      * @param array $data
      */
-    public function create(array $data, array $tagIds = []): Post
+    /**
+     * @param array<string, mixed> $data
+     * @param array<int> $tagIds
+     */
+    public function create(array $data, array $tagIds = []): int
     {
         return $this->executeInTransaction(function () use ($data, $tagIds) {
             // 資料已在 DTO 層級完成驗證，這裡直接處理
@@ -389,6 +408,9 @@ class PostRepository implements PostRepositoryInterface
      * 指派標籤到文章.
      * @param array $tagIds
      */
+    /**
+     * @param array<int> $tagIds
+     */
     private function assignTags(int $postId, array $tagIds): void
     {
         // 驗證標籤是否存在
@@ -407,7 +429,10 @@ class PostRepository implements PostRepositoryInterface
     /**
      * @param array $data
      */
-    public function update(int $id, array $data): Post
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function update(int $id, array $data): bool
     {
         // 檢查文章是否存在
         $post = $this->find($id);
@@ -478,6 +503,10 @@ class PostRepository implements PostRepositoryInterface
      * @param array $conditions
      * @return array
      */
+    /**
+     * @param array<string, mixed> $conditions
+     * @return array<string, mixed>
+     */
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         // 根據條件決定使用哪種快取鍵
@@ -515,7 +544,7 @@ class PostRepository implements PostRepositoryInterface
                         $this->logger->logSecurityEvent('Attempt to query with disallowed field', [
                             'field' => $key,
                             'action' => 'get_paginated',
-                            'conditions' => array_keys($conditions]),
+                            'conditions' => array_keys($conditions)
                         ]);
                     }
                 }
@@ -565,6 +594,9 @@ class PostRepository implements PostRepositoryInterface
     /**
      * @return array
      */
+    /**
+     * @return array<Post>
+     */
     public function getPinnedPosts(int $limit = 5): array
     {
         $cacheKey = PostCacheKeyService::pinnedPosts();
@@ -592,6 +624,9 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * @return array
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
@@ -656,7 +691,7 @@ class PostRepository implements PostRepositoryInterface
 
         $this->db->beginTransaction();
 
-        try { /* empty */ }
+        try {
             // 檢查文章是否存在
             $sql = $this->buildSelectQuery('id = ?');
             $stmt = $this->db->prepare($sql);
@@ -689,7 +724,11 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw $e;
         }
+    }
 
     public function setPinned(int $id, bool $isPinned): bool
     {
@@ -709,11 +748,14 @@ class PostRepository implements PostRepositoryInterface
     /**
      * @param array $tagIds
      */
-    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool
+    /**
+     * @param array<int> $tagIds
+     */
+    public function setTags(int $id, array $tagIds): bool
     {
         $this->db->beginTransaction();
 
-        try { /* empty */ }
+        try {
             // 驗證標籤是否存在
             if (!empty($tagIds) && !$this->tagsExist($tagIds)) {
                 throw new PDOException('部分標籤不存在');
@@ -738,7 +780,11 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw $e;
         }
+    }
 
     public function searchByTitle(string $title): mixed
     {
@@ -785,7 +831,7 @@ class PostRepository implements PostRepositoryInterface
                 /** @var array<string, mixed> $row */
                 return Post::fromArray($this->preparePostData($row));
             },
-            $results,
+            $results
         );
     }
 }

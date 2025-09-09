@@ -1,22 +1,18 @@
 {
-    "timestamp": "2025-09-09T20:06:09+08:00",
-    "total_syntax_errors": 161,
-    "affected_files": 68,
+    "timestamp": "2025-09-09T20:25:00+08:00",
+    "total_syntax_errors": 142,
+    "affected_files": 63,
     "error_type_stats": {
-        "syntax_general": 127,
-        "try_without_catch": 32,
-        "empty_array_elements": 2
+        "syntax_general": 114,
+        "try_without_catch": 27,
+        "empty_array_elements": 1
     },
     "file_error_counts": {
-        "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php": 4,
-        "\/var\/www\/html\/app\/Domains\/Post\/Repositories\/PostRepository.php": 4,
-        "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostCacheKeyService.php": 4,
-        "\/var\/www\/html\/app\/Domains\/Security\/DTOs\/CreateActivityLogDTO.php": 4,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php": 4,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/IpService.php": 4,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheKeys.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Response.php": 4,
+        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php": 4,
         "\/var\/www\/html\/app\/Shared\/Config\/JwtConfig.php": 4,
@@ -28,7 +24,6 @@
         "\/var\/www\/html\/app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheManager.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/ControllerResolver.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/RouteDispatcher.php": 3,
@@ -116,28 +111,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php": [
-            {
-                "line": 91,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 91",
-                "type": "syntax_general"
-            },
-            {
-                "line": 92,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 92",
-                "type": "syntax_general"
-            },
-            {
-                "line": 651,
-                "message": "Cannot use try without catch or finally on line 651",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 654,
-                "message": "Syntax error, unexpected T_VARIABLE on line 654",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Domains\/Post\/DTOs\/CreatePostDTO.php": [
             {
                 "line": 54,
@@ -148,28 +121,6 @@
                 "line": 59,
                 "message": "Syntax error, unexpected '{', expecting ')' on line 59",
                 "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Post\/Repositories\/PostRepository.php": [
-            {
-                "line": 84,
-                "message": "Cannot use try without catch or finally on line 84",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 518,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 518",
-                "type": "syntax_general"
-            },
-            {
-                "line": 659,
-                "message": "Cannot use try without catch or finally on line 659",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 716,
-                "message": "Cannot use try without catch or finally on line 716",
-                "type": "try_without_catch"
             }
         ],
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/ContentModerationService.php": [
@@ -184,54 +135,10 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostCacheKeyService.php": [
-            {
-                "line": 25,
-                "message": "Syntax error, unexpected '.', expecting T_VARIABLE on line 25",
-                "type": "syntax_general"
-            },
-            {
-                "line": 39,
-                "message": "Syntax error, unexpected '.', expecting T_VARIABLE on line 39",
-                "type": "syntax_general"
-            },
-            {
-                "line": 41,
-                "message": "Syntax error, unexpected ')' on line 41",
-                "type": "syntax_general"
-            },
-            {
-                "line": 41,
-                "message": "Syntax error, unexpected '.' on line 41",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Domains\/Post\/Validation\/PostValidator.php": [
             {
                 "line": 248,
                 "message": "Syntax error, unexpected '{', expecting ')' on line 248",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Security\/DTOs\/CreateActivityLogDTO.php": [
-            {
-                "line": 281,
-                "message": "Cannot use empty array elements in arrays on line 281",
-                "type": "empty_array_elements"
-            },
-            {
-                "line": 281,
-                "message": "Syntax error, unexpected T_DOUBLE_ARROW on line 281",
-                "type": "syntax_general"
-            },
-            {
-                "line": 305,
-                "message": "Cannot use try without catch or finally on line 305",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 307,
-                "message": "Syntax error, unexpected T_STRING on line 307",
                 "type": "syntax_general"
             }
         ],
@@ -280,28 +187,6 @@
             {
                 "line": 114,
                 "message": "Syntax error, unexpected '{' on line 114",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php": [
-            {
-                "line": 35,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 35",
-                "type": "syntax_general"
-            },
-            {
-                "line": 63,
-                "message": "Cannot use try without catch or finally on line 63",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 65,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 65",
-                "type": "syntax_general"
-            },
-            {
-                "line": 66,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 66",
                 "type": "syntax_general"
             }
         ],
@@ -497,6 +382,11 @@
                 "line": 61,
                 "message": "Syntax error, unexpected T_PUBLIC on line 61",
                 "type": "syntax_general"
+            },
+            {
+                "line": 63,
+                "message": "Cannot use try without catch or finally on line 63",
+                "type": "try_without_catch"
             },
             {
                 "line": 81,
@@ -1027,7 +917,6 @@
         "\/var\/www\/html\/app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheManager.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/ControllerResolver.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/RouteDispatcher.php": 3,
@@ -1077,15 +966,11 @@
         "\/var\/www\/html\/tests\/Unit\/Services\/AttachmentServiceTest.php": 1
     },
     "medium_fixes": {
-        "\/var\/www\/html\/app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php": 4,
-        "\/var\/www\/html\/app\/Domains\/Post\/Repositories\/PostRepository.php": 4,
-        "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostCacheKeyService.php": 4,
-        "\/var\/www\/html\/app\/Domains\/Security\/DTOs\/CreateActivityLogDTO.php": 4,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php": 4,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/IpService.php": 4,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheKeys.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Response.php": 4,
+        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php": 4,
         "\/var\/www\/html\/app\/Shared\/Config\/JwtConfig.php": 4,

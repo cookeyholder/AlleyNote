@@ -22,7 +22,7 @@ class PostCacheKeyService
     /**
      * 建立快取鍵的通用方法.
      */
-    private static function buildKey(mixed .$parts): string
+    private static function buildKey(mixed ...$parts): string
     {
         // 過濾空值並轉換為字串
         $cleanParts = array_filter(
@@ -36,9 +36,9 @@ class PostCacheKeyService
     /**
      * 建立模式匹配的快取鍵（用於刪除相關快取）.
      */
-    private static function pattern(mixed .$parts): string
+    private static function pattern(mixed ...$parts): string
     {
-        $pattern = self::buildKey(.$parts);
+        $pattern = self::buildKey(...$parts);
 
         return $pattern . '*';
     }

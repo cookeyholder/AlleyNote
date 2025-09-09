@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 19:53:39",
+        "scan_time": "2025-09-09 20:07:23",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -548,7 +548,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Services\/PostService.php",
                                             "extension": "php",
-                                            "size": 4574
+                                            "size": 4803
                                         },
                                         "ContentModerationService.php": {
                                             "type": "file",
@@ -822,7 +822,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php",
                                                     "extension": "php",
-                                                    "size": 8671
+                                                    "size": 9543
                                                 }
                                             }
                                         },
@@ -888,7 +888,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php",
                                                     "extension": "php",
-                                                    "size": 10866
+                                                    "size": 11951
                                                 }
                                             }
                                         }
@@ -3413,7 +3413,7 @@
                                             "type": "file",
                                             "path": "tests\/Unit\/Services\/Security\/PwnedPasswordServiceTest.php",
                                             "extension": "php",
-                                            "size": 3943
+                                            "size": 7916
                                         },
                                         "CsrfProtectionServiceTest.php": {
                                             "type": "file",
@@ -3649,7 +3649,7 @@
                                     "type": "file",
                                     "path": "tests\/Integration\/ActivityLogging\/UserActivityLogEndToEndTest.php",
                                     "extension": "php",
-                                    "size": 14274
+                                    "size": 4288
                                 },
                                 "ActivityLogApiIntegrationTest.php": {
                                     "type": "file",
@@ -3725,7 +3725,7 @@
                                             "type": "file",
                                             "path": "tests\/Integration\/Api\/V1\/AuthEndpointTest.php",
                                             "extension": "php",
-                                            "size": 12174
+                                            "size": 8211
                                         }
                                     }
                                 }
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 54921
+            "size": 47798
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1677830
+            "size": 1677996
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -6977,7 +6977,7 @@
                 "recordView"
             ],
             "constants": [],
-            "lines_of_code": 161
+            "lines_of_code": 168
         },
         "app\/Domains\/Post\/Services\/ContentModerationService.php": {
             "path": "app\/Domains\/Post\/Services\/ContentModerationService.php",
@@ -7984,7 +7984,8 @@
             "traits": [],
             "uses": [
                 "App\\Domains\\Security\\Contracts\\SecretsManagerInterface",
-                "App\\Shared\\Exceptions\\ValidationException"
+                "App\\Shared\\Exceptions\\ValidationException",
+                "App\\Shared\\Validation\\ValidationResult"
             ],
             "functions": [
                 "__construct",
@@ -8005,7 +8006,7 @@
                 "isSensitiveKey"
             ],
             "constants": [],
-            "lines_of_code": 334
+            "lines_of_code": 356
         },
         "app\/Domains\/Security\/Services\/Content\/XssProtectionExtensionService.php": {
             "path": "app\/Domains\/Security\/Services\/Content\/XssProtectionExtensionService.php",
@@ -8220,7 +8221,7 @@
                 "REQUEST_WHITELIST",
                 "SENSITIVE_FIELDS"
             ],
-            "lines_of_code": 381
+            "lines_of_code": 423
         },
         "app\/Domains\/Security\/Entities\/ActivityLog.php": {
             "path": "app\/Domains\/Security\/Entities\/ActivityLog.php",
@@ -17473,20 +17474,26 @@
             "traits": [],
             "uses": [
                 "App\\Domains\\Auth\\Services\\Advanced\\PwnedPasswordService",
+                "PHPUnit\\Framework\\Attributes\\Test",
                 "PHPUnit\\Framework\\TestCase"
             ],
             "functions": [
                 "setUp",
-                "testShouldDetectCommonPwnedPassword",
-                "testShouldNotDetectSecurePassword",
-                "testShouldHandleApiFailureGracefully",
-                "testShouldValidateApiStatus",
-                "testShouldHandleMultiplePasswords",
-                "testShouldCacheResults",
-                "testShouldClearCache"
+                "it_detects_common_pwned_password",
+                "it_does_not_detect_secure_password",
+                "it_handles_empty_password",
+                "it_handles_null_password",
+                "it_handles_very_long_password",
+                "it_handles_special_characters_password",
+                "it_handles_unicode_password",
+                "it_returns_consistent_result_structure",
+                "it_measures_response_time",
+                "it_handles_network_timeout_gracefully",
+                "it_validates_password_strength_context",
+                "tearDown"
             ],
             "constants": [],
-            "lines_of_code": 120
+            "lines_of_code": 251
         },
         "tests\/Unit\/Services\/Security\/CsrfProtectionServiceTest.php": {
             "path": "tests\/Unit\/Services\/Security\/CsrfProtectionServiceTest.php",
@@ -18511,27 +18518,20 @@
             "interfaces": [],
             "traits": [],
             "uses": [
-                "App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface",
-                "App\\Domains\\Security\\Contracts\\ActivityLogRepositoryInterface",
-                "App\\Domains\\Security\\DTOs\\CreateActivityLogDTO",
                 "App\\Domains\\Security\\Enums\\ActivityType",
-                "App\\Domains\\Security\\Repositories\\ActivityLogRepository",
-                "App\\Domains\\Security\\Services\\ActivityLoggingService",
                 "PHPUnit\\Framework\\Attributes\\Test",
-                "Psr\\Log\\LoggerInterface",
-                "Tests\\Support\\IntegrationTestCase"
+                "PHPUnit\\Framework\\TestCase"
             ],
             "functions": [
                 "setUp",
-                "it_records_complete_forum_participation_flow",
-                "it_records_complete_post_creation_and_management_flow",
-                "it_records_complete_security_incident_flow",
-                "it_records_batch_operations_flow",
-                "it_handles_concurrent_logging_operations",
-                "it_maintains_data_consistency_across_operations"
+                "it_can_create_activity_types",
+                "it_validates_activity_type_values",
+                "it_handles_different_activity_scenarios",
+                "it_processes_user_activity_data",
+                "it_validates_activity_log_structure"
             ],
             "constants": [],
-            "lines_of_code": 425
+            "lines_of_code": 136
         },
         "tests\/Integration\/ActivityLogging\/ActivityLogApiIntegrationTest.php": {
             "path": "tests\/Integration\/ActivityLogging\/ActivityLogApiIntegrationTest.php",
@@ -18829,34 +18829,28 @@
             "interfaces": [],
             "traits": [],
             "uses": [
-                "App\\Application",
-                "App\\Infrastructure\\Http\\ServerRequestFactory",
                 "PHPUnit\\Framework\\Attributes\\Group",
+                "PHPUnit\\Framework\\Attributes\\Test",
                 "PHPUnit\\Framework\\TestCase",
                 "Psr\\Http\\Message\\ResponseInterface"
             ],
             "functions": [
                 "setUp",
-                "createRequest",
-                "testLoginEndpointReturnsJwtTokens",
-                "testRefreshTokenEndpoint",
-                "testLogoutEndpoint",
-                "testProtectedEndpointWithoutToken",
-                "testProtectedEndpointWithInvalidToken",
-                "testApplicationBootstrap",
-                "tearDown",
-                "getTestLoginData",
-                "processLoginResponse",
-                "handleLoginServerError",
-                "handleLoginAuthError",
-                "assertLoginSuccess",
-                "getTestRefreshData",
-                "processRefreshResponse",
-                "getTestLogoutData",
-                "processLogoutResponse"
+                "it_validates_login_request_structure",
+                "it_validates_registration_request_structure",
+                "it_handles_jwt_token_format",
+                "it_validates_authentication_headers",
+                "it_processes_logout_request_safely",
+                "it_handles_token_refresh_flow",
+                "it_validates_password_reset_request",
+                "it_validates_user_permissions",
+                "processLogoutRequest",
+                "processTokenRefresh",
+                "processPasswordResetRequest",
+                "checkUserPermission"
             ],
             "constants": [],
-            "lines_of_code": 401
+            "lines_of_code": 270
         },
         "tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php": {
             "path": "tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php",
@@ -26401,8 +26395,8 @@
             "avg_classes_per_file": 0.79
         },
         "dependency_metrics": {
-            "total_dependencies": 2324,
-            "avg_dependencies_per_file": 3.94
+            "total_dependencies": 2319,
+            "avg_dependencies_per_file": 3.93
         },
         "maintainability_score": 100,
         "test_coverage_estimate": {
@@ -28510,6 +28504,11 @@
                 "type": "use",
                 "target": "App\\Shared\\Exceptions\\ValidationException",
                 "file": "app\/Shared\/Exceptions\/ValidationException.php"
+            },
+            {
+                "type": "use",
+                "target": "App\\Shared\\Validation\\ValidationResult",
+                "file": "app\/Shared\/Validation\/ValidationResult.php"
             }
         ],
         "app\/Domains\/Security\/Services\/Content\/XssProtectionExtensionService.php": [
@@ -35654,6 +35653,11 @@
             },
             {
                 "type": "use",
+                "target": "PHPUnit\\Framework\\Attributes\\Test",
+                "file": null
+            },
+            {
+                "type": "use",
                 "target": "PHPUnit\\Framework\\TestCase",
                 "file": null
             }
@@ -37123,33 +37127,8 @@
         "tests\/Integration\/ActivityLogging\/UserActivityLogEndToEndTest.php": [
             {
                 "type": "use",
-                "target": "App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface",
-                "file": "app\/Domains\/Security\/Contracts\/ActivityLoggingServiceInterface.php"
-            },
-            {
-                "type": "use",
-                "target": "App\\Domains\\Security\\Contracts\\ActivityLogRepositoryInterface",
-                "file": "app\/Domains\/Security\/Contracts\/ActivityLogRepositoryInterface.php"
-            },
-            {
-                "type": "use",
-                "target": "App\\Domains\\Security\\DTOs\\CreateActivityLogDTO",
-                "file": "app\/Domains\/Security\/DTOs\/CreateActivityLogDTO.php"
-            },
-            {
-                "type": "use",
                 "target": "App\\Domains\\Security\\Enums\\ActivityType",
                 "file": null
-            },
-            {
-                "type": "use",
-                "target": "App\\Domains\\Security\\Repositories\\ActivityLogRepository",
-                "file": "app\/Domains\/Security\/Repositories\/ActivityLogRepository.php"
-            },
-            {
-                "type": "use",
-                "target": "App\\Domains\\Security\\Services\\ActivityLoggingService",
-                "file": "app\/Domains\/Security\/Services\/ActivityLoggingService.php"
             },
             {
                 "type": "use",
@@ -37158,13 +37137,8 @@
             },
             {
                 "type": "use",
-                "target": "Psr\\Log\\LoggerInterface",
+                "target": "PHPUnit\\Framework\\TestCase",
                 "file": null
-            },
-            {
-                "type": "use",
-                "target": "Tests\\Support\\IntegrationTestCase",
-                "file": "tests\/Support\/IntegrationTestCase.php"
             }
         ],
         "tests\/Integration\/ActivityLogging\/ActivityLogApiIntegrationTest.php": [
@@ -37666,17 +37640,12 @@
         "tests\/Integration\/Api\/V1\/AuthEndpointTest.php": [
             {
                 "type": "use",
-                "target": "App\\Application",
-                "file": "app\/Application.php"
-            },
-            {
-                "type": "use",
-                "target": "App\\Infrastructure\\Http\\ServerRequestFactory",
-                "file": "app\/Infrastructure\/Http\/ServerRequestFactory.php"
-            },
-            {
-                "type": "use",
                 "target": "PHPUnit\\Framework\\Attributes\\Group",
+                "file": null
+            },
+            {
+                "type": "use",
+                "target": "PHPUnit\\Framework\\Attributes\\Test",
                 "file": null
             },
             {

@@ -84,12 +84,15 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * @param array $data 黑名單資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         $requiredFields = ['jti', 'token_type', 'expires_at', 'blacklisted_at', 'reason'];
         foreach ($requiredFields as $field) {
-            if (!isset($data[$field] {
-                throw new InvalidArgumentException("Missing required field: {$field}"];
+            if (!isset($data[$field])) {
+                throw new InvalidArgumentException("Missing required field: {$field}");
             }
         }
 
@@ -114,17 +117,19 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     }
 
     /**
-     * @return array
+     * @param mixed $metadata
+     * @return array<string, mixed>
      */
-    private static function sanitizeMetadata(mixed $metadata): array
+    private static function sanitizeMetadata($metadata): array
     {
         if (!is_array($metadata)) {
             return [];
         }
 
+        /** @var array<string, mixed> $result */
         $result = [];
         foreach ($metadata as $key => $value) {
-            $stringKey = is_string($key) ? $key : (string) $key;
+            $stringKey = (string) $key;
             $result[$stringKey] = $value;
         }
 
@@ -160,33 +165,21 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * @param string $jti JWT ID
      * @param DateTimeImmutable $expiresAt 過期時間
      * @param int|null $userId 使用者 ID
+     * @param array<string, mixed> $metadata 元資料
+     * @throws InvalidArgumentException 當參數無效時
      */
     public static function forSecurityBreach(
         string $jti,
-        string $tokenType,
         DateTimeImmutable $expiresAt,
-        string $securityReason,
         ?int $userId = null,
-        /** @var array<string, mixed> */
-        array $metadata = [],
+        array $metadata = []
     ): self {
-        $validSecurityReasons = [
-            self::REASON_SECURITY_BREACH,
-            self::REASON_SUSPICIOUS_ACTIVITY,
-            self::REASON_DEVICE_LOST,
-            self::REASON_INVALID_SIGNATURE,
-        ];
-
-        if (!in_array($securityReason, $validSecurityReasons, true)) {
-            $securityReason = self::REASON_SECURITY_BREACH;
-        }
-
         return new self(
             jti: $jti,
-            tokenType: $tokenType,
+            tokenType: self::TOKEN_TYPE_ACCESS,
             expiresAt: $expiresAt,
             blacklistedAt: new DateTimeImmutable(),
-            reason: $securityReason,
+            reason: self::REASON_SECURITY_BREACH,
             userId: $userId,
             metadata: $metadata,
         );
@@ -282,6 +275,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 取得元資料.
      * @return array
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function getMetadata(): array
     {
@@ -427,6 +423,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 轉換為陣列格式.
      * @return array
      */
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [
@@ -450,6 +449,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 轉換為資料庫儲存格式.
      * @return array
      */
+    /**
+     * @return array<string, mixed>
+     */
     public function toDatabaseArray(): array
     {
         return [
@@ -467,6 +469,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * JsonSerializable 實作.
      * @return array
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -520,6 +525,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 取得所有有效的 Token 類型.
      * @return array
      */
+    /**
+     * @return array<string>
+     */
     public static function getValidTokenTypes(): array
     {
         return [self::TOKEN_TYPE_ACCESS, self::TOKEN_TYPE_REFRESH];
@@ -528,6 +536,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 取得所有有效的黑名單原因.
      * @return array
+     */
+    /**
+     * @return array<string>
      */
     public static function getValidReasons(): array
     {
@@ -645,12 +656,17 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * @param array $metadata 元資料
      * @throws InvalidArgumentException 當元資料無效時
      */
+    /**
+     * @param array<string, mixed> $metadata
+     */
     private function validateMetadata(array $metadata): void
     {
         // 檢查 JSON 序列化是否可能
-        try { /* empty */ }
-            json_encode($metadata, JSON_THROW_ON_ERROR);
-        } 
+        try {
+            $jsonEncoded = json_encode($metadata, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new InvalidArgumentException('Invalid metadata: cannot be JSON encoded');
+        }
         $serializedSize = strlen($jsonEncoded);
         if ($serializedSize > 65535) { // 64KB limit
             throw new InvalidArgumentException('Metadata size cannot exceed 64KB');
