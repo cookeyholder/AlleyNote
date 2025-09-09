@@ -78,7 +78,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        try { /* empty */ }
+        try {
             // 1. 檢查使用者是否已認證
             if (!$request->getAttribute('authenticated', false)) {
                 return $this->createForbiddenResponse('使用者未認證', 'NOT_AUTHENTICATED');
@@ -125,7 +125,11 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $request = $this->injectAuthorizationContext($request, $authorizationResult);
 
             return $handler->handle($request);
+        } catch (Exception $e) {
+            $this->logger->error('Authorization error: ' . $e->getMessage());
+            return $this->createForbiddenResponse('授權檢查失敗', 'AUTHORIZATION_ERROR');
         }
+    }
 
     /**
      * 執行授權檢查.
@@ -571,8 +575,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
         // 從請求參數中提取
         $queryParams = $request->getQueryParams();
-        if (is_numeric($queryParams['id')] {
-            return (int] $queryParams['id'];
+        if (is_numeric($queryParams['id'])) {
+            return (int) $queryParams['id'];
         }
 
         // 從請求體中提取（用於 POST/PUT 請求）
@@ -625,7 +629,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 檢查特定資源的擁有者規則
-        if (isset($ownershipRules[$resource] {
+        if (isset($ownershipRules[$resource])) {
             // 這裡應該實作實際的資料庫查詢邏輯
             // 目前為示例用途，假設使用者 ID 和資源 ID 相等表示擁有者
             return $userId === $resourceId;
@@ -656,8 +660,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $serverParams = $request->getServerParams();
 
         foreach ($headers as $header) {
-            if (isset($serverParams[$header] && !empty($serverParams[$header] {
-                $ip = trim(explode(',', $serverParams[$header)[0]);
+            if (isset($serverParams[$header]) && !empty($serverParams[$header])) {
+                $ip = trim(explode(',', $serverParams[$header])[0]);
                 if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
                     return $ip;
                 }
@@ -738,7 +742,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 檢查時間範圍
-        if (isset($restriction['hours'] {
+        if (isset($restriction['hours'])) {
             $allowedHours = $restriction['hours'];
             if (!in_array($currentHour, $allowedHours, true)) {
                 return true; // 匹配限制（不允許的時間）
@@ -746,7 +750,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 檢查星期限制
-        if (isset($restriction['days'] {
+        if (isset($restriction['days'])) {
             $allowedDays = $restriction['days'];
             if (!in_array($currentDay, $allowedDays, true)) {
                 return true; // 匹配限制（不允許的日期）
@@ -882,7 +886,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $queryParams = $request->getQueryParams();
             foreach ($requiredParams as $param) {
                 $paramName = (string) $param;
-                if (!isset($queryParams[$paramName] {
+                if (!isset($queryParams[$paramName])) {
                     return new AuthorizationResult(
                         allowed: false,
                         reason: "缺少必要參數：{$paramName}",

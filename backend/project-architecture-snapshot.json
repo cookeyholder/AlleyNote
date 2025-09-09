@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 04:46:42",
+        "scan_time": "2025-09-09 07:58:47",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -1152,7 +1152,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Auth\/Services\/Advanced\/PwnedPasswordService.php",
                                                     "extension": "php",
-                                                    "size": 4773
+                                                    "size": 6019
                                                 }
                                             }
                                         },
@@ -1160,7 +1160,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Services\/SessionSecurityService.php",
                                             "extension": "php",
-                                            "size": 7426
+                                            "size": 7449
                                         },
                                         "AuthenticationService.php": {
                                             "type": "file",
@@ -1478,7 +1478,7 @@
                                             "type": "file",
                                             "path": "app\/Shared\/Cache\/Services\/DefaultCacheStrategy.php",
                                             "extension": "php",
-                                            "size": 9520
+                                            "size": 7608
                                         },
                                         "CacheGroupManager.php": {
                                             "type": "file",
@@ -2370,7 +2370,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Core\/Router.php",
                                             "extension": "php",
-                                            "size": 8354
+                                            "size": 8359
                                         }
                                     }
                                 },
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 121079
+            "size": 110010
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1678682
+            "size": 1678792
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -9297,22 +9297,22 @@
             ],
             "functions": [
                 "__construct",
-                "isPasswordPwned",
+                "isPwned",
+                "getPasswordCount",
+                "checkPasswordSecurity",
                 "fetchHashesFromApi",
                 "findHashInList",
-                "isInCache",
-                "getFromCache",
-                "setCache",
-                "clearCache",
-                "getApiStatus",
-                "checkMultiplePasswords"
+                "calculateRiskLevel",
+                "generateRecommendations",
+                "isServiceAvailable",
+                "getServiceStats"
             ],
             "constants": [
                 "HIBP_API_URL",
                 "REQUEST_TIMEOUT",
                 "CACHE_TTL"
             ],
-            "lines_of_code": 177
+            "lines_of_code": 228
         },
         "app\/Domains\/Auth\/Services\/SessionSecurityService.php": {
             "path": "app\/Domains\/Auth\/Services\/SessionSecurityService.php",
@@ -9341,7 +9341,7 @@
                 "performSecurityCheck"
             ],
             "constants": [],
-            "lines_of_code": 249
+            "lines_of_code": 250
         },
         "app\/Domains\/Auth\/Services\/AuthenticationService.php": {
             "path": "app\/Domains\/Auth\/Services\/AuthenticationService.php",
@@ -10709,27 +10709,27 @@
             "uses": [
                 "App\\Shared\\Cache\\Contracts\\CacheDriverInterface",
                 "App\\Shared\\Cache\\Contracts\\CacheStrategyInterface",
-                "Exception",
-                "InvalidArgumentException"
+                "Exception"
             ],
             "functions": [
                 "__construct",
                 "shouldCache",
+                "calculateTtl",
                 "selectDriver",
-                "decideTtl",
-                "handleMiss",
-                "handleDriverFailure",
+                "handleFailure",
                 "getStats",
                 "resetStats",
+                "getConfig",
+                "updateConfig",
+                "isExcluded",
+                "isValueSizeAcceptable",
+                "adjustTtlByKeyPattern",
                 "matchesPattern",
-                "addExcludePattern",
-                "removeExcludePattern",
-                "getExcludePatterns",
-                "setTtlRange",
-                "setMaxValueSize"
+                "initializeFromConfig",
+                "getDefaultConfig"
             ],
             "constants": [],
-            "lines_of_code": 339
+            "lines_of_code": 278
         },
         "app\/Shared\/Cache\/Services\/CacheGroupManager.php": {
             "path": "app\/Shared\/Cache\/Services\/CacheGroupManager.php",
@@ -13766,7 +13766,7 @@
                 "mergeGroupAttributes"
             ],
             "constants": [],
-            "lines_of_code": 304
+            "lines_of_code": 303
         },
         "app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": {
             "path": "app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php",
@@ -26406,7 +26406,7 @@
             "avg_classes_per_file": 0.79
         },
         "dependency_metrics": {
-            "total_dependencies": 2326,
+            "total_dependencies": 2325,
             "avg_dependencies_per_file": 3.94
         },
         "maintainability_score": 100,
@@ -30123,11 +30123,6 @@
             {
                 "type": "use",
                 "target": "Exception",
-                "file": null
-            },
-            {
-                "type": "use",
-                "target": "InvalidArgumentException",
                 "file": null
             }
         ],

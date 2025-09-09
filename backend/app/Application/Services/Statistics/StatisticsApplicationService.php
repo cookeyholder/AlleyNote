@@ -63,7 +63,7 @@ final class StatisticsApplicationService
     {
         $cacheKey = self::CACHE_PREFIX . ':snapshot:' . $this->getPeriodCacheKey($period);
 
-        try { /* empty */ }
+        try {
             // 檢查是否已存在且不強制重算
             if (!$forceRecalculate) {
                 $existingSnapshot = $this->statisticsRepository->findByPeriod($period);
@@ -111,6 +111,12 @@ final class StatisticsApplicationService
             ]);
 
             return $snapshot;
+        } catch (Exception $e) {
+            $this->logger->error('統計快照建立失敗', [
+                'period' => $period->getDisplayString(),
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
         }
 
     /**
@@ -132,7 +138,7 @@ final class StatisticsApplicationService
             return $cached;
         }
 
-        try { /* empty */ }
+        try {
             $this->logger->info('計算統計概覽', ['period' => $period->getDisplayString()]);
 
             // 取得統計快照
@@ -193,6 +199,12 @@ final class StatisticsApplicationService
             ]);
 
             return $overview;
+        } catch (Exception $e) {
+            $this->logger->error('統計總覽產生失敗', [
+                'period' => $period->getDisplayString(),
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
         }
 
     /**
@@ -212,7 +224,7 @@ final class StatisticsApplicationService
             return $cached;
         }
 
-        try { /* empty */ }
+        try {
             $this->logger->info('分析熱門內容', [
                 'period' => $period->getDisplayString(),
                 'limit' => $limit,
@@ -226,6 +238,13 @@ final class StatisticsApplicationService
             $this->cacheManager->set($cacheKey, $analysis, self::CACHE_TTL);
 
             return $analysis;
+        } catch (Exception $e) {
+            $this->logger->error('熱門內容分析失敗', [
+                'period' => $period->getDisplayString(),
+                'limit' => $limit,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
         }
 
     /**
@@ -239,7 +258,7 @@ final class StatisticsApplicationService
     {
         $cacheKey = self::CACHE_PREFIX . ':report:' . $this->getPeriodCacheKey($period) . ':' . md5(serialize($options));
 
-        try { /* empty */ }
+        try {
             $this->logger->info('產生統計報告', [
                 'period' => $period->getDisplayString(),
                 'options' => $options,
@@ -291,10 +310,16 @@ final class StatisticsApplicationService
 
             $this->logger->info('統計報告產生完成', [
                 'period' => $period->getDisplayString(),
-                'sections' => array_keys($report]),
+                'sections' => array_keys($report),
             ]);
 
             return $report;
+        } catch (Exception $e) {
+            $this->logger->error('統計報告產生失敗', [
+                'period' => $period->getDisplayString(),
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
         }
 
     /**
@@ -304,7 +329,7 @@ final class StatisticsApplicationService
      */
     public function clearStatisticsCache(?StatisticsPeriod $period = null): void
     {
-        try { /* empty */ }
+        try {
             if ($period !== null) {
                 // 清除特定週期的快取
                 $pattern = self::CACHE_PREFIX . ':*:' . $this->getPeriodCacheKey($period) . '*';
@@ -317,7 +342,14 @@ final class StatisticsApplicationService
 
                 $this->logger->info('清除所有統計快取');
             }
+        } catch (Exception $e) {
+            $this->logger->error('清除統計快取失敗', [
+                'period' => $period?->getDisplayString(),
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
         }
+    }
 
     /**
      * 檢查統計服務健康狀態.
@@ -325,7 +357,7 @@ final class StatisticsApplicationService
      */
     public function checkHealthStatus(): array
     {
-        try { /* empty */ }
+        try {
             $status = [
                 'service' => 'StatisticsApplicationService',
                 'status' => 'healthy',
@@ -354,6 +386,14 @@ final class StatisticsApplicationService
             }
 
             return $status;
+        } catch (Exception $e) {
+            return [
+                'service' => 'StatisticsApplicationService',
+                'status' => 'unhealthy',
+                'timestamp' => time(),
+                'error' => $e->getMessage(),
+                'checks' => ['error' => $e->getMessage()],
+            ];
         }
 
     /**
@@ -427,7 +467,7 @@ final class StatisticsApplicationService
      */
     private function checkCacheHealth(): array
     {
-        try { /* empty */ }
+        try {
             // 測試快取讀寫
             $testKey = self::CACHE_PREFIX . ':health_check';
             $testValue = ['test' => true, 'timestamp' => time()];
@@ -442,6 +482,8 @@ final class StatisticsApplicationService
             }
 
             return ['status' => 'error', 'message' => 'Cache read/write test failed'];
+        } catch (Exception $e) {
+            return ['status' => 'error', 'message' => 'Cache test failed: ' . $e->getMessage()];
         }
 
     /**
@@ -450,12 +492,14 @@ final class StatisticsApplicationService
      */
     private function checkDatabaseHealth(): array
     {
-        try { /* empty */ }
+        try {
             // 測試基本查詢
             $testPeriod = StatisticsPeriod::today();
             $this->statisticsRepository->findByPeriod($testPeriod);
 
             return ['status' => 'ok', 'message' => 'Database is accessible'];
+        } catch (Exception $e) {
+            return ['status' => 'error', 'message' => 'Database test failed: ' . $e->getMessage()];
         }
 
     /**
@@ -464,11 +508,14 @@ final class StatisticsApplicationService
      */
     private function checkCalculationHealth(): array
     {
-        try { /* empty */ }
+        try {
             // 測試計算服務 - 提供正確的型別
             $testData = ['period1' => 1, 'period2' => 2, 'period3' => 3]; // 測試資料
             $this->calculationService->calculateTrends($testData);
 
             return ['status' => 'ok', 'message' => 'Calculation service is working'];
-        } 
+        } catch (Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
 }

@@ -120,6 +120,7 @@ docker compose exec -T web composer ci
     - 使用 `php-cs-fixer` 修正風格錯誤
     - 修復 PHPStan 報告的問題（如類型錯誤、未使用變數等）
     - 確保所有測試均通過，在 scripts 資料夾中有各種清除錯誤測試或失敗測試的腳本可以使用
+    - 處理測試錯誤時，採取 **風險驅動優先級 → 批次處理 → 立即驗證 → 持續改進** 的工作流程，一次最多處理 5 個檔案，搭配腳本工具來提升效率
 
 5. **全部通過後再進行 Git Commit，Message 請符合 Conventional Commit 規範（以繁體中文撰寫）**
 
@@ -139,5 +140,6 @@ docker compose exec -T web composer ci
 ## 備註
 
 -   這個專案使用的資料庫是 SQLite3，請不要再任何文件出現其他資料庫的名稱，尤其是 MySQL 和 MariaDB。
+-   使用繁體中文撰寫所有文件與註解。
 
 如對本專案有任何實作、建模或架構相關的疑問，請先記錄在 `/docs/decision-log/` 中，再開啟 issue 或發起技術討論。

@@ -4,52 +4,49 @@ declare(strict_types=1);
 
 namespace App\Shared\Monitoring\Services;
 
-use App\Shared\Config\EnvironmentConfig;
-use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
 use Exception;
 use PDO;
 use Psr\Log\LoggerInterface;
 
 /**
- * 系統監控服務實作。
+ * 系統監控服務。
  *
- * 提供全面的系統監控功能，包含記憶體、磁碟、資料庫等系統指標監控
+ * 提供系統資源監控、健康檢查和性能指標收集功能
  */
-class SystemMonitorService implements SystemMonitorInterface
-
-
-
+class SystemMonitorService
 {
-    public function __construct(
-        private LoggerInterface $logger,
-        private PDO $database,
-        private EnvironmentConfig $config,
-    ) {}
+    private PDO $database;
+    private LoggerInterface $logger;
+    private array $config;
+
+    public function __construct(PDO $database, LoggerInterface $logger, array $config = [])
+    {
+        $this->database = $database;
+        $this->logger = $logger;
+        $this->config = array_merge($this->getDefaultConfig(), $config);
+    }
 
     /**
-     * 取得系統基本資訊。
-     * @return array
+     * 取得所有系統指標。
+     *
+     * @return array<string, mixed>
      */
-    public function getSystemInfo(): array
+    public function getAllMetrics(): array
     {
         return [
-            'php_version' => PHP_VERSION,
-            'system' => PHP_OS_FAMILY,
-            'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
-            'environment' => $this->config->getEnvironment(),
-            'timezone' => date_default_timezone_get(),
-            'memory_limit' => ini_get('memory_limit'),
-            'max_execution_time' => ini_get('max_execution_time'),
-            'upload_max_filesize' => ini_get('upload_max_filesize'),
-            'post_max_size' => ini_get('post_max_size'),
-            'extensions' => $this->getLoadedExtensions(),
+            'memory' => $this->getMemoryUsage(),
+            'cpu' => $this->getCpuUsage(),
+            'disk' => $this->getDiskUsage(),
+            'database' => $this->getDatabaseStatus(),
             'timestamp' => time(),
+            'environment' => $this->config['environment'] ?? 'production',
         ];
     }
 
     /**
-     * 取得記憶體使用統計。
-     * @return array
+     * 取得記憶體使用情況。
+     *
+     * @return array<string, mixed>
      */
     public function getMemoryUsage(): array
     {
@@ -64,15 +61,16 @@ class SystemMonitorService implements SystemMonitorInterface
             'peak_usage_mb' => round($memoryPeak / 1024 / 1024, 2),
             'limit_bytes' => $memoryLimit,
             'limit_mb' => round($memoryLimit / 1024 / 1024, 2),
-            'usage_percentage' => $memoryLimit > 0 ? round(($memoryUsage / $memoryLimit) * 100, 2)  => 0,
+            'usage_percentage' => $memoryLimit > 0 ? round(($memoryUsage / $memoryLimit) * 100, 2) : 0,
             'available_bytes' => max(0, $memoryLimit - $memoryUsage),
             'available_mb' => round(max(0, $memoryLimit - $memoryUsage) / 1024 / 1024, 2),
         ];
     }
 
     /**
-     * 取得 CPU 使用率（簡化版本）。
-     * @return array
+     * 取得 CPU 使用率。
+     *
+     * @return array<string, mixed>
      */
     public function getCpuUsage(): array
     {
@@ -82,32 +80,35 @@ class SystemMonitorService implements SystemMonitorInterface
             'load_average_1min' => $loadAvg[0] ?? 0,
             'load_average_5min' => $loadAvg[1] ?? 0,
             'load_average_15min' => $loadAvg[2] ?? 0,
-            'cpu_count' => $this->getCpuCount(),
-            'process_id' => getmypid(),
-            'process_uid' => function_exists('posix_getuid') ? posix_getuid() : null,
-            'process_gid' => function_exists('posix_getgid') ? posix_getgid() : null,
+            'cpu_cores' => $this->getCpuCoreCount(),
         ];
     }
 
     /**
-     * 取得磁碟使用統計。
-     * @return array
+     * 取得磁碟使用情況。
+     *
+     * @return array<string, mixed>
      */
-    public function getDiskUsage(string $path = '/'): array
+    public function getDiskUsage(): array
     {
+        $path = $this->config['disk_path'] ?? '/';
+
         if (!is_dir($path)) {
-            $path = dirname(__DIR__, 4);
+            return [
+                'error' => 'Invalid disk path',
+                'path' => $path,
+            ];
         }
 
         $totalBytes = disk_total_space($path);
         $freeBytes = disk_free_space($path);
-        $usedBytes = $totalBytes ? $totalBytes - $freeBytes : 0;
+        $usedBytes = $totalBytes && $freeBytes ? $totalBytes - $freeBytes : 0;
 
         return [
             'path' => $path,
-            'total_bytes' => $totalBytes ? => 0,
+            'total_bytes' => $totalBytes ?: 0,
             'total_gb' => $totalBytes ? round($totalBytes / 1024 / 1024 / 1024, 2) : 0,
-            'free_bytes' => $freeBytes ? true : 0,
+            'free_bytes' => $freeBytes ?: 0,
             'free_gb' => $freeBytes ? round($freeBytes / 1024 / 1024 / 1024, 2) : 0,
             'used_bytes' => $usedBytes,
             'used_gb' => round($usedBytes / 1024 / 1024 / 1024, 2),
@@ -116,12 +117,13 @@ class SystemMonitorService implements SystemMonitorInterface
     }
 
     /**
-     * 取得資料庫連線狀態和統計。
-     * @return array
+     * 取得資料庫狀態。
+     *
+     * @return array<string, mixed>
      */
     public function getDatabaseStatus(): array
     {
-        try { /* empty */ }
+        try {
             $startTime = microtime(true);
 
             // 測試資料庫連線
@@ -143,11 +145,19 @@ class SystemMonitorService implements SystemMonitorInterface
             }
 
             return $status;
+        } catch (Exception $e) {
+            return [
+                'connected' => false,
+                'error' => $e->getMessage(),
+                'connection_time_ms' => 0,
+            ];
         }
+    }
 
     /**
      * 取得應用程式健康狀態。
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     public function getHealthCheck(): array
     {
@@ -164,19 +174,23 @@ class SystemMonitorService implements SystemMonitorInterface
         $totalChecks = count($checks);
 
         foreach ($checks as $check) {
-            if ($check['status'] === 'healthy') {
-                $score++;
-            } elseif ($check['status'] === 'critical') {
+            if (is_array($check) && isset($check['status'])) {
+                if ($check['status'] === 'healthy') {
+                    $score++;
+                } elseif ($check['status'] === 'critical') {
+                    $overallHealth = false;
+                }
+            } else {
                 $overallHealth = false;
             }
         }
 
         return [
-            'overall_status' => $overallHealth ? 'healthy'  => 'unhealthy',
+            'overall_status' => $overallHealth ? 'healthy' : 'unhealthy',
             'health_score' => round(($score / $totalChecks) * 100, 1),
             'checks' => $checks,
             'timestamp' => time(),
-            'environment' => $this->config->getEnvironment(),
+            'environment' => $this->config['environment'] ?? 'unknown',
         ];
     }
 
@@ -187,139 +201,67 @@ class SystemMonitorService implements SystemMonitorInterface
     {
         $metrics = $this->getAllMetrics();
 
-        // 安全地存取陣列元素
-        $memoryUsageMb = 0.0;
-        if (is_array($metrics['memory'] ?? null)) {
-            $memoryData = $metrics['memory'];
-            $currentUsage = $memoryData['current_usage_mb'] ?? 0;
-            if (is_numeric($currentUsage)) {
-                $memoryUsageMb = (float) $currentUsage;
-            }
-        }
-
-        $memoryUsagePercent = 0.0;
-        if (is_array($metrics['memory'] ?? null)) {
-            $memoryData = $metrics['memory'];
-            $usagePercent = $memoryData['usage_percentage'] ?? 0;
-            if (is_numeric($usagePercent)) {
-                $memoryUsagePercent = (float) $usagePercent;
-            }
-        }
-
-        $diskUsagePercent = 0.0;
-        if (is_array($metrics['disk'] ?? null)) {
-            $diskData = $metrics['disk'];
-            $diskUsage = $diskData['usage_percentage'] ?? 0;
-            if (is_numeric($diskUsage)) {
-                $diskUsagePercent = (float) $diskUsage;
-            }
-        }
-
-        $dbConnected = false;
-        if (is_array($metrics['database'] ?? null)) {
-            $dbData = $metrics['database'];
-            $connected = $dbData['connected'] ?? false;
-            if (is_bool($connected)) {
-                $dbConnected = $connected;
-            }
-        }
-
-        $healthScore = 0.0;
-        if (is_array($metrics['health'] ?? null)) {
-            $healthData = $metrics['health'];
-            $score = $healthData['health_score'] ?? 0;
-            if (is_numeric($score)) {
-                $healthScore = (float) $score;
-            }
-        }
-
         $this->logger->info('System metrics collected', [
-            'memory_usage_mb' => $memoryUsageMb,
-            'memory_usage_percent' => $memoryUsagePercent,
-            'disk_usage_percent' => $diskUsagePercent,
-            'database_connected' => $dbConnected,
-            'health_score' => $healthScore,
+            'memory_usage_mb' => $metrics['memory']['current_usage_mb'] ?? 0,
+            'memory_usage_percent' => $metrics['memory']['usage_percentage'] ?? 0,
+            'disk_usage_percent' => $metrics['disk']['usage_percentage'] ?? 0,
+            'load_average_1min' => $metrics['cpu']['load_average_1min'] ?? 0,
+            'database_connected' => $metrics['database']['connected'] ?? false,
+            'database_response_time_ms' => $metrics['database']['connection_time_ms'] ?? 0,
         ]);
-
-        // 記錄警告
-        if ($memoryUsagePercent > 80) {
-            $memoryLimitMb = 0.0;
-            if (is_array($metrics['memory'] ?? null)) {
-                $memoryData = $metrics['memory'];
-                $limitMb = $memoryData['limit_mb'] ?? 0;
-                if (is_numeric($limitMb)) {
-                    $memoryLimitMb = (float) $limitMb;
-                }
-            }
-
-            $this->logger->warning('High memory usage detected', [
-                'usage_percent' => $memoryUsagePercent,
-                'used_mb' => $memoryUsageMb,
-                'limit_mb' => $memoryLimitMb,
-            ]);
-        }
-
-        if ($diskUsagePercent > 85) {
-            $diskUsedGb = 0.0;
-            $diskTotalGb = 0.0;
-            if (is_array($metrics['disk'] ?? null)) {
-                $diskData = $metrics['disk'];
-                $usedGb = $diskData['used_gb'] ?? 0;
-                $totalGb = $diskData['total_gb'] ?? 0;
-                if (is_numeric($usedGb)) {
-                    $diskUsedGb = (float) $usedGb;
-                }
-                if (is_numeric($totalGb)) {
-                    $diskTotalGb = (float) $totalGb;
-                }
-            }
-
-            $this->logger->warning('High disk usage detected', [
-                'usage_percent' => $diskUsagePercent,
-                'used_gb' => $diskUsedGb,
-                'total_gb' => $diskTotalGb,
-            ]);
-        }
     }
 
     /**
-     * 檢查系統是否正常運作。
+     * 檢查是否有任何關鍵問題。
      */
-    public function isSystemHealthy(): bool
+    public function hasAnyIssues(): bool
     {
-        $health = $this->getHealthCheck();
-
-        return $health['overall_status'] === 'healthy' && $health['health_score'] >= 80;
+        $healthCheck = $this->getHealthCheck();
+        return $healthCheck['overall_status'] !== 'healthy';
     }
 
     /**
-     * 取得所有系統指標。
-     * @return array
+     * 取得系統資源使用警告。
+     *
+     * @return array<string>
      */
-    public function getAllMetrics(): array
+    public function getResourceWarnings(): array
+    {
+        $warnings = [];
+        $memory = $this->getMemoryUsage();
+        $disk = $this->getDiskUsage();
+
+        if ($memory['usage_percentage'] > 90) {
+            $warnings[] = sprintf('記憶體使用率過高: %.1f%%', $memory['usage_percentage']);
+        }
+
+        if ($disk['usage_percentage'] > 85) {
+            $warnings[] = sprintf('磁碟使用率過高: %.1f%%', $disk['usage_percentage']);
+        }
+
+        $cpu = $this->getCpuUsage();
+        $cores = $cpu['cpu_cores'] ?? 1;
+        if ($cpu['load_average_5min'] > $cores * 0.8) {
+            $warnings[] = sprintf('CPU 負載過高: %.2f (核心數: %d)', $cpu['load_average_5min'], $cores);
+        }
+
+        return $warnings;
+    }
+
+    /**
+     * 取得預設配置。
+     *
+     * @return array<string, mixed>
+     */
+    private function getDefaultConfig(): array
     {
         return [
-            'system' => $this->getSystemInfo(),
-            'memory' => $this->getMemoryUsage(),
-            'cpu' => $this->getCpuUsage(),
-            'disk' => $this->getDiskUsage(),
-            'database' => $this->getDatabaseStatus(),
-            'health' => $this->getHealthCheck(),
+            'environment' => 'production',
+            'disk_path' => '/',
+            'memory_warning_threshold' => 80,
+            'disk_warning_threshold' => 85,
+            'cpu_warning_threshold' => 0.8,
         ];
-    }
-
-    // === 私有方法 ===
-
-    /**
-     * 取得載入的 PHP 擴充功能。
-     * @return array
-     */
-    private function getLoadedExtensions(): array
-    {
-        $extensions = get_loaded_extensions();
-        sort($extensions);
-
-        return $extensions;
     }
 
     /**
@@ -327,53 +269,48 @@ class SystemMonitorService implements SystemMonitorInterface
      */
     private function parseMemoryLimit(string $memoryLimit): int
     {
-        $memoryLimit = trim($memoryLimit);
-
-        if ($memoryLimit == '-1') {
-            return PHP_INT_MAX;
+        if ($memoryLimit === '-1') {
+            return 0; // 無限制
         }
 
         $unit = strtolower(substr($memoryLimit, -1));
-        $value = (int) substr($memoryLimit, 0, -1);
+        $value = (int) $memoryLimit;
 
         return match ($unit) {
             'g' => $value * 1024 * 1024 * 1024,
             'm' => $value * 1024 * 1024,
             'k' => $value * 1024,
-            default => (int) $memoryLimit,
+            default => $value,
         };
     }
 
     /**
-     * 取得 CPU 核心數量。
+     * 取得 CPU 核心數。
      */
-    private function getCpuCount(): int
+    private function getCpuCoreCount(): int
     {
-        if (function_exists('posix_times')) {
-            return (int) shell_exec('nproc') ? true : 1;
+        if (function_exists('shell_exec')) {
+            $cores = shell_exec('nproc');
+            if ($cores !== null) {
+                return (int) trim($cores);
+            }
         }
 
-        // 備選方案
-        if (is_file('/proc/cpuinfo')) {
-            $cpuinfo = file_get_contents('/proc/cpuinfo');
-
-            return substr_count($cpuinfo ? true : '', 'processor');
-        }
-
-        return 1;
+        return 1; // 預設值
     }
 
     /**
      * 取得 SQLite 統計資訊。
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     private function getSqliteStats(): array
     {
-        try { /* empty */ }
+        try {
             $stats = [];
 
             // 取得資料庫檔案大小
-            $dbPath = $this->config->get('DB_DATABASE');
+            $dbPath = $this->config['database_path'] ?? null;
             if (is_string($dbPath) && is_file($dbPath)) {
                 $fileSize = filesize($dbPath);
                 if ($fileSize !== false) {
@@ -384,21 +321,26 @@ class SystemMonitorService implements SystemMonitorInterface
 
             // 取得表格數量
             $stmt = $this->database->query("SELECT COUNT(*) as table_count FROM sqlite_master WHERE type='table'");
-            $result = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
-            if (is_array($result) && is_numeric($result['table_count'])) {
-                $stats['table_count'] = (int) $result['table_count'];
+            if ($stmt) {
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stats['table_count'] = $result['table_count'] ?? 0;
             }
 
             return $stats;
+        } catch (Exception $e) {
+            error_log('Failed to get SQLite stats: ' . $e->getMessage());
+            return [];
         }
+    }
 
     /**
      * 檢查資料庫健康狀態。
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     private function checkDatabaseHealth(): array
     {
-        try { /* empty */ }
+        try {
             $startTime = microtime(true);
             $stmt = $this->database->query('SELECT 1');
             $connectionTime = (microtime(true) - $startTime) * 1000;
@@ -410,11 +352,15 @@ class SystemMonitorService implements SystemMonitorInterface
             } else {
                 return ['status' => 'critical', 'message' => 'Database connection is very slow', 'response_time_ms' => round($connectionTime, 2)];
             }
+        } catch (Exception $e) {
+            return ['status' => 'critical', 'message' => 'Database connection failed: ' . $e->getMessage()];
         }
+    }
 
     /**
      * 檢查記憶體健康狀態。
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     private function checkMemoryHealth(): array
     {
@@ -423,8 +369,8 @@ class SystemMonitorService implements SystemMonitorInterface
 
         if ($usage < 70) {
             return ['status' => 'healthy', 'message' => 'Memory usage is normal', 'usage_percent' => $usage];
-        } elseif ($usage < 85) {
-            return ['status' => 'warning', 'message' => 'Memory usage is elevated', 'usage_percent' => $usage];
+        } elseif ($usage < 90) {
+            return ['status' => 'warning', 'message' => 'Memory usage is high', 'usage_percent' => $usage];
         } else {
             return ['status' => 'critical', 'message' => 'Memory usage is critical', 'usage_percent' => $usage];
         }
@@ -432,17 +378,18 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 檢查磁碟健康狀態。
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     private function checkDiskHealth(): array
     {
         $disk = $this->getDiskUsage();
         $usage = $disk['usage_percentage'];
 
-        if ($usage < 80) {
+        if ($usage < 70) {
             return ['status' => 'healthy', 'message' => 'Disk usage is normal', 'usage_percent' => $usage];
-        } elseif ($usage < 90) {
-            return ['status' => 'warning', 'message' => 'Disk usage is elevated', 'usage_percent' => $usage];
+        } elseif ($usage < 85) {
+            return ['status' => 'warning', 'message' => 'Disk usage is high', 'usage_percent' => $usage];
         } else {
             return ['status' => 'critical', 'message' => 'Disk usage is critical', 'usage_percent' => $usage];
         }
@@ -450,55 +397,48 @@ class SystemMonitorService implements SystemMonitorInterface
 
     /**
      * 檢查環境配置健康狀態。
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     private function checkEnvironmentHealth(): array
     {
-        try { /* empty */ }
-            $errors = $this->config->validate();
+        try {
+            $requiredExtensions = ['pdo', 'json', 'mbstring'];
+            $missingExtensions = [];
 
-            if (empty($errors)) {
-                return ['status' => 'healthy', 'message' => 'Environment configuration is valid'];
-            } else {
-                return ['status' => 'warning', 'message' => 'Environment configuration has issues', 'errors' => $errors];
+            foreach ($requiredExtensions as $extension) {
+                if (!extension_loaded($extension)) {
+                    $missingExtensions[] = $extension;
+                }
             }
+
+            if (empty($missingExtensions)) {
+                return ['status' => 'healthy', 'message' => 'All required PHP extensions are loaded'];
+            } else {
+                return ['status' => 'critical', 'message' => 'Missing PHP extensions', 'missing_extensions' => $missingExtensions];
+            }
+        } catch (Exception $e) {
+            return ['status' => 'critical', 'message' => 'Failed to check environment: ' . $e->getMessage()];
         }
+    }
 
     /**
      * 檢查日誌健康狀態。
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     private function checkLogHealth(): array
     {
-        $logPaths = [
-            'app' => '/var/www/html/storage/logs/app.log',
-            'error' => '/var/www/html/storage/logs/error.log',
-        ];
+        $logDir = $this->config['log_directory'] ?? '/tmp';
 
-        $issues = [];
-
-        foreach ($logPaths as $type => $path) {
-            if (file_exists($path)) {
-                if (!is_writable($path)) {
-                    $issues[] = "Log file {$type} is not writable: {$path}";
-                }
-
-                $size = filesize($path);
-                if ($size > 100 * 1024 * 1024) { // 100MB
-                    $issues[] = "Log file {$type} is too large: " . round($size / 1024 / 1024, 1) . 'MB';
-                }
-            } else {
-                $logDir = dirname($path);
-                if (!is_dir($logDir) || !is_writable($logDir)) {
-                    $issues[] = "Log directory is not writable: {$logDir}";
-                }
-            }
+        if (!is_dir($logDir)) {
+            return ['status' => 'critical', 'message' => 'Log directory does not exist'];
         }
 
-        if (empty($issues)) {
-            return ['status' => 'healthy', 'message' => 'Log system is functioning normally'];
-        } else {
-            return ['status' => 'warning', 'message' => 'Log system has issues', 'issues' => $issues];
+        if (!is_writable($logDir)) {
+            return ['status' => 'critical', 'message' => 'Log directory is not writable'];
         }
+
+        return ['status' => 'healthy', 'message' => 'Log directory is accessible'];
     }
 }

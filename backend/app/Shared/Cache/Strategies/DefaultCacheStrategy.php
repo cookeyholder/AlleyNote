@@ -7,131 +7,85 @@ namespace App\Shared\Cache\Strategies;
 use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\CacheStrategyInterface;
 use Exception;
-use InvalidArgumentException;
 
 /**
- * 預設快取策略。
+ * 預設快取策略實作。
  *
- * 提供基本的快取策略實作
+ * 提供基本的快取決策邏輯，包含 TTL 管理、值大小限制和排除模式
  */
 class DefaultCacheStrategy implements CacheStrategyInterface
 {
+    /** @var array<string, mixed> 配置 */
+    private array $config;
+
     /** @var array<string, int> 統計資料 */
     private array $stats = [
         'cache_decisions' => 0,
         'cache_allowed' => 0,
         'cache_denied' => 0,
-        'driver_selections' => 0,
         'ttl_adjustments' => 0,
-        'miss_handles' => 0,
-        'failure_handles' => 0,
+        'size_rejections' => 0,
+        'pattern_exclusions' => 0,
     ];
 
-    /** @var int 最小快取 TTL */
+    /** @var int 最小 TTL (秒) */
     private int $minTtl;
 
-    /** @var int 最大快取 TTL */
+    /** @var int 最大 TTL (秒) */
     private int $maxTtl;
 
-    /** @var array<string> 不快取的鍵模式 */
-    private array $excludePatterns;
-
-    /** @var int 最大值大小（位元組） */
+    /** @var int 最大值大小 (位元組) */
     private int $maxValueSize;
 
+    /** @var array<string> 排除模式 */
+    private array $excludePatterns;
+
     /**
-     * @param array $config
+     * @param array<string, mixed> $config
      */
     public function __construct(array $config = [])
     {
-        $this->minTtl = is_int($config['min_ttl'] ?? null) ? $config['min_ttl'] : 60;
-        $this->maxTtl = is_int($config['max_ttl'] ?? null) ? $config['max_ttl'] : 86400;
-
-        $patterns = $config['exclude_patterns'] ?? [];
-        $this->excludePatterns = is_array($patterns) ? array_filter($patterns, 'is_string') : [];
-
-        $this->maxValueSize = is_int($config['max_value_size'] ?? null) ? $config['max_value_size'] : 1024 * 1024; // 1MB
+        $this->config = array_merge($this->getDefaultConfig(), $config);
+        $this->initializeFromConfig();
     }
 
     public function shouldCache(string $key, mixed $value, int $ttl): bool
     {
         $this->stats['cache_decisions']++;
 
-        // 檢查是否在排除模式中
-        foreach ($this->excludePatterns as $pattern) {
-            if ($this->matchesPattern($key, $pattern)) {
-                $this->stats['cache_denied']++;
-
-                return false;
-            }
+        // 檢查排除模式
+        if ($this->isExcluded($key)) {
+            $this->stats['pattern_exclusions']++;
+            $this->stats['cache_denied']++;
+            return false;
         }
 
         // 檢查值大小
-        $serializedValue = serialize($value);
-        if (strlen($serializedValue) > $this->maxValueSize) {
+        if (!$this->isValueSizeAcceptable($value)) {
+            $this->stats['size_rejections']++;
             $this->stats['cache_denied']++;
-
             return false;
         }
 
         // 檢查 TTL 範圍
-        if ($ttl > 0 && ($ttl < $this->minTtl || $ttl > $this->maxTtl)) {
+        if ($ttl < $this->minTtl || ($this->maxTtl > 0 && $ttl > $this->maxTtl)) {
             $this->stats['cache_denied']++;
-
-            return false;
-        }
-
-        // 檢查值類型
-        if (is_resource($value) || (is_object($value) && !method_exists($value, '__sleep'))) {
-            $this->stats['cache_denied']++;
-
             return false;
         }
 
         $this->stats['cache_allowed']++;
-
         return true;
     }
 
-    /**
-     * @param array $drivers
-     */
     public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
     {
-        $this->stats['driver_selections']++;
-
         if (empty($drivers)) {
             return null;
         }
 
-        $serializedValue = serialize($value);
-        $valueSize = strlen($serializedValue);
-
-        // 根據資料大小選擇驅動
-        foreach ($drivers as $name => $driver) {
-            if (!$driver->isAvailable()) {
-                continue;
-            }
-
-            // 小資料優先使用記憶體快取
-            if ($valueSize <= 1024 && str_contains(get_class($driver), 'Memory')) {
-                return $driver;
-            }
-
-            // 中等資料使用 Redis
-            if ($valueSize <= 10240 && str_contains(get_class($driver), 'Redis')) {
-                return $driver;
-            }
-
-            // 大資料使用檔案快取
-            if (str_contains(get_class($driver), 'File')) {
-                return $driver;
-            }
-        }
-
-        // 回退到第一個可用的驅動
+        // 簡單的策略：優先選擇第一個可用的驅動
         foreach ($drivers as $driver) {
-            if ($driver->isAvailable()) {
+            if ($driver instanceof CacheDriverInterface) {
                 return $driver;
             }
         }
@@ -141,79 +95,64 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     public function decideTtl(string $key, mixed $value, int $requestedTtl): int
     {
-        $this->stats['ttl_adjustments']++;
+        // 確保 TTL 在允許範圍內
+        $ttl = $requestedTtl;
 
-        // 如果請求的 TTL 為 0（永不過期），保持原樣
-        if ($requestedTtl == 0) {
-            return 0;
+        if ($ttl < $this->minTtl) {
+            $ttl = $this->minTtl;
+            $this->stats['ttl_adjustments']++;
         }
 
-        // 調整 TTL 在合理範圍內
-        $adjustedTtl = max($this->minTtl, min($this->maxTtl, $requestedTtl));
-
-        // 根據資料特性調整 TTL
-        $serializedValue = serialize($value);
-        $valueSize = strlen($serializedValue);
-
-        // 小資料可以快取更長時間
-        if ($valueSize <= 1024) {
-            $adjustedTtl = min($this->maxTtl, $adjustedTtl * 2);
+        if ($this->maxTtl > 0 && $ttl > $this->maxTtl) {
+            $ttl = $this->maxTtl;
+            $this->stats['ttl_adjustments']++;
         }
 
-        // 大資料縮短快取時間
-        if ($valueSize > 10240) {
-            $adjustedTtl = max($this->minTtl, (int) ($adjustedTtl * 0.5));
-        }
+        // 基於鍵模式調整 TTL
+        $ttl = $this->adjustTtlByKeyPattern($key, $ttl);
 
-        // 根據鍵類型調整
-        if (str_contains($key, 'session:') || str_contains($key, 'user:')) {
-            // 會話相關資料較短時間
-            $adjustedTtl = min(3600, $adjustedTtl);
-        } elseif (str_contains($key, 'config:') || str_contains($key, 'settings:')) {
-            // 配置相關資料較長時間
-            $adjustedTtl = max(7200, $adjustedTtl);
-        }
-
-        return $adjustedTtl;
+        return $ttl;
     }
 
     public function handleMiss(string $key, callable $callback): mixed
     {
-        $this->stats['miss_handles']++;
-
         // 簡單的重試機制
         $maxRetries = 3;
         $retryDelay = 100000; // 100ms
 
         for ($i = 0; $i < $maxRetries; $i++) {
-            try { /* empty */ }
+            try {
                 return $callback();
-            } 
+            } catch (Exception $e) {
+                // 記錄錯誤並重試
+                error_log("Cache callback failed on attempt " . ($i + 1) . ": " . $e->getMessage());
+
+                if ($i < $maxRetries - 1) {
+                    usleep($retryDelay);
+                    $retryDelay *= 2; // 指數退避
+                }
+            }
         }
 
         return null;
     }
 
-    /**
-     * @param array $params
-     */
     public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
-        /** @var array<string, mixed> */
         array $availableDrivers,
         string $operation,
-        /** @var array<string, mixed> */
-        array $params,
+        array $params
     ): mixed {
-        $this->stats['failure_handles']++;
-
         // 尋找替代驅動
         foreach ($availableDrivers as $driver) {
-            if ($driver == $failedDriver || !$driver->isAvailable()) {
+            if ($driver === $failedDriver || !($driver instanceof CacheDriverInterface)) {
                 continue;
             }
 
-            try { /* empty */ }
+            try {
+                // 記錄驅動故障
+                error_log("Cache driver failure: " . get_class($failedDriver));
+
                 $key = is_string($params['key'] ?? null) ? $params['key'] : '';
                 $ttl = is_int($params['ttl'] ?? null) ? $params['ttl'] : 3600;
 
@@ -225,7 +164,11 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                     'flush' => $driver->flush(),
                     default => null,
                 };
-            } 
+            } catch (Exception $e) {
+                error_log("Fallback driver also failed: " . $e->getMessage());
+                continue;
+            }
+        }
 
         // 所有驅動都失敗，根據操作返回合適的預設值
         return match ($operation) {
@@ -237,33 +180,105 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     }
 
     /**
-     * @return array
+     * 取得策略統計資訊。
+     *
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {
         $totalDecisions = $this->stats['cache_decisions'];
         $allowRate = $totalDecisions > 0 ? ($this->stats['cache_allowed'] / $totalDecisions) * 100 : 0;
 
-        return array_merge($this->stats, [
-            'cache_allow_rate' => round($allowRate, 2),
-            'min_ttl' => $this->minTtl,
-            'max_ttl' => $this->maxTtl,
-            'max_value_size' => $this->maxValueSize,
-            'exclude_patterns_count' => count($this->excludePatterns]),
-        ]);
+        return [
+            'decisions_total' => $totalDecisions,
+            'allowed' => $this->stats['cache_allowed'],
+            'denied' => $this->stats['cache_denied'],
+            'allow_rate_percent' => round($allowRate, 2),
+            'ttl_adjustments' => $this->stats['ttl_adjustments'],
+            'size_rejections' => $this->stats['size_rejections'],
+            'pattern_exclusions' => $this->stats['pattern_exclusions'],
+            'config' => $this->config,
+        ];
     }
 
+    /**
+     * 重設統計資料。
+     */
     public function resetStats(): void
     {
         $this->stats = [
             'cache_decisions' => 0,
             'cache_allowed' => 0,
             'cache_denied' => 0,
-            'driver_selections' => 0,
             'ttl_adjustments' => 0,
-            'miss_handles' => 0,
-            'failure_handles' => 0,
+            'size_rejections' => 0,
+            'pattern_exclusions' => 0,
         ];
+    }
+
+    /**
+     * 取得配置。
+     *
+     * @return array<string, mixed>
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
+     * 更新配置。
+     *
+     * @param array<string, mixed> $config
+     */
+    public function updateConfig(array $config): void
+    {
+        $this->config = array_merge($this->config, $config);
+        $this->initializeFromConfig();
+    }
+
+    /**
+     * 檢查鍵是否被排除。
+     */
+    private function isExcluded(string $key): bool
+    {
+        foreach ($this->excludePatterns as $pattern) {
+            if ($this->matchesPattern($key, $pattern)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 檢查值大小是否可接受。
+     */
+    private function isValueSizeAcceptable(mixed $value): bool
+    {
+        if ($this->maxValueSize <= 0) {
+            return true;
+        }
+
+        $size = strlen(serialize($value));
+        return $size <= $this->maxValueSize;
+    }
+
+    /**
+     * 基於鍵模式調整 TTL。
+     */
+    private function adjustTtlByKeyPattern(string $key, int $ttl): int
+    {
+        // 特殊模式的 TTL 調整
+        $adjustments = $this->config['ttl_adjustments'] ?? [];
+
+        foreach ($adjustments as $pattern => $multiplier) {
+            if ($this->matchesPattern($key, $pattern)) {
+                return (int) ($ttl * $multiplier);
+            }
+        }
+
+        return $ttl;
     }
 
     /**
@@ -271,69 +286,43 @@ class DefaultCacheStrategy implements CacheStrategyInterface
      */
     private function matchesPattern(string $key, string $pattern): bool
     {
+        // 支援簡單的萬用字元模式
         $pattern = str_replace(['*', '?'], ['.*', '.'], $pattern);
-
         return preg_match('/^' . $pattern . '$/', $key) === 1;
     }
 
     /**
-     * 新增排除模式。
+     * 從配置初始化屬性。
      */
-    public function addExcludePattern(string $pattern): void
+    private function initializeFromConfig(): void
     {
-        if (!in_array($pattern, $this->excludePatterns, true)) {
-            $this->excludePatterns[] = $pattern;
-        }
+        $this->minTtl = (int) ($this->config['min_ttl'] ?? 60);
+        $this->maxTtl = (int) ($this->config['max_ttl'] ?? 86400);
+        $this->maxValueSize = (int) ($this->config['max_value_size'] ?? 1024 * 1024);
+        $this->excludePatterns = (array) ($this->config['exclude_patterns'] ?? []);
     }
 
     /**
-     * 移除排除模式。
+     * 取得預設配置。
+     *
+     * @return array<string, mixed>
      */
-    public function removeExcludePattern(string $pattern): bool
+    private function getDefaultConfig(): array
     {
-        $key = array_search($pattern, $this->excludePatterns, true);
-
-        if ($key !== false) {
-            unset($this->excludePatterns[$key]);
-            $this->excludePatterns = array_values($this->excludePatterns);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * 取得排除模式。
-     * @return array
-     */
-    public function getExcludePatterns(): array
-    {
-        return $this->excludePatterns;
-    }
-
-    /**
-     * 設定 TTL 範圍。
-     */
-    public function setTtlRange(int $minTtl, int $maxTtl): void
-    {
-        if ($minTtl <= 0 || $maxTtl <= 0 || $minTtl > $maxTtl) {
-            throw new InvalidArgumentException('無效的 TTL 範圍');
-        }
-
-        $this->minTtl = $minTtl;
-        $this->maxTtl = $maxTtl;
-    }
-
-    /**
-     * 設定最大值大小。
-     */
-    public function setMaxValueSize(int $maxValueSize): void
-    {
-        if ($maxValueSize <= 0) {
-            throw new InvalidArgumentException('最大值大小必須大於 0');
-        }
-
-        $this->maxValueSize = $maxValueSize;
+        return [
+            'min_ttl' => 60,        // 1 分鐘
+            'max_ttl' => 86400,     // 24 小時
+            'max_value_size' => 1024 * 1024, // 1MB
+            'exclude_patterns' => [
+                'temp:*',
+                'debug:*',
+                'test:*',
+            ],
+            'ttl_adjustments' => [
+                'user:*' => 0.5,     // 使用者相關資料較短的 TTL
+                'system:*' => 2.0,   // 系統資料較長的 TTL
+                'static:*' => 5.0,   // 靜態資料更長的 TTL
+            ],
+        ];
     }
 }
