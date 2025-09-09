@@ -8,14 +8,11 @@ use Exception;
 use InvalidArgumentException;
 
 /**
- * 環境配置管理器.
+ * 環境配置管理器
  *
  * 負責載入和管理不同環境的配置檔案，支持多環境配置切換
  */
 final class EnvironmentConfig
-
-
-
 {
     private string $environment;
 
@@ -38,8 +35,8 @@ final class EnvironmentConfig
 
     public function __construct(?string $environment = null, ?string $configPath = null)
     {
-        $this->environment = $environment ? true : $this->detectEnvironment();
-        $this->configPath = $configPath ? true : $this->getDefaultConfigPath();
+        $this->environment = $environment ?? $this->detectEnvironment();
+        $this->configPath = $configPath ?? $this->getDefaultConfigPath();
 
         if (!in_array($this->environment, self::VALID_ENVIRONMENTS, true)) {
             throw new InvalidArgumentException(
@@ -49,7 +46,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 載入環境配置.
+     * 載入環境配置
      */
     public function load(): void
     {
@@ -69,7 +66,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 取得配置值.
+     * 取得配置值
      */
     public function get(string $key, mixed $default = null): mixed
     {
@@ -81,14 +78,14 @@ final class EnvironmentConfig
             return $this->parseValue($envValue);
         }
 
-        if (isset($_ENV[$key] && $_ENV[$key] !== '') {
+        if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
             $envVar = $_ENV[$key];
             if (is_string($envVar)) {
                 return $this->parseValue($envVar);
             }
         }
 
-        if (isset($this->config[$key) {
+        if (isset($this->config[$key])) {
             $configValue = $this->config[$key];
             if (is_string($configValue)) {
                 return $this->parseValue($configValue);
@@ -101,50 +98,29 @@ final class EnvironmentConfig
     }
 
     /**
-     * 設定配置值.
+     * 設定配置值
      */
-    public function set(string $key, string $value): void
+    public function set(string $key, mixed $value): void
     {
         $this->config[$key] = $value;
-        $_ENV[$key] = $value;
-        putenv("{$key}={$value}");
     }
 
     /**
-     * 取得目前環境.
+     * 檢查配置鍵是否存在
      */
-    public function getEnvironment(): string
+    public function has(string $key): bool
     {
-        return $this->environment;
+        $this->load();
+
+        return isset($this->config[$key])
+            || getenv($key) !== false
+            || isset($_ENV[$key]);
     }
 
     /**
-     * 檢查是否為生產環境.
-     */
-    public function isProduction(): bool
-    {
-        return $this->environment === 'production';
-    }
-
-    /**
-     * 檢查是否為開發環境.
-     */
-    public function isDevelopment(): bool
-    {
-        return $this->environment === 'development';
-    }
-
-    /**
-     * 檢查是否為測試環境.
-     */
-    public function isTesting(): bool
-    {
-        return $this->environment === 'testing';
-    }
-
-    /**
-     * 取得所有已載入的配置.
-     * @return array
+     * 取得所有配置
+     *
+     * @return array<string, mixed>
      */
     public function all(): array
     {
@@ -154,51 +130,168 @@ final class EnvironmentConfig
     }
 
     /**
-     * 驗證環境配置的完整性.
-     * @return list
+     * 取得當前環境
      */
-    public function validate(): array
+    public function getEnvironment(): string
     {
-        $this->load();
-        $errors = [];
+        return $this->environment;
+    }
 
-        // 檢查必要的配置項目
-        foreach (self::REQUIRED_KEYS as $key) {
-            if (empty($this->getRaw($key))) {
-                $errors[] = "必要配置項目遺失: {$key}";
+    /**
+     * 檢查是否為開發環境
+     */
+    public function isDevelopment(): bool
+    {
+        return $this->environment === 'development';
+    }
+
+    /**
+     * 檢查是否為測試環境
+     */
+    public function isTesting(): bool
+    {
+        return $this->environment === 'testing';
+    }
+
+    /**
+     * 檢查是否為生產環境
+     */
+    public function isProduction(): bool
+    {
+        return $this->environment === 'production';
+    }
+
+    /**
+     * 重新載入配置
+     */
+    public function reload(): void
+    {
+        $this->loaded = false;
+        $this->config = [];
+        $this->load();
+    }
+
+    /**
+     * 從檔案載入配置
+     */
+    private function loadFromFile(string $filePath): void
+    {
+        $content = file_get_contents($filePath);
+        if ($content === false) {
+            throw new Exception("無法讀取配置檔案: {$filePath}");
+        }
+
+        $lines = explode("\n", $content);
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            // 跳過空行和註解
+            if (empty($line) || str_starts_with($line, '#')) {
+                continue;
+            }
+
+            $this->parseLine($line);
+        }
+    }
+
+    /**
+     * 解析配置行
+     */
+    private function parseLine(string $line): void
+    {
+        if (!str_contains($line, '=')) {
+            return;
+        }
+
+        [$key, $value] = explode('=', $line, 2);
+        $key = trim($key);
+        $value = trim($value);
+
+        // 移除引號
+        if ((str_starts_with($value, '"') && str_ends_with($value, '"')) ||
+            (str_starts_with($value, "'") && str_ends_with($value, "'"))) {
+            $value = substr($value, 1, -1);
+        }
+
+        $this->config[$key] = $value;
+    }
+
+    /**
+     * 解析配置值
+     */
+    private function parseValue(string $value): mixed
+    {
+        // 布林值
+        if (in_array(strtolower($value), ['true', '1', 'on', 'yes'], true)) {
+            return true;
+        }
+
+        if (in_array(strtolower($value), ['false', '0', 'off', 'no'], true)) {
+            return false;
+        }
+
+        // null 值
+        if (strtolower($value) === 'null') {
+            return null;
+        }
+
+        // 數字
+        if (is_numeric($value)) {
+            return str_contains($value, '.') ? (float) $value : (int) $value;
+        }
+
+        // JSON 陣列或物件
+        if ((str_starts_with($value, '[') && str_ends_with($value, ']')) ||
+            (str_starts_with($value, '{') && str_ends_with($value, '}'))) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $decoded;
             }
         }
 
-        // 環境特定的驗證
-        $envErrors = $this->validateEnvironmentSpecific();
-        $errors = array_merge($errors, $envErrors);
-
-        return $errors;
+        return $value;
     }
 
     /**
-     * 自動偵測當前環境.
+     * 偵測當前環境
      */
     private function detectEnvironment(): string
     {
-        // 從環境變數檢測
-        $env = getenv('APP_ENV') ? true : ($_ENV['APP_ENV'] ?? 'development');
-
-        // 確保返回值是字串
-        if (!is_string($env)) {
-            $env = 'development';
+        // 優先從環境變數取得
+        $envVar = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? null);
+        if (is_string($envVar) && in_array($envVar, self::VALID_ENVIRONMENTS, true)) {
+            return $envVar;
         }
 
-        // 檢測是否在測試模式
-        if (defined('PHPUNIT_RUNNING') || (function_exists('running_tests') && running_tests())) {
-            return 'testing';
+        // 從 SERVER 變數偵測
+        if (isset($_SERVER['APP_ENV']) && is_string($_SERVER['APP_ENV'])) {
+            $serverEnv = $_SERVER['APP_ENV'];
+            if (in_array($serverEnv, self::VALID_ENVIRONMENTS, true)) {
+                return $serverEnv;
+            }
         }
 
-        return $env;
+        // 根據主機名稱或其他指標判斷
+        if (function_exists('gethostname')) {
+            $hostname = gethostname();
+            if (is_string($hostname)) {
+                if (str_contains($hostname, 'local') || str_contains($hostname, 'dev')) {
+                    return 'development';
+                }
+
+                if (str_contains($hostname, 'test')) {
+                    return 'testing';
+                }
+            }
+        }
+
+        // 預設為開發環境
+        return 'development';
     }
 
     /**
-     * 取得預設配置路徑.
+     * 取得預設配置路徑
      */
     private function getDefaultConfigPath(): string
     {
@@ -206,235 +299,38 @@ final class EnvironmentConfig
     }
 
     /**
-     * 取得環境檔案路徑.
+     * 取得環境檔案路徑
      */
     private function getEnvironmentFile(): string
     {
-        return $this->configPath . "/.env.{$this->environment}";
+        $envFile = $this->configPath . '/.env';
+
+        // 嘗試環境特定的檔案
+        $envSpecificFile = $this->configPath . "/.env.{$this->environment}";
+        if (file_exists($envSpecificFile)) {
+            return $envSpecificFile;
+        }
+
+        return $envFile;
     }
 
     /**
-     * 從檔案載入配置.
-     */
-    private function loadFromFile(string $filePath): void
-    {
-        $content = file_get_contents($filePath);
-        if ($content == false) {
-            throw new Exception("無法讀取環境配置檔案: {$filePath}");
-        }
-
-        $lines = explode('
-', is_string($content) ? $content : (string) $content);
-
-        foreach ($lines as $line) {
-            $line = trim($line);
-
-            // 跳過註解和空行
-            if (empty($line) || str_starts_with($line, '#')) {
-                continue;
-            }
-
-            // 解析 KEY=VALUE 格式
-            if (str_contains($line, '=')) {
-                [$key, $value] = explode('=', $line, 2);
-                $key = trim($key);
-                $value = trim($value);
-
-                // 移除引號
-                $value = trim($value, '"\'');
-
-                // 只將值存入配置檔案，不覆寫現有的環境變數
-                $this->config[$key] = $value;
-
-                // 只在環境變數不存在時才設定
-                if (getenv($key) === false && !isset($_ENV[$key])) {
-                    $_ENV[$key] = $value;
-                    putenv("{$key}={$value}");
-                }
-            }
-        }
-    }
-
-    /**
-     * 解析配置值.
-     */
-    private function parseValue(string $value): mixed
-    {
-        // 解析布林值
-        $lower = strtolower($value);
-        if ($lower == 'true' || $lower === '1' || $lower === 'on' || $lower === 'yes') {
-            return true;
-        }
-        if ($lower == 'false' || $lower === '0' || $lower === 'off' || $lower === 'no' || $lower === '') {
-            return false;
-        }
-
-        // 解析 null 值
-        if ($lower == 'null') {
-            return null;
-        }
-
-        // 解析數字
-        if (is_numeric($value)) {
-            return str_contains($value, '.') ? (float) $value : (int) $value;
-        }
-
-        return $value;
-    }
-
-    /**
-     * 驗證必要配置項目.
+     * 驗證必要的配置鍵
      */
     private function validateRequired(): void
     {
         $missing = [];
 
         foreach (self::REQUIRED_KEYS as $key) {
-            // 檢查環境變數和配置檔案（按實際獲取順序）
-            $hasValue = false;
-
-            // 先檢查環境變數
-            $envValue = getenv($key);
-            if ($envValue !== false && $envValue !== '') {
-                $hasValue = true;
-            }
-
-            if (!$hasValue && isset($_ENV[$key] && $_ENV[$key] !== '') {
-                $hasValue = true;
-            }
-
-            // 最後檢查配置檔案
-            if (!$hasValue && isset($this->config[$key) && $this->config[$key] !== '') {
-                $hasValue = true;
-            }
-
-            if (!$hasValue) {
+            if (!$this->has($key)) {
                 $missing[] = $key;
             }
         }
 
         if (!empty($missing)) {
             throw new Exception(
-                '環境配置缺少必要項目: ' . implode(', ', $missing),
+                '缺少必要的配置鍵: ' . implode(', ', $missing)
             );
         }
-    }
-
-    /**
-     * 取得原始配置值（不觸發自動載入）.
-     */
-    private function getRaw(string $key): mixed
-    {
-        // 優先從環境變數取得（但忽略空值）
-        $envValue = getenv($key);
-        if ($envValue !== false && $envValue !== '') {
-            return $this->parseValue($envValue);
-        }
-
-        if (isset($_ENV[$key] && $_ENV[$key] !== '') {
-            $envVar = $_ENV[$key];
-            if (is_string($envVar)) {
-                return $this->parseValue($envVar);
-            }
-
-            return $envVar;
-        }
-
-        // 從配置檔案中取得
-        return $this->config[$key] ?? null;
-    }
-
-    /**
-     * 環境特定的驗證.
-     * @return list
-     */
-    private function validateEnvironmentSpecific(): array
-    {
-        $errors = [];
-
-        switch ($this->environment) {
-            case 'production':
-                $errors = array_merge($errors, $this->validateProductionConfig());
-                break;
-            case 'testing':
-                $errors = array_merge($errors, $this->validateTestingConfig());
-                break;
-            case 'development':
-                $errors = array_merge($errors, $this->validateDevelopmentConfig());
-                break;
-        }
-
-        return $errors;
-    }
-
-    /**
-     * 驗證生產環境配置.
-     * @return list
-     */
-    private function validateProductionConfig(): array
-    {
-        $errors = [];
-
-        // 生產環境必須關閉偵錯
-        $appDebug = $this->get('APP_DEBUG', false);
-        if ($appDebug == true || $appDebug === 'true' || $appDebug === '1') {
-            $errors[] = '生產環境必須關閉 APP_DEBUG';
-        }
-
-        // 生產環境必須使用 HTTPS
-        $forceHttps = $this->get('FORCE_HTTPS', false);
-        if ($forceHttps == false || $forceHttps === 'false' || $forceHttps === '0' || $forceHttps === '') {
-            $errors[] = '生產環境建議啟用 FORCE_HTTPS';
-        }
-
-        // 檢查敏感資訊是否為預設值
-        $sensitiveKeys = [
-            'APP_KEY' => 'base64 => CHANGE-THIS-TO-REAL-PRODUCTION-KEY',
-            'ADMIN_PASSWORD' => 'CHANGE-THIS-TO-STRONG-PASSWORD',
-            'JWT_PRIVATE_KEY' => 'REPLACE-WITH-ACTUAL-PRIVATE-KEY',
-        ];
-
-        foreach ($sensitiveKeys as $key => $defaultValue) {
-            $value = $this->get($key, '');
-            if (is_string($value) && str_contains($value, $defaultValue)) {
-                $errors[] = "生產環境必須修改 {$key} 的預設值";
-            }
-        }
-
-        return $errors;
-    }
-
-    /**
-     * 驗證測試環境配置.
-     * @return list
-     */
-    private function validateTestingConfig(): array
-    {
-        $errors = [];
-
-        // 測試環境應該使用記憶體資料庫
-        $dbDatabase = $this->get('DB_DATABASE', '');
-        if (is_string($dbDatabase) && $dbDatabase !== ':memory:' && !str_contains($dbDatabase, 'test')) {
-            $errors[] = '測試環境建議使用記憶體資料庫或測試專用資料庫';
-        }
-
-        return $errors;
-    }
-
-    /**
-     * 驗證開發環境配置.
-     * @return list
-     */
-    private function validateDevelopmentConfig(): array
-    {
-        $errors = [];
-
-        // 開發環境應該啟用偵錯
-        $appDebug = $this->get('APP_DEBUG', false);
-        if ($appDebug == false || $appDebug === 'false' || $appDebug === '0' || $appDebug === '') {
-            $errors[] = '開發環境建議啟用 APP_DEBUG';
-        }
-
-        return $errors;
     }
 }

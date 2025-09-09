@@ -8,9 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 
 abstract class UITestCase extends TestCase
-
-
-
 {
     protected static ?Process $serverProcess = null;
 
@@ -19,7 +16,7 @@ abstract class UITestCase extends TestCase
     public static function setUpBeforeClass(): void
     {
         // 啟動開發伺服器
-        static::$serverProcess = new Process(['php', '-S', 'localhost => 8080', '-t', 'public']);
+        static::$serverProcess = new Process(['php', '-S', 'localhost:8080', '-t', 'public']);
         static::$serverProcess->start();
 
         // 等待伺服器啟動
@@ -32,6 +29,7 @@ abstract class UITestCase extends TestCase
         if (static::$serverProcess !== null) {
             static::$serverProcess->stop();
         }
+    }
 
     protected function captureScreenshot(string $name): void
     {
@@ -42,7 +40,7 @@ abstract class UITestCase extends TestCase
 
         // 使用當前時間戳記作為檔名前綴
         $timestamp = date('Y-m-d_H-i-s');
-        $filename = sprintf('%s/%s_$this.png', $screenshotDir, $timestamp, $name);
+        $filename = sprintf('%s/%s_%s.png', $screenshotDir, $timestamp, $name);
 
         // 實際的截圖操作將由具體的測試類別實作
     }

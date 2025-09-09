@@ -1,18 +1,13 @@
 {
-    "timestamp": "2025-09-09T19:32:19+08:00",
-    "total_syntax_errors": 218,
-    "affected_files": 78,
+    "timestamp": "2025-09-09T19:50:18+08:00",
+    "total_syntax_errors": 191,
+    "affected_files": 74,
     "error_type_stats": {
-        "syntax_general": 172,
-        "try_without_catch": 44,
+        "syntax_general": 150,
+        "try_without_catch": 39,
         "empty_array_elements": 2
     },
     "file_error_counts": {
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthService.php": 6,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 6,
-        "\/var\/www\/html\/app\/Shared\/Config\/EnvironmentConfig.php": 6,
-        "\/var\/www\/html\/tests\/UI\/UITestCase.php": 6,
-        "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/FileSecurityService.php": 5,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostService.php": 5,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php": 5,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": 5,
@@ -28,6 +23,7 @@
         "\/var\/www\/html\/app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheKeys.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Response.php": 4,
+        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php": 4,
         "\/var\/www\/html\/app\/Shared\/Config\/JwtConfig.php": 4,
         "\/var\/www\/html\/tests\/Performance\/DatabaseOptimizationValidationTest.php": 4,
@@ -39,7 +35,6 @@
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheManager.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/ControllerResolver.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/RouteDispatcher.php": 3,
@@ -71,6 +66,7 @@
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php": 1,
         "\/var\/www\/html\/app\/Domains\/Auth\/Repositories\/UserRepository.php": 1,
         "\/var\/www\/html\/app\/Domains\/Post\/Validation\/PostValidator.php": 1,
+        "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 1,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Content\/XssProtectionExtensionService.php": 1,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php": 1,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Stream.php": 1,
@@ -107,69 +103,10 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/FileSecurityService.php": [
-            {
-                "line": 165,
-                "message": "Syntax error, unexpected '{' on line 165",
-                "type": "syntax_general"
-            },
-            {
-                "line": 168,
-                "message": "Syntax error, unexpected ')' on line 168",
-                "type": "syntax_general"
-            },
-            {
-                "line": 252,
-                "message": "Syntax error, unexpected T_CONSTANT_ENCAPSED_STRING, expecting ',' or ']' or ')' on line 252",
-                "type": "syntax_general"
-            },
-            {
-                "line": 276,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 276",
-                "type": "syntax_general"
-            },
-            {
-                "line": 280,
-                "message": "Syntax error, unexpected '{' on line 280",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Domains\/Auth\/Repositories\/UserRepository.php": [
             {
                 "line": 69,
                 "message": "Syntax error, unexpected ')', expecting ']' on line 69",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthService.php": [
-            {
-                "line": 38,
-                "message": "Cannot use try without catch or finally on line 38",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 71,
-                "message": "Syntax error, unexpected T_PUBLIC on line 71",
-                "type": "syntax_general"
-            },
-            {
-                "line": 102,
-                "message": "Cannot use try without catch or finally on line 102",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 136,
-                "message": "Syntax error, unexpected T_PUBLIC on line 136",
-                "type": "syntax_general"
-            },
-            {
-                "line": 140,
-                "message": "Cannot use try without catch or finally on line 140",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 155,
-                "message": "Syntax error, unexpected EOF on line 155",
                 "type": "syntax_general"
             }
         ],
@@ -367,33 +304,8 @@
         ],
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": [
             {
-                "line": 94,
-                "message": "Cannot use try without catch or finally on line 94",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 274,
-                "message": "Cannot use try without catch or finally on line 274",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 280,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 280",
-                "type": "syntax_general"
-            },
-            {
-                "line": 336,
-                "message": "Cannot use try without catch or finally on line 336",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 343,
-                "message": "Syntax error, unexpected ',' on line 343",
-                "type": "syntax_general"
-            },
-            {
-                "line": 343,
-                "message": "Syntax error, unexpected ']', expecting ')' on line 343",
+                "line": 289,
+                "message": "Syntax error, unexpected ']', expecting ')' on line 289",
                 "type": "syntax_general"
             }
         ],
@@ -681,6 +593,11 @@
         ],
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": [
             {
+                "line": 38,
+                "message": "Cannot use try without catch or finally on line 38",
+                "type": "try_without_catch"
+            },
+            {
                 "line": 88,
                 "message": "Syntax error, unexpected T_PUBLIC on line 88",
                 "type": "syntax_general"
@@ -855,38 +772,6 @@
                 "line": 119,
                 "message": "Cannot use try without catch or finally on line 119",
                 "type": "try_without_catch"
-            }
-        ],
-        "\/var\/www\/html\/app\/Shared\/Config\/EnvironmentConfig.php": [
-            {
-                "line": 84,
-                "message": "Syntax error, unexpected '{' on line 84",
-                "type": "syntax_general"
-            },
-            {
-                "line": 91,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 91",
-                "type": "syntax_general"
-            },
-            {
-                "line": 302,
-                "message": "Syntax error, unexpected '{' on line 302",
-                "type": "syntax_general"
-            },
-            {
-                "line": 307,
-                "message": "Syntax error, unexpected ')' on line 307",
-                "type": "syntax_general"
-            },
-            {
-                "line": 307,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 307",
-                "type": "syntax_general"
-            },
-            {
-                "line": 334,
-                "message": "Syntax error, unexpected '{' on line 334",
-                "type": "syntax_general"
             }
         ],
         "\/var\/www\/html\/app\/Shared\/Config\/JwtConfig.php": [
@@ -1174,38 +1059,6 @@
                 "type": "try_without_catch"
             }
         ],
-        "\/var\/www\/html\/tests\/UI\/UITestCase.php": [
-            {
-                "line": 36,
-                "message": "Syntax error, unexpected T_PROTECTED on line 36",
-                "type": "syntax_general"
-            },
-            {
-                "line": 50,
-                "message": "Syntax error, unexpected T_PROTECTED on line 50",
-                "type": "syntax_general"
-            },
-            {
-                "line": 55,
-                "message": "Syntax error, unexpected T_PROTECTED on line 55",
-                "type": "syntax_general"
-            },
-            {
-                "line": 60,
-                "message": "Syntax error, unexpected T_PROTECTED on line 60",
-                "type": "syntax_general"
-            },
-            {
-                "line": 65,
-                "message": "Syntax error, unexpected T_PROTECTED on line 65",
-                "type": "syntax_general"
-            },
-            {
-                "line": 70,
-                "message": "Syntax error, unexpected EOF on line 70",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/tests\/Unit\/DTOs\/DTOValidationTest.php": [
             {
                 "line": 606,
@@ -1343,7 +1196,6 @@
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheManager.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/ControllerResolver.php": 3,
         "\/var\/www\/html\/app\/Infrastructure\/Routing\/RouteDispatcher.php": 3,
@@ -1375,6 +1227,7 @@
         "\/var\/www\/html\/app\/Application\/DTOs\/Statistics\/StatisticsOverviewDTO.php": 1,
         "\/var\/www\/html\/app\/Domains\/Auth\/Repositories\/UserRepository.php": 1,
         "\/var\/www\/html\/app\/Domains\/Post\/Validation\/PostValidator.php": 1,
+        "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 1,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Content\/XssProtectionExtensionService.php": 1,
         "\/var\/www\/html\/app\/Domains\/Statistics\/Entities\/StatisticsSnapshot.php": 1,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Stream.php": 1,
@@ -1392,11 +1245,6 @@
         "\/var\/www\/html\/tests\/Unit\/Services\/AttachmentServiceTest.php": 1
     },
     "medium_fixes": {
-        "\/var\/www\/html\/app\/Domains\/Auth\/Services\/AuthService.php": 6,
-        "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": 6,
-        "\/var\/www\/html\/app\/Shared\/Config\/EnvironmentConfig.php": 6,
-        "\/var\/www\/html\/tests\/UI\/UITestCase.php": 6,
-        "\/var\/www\/html\/app\/Domains\/Attachment\/Services\/FileSecurityService.php": 5,
         "\/var\/www\/html\/app\/Domains\/Post\/Services\/PostService.php": 5,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Logging\/LoggingSecurityService.php": 5,
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/Secrets\/SecretsManager.php": 5,
@@ -1412,6 +1260,7 @@
         "\/var\/www\/html\/app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheKeys.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Response.php": 4,
+        "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php": 4,
         "\/var\/www\/html\/app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php": 4,
         "\/var\/www\/html\/app\/Shared\/Config\/JwtConfig.php": 4,
         "\/var\/www\/html\/tests\/Performance\/DatabaseOptimizationValidationTest.php": 4,

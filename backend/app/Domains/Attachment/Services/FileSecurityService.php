@@ -10,9 +10,6 @@ use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 
 class FileSecurityService implements FileSecurityServiceInterface
-
-
-
 {
     private const ALLOWED_MIME_TYPES = [
         'image/jpeg' => ['jpg', 'jpeg'],
@@ -93,14 +90,14 @@ class FileSecurityService implements FileSecurityServiceInterface
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        if ($finfo == false) {
+        if ($finfo === false) {
             throw new RuntimeException('無法初始化檔案資訊檢測器');
         }
 
         $mimeType = finfo_file($finfo, $filePath);
         finfo_close($finfo);
 
-        if ($mimeType == false) {
+        if ($mimeType === false) {
             throw ValidationException::fromSingleError('file', '無法檢測檔案 MIME 類型');
         }
 
@@ -132,7 +129,7 @@ class FileSecurityService implements FileSecurityServiceInterface
         $realFilePath = realpath($filePath);
         $realBaseDir = realpath($allowedBaseDir);
 
-        if ($realFilePath == false || $realBaseDir === false) {
+        if ($realFilePath === false || $realBaseDir === false) {
             return false;
         }
 
@@ -152,8 +149,8 @@ class FileSecurityService implements FileSecurityServiceInterface
         if ($file->getSize() > self::MAX_FILE_SIZE) {
             throw ValidationException::fromSingleError('file', '檔案大小超過限制（10MB）');
         }
-
     }
+
     private function validateFileName(?string $fileName): void
     {
         if (empty($fileName)) {
@@ -162,7 +159,7 @@ class FileSecurityService implements FileSecurityServiceInterface
 
         // 檢查路徑遍歷攻擊
         if (
-            str_contains($fileName, '.') {
+            str_contains($fileName, '..')
             || str_contains($fileName, '/')
             || str_contains($fileName, '\\')
         ) {
@@ -186,10 +183,9 @@ class FileSecurityService implements FileSecurityServiceInterface
             if (in_array(strtolower($extension), self::FORBIDDEN_EXTENSIONS, true)) {
                 throw ValidationException::fromSingleError('file', '不允許的檔案類型');
             }
+        }
+    }
 
-    }
-    }
-    }
     private function validateMimeType(UploadedFileInterface $file): void
     {
         $clientMimeType = $file->getClientMediaType();
@@ -205,8 +201,8 @@ class FileSecurityService implements FileSecurityServiceInterface
         if (!in_array($extension, self::ALLOWED_MIME_TYPES[$clientMimeType], true)) {
             throw ValidationException::fromSingleError('file', '檔案副檔名與類型不匹配');
         }
-
     }
+
     private function validateFileContent(UploadedFileInterface $file): void
     {
         $stream = $file->getStream();
@@ -222,14 +218,14 @@ class FileSecurityService implements FileSecurityServiceInterface
         if (!$this->validateFileSignature($content, $mimeType)) {
             throw ValidationException::fromSingleError('file', '檔案格式驗證失敗');
         }
-
     }
+
     private function containsMaliciousContent(string $content): bool
     {
         $maliciousPatterns = [
             // Script tags
             '/<script[^>]*>/i',
-            '/}<\/script>/i',
+            '/<\/script>/i',
             '/javascript:/i',
             '/vbscript:/i',
             '/data:(?!image\/)/i',
@@ -249,7 +245,7 @@ class FileSecurityService implements FileSecurityServiceInterface
             '/#!/i', // Shebang
 
             // Base64 encoded scripts
-            '/base64['';]/i',
+            '/base64/i',
         ];
 
         foreach ($maliciousPatterns as $pattern) {
@@ -273,11 +269,11 @@ class FileSecurityService implements FileSecurityServiceInterface
             'text/csv' => [],
         ];
 
-        if (!isset($signatures[$mimeType)] {
+        if (!isset($signatures[$mimeType])) {
             return false;
         }
 
-        if (empty($signatures[$mimeType] {
+        if (empty($signatures[$mimeType])) {
             return true; // 無需驗證簽名的檔案類型
         }
 
