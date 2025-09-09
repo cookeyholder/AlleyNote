@@ -11,9 +11,6 @@ use Psr\Http\Message\StreamInterface;
  * PSR-7 Response 實作.
  */
 class Response implements ResponseInterface
-
-
-
 {
     private string $protocolVersion = '1.1';
 
@@ -51,8 +48,8 @@ class Response implements ResponseInterface
         foreach ($headers as $name => $value) {
             $this->withHeader($name, $value);
         }
-
     }
+
     public function getProtocolVersion(): string
     {
         return $this->protocolVersion;
@@ -79,7 +76,7 @@ class Response implements ResponseInterface
     public function getHeader(string $name): array
     {
         $name = strtolower($name);
-        if (!isset($this->headerNames[$name) {
+        if (!isset($this->headerNames[$name])) {
             return [];
         }
 
@@ -106,7 +103,7 @@ class Response implements ResponseInterface
         $clone = clone $this;
         $normalizedName = strtolower($name);
 
-        if (isset($clone->headerNames[$normalizedName) {
+        if (isset($clone->headerNames[$normalizedName])) {
             $name = $clone->headerNames[$normalizedName];
             $clone->headers[$name] = array_merge($clone->headers[$name], is_array($value) ? $value : [$value]);
         } else {
@@ -122,7 +119,7 @@ class Response implements ResponseInterface
         $clone = clone $this;
         $normalizedName = strtolower($name);
 
-        if (!isset($clone->headerNames[$normalizedName) {
+        if (!isset($clone->headerNames[$normalizedName])) {
             return $clone;
         }
 

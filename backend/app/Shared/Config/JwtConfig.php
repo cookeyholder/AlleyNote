@@ -11,9 +11,6 @@ use InvalidArgumentException;
  * 負責載入和驗證 JWT 相關的配置參數，包括 RS256 金鑰對管理.
  */
 final class JwtConfig
-
-
-
 {
     private string $algorithm;
 
@@ -49,12 +46,12 @@ final class JwtConfig
         $this->algorithm = $algorithm;
 
         // 先驗證算法是否支援
-        if (!in_array($this->algorithm, ['RS256', 'RS384', 'RS512', 'HS256', 'HS384', 'HS512') {
+        if (!in_array($this->algorithm, ['RS256', 'RS384', 'RS512', 'HS256', 'HS384', 'HS512'])) {
             throw new InvalidArgumentException("不支援的演算法: {$this->algorithm}");
         }
 
         // 根據算法載入不同的金鑰
-        if ($this->isSymmetricAlgorithm($this->algorithm) {
+        if ($this->isSymmetricAlgorithm($this->algorithm)) {
             $this->secret = $this->loadSecret();
         } else {
             $this->privateKey = $this->loadPrivateKey();
@@ -187,34 +184,36 @@ final class JwtConfig
      */
     private function validateKeyPair(): void
     {
-        try { /* empty */
-        }
-        // 使用 openssl 函數驗證金鑰對
-        $privateKeyResource = openssl_pkey_get_private($this->privateKey ?? '');
-        $publicKeyResource = openssl_pkey_get_public($this->publicKey ?? '');
+        try {
+            // 使用 openssl 函數驗證金鑰對
+            $privateKeyResource = openssl_pkey_get_private($this->privateKey ?? '');
+            $publicKeyResource = openssl_pkey_get_public($this->publicKey ?? '');
 
-        if (!$privateKeyResource) {
-            throw new InvalidArgumentException('私鑰無效或格式錯誤');
-        }
+            if (!$privateKeyResource) {
+                throw new InvalidArgumentException('私鑰無效或格式錯誤');
+            }
 
-        if (!$publicKeyResource) {
-            throw new InvalidArgumentException('公鑰無效或格式錯誤');
-        }
+            if (!$publicKeyResource) {
+                throw new InvalidArgumentException('公鑰無效或格式錯誤');
+            }
 
-        // 簡單的金鑰對匹配測試
-        $testData = 'jwt-config-validation-test';
-        $signature = '';
+            // 簡單的金鑰對匹配測試
+            $testData = 'jwt-config-validation-test';
+            $signature = '';
 
-        if (!openssl_sign($testData, $signature, $privateKeyResource, OPENSSL_ALGO_SHA256)) {
-            throw new InvalidArgumentException('私鑰簽名測試失敗');
-        }
+            if (!openssl_sign($testData, $signature, $privateKeyResource, OPENSSL_ALGO_SHA256)) {
+                throw new InvalidArgumentException('私鑰簽名測試失敗');
+            }
 
-        if (!is_string($signature)) {
-            throw new InvalidArgumentException('簽名產生失敗');
-        }
+            if (!is_string($signature)) {
+                throw new InvalidArgumentException('簽名產生失敗');
+            }
 
-        if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {
-            throw new InvalidArgumentException('金鑰對不匹配，公鑰無法驗證私鑰簽名');
+            if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {
+                throw new InvalidArgumentException('金鑰對不匹配，公鑰無法驗證私鑰簽名');
+            }
+        } catch (\Exception $e) {
+            throw new InvalidArgumentException("金鑰驗證失敗: {$e->getMessage()}", 0, $e);
         }
     }
 

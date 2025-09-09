@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 20:07:23",
+        "scan_time": "2025-09-09 20:29:19",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -476,7 +476,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Repositories\/PostRepository.php",
                                             "extension": "php",
-                                            "size": 27176
+                                            "size": 28064
                                         }
                                     }
                                 },
@@ -572,7 +572,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Post\/Services\/PostCacheKeyService.php",
                                             "extension": "php",
-                                            "size": 2516
+                                            "size": 2522
                                         }
                                     }
                                 },
@@ -758,7 +758,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/DTOs\/CreateActivityLogDTO.php",
                                             "extension": "php",
-                                            "size": 8651
+                                            "size": 9096
                                         },
                                         "CreateIpRuleDTO.php": {
                                             "type": "file",
@@ -804,7 +804,7 @@
                                                     "type": "file",
                                                     "path": "app\/Domains\/Security\/Services\/Core\/CsrfProtectionService.php",
                                                     "extension": "php",
-                                                    "size": 8603
+                                                    "size": 8971
                                                 }
                                             }
                                         },
@@ -1232,7 +1232,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/ValueObjects\/TokenBlacklistEntry.php",
                                             "extension": "php",
-                                            "size": 19365
+                                            "size": 19657
                                         },
                                         "TokenPair.php": {
                                             "type": "file",
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 47798
+            "size": 42959
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1677996
+            "size": 1676402
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -6784,7 +6784,7 @@
                 "ALLOWED_UPDATE_FIELDS",
                 "ALLOWED_CONDITION_FIELDS"
             ],
-            "lines_of_code": 792
+            "lines_of_code": 838
         },
         "app\/Domains\/Post\/Models\/Post.php": {
             "path": "app\/Domains\/Post\/Models\/Post.php",
@@ -7710,7 +7710,7 @@
                 "validateMetadata"
             ],
             "constants": [],
-            "lines_of_code": 312
+            "lines_of_code": 321
         },
         "app\/Domains\/Security\/DTOs\/CreateIpRuleDTO.php": {
             "path": "app\/Domains\/Security\/DTOs\/CreateIpRuleDTO.php",
@@ -7916,7 +7916,7 @@
                 "TOKEN_POOL_SIZE",
                 "TOKEN_POOL_KEY"
             ],
-            "lines_of_code": 288
+            "lines_of_code": 297
         },
         "app\/Domains\/Security\/Services\/SuspiciousActivityDetector.php": {
             "path": "app\/Domains\/Security\/Services\/SuspiciousActivityDetector.php",
@@ -9771,7 +9771,7 @@
                 "REASON_DEVICE_LOST",
                 "REASON_SUSPICIOUS_ACTIVITY"
             ],
-            "lines_of_code": 660
+            "lines_of_code": 676
         },
         "app\/Domains\/Auth\/ValueObjects\/TokenPair.php": {
             "path": "app\/Domains\/Auth\/ValueObjects\/TokenPair.php",

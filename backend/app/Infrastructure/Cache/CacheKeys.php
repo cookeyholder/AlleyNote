@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace App\Infrastructure\Cache;
 
 class CacheKeys
-
-
-
 {
     private const PREFIX = 'alleynote';
 
@@ -211,7 +208,7 @@ class CacheKeys
     /**
      * 建立快取鍵的通用方法.
      */
-    private static function buildKey(.$parts): string
+    private static function buildKey(mixed ...$parts): string
     {
         // 過濾空值並轉換為字串
         $cleanParts = array_filter(
@@ -263,9 +260,9 @@ class CacheKeys
     /**
      * 建立模式匹配的快取鍵（用於刪除相關快取）.
      */
-    public static function pattern(.$parts): string
+    public static function pattern(mixed ...$parts): string
     {
-        $pattern = self::buildKey(.$parts);
+        $pattern = self::buildKey(...$parts);
 
         return $pattern . '*';
     }

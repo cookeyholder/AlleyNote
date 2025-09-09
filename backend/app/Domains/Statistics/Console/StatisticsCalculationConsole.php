@@ -15,9 +15,6 @@ use Psr\Log\LoggerInterface;
  * 提供命令行介面來執行統計計算任務
  */
 readonly class StatisticsCalculationConsole
-
-
-
 {
     public function __construct(
         private StatisticsCalculationCommand $calculationCommand,
@@ -168,7 +165,7 @@ readonly class StatisticsCalculationConsole
                     $options['command'] = $arg;
                     break;
                 case '--periods':
-                    if (!isset($arguments[$i + 1]) {
+                    if (!isset($arguments[$i + 1])) {
                         throw new InvalidArgumentException('--periods 需要參數值');
                     }
                     $periodsValue = $arguments[$i + 1];
@@ -188,7 +185,7 @@ readonly class StatisticsCalculationConsole
                 default:
                     // 如果不是已知選項，且不是以 -- 開頭，可能是週期類型的簡寫
                     if (is_string($arg) && !str_starts_with($arg, '--')) {
-                        if (in_array($arg, ['daily', 'weekly', 'monthly', 'yearly']) {
+                        if (in_array($arg, ['daily', 'weekly', 'monthly', 'yearly'])) {
                             $options['periods'][] = $arg;
                         }
                     }
@@ -199,7 +196,7 @@ readonly class StatisticsCalculationConsole
         }
 
         // 如果沒有指定週期，使用預設值
-        if (empty($options['periods'] && $options['command'] === 'calculate') {
+        if (empty($options['periods']) && $options['command'] === 'calculate') {
             $options['periods'] = ['daily', 'weekly', 'monthly'];
         }
 
@@ -300,7 +297,7 @@ readonly class StatisticsCalculationConsole
                 $periodStr = (string) $period;
                 $this->printInfo("{$periodStr}: {$lockedStatus}");
 
-                if ($locked && isset($periodStatus['lock_time'] && isset($periodStatus['lock_age_seconds'])) {
+                if ($locked && isset($periodStatus['lock_time']) && isset($periodStatus['lock_age_seconds'])) {
                     $lockTime = $periodStatus['lock_time'];
                     $lockAge = $periodStatus['lock_age_seconds'];
 
@@ -354,8 +351,7 @@ readonly class StatisticsCalculationConsole
      */
     private function printSuccess(string $message): void
     {
-        echo "\033[32m{$message}\033[0m
-";
+        echo "\033[32m{$message}\033[0m\n";
     }
 
     /**
@@ -363,8 +359,7 @@ readonly class StatisticsCalculationConsole
      */
     private function printWarning(string $message): void
     {
-        echo "\033[33m{$message}\033[0m
-";
+        echo "\033[33m{$message}\033[0m\n";
     }
 
     /**
@@ -372,8 +367,7 @@ readonly class StatisticsCalculationConsole
      */
     private function printError(string $message): void
     {
-        echo "\033[31m{$message}\033[0m
-";
+        echo "\033[31m{$message}\033[0m\n";
     }
 
     /**
@@ -381,6 +375,6 @@ readonly class StatisticsCalculationConsole
      */
     private function printInfo(string $message): void
     {
-        echo "{$$message}";
+        echo "{$message}\n";
     }
 }

@@ -19,9 +19,6 @@ use RuntimeException;
  * 支援文章數量、觀看次數、來源分布等複雜統計查詢。
  */
 final readonly class PostStatisticsRepository implements PostStatisticsRepositoryInterface
-
-
-
 {
     public function __construct(
         private PDO $pdo) {}
@@ -31,7 +28,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function countPostsByPeriod(StatisticsPeriod $period): int
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT COUNT(*)
                 FROM posts
@@ -43,7 +40,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $executed = $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
@@ -52,7 +49,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             }
 
             return (int) $stmt->fetchColumn();
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("計算文章總數失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -60,7 +59,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function countViewsByPeriod(StatisticsPeriod $period): int
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT COALESCE(SUM(p.views), 0)
                 FROM posts p
@@ -72,12 +71,14 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return (int) $stmt->fetchColumn();
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("計算總觀看次數失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -85,7 +86,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function countUniqueViewersByPeriod(StatisticsPeriod $period): int
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT COUNT(DISTINCT pv.user_ip)
                 FROM post_views pv
@@ -98,12 +99,14 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return (int) $stmt->fetchColumn();
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("計算不重複觀看者數量失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -111,7 +114,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     p.id,
@@ -134,10 +137,12 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt->execute();
 
             /** @var array<array{id: int, title: string, views: int, created_at: string}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得受歡迎文章失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -145,7 +150,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getSourceDistributionByPeriod(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     p.source_type,
@@ -171,15 +176,17 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array<array{source_type: string, post_count: int, view_count: int, percentage: float}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得來源分布統計失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -187,7 +194,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function countPostsBySourceAndPeriod(SourceType $sourceType, StatisticsPeriod $period): int
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT COUNT(*)
                 FROM posts
@@ -201,12 +208,14 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 'source_type' => $sourceType->value,
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return (int) $stmt->fetchColumn();
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("計算來源類型文章數量失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -214,7 +223,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function countViewsBySourceAndPeriod(SourceType $sourceType, StatisticsPeriod $period): int
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT COALESCE(SUM(views), 0)
                 FROM posts
@@ -228,12 +237,14 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 'source_type' => $sourceType->value,
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return (int) $stmt->fetchColumn();
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("計算來源類型觀看次數失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -241,7 +252,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getPostTrendsByPeriod(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     DATE(created_at) as date,
@@ -258,15 +269,17 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array<array{date: string, post_count: int, view_count: int}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得文章發布趨勢失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -274,7 +287,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getViewTrendsByPeriod(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     DATE(pv.view_date) as date,
@@ -292,15 +305,17 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array<array{date: string, view_count: int, unique_views: int}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得觀看次數趨勢失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -308,7 +323,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getAverageViewsPerPostByPeriod(StatisticsPeriod $period): float
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     CASE
@@ -324,12 +339,14 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return (float) $stmt->fetchColumn();
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("計算平均觀看次數失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -337,7 +354,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getMostViewedPostByPeriod(StatisticsPeriod $period): ?array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     id,
@@ -355,15 +372,17 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array{id: int, title: string, views: int, created_at: string}|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result ? true : null;
-        } 
+            return $result ?: null;
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得最多觀看文章失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -371,7 +390,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getNewPostsStatsByPeriod(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     COUNT(*) as total_new_posts,
@@ -389,19 +408,21 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array{total_new_posts: int, total_views: int, avg_views_per_post: float}|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result ? true : [
+            return $result ?: [
                 'total_new_posts' => 0,
                 'total_views' => 0,
                 'avg_views_per_post' => 0.0,
             ];
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得新文章統計失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -409,7 +430,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getViewsDistributionByPeriod(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     CASE
@@ -451,15 +472,17 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array<array{range: string, count: int, percentage: float}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得觀看次數分布失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -467,7 +490,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getTotalPostsAsOfDate(DateTimeInterface $date): int
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT COUNT(*)
                 FROM posts
@@ -477,10 +500,12 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['date' => $date->format('Y-m-d H => i:s')]);
+            $stmt->execute(['date' => $date->format('Y-m-d H:i:s')]);
 
             return (int) $stmt->fetchColumn();
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("計算截至日期文章總數失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -488,7 +513,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getTotalViewsAsOfDate(DateTimeInterface $date): int
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT COALESCE(SUM(views), 0)
                 FROM posts
@@ -498,10 +523,12 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['date' => $date->format('Y-m-d H => i:s')]);
+            $stmt->execute(['date' => $date->format('Y-m-d H:i:s')]);
 
             return (int) $stmt->fetchColumn();
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("計算截至日期總觀看次數失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -511,7 +538,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         StatisticsPeriod $period,
         int $limit = 30,
     ): array {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     DATE(created_at) as date,
@@ -535,20 +562,20 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt->execute();
 
             /** @var array<array{date: string, post_count: int, view_count: int, unique_views: int}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得統計趨勢失敗: {$e->getMessage()}", 0, $e);
+        }
     }
-
-    // 實作其餘的介面方法.
 
     /**
      * 取得文章活動熱圖資料（小時級別）.
      */
     public function getPostActivityHeatmapByPeriod(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     DATE(created_at) as date,
@@ -565,15 +592,17 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array<array{date: string, hour: int, activity_count: int}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得活動熱圖資料失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -581,7 +610,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getMostActiveAuthorsByPeriod(StatisticsPeriod $period, int $limit = 10): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     p.user_id,
@@ -606,10 +635,12 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt->execute();
 
             /** @var array<array{user_id: int, username: string, post_count: int, total_views: int}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得最活躍作者統計失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -617,7 +648,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getEngagementRateByPeriod(StatisticsPeriod $period): float
     {
-        try { /* empty */ }
+        try {
             // 簡化的互動率計算：基於觀看次數與文章數的比率
             $sql = '
                 SELECT
@@ -634,12 +665,14 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return (float) $stmt->fetchColumn();
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("計算互動率失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -647,7 +680,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getTagUsageStatsByPeriod(StatisticsPeriod $period, int $limit = 20): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     t.name as tag,
@@ -672,10 +705,12 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt->execute();
 
             /** @var array<array{tag: string, usage_count: int, post_count: int}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得標籤使用統計失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -683,7 +718,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function hasPostDataInPeriod(StatisticsPeriod $period): bool
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT 1
                 FROM posts
@@ -696,12 +731,14 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return $stmt->fetchColumn() !== false;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("檢查文章資料存在性失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -709,7 +746,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getPostStatsByPeriod(int $postId, StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     p.views,
@@ -728,21 +765,23 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 'post_id' => $postId,
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array{views: int, comments: int, likes: int, shares: int, source: string}|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result ? true : [
+            return $result ?: [
                 'views' => 0,
                 'comments' => 0,
                 'likes' => 0,
                 'shares' => 0,
                 'source' => 'unknown',
             ];
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得文章統計資料失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -750,7 +789,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getPostsByPublishTime(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     HOUR(created_at) as publish_hour,
@@ -767,15 +806,17 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array<array{publish_hour: string, publish_day: string, avg_views: float}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得發布時間統計失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -783,7 +824,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
      */
     public function getPostHistoricalPerformance(int $postId, StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     DATE(pv.view_date) as date,
@@ -799,24 +840,25 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 'post_id' => $postId,
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array<array{date: string, daily_views: int}> $result */
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ? true : [];
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             return $result;
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得文章歷史表現失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
      * 根據來源類型取得文章數據.
-     * @return array
      */
     public function getPostsBySourceType(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     CASE
@@ -835,21 +877,22 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得來源類型文章數據失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
      * 取得每小時分布統計.
-     * @return array
      */
     public function getHourlyDistribution(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     EXTRACT(HOUR FROM p.created_at) as hour,
@@ -865,11 +908,13 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-        } 
+        } catch (PDOException $e) {
+            throw new RuntimeException("取得每小時分布統計失敗: {$e->getMessage()}", 0, $e);
+        }
     }
 }
