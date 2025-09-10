@@ -50,7 +50,7 @@ return [
         return DatabaseConnection::getInstance();
     },
     PDO::class => function (ContainerInterface $container) {
-        return DatabaseConnection::getInstance()->getPdo();
+        return DatabaseConnection::getInstance();
     },
 
     // Cache Service

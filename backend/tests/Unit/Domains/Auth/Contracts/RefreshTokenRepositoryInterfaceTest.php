@@ -46,26 +46,39 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         $this->assertCount(6, $parameters);
 
         $this->assertEquals('jti', $parameters[0]->getName());
-        $this->assertEquals('string', $parameters[0]->getType()->getName());
+        $type0 = $parameters[0]->getType();
+        $this->assertNotNull($type0, 'Parameter 0 should have a type');
+        $this->assertEquals('string', $type0->getName());
 
         $this->assertEquals('userId', $parameters[1]->getName());
-        $this->assertEquals('int', $parameters[1]->getType()->getName());
+        $type1 = $parameters[1]->getType();
+        $this->assertNotNull($type1, 'Parameter 1 should have a type');
+        $this->assertEquals('int', $type1->getName());
 
         $this->assertEquals('tokenHash', $parameters[2]->getName());
-        $this->assertEquals('string', $parameters[2]->getType()->getName());
+        $type2 = $parameters[2]->getType();
+        $this->assertNotNull($type2, 'Parameter 2 should have a type');
+        $this->assertEquals('string', $type2->getName());
 
         $this->assertEquals('expiresAt', $parameters[3]->getName());
-        $this->assertEquals(DateTime::class, $parameters[3]->getType()->getName());
+        $type3 = $parameters[3]->getType();
+        $this->assertNotNull($type3, 'Parameter 3 should have a type');
+        $this->assertEquals(DateTime::class, $type3->getName());
 
         $this->assertEquals('deviceInfo', $parameters[4]->getName());
-        $this->assertEquals(DeviceInfo::class, $parameters[4]->getType()->getName());
+        $type4 = $parameters[4]->getType();
+        $this->assertNotNull($type4, 'Parameter 4 should have a type');
+        $this->assertEquals(DeviceInfo::class, $type4->getName());
 
         $this->assertEquals('parentTokenJti', $parameters[5]->getName());
-        $this->assertTrue($parameters[5]->getType()->allowsNull());
+        $type5 = $parameters[5]->getType();
+        $this->assertNotNull($type5, 'Parameter 5 should have a type');
+        $this->assertTrue($type5->allowsNull());
         $this->assertTrue($parameters[5]->isDefaultValueAvailable());
         $this->assertNull($parameters[5]->getDefaultValue());
 
         $returnType = $method->getReturnType();
+        $this->assertNotNull($returnType, 'Method should have a return type');
         $this->assertEquals('bool', $returnType->getName());
     }
 

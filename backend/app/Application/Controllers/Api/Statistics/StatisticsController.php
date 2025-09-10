@@ -35,7 +35,8 @@ class StatisticsController extends BaseController
     {
         try {
             $queryParams = $request->getQueryParams();
-            $period = is_string($queryParams['period'] ?? 'monthly') ? $queryParams['period'] : 'monthly';
+            $periodParam = $queryParams['period'] ?? 'monthly';
+            $period = is_string($periodParam) ? $periodParam : 'monthly';
 
             $overview = $this->statisticsService->getOverview($period);
 
@@ -69,8 +70,10 @@ class StatisticsController extends BaseController
     {
         try {
             $queryParams = $request->getQueryParams();
-            $period = is_string($queryParams['period'] ?? 'monthly') ? $queryParams['period'] : 'monthly';
-            $limit = max(1, min(100, is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 10));
+            $periodParam = $queryParams['period'] ?? 'monthly';
+            $period = is_string($periodParam) ? $periodParam : 'monthly';
+            $limitParam = $queryParams['limit'] ?? 10;
+            $limit = max(1, min(100, is_numeric($limitParam) ? (int) $limitParam : 10));
 
             $postStats = $this->statisticsService->getPostStatistics($period, $limit);
 
@@ -104,7 +107,8 @@ class StatisticsController extends BaseController
     {
         try {
             $queryParams = $request->getQueryParams();
-            $period = is_string($queryParams['period'] ?? 'monthly') ? $queryParams['period'] : 'monthly';
+            $periodParam = $queryParams['period'] ?? 'monthly';
+            $period = is_string($periodParam) ? $periodParam : 'monthly';
 
             $sourceStats = $this->statisticsService->getSourceStatistics($period);
 
@@ -138,13 +142,14 @@ class StatisticsController extends BaseController
     {
         try {
             $queryParams = $request->getQueryParams();
-            $period = is_string($queryParams['period'] ?? 'monthly') ? $queryParams['period'] : 'monthly';
+            $periodParam = $queryParams['period'] ?? 'monthly';
+            $period = is_string($periodParam) ? $periodParam : 'monthly';
 
-            $userStats = $this->statisticsService->getUserActivityStatistics($period);
+            $userActivityStats = $this->statisticsService->getUserActivityStatistics($period);
 
             $responseData = [
                 'success' => true,
-                'data' => $userStats,
+                'data' => $userActivityStats,
                 'timestamp' => time(),
             ];
 
@@ -172,8 +177,10 @@ class StatisticsController extends BaseController
     {
         try {
             $queryParams = $request->getQueryParams();
-            $period = is_string($queryParams['period'] ?? 'monthly') ? $queryParams['period'] : 'monthly';
-            $limit = max(1, min(50, is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 10));
+            $periodParam = $queryParams['period'] ?? 'monthly';
+            $period = is_string($periodParam) ? $periodParam : 'monthly';
+            $limitParam = $queryParams['limit'] ?? 20;
+            $limit = max(1, min(50, is_numeric($limitParam) ? (int) $limitParam : 20));
 
             $popularContent = $this->statisticsService->getPopularContent($period, $limit);
 
@@ -207,7 +214,8 @@ class StatisticsController extends BaseController
     {
         try {
             $queryParams = $request->getQueryParams();
-            $period = is_string($queryParams['period'] ?? 'monthly') ? $queryParams['period'] : 'monthly';
+            $periodParam = $queryParams['period'] ?? 'monthly';
+            $period = is_string($periodParam) ? $periodParam : 'monthly';
 
             $snapshot = $this->statisticsService->getSnapshot($period);
 

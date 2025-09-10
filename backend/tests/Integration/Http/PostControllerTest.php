@@ -46,15 +46,19 @@ class PostControllerTest extends TestCase
     /** @var ActivityLoggingServiceInterface&MockInterface */
     private ActivityLoggingServiceInterface $activityLogger;
 
-    private mixed $request;
+    /** @var ServerRequestInterface&MockInterface */
+    private ServerRequestInterface $request;
 
-    private mixed $response;
+    /** @var ResponseInterface&MockInterface */
+    private ResponseInterface $response;
 
-    private mixed $stream;
+    /** @var StreamInterface&MockInterface */
+    private StreamInterface $stream;
 
-    private mixed $responseStatus;
+    private int $responseStatus;
 
-    private mixed $currentResponseData;
+    /** @var array<string, mixed> */
+    private array $currentResponseData;
 
     protected function setUp(): void
     {

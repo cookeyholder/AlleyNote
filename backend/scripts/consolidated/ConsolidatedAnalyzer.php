@@ -8,7 +8,7 @@ use RuntimeException;
 
 /**
  * 整合的專案分析器
- * 
+ *
  * 統一所有專案分析功能
  */
 final readonly class ConsolidatedAnalyzer
@@ -18,7 +18,7 @@ final readonly class ConsolidatedAnalyzer
         private AnalysisConfig $config
     ) {}
 
-    public function analyze(array<mixed> $options = []): ScriptResult
+    public function analyze(array $options = []): ScriptResult
     {
         $startTime = microtime(true);
         $details = [];
@@ -51,7 +51,7 @@ final readonly class ConsolidatedAnalyzer
         }
     }
 
-    private function performFullAnalysis(): array<mixed>
+    private function performFullAnalysis(): array
     {
         $command = "cd {$this->projectRoot} && php scripts/scan-project-architecture.php";
         $output = shell_exec($command);
@@ -63,7 +63,7 @@ final readonly class ConsolidatedAnalyzer
         ];
     }
 
-    private function performArchitectureAnalysis(): array<mixed>
+    private function performQuickAnalysis(): array
     {
         // 實作架構分析邏輯
         return [
@@ -73,7 +73,7 @@ final readonly class ConsolidatedAnalyzer
         ];
     }
 
-    private function performModernPhpAnalysis(): array<mixed>
+    private function performErrorAnalysis(): array
     {
         // 實作現代 PHP 分析邏輯
         return [
@@ -83,7 +83,7 @@ final readonly class ConsolidatedAnalyzer
         ];
     }
 
-    private function performDddAnalysis(): array<mixed>
+    private function performTestAnalysis(): array
     {
         // 實作 DDD 分析邏輯
         return [

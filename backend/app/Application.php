@@ -322,9 +322,9 @@ class Application
             }
 
             /**
-             * @return array<string, mixed>
+             * @return list<string>
              */
-            public function getHeader(string $name): mixed
+            public function getHeader(string $name): array
             {
                 return strtolower($name) === 'content-type' ? ['application/json'] : [];
             }

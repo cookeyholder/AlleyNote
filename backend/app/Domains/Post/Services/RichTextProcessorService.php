@@ -180,7 +180,12 @@ class RichTextProcessorService
             default => $this->basicPurifier,
         };
 
-        $definition = $purifier->config->getHTMLDefinition();
+        $config = $purifier->config;
+        if (!$config instanceof HTMLPurifier_Config) {
+            return ['tags' => [], 'attributes' => []];
+        }
+
+        $definition = $config->getHTMLDefinition();
         if ($definition === null) {
             return ['tags' => [], 'attributes' => []];
         }
@@ -193,7 +198,7 @@ class RichTextProcessorService
         $tags = array_keys($allowedElements);
         $attributes = [];
         foreach ($allowedElements as $element) {
-            if (isset($element->attr) && is_array($element->attr)) {
+            if (is_object($element) && isset($element->attr) && is_array($element->attr)) {
                 $attributes = array_merge($attributes, array_keys($element->attr));
             }
         }

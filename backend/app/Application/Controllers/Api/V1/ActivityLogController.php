@@ -113,7 +113,7 @@ class ActivityLogController extends BaseController
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (Exception $e) {
-            $this->logger?->error('操作失敗', ['error' => $e->getMessage()]);
+            error_log('ActivityLogController error: ' . $e->getMessage());
 
             return $this->json($response, [
                 'success' => false,

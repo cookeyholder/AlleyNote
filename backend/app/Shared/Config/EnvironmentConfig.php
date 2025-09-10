@@ -315,6 +315,25 @@ final class EnvironmentConfig
     }
 
     /**
+     * 驗證配置完整性
+     *
+     * @return array<string> 驗證錯誤清單
+     */
+    public function validate(): array
+    {
+        $errors = [];
+
+        try {
+            $this->load();
+            $this->validateRequired();
+        } catch (Exception $e) {
+            $errors[] = $e->getMessage();
+        }
+
+        return $errors;
+    }
+
+    /**
      * 驗證必要的配置鍵
      */
     private function validateRequired(): void

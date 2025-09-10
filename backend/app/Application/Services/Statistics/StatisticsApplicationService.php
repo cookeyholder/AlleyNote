@@ -402,6 +402,87 @@ final class StatisticsApplicationService
     }
 
     /**
+     * 取得統計概覽（代理方法）
+     *
+     * @param string $period
+     * @return array<string, mixed>
+     */
+    public function getOverview(string $period = 'monthly'): array
+    {
+        $statisticsPeriod = StatisticsPeriod::fromString($period);
+        return $this->getStatisticsOverview($statisticsPeriod);
+    }
+
+    /**
+     * 取得貼文統計（代理方法）
+     *
+     * @param string $period
+     * @param int $limit
+     * @return array<string, mixed>
+     */
+    public function getPostStatistics(string $period = 'monthly', int $limit = 10): array
+    {
+        $statisticsPeriod = StatisticsPeriod::fromString($period);
+        return $this->generateStatisticsReport($statisticsPeriod, ['include_posts' => true, 'limit' => $limit]);
+    }
+
+    /**
+     * 取得來源統計（代理方法）
+     *
+     * @param string $period
+     * @return array<string, mixed>
+     */
+    public function getSourceStatistics(string $period = 'monthly'): array
+    {
+        $statisticsPeriod = StatisticsPeriod::fromString($period);
+        return $this->generateStatisticsReport($statisticsPeriod, ['include_sources' => true]);
+    }
+
+    /**
+     * 取得使用者活動統計（代理方法）
+     *
+     * @param string $period
+     * @return array<string, mixed>
+     */
+    public function getUserActivityStatistics(string $period = 'monthly'): array
+    {
+        $statisticsPeriod = StatisticsPeriod::fromString($period);
+        return $this->generateStatisticsReport($statisticsPeriod, ['include_user_activity' => true]);
+    }
+
+    /**
+     * 取得熱門內容（代理方法）
+     *
+     * @param string $period
+     * @param int $limit
+     * @return array<string, mixed>
+     */
+    public function getPopularContent(string $period = 'monthly', int $limit = 20): array
+    {
+        $statisticsPeriod = StatisticsPeriod::fromString($period);
+        return $this->analyzePopularContent($statisticsPeriod, $limit);
+    }
+
+    /**
+     * 取得統計快照（代理方法）
+     *
+     * @param string $period
+     * @return array<string, mixed>
+     */
+    public function getSnapshot(string $period = 'monthly'): array
+    {
+        $statisticsPeriod = StatisticsPeriod::fromString($period);
+        $snapshot = $this->createStatisticsSnapshot($statisticsPeriod);
+
+        return [
+            'id' => $snapshot->getId()->toString(),
+            'period' => $snapshot->getPeriod()->toString(),
+            'created_at' => $snapshot->getCreatedAt()->format('Y-m-d H:i:s'),
+            'data' => $snapshot->getData(),
+        ];
+    }
+
+    /**
      * 計算來源統計.
      *
      * @return array<int, SourceStatistics>

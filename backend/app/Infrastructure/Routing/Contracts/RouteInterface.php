@@ -61,7 +61,7 @@ interface RouteInterface
 
     /**
      * 取得路由的中介軟體.
-     * @return MiddlewareInterface[]
+     * @return array<MiddlewareInterface|string>
      */
     public function getMiddlewares(): array;
 

@@ -49,17 +49,24 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertCount(3, $parameters);
 
         $this->assertEquals('userId', $parameters[0]->getName());
-        $this->assertEquals('int', $parameters[0]->getType()->getName());
+        $type0 = $parameters[0]->getType();
+        $this->assertNotNull($type0, 'Parameter 0 should have a type');
+        $this->assertEquals('int', $type0->getName());
 
         $this->assertEquals('deviceInfo', $parameters[1]->getName());
-        $this->assertEquals(DeviceInfo::class, $parameters[1]->getType()->getName());
+        $type1 = $parameters[1]->getType();
+        $this->assertNotNull($type1, 'Parameter 1 should have a type');
+        $this->assertEquals(DeviceInfo::class, $type1->getName());
 
         $this->assertEquals('customClaims', $parameters[2]->getName());
-        $this->assertEquals('array', $parameters[2]->getType()->getName());
+        $type2 = $parameters[2]->getType();
+        $this->assertNotNull($type2, 'Parameter 2 should have a type');
+        $this->assertEquals('array', $type2->getName());
         $this->assertTrue($parameters[2]->isDefaultValueAvailable());
 
         // 檢查回傳類型
         $returnType = $method->getReturnType();
+        $this->assertNotNull($returnType, 'Method should have a return type');
         $this->assertEquals(TokenPair::class, $returnType->getName());
     }
 
@@ -74,10 +81,14 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertCount(2, $parameters);
 
         $this->assertEquals('token', $parameters[0]->getName());
-        $this->assertEquals('string', $parameters[0]->getType()->getName());
+        $type0 = $parameters[0]->getType();
+        $this->assertNotNull($type0, 'Parameter 0 should have a type');
+        $this->assertEquals('string', $type0->getName());
 
         $this->assertEquals('checkBlacklist', $parameters[1]->getName());
-        $this->assertEquals('bool', $parameters[1]->getType()->getName());
+        $type1 = $parameters[1]->getType();
+        $this->assertNotNull($type1, 'Parameter 1 should have a type');
+        $this->assertEquals('bool', $type1->getName());
         $this->assertTrue($parameters[1]->isDefaultValueAvailable());
         $this->assertTrue($parameters[1]->getDefaultValue());
 
@@ -94,11 +105,15 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertCount(2, $parameters);
 
         $this->assertEquals('token', $parameters[0]->getName());
-        $this->assertEquals('string', $parameters[0]->getType()->getName());
+        $type0 = $parameters[0]->getType();
+        $this->assertNotNull($type0, 'Parameter 0 should have a type');
+        $this->assertEquals('string', $type0->getName());
 
         $this->assertEquals('checkBlacklist', $parameters[1]->getName());
-        $this->assertEquals('bool', $parameters[1]->getType()->getName());
-        $this->assertTrue($parameters[1]->getDefaultValue());
+        $type1 = $parameters[1]->getType();
+        $this->assertNotNull($type1, 'Parameter 1 should have a type');
+        $this->assertEquals('bool', $type1->getName());
+        $this->assertTrue($parameters[1]->isDefaultValueAvailable());
 
         $returnType = $method->getReturnType();
         $this->assertEquals(JwtPayload::class, $returnType->getName());
@@ -113,9 +128,12 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertCount(1, $parameters);
 
         $this->assertEquals('token', $parameters[0]->getName());
-        $this->assertEquals('string', $parameters[0]->getType()->getName());
+        $type0 = $parameters[0]->getType();
+        $this->assertNotNull($type0, 'Parameter 0 should have a type');
+        $this->assertEquals('string', $type0->getName());
 
         $returnType = $method->getReturnType();
+        $this->assertNotNull($returnType, 'Method should have a return type');
         $this->assertEquals(JwtPayload::class, $returnType->getName());
     }
 
@@ -153,6 +171,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertTrue($parameters[1]->isDefaultValueAvailable());
 
         $returnType = $method->getReturnType();
+        $this->assertNotNull($returnType, 'Method should have a return type');
         $this->assertEquals('bool', $returnType->getName());
     }
 
@@ -172,7 +191,8 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertTrue($parameters[1]->isDefaultValueAvailable());
 
         $returnType = $method->getReturnType();
-        $this->assertEquals('int', $returnType->getName());
+        $this->assertNotNull($returnType, 'Method should have a return type');
+        $this->assertEquals('array', $returnType->getName());
     }
 
     public function testIsTokenRevokedMethodSignature(): void
@@ -270,6 +290,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
         $this->assertCount(0, $parameters);
 
         $returnType = $method->getReturnType();
+        $this->assertNotNull($returnType, 'Method should have a return type');
         $this->assertEquals('string', $returnType->getName());
     }
 

@@ -12,6 +12,7 @@ use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Shared\Exceptions\NotFoundException;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,16 +24,22 @@ class PostControllerTest extends TestCase
 
 
 {
+    /** @var PostServiceInterface&MockInterface */
     private PostServiceInterface $postService;
 
+    /** @var XssProtectionServiceInterface&MockInterface */
     private XssProtectionServiceInterface $xssProtection;
 
+    /** @var CsrfProtectionServiceInterface&MockInterface */
     private CsrfProtectionServiceInterface $csrfProtection;
 
+    /** @var ServerRequestInterface&MockInterface */
     private ServerRequestInterface $request;
 
+    /** @var ResponseInterface&MockInterface */
     private ResponseInterface $response;
 
+    /** @var StreamInterface&MockInterface */
     private StreamInterface $stream;
 
     private int $statusCode = 200;

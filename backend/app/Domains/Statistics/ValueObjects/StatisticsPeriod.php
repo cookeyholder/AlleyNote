@@ -167,6 +167,24 @@ readonly class StatisticsPeriod
     }
 
     /**
+     * 從字串建立統計週期
+     */
+    public static function fromString(string $period): self
+    {
+        return match (strtolower($period)) {
+            'today' => self::today(),
+            'yesterday' => self::yesterday(),
+            'this_week', 'thisweek' => self::thisWeek(),
+            'last_week', 'lastweek' => self::lastWeek(),
+            'this_month', 'thismonth', 'monthly' => self::thisMonth(),
+            'last_month', 'lastmonth' => self::lastMonth(),
+            'this_year', 'thisyear', 'yearly' => self::thisYear(),
+            'last_year', 'lastyear' => self::lastYear(),
+            default => self::thisMonth(), // 預設為本月
+        };
+    }
+
+    /**
      * 取得週期長度（天數）.
      */
     public function getDaysCount(): int
