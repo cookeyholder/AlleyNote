@@ -117,34 +117,29 @@ class RouteLoader
                 );
             }
 
-            // 診斷 routeConfig 為 array<string, mixed> 類型
-            $routeConfig = array_map(function ($value) {
+            // 確保 routeConfig 為 array<string, mixed> 類型
+            /** @var array<string, mixed> $typedRouteConfig */
+            $typedRouteConfig = array_map(function ($value) {
                 return $value;
             }, $routeConfig);
 
             // 設定路由名稱（如果沒有提供的話）
-            if (!isset($routeConfig['name'])) {
-                $routeConfig['name'] = (string) $routeName;
+            if (!isset($typedRouteConfig['name'])) {
+                $typedRouteConfig['name'] = (string) $routeName;
             }
 
             // 新增群組資訊
-            $routeConfig['group'] = $group;
-            $routeConfig['file'] = $filePath;
+            $typedRouteConfig['group'] = $group;
+            $typedRouteConfig['file'] = $filePath;
 
             // 驗證路由配置
-            $this->validator->validateRoute($routeConfig);
-
-            // 將 $routeConfig 轉換為正確類型以滿足 PHPStan
-            /** @var array<string, mixed> $validatedRouteConfig */
-            $validatedRouteConfig = $routeConfig;
+            $this->validator->validateRoute($typedRouteConfig);
 
             // 註冊路由
-            $this->registerRoute($router, $validatedRouteConfig);
+            $this->registerRoute($router, $typedRouteConfig);
 
             // 記錄已載入的路由
-            /** @var array<string, mixed> $routeRecord */
-            $routeRecord = array_map(function ($value) { return $value; }, $validatedRouteConfig);
-            $this->loadedRoutes[] = $routeRecord;
+            $this->loadedRoutes[] = $typedRouteConfig;
         }
     }
 
