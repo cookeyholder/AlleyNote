@@ -32,22 +32,26 @@ class ValidatorFactory
 
     /**
      * 建立具有自訂配置的驗證器實例.
-     * @param array $config 自訂配置
+     * @param array<string, mixed> $config 自訂配置
      */
     public function createWithConfig(array $config): ValidatorInterface
     {
         $validator = $this->create();
 
         // 應用自訂配置
-        if (isset($config['messages'])) {
+        if (isset($config['messages']) && is_array($config['messages'])) {
             foreach ($config['messages'] as $rule => $message) {
-                $validator->addMessage($rule, $message);
+                if (is_string($rule) && is_string($message)) {
+                    $validator->addMessage($rule, $message);
+                }
             }
         }
 
-        if (isset($config['rules'])) {
+        if (isset($config['rules']) && is_array($config['rules'])) {
             foreach ($config['rules'] as $name => $callback) {
-                $validator->addRule($name, $callback);
+                if (is_string($name) && is_callable($callback)) {
+                    $validator->addRule($name, $callback);
+                }
             }
         }
 
@@ -178,7 +182,7 @@ class ValidatorFactory
             }
 
             // 檢查域名部分
-            $parts = explode('@', is_string($email) ? $email : (string) $email);
+            $parts = explode('@', $email);
             if (count($parts) !== 2) {
                 return false;
             }
@@ -208,7 +212,7 @@ class ValidatorFactory
 
             // 檢查是否為 CIDR 格式
             if (strpos($ip, '/') !== false) {
-                $parts = explode('/', is_string($ip) ? $ip : (string) $ip);
+                $parts = explode('/', $ip);
                 if (count($parts) !== 2) {
                     return false;
                 }

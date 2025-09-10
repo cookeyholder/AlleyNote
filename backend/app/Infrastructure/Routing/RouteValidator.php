@@ -28,11 +28,13 @@ class RouteValidator
 
     /**
      * 已註冊的路由，用於檢查重複.
+     * @var array<string, bool>
      */
     private array $registeredRoutes = [];
 
     /**
      * 驗證路由配置.
+     * @param array<string, mixed> $routeConfig
      */
     public function validateRoute(array $routeConfig): void
     {
@@ -45,6 +47,7 @@ class RouteValidator
 
     /**
      * 驗證路由基本結構.
+     * @param array<string, mixed> $routeConfig
      */
     private function validateRouteStructure(array $routeConfig): void
     {
@@ -53,7 +56,7 @@ class RouteValidator
         foreach ($required as $field) {
             if (!array_key_exists($field, $routeConfig)) {
                 throw RouteConfigurationException::invalidRouteDefinition(
-                    $routeConfig['name'] ?? '未命名路由',
+                    (string) ($routeConfig['name'] ?? '未命名路由'),
                     "缺少必要欄位: {$field}",
                 );
             }
@@ -62,11 +65,12 @@ class RouteValidator
 
     /**
      * 驗證 HTTP 方法.
+     * @param array<string, mixed> $routeConfig
      */
     private function validateHttpMethods(array $routeConfig): void
     {
         $methods = (array) $routeConfig['methods'];
-        $routeName = $routeConfig['name'] ?? '未命名路由';
+        $routeName = (string) ($routeConfig['name'] ?? '未命名路由');
 
         if (empty($methods)) {
             throw RouteConfigurationException::invalidRouteDefinition(
@@ -95,11 +99,12 @@ class RouteValidator
 
     /**
      * 驗證路由路径.
+     * @param array<string, mixed> $routeConfig
      */
     private function validatePath(array $routeConfig): void
     {
         $path = $routeConfig['path'];
-        $routeName = $routeConfig['name'] ?? '未命名路由';
+        $routeName = (string) ($routeConfig['name'] ?? '未命名路由');
 
         if (!is_string($path)) {
             throw RouteConfigurationException::invalidRouteDefinition(
@@ -130,11 +135,12 @@ class RouteValidator
 
     /**
      * 驗證處理器.
+     * @param array<string, mixed> $routeConfig
      */
     private function validateHandler(array $routeConfig): void
     {
         $handler = $routeConfig['handler'];
-        $routeName = $routeConfig['name'] ?? '未命名路由';
+        $routeName = (string) ($routeConfig['name'] ?? '未命名路由');
 
         // 允許的處理器格式：
         // 1. 閉包 (Closure)
@@ -150,7 +156,7 @@ class RouteValidator
             if (strpos($handler, '@') !== false) {
                 $parts = explode('@', $handler, 2);
                 if (count($parts) !== 2 || empty($parts[0]) || empty($parts[1])) {
-                    throw RouteConfigurationException::invalidHandler($routeName, $handler);
+                    throw RouteConfigurationException::invalidHandler($routeName, (string) $handler);
                 }
 
                 return;
@@ -169,19 +175,20 @@ class RouteValidator
             }
         }
 
-        throw RouteConfigurationException::invalidHandler($routeName, $handler);
+        throw RouteConfigurationException::invalidHandler($routeName, (string) json_encode($handler));
     }
 
     /**
      * 檢查重複路由.
+     * @param array<string, mixed> $routeConfig
      */
     private function checkDuplicateRoute(array $routeConfig): void
     {
         $methods = (array) $routeConfig['methods'];
-        $path = $routeConfig['path'];
+        $path = (string) $routeConfig['path'];
 
         foreach ($methods as $method) {
-            $method = strtoupper(trim($method));
+            $method = strtoupper(trim((string) $method));
             $key = "{$method}:{$path}";
 
             if (isset($this->registeredRoutes[$key])) {
@@ -201,10 +208,12 @@ class RouteValidator
     }
 
     /**
+    /**
      * 取得已註冊的路由清單.
+     * @return array<string, bool>
      */
     public function getRegisteredRoutes(): array
     {
-        return array_keys($this->registeredRoutes);
+        return $this->registeredRoutes;
     }
 }

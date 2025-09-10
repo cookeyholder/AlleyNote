@@ -30,8 +30,8 @@ class Uri implements UriInterface
         if ($uri !== '') {
             $this->parseUri($uri);
         }
-
     }
+
     private function parseUri(string $uri): void
     {
         $parts = parse_url($uri);
@@ -50,6 +50,7 @@ class Uri implements UriInterface
             }
         }
     }
+
     public function getScheme(): string
     {
         return $this->scheme;

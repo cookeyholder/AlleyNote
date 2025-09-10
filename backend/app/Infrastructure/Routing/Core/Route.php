@@ -28,10 +28,10 @@ class Route implements RouteInterface
     private array $parameterNames = [];
 
     /**
-     * @param string[] $methods HTTP 方法列表
+     * @param array<string> $methods HTTP 方法列表
+     * @param callable|string $handler
      */
     public function __construct(
-        /** @var array<string, mixed> */
         private readonly array $methods,
         private readonly string $pattern,
         private readonly mixed $handler,
@@ -39,9 +39,12 @@ class Route implements RouteInterface
         $this->parameterNames = $this->extractParameterNames($pattern);
     }
 
+    /**
+     * @return array<string>
+     */
     public function getMethods(): array
     {
-        return $this->methods;
+        return array_keys($this->methods);
     }
 
     public function getPattern(): string
@@ -54,9 +57,12 @@ class Route implements RouteInterface
         return $this->name;
     }
 
-    public function getHandler(): callable|string|array
+    /**
+     * @return array<mixed>
+     */
+    public function getHandler(): array
     {
-        return $this->handler;
+        return is_array($this->handler) ? $this->handler : [$this->handler];
     }
 
     public function addMiddleware(MiddlewareInterface $middleware): self
@@ -66,15 +72,13 @@ class Route implements RouteInterface
         return $this;
     }
 
+    /**
+     * @param array<MiddlewareInterface> $middlewares
+     */
     public function addMiddlewares(array $middlewares): self
     {
         foreach ($middlewares as $middleware) {
-            if ($middleware instanceof MiddlewareInterface) {
-                $this->middlewares[] = $middleware;
-            } elseif (is_string($middleware)) {
-                // 支援字串別名
-                $this->middlewares[] = $middleware;
-            }
+            $this->middlewares[] = $middleware;
         }
 
         return $this;
@@ -124,7 +128,11 @@ class Route implements RouteInterface
         return $this->matchesPath($path);
     }
 
-    public function generateUrl(array $parameters = [], /** @var array<string, mixed> */ array $queryParams = []): string
+    /**
+     * @param array<string, mixed> $parameters
+     * @param array<string, mixed> $queryParams
+     */
+    public function generateUrl(array $parameters = [], array $queryParams = []): string
     {
         $url = $this->pattern;
 
@@ -153,17 +161,22 @@ class Route implements RouteInterface
         return $url;
     }
 
+    /**
+     * @param array<string, mixed> $attributes
+     */
     public function withAttributes(array $attributes): self
     {
         $clone = clone $this;
 
-        if (isset($attributes['name'])) {
+        if (isset($attributes['name']) && is_string($attributes['name'])) {
             $clone->name = $attributes['name'];
         }
 
-        if (is_array($attributes['middlewares'])) {
+        if (isset($attributes['middlewares']) && is_array($attributes['middlewares'])) {
             $clone->middlewares = [];
-            $clone->addMiddlewares($attributes['middlewares']);
+            /** @var array<MiddlewareInterface> $middlewares */
+            $middlewares = $attributes['middlewares'];
+            $clone->addMiddlewares($middlewares);
         }
 
         return $clone;
@@ -179,7 +192,7 @@ class Route implements RouteInterface
 
     /**
      * 添加中介軟體（支援字串別名、實例和陣列）.
-     * @param array $middleware
+     * @param MiddlewareInterface|string $middleware
      */
     public function middleware($middleware): self
     {
@@ -188,17 +201,19 @@ class Route implements RouteInterface
         } elseif (is_string($middleware)) {
             // 支援字串別名
             $this->middlewares[] = $middleware;
-        } elseif (is_array($middleware)) {
-            $this->addMiddlewares($middleware);
         }
 
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function extractParameters(string $path): array
     {
         $result = $this->matchesPath($path);
 
+        /** @var array<string, mixed> */
         return $result->isMatched() ? $result->getParameters() : [];
     }
 
@@ -215,6 +230,9 @@ class Route implements RouteInterface
 
         // 先將參數佔位符替換為特殊標記
         $pattern = preg_replace('/{([^}]+)}/', 'ROUTEPARAM', $pattern);
+        if ($pattern === null) {
+            $pattern = $this->pattern;
+        }
 
         // 轉義特殊字符
         $pattern = preg_quote($pattern, '/');
@@ -241,37 +259,59 @@ class Route implements RouteInterface
     }
 
     // HTTP 方法快捷方法
-    public static function get(string $pattern, callable|string $handler): self
+    /**
+     * @param callable|string $handler
+     */
+    public static function get(string $pattern, $handler): self
     {
         return new self(['GET'], $pattern, $handler);
     }
 
-    public static function post(string $pattern, callable|string $handler): self
+    /**
+     * @param callable|string $handler
+     */
+    public static function post(string $pattern, $handler): self
     {
         return new self(['POST'], $pattern, $handler);
     }
 
-    public static function put(string $pattern, callable|string $handler): self
+    /**
+     * @param callable|string $handler
+     */
+    public static function put(string $pattern, $handler): self
     {
         return new self(['PUT'], $pattern, $handler);
     }
 
-    public static function patch(string $pattern, callable|string $handler): self
+    /**
+     * @param callable|string $handler
+     */
+    public static function patch(string $pattern, $handler): self
     {
         return new self(['PATCH'], $pattern, $handler);
     }
 
-    public static function delete(string $pattern, callable|string $handler): self
+    /**
+     * @param callable|string $handler
+     */
+    public static function delete(string $pattern, $handler): self
     {
         return new self(['DELETE'], $pattern, $handler);
     }
 
-    public static function any(string $pattern, callable|string $handler): self
+    /**
+     * @param callable|string $handler
+     */
+    public static function any(string $pattern, $handler): self
     {
         return new self(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'], $pattern, $handler);
     }
 
-    public static function match(array $methods, string $pattern, callable|string $handler): self
+    /**
+     * @param array<string> $methods
+     * @param callable|string $handler
+     */
+    public static function match(array $methods, string $pattern, $handler): self
     {
         return new self($methods, $pattern, $handler);
     }
