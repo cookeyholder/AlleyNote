@@ -378,6 +378,19 @@ readonly class StatisticsPeriod
     }
 
     /**
+     * 將週期轉換為字串表示
+     */
+    public function toString(): string
+    {
+        return sprintf(
+            '%s_%s_%s',
+            $this->type->value,
+            $this->startDate->format('Y-m-d'),
+            $this->endDate->format('Y-m-d')
+        );
+    }
+
+    /**
      * 驗證週期長度是否合理.
      */
     private function validatePeriodLength(): void

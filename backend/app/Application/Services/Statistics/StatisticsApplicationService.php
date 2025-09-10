@@ -483,6 +483,41 @@ final class StatisticsApplicationService
     }
 
     /**
+     * 重新整理統計資料（代理方法）
+     *
+     * 清除快取並重新計算統計資料
+     */
+    public function refreshStatistics(): void
+    {
+        try {
+            // 清除所有統計快取
+            $this->clearStatisticsCache();
+
+            // 重新計算當前月份的統計
+            $currentPeriod = StatisticsPeriod::thisMonth();
+            $this->createStatisticsSnapshot($currentPeriod, true);
+
+            // 重新計算本週統計
+            $weekPeriod = StatisticsPeriod::thisWeek();
+            $this->createStatisticsSnapshot($weekPeriod, true);
+
+            // 記錄重新整理操作
+            $this->logger->info('統計資料重新整理完成', [
+                'current_month' => $currentPeriod->toString(),
+                'current_week' => $weekPeriod->toString(),
+                'timestamp' => date('c'),
+            ]);
+
+        } catch (Exception $e) {
+            $this->logger->error('統計資料重新整理失敗', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
      * 計算來源統計.
      *
      * @return array<int, SourceStatistics>

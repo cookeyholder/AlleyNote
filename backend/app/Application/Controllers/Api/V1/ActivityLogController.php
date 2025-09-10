@@ -65,7 +65,7 @@ class ActivityLogController extends BaseController
                     'message' => 'Invalid request data',
                     'error_code' => 400,
                 ]);
-                $response->getBody()->write($errorResponse ? true : '{"error": "JSON encoding failed"}');
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -73,7 +73,7 @@ class ActivityLogController extends BaseController
             $actionType = $data['action_type'] ?? '';
             if (!is_string($actionType) && !is_int($actionType)) {
                 $errorResponse = json_encode(['error' => 'Invalid action_type format']);
-                $response->getBody()->write($errorResponse ? true : '{"error": "JSON encoding failed"}');
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -81,7 +81,7 @@ class ActivityLogController extends BaseController
             $userId = $data['user_id'] ?? 0;
             if (!is_numeric($userId)) {
                 $errorResponse = json_encode(['error' => 'Invalid user_id format']);
-                $response->getBody()->write($errorResponse ? true : '{"error": "JSON encoding failed"}');
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -89,7 +89,7 @@ class ActivityLogController extends BaseController
             $metadata = $data['metadata'] ?? [];
             if (!is_array($metadata)) {
                 $errorResponse = json_encode(['error' => 'Invalid metadata format']);
-                $response->getBody()->write($errorResponse ? true : '{"error": "JSON encoding failed"}');
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
@@ -109,7 +109,7 @@ class ActivityLogController extends BaseController
                 'data' => $result,
                 'message' => 'Activity logged successfully',
             ]);
-            $response->getBody()->write($successResponse ? true : '{"error": "JSON encoding failed"}');
+            $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (Exception $e) {
@@ -123,129 +123,8 @@ class ActivityLogController extends BaseController
                 ],
                 'timestamp' => time(),
             ], 500);
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
         }
-
-        }
+    }
 
     #[OA\Get(
         path: '/api/v1/activity-logs',
@@ -292,127 +171,6 @@ class ActivityLogController extends BaseController
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
         }
-
-        }
+    }
 }
