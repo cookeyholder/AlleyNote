@@ -150,6 +150,7 @@ final class StatisticsApplicationService
             // 計算額外指標
             $popularPosts = $this->postStatisticsService->getPopularPostsByPeriod($period, 10);
             $activeUsers = $this->userStatisticsRepository->getMostActiveUsers($period, 10);
+            $sourceStatistics = $snapshot->getSourceStats();
 
             $overview = [
                 'period' => [
@@ -170,18 +171,23 @@ final class StatisticsApplicationService
                     ],
                 ],
                 'source_statistics' => array_map(
-                    fn(SourceStatistics $stats): array => [
-                        'source_type' => $stats->sourceType->value,
-                        'count' => [
-                            'value' => $stats->count->getValue(),
-                            'unit' => $stats->count->getUnit(),
-                        ],
-                        'percentage' => [
-                            'value' => $stats->percentage->getValue(),
-                            'unit' => $stats->percentage->getUnit(),
-                        ],
-                    ],
-                    $snapshot->getSourceStats(),
+                    function($stats): array {
+                        if ($stats instanceof SourceStatistics) {
+                            return [
+                                'source_type' => $stats->sourceType->value,
+                                'count' => [
+                                    'value' => $stats->count->getValue(),
+                                    'unit' => $stats->count->getUnit(),
+                                ],
+                                'percentage' => [
+                                    'value' => $stats->percentage->getValue(),
+                                    'unit' => $stats->percentage->getUnit(),
+                                ],
+                            ];
+                        }
+                        return [];
+                    },
+                    $sourceStatistics,
                 ),
                 'popular_posts' => $popularPosts,
                 'active_users' => $activeUsers,
@@ -281,7 +287,16 @@ final class StatisticsApplicationService
                 $period->startDate,
                 $period->endDate,
             );
-            $trendValues = array_map(fn($snapshot): float|int => $snapshot->getTotalViews()->value, $historicalData);
+            $trendValues = array_map(function($snapshot): int {
+                if (is_object($snapshot) && method_exists($snapshot, 'getTotalViews')) {
+                    $totalViews = $snapshot->getTotalViews();
+                    if (is_object($totalViews) && method_exists($totalViews, 'getValue')) {
+                        $value = $totalViews->getValue();
+                        return is_numeric($value) ? (int)$value : 0;
+                    }
+                }
+                return 0;
+            }, $historicalData);
             // 轉換為符合期望格式的陣列
             $indexedTrendValues = [];
             foreach ($trendValues as $index => $value) {

@@ -503,6 +503,24 @@ class StatisticsSnapshot extends AggregateRoot
     }
 
     /**
+     * 取得統計資料
+     * @return array<string, mixed>
+     */
+    public function getData(): array
+    {
+        return [
+            'id' => $this->id->toString(),
+            'period' => $this->period->toString(),
+            'total_posts' => $this->totalPosts->toArray(),
+            'total_views' => $this->totalViews->toArray(),
+            'source_stats' => array_map(fn($stat) => $stat->toArray(), $this->sourceStats),
+            'additional_metrics' => array_map(fn($metric) => $metric->toArray(), $this->additionalMetrics),
+            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updatedAt?->format('Y-m-d H:i:s'),
+        ];
+    }
+
+    /**
      * 轉換為陣列.
      * @return array
      */

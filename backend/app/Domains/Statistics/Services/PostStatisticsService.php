@@ -449,6 +449,16 @@ final class PostStatisticsService
     }
 
     /**
+     * 取得熱門文章（代理方法）
+     *
+     * @return array<string, mixed>
+     */
+    public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array
+    {
+        return $this->analyzePopularPosts($period, $limit);
+    }
+
+    /**
      * 取得品質等級.
      */
     private function getQualityGrade(float $score): string

@@ -58,7 +58,8 @@ class TagManagementController extends BaseController
             // 搜尋過濾
             if (!empty($search)) {
                 $tags = array_filter($tags, function ($tag) use ($search) {
-                    return stripos($tag['name'], $search) !== false;
+                    $tagName = $tag['name'] ?? '';
+                    return is_string($tagName) && stripos($tagName, $search) !== false;
                 });
             }
 
@@ -70,7 +71,7 @@ class TagManagementController extends BaseController
             $responseData = [
                 'success' => true,
                 'data' => [
-                    'tags' => array_values($tags),
+                    'tags' => $tags,
                     'pagination' => [
                         'page' => $page,
                         'limit' => $limit,
@@ -183,6 +184,7 @@ class TagManagementController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
+            $tagName = $tagName ?? 'unknown';
             $this->logger?->error("清除標籤失敗: {$tagName}", ['error' => $e->getMessage()]);
 
             return $this->json($response, [
