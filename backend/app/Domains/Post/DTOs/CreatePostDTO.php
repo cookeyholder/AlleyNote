@@ -40,9 +40,9 @@ class CreatePostDTO extends BaseDTO
      * @param array $data 要驗證的資料
      * @throws ValidationException 當驗證失敗時
      */
-    
-    
-    
+
+
+
     public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);
@@ -51,12 +51,12 @@ class CreatePostDTO extends BaseDTO
         $this->addPostValidationRules();
 
         // 預處理 is_pinned 預設值
-        if (!isset($data['is_pinned'] {
+        if (!isset($data['is_pinned'])) {
             $data['is_pinned'] = false;
         }
 
         // 預處理狀態值
-        if (!isset($data['status'] {
+        if (!isset($data['status'])) {
             $data['status'] = PostStatus::DRAFT->value;
         }
 

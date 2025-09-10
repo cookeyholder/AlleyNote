@@ -66,7 +66,7 @@ class UserRepository
         $params = ['id' => $id];
 
         foreach ($data as $key => $value) {
-            if (in_array($key, ['username', 'email', 'status', 'password') {
+            if (in_array($key, ['username', 'email', 'status', 'password'])) {
                 $fields[] = "{$key} = :{$key}";
                 $params[$key] = $key === 'password'
                     ? password_hash((string) $value, PASSWORD_ARGON2ID) : $value;

@@ -286,7 +286,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             foreach ($dtos as $dto) {
                 if (!$dto instanceof CreateActivityLogDTO) {
                     $this->logger->warning('Invalid DTO type in batch', [
-                        'type' => gettype($dto]),
+                        'type' => gettype($dto)
                     ]);
                     continue;
                 }

@@ -394,7 +394,7 @@ class StatisticsSnapshot extends AggregateRoot
      */
     public function removeAdditionalMetric(string $key): void
     {
-        if (isset($this->additionalMetrics[$key) {
+        if (isset($this->additionalMetrics[$key])) {
             unset($this->additionalMetrics[$key]);
             $this->markAsUpdated();
         }

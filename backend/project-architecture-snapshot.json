@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 20:43:43",
+        "scan_time": "2025-09-10 17:57:32",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -404,7 +404,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php",
                                             "extension": "php",
-                                            "size": 8986
+                                            "size": 8989
                                         },
                                         "StatisticsMetric.php": {
                                             "type": "file",
@@ -722,13 +722,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Repositories\/IpRepository.php",
                                             "extension": "php",
-                                            "size": 11045
+                                            "size": 11198
                                         },
                                         "ActivityLogRepository.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Repositories\/ActivityLogRepository.php",
                                             "extension": "php",
-                                            "size": 30009
+                                            "size": 30448
                                         }
                                     }
                                 },
@@ -2144,7 +2144,7 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Cache\/CacheManager.php",
                                     "extension": "php",
-                                    "size": 5274
+                                    "size": 5277
                                 },
                                 "CacheKeys.php": {
                                     "type": "file",
@@ -2184,7 +2184,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php",
                                             "extension": "php",
-                                            "size": 11443
+                                            "size": 11925
                                         }
                                     }
                                 },
@@ -2288,7 +2288,7 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Http\/ServerRequestFactory.php",
                                     "extension": "php",
-                                    "size": 2937
+                                    "size": 2940
                                 }
                             }
                         },
@@ -2342,7 +2342,7 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Routing\/RouteDispatcher.php",
                                     "extension": "php",
-                                    "size": 3765
+                                    "size": 3887
                                 },
                                 "ClosureRequestHandler.php": {
                                     "type": "file",
@@ -2382,7 +2382,7 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php",
                                             "extension": "php",
-                                            "size": 3863
+                                            "size": 3869
                                         },
                                         "RouteCacheFactory.php": {
                                             "type": "file",
@@ -2498,7 +2498,7 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Routing\/ControllerResolver.php",
                                     "extension": "php",
-                                    "size": 16873
+                                    "size": 17060
                                 },
                                 "RouteValidator.php": {
                                     "type": "file",
@@ -3753,7 +3753,7 @@
                                                     "type": "file",
                                                     "path": "tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php",
                                                     "extension": "php",
-                                                    "size": 23586
+                                                    "size": 23591
                                                 }
                                             }
                                         },
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 33228
+            "size": 25033
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -5289,7 +5289,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1676402
+            "size": 1677038
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -7531,7 +7531,7 @@
                 "IP_SELECT_FIELDS",
                 "ALLOWED_CONDITION_FIELDS"
             ],
-            "lines_of_code": 344
+            "lines_of_code": 347
         },
         "app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": {
             "path": "app\/Domains\/Security\/Repositories\/ActivityLogRepository.php",
@@ -7585,7 +7585,7 @@
                 "TABLE_NAME",
                 "SELECT_FIELDS"
             ],
-            "lines_of_code": 920
+            "lines_of_code": 931
         },
         "app\/Domains\/Security\/Models\/IpList.php": {
             "path": "app\/Domains\/Security\/Models\/IpList.php",
@@ -12957,7 +12957,7 @@
                 "validateIssuerAndAudience"
             ],
             "constants": [],
-            "lines_of_code": 365
+            "lines_of_code": 376
         },
         "app\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepository.php": {
             "path": "app\/Infrastructure\/Auth\/Repositories\/RefreshTokenRepository.php",
@@ -13607,7 +13607,7 @@
                 "create"
             ],
             "constants": [],
-            "lines_of_code": 117
+            "lines_of_code": 119
         },
         "app\/Infrastructure\/Routing\/ClosureRequestHandler.php": {
             "path": "app\/Infrastructure\/Routing\/ClosureRequestHandler.php",
@@ -14245,7 +14245,7 @@
                 "44": "convertParameter"
             },
             "constants": [],
-            "lines_of_code": 573
+            "lines_of_code": 568
         },
         "app\/Infrastructure\/Routing\/RouteValidator.php": {
             "path": "app\/Infrastructure\/Routing\/RouteValidator.php",

@@ -111,7 +111,7 @@ class XssProtectionExtensionService
             'security_score' => $this->calculateSecurityScore($input, $processResult['content']),
         ];
 
-        if ($input !== $processResult['content'] {
+        if ($input !== $processResult['content']) {
             $result['modifications'][] = [
                 'type' => 'html_sanitization',
                 'description' => 'HTML 內容已經過安全過濾',

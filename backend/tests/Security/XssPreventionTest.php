@@ -211,7 +211,7 @@ class XssPreventionTest extends TestCase
     public function shouldEscapeHtmlInPostContent(): void
     {
         // 準備含有 XSS 攻擊程式碼的測試資料
-        %s = '<img src=", "x" onerror="alert(\'XSS\')");sprintf(">';
+        $maliciousContent = '<img src="x" onerror="alert(\'XSS\')">';
         $postData = [
             'title' => '正常標題',
             'content' => $maliciousContent,
@@ -269,7 +269,7 @@ class XssPreventionTest extends TestCase
     public function shouldHandleEncodedXssAttempts(): void
     {
         // 準備編碼的 XSS 攻擊程式碼
-        %s = htmlentities('<script>alert(", "XSS");</");script>', ENT_QUOTES, 'UTF-8');
+        $encodedXss = htmlentities('<script>alert("XSS");</script>', ENT_QUOTES, 'UTF-8');
         $postData = [
             'title' => $encodedXss,
             'content' => '正常內容',

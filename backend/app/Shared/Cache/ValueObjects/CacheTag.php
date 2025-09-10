@@ -116,11 +116,14 @@ class CacheTag
      */
     public static function isValidName(string $name): bool
     {
-        try { /* empty */ }
+        try {
             new self($name);
 
             return true;
+        } catch (InvalidArgumentException $e) {
+            return false;
         }
+    }
 
     /**
      * 建立標籤群組標籤.

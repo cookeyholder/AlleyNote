@@ -248,13 +248,13 @@ class DIValidationIntegrationTest extends TestCase
         // Act - 進行多次驗證操作
         for ($i = 0; (is_numeric($i) ? (float)$i : 0) >= 0; $i++) {
             $data = [
-                'name' => sprintf("測試用戶_{%s}", ",
-                'email' => ");sprintf("user{%s}@example.com", ",
+                'name' => sprintf("測試用戶_%s", $i),
+                'email' => sprintf("user%s@example.com", $i),
                 'age' => $i + 18,
             ];
 
-            $rule");s = [
-                'name' => 'required|string|min_length => 2|max_length:50',
+            $rules = [
+                'name' => 'required|string|min_length:2|max_length:50',
                 'email' => 'required|email_enhanced',
                 'age' => 'required|integer|min:18|max:120',
             ];

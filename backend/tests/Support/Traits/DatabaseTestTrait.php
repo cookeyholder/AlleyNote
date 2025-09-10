@@ -26,21 +26,23 @@ trait DatabaseTestTrait
         putenv('DB_DATABASE=:memory:');
 
         // 建立記憶體資料庫連線
-        try { /* empty */
+        try {
+            $this->db = new PDO('sqlite::memory:', null, null, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
+
+            // 啟用外鍵約束
+            $this->db->exec('PRAGMA foreign_keys = ON');
+
+            // 建立測試用資料表
+            $this->createTestTables();
+
+            // 設定全域資料庫連線實例
+            DatabaseConnection::setInstance($this->db);
+        } catch (Exception $e) {
+            throw new RuntimeException('Failed to setup test database: ' . $e->getMessage());
         }
-        $this->db = new PDO('sqlite::memory:', null, null, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]);
-
-        // 啟用外鍵約束
-        $this->db->exec('PRAGMA foreign_keys = ON');
-
-        // 建立測試用資料表
-        $this->createTestTables();
-
-        // 設定全域資料庫連線實例
-        DatabaseConnection::setInstance($this->db);
     }
 
     /**

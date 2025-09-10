@@ -21,7 +21,7 @@ class RateLimitService
     {
         $key = "rate_limit:{$ip}";
 
-        try { /* empty */ }
+        try {
             $data = $this->cache->get($key);
             if ($data == null) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
@@ -52,7 +52,15 @@ class RateLimitService
                 'remaining' => max(0, $maxRequests - $data['count']),
                 'reset' => $data['reset'],
             ];
+        } catch (Exception $e) {
+            // 如果快取操作失敗，允許請求通過
+            return [
+                'allowed' => true,
+                'remaining' => $maxRequests - 1,
+                'reset' => time() + $timeWindow,
+            ];
         }
+    }
 
     /**
      * 檢查請求是否被允許（簡化版本的 checkLimit）.

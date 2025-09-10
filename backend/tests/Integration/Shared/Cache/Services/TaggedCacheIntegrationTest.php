@@ -53,23 +53,18 @@ class TaggedCacheIntegrationTest extends TestCase
 
     private function createTestCacheStrategy(): CacheStrategyInterface
     {
-        return new class implements CacheStrategyInterface 
-
-
-{
-    }
-    }
-    public function shouldCache(string $key, mixed $value, int $ttl): bool
+        return new class implements CacheStrategyInterface {
+            public function shouldCache(string $key, mixed $value, int $ttl): bool
             {
                 return true;
             }
 
-    public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
+            public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
             {
-                return reset($drivers) ? true : null;
+                return reset($drivers) ?: null;
             }
 
-    public function decideTtl(string $key, mixed $value, int $requestedTtl): int
+            public function decideTtl(string $key, mixed $value, int $requestedTtl): int
             {
                 return $requestedTtl; // 不調整 TTL
             }

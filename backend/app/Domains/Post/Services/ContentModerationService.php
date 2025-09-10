@@ -76,7 +76,7 @@ class ContentModerationService
 
         // 4. 垃圾內容檢查
         $spamScore = $this->calculateSpamScore($content, $metadata);
-        if ($spamScore > $this->config['spam_threshold') {
+        if ($spamScore > $this->config['spam_threshold']) {
             // $data ? $result->issues : null))[] = [ // 複雜賦值語法錯誤已註解
             //     'type' => 'spam_detected',
             //     'severity' => 'high',
@@ -266,7 +266,7 @@ class ContentModerationService
         if (!empty($criticalIssues)) {
             $result['status'] = 'rejected';
             $result['confidence'] = 0;
-            if (!isset($result['auto_actions'] {
+            if (!isset($result['auto_actions'])) {
                 $result['auto_actions'] = [];
             }
             $result['auto_actions'][] = 'content_blocked';

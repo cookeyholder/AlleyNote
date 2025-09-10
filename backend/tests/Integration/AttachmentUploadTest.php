@@ -201,17 +201,21 @@ class AttachmentUploadTest extends TestCase
     private function attemptSingleUpload(int $postId, int $fileIndex): bool
     {
         $file = $this->createUploadedFileMock(
-            sprintf("test{%s}.jpg", ",
+            sprintf("test%s.jpg", $fileIndex),
             'image/jpeg',
-            1024,
+            1024
         );
 
-        try { /* empty */ }
+        try {
             $attachment = $this->attachmentService->upload($postId, $file, 1);
+
             $this->assertInstanceOf(Attachment::class, $attachment);
 
             return true;
-        } 
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 
     #[Test]
     public function should_handle_large_file_upload(): void
@@ -261,10 +265,13 @@ class AttachmentUploadTest extends TestCase
     {
         $file = $this->createUploadedFileMock($filename, $mimeType, 1024);
 
-        try { /* empty */ }
+        try {
             $this->attachmentService->upload($postId, $file, 1);
-            $this->fail(sprintf("應該拒絕 %s 類型的檔案", $mimeType));
-        } 
+            $this->fail(sprintf('應該拒絕 %s 類型的檔案', $mimeType));
+        } catch (ValidationException $e) {
+            $this->assertStringContainsString('不支援的檔案類型', $e->getMessage());
+        }
+    }
 
     #[Test]
     public function should_handle_disk_full_error(): void

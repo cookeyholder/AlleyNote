@@ -1236,7 +1236,7 @@ class TokenBlacklistRepositoryTest extends TestCase
             $this->mockStatement
                 ->expects($this->exactly($executeCount))
                 ->method('execute')
-                ->willReturnOnConsecutiveCalls(..$executeResults);
+                ->willReturnOnConsecutiveCalls(...$executeResults);
         }
 
         $this->mockPdo
@@ -1290,12 +1290,13 @@ class TokenBlacklistRepositoryTest extends TestCase
             }
 
             for ($i = 0; $i < count($expectedJtis); $i++) {
-                if ($params[$i] !== $expectedJtis[$i] {
+                if ($params[$i] !== $expectedJtis[$i]) {
                     return false;
                 }
             }
 
-            // 最後一個參數應該是 current_time (字串] return is_string($params[count($expectedJtis)]);
+            // 最後一個參數應該是 current_time (字串)
+            return is_string($params[count($expectedJtis)]);
         };
     }
 
@@ -1305,7 +1306,8 @@ class TokenBlacklistRepositoryTest extends TestCase
      * @param string $jti JTI，預設為 'test-jti'
      * @return TokenBlacklistEntry 範例項目
      */
-    private function createSampleEntry(string $jti = 'test-jti'): TokenBlacklistEntry { /* empty */ }
+    private function createSampleEntry(string $jti = 'test-jti'): TokenBlacklistEntry
+    {
         return new TokenBlacklistEntry(
             jti: $jti,
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,

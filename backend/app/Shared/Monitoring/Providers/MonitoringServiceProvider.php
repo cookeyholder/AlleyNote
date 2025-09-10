@@ -226,7 +226,7 @@ class MonitoringServiceProvider
 
             $errorTracker->recordWarning('System health check failed', [
                 'health_status' => $healthStatus,
-                'check_time' => date('Y-m-d H => i:s']),
+                'check_time' => date('Y-m-d H:i:s'),
             ]);
         }
     }

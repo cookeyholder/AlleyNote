@@ -27,10 +27,9 @@ class JwtExceptionTest extends TestCase
     ): JwtException {
         /** @var array<string, mixed> $context */
         return new class ($message, $code, $previous, $context) extends JwtException {
-            /**\n              * @param array $context
+            /**
+             * @param array $context
              */
-    }
-    }
             public function __construct(
                 string $message,
                 int $code,

@@ -334,7 +334,7 @@ class UserActivityLogsSeederTest extends TestCase
      */
     private function assertMetadataIsValidJson(array $record): void
     {
-        if ($record['metadata'] {
+        if ($record['metadata'] !== null) {
             $this->assertIsString($record['metadata'], 'metadata should be a string');
             $decodedMetadata = json_decode($record['metadata'], true);
             $this->assertIsArray($decodedMetadata, 'metadata 應為有效的 JSON 格式');

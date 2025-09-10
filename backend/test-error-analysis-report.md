@@ -1,30 +1,30 @@
 # AlleyNote 測試錯誤分析報告
 
-生成時間：2025-09-09 03:48:59
+生成時間：2025-09-10 17:57:39
 PHPStan 等級：Level 10
 
 ## 📊 摘要統計
 - 測試檔案數：144
 - 原始檔案數：268
-- PHPStan 錯誤總數：890
-- 有錯誤的檔案數：136
+- PHPStan 錯誤總數：73
+- 有錯誤的檔案數：43
 - 最常見錯誤類型：other
 - 測試品質評分：70/100
 
 ## ⏱️ 預估修復時間
-- 總預估時間：13350 分鐘 (222.5 小時)
+- 總預估時間：1095 分鐘 (18.3 小時)
 - 簡單修復：0 個 (約 0 分鐘)
 - 中等修復：0 個 (約 0 分鐘)
-- 困難修復：890 個 (約 13350 分鐘)
+- 困難修復：73 個 (約 1095 分鐘)
 
 ## 🔍 錯誤類型分佈
-- other：890 個
+- other：73 個
 
 ## 💡 重構建議
 ### 🔴 修正 other 錯誤
 **優先級：** High
-**頻率：** 890 次
-**描述：** 發現 890 個 other 型別的錯誤。
+**頻率：** 73 次
+**描述：** 發現 73 個 other 型別的錯誤。
 **建議行動：** 請檢查相關程式碼並進行必要的修正。
 **修復範例：**
 ```php
@@ -65,6 +65,12 @@ PHPStan 等級：Level 10
 **優先級：** High
 **頻率：** N/A 次
 **描述：** 在 tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php 中發現 high_cyclomatic_complexity 反模式
+**建議行動：** 將複雜的測試分割成多個較簡單的測試方法
+
+### 🔴 修正測試反模式
+**優先級：** High
+**頻率：** N/A 次
+**描述：** 在 tests/Unit/Services/Security/PwnedPasswordServiceTest.php 中發現 high_cyclomatic_complexity 反模式
 **建議行動：** 將複雜的測試分割成多個較簡單的測試方法
 
 ### 🔴 修正測試反模式
@@ -225,6 +231,9 @@ PHPStan 等級：Level 10
 - too_many_test_methods (嚴重程度：medium)
 - high_cyclomatic_complexity (嚴重程度：high)
 
+### PwnedPasswordServiceTest.php
+- high_cyclomatic_complexity (嚴重程度：high)
+
 ### AttachmentServiceTest.php
 - excessive_mocking (嚴重程度：medium)
 
@@ -237,9 +246,6 @@ PHPStan 等級：Level 10
 - high_cyclomatic_complexity (嚴重程度：high)
 
 ### CsrfProtectionTest.php
-- redundant_type_check (嚴重程度：low)
-
-### SqlInjectionTest.php
 - redundant_type_check (嚴重程度：low)
 
 ### XssPreventionTest.php
@@ -315,11 +321,7 @@ PHPStan 等級：Level 10
 ### test_routing_performance.php
 - redundant_type_check (嚴重程度：low)
 
-### DatabaseOptimizationValidationTest.php
-- redundant_type_check (嚴重程度：low)
-
 ### SimpleUserActivityLogPerformanceTest.php
-- redundant_type_check (嚴重程度：low)
 - high_cyclomatic_complexity (嚴重程度：high)
 
 ### PostControllerActivityLoggingTest.php
@@ -331,16 +333,16 @@ PHPStan 等級：Level 10
 - high_cyclomatic_complexity (嚴重程度：high)
 
 ## 📁 錯誤最多的檔案 (Top 10)
-- JwtTokenService.php：27 個錯誤
-- SecurityTestService.php：23 個錯誤
-- RefreshTokenRepository.php：21 個錯誤
-- SwaggerController.php：20 個錯誤
-- StatisticsQueryService.php：20 個錯誤
-- PasswordSecurityService.php：20 個錯誤
-- SecurityServiceProvider.php：18 個錯誤
-- ErrorTrackerService.php：18 個錯誤
-- AuthenticationService.php：17 個錯誤
-- AuthorizationService.php：17 個錯誤
+- AttachmentUploadTest.php：3 個錯誤
+- ActivityLogRepositoryTest.php：3 個錯誤
+- ActivityLoggingServiceTest.php：3 個錯誤
+- TokenBlacklistRepositoryTest.php：3 個錯誤
+- CacheTagTest.php：3 個錯誤
+- SourceDistributionDTO.php：2 個錯誤
+- RefreshTokenService.php：2 個錯誤
+- CreatePostDTO.php：2 個錯誤
+- ContentModerationService.php：2 個錯誤
+- Uri.php：2 個錯誤
 
 ## 🎯 下一步行動建議
 1. 優先修復高優先級的重構建議

@@ -432,7 +432,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
         $this->logger->warning("Slow operation detected: {$operation}", [
             'duration_ms' => round($duration, 2),
-            'threshold_ms' => (float]) $this->slowQueryThreshold,
+            'threshold_ms' => (float) $this->slowQueryThreshold,
             'context' => $context,
         ]);
     }

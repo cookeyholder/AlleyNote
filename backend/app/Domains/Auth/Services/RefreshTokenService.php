@@ -72,6 +72,29 @@ final class RefreshTokenService
         ?string $parentTokenJti = null,
     ): RefreshToken {
         try {
- /* empty */}
+            $refreshToken = new RefreshToken(
+                jti: $this->generateJti(),
+                userId: $userId,
+                deviceInfo: $deviceInfo,
+                parentTokenJti: $parentTokenJti,
+                expiresAt: new DateTimeImmutable('+30 days'),
+                createdAt: new DateTimeImmutable()
+            );
 
+            $this->repository->store($refreshToken);
+
+            return $refreshToken;
+        } catch (Exception $e) {
+            throw new RefreshTokenException(
+                'Failed to create refresh token: ' . $e->getMessage(),
+                0,
+                $e
+            );
+        }
     }
+
+    private function generateJti(): string
+    {
+        return bin2hex(random_bytes(16));
+    }
+}

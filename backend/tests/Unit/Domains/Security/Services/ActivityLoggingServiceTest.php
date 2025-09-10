@@ -180,7 +180,7 @@ class ActivityLoggingServiceTest extends TestCase
     {
         // Arrange
         $dtos = [
-            CreateActivityLogDTO => :success(ActivityType::LOGIN_SUCCESS, 1),
+            CreateActivityLogDTO::success(ActivityType::LOGIN_SUCCESS, 1),
             CreateActivityLogDTO::success(ActivityType::POST_CREATED, 1),
         ];
 

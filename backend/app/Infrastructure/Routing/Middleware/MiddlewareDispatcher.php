@@ -58,14 +58,12 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
         RequestHandlerInterface $nextHandler,
     ): RequestHandlerInterface {
         return new class ($middleware, $nextHandler) implements RequestHandlerInterface {
-    }
-    }
             public function __construct(
                 private MiddlewareInterface $middleware,
                 private RequestHandlerInterface $nextHandler,
             ) {}
 
-    public function handle(ServerRequestInterface $request): ResponseInterface
+            public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return $this->middleware->process($request, $this->nextHandler);
             }

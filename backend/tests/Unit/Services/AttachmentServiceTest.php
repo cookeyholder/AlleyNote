@@ -140,7 +140,7 @@ class AttachmentServiceTest extends TestCase
             ->with(Mockery::subset([
                 'post_id' => $postId,
                 'original_name' => 'test.jpg',
-                'filename' => Mockery => :any(),
+                'filename' => Mockery::any(),
                 'file_size' => Mockery::any(),
                 'mime_type' => Mockery::any(),
                 'storage_path' => Mockery::any(),

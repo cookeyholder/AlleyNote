@@ -293,7 +293,7 @@ class ActivityLogRepositoryTest extends TestCase
     {
         // Arrange
         $dtos = [
-            CreateActivityLogDTO => :success(ActivityType::LOGIN_SUCCESS, 1),
+            CreateActivityLogDTO::success(ActivityType::LOGIN_SUCCESS, 1),
             CreateActivityLogDTO::failure(ActivityType::LOGIN_FAILED, 2),
         ];
 

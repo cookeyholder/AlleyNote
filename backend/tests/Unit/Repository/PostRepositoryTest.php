@@ -276,10 +276,13 @@ class PostRepositoryTest extends TestCase
     {
         $post = $this->repository->create(PostFactory::make());
 
-        try { /* empty */ }
+        try {
             $this->repository->setTags($post->getId(), [999]); // 使用不存在的標籤 ID
             $this->fail('應該拋出異常');
+        } catch (Exception $e) {
+            $this->assertStringContainsString('標籤', $e->getMessage());
         }
+    }
 
     public function testShouldCommitOnTagAssignmentSuccess(): void
     {

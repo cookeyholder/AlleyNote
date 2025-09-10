@@ -245,7 +245,7 @@ class PostValidator extends Validator
         $availableRules = self::getUpdatePostRules();
 
         foreach ($data as $field => $value) {
-            if (isset($availableRules[$field] {
+            if (isset($availableRules[$field])) {
                 $rules[$field] = $availableRules[$field];
             }
         }

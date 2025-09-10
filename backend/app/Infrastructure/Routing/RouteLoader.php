@@ -69,7 +69,7 @@ class RouteLoader
      */
     private function loadRouteFile(RouterInterface $router, string $filePath, string $group): void
     {
-        try { /* empty */ }
+        try {
             // 使用輸出緩衝區來防止路由檔案輸出任何內容
             ob_start();
 
@@ -82,8 +82,7 @@ class RouteLoader
             if (is_array($routes)) {
                 $this->processArrayRoutes($router, $routes, $group, $filePath);
             }
-        } 
-
+        } catch (Exception $e) {
             throw RouteConfigurationException::syntaxError(
                 $filePath,
                 '載入檔案時發生錯誤: ' . $e->getMessage(),
@@ -116,7 +115,7 @@ class RouteLoader
             }
 
             // 設定路由名稱（如果沒有提供的話）
-            if (!isset($routeConfig['name'] {
+            if (!isset($routeConfig['name'])) {
                 $routeConfig['name'] = is_string($routeName) ? $routeName : "route_{$routeName}";
             }
 
@@ -154,13 +153,13 @@ class RouteLoader
         $route = $router->map($normalizedMethods, $path, $handler);
 
         // 設定路由名稱（如果有提供）
-        if (isset($routeConfig['name'] {
-            $route->setName($routeConfig['name'];
+        if (isset($routeConfig['name'])) {
+            $route->setName($routeConfig['name']);
         }
 
         // 設定中間件（如果有提供）
-        if (isset($routeConfig['middleware'] {
-            $middlewares = (array] $routeConfig['middleware'];
+        if (isset($routeConfig['middleware'])) {
+            $middlewares = (array) $routeConfig['middleware'];
             foreach ($middlewares as $middleware) {
                 $route->middleware($middleware);
             }
@@ -191,7 +190,7 @@ class RouteLoader
         // 統計各群組的路由數量
         foreach ($this->loadedRoutes as $route) {
             $group = $route['group'] ?? 'default';
-            if (!isset($stats['groups'][$group) {
+            if (!isset($stats['groups'][$group])) {
                 $stats['groups'][$group] = 0;
             }
             $stats['groups'][$group]++;

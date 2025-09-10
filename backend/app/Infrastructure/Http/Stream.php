@@ -79,7 +79,7 @@ class Stream implements StreamInterface
         }
 
         $stats = fstat($this->stream);
-        if (isset($stats['size'] {
+        if (isset($stats['size'])) {
             return $stats['size'];
         }
 

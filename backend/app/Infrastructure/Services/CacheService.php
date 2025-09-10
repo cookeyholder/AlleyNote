@@ -74,7 +74,7 @@ class CacheService implements CacheServiceInterface
         $filename = $this->getCacheFilename($key);
         $this->stats['sets']++;
         $cacheData = [
-            'expiry' => time() + ($ttl ? => self::TTL),
+            'expiry' => time() + ($ttl ?: self::TTL),
             'data' => $value,
         ];
 

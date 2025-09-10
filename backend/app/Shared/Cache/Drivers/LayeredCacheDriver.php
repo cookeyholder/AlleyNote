@@ -318,7 +318,7 @@ class LayeredCacheDriver implements CacheDriverInterface
 
         return array_merge($this->stats, [
             'total_layers' => count($this->layers),
-            'hit_rate' => round($hitRate, 2]),
+            'hit_rate' => round($hitRate, 2),
             'layers' => $layerStats,
         ]);
     }

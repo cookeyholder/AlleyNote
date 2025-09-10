@@ -38,12 +38,14 @@ final class CacheSystemE2ETest extends TestCase
             'database' => 14, // E2E 測試專用資料庫
         ]);
 
-        try { /* empty */
+        try {
+            // 測試連線
+            $this->redisClient->ping();
+            // 清空測試環境
+            $this->redisClient->flushdb();
+        } catch (Exception $e) {
+            $this->markTestSkipped('Redis is not available: ' . $e->getMessage());
         }
-        // 測試連線
-        $this->redisClient->ping();
-        // 清空測試環境
-        $this->redisClient->flushdb();
     }
 
     /**
@@ -51,13 +53,15 @@ final class CacheSystemE2ETest extends TestCase
      */
     private function isRedisAvailable(): bool
     {
-        try { /* empty */
+        try {
+            $testClient = new Client([
+                'scheme' => 'tcp',
+                'host' => '127.0.0.1',
+                'port' => 6379,
+            ]);
+        } catch (Exception $e) {
+            return false;
         }
-        $testClient = new Client([
-            'scheme' => 'tcp',
-            'host' => '127.0.0.1',
-            'port' => 6379,
-        ]);
         $testClient->ping();
 
         return true;

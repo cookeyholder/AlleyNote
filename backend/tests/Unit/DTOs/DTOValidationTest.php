@@ -603,9 +603,12 @@ class DTOValidationTest extends TestCase
         ];
 
         // 某些極端值可能會觸發驗證錯誤，這是預期的
-        try { /* empty */
+        try {
+            $dto = new CreatePostDTO($this->validator, $extremeData);
+            $this->assertInstanceOf(CreatePostDTO::class, $dto);
+        } catch (ValidationException $e) {
+            // 這是預期的，某些極端值可能會觸發驗證錯誤
+            $this->addToAssertionCount(1);
         }
-        $dto = new CreatePostDTO($this->validator, $extremeData);
-        $this->assertInstanceOf(CreatePostDTO::class, $dto);
     }
 }

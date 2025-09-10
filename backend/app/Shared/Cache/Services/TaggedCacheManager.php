@@ -129,12 +129,19 @@ class TaggedCacheManager implements TaggedCacheInterface
             return $value;
         }
 
-        try { /* empty */ }
+        try {
             $value = $callback();
             $this->put($key, $value, $ttl);
 
             return $value;
+        } catch (Exception $e) {
+            $this->logger->error('Failed to remember cache value', [
+                'key' => $key,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
         }
+    }
 
     /**
      * 增加新標籤到快取管理器.
@@ -362,7 +369,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         $this->logger->info('批量設定標籤化快取', [
             'items_count' => count($items),
             'tags' => $tags,
-            'success_count' => count(array_filter($results)]),
+            'success_count' => count(array_filter($results)),
         ]);
 
         return $results;
