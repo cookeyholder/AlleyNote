@@ -204,7 +204,7 @@ class PasswordHashingTest extends TestCase
         $user = (is_array($result) && array_key_exists('user', $result) ? $result['user'] : null);
 
         $userId = null;
-        if (is_array($user) && isset((is_array($user) && array_key_exists('id', $user) ? $user['id'] : null))) {
+        if (is_array($user) && array_key_exists('id', $user) && $user['id'] !== null) {
             $userId = (is_array($user) && array_key_exists('id', $user) ? $user['id'] : null);
         } elseif (is_object($user) && method_exists($user, 'getId')) {
             $userId = $user->getId();

@@ -12,9 +12,6 @@ use App\Domains\Security\Services\Core\XssProtectionService;
  * 提供自動化內容審核和人工審核的工作流程
  */
 class ContentModerationService
-
-
-
 {
     private XssProtectionService $xssProtection;
 

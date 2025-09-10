@@ -15,9 +15,6 @@ use DateTime;
  * 擴展基本驗證器，添加 Post 相關的自訂驗證規則
  */
 class PostValidator extends Validator
-
-
-
 {
     public function __construct()
     {

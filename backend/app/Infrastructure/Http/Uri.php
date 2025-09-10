@@ -10,9 +10,6 @@ use Psr\Http\Message\UriInterface;
  * 簡單的 PSR-7 URI 實作.
  */
 class Uri implements UriInterface
-
-
-
 {
     private string $scheme = '';
 

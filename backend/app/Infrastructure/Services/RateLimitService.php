@@ -7,15 +7,14 @@ namespace App\Infrastructure\Services;
 use Exception;
 
 class RateLimitService
-
-
-
 {
     public function __construct(
-        private readonly CacheService $cache) {}
+        private readonly CacheService $cache,
+    ) {}
 
     /**
-     * @return array
+     * 檢查速率限制.
+     * @return array<string, mixed>
      */
     public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
     {
@@ -23,8 +22,16 @@ class RateLimitService
 
         try {
             $data = $this->cache->get($key);
-            if ($data == null) {
+            if ($data === null || !is_array($data)) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
+            }
+
+            // 確保 $data 是正確的格式
+            if (!isset($data['count']) || !is_int($data['count'])) {
+                $data['count'] = 0;
+            }
+            if (!isset($data['reset']) || !is_int($data['reset'])) {
+                $data['reset'] = time() + $timeWindow;
             }
 
             // 檢查是否需要重置計數器
@@ -41,8 +48,8 @@ class RateLimitService
                 ];
             }
 
-            // 增加請求計數
-            $data['count']++;
+            // 增加請求計數（確保 $data['count'] 是 int 類型）
+            $data['count'] = (int) $data['count'] + 1;
 
             // 更新快取
             $this->cache->set($key, $data, $timeWindow);
@@ -69,6 +76,6 @@ class RateLimitService
     {
         $result = $this->checkLimit($ip, $maxRequests, $timeWindow);
 
-        return $result['allowed'];
+        return (bool) ($result['allowed'] ?? false);
     }
 }

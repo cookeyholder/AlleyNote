@@ -16,9 +16,6 @@ use Psr\Http\Message\ServerRequestInterface;
  * 負責執行中介軟體鏈，採用遞迴方式建立執行鏈
  */
 class MiddlewareDispatcher implements MiddlewareDispatcherInterface
-
-
-
 {
     public function dispatch(
         ServerRequestInterface $request,

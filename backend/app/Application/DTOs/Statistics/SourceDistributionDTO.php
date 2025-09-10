@@ -247,7 +247,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得來源排名.
-     * @return array>
+     * @return array<int, array<string, mixed>>
      */
     public function getSourceRanking(): array
     {
@@ -306,7 +306,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         return [
             'period_info' => [
                 'display_name' => $this->period->getDisplayName(),
-                'start_date' => $this->period->startDate->format('Y-m-d H => i:s'),
+                'start_date' => $this->period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
                 'type' => $this->period->type->value,
             ],
