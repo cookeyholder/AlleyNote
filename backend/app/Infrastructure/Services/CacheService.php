@@ -7,9 +7,6 @@ namespace App\Infrastructure\Services;
 use App\Shared\Contracts\CacheServiceInterface;
 
 class CacheService implements CacheServiceInterface
-
-
-
 {
     private string $cachePath;
 
@@ -31,8 +28,8 @@ class CacheService implements CacheServiceInterface
         if (!is_dir($this->cachePath)) {
             mkdir($this->cachePath, 0o755, true);
         }
-
     }
+
     public function get(string $key): mixed
     {
         $filename = $this->getCacheFilename($key);
@@ -49,7 +46,7 @@ class CacheService implements CacheServiceInterface
             return null;
         }
 
-        $stringData = is_string($data) ? $data : (string) $data;
+        $stringData = (string) $data;
         $cacheData = json_decode($stringData, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry']) || !isset($cacheData['data'])) {
             $this->stats['misses']++;
@@ -78,7 +75,7 @@ class CacheService implements CacheServiceInterface
             'data' => $value,
         ];
 
-        $result = file_put_contents($filename, (json_encode($cacheData) ?? '')) !== false;
+        $result = file_put_contents($filename, json_encode($cacheData) ?: '') !== false;
         if ($result) {
             $this->updateCacheSize();
         }
@@ -137,7 +134,7 @@ class CacheService implements CacheServiceInterface
         if ($value == null) {
             $value = $callback();
             if ($value !== null) {
-                $this->set($key, $value, $ttl ? true : self::TTL);
+                $this->set($key, $value, $ttl ?? self::TTL);
             }
         }
 
@@ -156,7 +153,7 @@ class CacheService implements CacheServiceInterface
             return false;
         }
 
-        $stringData = is_string($data) ? $data : (string) $data;
+        $stringData = (string) $data;
         $cacheData = json_decode($stringData, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry'])) {
             return false;
@@ -172,46 +169,45 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-     * @return array
+     * @param array<string> $keys
+     * @return array<string, mixed>
      */
-    public function getMultiple(array $keys): array
+    public function getMultiple(array $keys, mixed $default = null): array
     {
         $result = [];
         foreach ($keys as $key) {
-            $result[$key] = $this->get($key);
+            $result[$key] = $this->get($key) ?? $default;
         }
 
         return $result;
     }
 
     /**
-     * @param array $values
+     * @param array<string, mixed> $values
      */
-    public function setMultiple(array $values, int $ttl = 3600): bool
+    public function setMultiple(array $values, ?int $ttl = null): bool
     {
-        $success = true;
         foreach ($values as $key => $value) {
-            if (!$this->set($key, $value, $ttl)) {
-                $success = false;
+            if (!$this->set($key, $value, $ttl ?? 0)) {
+                return false;
             }
         }
 
-        return $success;
+        return true;
     }
 
     /**
-     * @param array $keys
+     * @param array<string> $keys
      */
     public function deleteMultiple(array $keys): bool
     {
-        $success = true;
         foreach ($keys as $key) {
             if (!$this->delete($key)) {
-                $success = false;
+                return false;
             }
         }
 
-        return $success;
+        return true;
     }
 
     private function getCacheFilename(string $key): string
@@ -236,7 +232,7 @@ class CacheService implements CacheServiceInterface
 
     /**
      * 取得快取統計資訊.
-     * @return array
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {
@@ -269,7 +265,7 @@ class CacheService implements CacheServiceInterface
             foreach ($files as $file) {
                 $data = file_get_contents($file);
                 if ($data !== false) {
-                    $stringData = is_string($data) ? $data : (string) $data;
+                    $stringData = (string) $data;
                     $cacheData = json_decode($stringData, true);
                     if (is_array($cacheData) && isset($cacheData['expiry'])) {
                         if (time() > $cacheData['expiry']) {

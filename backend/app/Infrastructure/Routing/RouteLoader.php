@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing;
 
+use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Exceptions\RouteConfigurationException;
-use ParseError;
-use Throwable;
+use Exception;
 
 /**
  * 路由載入器.
@@ -15,14 +15,13 @@ use Throwable;
  * 負責載入和管理多個路由配置檔案
  */
 class RouteLoader
-
-
-
 {
     private RouteValidator $validator;
 
+    /** @var array<int, array<string, mixed>> */
     private array $loadedRoutes = [];
 
+    /** @var array<int, array<string, string>> */
     private array $routeFiles = [];
 
     public function __construct(?RouteValidator $validator = null)
@@ -80,7 +79,9 @@ class RouteLoader
 
             // 如果路由檔案返回陣列，處理陣列格式的路由定義
             if (is_array($routes)) {
-                $this->processArrayRoutes($router, $routes, $group, $filePath);
+                /** @var array<string, mixed> $routesTyped */
+                $routesTyped = $routes;
+                $this->processArrayRoutes($router, $routesTyped, $group, $filePath);
             }
         } catch (Exception $e) {
             throw RouteConfigurationException::syntaxError(
@@ -101,22 +102,29 @@ class RouteLoader
 
     /**
      * 處理陣列格式的路由定義.
-     * @param array $routes
+     * @param array<string, mixed> $routes
      */
-    private function processArrayRoutes(RouterInterface $router, /** @var array<string, mixed> */ array $routes, string $group, string $filePath): void
+    private function processArrayRoutes(RouterInterface $router, array $routes, string $group, string $filePath): void
     {
         foreach ($routes as $routeName => $routeConfig) {
             // 確保路由配置是陣列
             if (!is_array($routeConfig)) {
+                $routeNameStr = (string) $routeName;
+
                 throw RouteConfigurationException::invalidRouteDefinition(
-                    $routeName,
+                    $routeNameStr,
                     '路由配置必須是陣列格式',
                 );
             }
 
+            // 診斷 routeConfig 為 array<string, mixed> 類型
+            $routeConfig = array_map(function ($value) {
+                return $value;
+            }, $routeConfig);
+
             // 設定路由名稱（如果沒有提供的話）
             if (!isset($routeConfig['name'])) {
-                $routeConfig['name'] = is_string($routeName) ? $routeName : "route_{$routeName}";
+                $routeConfig['name'] = (string) $routeName;
             }
 
             // 新增群組資訊
@@ -126,34 +134,62 @@ class RouteLoader
             // 驗證路由配置
             $this->validator->validateRoute($routeConfig);
 
+            // 將 $routeConfig 轉換為正確類型以滿足 PHPStan
+            /** @var array<string, mixed> $validatedRouteConfig */
+            $validatedRouteConfig = $routeConfig;
+
             // 註冊路由
-            $this->registerRoute($router, $routeConfig);
+            $this->registerRoute($router, $validatedRouteConfig);
 
             // 記錄已載入的路由
-            $this->loadedRoutes[] = $routeConfig;
+            /** @var array<string, mixed> $routeRecord */
+            $routeRecord = array_map(function ($value) { return $value; }, $validatedRouteConfig);
+            $this->loadedRoutes[] = $routeRecord;
         }
     }
 
     /**
      * 註冊路由到路由器.
-     * @param array $routeConfig
+     * @param array<string, mixed> $routeConfig
      */
-    private function registerRoute(RouterInterface $router, /** @var array<string, mixed> */ array $routeConfig): void
+    private function registerRoute(RouterInterface $router, array $routeConfig): void
     {
-        $methods = (array) $routeConfig['methods'];
-        $path = $routeConfig['path'];
-        $handler = $routeConfig['handler'];
+        $methods = (array) ($routeConfig['methods'] ?? []);
+        $path = (string) ($routeConfig['path'] ?? '');
+        $handler = $routeConfig['handler'] ?? [];
+
+        // 確保 handler 是陣列
+        if (!is_array($handler)) {
+            $routeName = $routeConfig['name'] ?? 'unknown';
+            $routeNameStr = is_string($routeName) ? $routeName : (string) $routeName;
+
+            throw RouteConfigurationException::invalidRouteDefinition(
+                $routeNameStr,
+                'Route handler must be an array',
+            );
+        }
+
+        // 確保 path 不為空
+        if (empty(trim($path))) {
+            $routeName = $routeConfig['name'] ?? 'unknown';
+            $routeNameStr = is_string($routeName) ? $routeName : (string) $routeName;
+
+            throw RouteConfigurationException::invalidRouteDefinition(
+                $routeNameStr,
+                'Route path cannot be empty',
+            );
+        }
 
         // 正規化 HTTP 方法
         $normalizedMethods = array_map(function ($method) {
-            return strtoupper(trim($method));
+            return strtoupper(trim((string) $method));
         }, $methods);
 
         // 使用 map 方法註冊路由
         $route = $router->map($normalizedMethods, $path, $handler);
 
         // 設定路由名稱（如果有提供）
-        if (isset($routeConfig['name'])) {
+        if (isset($routeConfig['name']) && is_string($routeConfig['name'])) {
             $route->setName($routeConfig['name']);
         }
 
@@ -161,14 +197,16 @@ class RouteLoader
         if (isset($routeConfig['middleware'])) {
             $middlewares = (array) $routeConfig['middleware'];
             foreach ($middlewares as $middleware) {
-                $route->middleware($middleware);
+                if (is_string($middleware) || $middleware instanceof MiddlewareInterface) {
+                    $route->middleware($middleware);
+                }
             }
         }
     }
 
     /**
      * 取得已載入的路由資訊.
-     * @return array
+     * @return array<int, array<string, mixed>>
      */
     public function getLoadedRoutes(): array
     {
@@ -177,7 +215,7 @@ class RouteLoader
 
     /**
      * 取得路由統計資訊.
-     * @return array
+     * @return array<string, mixed>
      */
     public function getRouteStats(): array
     {
@@ -211,7 +249,7 @@ class RouteLoader
 
     /**
      * 透過群組篩選路由.
-     * @return array
+     * @return array<int, array<string, mixed>>
      */
     public function getRoutesByGroup(string $group): array
     {
@@ -222,7 +260,7 @@ class RouteLoader
 
     /**
      * 搜尋路由.
-     * @return array
+     * @return array<int, array<string, mixed>>
      */
     public function findRoutes(callable $filter): array
     {
