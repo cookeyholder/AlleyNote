@@ -53,7 +53,7 @@ class RouteDispatcher
         $resolvedMiddlewares = [];
 
         foreach ($middlewares as $middleware) {
-            try { /* empty */ }
+            try {
                 if (is_string($middleware)) {
                     // 解析字串別名
                     $resolvedMiddlewares[] = $this->middlewareResolver->resolve($middleware);
@@ -61,7 +61,9 @@ class RouteDispatcher
                     // 已經是實例，直接使用
                     $resolvedMiddlewares[] = $middleware;
                 }
-            } 
+            } catch (\Exception $e) {
+                throw new RuntimeException("無法解析中介軟體: {$e->getMessage()}", 0, $e);
+            }
         }
 
         // 3. 建立最終處理器 (控制器)

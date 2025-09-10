@@ -226,7 +226,7 @@ readonly class SourceStatistics
         // 合併額外指標
         $mergedMetrics = $this->additionalMetrics;
         foreach ($other->additionalMetrics as $key => $metric) {
-            if (isset($mergedMetrics[$key] {
+            if (isset($mergedMetrics[$key])) {
                 $mergedMetrics[$key] = $mergedMetrics[$key]->add($metric);
             } else {
                 $mergedMetrics[$key] = $metric;
@@ -267,7 +267,7 @@ readonly class SourceStatistics
         }
 
         foreach ($this->additionalMetrics as $key => $metric) {
-            if (!isset($other->additionalMetrics[$key) || !$metric->equals($other->additionalMetrics[$key])) {
+            if (!isset($other->additionalMetrics[$key]) || !$metric->equals($other->additionalMetrics[$key])) {
                 return false;
             }
         }

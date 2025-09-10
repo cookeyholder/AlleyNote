@@ -111,7 +111,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function create(CreateActivityLogDTO $dto): ?array
     {
-        try { /* empty */ }
+        try {
             $this->db->beginTransaction();
 
             $entity = ActivityLog::fromDTO(
@@ -142,7 +142,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
-                ' => uuid' => $entity->getUuid(),
+                ':uuid' => $entity->getUuid(),
                 ':user_id' => $entity->getUserId(),
                 ':session_id' => $entity->getSessionId(),
                 ':action_type' => $entity->getActionType()->value,
@@ -167,7 +167,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             // 回傳完整的實體資料
             return $this->findById($insertId);
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw new RuntimeException("建立活動記錄失敗: {$e->getMessage()}", 0, $e);
         }
+    }
 
     /**
      * 批次建立多個活動記錄.
@@ -179,7 +183,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             return 0;
         }
 
-        try { /* empty */ }
+        try {
             $this->db->beginTransaction();
 
             $sql = 'INSERT INTO ' . self::TABLE_NAME . ' (
@@ -217,7 +221,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 );
 
                 $stmt->execute([
-                    ' => uuid' => $entity->getUuid(),
+                    ':uuid' => $entity->getUuid(),
                     ':user_id' => $entity->getUserId(),
                     ':session_id' => $entity->getSessionId(),
                     ':action_type' => $entity->getActionType()->value,
@@ -241,7 +245,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $this->db->commit();
 
             return $count;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw new RuntimeException("批次建立活動記錄失敗: {$e->getMessage()}", 0, $e);
         }
+    }
 
     /**
      * 根據 ID 查詢活動記錄.
@@ -293,7 +301,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function findAll(int $limit = 20, int $offset = 0): array
     {
-        try { /* empty */ }
+        try {
             $sql = 'SELECT ' . self::SELECT_FIELDS . '
                     FROM ' . self::TABLE_NAME . '
                     ORDER BY occurred_at DESC
@@ -311,7 +319,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
                 return $entity->toArray();
             }, $results);
+        } catch (\Exception $e) {
+            throw new RuntimeException("查詢所有活動記錄失敗: {$e->getMessage()}", 0, $e);
         }
+    }
 
     /**
      * 查詢使用者的活動記錄.

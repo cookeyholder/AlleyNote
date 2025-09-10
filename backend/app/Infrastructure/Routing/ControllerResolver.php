@@ -97,15 +97,11 @@ class ControllerResolver
 
             private string $protocolVersion = '1.1';
 
-    }
-    }
             public function __construct()
             {
                 $this->body = new class {
                     private string $content = '';
 
-            }
-            }
                     public function write(string $string): int
                     {
                         $this->content .= $string;
@@ -113,14 +109,14 @@ class ControllerResolver
                         return strlen($string);
                     }
 
-    public function __toString(): string
+                    public function __toString(): string
                     {
                         return $this->content;
                     }
                 };
             }
 
-    public function getStatusCode(): int
+            public function getStatusCode(): int
             {
                 return $this->statusCode;
             }
@@ -238,15 +234,11 @@ class ControllerResolver
 
             private string $protocolVersion = '1.1';
 
-    }
-    }
             public function __construct()
             {
                 $this->body = new class {
                     private string $content = '';
 
-            }
-            }
                     public function write(string $string): int
                     {
                         $this->content .= $string;
@@ -254,19 +246,19 @@ class ControllerResolver
                         return strlen($string);
                     }
 
-    public function __toString(): string
+                    public function __toString(): string
                     {
                         return $this->content;
                     }
                 };
             }
 
-    public function getStatusCode(): int
+            public function getStatusCode(): int
             {
                 return $this->statusCode;
             }
 
-    public function withStatus($code, $reasonPhrase = ''): self
+            public function withStatus($code, $reasonPhrase = ''): self
             {
                 $new = clone $this;
                 $new->statusCode = $code;
@@ -277,7 +269,7 @@ class ControllerResolver
                 return $new;
             }
 
-    public function getReasonPhrase(): string
+            public function getReasonPhrase(): string
             {
                 return $this->reasonPhrase;
             }
@@ -402,7 +394,7 @@ class ControllerResolver
         $methodArgs = $this->resolveMethodArguments($controller, $method, $request, $parameters);
 
         // 呼叫控制器方法
-        return $controller->{$method}(.$methodArgs);
+        return $controller->{$method}(...$methodArgs);
     }
 
     /**
@@ -426,20 +418,21 @@ class ControllerResolver
         }
 
         // 如果容器中沒有，嘗試建立實例
-        try { /* empty */ }
+        try {
             $reflection = new ReflectionClass($controllerClass);
             $constructor = $reflection->getConstructor();
 
-            if ($constructor == null) {
-                // 無參數建構子
+            if ($constructor === null) {
                 return new $controllerClass();
             }
 
-            // 解析建構子參數
+            // 解析建構函式參數
             $args = $this->resolveConstructorArguments($constructor);
 
-            return new $controllerClass(.$args);
-        } 
+            return new $controllerClass(...$args);
+        } catch (\Exception $e) {
+            throw new RuntimeException("無法建立控制器實例: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
@@ -493,9 +486,11 @@ class ControllerResolver
         /** @var array<string, mixed> */
         array $routeParameters,
     ): array {
-        try { /* empty */ }
+        try {
             $reflection = new ReflectionMethod($controller, $methodName);
-        } 
+        } catch (\Exception $e) {
+            throw new RuntimeException("無法解析方法參數: {$e->getMessage()}", 0, $e);
+        }
 
         $args = [];
 
@@ -521,7 +516,7 @@ class ControllerResolver
             }
 
             // 處理路由參數
-            if (isset($routeParameters[$paramName] {
+            if (isset($routeParameters[$paramName])) {
                 $args[] = $this->convertParameter($routeParameters[$paramName], $type);
                 continue;
             }

@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-09 20:29:19",
+        "scan_time": "2025-09-09 20:43:43",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -428,7 +428,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Statistics\/Console\/StatisticsCalculationConsole.php",
                                             "extension": "php",
-                                            "size": 13115
+                                            "size": 13120
                                         }
                                     }
                                 }
@@ -848,7 +848,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Security\/Services\/IpService.php",
                                             "extension": "php",
-                                            "size": 3195
+                                            "size": 3385
                                         },
                                         "Headers": {
                                             "type": "directory",
@@ -1534,7 +1534,7 @@
                                     "type": "file",
                                     "path": "app\/Shared\/Config\/JwtConfig.php",
                                     "extension": "php",
-                                    "size": 8644
+                                    "size": 8847
                                 }
                             }
                         },
@@ -2150,7 +2150,7 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Cache\/CacheKeys.php",
                                     "extension": "php",
-                                    "size": 7140
+                                    "size": 7155
                                 }
                             }
                         },
@@ -2220,19 +2220,19 @@
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Repositories\/Statistics\/StatisticsRepository.php",
                                             "extension": "php",
-                                            "size": 21225
+                                            "size": 18241
                                         },
                                         "PostStatisticsRepository.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php",
                                             "extension": "php",
-                                            "size": 29716
+                                            "size": 32674
                                         },
                                         "UserStatisticsRepository.php": {
                                             "type": "file",
                                             "path": "app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php",
                                             "extension": "php",
-                                            "size": 41714
+                                            "size": 26439
                                         },
                                         "SystemStatisticsRepository.php": {
                                             "type": "file",
@@ -2264,7 +2264,7 @@
                                     "type": "file",
                                     "path": "app\/Infrastructure\/Http\/Response.php",
                                     "extension": "php",
-                                    "size": 4638
+                                    "size": 4641
                                 },
                                 "Stream.php": {
                                     "type": "file",
@@ -3513,7 +3513,7 @@
                             "type": "file",
                             "path": "tests\/Security\/SqlInjectionTest.php",
                             "extension": "php",
-                            "size": 7102
+                            "size": 10373
                         },
                         "XssPreventionTest.php": {
                             "type": "file",
@@ -3963,7 +3963,7 @@
                             "type": "file",
                             "path": "tests\/Performance\/DatabaseOptimizationValidationTest.php",
                             "extension": "php",
-                            "size": 3443
+                            "size": 7124
                         },
                         "SimpleUserActivityLogPerformanceTest.php": {
                             "type": "file",
@@ -4075,7 +4075,7 @@
             "type": "file",
             "path": "syntax-errors-classification-report.json",
             "extension": "json",
-            "size": 42959
+            "size": 33228
         },
         "ci-simulation-report.md": {
             "type": "file",
@@ -6646,7 +6646,7 @@
                 "printInfo"
             ],
             "constants": [],
-            "lines_of_code": 387
+            "lines_of_code": 381
         },
         "app\/Domains\/Post\/Contracts\/PostRepositoryInterface.php": {
             "path": "app\/Domains\/Post\/Contracts\/PostRepositoryInterface.php",
@@ -8070,7 +8070,7 @@
                 "logIpRuleEvent"
             ],
             "constants": [],
-            "lines_of_code": 101
+            "lines_of_code": 104
         },
         "app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php": {
             "path": "app\/Domains\/Security\/Services\/Headers\/SecurityHeaderService.php",
@@ -11026,7 +11026,7 @@
                 "getConfigSummary"
             ],
             "constants": [],
-            "lines_of_code": 321
+            "lines_of_code": 320
         },
         "app\/Shared\/Contracts\/RepositoryInterface.php": {
             "path": "app\/Shared\/Contracts\/RepositoryInterface.php",
@@ -12838,7 +12838,7 @@
                 "PREFIX",
                 "SEPARATOR"
             ],
-            "lines_of_code": 296
+            "lines_of_code": 293
         },
         "app\/Infrastructure\/Config\/ContainerFactory.php": {
             "path": "app\/Infrastructure\/Config\/ContainerFactory.php",
@@ -13072,7 +13072,7 @@
                 "saveSnapshot",
                 "findById",
                 "findByPeriod",
-                "findByDateRange",
+                "findByPeriodType",
                 "findLatest",
                 "findExpiredSnapshots",
                 "getOldestSnapshot",
@@ -13083,15 +13083,15 @@
                 "existsByPeriod",
                 "updateSnapshot",
                 "getSnapshotDateRange",
-                "countByDateRange",
-                "buildSnapshotFromRow",
+                "countSnapshotsByDateRange",
+                "createSnapshotFromRow",
                 "serializeSnapshotData",
                 "deserializeMetrics",
                 "extractMetricValue",
                 "extractPrimarySource"
             ],
             "constants": [],
-            "lines_of_code": 639
+            "lines_of_code": 542
         },
         "app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php": {
             "path": "app\/Infrastructure\/Repositories\/Statistics\/PostStatisticsRepository.php",
@@ -13140,7 +13140,7 @@
                 "getHourlyDistribution"
             ],
             "constants": [],
-            "lines_of_code": 876
+            "lines_of_code": 921
         },
         "app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php": {
             "path": "app\/Infrastructure\/Repositories\/Statistics\/UserStatisticsRepository.php",
@@ -13165,28 +13165,18 @@
                 "countTotalUsersByPeriod",
                 "getUserRegistrationTrends",
                 "getUserActivityStats",
-                "getActiveUsersByPeriod",
                 "getMostActiveUsers",
-                "getTopActiveUsers",
                 "getUserBehaviorAnalysis",
                 "getUserBehaviorPatterns",
                 "getUserRetentionRate",
-                "getUserSegmentationStats",
-                "getUserChurnRate",
-                "getNewUserFirstActivityAnalysis",
-                "getUserInteractionNetworkStats",
-                "getUserLifetimeValueAnalysis",
-                "getUserGeographicDistribution",
-                "getUserEngagementScores",
-                "getUserActivityTimeDistribution",
-                "getUserActivityTrends",
-                "getUserDeviceTypeStats",
-                "hasUserActivityInPeriod",
-                "getTotalUsersAsOfDate",
-                "calculateUserEngagement"
+                "getUserEngagementStats",
+                "getUserGrowthTrends",
+                "getUserDistributionStats",
+                "hasUserDataInPeriod",
+                "getTotalUsersAsOfDate"
             ],
             "constants": [],
-            "lines_of_code": 1047
+            "lines_of_code": 682
         },
         "app\/Infrastructure\/Repositories\/Statistics\/SystemStatisticsRepository.php": {
             "path": "app\/Infrastructure\/Repositories\/Statistics\/SystemStatisticsRepository.php",
@@ -13279,7 +13269,7 @@
                 "getDefaultReasonPhrase"
             ],
             "constants": [],
-            "lines_of_code": 189
+            "lines_of_code": 186
         },
         "app\/Infrastructure\/Http\/Stream.php": {
             "path": "app\/Infrastructure\/Http\/Stream.php",
@@ -17958,7 +17948,9 @@
                 "Mockery\\MockInterface",
                 "PDO",
                 "PHPUnit\\Framework\\Attributes\\Test",
-                "Tests\\TestCase"
+                "Tests\\TestCase",
+                "delays\")",
+                "delays: {$attack}\")"
             ],
             "functions": [
                 "setUp",
@@ -17967,10 +17959,15 @@
                 "shouldHandleSpecialCharactersInContent",
                 "shouldPreventSqlInjectionInUserIdFilter",
                 "shouldSanitizeSearchInput",
+                "shouldPreventUnionBasedAttacks",
+                "shouldPreventBooleanBasedBlindAttacks",
+                "shouldHandleNumericInjectionAttempts",
+                "shouldPreventTimeBasedBlindAttacks",
+                "shouldEscapeSpecialCharactersCorrectly",
                 "tearDown"
             ],
             "constants": [],
-            "lines_of_code": 184
+            "lines_of_code": 290
         },
         "tests\/Security\/XssPreventionTest.php": {
             "path": "tests\/Security\/XssPreventionTest.php",
@@ -19903,16 +19900,23 @@
             "traits": [],
             "uses": [
                 "PDO",
-                "Tests\\TestCase"
+                "Tests\\TestCase",
+                "index, but plan shows: {$planText}\"\n            )"
             ],
             "functions": [
                 "setUp",
                 "testCompositeIndexesExist",
                 "testBasicQueryPerformance",
-                "testTableStatistics"
+                "testTableStatistics",
+                "testQueryPlanAnalysis",
+                "testIndexUsageEffectiveness",
+                "measureQueryTime",
+                "testDatabaseIntegrity",
+                "testTableSchema",
+                "tearDown"
             ],
             "constants": [],
-            "lines_of_code": 99
+            "lines_of_code": 205
         },
         "tests\/Performance\/SimpleUserActivityLogPerformanceTest.php": {
             "path": "tests\/Performance\/SimpleUserActivityLogPerformanceTest.php",
@@ -26395,8 +26399,8 @@
             "avg_classes_per_file": 0.79
         },
         "dependency_metrics": {
-            "total_dependencies": 2319,
-            "avg_dependencies_per_file": 3.93
+            "total_dependencies": 2322,
+            "avg_dependencies_per_file": 3.94
         },
         "maintainability_score": 100,
         "test_coverage_estimate": {
@@ -36241,6 +36245,16 @@
                 "type": "use",
                 "target": "Tests\\TestCase",
                 "file": "tests\/TestCase.php"
+            },
+            {
+                "type": "use",
+                "target": "delays\")",
+                "file": null
+            },
+            {
+                "type": "use",
+                "target": "delays: {$attack}\")",
+                "file": null
             }
         ],
         "tests\/Security\/XssPreventionTest.php": [
@@ -38357,6 +38371,11 @@
                 "type": "use",
                 "target": "Tests\\TestCase",
                 "file": "tests\/TestCase.php"
+            },
+            {
+                "type": "use",
+                "target": "index, but plan shows: {$planText}\"\n            )",
+                "file": null
             }
         ],
         "tests\/Performance\/SimpleUserActivityLogPerformanceTest.php": [

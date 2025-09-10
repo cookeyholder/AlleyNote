@@ -1,22 +1,12 @@
 {
-    "timestamp": "2025-09-09T20:41:03+08:00",
-    "total_syntax_errors": 103,
-    "affected_files": 53,
+    "timestamp": "2025-09-10T17:56:10+08:00",
+    "total_syntax_errors": 73,
+    "affected_files": 43,
     "error_type_stats": {
-        "syntax_general": 83,
-        "try_without_catch": 20
+        "syntax_general": 60,
+        "try_without_catch": 13
     },
     "file_error_counts": {
-        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": 3,
-        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/IpRepository.php": 3,
-        "\/var\/www\/html\/app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheManager.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/ControllerResolver.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/RouteDispatcher.php": 3,
-        "\/var\/www\/html\/tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php": 3,
         "\/var\/www\/html\/tests\/Integration\/AttachmentUploadTest.php": 3,
         "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Repositories\/ActivityLogRepositoryTest.php": 3,
         "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/ActivityLoggingServiceTest.php": 3,
@@ -131,40 +121,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": [
-            {
-                "line": 114,
-                "message": "Cannot use try without catch or finally on line 114",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 182,
-                "message": "Cannot use try without catch or finally on line 182",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 296,
-                "message": "Cannot use try without catch or finally on line 296",
-                "type": "try_without_catch"
-            }
-        ],
-        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/IpRepository.php": [
-            {
-                "line": 105,
-                "message": "Cannot use try without catch or finally on line 105",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 191,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 191",
-                "type": "syntax_general"
-            },
-            {
-                "line": 192,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 192",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Domains\/Security\/Services\/ActivityLoggingService.php": [
             {
                 "line": 289,
@@ -186,74 +142,6 @@
                 "type": "syntax_general"
             }
         ],
-        "\/var\/www\/html\/app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php": [
-            {
-                "line": 229,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 229",
-                "type": "syntax_general"
-            },
-            {
-                "line": 231,
-                "message": "Syntax error, unexpected T_ELSE, expecting '}' on line 231",
-                "type": "syntax_general"
-            },
-            {
-                "line": 242,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 242",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php": [
-            {
-                "line": 49,
-                "message": "Cannot use try without catch or finally on line 49",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 100,
-                "message": "Cannot use try without catch or finally on line 100",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 118,
-                "message": "Syntax error, unexpected T_THROW on line 118",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheManager.php": [
-            {
-                "line": 53,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 53",
-                "type": "syntax_general"
-            },
-            {
-                "line": 57,
-                "message": "Syntax error, unexpected ')' on line 57",
-                "type": "syntax_general"
-            },
-            {
-                "line": 57,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 57",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": [
-            {
-                "line": 70,
-                "message": "Syntax error, unexpected '{' on line 70",
-                "type": "syntax_general"
-            },
-            {
-                "line": 71,
-                "message": "Syntax error, unexpected ';', expecting ')' on line 71",
-                "type": "syntax_general"
-            },
-            {
-                "line": 79,
-                "message": "Syntax error, unexpected ']' on line 79",
-                "type": "syntax_general"
-            }
-        ],
         "\/var\/www\/html\/app\/Infrastructure\/Http\/Stream.php": [
             {
                 "line": 82,
@@ -270,40 +158,6 @@
             {
                 "line": 51,
                 "message": "Syntax error, unexpected '{', expecting ')' on line 51",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": [
-            {
-                "line": 41,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 41",
-                "type": "syntax_general"
-            },
-            {
-                "line": 46,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 46",
-                "type": "syntax_general"
-            },
-            {
-                "line": 153,
-                "message": "Syntax error, unexpected ')', expecting ']' on line 153",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/ControllerResolver.php": [
-            {
-                "line": 101,
-                "message": "Syntax error, unexpected '}', expecting ';' on line 101",
-                "type": "syntax_general"
-            },
-            {
-                "line": 108,
-                "message": "Syntax error, unexpected '}' on line 108",
-                "type": "syntax_general"
-            },
-            {
-                "line": 121,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 121",
                 "type": "syntax_general"
             }
         ],
@@ -328,23 +182,6 @@
             {
                 "line": 73,
                 "message": "Syntax error, unexpected '}', expecting EOF on line 73",
-                "type": "syntax_general"
-            }
-        ],
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/RouteDispatcher.php": [
-            {
-                "line": 56,
-                "message": "Cannot use try without catch or finally on line 56",
-                "type": "try_without_catch"
-            },
-            {
-                "line": 68,
-                "message": "Syntax error, unexpected T_VARIABLE on line 68",
-                "type": "syntax_general"
-            },
-            {
-                "line": 76,
-                "message": "Syntax error, unexpected '}', expecting EOF on line 76",
                 "type": "syntax_general"
             }
         ],
@@ -472,23 +309,6 @@
                 "line": 54,
                 "message": "Cannot use try without catch or finally on line 54",
                 "type": "try_without_catch"
-            }
-        ],
-        "\/var\/www\/html\/tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php": [
-            {
-                "line": 82,
-                "message": "Syntax error, unexpected '{' on line 82",
-                "type": "syntax_general"
-            },
-            {
-                "line": 89,
-                "message": "Syntax error, unexpected '{', expecting ')' on line 89",
-                "type": "syntax_general"
-            },
-            {
-                "line": 94,
-                "message": "Syntax error, unexpected '{' on line 94",
-                "type": "syntax_general"
             }
         ],
         "\/var\/www\/html\/tests\/Integration\/AttachmentUploadTest.php": [
@@ -685,16 +505,6 @@
         ]
     },
     "quick_fixes": {
-        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/ActivityLogRepository.php": 3,
-        "\/var\/www\/html\/app\/Domains\/Security\/Repositories\/IpRepository.php": 3,
-        "\/var\/www\/html\/app\/Domains\/Statistics\/ValueObjects\/SourceStatistics.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Auth\/Jwt\/FirebaseJwtProvider.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Cache\/CacheManager.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Http\/ServerRequestFactory.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/Cache\/MemoryRouteCache.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/ControllerResolver.php": 3,
-        "\/var\/www\/html\/app\/Infrastructure\/Routing\/RouteDispatcher.php": 3,
-        "\/var\/www\/html\/tests\/Integration\/Application\/Controllers\/Admin\/TagManagementControllerTest.php": 3,
         "\/var\/www\/html\/tests\/Integration\/AttachmentUploadTest.php": 3,
         "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Repositories\/ActivityLogRepositoryTest.php": 3,
         "\/var\/www\/html\/tests\/Unit\/Domains\/Security\/Services\/ActivityLoggingServiceTest.php": 3,

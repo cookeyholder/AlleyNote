@@ -67,8 +67,8 @@ class ServerRequestFactory
             $uri = $uri->withPort($port);
         }
 
-        if (!empty($_SERVER['QUERY_STRING'] {
-            $uri = $uri->withQuery($_SERVER['QUERY_STRING'];
+        if (!empty($_SERVER['QUERY_STRING'])) {
+            $uri = $uri->withQuery($_SERVER['QUERY_STRING']);
         }
 
         return $uri;
@@ -76,7 +76,7 @@ class ServerRequestFactory
 
     private static function isDefaultPort(string $scheme, int $port): bool
     {
-        return ($scheme === 'http' && $port === 80] || ($scheme === 'https' && $port === 443];
+        return ($scheme === 'http' && $port === 80) || ($scheme === 'https' && $port === 443);
     }
 
     private static function parseHeaders(): array
