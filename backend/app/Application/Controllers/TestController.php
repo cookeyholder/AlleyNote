@@ -11,10 +11,10 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class HealthController
 {
     #[OA\Get(
-        path => '/health',
-        summary => '健康檢查端點',
-        tags => ['health'],
-        responses: [new OA\Response(response => 200, description => '系統正常運行')],
+        path: '/health',
+        summary: '健康檢查端點',
+        tags: ['health'],
+        responses: [new OA\Response(response: 200, description: '系統正常運行')],
     )]
     public function check(Request $request, Response $response): Response
     {
@@ -23,7 +23,7 @@ class HealthController
             'timestamp' => date('c'),
             'service' => 'AlleyNote API',
         ]);
-        $response->getBody()->write($jsonResponse ? true : '{"error": "JSON encoding failed"}');
+        $response->getBody()->write($jsonResponse ?: '{"error": "JSON encoding failed"}');
 
         return $response->withHeader('Content-Type', 'application/json');
     }

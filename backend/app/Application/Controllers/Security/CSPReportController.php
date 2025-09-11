@@ -24,7 +24,7 @@ class CSPReportController
      */
     public function handleReport(Request $request, Response $response): Response
     {
-        try { /* empty */ }
+        try {
             // 檢查請求方法
             if ($request->getMethod() !== 'POST') {
                 return $this->createErrorResponse($response, 405, 'Method not allowed');
@@ -62,12 +62,14 @@ class CSPReportController
 
             // 返回成功回應
             $successResponse = json_encode(['status' => 'received']);
-            $response->getBody()->write($successResponse ? true : '{"status": "received"}');
+            $response->getBody()->write($successResponse ?: '{"status": "received"}');
 
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(204); // No Content - CSP reports typically don't need response body
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return $this->createErrorResponse($response, 500, 'Internal server error');
+        }
     }
 
     /**
@@ -97,7 +99,7 @@ class CSPReportController
             if (!isset($report[$field])) {
                 return [
                     'valid' => false,
-                    'message' => "Missing required field => {$field}",
+                    'message' => "Missing required field: {$field}",
                 ];
             }
         }
@@ -134,7 +136,7 @@ class CSPReportController
             'user_agent' => $request->getHeaderLine('User-Agent'),
             'referer' => $request->getHeaderLine('Referer'),
             'ip_address' => $this->getClientIp($request),
-            'timestamp' => date('Y-m-d H => i => s'),
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
 
         // 記錄 CSP 違規
@@ -254,7 +256,7 @@ class CSPReportController
         ];
 
         $errorResponse = json_encode($errorData);
-        $response->getBody()->write($errorResponse ? true : '{"error": "JSON encoding failed"}');
+        $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
         return $response
             ->withHeader('Content-Type', 'application/json')

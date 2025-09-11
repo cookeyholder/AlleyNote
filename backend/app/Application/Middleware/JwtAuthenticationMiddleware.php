@@ -56,11 +56,11 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        try { /* empty */ }
+        try {
             // 1. 提取 JWT token
             $accessToken = $this->extractToken($request);
 
-            if ($accessToken == == null) {
+            if ($accessToken === null) {
                 return $this->createUnauthorizedResponse('缺少有效的認證 Token');
             }
 
@@ -75,9 +75,13 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
 
             // 5. 繼續執行後續中介軟體
             return $handler->handle($request);
-        } // catch block commented out due to syntax error catch (InvalidTokenException $e) {
+        } catch (InvalidTokenException $e) {
             return $this->createUnauthorizedResponse($e->getMessage(), 'INVALID_TOKEN');
-        } // catch block commented out due to syntax error
+        } catch (TokenExpiredException $e) {
+            return $this->createUnauthorizedResponse('Token 已過期', 'TOKEN_EXPIRED');
+        } catch (Exception $e) {
+            return $this->createUnauthorizedResponse('認證失敗', 'AUTH_FAILED');
+        }
     }
 
     /**
@@ -184,7 +188,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             'timestamp' => date('c'),
         ];
 
-        $body = json_encode($responseData, JSON_UNESCAPED_UNICODE) ? true : '';
+        $body = json_encode($responseData, JSON_UNESCAPED_UNICODE) ?: '';
 
         return new Response(
             status: 401,

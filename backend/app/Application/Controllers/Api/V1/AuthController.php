@@ -464,9 +464,9 @@ class AuthController extends BaseController
     }
 
     #[OA\Post(
-        path => '/api/v1/auth/refresh',
-        summary => '更新 access token',
-        description => '使用 refresh token 更新 access token',
+        path: '/api/v1/auth/refresh',
+        summary: '更新 access token',
+        description: '使用 refresh token 更新 access token',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(

@@ -27,10 +27,11 @@ use JsonSerializable;
 final readonly class SourceDistributionDTO implements JsonSerializable
 {
     /**
-    /**
      * @param StatisticsPeriod $period 統計週期
+     * @param array $sourceStatistics 來源統計資料
+     * @param int $totalCount 總數量
+     * @param array $distributionAnalysis 分佈分析
      * @param DateTimeImmutable $generatedAt 產生時間
-     */
      */
     public function __construct(
         public StatisticsPeriod $period,
@@ -233,7 +234,9 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * 取得前 N 個來源.
      */
     /**
-     /**\n      * @return array */\n      */\n    public function getTopSources(int $limit = 5): array
+     * @return array
+     */
+    public function getTopSources(int $limit = 5): array
     {
         $sorted = $this->sourceStatistics;
         usort($sorted, fn(SourceStatistics $a, SourceStatistics $b): int => $b->count->value <=> $a->count->value);
@@ -241,13 +244,15 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         return array_slice(array_map(fn(SourceStatistics $source): array => [
             'source' => $source->sourceType->value,
             'count' => $source->count->value,
-            'percentage' => $this->totalCount > 0 ? round(($source->count->value / $this->totalCount) * 100, 2)  => 0,
+            'percentage' => $this->totalCount > 0 ? round(($source->count->value / $this->totalCount) * 100, 2) : 0,
         ], $sorted), 0, $limit);
     }
 
     /**
      * 取得來源排名.
-     /**\n      * @return array */\n      */\n    public function getSourceRanking(): array
+     * @return array
+     */
+    public function getSourceRanking(): array
     {
         $sorted = $this->sourceStatistics;
         usort($sorted, fn(SourceStatistics $a, SourceStatistics $b): int => $b->count->value <=> $a->count->value);
@@ -269,9 +274,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * 取得分佈摘要
      */
     /**
-    /**
      * @return array
-     */
      */
     public function getDistributionSummary(): array
     {
@@ -302,9 +305,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * 取得格式化的分佈資訊.
      */
     /**
-    /**
      * @return array
-     */
      */
     public function getFormattedDistribution(): array
     {
@@ -345,9 +346,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * 比較與另一個分佈的差異.
      */
     /**
-    /**
      * @return array
-     */
      */
     public function compareWith(SourceDistributionDTO $other): array
     {
@@ -410,9 +409,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * 轉換為陣列.
      */
     /**
-    /**
      * @return array
-     */
      */
     public function toArray(): array
     {
@@ -443,9 +440,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * JSON 序列化.
      */
     /**
-    /**
      * @return array
-     */
      */
     public function jsonSerialize(): array
     {
@@ -471,10 +466,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * 計算分佈分析.
      */
     /**
-    /**
-     * @param array $sourceStatistics
      * @return array
-     */
      */
     private static function calculateDistributionAnalysis(array $sourceStatistics, int $totalCount): array
     {
@@ -507,11 +499,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 驗證來源統計資料.
-     */
-    /**
-    /**
      * @param array $sourceStatistics
-     */
      */
     private function validateSourceStatistics(array $sourceStatistics): void
     {
