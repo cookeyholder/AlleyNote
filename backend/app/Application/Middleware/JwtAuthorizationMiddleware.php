@@ -56,9 +56,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private ?LoggerInterface $logger = null;
 
     /**
-    /**
      * @param array $config
-     */
      */
     public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
@@ -83,7 +81,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        try { /* empty */ }
+        try {
             // 1. 檢查使用者是否已認證
             if (!$request->getAttribute('authenticated', false)) {
                 return $this->createForbiddenResponse('使用者未認證', 'NOT_AUTHENTICATED');
@@ -130,7 +128,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $request = $this->injectAuthorizationContext($request, $authorizationResult);
 
             return $handler->handle($request);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logAuthorizationFailure($request, $e->getMessage());
+            return $this->createForbiddenResponse('授權失敗', 'AUTHORIZATION_FAILED');
+        }
     }
 
     /**
@@ -297,7 +298,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         // 資源擁有者檢查
-        if ($action == = = = 'update' || $action === 'delete') {
+        if ($action === 'update' || $action === 'delete') {
             $ownershipResult = $this->checkResourceOwnership($userId, $resource, $request);
             if ($ownershipResult->isAllowed()) {
                 return $ownershipResult;
@@ -475,7 +476,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     ): AuthorizationResult {
         // 從 URL 路徑或請求參數中提取資源 ID
         $resourceId = $this->extractResourceId($request, $resource);
-        if ($resourceId == = = = null) {
+        if ($resourceId === null) {
             return new AuthorizationResult(false, '無法識別資源 ID', 'RESOURCE_ID_NOT_FOUND');
         }
 
@@ -504,7 +505,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      */
     private function extractResource(ServerRequestInterface $request): string
     {
-        $path = trim($request->getUri()->getPath(), '/');
+        $path = $request->getUri()->getPath();
         $segments = explode('/', is_string($path) ? $path : (string) $path);
 
         // 假設 API 路徑格式為 /api/v1/{resource}/{id?}
@@ -638,7 +639,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param ServerRequestInterface $request HTTP 請求物件
      * @return string 客戶端 IP 位址
      */
-    private function getClientIpAddress(ServerRequestInterface $request): string
+    private function getClientFingerprint(ServerRequestInterface $request): string
     {
         // 檢查各種可能包含真實 IP 的標頭
         $headers = [
@@ -696,7 +697,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function ipMatches(string $ip, string $pattern): bool
     {
         // 完全匹配
-        if ($ip == = = = $pattern) {
+        if ($ip === $pattern) {
             return true;
         }
 
@@ -936,7 +937,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         ];
 
         $body = json_encode($responseData, JSON_UNESCAPED_UNICODE);
-        if ($body == = = = false) {
+        if ($body === false) {
             $body = '{"error": "JSON 編碼失敗"}';
         }
 
@@ -952,7 +953,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param ServerRequestInterface $request HTTP 請求物件
      * @return bool 是否應該處理
      */
-    public function shouldProcess(ServerRequestInterface $request): bool
+    private function shouldProcess(ServerRequestInterface $request): bool
     {
         if (!$this->enabled) {
             return false;
@@ -1003,8 +1004,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function getDefaultConfig(): array
     {
         return [
-            'default_policy' => self => DEFAULT_POLICY,
-            'admin_roles' => self => :ADMIN_ROLES,
+            'default_policy' => self::DEFAULT_POLICY,
+            'admin_roles' => self::ADMIN_ROLES,
             'skip_paths' => [],
             'auth_paths' => ['/api/'],
             'role_permissions' => [
@@ -1082,7 +1083,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 設定授權配置.
      * @param array $config 配置陣列
      */
-    public function setConfig(array $config): self
+    public function updateConfig(array $config): self
     {
         $this->config = [...$this->config, ...$config];
 

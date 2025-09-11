@@ -99,11 +99,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
-     */
-    /**
-    /**
      * @param array $data
-     */
      */
     public static function fromArray(array $data): self
     {

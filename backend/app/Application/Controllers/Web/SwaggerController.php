@@ -17,7 +17,7 @@ class SwaggerController
      */
     public function docs(Request $request, Response $response): Response
     {
-        try { /* empty */ }
+        try {
             // 暫時捕獲所有輸出，避免警告訊息影響 JSON 格式
             ob_start();
 
@@ -32,12 +32,12 @@ class SwaggerController
             // 清除任何輸出的警告訊息
             ob_end_clean();
 
-            if ($openapi == == null) {
+            if ($openapi === null) {
                 throw new Exception('Failed to generate OpenAPI documentation');
             }
 
             $json = $openapi->toJson();
-            $response->getBody()->write($json ? true : '{"error": "Failed to serialize OpenAPI spec"}');
+            $response->getBody()->write($json ?: '{"error": "Failed to serialize OpenAPI spec"}');
 
             return $response
                 ->withStatus(200)
@@ -45,8 +45,7 @@ class SwaggerController
                 ->withHeader('Access-Control-Allow-Origin', '*')
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
                 ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        } // catch block commented out due to syntax error
-
+        } catch (Exception | Throwable $e) {
             $error = [
                 'success' => false,
                 'error' => [
@@ -57,7 +56,7 @@ class SwaggerController
             ];
 
             $errorJson = json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            $response->getBody()->write($errorJson ? true : '{"error": "JSON encoding failed"}');
+            $response->getBody()->write($errorJson ?: '{"error": "JSON encoding failed"}');
 
             return $response
                 ->withStatus(500)
@@ -71,7 +70,7 @@ class SwaggerController
      */
     public function ui(Request $request, Response $response): Response
     {
-        try { /* empty */ }
+        try {
             $html = $this->generateSwaggerUiHtml();
             $response->getBody()->write($html);
 
@@ -81,7 +80,13 @@ class SwaggerController
                 ->withHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
                 ->withHeader('Pragma', 'no-cache')
                 ->withHeader('Expires', '0');
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $errorHtml = $this->generateErrorHtml($e->getMessage());
+            $response->getBody()->write($errorHtml);
+            return $response
+                ->withStatus(500)
+                ->withHeader('Content-Type', 'text/html; charset=UTF-8');
+        }
     }
 
     /**
@@ -111,7 +116,7 @@ class SwaggerController
                 <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js"></script>
                 <script>
                     window.onload = function() {
-                        try { /* empty */ }
+                        try {
                             SwaggerUIBundle({
                                 url: '/api/docs',
                                 dom_id: '#swagger-ui',
@@ -128,7 +133,9 @@ class SwaggerController
                                 defaultModelsExpandDepth: 1,
                                 defaultModelExpandDepth: 1
                             });
-                        } // catch block commented out due to syntax error
+                        } catch (error) {
+                            console.error('Failed to initialize Swagger UI:', error);
+                        }
                     };
                 </script>
             </body>
@@ -185,7 +192,7 @@ class SwaggerController
      */
     public function info(Request $request, Response $response): Response
     {
-        try { /* empty */ }
+        try {
             $info = [
                 'name' => 'AlleyNote API',
                 'version' => '1.0.0',
@@ -201,7 +208,7 @@ class SwaggerController
                 ],
                 'license' => [
                     'name' => 'MIT',
-                    'url' => 'https => //opensource.org/licenses/MIT',
+                    'url' => 'https://opensource.org/licenses/MIT',
                 ],
                 'endpoints' => [
                     'health_check' => '/api/health',
@@ -212,19 +219,20 @@ class SwaggerController
                 'server_info' => [
                     'php_version' => PHP_VERSION,
                     'timezone' => date_default_timezone_get(),
-                    'timestamp' => date('Y-m-d H => i => s'),
+                    'timestamp' => date('Y-m-d H:i:s'),
                 ],
             ];
 
             $infoJson = json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            $response->getBody()->write($infoJson ? true : '{"error": "JSON encoding failed"}');
+            $response->getBody()->write($infoJson ?: '{"error": "JSON encoding failed"}');
 
             return $response
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8')
                 ->withHeader('Cache-Control', 'public, max-age=3600');
-        } // catch block commented out due to syntax error');
-
+        } catch (Exception $e) {
+            $errorJson = json_encode(['error' => 'Failed to get API info']);
+            $response->getBody()->write($errorJson ?: '{"error": "JSON encoding failed"}');
             return $response
                 ->withStatus(500)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -236,11 +244,11 @@ class SwaggerController
      */
     public function health(Request $request, Response $response): Response
     {
-        try { /* empty */ }
+        try {
             $health = [
                 'status' => 'healthy',
                 'service' => 'AlleyNote API Documentation',
-                'timestamp' => date('Y-m-d H => i => s'),
+                'timestamp' => date('Y-m-d H:i:s'),
                 'uptime' => $this->getUptime(),
                 'memory_usage' => [
                     'current' => $this->formatBytes(memory_get_usage(true)),
@@ -249,14 +257,15 @@ class SwaggerController
             ];
 
             $healthJson = json_encode($health, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            $response->getBody()->write($healthJson ? true : '{"status": "unknown"}');
+            $response->getBody()->write($healthJson ?: '{"status": "unknown"}');
 
             return $response
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8')
                 ->withHeader('Cache-Control', 'no-cache');
-        } // catch block commented out due to syntax error');
-
+        } catch (Exception $e) {
+            $errorJson = json_encode(['status' => 'unhealthy', 'error' => $e->getMessage()]);
+            $response->getBody()->write($errorJson ?: '{"status": "unknown"}');
             return $response
                 ->withStatus(503)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8');
