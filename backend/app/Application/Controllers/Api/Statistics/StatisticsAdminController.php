@@ -25,11 +25,11 @@ class StatisticsAdminController extends BaseController
      */
     public function refresh(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try { /* empty */ }
+        try {
             $this->logger->info('統計重新整理 API 請求', [
                 'method' => $request->getMethod(),
                 'uri' => (string) $request->getUri(),
-                'body' => (string) $request->getBody(]),
+                'body' => (string) $request->getBody(),
             ]);
 
             $bodyString = (string) $request->getBody();
@@ -49,13 +49,22 @@ class StatisticsAdminController extends BaseController
             ];
 
             $jsonResponse = json_encode($responseData);
-            if ($jsonResponse == == false) {
+            if ($jsonResponse === false) {
                 $jsonResponse = '{"error": "JSON encoding failed"}';
             }
             $response->getBody()->write($jsonResponse);
 
             return $response->withHeader('Content-Type', 'application/json');
-        } // catch block commented out due to syntax error';
+        } catch (Exception $e) {
+            $this->logger->error('統計重新整理失敗: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'success' => false,
+                'error' => '統計資料重新整理失敗',
+                'message' => $e->getMessage(),
+                'timestamp' => date('c'),
+            ]);
+            if ($errorResponse === false) {
+                $errorResponse = '{"error": "JSON encoding failed"}';
             }
             $response->getBody()->write($errorResponse);
 

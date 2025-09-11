@@ -26,7 +26,7 @@ class AttachmentController
     {
         // 從 request attributes 或 session 中取得使用者 ID
         $userId = $request->getAttribute('user_id');
-        if ($userId == == null) {
+        if ($userId === null) {
             throw ValidationException::fromSingleError('user_id', '使用者未登入');
         }
 
@@ -38,9 +38,9 @@ class AttachmentController
     }
 
     #[OA\Post(
-        path => '/posts/{post_id}/attachments',
-        summary => '上傳文件附件',
-        description => '為指定貼文上傳附件檔案，支援多種檔案格式',
+        path: '/posts/{post_id}/attachments',
+        summary: '上傳文件附件',
+        description: '為指定貼文上傳附件檔案，支援多種檔案格式',
         operationId: 'uploadAttachment',
         tags: ['attachments'],
         security: [
@@ -49,9 +49,9 @@ class AttachmentController
         ],
         parameters: [
             new OA\Parameter(
-                name => 'post_id',
-                in => 'path',
-                description => '貼文 ID',
+                name: 'post_id',
+                in: 'path',
+                description: '貼文 ID',
                 required: true,
                 schema: new OA\Schema(type: 'integer', minimum: 1),
             ),
@@ -64,9 +64,9 @@ class AttachmentController
                 schema: new OA\Schema(
                     properties: [
                         new OA\Property(
-                            property => 'file',
-                            type => 'string',
-                            format => 'binary',
+                            property: 'file',
+                            type: 'string',
+                            format: 'binary',
                             description: '要上傳的檔案',
                         ),
                     ],
@@ -76,16 +76,16 @@ class AttachmentController
         ),
         responses: [
             new OA\Response(
-                response => 201,
-                description => '檔案上傳成功',
-                content => new OA\JsonContent(
+                response: 201,
+                description: '檔案上傳成功',
+                content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property => 'success', type => 'boolean', example: true),
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
                         new OA\Property(property: 'message', type: 'string', example: '檔案上傳成功'),
                         new OA\Property(
                             property: 'data',
                             properties: [
-                                new OA\Property(property => 'id', type => 'string', example => '550e8400-e29b-41d4-a716-446655440000'),
+                                new OA\Property(property: 'id', type: 'string', example: '550e8400-e29b-41d4-a716-446655440000'),
                                 new OA\Property(property: 'post_id', type: 'integer', example: 1),
                                 new OA\Property(property: 'filename', type: 'string', example: 'document.pdf'),
                                 new OA\Property(property: 'original_name', type: 'string', example: '重要文件.pdf'),
@@ -104,7 +104,7 @@ class AttachmentController
                 description: '檔案上傳失敗或格式不支援',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property => 'error', type => 'string', example => '不支援的檔案格式'),
+                        new OA\Property(property: 'error', type: 'string', example: '不支援的檔案格式'),
                     ],
                 ),
             ),
@@ -125,7 +125,7 @@ class AttachmentController
                 description: '檔案大小超過限制',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property => 'error', type => 'string', example => '檔案大小超過 10MB 限制'),
+                        new OA\Property(property: 'error', type: 'string', example: '檔案大小超過 10MB 限制'),
                     ],
                 ),
             ),
@@ -133,12 +133,12 @@ class AttachmentController
     )]
     public function upload(Request $request, Response $response): Response
     {
-        try { /* empty */ }
+        try {
             $currentUserId = $this->getCurrentUserId($request);
             $postIdAttr = $request->getAttribute('post_id');
             if (!is_numeric($postIdAttr)) {
                 $errorResponse = json_encode(['error' => '無效的貼文 ID']);
-                $response->getBody()->write($errorResponse ? true : '{"error": "JSON encoding failed"}');
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
@@ -147,7 +147,7 @@ class AttachmentController
 
             if (!isset($files['file'])) {
                 $errorResponse = json_encode(['error' => '缺少上傳檔案']);
-                $response->getBody()->write($errorResponse ? true : '{"error": "JSON encoding failed"}');
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
                 return $response
                     ->withStatus(400)
@@ -157,7 +157,7 @@ class AttachmentController
             $file = $files['file'];
             if (!$file instanceof UploadedFileInterface) {
                 $errorResponse = json_encode(['error' => '無效的上傳檔案格式']);
-                $response->getBody()->write($errorResponse ? true : '{"error": "JSON encoding failed"}');
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
                 return $response
                     ->withStatus(400)
@@ -167,44 +167,46 @@ class AttachmentController
             $attachment = $this->attachmentService->upload($postId, $file, $currentUserId);
 
             $jsonResponse = json_encode(['data' => $attachment->toArray()]);
-            $response->getBody()->write($jsonResponse ? true : '{"error": "JSON encoding failed"}');
+            $response->getBody()->write($jsonResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
-        } // catch block commented out due to syntax error');
-
+        } catch (ValidationException $e) {
+            $errorResponse = json_encode(['error' => $e->getMessage()]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        } // catch block commented out due to syntax error');
-
+        } catch (Exception $e) {
+            $errorResponse = json_encode(['error' => '檔案上傳失敗']);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 
     /** @phpstan-ignore-next-line */
     #[OA\Get(
-        path => '/attachments/{id}/download',
-        summary => '下載附件',
-        description => '下載指定的附件檔案',
+        path: '/attachments/{id}/download',
+        summary: '下載附件',
+        description: '下載指定的附件檔案',
         operationId: 'downloadAttachment',
         tags: ['attachments'],
         parameters: [
             new OA\Parameter(
-                name => 'id',
-                in => 'path',
-                description => '附件 UUID',
+                name: 'id',
+                in: 'path',
+                description: '附件 UUID',
                 required: true,
                 schema: new OA\Schema(type: 'string', format: 'uuid'),
             ),
         ],
         responses: [
             new OA\Response(
-                response => 200,
-                description => '檔案下載成功',
-                content => [
+                response: 200,
+                description: '檔案下載成功',
+                content: [
                     'application/octet-stream' => new OA\MediaType(
-                        mediaType => 'application/octet-stream',
-                        schema => new OA\Schema(
+                        mediaType: 'application/octet-stream',
+                        schema: new OA\Schema(
                             type: 'string',
                             format: 'binary',
                         ),
@@ -219,9 +221,9 @@ class AttachmentController
                 ],
                 headers: [
                     'Content-Disposition' => new OA\Header(
-                        header => 'Content-Disposition',
-                        description => '檔案下載標頭',
-                        schema => new OA\Schema(type: 'string', example: 'attachment; filename="document.pdf"'),
+                        header: 'Content-Disposition',
+                        description: '檔案下載標頭',
+                        schema: new OA\Schema(type: 'string', example: 'attachment; filename="document.pdf"'),
                     ),
                     'Content-Type' => new OA\Header(
                         header: 'Content-Type',
@@ -240,7 +242,7 @@ class AttachmentController
                 description: '無效的附件識別碼',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property => 'error', type => 'string', example => '無效的附件識別碼'),
+                        new OA\Property(property: 'error', type: 'string', example: '無效的附件識別碼'),
                     ],
                 ),
             ),
@@ -255,7 +257,7 @@ class AttachmentController
                 description: '檔案已不存在',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property => 'error', type => 'string', example => '檔案已被刪除或移動'),
+                        new OA\Property(property: 'error', type: 'string', example: '檔案已被刪除或移動'),
                     ],
                 ),
             ),
@@ -268,7 +270,7 @@ class AttachmentController
     public function download(Request $request, Response $response, array $args): Response
     {
         // 這個方法需要實作檔案下載邏輯
-        try { /* empty */ }
+        try {
             $uuid = $args['id'] ?? null;
             if (!$uuid || !is_string($uuid)) {
                 throw ValidationException::fromSingleError('uuid', '無效的附件識別碼');
@@ -276,14 +278,16 @@ class AttachmentController
 
             // TODO: 實作檔案下載邏輯
             $jsonResponse = json_encode(['message' => '檔案下載功能待實作']);
-            $response->getBody()->write($jsonResponse ? true : '{"error": "JSON encoding failed"}');
+            $response->getBody()->write($jsonResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json');
-        } // catch block commented out due to syntax error');
-
+        } catch (ValidationException $e) {
+            $errorResponse = json_encode(['error' => $e->getMessage()]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        } // catch block commented out due to syntax error');
-
+        } catch (Exception $e) {
+            $errorResponse = json_encode(['error' => '檔案下載失敗']);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }

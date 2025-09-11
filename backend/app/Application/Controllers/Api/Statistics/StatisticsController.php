@@ -30,7 +30,7 @@ class StatisticsController extends BaseController
      */
     public function getOverview(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try { /* empty */ }
+        try {
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -44,7 +44,13 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('統計概覽取得失敗: ' . $e->getMessage());
+            return $this->json($response, [
+                'success' => false,
+                'error' => '取得統計概覽時發生錯誤',
+            ], 500);
+        }
     }
 
     /**
@@ -54,7 +60,7 @@ class StatisticsController extends BaseController
      */
     public function getPostStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try { /* empty */ }
+        try {
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -70,7 +76,13 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('文章統計取得失敗: ' . $e->getMessage());
+            return $this->json($response, [
+                'success' => false,
+                'error' => '取得文章統計時發生錯誤',
+            ], 500);
+        }
     }
 
     /**
@@ -80,7 +92,7 @@ class StatisticsController extends BaseController
      */
     public function getSourceStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try { /* empty */ }
+        try {
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -94,7 +106,13 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('來源統計取得失敗: ' . $e->getMessage());
+            return $this->json($response, [
+                'success' => false,
+                'error' => '取得來源統計時發生錯誤',
+            ], 500);
+        }
     }
 
     /**
@@ -104,7 +122,7 @@ class StatisticsController extends BaseController
      */
     public function getUserActivityStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try { /* empty */ }
+        try {
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -118,7 +136,13 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('使用者活動統計取得失敗: ' . $e->getMessage());
+            return $this->json($response, [
+                'success' => false,
+                'error' => '取得使用者活動統計時發生錯誤',
+            ], 500);
+        }
     }
 
     /**
@@ -128,7 +152,7 @@ class StatisticsController extends BaseController
      */
     public function getPopularContent(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try { /* empty */ }
+        try {
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -144,7 +168,13 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('熱門內容統計取得失敗: ' . $e->getMessage());
+            return $this->json($response, [
+                'success' => false,
+                'error' => '取得熱門內容統計時發生錯誤',
+            ], 500);
+        }
     }
 
     /**
@@ -154,7 +184,7 @@ class StatisticsController extends BaseController
      */
     public function getSnapshot(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try { /* empty */ }
+        try {
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -168,6 +198,12 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('統計快照取得失敗: ' . $e->getMessage());
+            return $this->json($response, [
+                'success' => false,
+                'error' => '取得統計快照時發生錯誤',
+            ], 500);
+        }
     }
 }

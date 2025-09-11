@@ -22,16 +22,12 @@ class IpController
 
     /**
      * 建立IP規則.
-     */
-    /**
-    /**
      * @param array $request
      * @return array
      */
-     */
     public function create(array $request): array
     {
-        try { /* empty */ }
+        try {
             $dto = new CreateIpRuleDTO($this->validator, $request);
             $ipList = $this->service->createIpRule($dto);
 
@@ -39,21 +35,22 @@ class IpController
                 'status' => 201,
                 'data' => $ipList->toSafeArray($this->sanitizer),
             ];
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return [
+                'status' => 500,
+                'error' => $e->getMessage(),
+            ];
+        }
     }
 
     /**
      * 根據類型取得IP規則.
-     */
-    /**
-    /**
      * @param array $request
      * @return array
      */
-     */
     public function getByType(array $request): array
     {
-        try { /* empty */ }
+        try {
             if (!isset($request['type'])) {
                 throw new InvalidArgumentException('必須指定名單類型');
             }
@@ -72,21 +69,22 @@ class IpController
                 'status' => 200,
                 'data' => $mappedRules,
             ];
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return [
+                'status' => 500,
+                'error' => $e->getMessage(),
+            ];
+        }
     }
 
     /**
      * 檢查IP存取權限.
-     */
-    /**
-    /**
      * @param array $request
      * @return array
      */
-     */
     public function checkAccess(array $request): array
     {
-        try { /* empty */ }
+        try {
             if (!isset($request['ip'])) {
                 throw new InvalidArgumentException('必須提供 IP 位址');
             }
@@ -101,6 +99,11 @@ class IpController
                     'allowed' => $isAllowed,
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return [
+                'status' => 500,
+                'error' => $e->getMessage(),
+            ];
+        }
     }
 }
