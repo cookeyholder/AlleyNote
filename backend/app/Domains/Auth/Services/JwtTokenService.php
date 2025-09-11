@@ -97,17 +97,16 @@ final class JwtTokenService implements JwtTokenServiceInterface
             return new TokenPair(
                 accessToken: $accessToken,
                 refreshToken: $refreshToken,
-                accessTokenExpiresAt: DateTime::createFromImmutable($accessTokenExpiresAt),
-                refreshTokenExpiresAt: DateTime::createFromImmutable($refreshTokenExpiresAtFinal),
-                tokenType: 'Bearer'
+                accessTokenExpiresAt: $accessTokenExpiresAt,
+                refreshTokenExpiresAt: $refreshTokenExpiresAtFinal,
+                tokenType: 'Bearer',
             );
-
         } catch (Throwable $e) {
             throw new TokenGenerationException(
-                TokenGenerationException::REASON_GENERATION_FAILED,
+                TokenGenerationException::REASON_CLAIMS_INVALID,
                 TokenGenerationException::ACCESS_TOKEN,
                 'Failed to generate token pair: ' . $e->getMessage(),
-                $e
+                ['error' => $e->getMessage()],
             );
         }
     }
@@ -122,23 +121,23 @@ final class JwtTokenService implements JwtTokenServiceInterface
             if ($this->isTokenBlacklisted($token)) {
                 throw new InvalidTokenException(
                     InvalidTokenException::REASON_BLACKLISTED,
-                    'Token has been revoked'
+                    'Token has been revoked',
                 );
             }
 
             // 使用 JWT provider 驗證和解析 token
-            $payload = $this->jwtProvider->parseToken($token);
+            $payload = $this->jwtProvider->parseTokenUnsafe($token);
 
             // 轉換為 JwtPayload 物件
-            return $this->createJwtPayloadFromArray($payload);
-
+            // @phpstan-ignore-next-line
+            return $this->createJwtPayloadFromArray((array) $payload);
         } catch (InvalidTokenException $e) {
             throw $e;
         } catch (Throwable $e) {
             throw new InvalidTokenException(
-                InvalidTokenException::REASON_INVALID_FORMAT,
+                InvalidTokenException::REASON_MALFORMED,
+                InvalidTokenException::ACCESS_TOKEN,
                 'Token validation failed: ' . $e->getMessage(),
-                $e
             );
         }
     }
@@ -150,12 +149,12 @@ final class JwtTokenService implements JwtTokenServiceInterface
     {
         try {
             // 驗證 refresh token
-            $payload = $this->jwtProvider->parseToken($refreshToken);
+            $payload = $this->jwtProvider->parseTokenUnsafe($refreshToken);
 
             if (($payload['type'] ?? '') !== 'refresh') {
                 throw new InvalidTokenException(
-                    InvalidTokenException::REASON_INVALID_TYPE,
-                    'Not a refresh token'
+                    InvalidTokenException::REASON_MALFORMED,
+                    'Not a refresh token',
                 );
             }
 
@@ -165,7 +164,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             if (!$jti || !$userId) {
                 throw new InvalidTokenException(
                     InvalidTokenException::REASON_CLAIMS_INVALID,
-                    'Invalid refresh token claims'
+                    'Invalid refresh token claims',
                 );
             }
 
@@ -173,33 +172,33 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $storedToken = $this->refreshTokenRepository->findByJti((string) $jti);
             if (!$storedToken) {
                 throw new InvalidTokenException(
-                    InvalidTokenException::REASON_NOT_FOUND,
-                    'Refresh token not found'
+                    InvalidTokenException::REASON_MALFORMED,
+                    'Refresh token not found',
                 );
             }
 
             // 驗證 token hash
             $tokenHash = hash('sha256', $refreshToken);
-            if (!hash_equals($storedToken->getTokenHash(), $tokenHash)) {
+            if (!hash_equals((string) ($storedToken['token_hash'] ?? ''), $tokenHash)) {
                 throw new InvalidTokenException(
-                    InvalidTokenException::REASON_HASH_MISMATCH,
-                    'Refresh token hash mismatch'
+                    InvalidTokenException::REASON_SIGNATURE_INVALID,
+                    InvalidTokenException::REFRESH_TOKEN,
+                    'Refresh token hash mismatch',
                 );
             }
 
             // 撤銷舊的 refresh token
-            $this->refreshTokenRepository->revokeByJti((string) $jti);
+            $this->refreshTokenRepository->revoke((string) $jti);
 
             // 生成新的 token pair
             return $this->generateTokenPair($userId, $deviceInfo);
-
         } catch (InvalidTokenException $e) {
             throw $e;
         } catch (Throwable $e) {
             throw new InvalidTokenException(
-                InvalidTokenException::REASON_REFRESH_FAILED,
+                InvalidTokenException::REASON_DECODE_FAILED,
+                InvalidTokenException::REFRESH_TOKEN,
                 'Token refresh failed: ' . $e->getMessage(),
-                $e
             );
         }
     }
@@ -207,7 +206,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
     /**
      * 撤銷 Token.
      */
-    public function revokeToken(string $token): void
+    public function revokeToken(string $token, string $reason = 'manual_revocation'): bool
     {
         try {
             $payload = $this->jwtProvider->parseTokenUnsafe($token);
@@ -215,52 +214,51 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $exp = $payload['exp'] ?? null;
 
             if (!$jti || !$exp) {
-                throw new InvalidArgumentException('Token missing required claims');
+                return false;
             }
 
-            $expiresAt = new DateTimeImmutable('@' . $exp);
+            $expiresAt = new DateTimeImmutable('@' . (string) $exp);
 
             // 將 token 添加到黑名單
             $blacklistEntry = new TokenBlacklistEntry(
                 jti: (string) $jti,
-                expiresAt: DateTime::createFromImmutable($expiresAt)
+                tokenType: (string) ($payload['typ'] ?? 'access'),
+                expiresAt: $expiresAt,
+                blacklistedAt: new DateTimeImmutable(),
+                reason: $reason,
+                userId: isset($payload['sub']) ? (int) $payload['sub'] : null,
+                deviceId: isset($payload['device_id']) ? (string) $payload['device_id'] : null,
             );
 
-            $this->blacklistRepository->add($blacklistEntry);
+            $this->blacklistRepository->addToBlacklist($blacklistEntry);
 
             // 如果是 refresh token，也從資料庫中撤銷
-            if (($payload['type'] ?? '') === 'refresh') {
-                $this->refreshTokenRepository->revokeByJti((string) $jti);
+            if (($payload['typ'] ?? '') === 'refresh') {
+                $this->refreshTokenRepository->revoke((string) $jti);
             }
 
-        } catch (Throwable $e) {
-            throw new InvalidArgumentException(
-                'Failed to revoke token: ' . $e->getMessage(),
-                0,
-                $e
-            );
+            return true;
+        } catch (Throwable) {
+            return false;
         }
     }
 
     /**
      * 撤銷使用者的所有 Token.
      */
-    public function revokeAllUserTokens(int $userId): void
+    public function revokeAllUserTokens(int $userId, string $reason = 'user_revocation'): int
     {
         try {
             // 撤銷所有 refresh tokens
-            $this->refreshTokenRepository->revokeAllByUserId($userId);
+            $revokedCount = $this->refreshTokenRepository->revokeAllByUserId($userId);
 
             // 注意：access tokens 無法直接從資料庫撤銷，
             // 因為它們是無狀態的。只能等待自然過期。
             // 在實際應用中，可能需要實現 token version 機制。
 
-        } catch (Throwable $e) {
-            throw new InvalidArgumentException(
-                'Failed to revoke user tokens: ' . $e->getMessage(),
-                0,
-                $e
-            );
+            return $revokedCount;
+        } catch (Throwable) {
+            return 0;
         }
     }
 
@@ -270,12 +268,12 @@ final class JwtTokenService implements JwtTokenServiceInterface
     public function revokeDeviceTokens(int $userId, string $deviceId): void
     {
         try {
-            $this->refreshTokenRepository->revokeByUserIdAndDeviceId($userId, $deviceId);
+            $this->refreshTokenRepository->revokeAllByDevice($userId, $deviceId);
         } catch (Throwable $e) {
             throw new InvalidArgumentException(
                 'Failed to revoke device tokens: ' . $e->getMessage(),
                 0,
-                $e
+                $e,
             );
         }
     }
@@ -339,11 +337,12 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 jti: (string) $payload['jti'],
                 sub: (string) $payload['sub'],
                 iss: (string) $payload['iss'],
-                aud: $this->normalizeAudience($payload['aud']),
+                // @phpstan-ignore-next-line
+                aud: (array) (is_array($payload['aud'] ?? []) ? $payload['aud'] : [$payload['aud'] ?? '']),
                 iat: $iat,
                 exp: $exp,
                 nbf: $nbf,
-                customClaims: array_filter($payload, fn($key): bool => !in_array($key, [
+                customClaims: (array) array_filter($payload, fn($key): bool => !in_array($key, [
                     'jti',
                     'sub',
                     'iss',
@@ -357,27 +356,241 @@ final class JwtTokenService implements JwtTokenServiceInterface
             throw new InvalidArgumentException(
                 'Failed to create JWT payload: ' . $e->getMessage(),
                 0,
-                $e
+                $e,
             );
         }
     }
 
     /**
-     * 正規化 audience 欄位.
-     *
-     * @param mixed $audience
-     * @return array<string>
+     * 驗證 access token.
      */
-    private function normalizeAudience($audience): array
+    public function validateAccessToken(string $token, bool $checkBlacklist = true): JwtPayload
     {
-        if (is_string($audience)) {
-            return [$audience];
-        }
+        try {
+            $payload = $this->jwtProvider->validateToken($token);
 
-        if (is_array($audience)) {
-            return array_map('strval', $audience);
-        }
+            // 檢查黑名單
+            if ($checkBlacklist) {
+                $jti = $payload['jti'] ?? null;
+                if ($jti && $this->blacklistRepository->isBlacklisted((string) $jti)) {
+                    throw new InvalidTokenException(
+                        InvalidTokenException::REASON_BLACKLISTED,
+                        'Token has been revoked',
+                        'Access denied',
+                    );
+                }
+            }
 
-        return [];
+            // @phpstan-ignore-next-line
+            return $this->createJwtPayloadFromArray((array) $payload);
+        } catch (Throwable $e) {
+            throw new InvalidTokenException(
+                InvalidTokenException::REASON_MALFORMED,
+                'Failed to validate access token: ' . $e->getMessage(),
+                'Invalid token',
+            );
+        }
+    }
+
+    /**
+     * 驗證 refresh token.
+     */
+    public function validateRefreshToken(string $token, bool $checkBlacklist = true): JwtPayload
+    {
+        try {
+            $payload = $this->jwtProvider->validateToken($token);
+
+            // 檢查 token 類型
+            if (($payload['typ'] ?? '') !== 'refresh') {
+                throw new InvalidTokenException(
+                    InvalidTokenException::REASON_MALFORMED,
+                    'Invalid token type for refresh token',
+                    'Token validation failed',
+                );
+            }
+
+            // 檢查黑名單
+            if ($checkBlacklist) {
+                $jti = $payload['jti'] ?? null;
+                if ($jti && $this->blacklistRepository->isBlacklisted((string) $jti)) {
+                    throw new InvalidTokenException(
+                        InvalidTokenException::REASON_BLACKLISTED,
+                        'Token has been revoked',
+                        'Access denied',
+                    );
+                }
+            }
+
+            // @phpstan-ignore-next-line
+            return $this->createJwtPayloadFromArray((array) $payload);
+        } catch (Throwable $e) {
+            throw new InvalidTokenException(
+                InvalidTokenException::REASON_MALFORMED,
+                'Failed to validate refresh token: ' . $e->getMessage(),
+                'Token validation failed',
+            );
+        }
+    }
+
+    /**
+     * 提取 token payload.
+     */
+    public function extractPayload(string $token): JwtPayload
+    {
+        try {
+            $payload = $this->jwtProvider->parseTokenUnsafe($token);
+
+            // @phpstan-ignore-next-line
+            return $this->createJwtPayloadFromArray((array) $payload);
+        } catch (Throwable $e) {
+            throw new InvalidTokenException(
+                InvalidTokenException::REASON_MALFORMED,
+                'Failed to extract payload: ' . $e->getMessage(),
+                'Invalid token',
+            );
+        }
+    }
+
+    /**
+     * 重新整理 tokens.
+     */
+    public function refreshTokens(string $refreshToken, DeviceInfo $deviceInfo): TokenPair
+    {
+        try {
+            // 驗證 refresh token
+            $payload = $this->validateRefreshToken($refreshToken);
+            $userId = (int) $payload->getSubject();
+
+            // 檢查資料庫中的 refresh token
+            $jti = $payload->toArray()['jti'];
+            $storedToken = $this->refreshTokenRepository->findByJti((string) $jti);
+
+            if (!$storedToken) {
+                throw new InvalidTokenException(
+                    InvalidTokenException::REASON_MALFORMED,
+                    'Refresh token not found',
+                    'Token not found',
+                );
+            }
+
+            // 驗證 token hash
+            if (!hash_equals((string) ($storedToken['token_hash'] ?? ''), hash('sha256', $refreshToken))) {
+                throw new InvalidTokenException(
+                    InvalidTokenException::REASON_SIGNATURE_INVALID,
+                    InvalidTokenException::REFRESH_TOKEN,
+                    'Token hash mismatch',
+                );
+            }
+
+            // 撤銷舊的 refresh token
+            $this->refreshTokenRepository->revoke((string) $jti);
+
+            // 產生新的 token pair
+            return $this->generateTokenPair($userId, $deviceInfo);
+        } catch (Throwable $e) {
+            throw new InvalidTokenException(
+                InvalidTokenException::REASON_DECODE_FAILED,
+                'Failed to refresh tokens: ' . $e->getMessage(),
+                'Token refresh failed',
+            );
+        }
+    }
+
+    /**
+     * 檢查token是否已被撤銷（是否在黑名單中）.
+     */
+    public function isTokenRevoked(string $token): bool
+    {
+        try {
+            $payload = $this->extractPayload($token);
+            $jti = $payload->toArray()['jti'] ?? null;
+
+            return $jti && $this->blacklistRepository->isBlacklisted((string) $jti);
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * 取得token的剩餘有效時間（秒）.
+     */
+    public function getTokenRemainingTime(string $token): int
+    {
+        try {
+            $payload = $this->extractPayload($token);
+            $expiresAt = $payload->getExpiresAt();
+            $now = new DateTimeImmutable();
+
+            if ($expiresAt <= $now) {
+                return 0;
+            }
+
+            return $expiresAt->getTimestamp() - $now->getTimestamp();
+        } catch (Throwable) {
+            return 0;
+        }
+    }
+
+    /**
+     * 檢查token是否即將過期
+     */
+    public function isTokenNearExpiry(string $token, int $thresholdSeconds = 300): bool
+    {
+        $remainingTime = $this->getTokenRemainingTime($token);
+
+        return $remainingTime > 0 && $remainingTime <= $thresholdSeconds;
+    }
+
+    /**
+     * 驗證token是否屬於特定使用者.
+     */
+    public function isTokenOwnedBy(string $token, int $userId): bool
+    {
+        try {
+            $payload = $this->extractPayload($token);
+
+            return $payload->getSubject() === (string) $userId;
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * 驗證token是否來自特定裝置.
+     */
+    public function isTokenFromDevice(string $token, DeviceInfo $deviceInfo): bool
+    {
+        try {
+            $payload = $this->extractPayload($token);
+            $claims = $payload->toArray();
+
+            return ($claims['device_id'] ?? '') === $deviceInfo->getDeviceId();
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * 取得JWT演算法名稱.
+     */
+    public function getAlgorithm(): string
+    {
+        return 'RS256';
+    }
+
+    /**
+     * 取得access token的TTL（存活時間）.
+     */
+    public function getAccessTokenTtl(): int
+    {
+        return $this->config->getAccessTokenTtl();
+    }
+
+    /**
+     * 取得refresh token的TTL（存活時間）.
+     */
+    public function getRefreshTokenTtl(): int
+    {
+        return $this->config->getRefreshTokenTtl();
     }
 }

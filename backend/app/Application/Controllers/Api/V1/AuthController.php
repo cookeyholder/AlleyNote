@@ -6,7 +6,6 @@ namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
-use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
 use App\Domains\Auth\DTOs\RefreshRequestDTO;
@@ -17,14 +16,12 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Contracts\ValidatorInterface;
-use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use Exception;
 use InvalidArgumentException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Throwable;
 
 /**
  * JWT 認證 Controller.
@@ -33,11 +30,10 @@ class AuthController extends BaseController
 {
     public function __construct(
         private AuthenticationServiceInterface $authService,
-        private JwtTokenServiceInterface $jwtService,
+        private AuthService $registrationService,
         private ActivityLoggingServiceInterface $activityLogger,
         private ValidatorInterface $validator,
-    ) {
-    }
+    ) {}
 
     /**
      * 取得客戶端 IP 位址.
@@ -64,11 +60,9 @@ class AuthController extends BaseController
 
             if (isset($requestHeaders[$headerKey])) {
                 $ip = $requestHeaders[$headerKey][0] ?? '';
-                if (is_string($ip)) {
-                    $ip = trim(explode(',', $ip)[0]);
-                    if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                        return $ip;
-                    }
+                $ip = trim(explode(',', $ip)[0]);
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
                 }
             }
         }
@@ -88,7 +82,7 @@ class AuthController extends BaseController
         }
 
         // 預設值
-        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+        return (string) ($serverParams['REMOTE_ADDR'] ?? '127.0.0.1');
     }
 
     /**
@@ -100,10 +94,10 @@ class AuthController extends BaseController
         $userAgent = $headers['User-Agent'][0] ?? 'Unknown';
         $acceptLanguage = $headers['Accept-Language'][0] ?? 'en';
 
-        return new DeviceInfo(
+        return DeviceInfo::fromUserAgent(
             userAgent: $userAgent,
             ipAddress: $this->getClientIp($request),
-            acceptLanguage: $acceptLanguage,
+            deviceName: 'Web Browser',
         );
     }
 
@@ -194,33 +188,25 @@ class AuthController extends BaseController
             }
 
             // 建立註冊 DTO
-            $registerDTO = new RegisterUserDTO(
-                email: $data['email'] ?? '',
-                password: $data['password'] ?? '',
-                displayName: $data['display_name'] ?? '',
-                bio: $data['bio'] ?? null,
-            );
+            $registerData = [
+                'username' => $data['display_name'] ?? '',
+                'email' => $data['email'] ?? '',
+                'password' => $data['password'] ?? '',
+                'confirm_password' => $data['password'] ?? '',
+                'user_ip' => $this->getClientIp($request),
+            ];
+            $registerDTO = new RegisterUserDTO($this->validator, $registerData);
 
-            // 驗證資料
-            $validationResult = $this->validator->validate($registerDTO);
-            if (!$validationResult->isValid()) {
-                $responseData = [
-                    'success' => false,
-                    'error' => '驗證失敗',
-                    'errors' => $validationResult->getErrors(),
-                ];
-                $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
-                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-            }
+            // 驗證已在 DTO 建構中完成
 
             // 執行註冊
             $deviceInfo = $this->getDeviceInfo($request);
-            $authResult = $this->authService->register($registerDTO, $deviceInfo);
+            $authResult = $this->registrationService->register($registerDTO, $deviceInfo);
 
             // 記錄活動
-            $activityLog = CreateActivityLogDTO::userActivity(
-                userId: $authResult->getUser()->getId(),
+            $activityLog = new CreateActivityLogDTO(
                 actionType: ActivityType::USER_REGISTERED,
+                userId: (int) $authResult['user']['id'],
                 description: '使用者註冊成功',
                 ipAddress: $deviceInfo->getIpAddress(),
                 userAgent: $deviceInfo->getUserAgent(),
@@ -232,21 +218,21 @@ class AuthController extends BaseController
                 'success' => true,
                 'message' => '註冊成功',
                 'data' => [
-                    'user_id' => $authResult->getUser()->getId(),
-                    'email' => $authResult->getUser()->getEmail(),
-                    'display_name' => $authResult->getUser()->getDisplayName(),
+                    'user_id' => (int) $authResult['user']['id'],
+                    'email' => (string) $authResult['user']['email'],
+                    'display_name' => (string) $authResult['user']['username'],
                 ],
                 'tokens' => [
-                    'access_token' => $authResult->getAccessToken(),
-                    'refresh_token' => $authResult->getRefreshToken(),
-                    'expires_in' => $authResult->getExpiresIn(),
+                    'access_token' => (string) ($authResult['access_token'] ?? ''),
+                    'refresh_token' => (string) ($authResult['refresh_token'] ?? ''),
+                    'expires_in' => (int) ($authResult['expires_in'] ?? 3600),
                     'token_type' => 'Bearer',
                 ],
             ];
 
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
-            return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
 
+            return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
             $responseData = [
                 'success' => false,
@@ -254,6 +240,7 @@ class AuthController extends BaseController
                 'errors' => $e->getErrors(),
             ];
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             error_log('Registration error: ' . $e->getMessage());
@@ -262,6 +249,7 @@ class AuthController extends BaseController
                 'error' => '註冊失敗',
             ];
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
@@ -346,14 +334,15 @@ class AuthController extends BaseController
                     'error' => '缺少必要的登入資料',
                 ];
                 $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+
                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
 
             // 建立登入 DTO
             $loginDTO = new LoginRequestDTO(
-                email: $credentials['email'],
-                password: $credentials['password'],
-                rememberMe: $credentials['remember_me'] ?? false,
+                email: (string) $credentials['email'],
+                password: (string) $credentials['password'],
+                rememberMe: (bool) ($credentials['remember_me'] ?? false),
             );
 
             // 執行登入
@@ -361,9 +350,9 @@ class AuthController extends BaseController
             $authResult = $this->authService->login($loginDTO, $deviceInfo);
 
             // 記錄活動
-            $activityLog = CreateActivityLogDTO::userActivity(
-                userId: $authResult->getUser()->getId(),
-                actionType: ActivityType::USER_LOGIN_SUCCESS,
+            $activityLog = new CreateActivityLogDTO(
+                actionType: ActivityType::LOGIN_SUCCESS,
+                userId: $authResult->userId,
                 description: '使用者登入成功',
                 ipAddress: $deviceInfo->getIpAddress(),
                 userAgent: $deviceInfo->getUserAgent(),
@@ -375,39 +364,38 @@ class AuthController extends BaseController
                 'success' => true,
                 'message' => '登入成功',
                 'data' => [
-                    'user_id' => $authResult->getUser()->getId(),
-                    'email' => $authResult->getUser()->getEmail(),
-                    'display_name' => $authResult->getUser()->getDisplayName(),
+                    'user_id' => $authResult->userId,
+                    'email' => $authResult->userEmail,
+                    'display_name' => $authResult->userEmail, // 暫時使用 email
                 ],
                 'tokens' => [
-                    'access_token' => $authResult->getAccessToken(),
-                    'refresh_token' => $authResult->getRefreshToken(),
-                    'expires_in' => $authResult->getExpiresIn(),
+                    'access_token' => $authResult->tokens->getAccessToken(),
+                    'refresh_token' => $authResult->tokens->getRefreshToken(),
+                    'expires_in' => $authResult->expiresAt - time(),
                     'token_type' => 'Bearer',
                 ],
             ];
 
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
-            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
 
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
-            // 記錄失敗的登入嘗試
-            if (isset($credentials['email'])) {
-                $activityLog = CreateActivityLogDTO::securityEvent(
-                    actionType: ActivityType::USER_LOGIN_FAILED,
-                    description: '使用者登入失敗: ' . $e->getMessage(),
-                    ipAddress: $this->getClientIp($request),
-                    userAgent: $request->getHeaders()['User-Agent'][0] ?? 'Unknown',
-                    metadata: ['email' => $credentials['email']],
-                );
-                $this->activityLogger->log($activityLog);
-            }
+            // 記錄失敗的登入嘗試（$credentials 已在前面驗證為包含 email 的陣列）
+            $activityLog = CreateActivityLogDTO::securityEvent(
+                actionType: ActivityType::LOGIN_FAILED,
+                description: '使用者登入失敗: ' . $e->getMessage(),
+                ipAddress: $this->getClientIp($request),
+                userAgent: $request->getHeaders()['User-Agent'][0] ?? 'Unknown',
+                metadata: ['email' => (string) $credentials['email']],
+            );
+            $this->activityLogger->log($activityLog);
 
             $responseData = [
                 'success' => false,
                 'error' => '電子郵件或密碼錯誤',
             ];
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             error_log('Login error: ' . $e->getMessage());
@@ -416,6 +404,7 @@ class AuthController extends BaseController
                 'error' => '登入失敗',
             ];
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
@@ -475,18 +464,18 @@ class AuthController extends BaseController
                     'error' => '未提供有效的 token',
                 ];
                 $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+
                 return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
             }
 
             // 建立登出 DTO
             $logoutDTO = new LogoutRequestDTO(
                 accessToken: $accessToken,
-                refreshToken: is_array($data) ? ($data['refresh_token'] ?? null) : null,
+                refreshToken: is_array($data) ? ((string) ($data['refresh_token'] ?? '')) : null,
             );
 
             // 執行登出
-            $deviceInfo = $this->getDeviceInfo($request);
-            $this->authService->logout($logoutDTO, $deviceInfo);
+            $this->authService->logout($logoutDTO);
 
             // 回傳成功回應
             $responseData = [
@@ -494,8 +483,8 @@ class AuthController extends BaseController
                 'message' => '登出成功',
             ];
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
-            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
 
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             error_log('Logout error: ' . $e->getMessage());
             $responseData = [
@@ -503,6 +492,7 @@ class AuthController extends BaseController
                 'error' => '登出失敗',
             ];
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
@@ -574,12 +564,13 @@ class AuthController extends BaseController
                     'error' => '缺少 refresh token',
                 ];
                 $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+
                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
 
             // 建立更新 DTO
             $refreshDTO = new RefreshRequestDTO(
-                refreshToken: $data['refresh_token'],
+                refreshToken: (string) $data['refresh_token'],
             );
 
             // 執行 token 更新
@@ -590,16 +581,16 @@ class AuthController extends BaseController
             $responseData = [
                 'success' => true,
                 'tokens' => [
-                    'access_token' => $authResult->getAccessToken(),
-                    'refresh_token' => $authResult->getRefreshToken(),
-                    'expires_in' => $authResult->getExpiresIn(),
+                    'access_token' => $authResult->tokens->getAccessToken(),
+                    'refresh_token' => $authResult->tokens->getRefreshToken(),
+                    'expires_in' => $authResult->expiresAt - time(),
                     'token_type' => 'Bearer',
                 ],
             ];
 
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
-            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
 
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             error_log('Token refresh error: ' . $e->getMessage());
             $responseData = [
@@ -607,6 +598,7 @@ class AuthController extends BaseController
                 'error' => 'Refresh token 無效或已過期',
             ];
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
         }
     }

@@ -25,13 +25,12 @@ class XssProtectionExtensionService
     private array $config;
 
     /**
-     * @param array $config
+     * @param array<string, mixed> $config
      */
     public function __construct(
         XssProtectionService $baseXssProtection,
         RichTextProcessorService $richTextProcessor,
         ContentModerationService $contentModerator,
-        /** @var array<string, mixed> */
         array $config = [],
     ) {
         $this->baseXssProtection = $baseXssProtection;
@@ -42,9 +41,10 @@ class XssProtectionExtensionService
 
     /**
      * 情境感知的 XSS 防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    public function protectByContext(string $input, string $context, /** @var array<string, mixed> */ array $options = []): array
+    public function protectByContext(string $input, string $context, array $options = []): array
     {
         $result = [
             'protected_content' => '',
@@ -92,11 +92,12 @@ class XssProtectionExtensionService
 
     /**
      * 富文本編輯器防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    private function protectRichTextEditor(string $input, /** @var array<string, mixed> */ array $options): array
+    private function protectRichTextEditor(string $input, array $options): array
     {
-        $userLevel = $options['user_level'] ?? 'basic';
+        $userLevel = (string) ($options['user_level'] ?? 'basic');
         $processResult = $this->richTextProcessor->processCKEditorContent($input, $userLevel);
 
         $result = [
@@ -105,7 +106,7 @@ class XssProtectionExtensionService
             'protection_level' => 'enhanced',
             'modifications' => [],
             'warnings' => $processResult['warnings'],
-            'security_score' => $this->calculateSecurityScore($input, $processResult['content']),
+            'security_score' => $this->calculateSecurityScore($input, (string) $processResult['content']),
         ];
 
         if ($input !== $processResult['content']) {
@@ -113,7 +114,7 @@ class XssProtectionExtensionService
                 'type' => 'html_sanitization',
                 'description' => 'HTML 內容已經過安全過濾',
                 'original_length' => strlen($input),
-                'filtered_length' => strlen($processResult['content']),
+                'filtered_length' => strlen((string) $processResult['content']),
             ];
         }
 
@@ -122,9 +123,10 @@ class XssProtectionExtensionService
 
     /**
      * 使用者簡介防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    private function protectUserBio(string $input, /** @var array<string, mixed> */ array $options): array
+    private function protectUserBio(string $input, array $options): array
     {
         // 使用者簡介只允許基本格式化
         $allowedTags = '<b><strong><i><em><u><br><p>';
@@ -143,16 +145,18 @@ class XssProtectionExtensionService
 
     /**
      * 文章標題防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    private function protectPostTitle(string $input, /** @var array<string, mixed> */ array $options): array
+    private function protectPostTitle(string $input, array $options): array
     {
         // 標題不允許任何 HTML
         $cleaned = $this->baseXssProtection->strictClean($input);
 
         // 長度限制
-        if (strlen($cleaned) > $this->config['max_title_length']) {
-            $cleaned = mb_substr($cleaned, 0, $this->config['max_title_length']);
+        $maxLength = (int) ($this->config['max_title_length'] ?? 255);
+        if (strlen($cleaned) > $maxLength) {
+            $cleaned = mb_substr($cleaned, 0, $maxLength);
         }
 
         return [
@@ -167,11 +171,12 @@ class XssProtectionExtensionService
 
     /**
      * 文章內容防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    private function protectPostContent(string $input, /** @var array<string, mixed> */ array $options): array
+    private function protectPostContent(string $input, array $options): array
     {
-        $userLevel = $options['user_level'] ?? 'basic';
+        $userLevel = (string) ($options['user_level'] ?? 'basic');
 
         // 先進行內容審核
         $moderationResult = $this->contentModerator->moderateContent($input, $options);
@@ -194,17 +199,21 @@ class XssProtectionExtensionService
             'protected_content' => $processResult['content'],
             'context' => 'post_content',
             'protection_level' => 'enhanced',
-            'modifications' => $processResult['warnings'],
-            'warnings' => array_merge($moderationResult['issues'], $processResult['warnings']),
-            'security_score' => $this->calculateSecurityScore($input, $processResult['content']),
+            'modifications' => is_array($processResult['warnings']) ? $processResult['warnings'] : [],
+            'warnings' => array_merge(
+                is_array($moderationResult['issues']) ? $moderationResult['issues'] : [],
+                is_array($processResult['warnings']) ? $processResult['warnings'] : [],
+            ),
+            'security_score' => $this->calculateSecurityScore($input, (string) $processResult['content']),
         ];
     }
 
     /**
      * 評論防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    private function protectComment(string $input, /** @var array<string, mixed> */ array $options): array
+    private function protectComment(string $input, array $options): array
     {
         // 評論允許的標籤較少
         $allowedTags = '<b><strong><i><em><u><br><p><a>';
@@ -212,8 +221,9 @@ class XssProtectionExtensionService
         $cleaned = $this->baseXssProtection->cleanHtml($cleaned);
 
         // 長度限制
-        if (strlen($cleaned) > $this->config['max_comment_length']) {
-            $cleaned = mb_substr($cleaned, 0, $this->config['max_comment_length']) . ' . ';
+        $maxLength = (int) ($this->config['max_comment_length'] ?? 1000);
+        if (strlen($cleaned) > $maxLength) {
+            $cleaned = mb_substr($cleaned, 0, $maxLength) . '...';
         }
 
         return [
@@ -228,19 +238,21 @@ class XssProtectionExtensionService
 
     /**
      * 搜尋查詢防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    private function protectSearchQuery(string $input, /** @var array<string, mixed> */ array $options): array
+    private function protectSearchQuery(string $input, array $options): array
     {
         // 搜尋查詢完全不允許 HTML
         $cleaned = $this->baseXssProtection->strictClean($input);
 
         // 移除特殊字元
-        $cleaned = preg_replace('/[<>"\']/', '', $cleaned);
+        $cleaned = preg_replace('/[<>"\']/', '', $cleaned) ?? '';
 
         // 長度限制
-        if (strlen($cleaned) > $this->config['max_search_length']) {
-            $cleaned = mb_substr($cleaned, 0, $this->config['max_search_length']);
+        $maxLength = (int) ($this->config['max_search_length'] ?? 200);
+        if (strlen($cleaned) > $maxLength) {
+            $cleaned = mb_substr($cleaned, 0, $maxLength);
         }
 
         return [
@@ -255,9 +267,10 @@ class XssProtectionExtensionService
 
     /**
      * URL 參數防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    private function protectUrlParameter(string $input, /** @var array<string, mixed> */ array $options): array
+    private function protectUrlParameter(string $input, array $options): array
     {
         $cleaned = $this->baseXssProtection->cleanForUrl($input);
 
@@ -273,12 +286,13 @@ class XssProtectionExtensionService
 
     /**
      * JSON 資料防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    private function protectJsonData(string $input, /** @var array<string, mixed> */ array $options): array
+    private function protectJsonData(string $input, array $options): array
     {
         // 嘗試解析 JSON
-        $decoded = json_decode(is_string($input) ? $input : (string) $input, true);
+        $decoded = json_decode($input, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             return [
@@ -295,22 +309,23 @@ class XssProtectionExtensionService
         $cleaned = $this->cleanJsonRecursively($decoded);
 
         return [
-            'protected_content' => (json_encode($cleaned, JSON_UNESCAPED_UNICODE) ?? ''),
+            'protected_content' => (json_encode($cleaned, JSON_UNESCAPED_UNICODE) ?: ''),
             'context' => 'json_data',
             'protection_level' => 'enhanced',
             'modifications' => $decoded !== $cleaned ? [['type' => 'json_sanitization', 'description' => 'JSON 資料已清理']] : [],
             'warnings' => [],
-            'security_score' => $this->calculateSecurityScore($input, (json_encode($cleaned) ?? '')),
+            'security_score' => $this->calculateSecurityScore($input, (json_encode($cleaned) ?: '')),
         ];
     }
 
     /**
      * 檔案上傳防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    private function protectFileUpload(string $input, /** @var array<string, mixed> */ array $options): array
+    private function protectFileUpload(string $input, array $options): array
     {
-        $filename = $options['filename'] ?? 'unknown';
+        $filename = (string) ($options['filename'] ?? 'unknown');
         $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         // 檢查檔案擴展名
@@ -340,9 +355,10 @@ class XssProtectionExtensionService
 
     /**
      * 通用防護.
-     * @param array $options
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
-    private function protectGeneric(string $input, /** @var array<string, mixed> */ array $options): array
+    private function protectGeneric(string $input, array $options): array
     {
         $cleaned = $this->baseXssProtection->clean($input);
 
@@ -359,7 +375,7 @@ class XssProtectionExtensionService
     /**
      * 遞迴清理 JSON 資料.
      */
-    private function cleanJsonRecursively(mixed $data)
+    private function cleanJsonRecursively(mixed $data): mixed
     {
         if (is_array($data)) {
             return array_map([$this, 'cleanJsonRecursively'], $data);
@@ -378,7 +394,7 @@ class XssProtectionExtensionService
     private function cleanFilename(string $filename): string
     {
         // 移除危險字元
-        $cleaned = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $filename);
+        $cleaned = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $filename) ?? '';
 
         // 防止目錄遍歷
         $cleaned = str_replace(['./', '.\\', './'], '', $cleaned);
@@ -423,7 +439,7 @@ class XssProtectionExtensionService
 
     /**
      * 預設設定.
-     * @return array
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {

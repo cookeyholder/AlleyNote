@@ -11,6 +11,7 @@ use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Exceptions\PostStatusException;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
@@ -29,8 +30,7 @@ class PostController extends BaseController
         private readonly ValidatorInterface $validator,
         private readonly OutputSanitizerInterface $sanitizer,
         private readonly ActivityLoggingServiceInterface $activityLogger,
-    ) {
-    }
+    ) {}
 
     #[OA\Get(
         path: '/posts',
@@ -86,15 +86,17 @@ class PostController extends BaseController
                 response: 200,
                 description: '成功取得貼文列表',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/PaginatedResponse'),
+                    ref: '#/components/schemas/PaginatedResponse',
+                ),
             ),
             new OA\Response(
                 response: 400,
                 description: '請求參數錯誤',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError'),
+                    ref: '#/components/schemas/ValidationError',
+                ),
             ),
-        ]
+        ],
     )]
     public function index(Request $request, Response $response): Response
     {
@@ -122,35 +124,29 @@ class PostController extends BaseController
 
             $result = $this->postService->listPosts($page, $limit, $filters);
 
-            // 確保 result 包含必要的鍵
-            if (!array_key_exists('items', $result)
-                || !array_key_exists('total', $result)
-                || !array_key_exists('page', $result)
-                || !array_key_exists('per_page', $result)) {
-                throw new Exception('Invalid service response format');
-            }
-
             // 記錄活動
             $this->activityLogger->log(
-                ActivityType::POST_VIEW,
-                null,
-                null,
-                ['filters' => $filters, 'page' => $page, 'limit' => $limit]
+                CreateActivityLogDTO::success(
+                    ActivityType::POST_VIEWED,
+                    $this->getCurrentUserId($request),
+                    null,
+                    null,
+                    '取得貼文列表',
+                    ['filters' => $filters, 'page' => $page, 'limit' => $limit],
+                ),
             );
 
             return $this->json($response, [
                 'success' => true,
                 'data' => array_map(
-                    fn($post) => $post->toSafeArray($this->sanitizer),
-                    $result['items']
+                    fn($post) => is_object($post) && method_exists($post, 'toSafeArray') ? $post->toSafeArray($this->sanitizer) : $post,
+                    $result['items'],
                 ),
                 'pagination' => [
                     'total' => $result['total'],
                     'page' => $result['page'],
                     'per_page' => $result['per_page'],
-                    'total_pages' => $result['total_pages'],
-                    'has_next' => $result['has_next'],
-                    'has_prev' => $result['has_prev'],
+                    'last_page' => $result['last_page'],
                 ],
             ]);
         } catch (ValidationException $e) {
@@ -163,10 +159,7 @@ class PostController extends BaseController
                 ],
             ], 400);
         } catch (Exception $e) {
-            $this->logger?->error('取得貼文列表失敗', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            error_log('取得貼文列表失敗: ' . $e->getMessage());
 
             return $this->json($response, [
                 'success' => false,
@@ -194,10 +187,14 @@ class PostController extends BaseController
 
             // 記錄活動
             $this->activityLogger->log(
-                ActivityType::POST_CREATE,
-                $post->getId(),
-                null,
-                ['title' => $post->getTitle()]
+                CreateActivityLogDTO::success(
+                    ActivityType::POST_CREATED,
+                    $this->getCurrentUserId($request),
+                    null,
+                    (string) $post->getId(),
+                    '建立貼文',
+                    ['title' => $post->getTitle()],
+                ),
             );
 
             return $this->json($response, [
@@ -215,10 +212,7 @@ class PostController extends BaseController
                 ],
             ], 400);
         } catch (Exception $e) {
-            $this->logger?->error('創建貼文失敗', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            error_log('建立貼文失敗: ' . $e->getMessage());
 
             return $this->json($response, [
                 'success' => false,
@@ -241,14 +235,18 @@ class PostController extends BaseController
                 throw new RequestValidationException('貼文 ID 不能為空');
             }
 
-            $post = $this->postService->getPost($id);
+            $post = $this->postService->findById((int) $id);
 
             // 記錄活動
             $this->activityLogger->log(
-                ActivityType::POST_VIEW,
-                $post->getId(),
-                null,
-                ['title' => $post->getTitle()]
+                CreateActivityLogDTO::success(
+                    ActivityType::POST_VIEWED,
+                    $this->getCurrentUserId($request),
+                    null,
+                    (string) $post->getId(),
+                    '查看貼文',
+                    ['title' => $post->getTitle()],
+                ),
             );
 
             return $this->json($response, [
@@ -264,11 +262,7 @@ class PostController extends BaseController
                 ],
             ], 404);
         } catch (Exception $e) {
-            $this->logger?->error('取得貼文失敗', [
-                'id' => $args['id'] ?? 'unknown',
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            error_log('查看貼文失敗: ' . $e->getMessage());
 
             return $this->json($response, [
                 'success' => false,
@@ -296,15 +290,21 @@ class PostController extends BaseController
                 throw new RequestValidationException('Invalid request body');
             }
 
-            $dto = new UpdatePostDTO($this->validator, $data);
-            $post = $this->postService->updatePost($id, $dto);
+            /** @var array<string, mixed> $typedData */
+            $typedData = $data;
+            $dto = new UpdatePostDTO($this->validator, $typedData);
+            $post = $this->postService->updatePost((int) $id, $dto);
 
             // 記錄活動
             $this->activityLogger->log(
-                ActivityType::POST_UPDATE,
-                $post->getId(),
-                null,
-                ['title' => $post->getTitle()]
+                CreateActivityLogDTO::success(
+                    ActivityType::POST_UPDATED,
+                    $this->getCurrentUserId($request),
+                    null,
+                    (string) $post->getId(),
+                    '更新貼文',
+                    ['title' => $post->getTitle()],
+                ),
             );
 
             return $this->json($response, [
@@ -329,7 +329,7 @@ class PostController extends BaseController
                     'details' => $e->getErrors(),
                 ],
             ], 400);
-        } catch (PostStatusException | StateTransitionException $e) {
+        } catch (PostStatusException|StateTransitionException $e) {
             return $this->json($response, [
                 'success' => false,
                 'error' => [
@@ -338,11 +338,7 @@ class PostController extends BaseController
                 ],
             ], 422);
         } catch (Exception $e) {
-            $this->logger?->error('更新貼文失敗', [
-                'id' => $args['id'] ?? 'unknown',
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            error_log('更新貼文失敗: ' . $e->getMessage());
 
             return $this->json($response, [
                 'success' => false,
@@ -365,14 +361,18 @@ class PostController extends BaseController
                 throw new RequestValidationException('貼文 ID 不能為空');
             }
 
-            $this->postService->deletePost($id);
+            $this->postService->deletePost((int) $id);
 
             // 記錄活動
             $this->activityLogger->log(
-                ActivityType::POST_DELETE,
-                $id,
-                null,
-                ['deleted_at' => time()]
+                CreateActivityLogDTO::success(
+                    ActivityType::POST_DELETED,
+                    $this->getCurrentUserId($request),
+                    null,
+                    (string) $id,
+                    '刪除貼文',
+                    [],
+                ),
             );
 
             return $this->json($response, [
@@ -387,7 +387,7 @@ class PostController extends BaseController
                     'message' => '貼文不存在',
                 ],
             ], 404);
-        } catch (PostStatusException | StateTransitionException $e) {
+        } catch (PostStatusException|StateTransitionException $e) {
             return $this->json($response, [
                 'success' => false,
                 'error' => [
@@ -396,11 +396,7 @@ class PostController extends BaseController
                 ],
             ], 422);
         } catch (Exception $e) {
-            $this->logger?->error('刪除貼文失敗', [
-                'id' => $args['id'] ?? 'unknown',
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            error_log('刪除貼文失敗: ' . $e->getMessage());
 
             return $this->json($response, [
                 'success' => false,
@@ -410,5 +406,15 @@ class PostController extends BaseController
                 ],
             ], 500);
         }
+    }
+
+    /**
+     * 從請求中取得當前使用者 ID.
+     */
+    private function getCurrentUserId(Request $request): ?int
+    {
+        $user = $request->getAttribute('user');
+
+        return $user ? (int) $user['id'] : null;
     }
 }

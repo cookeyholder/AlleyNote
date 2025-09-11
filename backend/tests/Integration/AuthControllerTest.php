@@ -82,6 +82,9 @@ class AuthControllerTest extends TestCase
         $this->request->shouldReceive('getHeaderLine')
             ->andReturn('');
 
+        $this->request->shouldReceive('getHeaders')
+            ->andReturn(['User-Agent' => ['Test User Agent']]);
+
         $this->request->shouldReceive('getServerParams')
             ->andReturn([]);
 
@@ -148,16 +151,22 @@ class AuthControllerTest extends TestCase
 
         $this->authService->shouldReceive('register')
             ->once()
-            ->with(Mockery::type(RegisterUserDTO::class))
+            ->with(Mockery::type(RegisterUserDTO::class), Mockery::any())
             ->andReturn([
-                'id' => 1,
-                'username' => 'testuser',
-                'email' => 'test@example.com',
-                'status' => 1,
+                'user' => [
+                    'id' => 1,
+                    'username' => 'testuser',
+                    'email' => 'test@example.com',
+                    'status' => 1,
+                ],
+                'tokens' => [
+                    'access_token' => 'fake_access_token',
+                    'refresh_token' => 'fake_refresh_token',
+                ],
             ]);
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
+        $controller = new AuthController($this->authenticationService, $this->authService, $this->activityLoggingService, $this->validator);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -204,7 +213,7 @@ class AuthControllerTest extends TestCase
         $this->authService->shouldNotReceive('register');
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
+        $controller = new AuthController($this->authenticationService, $this->authService, $this->activityLoggingService, $this->validator);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -277,7 +286,7 @@ class AuthControllerTest extends TestCase
             ->andReturn(true);
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
+        $controller = new AuthController($this->authenticationService, $this->authService, $this->activityLoggingService, $this->validator);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應
@@ -304,7 +313,7 @@ class AuthControllerTest extends TestCase
             ->andThrow(new InvalidArgumentException('無效的憑證'));
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
+        $controller = new AuthController($this->authenticationService, $this->authService, $this->activityLoggingService, $this->validator);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應 - 當 AuthService 拋出 InvalidArgumentException 時，控制器返回 400
@@ -338,7 +347,7 @@ class AuthControllerTest extends TestCase
             ->andReturn(true);
 
         // 建立控制器並執行
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService);
+        $controller = new AuthController($this->authenticationService, $this->authService, $this->activityLoggingService, $this->validator);
         $response = $controller->logout($this->request, $this->response);
 
         // 驗證回應

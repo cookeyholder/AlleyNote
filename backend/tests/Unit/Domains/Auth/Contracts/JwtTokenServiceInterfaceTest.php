@@ -192,7 +192,7 @@ class JwtTokenServiceInterfaceTest extends TestCase
 
         $returnType = $method->getReturnType();
         $this->assertNotNull($returnType, 'Method should have a return type');
-        $this->assertEquals('array', $returnType->getName());
+        $this->assertEquals('int', $returnType->getName());
     }
 
     public function testIsTokenRevokedMethodSignature(): void
