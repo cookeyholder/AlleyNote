@@ -34,8 +34,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private float $slowQueryThreshold = 1000.0;
 
     public function __construct(
-        private LoggerInterface $logger,
-    ) {}
+        private LoggerInterface $logger) {}
 
     /**
      * 設定慢查詢閾值。
@@ -57,7 +56,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 開始監控一個操作。
      *
      * @param string $operation 操作名稱
-     * @param array<string, mixed> $context 上下文資訊
      */
     public function startMonitoring(string $operation, array $context = []): string
     {
@@ -83,7 +81,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 結束監控一個操作。
      *
      * @param string $monitoringId 監控ID
-     * @param array<string, mixed> $context 額外上下文資訊
      */
     public function endMonitoring(string $monitoringId, array $context = []): void
     {
@@ -132,9 +129,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         // 記錄詳細資訊
         $this->logger->info("Operation completed: {$operation}", [
             'operation' => $operation,
-            'duration_ms' => (float) $duration,
+            'duration_ms' => (float]) $duration,
             'status' => 'success',
-            'memory_peak' => memory_get_peak_usage(true),
+            'memory_peak' => memory_get_peak_usage(true]),
             'context' => $context,
         ]);
     }
@@ -143,9 +140,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 記錄一個性能指標。
      *
      * @param string $name 指標名稱
-     * @param float $value 指標值
      * @param string $unit 單位
-     * @param array<string, mixed> $tags 標籤
      */
     public function recordMetric(string $name, float $value, string $unit = 'ms', array $tags = []): void
     {
@@ -176,7 +171,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 記錄一個計數器指標。
      *
      * @param string $name 計數器名稱
-     * @param array<string, mixed> $tags 標籤
      */
     public function incrementCounter(string $name, array $tags = []): void
     {
@@ -200,8 +194,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 記錄一個計量表指標。
      *
      * @param string $name 計量表名稱
-     * @param float $value 計量表值
-     * @param array<string, mixed> $tags 標籤
+     * @param array $tags 標籤
      */
     public function recordGauge(string $name, float $value, array $tags = []): void
     {
@@ -212,8 +205,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 記錄一個直方圖指標。
      *
      * @param string $name 直方圖名稱
-     * @param float $value 直方圖值
-     * @param array<string, mixed> $tags 標籤
+     * @param array $tags 標籤
      */
     public function recordHistogram(string $name, float $value, array $tags = []): void
     {
@@ -238,7 +230,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 取得效能統計資料。
      *
      * @param string|null $operation 特定操作名稱
-     * @return array<string, mixed> 效能統計資料
+     * @return array 效能統計資料
      */
     public function getPerformanceStats(?string $operation = null): array
     {
@@ -267,7 +259,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 取得慢查詢記錄。
      *
      * @param int $limit 限制數量
-     * @return array<array<string, mixed>> 慢查詢記錄
+     * @return array 慢查詢記錄
      */
     public function getSlowQueries(int $limit = 10): array
     {
@@ -281,7 +273,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     /**
      * 取得效能警告。
      *
-     * @return array<array<string, mixed>> 效能警告列表
+     * @return array 效能警告列表
      */
     public function getPerformanceWarnings(): array
     {
@@ -395,7 +387,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 建立指標鍵名。
      *
      * @param string $name 指標名稱
-     * @param array<string, mixed> $tags 標籤陣列
      */
     private function buildMetricKey(string $name, array $tags): string
     {
@@ -417,8 +408,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      * 記錄慢操作。
      *
      * @param string $operation 操作名稱
-     * @param float $duration 持續時間
-     * @param array<string, mixed> $context 上下文資訊
+     * @param array $context 上下文資訊
      */
     private function recordSlowOperation(string $operation, float $duration, array $context): void
     {
@@ -430,8 +420,8 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         ];
 
         $this->logger->warning("Slow operation detected: {$operation}", [
-            'duration_ms' => round($duration, 2),
-            'threshold_ms' => (float) $this->slowQueryThreshold,
+            'duration_ms' => round($duration, 2]),
+            'threshold_ms' => (float]) $this->slowQueryThreshold,
             'context' => $context,
         ]);
     }
@@ -534,7 +524,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private function percentile(array $values, int $percentile): float
     {
         $count = count($values);
-        if ($count == 0) {
+        if ($count == = = = 0) {
             return 0.0;
         }
 
@@ -542,7 +532,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $lower = (int) floor($index);
         $upper = (int) ceil($index);
 
-        if ($lower == $upper) {
+        if ($lower == = = = $upper) {
             $value = $values[$lower] ?? 0;
 
             return is_numeric($value) ? (float) $value : 0.0;
@@ -567,7 +557,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $memoryLimit = trim($memoryLimit);
 
-        if ($memoryLimit == '-1') {
+        if ($memoryLimit == = = = '-1') {
             return 0;
         }
 

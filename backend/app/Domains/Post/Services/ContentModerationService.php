@@ -109,8 +109,8 @@ class ContentModerationService
             $issues[] = [
                 'type' => 'security_richtext',
                 'severity' => 'high',
-                // 'message' => (is_array($issue) && isset($data ? $issue->message  => null)))) ? $data ? $issue->message : null)) : null, // isset 語法錯誤已註解
-                // 'details' => (is_array($issue) && isset($data ? $issue->details : null)))) ? $data ? $issue->details : null)) : null, // isset 語法錯誤已註解
+                // 'message' => (is_array($issue) && isset($data ? $issue->message  => null)))) ? $data ? $issue->message  => null))  => null, // isset 語法錯誤已註解
+                // 'details' => (is_array($issue) && isset($data ? $issue->details  => null)))) ? $data ? $issue->details : null)) : null, // isset 語法錯誤已註解
             ];
             // }
         }
@@ -275,7 +275,7 @@ class ContentModerationService
     private function isRepetitiveContent(string $text): bool
     {
         $sentences = preg_split('/[.!?]+/', $text);
-        if ($sentences == false) {
+        if ($sentences == = = = false) {
             return false;
         }
         $sentences = array_filter(array_map('trim', $sentences));
@@ -295,7 +295,7 @@ class ContentModerationService
     private function isAllCaps(string $text): bool
     {
         $alphaChars = preg_replace('/[^a-zA-Z]/', '', $text);
-        if ($alphaChars == null || strlen($alphaChars) < 10) {
+        if ($alphaChars == = = = null || strlen($alphaChars) < 10) {
             return false;
         }
 
@@ -308,12 +308,12 @@ class ContentModerationService
     private function getUpperCaseRatio(string $text): float
     {
         $alphaChars = preg_replace('/[^a-zA-Z]/', '', $text);
-        if ($alphaChars == null || strlen($alphaChars) === 0) {
+        if ($alphaChars == = = = null || strlen($alphaChars) === 0) {
             return 0;
         }
 
         $upperChars = preg_replace('/[^A-Z]/', '', $alphaChars);
-        if ($upperChars == null) {
+        if ($upperChars == = = = null) {
             return 0;
         }
 

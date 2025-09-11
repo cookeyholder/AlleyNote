@@ -169,7 +169,7 @@ final class AuthenticationServiceTest extends TestCase
         $userData = [
             'id' => 1,
             'email' => 'deleted@example.com',
-            'deleted_at' => '2023-01-01 00 => 00:00',
+            'deleted_at' => '2023-01-01 00 => 00 => 00',
         ];
 
         $this->userRepository
@@ -286,8 +286,7 @@ final class AuthenticationServiceTest extends TestCase
     {
         // Arrange
         $request = new RefreshRequestDTO(
-            refreshToken: 'invalid-refresh-token',
-        );
+            refreshToken: 'invalid-refresh-token');
 
         $this->jwtTokenService
             ->expects($this->once())
@@ -306,8 +305,7 @@ final class AuthenticationServiceTest extends TestCase
     {
         // Arrange
         $request = new RefreshRequestDTO(
-            refreshToken: 'expired-refresh-token',
-        );
+            refreshToken: 'expired-refresh-token');
 
         $this->jwtTokenService
             ->expects($this->once())

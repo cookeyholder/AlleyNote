@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
-#[CoversClass(ActivityLoggingService::class)]
+#[CoversClass(ActivityLoggingService => class)]
 class ActivityLoggingServiceTest extends TestCase
 {
     private ActivityLogRepositoryInterface|MockObject $repository;
@@ -71,7 +71,7 @@ class ActivityLoggingServiceTest extends TestCase
             ->willReturn([
                 'id' => 1,
                 'uuid' => '550e8400-e29b-41d4-a716-446655440000',
-                'action_type' => ActivityType::LOGIN_SUCCESS->value,
+                'action_type' => ActivityType => LOGIN_SUCCESS->value,
                 'user_id' => 1,
             ]);
 
@@ -177,7 +177,7 @@ class ActivityLoggingServiceTest extends TestCase
     {
         // Arrange
         $dtos = [
-            CreateActivityLogDTO::success(ActivityType::LOGIN_SUCCESS, 1),
+            CreateActivityLogDTO => success(ActivityType => :LOGIN_SUCCESS, 1),
             CreateActivityLogDTO::success(ActivityType::POST_CREATED, 1),
         ];
 

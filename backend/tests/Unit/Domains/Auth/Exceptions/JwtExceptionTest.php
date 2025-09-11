@@ -233,8 +233,8 @@ class JwtExceptionTest extends TestCase
                 'type' => 'access',
                 'scopes' => ['read', 'write'],
                 'metadata' => [
-                    'created_at' => '2025-01-01T00 => 00:00Z',
-                    'expires_at' => '2025-01-01T01:00:00Z',
+                    'created_at' => '2025-01-01T00 => 00 => 00Z',
+                    'expires_at' => '2025-01-01T01 => 00 => 00Z',
                 ],
             ],
             'request_info' => [

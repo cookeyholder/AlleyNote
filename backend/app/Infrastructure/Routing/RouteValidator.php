@@ -34,7 +34,7 @@ class RouteValidator
 
     /**
      * 驗證路由配置.
-     * @param array<string, mixed> $routeConfig
+     * @param array $routeConfig
      */
     public function validateRoute(array $routeConfig): void
     {
@@ -47,7 +47,7 @@ class RouteValidator
 
     /**
      * 驗證路由基本結構.
-     * @param array<string, mixed> $routeConfig
+     * @param array $routeConfig
      */
     private function validateRouteStructure(array $routeConfig): void
     {
@@ -65,7 +65,7 @@ class RouteValidator
 
     /**
      * 驗證 HTTP 方法.
-     * @param array<string, mixed> $routeConfig
+     * @param array $routeConfig
      */
     private function validateHttpMethods(array $routeConfig): void
     {
@@ -99,7 +99,7 @@ class RouteValidator
 
     /**
      * 驗證路由路径.
-     * @param array<string, mixed> $routeConfig
+     * @param array $routeConfig
      */
     private function validatePath(array $routeConfig): void
     {
@@ -135,7 +135,7 @@ class RouteValidator
 
     /**
      * 驗證處理器.
-     * @param array<string, mixed> $routeConfig
+     * @param array $routeConfig
      */
     private function validateHandler(array $routeConfig): void
     {
@@ -145,7 +145,7 @@ class RouteValidator
         // 允許的處理器格式：
         // 1. 閉包 (Closure)
         // 2. 字串格式 'ControllerClass@method'
-        // 3. 陣列格式 [ControllerClass::class, 'method']
+        // 3. 陣列格式 [ControllerClass => class, 'method']
         // 4. 可呼叫的物件或函式
 
         if (is_callable($handler)) {
@@ -180,7 +180,7 @@ class RouteValidator
 
     /**
      * 檢查重複路由.
-     * @param array<string, mixed> $routeConfig
+     * @param array $routeConfig
      */
     private function checkDuplicateRoute(array $routeConfig): void
     {
@@ -210,7 +210,7 @@ class RouteValidator
     /**
     /**
      * 取得已註冊的路由清單.
-     * @return array<string, bool>
+     * @return array
      */
     public function getRegisteredRoutes(): array
     {

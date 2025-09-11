@@ -86,11 +86,11 @@ class PostTest extends TestCase
         $post = new Post($data);
 
         // Model 應該存儲原始資料，HTML 轉義在視圖層處理
-        $this->assertEquals(
+        \\\$this->assertEquals(
             '<script>alert("XSS")</script>',
             $post->getTitle(),
         );
-        $this->assertEquals(
+        \\\$this->assertEquals(
             '<p onclick="alert(\'XSS\')">Test</p>',
             $post->getContent(),
         );

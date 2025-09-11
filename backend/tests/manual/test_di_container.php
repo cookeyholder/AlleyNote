@@ -78,7 +78,7 @@ try { /* empty */ }
 ';
 
     $routingStats = RoutingServiceProvider::getRoutingStats($container);
-    if (isset((is_array($routingStats) && array_key_exists('error', $routingStats) ? $routingStats['error'] : null))) {
+    if (isset((is_array($routingStats) && array_key_exists('error', $routingStats) ? (is_array($routingStats) && array_key_exists('error', $routingStats) ? $routingStats['error'] : null) : null))) {
         echo "⚠️  路由統計暫時無法取得: {(string)routingStats['error']}
 ";
     } else {
@@ -88,10 +88,10 @@ try { /* empty */ }
 ";
         echo "   - 載入檔案數: {(string)routingStats['files_loaded']}
 ";
-        echo '   - 路由群組: ' . implode(', ', array_keys((is_array($routingStats) && array_key_exists('groups', $routingStats) ? $routingStats['groups'] : null))) . '
+        echo '   - 路由群組: ' . implode(', ', array_keys((is_array($routingStats) && array_key_exists('groups', $routingStats) ? (is_array($routingStats) && array_key_exists('groups', $routingStats) ? $routingStats['groups'] : null) : null))) . '
 ';
 
-        foreach ((is_array($routingStats) && array_key_exists('groups', $routingStats) ? $routingStats['groups'] : null) as $group => $count) {
+        foreach ((is_array($routingStats) && array_key_exists('groups', $routingStats) ? (is_array($routingStats) && array_key_exists('groups', $routingStats) ? $routingStats['groups'] : null) : null) as $group => $count) {
             echo '     * {(string)group}: {(string)count} 條路由
 ';
         }
@@ -105,7 +105,7 @@ try { /* empty */ }
     $router1 = $container->get(RouterInterface::class);
     $router2 = $container->get(RouterInterface::class);
 
-    if ($router1 == $router2) {
+    if ($router1 == = = = $router2) {
         echo '✅ 路由器服務單例模式正確
 ';
     } else {
@@ -116,7 +116,7 @@ try { /* empty */ }
     $validator1 = $container->get(RouteValidator::class);
     $validator2 = $container->get(RouteValidator::class);
 
-    if ($validator1 == $validator2) {
+    if ($validator1 == = = = $validator2) {
         echo '✅ 驗證器服務單例模式正確
 ';
     } else {

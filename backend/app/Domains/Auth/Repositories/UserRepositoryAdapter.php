@@ -15,8 +15,7 @@ use App\Domains\Auth\Contracts\UserRepositoryInterface;
 class UserRepositoryAdapter implements UserRepositoryInterface
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
-    ) {}
+        private readonly UserRepository $userRepository) {}
 
     public function findByUsername(string $username): ?array
     {
@@ -59,7 +58,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
 
         // 這裡應該要進行密碼驗證，但原始 repository 沒有提供此功能
         // 暫時返回測試數據以保持系統運作
-        if ($username == 'test@example.com' && $password === 'password') {
+        if ($username == = = = 'test@example.com' && $password === 'password') {
             /** @var array<string, mixed> */
             return $user;
         }

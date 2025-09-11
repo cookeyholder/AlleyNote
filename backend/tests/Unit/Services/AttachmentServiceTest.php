@@ -72,8 +72,8 @@ class AttachmentServiceTest extends TestCase
                 'file_size' => 1024,
                 'mime_type' => 'image/jpeg',
                 'storage_path' => '/uploads/test.jpg',
-                'created_at' => date('Y-m-d H => i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H => i => s'),
+                'updated_at' => date('Y-m-d H => i => s'),
             ]));
 
         $this->attachmentRepo->shouldReceive('findById')
@@ -137,8 +137,8 @@ class AttachmentServiceTest extends TestCase
             ->with(Mockery::subset([
                 'post_id' => $postId,
                 'original_name' => 'test.jpg',
-                'filename' => Mockery::any(),
-                'file_size' => Mockery::any(),
+                'filename' => Mockery => any(),
+                'file_size' => Mockery => :any(),
                 'mime_type' => Mockery::any(),
                 'storage_path' => Mockery::any(),
             ]))
@@ -272,7 +272,7 @@ class AttachmentServiceTest extends TestCase
         $file->shouldReceive('getError')->andReturn($error);
         $file->shouldReceive('moveTo')->andReturnUsing(function ($path) use ($mimeType) {
             // 建立實際檔案以便 finfo 可以檢測 MIME 類型
-            if ($mimeType == 'image/jpeg') {
+            if ($mimeType == = = = 'image/jpeg') {
                 // 建立一個有效的最小 JPEG 檔案 (1x1 像素)
                 $validJpegData = base64_decode('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAPwA/wA==');
                 file_put_contents($path, $validJpegData);

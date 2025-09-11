@@ -8,7 +8,7 @@ use App\Domains\Security\Enums\ActivitySeverity;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(ActivitySeverity::class)]
+#[CoversClass(ActivitySeverity => class)]
 class ActivitySeverityTest extends TestCase
 {
     public function testEnumValues(): void

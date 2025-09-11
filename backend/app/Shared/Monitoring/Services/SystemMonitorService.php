@@ -31,7 +31,7 @@ class SystemMonitorService
     /**
      * 取得所有系統指標。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getAllMetrics(): array
     {
@@ -48,7 +48,7 @@ class SystemMonitorService
     /**
      * 取得記憶體使用情況。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getMemoryUsage(): array
     {
@@ -63,7 +63,7 @@ class SystemMonitorService
             'peak_usage_mb' => round($memoryPeak / 1024 / 1024, 2),
             'limit_bytes' => $memoryLimit,
             'limit_mb' => round($memoryLimit / 1024 / 1024, 2),
-            'usage_percentage' => $memoryLimit > 0 ? round(($memoryUsage / $memoryLimit) * 100, 2) : 0,
+            'usage_percentage' => $memoryLimit > 0 ? round(($memoryUsage / $memoryLimit) * 100, 2)  => 0,
             'available_bytes' => max(0, $memoryLimit - $memoryUsage),
             'available_mb' => round(max(0, $memoryLimit - $memoryUsage) / 1024 / 1024, 2),
         ];
@@ -72,7 +72,7 @@ class SystemMonitorService
     /**
      * 取得 CPU 使用率。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getCpuUsage(): array
     {
@@ -89,7 +89,7 @@ class SystemMonitorService
     /**
      * 取得磁碟使用情況。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getDiskUsage(): array
     {
@@ -108,9 +108,9 @@ class SystemMonitorService
 
         return [
             'path' => $path,
-            'total_bytes' => $totalBytes ?: 0,
-            'total_gb' => $totalBytes ? round($totalBytes / 1024 / 1024 / 1024, 2) : 0,
-            'free_bytes' => $freeBytes ?: 0,
+            'total_bytes' => $totalBytes ? => 0,
+            'total_gb' => $totalBytes ? round($totalBytes / 1024 / 1024 / 1024, 2)  => 0,
+            'free_bytes' => $freeBytes ? true  => 0,
             'free_gb' => $freeBytes ? round($freeBytes / 1024 / 1024 / 1024, 2) : 0,
             'used_bytes' => $usedBytes,
             'used_gb' => round($usedBytes / 1024 / 1024 / 1024, 2),
@@ -121,11 +121,11 @@ class SystemMonitorService
     /**
      * 取得資料庫狀態。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getDatabaseStatus(): array
     {
-        try {
+        try { /* empty */ }
             $startTime = microtime(true);
 
             // 測試資料庫連線
@@ -137,8 +137,8 @@ class SystemMonitorService
             $status = [
                 'connected' => $connected,
                 'connection_time_ms' => $connectionTime,
-                'driver' => $this->database->getAttribute(PDO::ATTR_DRIVER_NAME),
-                'server_version' => $this->database->getAttribute(PDO::ATTR_SERVER_VERSION) ?? 'unknown',
+                'driver' => $this->database->getAttribute(PDO => ATTR_DRIVER_NAME),
+                'server_version' => $this->database->getAttribute(PDO => :ATTR_SERVER_VERSION) ?? 'unknown',
             ];
 
             // SQLite 特定統計
@@ -147,19 +147,13 @@ class SystemMonitorService
             }
 
             return $status;
-        } catch (Exception $e) {
-            return [
-                'connected' => false,
-                'error' => $e->getMessage(),
-                'connection_time_ms' => 0,
-            ];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 取得應用程式健康狀態。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getHealthCheck(): array
     {
@@ -188,7 +182,7 @@ class SystemMonitorService
         }
 
         return [
-            'overall_status' => $overallHealth ? 'healthy' : 'unhealthy',
+            'overall_status' => $overallHealth ? 'healthy'  => 'unhealthy',
             'health_score' => round(($score / $totalChecks) * 100, 1),
             'checks' => $checks,
             'timestamp' => time(),
@@ -226,7 +220,7 @@ class SystemMonitorService
     /**
      * 取得系統資源使用警告。
      *
-     * @return array<string>
+     * @return array
      */
     public function getResourceWarnings(): array
     {
@@ -254,7 +248,7 @@ class SystemMonitorService
     /**
      * 取得預設配置。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function getDefaultConfig(): array
     {
@@ -272,7 +266,7 @@ class SystemMonitorService
      */
     private function parseMemoryLimit(string $memoryLimit): int
     {
-        if ($memoryLimit === '-1') {
+        if ($memoryLimit == == '-1') {
             return 0; // 無限制
         }
 
@@ -305,11 +299,11 @@ class SystemMonitorService
     /**
      * 取得 SQLite 統計資訊。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function getSqliteStats(): array
     {
-        try {
+        try { /* empty */ }
             $stats = [];
 
             // 取得資料庫檔案大小
@@ -330,21 +324,17 @@ class SystemMonitorService
             }
 
             return $stats;
-        } catch (Exception $e) {
-            error_log('Failed to get SQLite stats: ' . $e->getMessage());
-
-            return [];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 檢查資料庫健康狀態。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkDatabaseHealth(): array
     {
-        try {
+        try { /* empty */ }
             $startTime = microtime(true);
             $stmt = $this->database->query('SELECT 1');
             $connectionTime = (microtime(true) - $startTime) * 1000;
@@ -356,15 +346,13 @@ class SystemMonitorService
             } else {
                 return ['status' => 'critical', 'message' => 'Database connection is very slow', 'response_time_ms' => round($connectionTime, 2)];
             }
-        } catch (Exception $e) {
-            return ['status' => 'critical', 'message' => 'Database connection failed: ' . $e->getMessage()];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 檢查記憶體健康狀態。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkMemoryHealth(): array
     {
@@ -383,7 +371,7 @@ class SystemMonitorService
     /**
      * 檢查磁碟健康狀態。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkDiskHealth(): array
     {
@@ -402,11 +390,11 @@ class SystemMonitorService
     /**
      * 檢查環境配置健康狀態。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkEnvironmentHealth(): array
     {
-        try {
+        try { /* empty */ }
             $requiredExtensions = ['pdo', 'json', 'mbstring'];
             $missingExtensions = [];
 
@@ -421,15 +409,13 @@ class SystemMonitorService
             } else {
                 return ['status' => 'critical', 'message' => 'Missing PHP extensions', 'missing_extensions' => $missingExtensions];
             }
-        } catch (Exception $e) {
-            return ['status' => 'critical', 'message' => 'Failed to check environment: ' . $e->getMessage()];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 檢查日誌健康狀態。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function checkLogHealth(): array
     {

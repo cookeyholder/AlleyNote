@@ -28,15 +28,10 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 {
     /**
      * @param Uuid $postId 文章識別碼
-     * @param string $title 文章標題
      * @param SourceType $sourceType 來源類型
-     * @param StatisticsMetric $viewCount 瀏覽次數
      * @param StatisticsMetric $likeCount 按讚次數
-     * @param StatisticsMetric $commentCount 評論次數
      * @param StatisticsMetric $shareCount 分享次數
-     * @param StatisticsPeriod $period 統計期間
-     * @param array<string, mixed> $additionalMetrics 額外統計指標
-     * @param DateTimeImmutable $publishedAt 發布時間
+     * @param array $additionalMetrics 額外統計指標
      * @param DateTimeImmutable $updatedAt 更新時間
      */
     public function __construct(
@@ -59,7 +54,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * 從文章資料建立 DTO.
      *
-     * @param array<string, mixed> $postData
+     * @param array $postData
      */
     public static function fromPostData(array $postData, StatisticsPeriod $period): self
     {
@@ -112,7 +107,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * 建立帶有統計分析的 DTO.
      *
-     * @param array<string, mixed> $rawMetrics
+     * @param array $rawMetrics
      */
     public static function withAnalysis(
         Uuid $postId,
@@ -233,7 +228,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * 取得格式化的統計資訊.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getFormattedStatistics(): array
     {
@@ -282,7 +277,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * 比較與另一篇文章的效能.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function compareWith(PostStatisticsDTO $other): array
     {
@@ -303,7 +298,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * 轉換為陣列.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
@@ -343,7 +338,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * JSON 序列化.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -356,7 +351,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     public function __toString(): string
     {
         return sprintf(
-            'PostStatistics[%s: %d views, %.2f%% engagement]',
+            'PostStatistics[%s - %d views, %.2f%% engagement]',
             substr($this->title, 0, 30) . (strlen($this->title) > 30 ? '...' : ''),
             $this->viewCount->value,
             $this->getEngagementRate(),
@@ -366,7 +361,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * 計算互動率.
      *
-     * @param array<string, mixed> $metrics
+     * @param array $metrics
      */
     private static function calculateEngagementRate(array $metrics): float
     {
@@ -387,7 +382,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * 計算效能評分.
      *
-     * @param array<string, mixed> $metrics
+     * @param array $metrics
      */
     private static function calculatePerformanceScore(array $metrics): float
     {
@@ -431,7 +426,7 @@ final readonly class PostStatisticsDTO implements JsonSerializable
     /**
      * 驗證額外指標.
      *
-     * @param array<string, mixed> $metrics
+     * @param array $metrics
      */
     private function validateAdditionalMetrics(array $metrics): void
     {

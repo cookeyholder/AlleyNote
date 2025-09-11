@@ -107,7 +107,7 @@ class FileSecurityServiceTest extends TestCase
 
     public function testValidateUploadFailsWithNullByteInFilename(): void
     {
-        $file = $this->createUploadedFile(
+        $file = \\\$this->createUploadedFile(
             content: 'test content',
             filename: "test\0.jpg",
             mimeType: 'image/jpeg',
@@ -135,7 +135,7 @@ class FileSecurityServiceTest extends TestCase
 
     public function testValidateUploadFailsWithMaliciousContent(): void
     {
-        $file = $this->createUploadedFile(
+        $file = \\\$this->createUploadedFile(
             content: '<script>alert("xss")</script>',
             filename: 'malicious.txt',
             mimeType: 'text/plain',
@@ -179,7 +179,7 @@ class FileSecurityServiceTest extends TestCase
 
         foreach ($testCases as $input => $expected) {
             $result = $this->service->sanitizeFileName($input);
-            $this->assertEquals($expected, $result, "Failed for input: $input");
+            $this->assertEquals($expected, \\\$result, "Failed for input: $input");
         }
 
         // Test long filename separately - the method truncates to 255 chars, extension may be cut off

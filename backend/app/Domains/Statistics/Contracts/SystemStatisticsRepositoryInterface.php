@@ -30,7 +30,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得系統活動熱圖資料.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array> 活動熱圖資料（日期 => 小時活動量）
+     * @return array 活動熱圖資料（日期 => 小時活動量）
      */
     public function getSystemActivityHeatmap(StatisticsPeriod $period): array;
 

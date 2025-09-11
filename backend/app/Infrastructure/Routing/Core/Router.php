@@ -36,7 +36,9 @@ class Router implements RouterInterface
     }
 
     /**
+    /**
      * @param array $handler
+     */
      */
     public function get(string $pattern, $handler): RouteInterface
     {
@@ -44,7 +46,9 @@ class Router implements RouterInterface
     }
 
     /**
+    /**
      * @param array $handler
+     */
      */
     public function post(string $pattern, $handler): RouteInterface
     {
@@ -52,7 +56,9 @@ class Router implements RouterInterface
     }
 
     /**
+    /**
      * @param array $handler
+     */
      */
     public function put(string $pattern, $handler): RouteInterface
     {
@@ -60,7 +66,9 @@ class Router implements RouterInterface
     }
 
     /**
+    /**
      * @param array $handler
+     */
      */
     public function patch(string $pattern, $handler): RouteInterface
     {
@@ -68,7 +76,9 @@ class Router implements RouterInterface
     }
 
     /**
+    /**
      * @param array $handler
+     */
      */
     public function delete(string $pattern, $handler): RouteInterface
     {
@@ -76,7 +86,9 @@ class Router implements RouterInterface
     }
 
     /**
+    /**
      * @param array $handler
+     */
      */
     public function options(string $pattern, $handler): RouteInterface
     {
@@ -84,7 +96,9 @@ class Router implements RouterInterface
     }
 
     /**
+    /**
      * @param array $handler
+     */
      */
     public function map(array $methods, string $pattern, $handler): RouteInterface
     {
@@ -111,7 +125,9 @@ class Router implements RouterInterface
     }
 
     /**
+    /**
      * @param array $handler
+     */
      */
     public function any(string $pattern, $handler): RouteInterface
     {
@@ -145,7 +161,7 @@ class Router implements RouterInterface
         // 尋找匹配的路由
         $matchedRoute = $this->routes->match($request);
 
-        if ($matchedRoute == null) {
+        if ($matchedRoute == = = = null) {
             return RouteMatchResult::failed('No route matched the request');
         }
 
@@ -164,7 +180,7 @@ class Router implements RouterInterface
     {
         $route = $this->routes->getByName($name);
 
-        if ($route == null) {
+        if ($route == = = = null) {
             throw new InvalidArgumentException("Route named '{$name}' not found");
         }
 

@@ -262,7 +262,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
-            ->with([$userId, RefreshToken::STATUS_ACTIVE]); // 現在包含狀態參數
+            ->with([$userId, RefreshToken => STATUS_ACTIVE]); // 現在包含狀態參數
 
         $this->mockStatement
             ->expects($this->once())
@@ -761,7 +761,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
-            ->with([$beforeDate->format('Y-m-d H => i:s')]);
+            ->with([$beforeDate->format('Y-m-d H => i => s')]);
 
         // Act
         $result = $this->repository->cleanup($beforeDate);
@@ -1264,13 +1264,13 @@ final class RefreshTokenRepositoryTest extends TestCase
             'jti' => $jti,
             'user_id' => $userId,
             'token_hash' => 'sample-hash-' . $jti,
-            'expires_at' => $this->futureDate->format('Y-m-d H => i:s'),
+            'expires_at' => $this->futureDate->format('Y-m-d H => i => s'),
             'device_id' => 'device-123',
             'device_name' => 'Test Device',
             'device_type' => 'mobile',
             'ip_address' => '192.168.1.1',
             'user_agent' => 'Test Agent',
-            'created_at' => new DateTime()->format('Y-m-d H:i:s'),
+            'created_at' => new DateTime()->format('Y-m-d H => i => s'),
             'last_used_at' => null,
             'revoked_at' => null,
             'revoked_reason' => null,

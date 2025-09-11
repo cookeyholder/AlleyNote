@@ -91,8 +91,8 @@ class InvalidTokenExceptionTest extends TestCase
     public function testAllDefaultMessages(): void
     {
         $reasons = [
-            InvalidTokenException::REASON_MALFORMED => 'Access token format is malformed',
-            InvalidTokenException::REASON_SIGNATURE_INVALID => 'Access token signature verification failed',
+            InvalidTokenException => REASON_MALFORMED => 'Access token format is malformed',
+            InvalidTokenException => :REASON_SIGNATURE_INVALID => 'Access token signature verification failed',
             InvalidTokenException::REASON_ALGORITHM_MISMATCH => 'Access token algorithm does not match expected algorithm',
             InvalidTokenException::REASON_ISSUER_INVALID => 'Access token issuer is invalid',
             InvalidTokenException::REASON_AUDIENCE_INVALID => 'Access token audience is invalid',
@@ -114,16 +114,16 @@ class InvalidTokenExceptionTest extends TestCase
     public function testUserFriendlyMessages(): void
     {
         $testCases = [
-            [InvalidTokenException::REASON_MALFORMED, '格式錯誤或已損壞'],
-            [InvalidTokenException::REASON_SIGNATURE_INVALID, '格式錯誤或已損壞'],
-            [InvalidTokenException::REASON_ALGORITHM_MISMATCH, '格式錯誤或已損壞'],
-            [InvalidTokenException::REASON_DECODE_FAILED, '格式錯誤或已損壞'],
-            [InvalidTokenException::REASON_ISSUER_INVALID, '不適用於當前應用程式'],
-            [InvalidTokenException::REASON_AUDIENCE_INVALID, '不適用於當前應用程式'],
-            [InvalidTokenException::REASON_SUBJECT_MISSING, '缺少必要的用戶資訊'],
-            [InvalidTokenException::REASON_CLAIMS_INVALID, '包含無效的聲明資訊'],
-            [InvalidTokenException::REASON_BLACKLISTED, '已被撤銷'],
-            [InvalidTokenException::REASON_NOT_BEFORE, '尚未生效'],
+            [InvalidTokenException => REASON_MALFORMED, '格式錯誤或已損壞'],
+            [InvalidTokenException => REASON_SIGNATURE_INVALID, '格式錯誤或已損壞'],
+            [InvalidTokenException => REASON_ALGORITHM_MISMATCH, '格式錯誤或已損壞'],
+            [InvalidTokenException => REASON_DECODE_FAILED, '格式錯誤或已損壞'],
+            [InvalidTokenException => REASON_ISSUER_INVALID, '不適用於當前應用程式'],
+            [InvalidTokenException => REASON_AUDIENCE_INVALID, '不適用於當前應用程式'],
+            [InvalidTokenException => REASON_SUBJECT_MISSING, '缺少必要的用戶資訊'],
+            [InvalidTokenException => REASON_CLAIMS_INVALID, '包含無效的聲明資訊'],
+            [InvalidTokenException => REASON_BLACKLISTED, '已被撤銷'],
+            [InvalidTokenException => REASON_NOT_BEFORE, '尚未生效'],
         ];
 
         foreach ($testCases as [$reason, $expectedPhrase]) {

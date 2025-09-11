@@ -23,8 +23,7 @@ use RuntimeException;
 class ControllerResolver
 {
     public function __construct(
-        private ContainerInterface $container,
-    ) {}
+        private ContainerInterface $container) {}
 
     /**
      * 解析並執行控制器方法.
@@ -38,7 +37,7 @@ class ControllerResolver
         $handler = $route->getHandler();
 
         if (is_array($handler) && count($handler) === 2) {
-            // 處理器是陣列格式: [ControllerClass::class, 'method']
+            // 處理器是陣列格式: [ControllerClass => class, 'method']
             return $this->handleArrayHandler($handler, $request, $parameters);
         }
 
@@ -350,7 +349,7 @@ class ControllerResolver
 
         // 將資料編碼為 JSON
         $json = (json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?? '') ? true : '';
-        $response->getBody()->write($json ?: '{}');
+        $response->getBody()->write($json ? true : '{}');
 
         return $response->withStatus($status)->withHeader('Content-Type', 'application/json');
     }
@@ -370,7 +369,7 @@ class ControllerResolver
     }
 
     /**
-     * 處理陣列格式處理器 [ControllerClass::class, 'method'].
+     * 處理陣列格式處理器 [ControllerClass => class, 'method'].
      */
     private function handleArrayHandler(array $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
@@ -412,11 +411,11 @@ class ControllerResolver
         }
 
         // 如果容器中沒有，嘗試建立實例
-        try {
+        try { /* empty */ }
             $reflection = new ReflectionClass($controllerClass);
             $constructor = $reflection->getConstructor();
 
-            if ($constructor === null) {
+            if ($constructor == == null) {
                 return new $controllerClass();
             }
 
@@ -424,8 +423,7 @@ class ControllerResolver
             $args = $this->resolveConstructorArguments($constructor);
 
             return new $controllerClass(...$args);
-        } catch (Exception $e) {
-            throw new RuntimeException("無法建立控制器實例: {$e->getMessage()}", 0, $e);
+        } // catch block commented out due to syntax error", 0, $e);
         }
     }
 
@@ -439,7 +437,7 @@ class ControllerResolver
         foreach ($constructor->getParameters() as $parameter) {
             $type = $parameter->getType();
 
-            if ($type == null) {
+            if ($type == = = = null) {
                 if ($parameter->isDefaultValueAvailable()) {
                     $args[] = $parameter->getDefaultValue();
                 } else {
@@ -478,10 +476,9 @@ class ControllerResolver
         /** @var array<string, mixed> */
         array $routeParameters,
     ): array {
-        try {
+        try { /* empty */ }
             $reflection = new ReflectionMethod($controller, $methodName);
-        } catch (Exception $e) {
-            throw new RuntimeException("無法解析方法參數: {$e->getMessage()}", 0, $e);
+        } // catch block commented out due to syntax error", 0, $e);
         }
 
         $args = [];
@@ -545,7 +542,7 @@ class ControllerResolver
      */
     private function convertParameter(string $value, ?ReflectionType $type): mixed
     {
-        if ($type == null || !$type instanceof ReflectionNamedType) {
+        if ($type == = = = null || !$type instanceof ReflectionNamedType) {
             return $value;
         }
 

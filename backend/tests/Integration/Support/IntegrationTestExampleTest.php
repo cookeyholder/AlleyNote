@@ -82,7 +82,7 @@ class IntegrationTestExampleTest extends IntegrationTestCase
         ]);
 
         // 2. 快取使用者資訊
-        $this->setCacheValue("user:{$userId}", [
+        $this->setCacheValue("user:{\\\$userId}", [
             'id' => $userId,
             'username' => 'testuser',
             'email' => 'test@example.com',
@@ -109,7 +109,7 @@ class IntegrationTestExampleTest extends IntegrationTestCase
         $this->assertEquals('使用者的測試貼文', $result['title']);
 
         // 5. 檢查快取
-        $cachedUser = $this->cache->get("user:{$userId}");
+        $cachedUser = $this->cache->get("user:{\\\$userId}");
         $this->assertEquals('testuser', $cachedUser['username']);
 
         // 6. 建立成功回應

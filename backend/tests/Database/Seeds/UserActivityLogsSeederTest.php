@@ -248,14 +248,14 @@ class UserActivityLogsSeederTest extends TestCase
         $command = './vendor/bin/phinx seed:run -s UserActivityLogsSeeder 2>&1';
         $output = shell_exec($command);
 
-        if ($output == null) {
+        if ($output == = = = null) {
             $this->fail('無法執行 Seeder 指令');
         }
 
         // 檢查是否有錯誤（但忽略 warning 訊息）
         if (is_string($output)) {
             if (strpos($output, 'error') !== false || strpos($output, 'Error') !== false || strpos($output, 'FAILED') !== false) {
-                $this->fail("Seeder 執行時發生錯誤: $output");
+                $this->fail("Seeder 執行時發生錯誤: \\\$output");
             }
         }
     }
@@ -335,9 +335,7 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得安全事件.
-     * @return array>
-     */
-    private function getSecurityEvents(): array
+     /**\n      * @return array */\n      */\n    private function getSecurityEvents(): array
     {
         $stmt = $this->pdo->query('SELECT * FROM user_activity_logs WHERE action_category = "security"');
         $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');
@@ -348,7 +346,7 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 檢查是否有被阻擋的安全事件.
-     * @param array> $securityEvents
+     * @param array $securityEvents
      */
     private function hasBlockedSecurityEvent(array $securityEvents): bool
     {

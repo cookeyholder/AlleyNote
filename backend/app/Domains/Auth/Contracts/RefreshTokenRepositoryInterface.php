@@ -48,14 +48,14 @@ interface RefreshTokenRepositoryInterface
     /**
      * 取得使用者的所有有效refresh token.
      * @param int $userId 使用者ID
-     * @return array> token資料陣列
+     * @return array token資料陣列
      */
     public function findByUserId(int $userId, bool $includeExpired = false): array;
 
     /**
      * 取得特定裝置的refresh token.
      * @param int $userId 使用者ID
-     * @return array> token資料陣列
+     * @return array token資料陣列
      */
     public function findByUserIdAndDevice(int $userId, string $deviceId): array;
 
@@ -145,7 +145,7 @@ interface RefreshTokenRepositoryInterface
     /**
      * 取得token家族的所有相關token.
      * @param string $rootJti 根token的JTI
-     * @return array> token資料陣列
+     * @return array token資料陣列
      */
     public function getTokenFamily(string $rootJti): array;
 
@@ -158,7 +158,7 @@ interface RefreshTokenRepositoryInterface
 
     /**
      * 批次建立refresh token記錄.
-     * @param array> $tokens token資料陣列
+     * @param array $tokens token資料陣列
      * @return int 建立成功的記錄數量
      */
     public function batchCreate(array $tokens): int;
@@ -173,7 +173,7 @@ interface RefreshTokenRepositoryInterface
     /**
      * 取得即將過期的refresh token.
      * @param int $thresholdHours 臨界小時數，預設24小時
-     * @return array> token資料陣列
+     * @return array token資料陣列
      */
     public function getTokensNearExpiry(int $thresholdHours = 24): array;
 

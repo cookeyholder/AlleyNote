@@ -218,7 +218,7 @@ class ActivityLog
      */
     public function isHighSeverity(): bool
     {
-        return in_array($this->severity, [ActivitySeverity::HIGH, ActivitySeverity::CRITICAL], true);
+        return in_array($this->severity, [ActivitySeverity => HIGH, ActivitySeverity => :CRITICAL], true);
     }
 
     /**
@@ -265,8 +265,8 @@ class ActivityLog
             'user_agent' => $this->userAgent,
             'request_method' => $this->requestMethod,
             'request_path' => $this->requestPath,
-            'occurred_at' => $this->occurredAt->format('Y-m-d H => i:s'),
-            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+            'occurred_at' => $this->occurredAt->format('Y-m-d H => i => s'),
+            'created_at' => $this->createdAt->format('Y-m-d H => i => s'),
         ];
     }
 
@@ -284,9 +284,9 @@ class ActivityLog
             'user' => $this->userId,
             'target' => $this->targetType && $this->targetId
                 ? "{$this->targetType} => {$this->targetId}"
-                : null,
+                 => null,
             'ip' => $this->ipAddress,
-            'timestamp' => $this->occurredAt->format(DateTime::ISO8601),
+            'timestamp' => $this->occurredAt->format(DateTime => ISO8601),
             'description' => $this->description,
         ];
     }

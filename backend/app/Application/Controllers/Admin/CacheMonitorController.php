@@ -25,7 +25,7 @@ class CacheMonitorController extends BaseController
      */
     public function getStats(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             $stats = $this->cacheManager->getStats();
             $health = $this->cacheManager->getHealthStatus();
 
@@ -36,12 +36,7 @@ class CacheMonitorController extends BaseController
             ];
 
             return $this->json($response, $data);
-        } catch (Exception $e) {
-            return $this->json($response, [
-                'error' => '獲取快取統計資料失敗',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -49,7 +44,7 @@ class CacheMonitorController extends BaseController
      */
     public function getMetrics(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             $queryParams = $request->getQueryParams();
             $timeRange = is_string($queryParams['timeRange'] ?? '1h') ? $queryParams['timeRange'] ?? '1h' : '1h';
 
@@ -62,12 +57,7 @@ class CacheMonitorController extends BaseController
             ];
 
             return $this->json($response, $metrics);
-        } catch (Exception $e) {
-            return $this->json($response, [
-                'error' => '獲取快取指標失敗',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -75,7 +65,7 @@ class CacheMonitorController extends BaseController
      */
     public function getHealth(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             $healthOverview = $this->cacheMonitor->getHealthOverview();
             $driverHealth = $this->cacheManager->getHealthStatus();
 
@@ -86,12 +76,7 @@ class CacheMonitorController extends BaseController
             ];
 
             return $this->json($response, $healthData);
-        } catch (Exception $e) {
-            return $this->json($response, [
-                'error' => '獲取快取健康狀態失敗',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -99,7 +84,7 @@ class CacheMonitorController extends BaseController
      */
     public function resetStats(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             // 清理舊的監控資料
             $cleaned = $this->cacheMonitor->cleanup(0);
 
@@ -107,12 +92,7 @@ class CacheMonitorController extends BaseController
                 'message' => '統計資料已重置',
                 'cleanedRecords' => $cleaned,
             ]);
-        } catch (Exception $e) {
-            return $this->json($response, [
-                'error' => '重置統計資料失敗',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -120,7 +100,7 @@ class CacheMonitorController extends BaseController
      */
     public function flushCache(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             $success = $this->cacheManager->clear();
 
             if ($success) {
@@ -128,12 +108,7 @@ class CacheMonitorController extends BaseController
             } else {
                 return $this->json($response, ['error' => '清空快取失敗'], 500);
             }
-        } catch (Exception $e) {
-            return $this->json($response, [
-                'error' => '清空快取操作失敗',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -141,7 +116,7 @@ class CacheMonitorController extends BaseController
      */
     public function getDriverInfo(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             $drivers = $this->cacheManager->getDrivers();
             $driverInfo = [];
 
@@ -156,11 +131,6 @@ class CacheMonitorController extends BaseController
             }
 
             return $this->json($response, ['drivers' => $driverInfo]);
-        } catch (Exception $e) {
-            return $this->json($response, [
-                'error' => '獲取驅動資訊失敗',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 }

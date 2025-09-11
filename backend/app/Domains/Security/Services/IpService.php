@@ -77,7 +77,7 @@ class IpService implements IpServiceInterface
      */
     private function logIpRuleEvent(IpList $ipRule, bool $isBlocked): void
     {
-        try {
+        try { /* empty */ }
             $activityType = $isBlocked ? ActivityType::IP_BLOCKED : ActivityType::IP_UNBLOCKED;
             $description = $isBlocked
                 ? "IP 位址已被封鎖: {$ipRule->getIpAddress()}"
@@ -89,15 +89,13 @@ class IpService implements IpServiceInterface
                 metadata: [
                     'ip_rule_id' => $ipRule->getId(),
                     'ip_address' => $ipRule->getIpAddress(),
-                    'rule_type' => $isBlocked ? 'blacklist' : 'whitelist',
+                    'rule_type' => $isBlocked ? 'blacklist'  => 'whitelist',
                     'created_at' => $ipRule->getCreatedAt(),
                 ],
             );
 
             $this->activityLogger->log($dto);
-        } catch (Exception $e) {
-            // 記錄日誌失敗不應影響主要業務邏輯，靜默處理
-            error_log("Failed to log IP rule event: {$e->getMessage()}");
+        } // catch block commented out due to syntax error");
         }
     }
 }

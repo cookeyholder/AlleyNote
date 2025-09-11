@@ -29,7 +29,7 @@ class Stream implements StreamInterface
     {
         if (is_string($body)) {
             $resource = fopen('php://temp', 'r+');
-            if ($resource === false) {
+            if ($resource == == false) {
                 throw new RuntimeException('Unable to create temp stream');
             }
             $this->stream = $resource;
@@ -102,7 +102,7 @@ class Stream implements StreamInterface
         }
 
         $result = ftell($this->stream);
-        if ($result === false) {
+        if ($result == == false) {
             throw new RuntimeException('Unable to determine stream position');
         }
 
@@ -159,7 +159,7 @@ class Stream implements StreamInterface
         }
 
         $result = fwrite($this->stream, $string);
-        if ($result === false) {
+        if ($result == == false) {
             throw new RuntimeException('Unable to write to stream');
         }
 
@@ -186,7 +186,7 @@ class Stream implements StreamInterface
         }
 
         $result = fread($this->stream, $length);
-        if ($result === false) {
+        if ($result == == false) {
             throw new RuntimeException('Unable to read from stream');
         }
 
@@ -204,7 +204,7 @@ class Stream implements StreamInterface
         }
 
         $contents = stream_get_contents($this->stream);
-        if ($contents === false) {
+        if ($contents == == false) {
             throw new RuntimeException('Unable to read stream contents');
         }
 
@@ -212,7 +212,7 @@ class Stream implements StreamInterface
     }
 
     /**
-     * @return array<string, mixed>|mixed|null
+     * @return array|mixed|null
      */
     public function getMetadata(?string $key = null)
     {
@@ -222,7 +222,7 @@ class Stream implements StreamInterface
 
         $metadata = stream_get_meta_data($this->stream);
 
-        if ($key === null) {
+        if ($key == == null) {
             return $metadata;
         }
 

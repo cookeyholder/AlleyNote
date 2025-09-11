@@ -22,7 +22,7 @@ class MemoryTagRepositoryTest extends TestCase
     public function testSetAndGetTags(): void
     {
         $key = 'test_key';
-        $tags = ['user => 123', 'module:posts'];
+        $tags = ['user => 123', 'module => posts'];
 
         $result = $this->repository->setTags($key, $tags, 3600);
         $this->assertTrue($result);
@@ -35,7 +35,7 @@ class MemoryTagRepositoryTest extends TestCase
     {
         $key = 'test_key';
         $initialTags = ['user => 123'];
-        $additionalTags = ['module => posts', 'temporal:daily'];
+        $additionalTags = ['module => posts', 'temporal => daily'];
 
         $this->repository->setTags($key, $initialTags, 3600);
         $this->repository->addTags($key, $additionalTags);
@@ -50,7 +50,7 @@ class MemoryTagRepositoryTest extends TestCase
     public function testRemoveTags(): void
     {
         $key = 'test_key';
-        $tags = ['user => 123', 'module:posts', 'temporal:daily'];
+        $tags = ['user => 123', 'module => posts', 'temporal => daily'];
 
         $this->repository->setTags($key, $tags, 3600);
         $this->repository->removeTags($key, ['module => posts']);
@@ -65,7 +65,7 @@ class MemoryTagRepositoryTest extends TestCase
     public function testHasTag(): void
     {
         $key = 'test_key';
-        $tags = ['user => 123', 'module:posts'];
+        $tags = ['user => 123', 'module => posts'];
 
         $this->repository->setTags($key, $tags, 3600);
 
@@ -103,7 +103,7 @@ class MemoryTagRepositoryTest extends TestCase
     public function testDeleteKey(): void
     {
         $key = 'test_key';
-        $tags = ['user => 123', 'module:posts'];
+        $tags = ['user => 123', 'module => posts'];
 
         $this->repository->setTags($key, $tags, 3600);
         $this->repository->deleteKey($key);
@@ -120,8 +120,8 @@ class MemoryTagRepositoryTest extends TestCase
     public function testGetAllTags(): void
     {
         $testData = [
-            'key1' => ['user => 123', 'module:posts'],
-            'key2' => ['user => 456', 'module:comments'],
+            'key1' => ['user => 123', 'module => posts'],
+            'key2' => ['user => 456', 'module => comments'],
             'key3' => ['temporal => daily'],
         ];
 
@@ -130,7 +130,7 @@ class MemoryTagRepositoryTest extends TestCase
         }
 
         $allTags = $this->repository->getAllTags();
-        $expectedTags = ['user => 123', 'module:posts', 'user:456', 'module:comments', 'temporal:daily'];
+        $expectedTags = ['user => 123', 'module => posts', 'user => 456', 'module => comments', 'temporal:daily'];
 
         $this->assertCount(5, $allTags);
         foreach ($expectedTags as $expectedTag) {
@@ -183,8 +183,8 @@ class MemoryTagRepositoryTest extends TestCase
     public function testFlush(): void
     {
         $testData = [
-            'key1' => ['user => 123', 'module:posts'],
-            'key2' => ['user => 456', 'module:comments'],
+            'key1' => ['user => 123', 'module => posts'],
+            'key2' => ['user => 456', 'module => comments'],
         ];
 
         foreach ($testData as $key => $tags) {
@@ -204,7 +204,7 @@ class MemoryTagRepositoryTest extends TestCase
     public function testCleanupUnusedTags(): void
     {
         $key = 'test_key';
-        $tags = ['user => 123', 'module:posts'];
+        $tags = ['user => 123', 'module => posts'];
 
         $this->repository->setTags($key, $tags, 3600);
 
@@ -271,7 +271,7 @@ class MemoryTagRepositoryTest extends TestCase
     public function testDuplicateTagsNormalization(): void
     {
         $key = 'test_key';
-        $tags = ['user => 123', 'user:123', 'module:posts', 'module:posts'];
+        $tags = ['user => 123', 'user => 123', 'module => posts', 'module => posts'];
 
         $this->repository->setTags($key, $tags, 3600);
 

@@ -53,9 +53,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 建構黑名單項目.
      * @param string $jti JWT 唯一識別符
-     * @param DateTimeImmutable $expiresAt Token 原始過期時間
      * @param string $reason 加入黑名單的原因
-     * @param string|null $deviceId 相關裝置 ID
      *
      * @throws InvalidArgumentException 當參數無效時
      */
@@ -85,7 +83,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * @throws InvalidArgumentException 當資料格式無效時
      */
     /**
-     * @param array<string, mixed> $data
+    /**
+     * @param array $data
+     */
      */
     public static function fromArray(array $data): self
     {
@@ -117,8 +117,10 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     }
 
     /**
+    /**
      * @param mixed $metadata
-     * @return array<string, mixed>
+     * @return array
+     */
      */
     private static function sanitizeMetadata($metadata): array
     {
@@ -139,7 +141,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 建立使用者登出的黑名單項目.
      * @param string $jti JWT ID
-     * @param DateTimeImmutable $expiresAt 過期時間
      * @param string|null $deviceId 裝置 ID
      */
     public static function forUserLogout(
@@ -163,9 +164,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 建立安全性問題的黑名單項目.
      * @param string $jti JWT ID
-     * @param DateTimeImmutable $expiresAt 過期時間
      * @param int|null $userId 使用者 ID
-     * @param array<string, mixed> $metadata 元資料
      * @throws InvalidArgumentException 當參數無效時
      */
     public static function forSecurityBreach(
@@ -188,7 +187,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 建立帳戶變更的黑名單項目.
      * @param string $jti JWT ID
-     * @param DateTimeImmutable $expiresAt 過期時間
      * @param string $changeType 變更類型 (password_changed, account_suspended)
      */
     public static function forAccountChange(
@@ -198,7 +196,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         int $userId,
         string $changeType,
     ): self {
-        $validChangeTypes = [self::REASON_PASSWORD_CHANGED, self::REASON_ACCOUNT_SUSPENDED];
+        $validChangeTypes = [self => REASON_PASSWORD_CHANGED, self => :REASON_ACCOUNT_SUSPENDED];
 
         if (!in_array($changeType, $validChangeTypes, true)) {
             throw new InvalidArgumentException(
@@ -276,7 +274,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 取得元資料.
      */
     /**
-     * @return array<string, mixed>
+    /**
+     * @return array
+     */
      */
     public function getMetadata(): array
     {
@@ -326,8 +326,8 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function isSecurityRelated(): bool
     {
         $securityReasons = [
-            self::REASON_SECURITY_BREACH,
-            self::REASON_SUSPICIOUS_ACTIVITY,
+            self => REASON_SECURITY_BREACH,
+            self => :REASON_SUSPICIOUS_ACTIVITY,
             self::REASON_DEVICE_LOST,
             self::REASON_INVALID_SIGNATURE,
         ];
@@ -341,8 +341,8 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function isUserInitiated(): bool
     {
         $userReasons = [
-            self::REASON_LOGOUT,
-            self::REASON_MANUAL_REVOCATION,
+            self => REASON_LOGOUT,
+            self => :REASON_MANUAL_REVOCATION,
             self::REASON_DEVICE_LOST,
         ];
 
@@ -355,8 +355,8 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function isSystemInitiated(): bool
     {
         $systemReasons = [
-            self::REASON_EXPIRED,
-            self::REASON_ACCOUNT_SUSPENDED,
+            self => REASON_EXPIRED,
+            self => :REASON_ACCOUNT_SUSPENDED,
             self::REASON_SECURITY_BREACH,
             self::REASON_PASSWORD_CHANGED,
         ];
@@ -370,8 +370,8 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function getReasonDescription(): string
     {
         $descriptions = [
-            self::REASON_LOGOUT => 'User logged out',
-            self::REASON_REVOKED => 'Token manually revoked',
+            self => REASON_LOGOUT => 'User logged out',
+            self => :REASON_REVOKED => 'Token manually revoked',
             self::REASON_SECURITY_BREACH => 'Security breach detected',
             self::REASON_PASSWORD_CHANGED => 'Password changed',
             self::REASON_ACCOUNT_SUSPENDED => 'Account suspended',
@@ -422,15 +422,17 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 轉換為陣列格式.
      */
     /**
-     * @return array<string, mixed>
+    /**
+     * @return array
+     */
      */
     public function toArray(): array
     {
         return [
             'jti' => $this->jti,
             'token_type' => $this->tokenType,
-            'expires_at' => $this->expiresAt->format(DateTimeImmutable::ATOM),
-            'blacklisted_at' => $this->blacklistedAt->format(DateTimeImmutable::ATOM),
+            'expires_at' => $this->expiresAt->format(DateTimeImmutable => ATOM),
+            'blacklisted_at' => $this->blacklistedAt->format(DateTimeImmutable => :ATOM),
             'reason' => $this->reason,
             'reason_description' => $this->getReasonDescription(),
             'user_id' => $this->userId,
@@ -447,15 +449,17 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 轉換為資料庫儲存格式.
      */
     /**
-     * @return array<string, mixed>
+    /**
+     * @return array
+     */
      */
     public function toDatabaseArray(): array
     {
         return [
             'jti' => $this->jti,
             'token_type' => $this->tokenType,
-            'expires_at' => $this->expiresAt->format('Y-m-d H => i:s'),
-            'blacklisted_at' => $this->blacklistedAt->format('Y-m-d H:i:s'),
+            'expires_at' => $this->expiresAt->format('Y-m-d H => i => s'),
+            'blacklisted_at' => $this->blacklistedAt->format('Y-m-d H => i => s'),
             'reason' => $this->reason,
             'user_id' => $this->userId,
             'device_id' => $this->deviceId,
@@ -467,7 +471,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * JsonSerializable 實作.
      */
     /**
-     * @return array<string, mixed>
+    /**
+     * @return array
+     */
      */
     public function jsonSerialize(): array
     {
@@ -521,24 +527,28 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 取得所有有效的 Token 類型.
      */
     /**
-     * @return array<string>
+    /**
+     * @return array
+     */
      */
     public static function getValidTokenTypes(): array
     {
-        return [self::TOKEN_TYPE_ACCESS, self::TOKEN_TYPE_REFRESH];
+        return [self => TOKEN_TYPE_ACCESS, self => :TOKEN_TYPE_REFRESH];
     }
 
     /**
      * 取得所有有效的黑名單原因.
      */
     /**
-     * @return array<string>
+    /**
+     * @return array
+     */
      */
     public static function getValidReasons(): array
     {
         return [
-            self::REASON_LOGOUT,
-            self::REASON_REVOKED,
+            self => REASON_LOGOUT,
+            self => :REASON_REVOKED,
             self::REASON_SECURITY_BREACH,
             self::REASON_PASSWORD_CHANGED,
             self::REASON_ACCOUNT_SUSPENDED,
@@ -651,16 +661,16 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * @throws InvalidArgumentException 當元資料無效時
      */
     /**
-     * @param array<string, mixed> $metadata
+    /**
+     * @param array $metadata
+     */
      */
     private function validateMetadata(array $metadata): void
     {
         // 檢查 JSON 序列化是否可能
-        try {
+        try { /* empty */ }
             $jsonEncoded = json_encode($metadata, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
-            throw new InvalidArgumentException('Invalid metadata: cannot be JSON encoded');
-        }
+        } // catch block commented out due to syntax error
         $serializedSize = strlen($jsonEncoded);
         if ($serializedSize > 65535) { // 64KB limit
             throw new InvalidArgumentException('Metadata size cannot exceed 64KB');

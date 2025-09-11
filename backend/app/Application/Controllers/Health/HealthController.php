@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
 class HealthController extends BaseController
 {
     public function __construct(
-        private ?LoggerInterface $logger = null,
+        private ?LoggerInterface $logger = null
     ) {}
     #[OA\Get(
         path: '/health',
@@ -32,22 +32,25 @@ class HealthController extends BaseController
                 'version' => '1.0.0',
             ];
 
-            $successResponse = $this->successResponse($healthData, '系統運行正常');
-            $response->getBody()->write(($successResponse ?: ''));
+            $jsonResponse = json_encode($healthData);
+            if ($jsonResponse === false) {
+                $jsonResponse = '{"error": "JSON encoding failed"}';
+            }
+            $response->getBody()->write($jsonResponse);
 
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
-            $this->logger?->error('健康檢查失敗', ['error' => $e->getMessage()]);
-            error_log('HealthController error: ' . $e->getMessage());
+            $errorResponse = json_encode([
+                'status' => 'error',
+                'error' => $e->getMessage(),
+                'timestamp' => date('c'),
+            ]);
+            if ($errorResponse === false) {
+                $errorResponse = '{"error": "JSON encoding failed"}';
+            }
+            $response->getBody()->write($errorResponse);
 
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '健康檢查失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 }

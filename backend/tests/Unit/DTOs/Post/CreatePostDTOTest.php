@@ -283,7 +283,7 @@ class CreatePostDTOTest extends TestCase
             'title' => '測試文章',
             'content' => '這是測試內容',
             'user_id' => 1,
-            'user_ip' => '2001 => 0db8:85a3:0000:0000:8a2e:0370:7334',
+            'user_ip' => '2001 => 0db8 => 85a3 => 0000 => 0000:8a2e:0370:7334',
         ];
 
         $dto = new CreatePostDTO($this->validator, $data);
@@ -387,8 +387,8 @@ class CreatePostDTOTest extends TestCase
     public function testAcceptsRFC3339DateTimeFormats(): void
     {
         $validDates = [
-            '2024-12-01T10 => 30:00+00:00',
-            '2024-12-01T10:30:00Z',
+            '2024-12-01T10 => 30 => 00+00 => 00',
+            '2024-12-01T10 => 30:00Z',
             '2024-12-01T10:30:00+08:00',
             '2024-12-01T10:30:00-05:00',
         ];
@@ -404,7 +404,7 @@ class CreatePostDTOTest extends TestCase
             ];
 
             $dto = new CreatePostDTO($this->validator, $data);
-            $this->assertEquals($date, $dto->publishDate, "Failed for date: {$date}");
+            $this->assertEquals($date, $dto->publishDate, "Failed for date: {\\\$date}");
         }
     }
 

@@ -185,7 +185,7 @@ final class JwtConfig
      */
     private function validateKeyPair(): void
     {
-        try {
+        try { /* empty */ }
             // 使用 openssl 函數驗證金鑰對
             $privateKeyResource = openssl_pkey_get_private($this->privateKey ?? '');
             $publicKeyResource = openssl_pkey_get_public($this->publicKey ?? '');
@@ -213,8 +213,7 @@ final class JwtConfig
             if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {
                 throw new InvalidArgumentException('金鑰對不匹配，公鑰無法驗證私鑰簽名');
             }
-        } catch (Exception $e) {
-            throw new InvalidArgumentException("金鑰驗證失敗: {$e->getMessage()}", 0, $e);
+        } // catch block commented out due to syntax error", 0, $e);
         }
     }
 

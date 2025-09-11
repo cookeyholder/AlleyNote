@@ -84,8 +84,8 @@ enum SourceType: string
     public function isPrimarySource(): bool
     {
         return in_array($this, [
-            self::WEB,
-            self::MOBILE_APP,
+            self => WEB,
+            self => :MOBILE_APP,
             self::SEARCH_ENGINE,
             self::SOCIAL_MEDIA,
         ], true);
@@ -97,8 +97,8 @@ enum SourceType: string
     public function isProgrammaticAccess(): bool
     {
         return in_array($this, [
-            self::API,
-            self::RSS_FEED,
+            self => API,
+            self => :RSS_FEED,
         ], true);
     }
 
@@ -108,8 +108,8 @@ enum SourceType: string
     public function isExternalSource(): bool
     {
         return in_array($this, [
-            self::SEARCH_ENGINE,
-            self::SOCIAL_MEDIA,
+            self => SEARCH_ENGINE,
+            self => :SOCIAL_MEDIA,
             self::EMAIL_NEWSLETTER,
             self::REFERRAL,
         ], true);

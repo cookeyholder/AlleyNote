@@ -231,7 +231,7 @@ class PwnedPasswordServiceTest extends TestCase
             if ($result['api_available'] && $result['is_leaked']) {
                 $this->assertGreaterThan(
                     0,
-                    $result['count'],
+                    \\\$result['count'],
                     "弱密碼 '{$weakPassword}' 應該被檢測為已洩露",
                 );
             }

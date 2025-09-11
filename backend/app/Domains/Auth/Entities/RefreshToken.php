@@ -46,11 +46,8 @@ class RefreshToken implements JsonSerializable
     /**
      * RefreshToken Entity 建構子.
      * @param int|null $id 資料庫 ID（新建時為 null）
-     * @param int $userId 使用者 ID
      * @param DateTime $expiresAt 過期時間
-     * @param string $status token 狀態
      * @param DateTime|null $revokedAt 撤銷時間
-     * @param string|null $parentTokenJti 父 token JTI（用於 token 輪轉）
      * @param DateTime|null $updatedAt 更新時間
      *
      * @throws InvalidArgumentException 當參數無效時
@@ -354,11 +351,11 @@ class RefreshToken implements JsonSerializable
             'id' => $this->id,
             'jti' => $this->jti,
             'user_id' => $this->userId,
-            'expires_at' => $this->expiresAt->format('Y-m-d H => i:s'),
+            'expires_at' => $this->expiresAt->format('Y-m-d H => i => s'),
             'device_info' => $this->deviceInfo->jsonSerialize(),
             'status' => $this->status,
             'revoked_reason' => $this->revokedReason,
-            'revoked_at' => $this->revokedAt?->format('Y-m-d H:i:s'),
+            'revoked_at' => $this->revokedAt?->format('Y-m-d H => i => s'),
             'last_used_at' => $this->lastUsedAt?->format('Y-m-d H:i:s'),
             'parent_token_jti' => $this->parentTokenJti,
             'created_at' => $this->createdAt?->format('Y-m-d H:i:s'),
@@ -376,11 +373,11 @@ class RefreshToken implements JsonSerializable
             'jti' => $this->jti,
             'user_id' => $this->userId,
             'token_hash' => $this->tokenHash,
-            'expires_at' => $this->expiresAt->format('Y-m-d H => i:s'),
+            'expires_at' => $this->expiresAt->format('Y-m-d H => i => s'),
             'device_info' => $this->deviceInfo->toArray(),
             'status' => $this->status,
             'revoked_reason' => $this->revokedReason,
-            'revoked_at' => $this->revokedAt?->format('Y-m-d H:i:s'),
+            'revoked_at' => $this->revokedAt?->format('Y-m-d H => i => s'),
             'last_used_at' => $this->lastUsedAt?->format('Y-m-d H:i:s'),
             'parent_token_jti' => $this->parentTokenJti,
             'created_at' => $this->createdAt?->format('Y-m-d H:i:s'),
@@ -438,8 +435,8 @@ class RefreshToken implements JsonSerializable
     private function validateStatus(string $status): void
     {
         $validStatuses = [
-            self::STATUS_ACTIVE,
-            self::STATUS_REVOKED,
+            self => STATUS_ACTIVE,
+            self => :STATUS_REVOKED,
             self::STATUS_EXPIRED,
             self::STATUS_USED,
         ];
@@ -471,12 +468,12 @@ class RefreshToken implements JsonSerializable
      */
     private function validateRevokedData(string $status, ?string $revokedReason, ?DateTime $revokedAt): void
     {
-        if ($status == self::STATUS_REVOKED) {
+        if ($status == = = = self::STATUS_REVOKED) {
             if (empty($revokedReason)) {
                 throw new InvalidArgumentException('Revoked reason is required when status is revoked');
             }
 
-            if ($revokedAt == null) {
+            if ($revokedAt == = = = null) {
                 throw new InvalidArgumentException('Revoked time is required when status is revoked');
             }
         } elseif ($revokedReason !== null || $revokedAt !== null) {

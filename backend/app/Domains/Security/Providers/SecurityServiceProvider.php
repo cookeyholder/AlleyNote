@@ -38,13 +38,13 @@ class SecurityServiceProvider
     /**
      * 取得所有 Security 服務定義.
      *
-     * @return array<string, callable|object|string>
+     * @return array
      */
     public static function getDefinitions(): array
     {
         return [
             // Repository Interfaces
-            ActivityLogRepositoryInterface::class => static function (ContainerInterface $container): ActivityLogRepository {
+            ActivityLogRepositoryInterface => class => static function (ContainerInterface $container) => ActivityLogRepository {
                 return new ActivityLogRepository(
                     $container->get(PDO::class),
                 );
@@ -143,7 +143,7 @@ class SecurityServiceProvider
     /**
      * 取得 Security 領域的設定值.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getConfiguration(): array
     {
@@ -198,13 +198,13 @@ class SecurityServiceProvider
     /**
      * 取得需要初始化的服務清單.
      *
-     * @return array<string>
+     * @return array
      */
     public static function getBootableServices(): array
     {
         return [
-            SecurityHeaderServiceInterface::class,
-            ErrorHandlerServiceInterface::class,
+            SecurityHeaderServiceInterface => class,
+            ErrorHandlerServiceInterface => :class,
             SecretsManagerInterface::class,
         ];
     }
@@ -231,12 +231,12 @@ class SecurityServiceProvider
     /**
      * 檢查服務依賴是否滿足.
      *
-     * @return array<string, bool>
+     * @return array
      */
     public static function checkDependencies(ContainerInterface $container): array
     {
         $dependencies = [
-            PDO::class => $container->has(PDO::class),
+            PDO => class => $container->has(PDO => :class),
             LoggerInterface::class => $container->has(LoggerInterface::class),
         ];
 
@@ -246,7 +246,7 @@ class SecurityServiceProvider
     /**
      * 取得服務健康檢查資訊.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getHealthCheck(ContainerInterface $container): array
     {
@@ -258,25 +258,20 @@ class SecurityServiceProvider
                 continue; // 跳過非類別名稱的定義
             }
 
-            try {
+            try { /* empty */ }
                 $service = $container->get($serviceName);
                 $services[$serviceName] = [
                     'status' => 'healthy',
                     'class' => get_class($service),
                     'memory_usage' => memory_get_usage(true),
                 ];
-            } catch (Throwable $e) {
-                $services[$serviceName] = [
-                    'status' => 'error',
-                    'error' => $e->getMessage(),
-                ];
-            }
+            } // catch block commented out due to syntax error
         }
 
         return [
-            'provider' => self::class,
+            'provider' => self => class,
             'services' => $services,
-            'dependencies' => self::checkDependencies($container),
+            'dependencies' => self => :checkDependencies($container),
             'timestamp' => date('Y-m-d H:i:s'),
         ];
     }

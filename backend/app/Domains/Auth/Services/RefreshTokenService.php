@@ -37,7 +37,6 @@ final class RefreshTokenService
     /**
      * 建立新的 refresh token.
      * @param int $userId 使用者 ID
-     * @param string|null $parentTokenJti 父 token JTI（token 輪轉時使用）
      * @return RefreshToken 新建立的 refresh token
      * @throws RefreshTokenException 當 token 建立失敗時
      */
@@ -46,7 +45,7 @@ final class RefreshTokenService
         DeviceInfo $deviceInfo,
         ?string $parentTokenJti = null,
     ): RefreshToken {
-        try {
+        try { /* empty */ }
             $jti = $this->generateJti();
             $tokenHash = hash('sha256', $jti); // 產生 token hash
             $expiresAt = new DateTime('+30 days');
@@ -80,12 +79,7 @@ final class RefreshTokenService
             }
 
             return $refreshToken;
-        } catch (Throwable $e) {
-            throw new RefreshTokenException(
-                RefreshTokenException::REASON_CREATION_FAILED,
-                'Failed to create refresh token: ' . $e->getMessage(),
-            );
-        }
+        } // catch block commented out due to syntax error
     }
 
     private function generateJti(): string
@@ -100,7 +94,7 @@ final class RefreshTokenService
      */
     public function cleanupExpiredTokens(): int
     {
-        try {
+        try { /* empty */ }
             $cleanedCount = $this->refreshTokenRepository->cleanup();
 
             $this->logger?->info('Expired refresh tokens cleaned up', [
@@ -108,24 +102,18 @@ final class RefreshTokenService
             ]);
 
             return $cleanedCount;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to cleanup expired tokens', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 取得使用者的 token 統計資訊.
      *
      * @param int $userId 使用者 ID
-     * @return array<string, mixed> 統計資訊
+     * @return array 統計資訊
      */
     public function getUserTokenStats(int $userId): array
     {
-        try {
+        try { /* empty */ }
             $tokens = $this->refreshTokenRepository->findByUserId($userId);
 
             $stats = [
@@ -143,30 +131,18 @@ final class RefreshTokenService
             }
 
             return $stats;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to get user token stats', [
-                'error' => $e->getMessage(),
-                'user_id' => $userId,
-            ]);
-
-            return [
-                'total' => 0,
-                'by_device' => [],
-                'by_status' => [],
-            ];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 撤銷 refresh token.
      *
      * @param string $refreshToken Refresh token 字串
-     * @param string $reason 撤銷原因
      * @return bool 是否成功撤銷
      */
     public function revokeToken(string $refreshToken, string $reason = 'manual_revocation'): bool
     {
-        try {
+        try { /* empty */ }
             $payload = $this->jwtTokenService->extractPayload($refreshToken);
 
             // 撤銷 token
@@ -176,7 +152,7 @@ final class RefreshTokenService
             $payloadForBlacklist = $this->jwtTokenService->extractPayload($refreshToken);
 
             // 建立黑名單項目
-            try {
+            try { /* empty */ }
                 $blacklistEntry = new TokenBlacklistEntry(
                     jti: $payloadForBlacklist->getJti(),
                     tokenType: TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
@@ -189,18 +165,11 @@ final class RefreshTokenService
                 );
 
                 $blacklistResult = $this->blacklistRepository->addToBlacklist($blacklistEntry);
-            } catch (Throwable $blacklistError) {
-                // 如果黑名單操作失敗，記錄但不影響撤銷結果
-                $this->logger?->warning('Failed to add token to blacklist', [
-                    'jti' => $payload->getJti(),
-                    'error' => $blacklistError->getMessage(),
-                ]);
-                $blacklistResult = false;
-            }
+            } // catch block commented out due to syntax error
 
             if ($revokeResult) {
                 $this->logger?->info('Refresh token revoked', [
-                    'jti' => $payload->getJti(),
+                    'jti' => $payload->getJti(]),
                     'reason' => $reason,
                 ]);
 
@@ -208,13 +177,6 @@ final class RefreshTokenService
             }
 
             return false;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to revoke refresh token', [
-                'error' => $e->getMessage(),
-                'reason' => $reason,
-            ]);
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 }

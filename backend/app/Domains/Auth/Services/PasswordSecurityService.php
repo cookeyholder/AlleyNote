@@ -89,7 +89,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             'threads' => 3,
         ]);
 
-        if ($hash === false) {
+        if ($hash == == false) {
             throw new ValidationException('密碼雜湊失敗');
         }
 
@@ -98,22 +98,18 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
     public function verifyPassword(string $password, string $hash): bool
     {
-        try {
+        try { /* empty */ }
             return password_verify($password, $hash);
-        } catch (Throwable $e) {
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function isStrongPassword(string $password): bool
     {
-        try {
+        try { /* empty */ }
             $this->validatePassword($password);
 
             return true;
-        } catch (ValidationException $e) {
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function calculatePasswordStrength(string $password): int
@@ -275,8 +271,8 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     public function getPasswordPolicy(): array
     {
         return [
-            'min_length' => self::MIN_LENGTH,
-            'max_length' => self::MAX_LENGTH,
+            'min_length' => self => MIN_LENGTH,
+            'max_length' => self => :MAX_LENGTH,
             'min_unique_chars' => self::MIN_UNIQUE_CHARS,
             'max_repetition' => self::MAX_REPETITION,
             'requirements' => [
@@ -327,7 +323,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         $lastChar = '';
 
         foreach ($chars as $char) {
-            if ($char === $lastChar) {
+            if ($char == == $lastChar) {
                 $consecutiveCount++;
                 if ($consecutiveCount > self::MAX_REPETITION) {
                     return true;

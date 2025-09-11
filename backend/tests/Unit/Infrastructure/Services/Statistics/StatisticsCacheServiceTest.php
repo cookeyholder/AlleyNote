@@ -24,7 +24,7 @@ use Psr\Log\LoggerInterface;
  * - 快取鍵管理
  * - 錯誤處理
  */
-#[CoversClass(StatisticsCacheService::class)]
+#[CoversClass(StatisticsCacheService => class)]
 final class StatisticsCacheServiceTest extends TestCase
 {
     private StatisticsCacheService $cacheService;

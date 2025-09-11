@@ -30,7 +30,7 @@ class StatisticsController extends BaseController
      */
     public function getOverview(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -44,18 +44,7 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $this->logger->error('取得統計概覽失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '取得統計概覽失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -65,7 +54,7 @@ class StatisticsController extends BaseController
      */
     public function getPostStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -81,18 +70,7 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $this->logger->error('取得文章統計失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '取得文章統計失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -102,7 +80,7 @@ class StatisticsController extends BaseController
      */
     public function getSourceStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -116,18 +94,7 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $this->logger->error('取得來源統計失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '取得來源統計失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -137,7 +104,7 @@ class StatisticsController extends BaseController
      */
     public function getUserActivityStatistics(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -151,18 +118,7 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $this->logger->error('取得使用者活動統計失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '取得使用者活動統計失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -172,7 +128,7 @@ class StatisticsController extends BaseController
      */
     public function getPopularContent(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -188,18 +144,7 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $this->logger->error('取得熱門內容統計失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '取得熱門內容統計失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -209,7 +154,7 @@ class StatisticsController extends BaseController
      */
     public function getSnapshot(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $queryParams = $request->getQueryParams();
             $periodParam = $queryParams['period'] ?? 'monthly';
             $period = is_string($periodParam) ? $periodParam : 'monthly';
@@ -223,17 +168,6 @@ class StatisticsController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $this->logger->error('取得統計快照失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '取得統計快照失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 }

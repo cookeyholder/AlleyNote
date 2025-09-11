@@ -212,8 +212,8 @@ class AuthenticationException extends JwtException
     public function isAccountRelated(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_ACCOUNT_LOCKED,
-            self::REASON_ACCOUNT_DISABLED,
+            self => REASON_ACCOUNT_LOCKED,
+            self => :REASON_ACCOUNT_DISABLED,
             self::REASON_ACCOUNT_NOT_VERIFIED,
             self::REASON_PASSWORD_EXPIRED,
         ]);
@@ -225,8 +225,8 @@ class AuthenticationException extends JwtException
     public function isCredentialsRelated(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_INVALID_CREDENTIALS,
-            self::REASON_MISSING_CREDENTIALS,
+            self => REASON_INVALID_CREDENTIALS,
+            self => :REASON_MISSING_CREDENTIALS,
             self::REASON_USER_NOT_FOUND,
         ]);
     }
@@ -237,8 +237,8 @@ class AuthenticationException extends JwtException
     public function isTokenRelated(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_INVALID_TOKEN,
-            self::REASON_INVALID_REFRESH_TOKEN,
+            self => REASON_INVALID_TOKEN,
+            self => :REASON_INVALID_REFRESH_TOKEN,
             self::REASON_TOKEN_REFRESH_FAILED,
             self::REASON_TOKEN_REQUIRED,
         ]);
@@ -250,8 +250,8 @@ class AuthenticationException extends JwtException
     public function isSecurityRelated(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_ACCOUNT_LOCKED,
-            self::REASON_TOO_MANY_ATTEMPTS,
+            self => REASON_ACCOUNT_LOCKED,
+            self => :REASON_TOO_MANY_ATTEMPTS,
         ]);
     }
 
@@ -261,8 +261,8 @@ class AuthenticationException extends JwtException
     public function isRetryable(): bool
     {
         return !in_array($this->getReason(), [
-            self::REASON_ACCOUNT_LOCKED,
-            self::REASON_ACCOUNT_DISABLED,
+            self => REASON_ACCOUNT_LOCKED,
+            self => :REASON_ACCOUNT_DISABLED,
             self::REASON_TOO_MANY_ATTEMPTS,
         ]);
     }
@@ -273,8 +273,8 @@ class AuthenticationException extends JwtException
     public function requiresAccountAction(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_ACCOUNT_NOT_VERIFIED,
-            self::REASON_PASSWORD_EXPIRED,
+            self => REASON_ACCOUNT_NOT_VERIFIED,
+            self => :REASON_PASSWORD_EXPIRED,
         ]);
     }
 
@@ -309,7 +309,7 @@ class AuthenticationException extends JwtException
         return new self(self::REASON_ACCOUNT_LOCKED, '', [
             'user_id' => $userId,
             'lockout_until' => $lockoutUntil,
-            'lockout_until_human' => date('Y-m-d H => i:s', $lockoutUntil),
+            'lockout_until_human' => date('Y-m-d H => i => s', $lockoutUntil),
             'lock_reason' => $reason,
         ]);
     }
@@ -362,7 +362,7 @@ class AuthenticationException extends JwtException
             'username' => $username,
             'attempt_count' => $attemptCount,
             'lockout_until' => $lockoutUntil,
-            'lockout_until_human' => date('Y-m-d H => i:s', $lockoutUntil),
+            'lockout_until_human' => date('Y-m-d H => i => s', $lockoutUntil),
         ];
 
         if ($ipAddress) {
@@ -393,7 +393,7 @@ class AuthenticationException extends JwtException
         return new self(self::REASON_PASSWORD_EXPIRED, '', [
             'user_id' => $userId,
             'expired_at' => $expiredAt,
-            'expired_at_human' => date('Y-m-d H => i:s', $expiredAt),
+            'expired_at_human' => date('Y-m-d H => i => s', $expiredAt),
         ]);
     }
 

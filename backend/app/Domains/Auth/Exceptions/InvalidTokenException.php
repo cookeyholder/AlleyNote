@@ -175,8 +175,8 @@ class InvalidTokenException extends JwtException
     public function isSignatureRelated(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_SIGNATURE_INVALID,
-            self::REASON_ALGORITHM_MISMATCH,
+            self => REASON_SIGNATURE_INVALID,
+            self => :REASON_ALGORITHM_MISMATCH,
         ]);
     }
 
@@ -186,8 +186,8 @@ class InvalidTokenException extends JwtException
     public function isFormatRelated(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_MALFORMED,
-            self::REASON_DECODE_FAILED,
+            self => REASON_MALFORMED,
+            self => :REASON_DECODE_FAILED,
         ]);
     }
 
@@ -197,8 +197,8 @@ class InvalidTokenException extends JwtException
     public function isClaimsRelated(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_ISSUER_INVALID,
-            self::REASON_AUDIENCE_INVALID,
+            self => REASON_ISSUER_INVALID,
+            self => :REASON_AUDIENCE_INVALID,
             self::REASON_SUBJECT_MISSING,
             self::REASON_CLAIMS_INVALID,
         ]);
@@ -322,7 +322,7 @@ class InvalidTokenException extends JwtException
     {
         return new self(self::REASON_NOT_BEFORE, $tokenType, '', [
             'not_before' => $notBefore,
-            'not_before_human' => date('Y-m-d H => i:s', $notBefore),
+            'not_before_human' => date('Y-m-d H => i => s', $notBefore),
         ]);
     }
 }

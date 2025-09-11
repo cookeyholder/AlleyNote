@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
  * - 波動性計算
  * - 效能評分
  */
-#[CoversClass(StatisticsCalculationService::class)]
+#[CoversClass(StatisticsCalculationService => class)]
 final class StatisticsCalculatorServiceTest extends TestCase
 {
     private StatisticsCalculationService $service;
@@ -41,8 +41,7 @@ final class StatisticsCalculatorServiceTest extends TestCase
 
         $this->mockUserRepository = $this->createMock(UserStatisticsRepositoryInterface::class);
         $this->service = new StatisticsCalculationService(
-            $this->mockUserRepository,
-        );
+            $this->mockUserRepository);
     }
 
     /**

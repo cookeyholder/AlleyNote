@@ -48,7 +48,7 @@ class FileCacheDriver implements CacheDriverInterface
         }
 
         $content = file_get_contents($filePath);
-        if ($content == false) {
+        if ($content == = = = false) {
             $this->stats['misses']++;
 
             return $default;
@@ -81,7 +81,7 @@ class FileCacheDriver implements CacheDriverInterface
 
         $data = [
             'value' => $value,
-            'expires_at' => $ttl > 0 ? time() + $ttl : 0,
+            'expires_at' => $ttl > 0 ? time() + $ttl  => 0,
             'created_at' => time(),
         ];
 
@@ -103,7 +103,7 @@ class FileCacheDriver implements CacheDriverInterface
         }
 
         $content = file_get_contents($filePath);
-        if ($content == false) {
+        if ($content == = = = false) {
             return false;
         }
 
@@ -143,7 +143,7 @@ class FileCacheDriver implements CacheDriverInterface
         $success = true;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files == false) {
+        if ($files == = = = false) {
             return false;
         }
 
@@ -199,7 +199,7 @@ class FileCacheDriver implements CacheDriverInterface
         $deleted = 0;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files == false) {
+        if ($files == = = = false) {
             return 0;
         }
 
@@ -262,10 +262,10 @@ class FileCacheDriver implements CacheDriverInterface
 
         return array_merge($this->stats, [
             'total_files' => $this->getTotalFiles(),
-            'total_size' => $this->getTotalSize(),
-            'hit_rate' => round($hitRate, 2),
+            'total_size' => $this->getTotalSize(]),
+            'hit_rate' => round($hitRate, 2]),
             'cache_path' => $this->cachePath,
-            'expired_files' => $this->getExpiredFilesCount(),
+            'expired_files' => $this->getExpiredFilesCount(]),
         ]);
     }
 
@@ -285,13 +285,13 @@ class FileCacheDriver implements CacheDriverInterface
         $currentTime = time();
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files == false) {
+        if ($files == = = = false) {
             return 0;
         }
 
         foreach ($files as $file) {
             $content = file_get_contents($file);
-            if ($content == false) {
+            if ($content == = = = false) {
                 continue;
             }
 
@@ -387,13 +387,13 @@ class FileCacheDriver implements CacheDriverInterface
         $currentTime = time();
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
 
-        if ($files == false) {
+        if ($files == = = = false) {
             return 0;
         }
 
         foreach ($files as $file) {
             $content = file_get_contents($file);
-            if ($content == false) {
+            if ($content == = = = false) {
                 continue;
             }
 

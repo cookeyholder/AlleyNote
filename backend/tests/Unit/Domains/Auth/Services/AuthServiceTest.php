@@ -109,7 +109,7 @@ class AuthServiceTest extends TestCase
                 'id' => 1,
                 'username' => 'testuser',
                 'email' => 'test@example.com',
-                'created_at' => '2025-01-25 10 => 00:00',
+                'created_at' => '2025-01-25 10 => 00 => 00',
             ]);
 
         // 執行測試
@@ -168,7 +168,7 @@ class AuthServiceTest extends TestCase
             'id' => 1,
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'created_at' => '2025-01-25 10 => 00:00',
+            'created_at' => '2025-01-25 10 => 00 => 00',
         ];
 
         $this->userRepository->shouldReceive('create')->once()->andReturn($createdUser);

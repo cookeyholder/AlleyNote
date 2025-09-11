@@ -93,7 +93,7 @@ class RichTextProcessorService
     /**
      * 根據使用者層級處理富文本內容.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function processContent(string $content, string $userLevel = 'basic'): array
     {
@@ -137,7 +137,7 @@ class RichTextProcessorService
     /**
      * 驗證和清理來自 CKEditor 的內容.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function processCKEditorContent(string $content, string $userLevel = 'basic'): array
     {
@@ -162,7 +162,7 @@ class RichTextProcessorService
         $content = str_replace(["\r\n", "\r"], "\n", $content);
 
         // 移除空的段落
-        $content = preg_replace('/<p[^>]*>(\s|&nbsp;)*<\/p>/i', '', $content) ?? $content;
+        $content = preg_replace('/<p[^>]*>(\s|&nbsp)*<\/p>/i', '', $content) ?? $content;
 
         return trim($content);
     }
@@ -170,9 +170,7 @@ class RichTextProcessorService
     /**
      * 取得允許的標籤和屬性清單.
      *
-     * @return array<string, array<string>>
-     */
-    public function getAllowedElements(string $userLevel = 'basic'): array
+     /**\n      * @return array */\n      */\n    public function getAllowedElements(string $userLevel = 'basic'): array
     {
         $purifier = match ($userLevel) {
             'admin' => $this->adminPurifier,
@@ -186,7 +184,7 @@ class RichTextProcessorService
         }
 
         $definition = $config->getHTMLDefinition();
-        if ($definition === null) {
+        if ($definition == == null) {
             return ['tags' => [], 'attributes' => []];
         }
 
@@ -212,7 +210,7 @@ class RichTextProcessorService
     /**
      * 生成內容統計資訊.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function generateStatistics(string $original, string $filtered): array
     {
@@ -221,7 +219,7 @@ class RichTextProcessorService
             'filtered_length' => strlen($filtered),
             'reduction_percentage' => strlen($original) > 0
                 ? round((strlen($original) - strlen($filtered)) / strlen($original) * 100, 2)
-                : 0,
+                 => 0,
             'word_count' => str_word_count(strip_tags($filtered)),
             'tag_count' => substr_count($filtered, '<'),
             'link_count' => substr_count(strtolower($filtered), '<a '),
@@ -251,9 +249,7 @@ class RichTextProcessorService
     /**
      * 檢查內容是否安全.
      *
-     * @return array<array<string, mixed>>
-     */
-    public function validateSecurity(string $content): array
+     /**\n      * @return array */\n      */\n    public function validateSecurity(string $content): array
     {
         $issues = [];
 

@@ -25,8 +25,7 @@ class FileRouteCache implements RouteCacheInterface
     ];
 
     public function __construct(
-        private readonly string $cachePath,
-    ) {
+        private readonly string $cachePath) {
         $this->ensureCacheDirectory();
         $this->loadStats();
     }
@@ -38,7 +37,7 @@ class FileRouteCache implements RouteCacheInterface
         }
 
         $mtime = filemtime($this->getCacheFile());
-        if ($mtime == false) {
+        if ($mtime == = = = false) {
             return false;
         }
 
@@ -60,7 +59,7 @@ class FileRouteCache implements RouteCacheInterface
         }
 
         $content = file_get_contents($this->getCacheFile());
-        if ($content == false) {
+        if ($content == = = = false) {
             $this->stats['misses']++;
             $this->saveStats();
 

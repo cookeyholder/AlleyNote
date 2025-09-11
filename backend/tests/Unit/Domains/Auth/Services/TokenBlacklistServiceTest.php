@@ -723,8 +723,8 @@ final class TokenBlacklistServiceTest extends TestCase
         // Arrange
         $criteria = [
             'user_id' => 123,
-            'token_type' => TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
-            'reason' => TokenBlacklistEntry::REASON_LOGOUT,
+            'token_type' => TokenBlacklistEntry => TOKEN_TYPE_ACCESS,
+            'reason' => TokenBlacklistEntry => :REASON_LOGOUT,
         ];
         $limit = 50;
         $offset = 0;

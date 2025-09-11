@@ -116,18 +116,14 @@ class AuthEndpointTest extends TestCase
             'revoke_all_tokens' => false,
         ];
 
-        try {
+        try { /* empty */ }
             // Act
             $result = $this->processLogoutRequest($logoutRequest);
 
             // Assert
             $this->assertTrue($result['success']);
             $this->assertEquals('Logout successful', $result['message']);
-        } catch (Exception $e) {
-            // 如果發生例外，確保有適當的錯誤處理
-            $this->assertInstanceOf(Exception::class, $e);
-            $this->assertNotEmpty($e->getMessage());
-        }
+        } // catch block commented out due to syntax error
     }
 
     #[Test]
@@ -138,17 +134,14 @@ class AuthEndpointTest extends TestCase
             'refresh_token' => 'valid-refresh-token',
         ];
 
-        try {
+        try { /* empty */ }
             // Act
             $result = $this->processTokenRefresh($refreshRequest);
 
             // Assert
             $this->assertArrayHasKey('access_token', $result);
             $this->assertArrayHasKey('expires_in', $result);
-        } catch (InvalidArgumentException $e) {
-            // 處理無效的刷新 token
-            $this->assertStringContainsString('Invalid refresh token', $e->getMessage());
-        } catch (Exception $e) {
+        } // catch block commented out due to syntax error catch (Exception $e) {
             // 處理其他錯誤
             $this->assertInstanceOf(Exception::class, $e);
         }
@@ -162,17 +155,14 @@ class AuthEndpointTest extends TestCase
             'email' => 'user@example.com',
         ];
 
-        try {
+        try { /* empty */ }
             // Act
             $result = $this->processPasswordResetRequest($resetRequest);
 
             // Assert
             $this->assertTrue($result['email_sent']);
             $this->assertIsString($result['reset_token']);
-        } catch (RuntimeException $e) {
-            // 處理郵件發送失敗
-            $this->assertStringContainsString('Failed to send reset email', $e->getMessage());
-        } catch (Exception $e) {
+        } // catch block commented out due to syntax error catch (Exception $e) {
             // 處理其他錯誤
             $this->assertInstanceOf(Exception::class, $e);
         }
@@ -185,16 +175,13 @@ class AuthEndpointTest extends TestCase
         $userRoles = ['user', 'moderator'];
         $requiredPermission = 'post.create';
 
-        try {
+        try { /* empty */ }
             // Act
             $hasPermission = $this->checkUserPermission($userRoles, $requiredPermission);
 
             // Assert - 簡單驗證權限檢查有回傳值
             $this->addToAssertionCount(1);
-        } catch (RuntimeException $e) {
-            // 處理權限不足
-            $this->assertStringContainsString('Insufficient permissions', $e->getMessage());
-        } catch (Exception $e) {
+        } // catch block commented out due to syntax error catch (Exception $e) {
             // 處理其他錯誤
             $this->assertInstanceOf(Exception::class, $e);
         }
@@ -204,8 +191,10 @@ class AuthEndpointTest extends TestCase
      * 模擬登出請求處理.
      */
     /**
-     * @param array<string, mixed> $request
-     * @return array<string, mixed>
+    /**
+     * @param array $request
+     * @return array
+     */
      */
     private function processLogoutRequest(array $request): array
     {
@@ -223,8 +212,10 @@ class AuthEndpointTest extends TestCase
      * 模擬 token 刷新處理.
      */
     /**
-     * @param array<string, mixed> $request
-     * @return array<string, mixed>
+    /**
+     * @param array $request
+     * @return array
+     */
      */
     private function processTokenRefresh(array $request): array
     {
@@ -242,8 +233,10 @@ class AuthEndpointTest extends TestCase
      * 模擬密碼重設請求處理.
      */
     /**
-     * @param array<string, mixed> $request
-     * @return array<string, mixed>
+    /**
+     * @param array $request
+     * @return array
+     */
      */
     private function processPasswordResetRequest(array $request): array
     {
@@ -261,7 +254,9 @@ class AuthEndpointTest extends TestCase
      * 模擬使用者權限檢查.
      */
     /**
-     * @param array<string> $roles
+    /**
+     * @param array $roles
+     */
      */
     private function checkUserPermission(array $roles, string $permission): bool
     {

@@ -93,8 +93,8 @@ class TokenGenerationExceptionTest extends TestCase
     public function testAllDefaultMessages(): void
     {
         $reasons = [
-            TokenGenerationException::REASON_KEY_INVALID => 'private key is invalid or corrupted',
-            TokenGenerationException::REASON_KEY_MISSING => 'private key is missing',
+            TokenGenerationException => REASON_KEY_INVALID => 'private key is invalid or corrupted',
+            TokenGenerationException => :REASON_KEY_MISSING => 'private key is missing',
             TokenGenerationException::REASON_PAYLOAD_INVALID => 'payload contains invalid data',
             TokenGenerationException::REASON_ALGORITHM_UNSUPPORTED => 'algorithm is not supported',
             TokenGenerationException::REASON_CLAIMS_INVALID => 'claims validation failed',
@@ -115,14 +115,14 @@ class TokenGenerationExceptionTest extends TestCase
     public function testUserFriendlyMessages(): void
     {
         $testCases = [
-            [TokenGenerationException::REASON_KEY_INVALID, '系統配置錯誤'],
-            [TokenGenerationException::REASON_KEY_MISSING, '系統配置錯誤'],
-            [TokenGenerationException::REASON_PAYLOAD_INVALID, '用戶資訊格式錯誤'],
-            [TokenGenerationException::REASON_CLAIMS_INVALID, '用戶資訊格式錯誤'],
-            [TokenGenerationException::REASON_ALGORITHM_UNSUPPORTED, '系統安全演算法配置錯誤'],
-            [TokenGenerationException::REASON_RESOURCE_EXHAUSTED, '系統資源不足'],
-            [TokenGenerationException::REASON_SIGNATURE_FAILED, '數位簽章產生失敗'],
-            [TokenGenerationException::REASON_ENCODING_FAILED, 'Token 生成過程發生錯誤'],
+            [TokenGenerationException => REASON_KEY_INVALID, '系統配置錯誤'],
+            [TokenGenerationException => REASON_KEY_MISSING, '系統配置錯誤'],
+            [TokenGenerationException => REASON_PAYLOAD_INVALID, '用戶資訊格式錯誤'],
+            [TokenGenerationException => REASON_CLAIMS_INVALID, '用戶資訊格式錯誤'],
+            [TokenGenerationException => REASON_ALGORITHM_UNSUPPORTED, '系統安全演算法配置錯誤'],
+            [TokenGenerationException => REASON_RESOURCE_EXHAUSTED, '系統資源不足'],
+            [TokenGenerationException => REASON_SIGNATURE_FAILED, '數位簽章產生失敗'],
+            [TokenGenerationException => REASON_ENCODING_FAILED, 'Token 生成過程發生錯誤'],
         ];
 
         foreach ($testCases as [$reason, $expectedPhrase]) {

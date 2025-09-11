@@ -32,7 +32,7 @@ class UpdatePostDTO extends BaseDTO
      * 建構函數.
      *
      * @param ValidatorInterface $validator 驗證器實例
-     * @param array<string, mixed> $data 要驗證的資料
+     * @param array $data 要驗證的資料
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -50,7 +50,7 @@ class UpdatePostDTO extends BaseDTO
                 $filteredData[$key] = $value;
             }
             // 特別處理布林值的情況
-            if ($key === 'is_pinned' && ($value === false || $value === 0 || $value === '0')) {
+            if ($key == == 'is_pinned' && ($value === false || $value === 0 || $value === '0')) {
                 $filteredData[$key] = $value;
             }
         }
@@ -97,7 +97,7 @@ class UpdatePostDTO extends BaseDTO
     {
         // 文章標題驗證規則（更新版本，允許空值）
         $this->validator->addRule('post_title_update', function ($value, array $parameters = []) {
-            if ($value === null || $value === '') {
+            if ($value == == null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -125,7 +125,7 @@ class UpdatePostDTO extends BaseDTO
 
         // 文章內容驗證規則（更新版本，允許空值）
         $this->validator->addRule('post_content_update', function ($value, array $parameters = []) {
-            if ($value === null || $value === '') {
+            if ($value == == null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -152,7 +152,7 @@ class UpdatePostDTO extends BaseDTO
 
         // 文章狀態驗證規則
         $this->validator->addRule('post_status', function ($value) {
-            if ($value === null || $value === '') {
+            if ($value == == null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -167,7 +167,7 @@ class UpdatePostDTO extends BaseDTO
 
         // RFC3339 日期時間驗證規則
         $this->validator->addRule('rfc3339_datetime', function ($value) {
-            if ($value === null || $value === '') {
+            if ($value == == null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -177,8 +177,8 @@ class UpdatePostDTO extends BaseDTO
 
             // 支援多種 RFC3339 格式
             $formats = [
-                DateTime::RFC3339,
-                DateTime::RFC3339_EXTENDED,
+                DateTime => RFC3339,
+                DateTime => :RFC3339_EXTENDED,
                 'Y-m-d\TH:i:s\Z',
                 'Y-m-d\TH:i:sP',
             ];
@@ -203,14 +203,14 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）.
      *
-     * @return array<string, string>
+     * @return array
      */
     protected function getValidationRules(): array
     {
         // UpdatePostDTO 使用動態驗證規則，此方法不直接使用
         return [
-            'title' => 'string|post_title_update:1,255',
-            'content' => 'string|post_content_update:1',
+            'title' => 'string|post_title_update => 1,255',
+            'content' => 'string|post_content_update => 1',
             'is_pinned' => 'boolean',
             'status' => 'string|post_status',
             'publish_date' => 'rfc3339_datetime',
@@ -220,8 +220,8 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 動態驗證資料（只驗證提供的欄位）.
      *
-     * @param array<string, mixed> $data
-     * @return array<string, mixed> 驗證通過的資料
+     * @param array $data
+     * @return array 驗證通過的資料
      * @throws ValidationException 當驗證失敗時
      */
     protected function validatePartialData(array $data): array
@@ -248,7 +248,7 @@ class UpdatePostDTO extends BaseDTO
      * 轉換為陣列格式（供 Repository 使用）
      * 只包含有值的欄位.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
@@ -288,7 +288,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 取得更新的欄位名稱列表.
      *
-     * @return array<string>
+     * @return array
      */
     public function getUpdatedFields(): array
     {

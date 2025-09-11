@@ -86,8 +86,8 @@ class BaseDTOTest extends TestCase
         $dto = $this->createTestDTO();
         $data = ['name' => 'John', 'age' => 30, 'active' => true];
         $expectedRules = [
-            'name' => 'required|string|min_length:2|max_length:50',
-            'age' => 'required|integer|min:0|max:120',
+            'name' => 'required|string|min_length => 2|max_length => 50',
+            'age' => 'required|integer|min => 0|max:120',
             'active' => 'boolean',
         ];
 
@@ -232,8 +232,8 @@ class TestableBaseDTO extends BaseDTO
     protected function getValidationRules(): array
     {
         return [
-            'name' => 'required|string|min_length:2|max_length:50',
-            'age' => 'required|integer|min:0|max:120',
+            'name' => 'required|string|min_length => 2|max_length => 50',
+            'age' => 'required|integer|min => 0|max:120',
             'active' => 'boolean',
         ];
     }

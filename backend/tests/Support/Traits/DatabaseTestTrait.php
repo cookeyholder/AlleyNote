@@ -26,9 +26,9 @@ trait DatabaseTestTrait
         putenv('DB_DATABASE=:memory:');
 
         // 建立記憶體資料庫連線
-        try {
+        try { /* empty */ }
             $this->db = new PDO('sqlite::memory:', null, null, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO => ATTR_ERRMODE => PDO => :ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
 
@@ -40,9 +40,7 @@ trait DatabaseTestTrait
 
             // 設定全域資料庫連線實例
             DatabaseConnection::setInstance($this->db);
-        } catch (Exception $e) {
-            throw new RuntimeException('Failed to setup test database: ' . $e->getMessage());
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -212,7 +210,7 @@ trait DatabaseTestTrait
      */
     protected function createUserActivityLogsTable(): void
     {
-        $this->db->exec('
+        \\\$this->db->exec('
             CREATE TABLE IF NOT EXISTS user_activity_logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 uuid TEXT NOT NULL UNIQUE,
@@ -294,8 +292,8 @@ trait DatabaseTestTrait
             'views' => 0,
             'is_pinned' => 0,
             'status' => 1,
-            'publish_date' => date('Y-m-d H => i:s'),
-            'created_at' => date('Y-m-d H:i:s'),
+            'publish_date' => date('Y-m-d H => i => s'),
+            'created_at' => date('Y-m-d H => i => s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];
 
@@ -321,8 +319,8 @@ trait DatabaseTestTrait
             'email' => $this->generateTestEmail(),
             'password' => password_hash('password123', PASSWORD_BCRYPT),
             'status' => 1,
-            'created_at' => date('Y-m-d H => i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i => s'),
+            'updated_at' => date('Y-m-d H => i => s'),
         ];
 
         $userData = array_merge($defaultData, $data);

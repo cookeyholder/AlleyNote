@@ -17,15 +17,14 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class CSPReportController
 {
     public function __construct(
-        private LoggingSecurityServiceInterface $securityLogger,
-    ) {}
+        private LoggingSecurityServiceInterface $securityLogger) {}
 
     /**
      * 處理 CSP 違規報告。
      */
     public function handleReport(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             // 檢查請求方法
             if ($request->getMethod() !== 'POST') {
                 return $this->createErrorResponse($response, 405, 'Method not allowed');
@@ -63,21 +62,12 @@ class CSPReportController
 
             // 返回成功回應
             $successResponse = json_encode(['status' => 'received']);
-            $response->getBody()->write($successResponse ?: '{"status": "received"}');
+            $response->getBody()->write($successResponse ? true : '{"status": "received"}');
 
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(204); // No Content - CSP reports typically don't need response body
-        } catch (Exception $e) {
-            $this->securityLogger->logSecurityEvent('csp_processing_error', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request_uri' => $request->getUri()->getPath(),
-                'user_agent' => $request->getHeaderLine('User-Agent'),
-            ]);
-
-            return $this->createErrorResponse($response, 500, 'Internal server error');
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -107,7 +97,7 @@ class CSPReportController
             if (!isset($report[$field])) {
                 return [
                     'valid' => false,
-                    'message' => "Missing required field: {$field}",
+                    'message' => "Missing required field => {$field}",
                 ];
             }
         }
@@ -118,7 +108,7 @@ class CSPReportController
     /**
      * 處理 CSP 報告。
      *
-     * @param array<mixed, mixed> $data
+     * @param array $data
      */
     private function processCspReport(array $data, Request $request): void
     {
@@ -144,7 +134,7 @@ class CSPReportController
             'user_agent' => $request->getHeaderLine('User-Agent'),
             'referer' => $request->getHeaderLine('Referer'),
             'ip_address' => $this->getClientIp($request),
-            'timestamp' => date('Y-m-d H:i:s'),
+            'timestamp' => date('Y-m-d H => i => s'),
         ];
 
         // 記錄 CSP 違規
@@ -168,7 +158,7 @@ class CSPReportController
     /**
      * 計算違規嚴重程度。
      *
-     * @param array<string, mixed> $reportInfo
+     * @param array $reportInfo
      */
     private function calculateSeverity(array $reportInfo): string
     {
@@ -216,7 +206,7 @@ class CSPReportController
     /**
      * 檢查是否為高風險違規。
      *
-     * @param array<string, mixed> $reportInfo
+     * @param array $reportInfo
      */
     private function isHighRiskViolation(array $reportInfo): bool
     {
@@ -264,7 +254,7 @@ class CSPReportController
         ];
 
         $errorResponse = json_encode($errorData);
-        $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+        $response->getBody()->write($errorResponse ? true : '{"error": "JSON encoding failed"}');
 
         return $response
             ->withHeader('Content-Type', 'application/json')

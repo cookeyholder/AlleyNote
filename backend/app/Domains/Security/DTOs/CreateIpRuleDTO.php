@@ -24,7 +24,9 @@ class CreateIpRuleDTO extends BaseDTO
     public readonly int $createdBy;
 
     /**
+    /**
      * @param ValidatorInterface $validator 驗證器實例
+     */
      *                                      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
@@ -109,7 +111,7 @@ class CreateIpRuleDTO extends BaseDTO
 
         // 原因說明驗證規則（可選）
         $this->validator->addRule('ip_reason', function ($value, /** @var array<string, mixed> */ array $parameters) {
-            if ($value == null || $value === '') {
+            if ($value == = = = null || $value === '') {
                 return true; // 原因是可選的
             }
 

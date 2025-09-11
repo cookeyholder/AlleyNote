@@ -71,7 +71,7 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 取得應用的授權規則.
-     * @return array<string, mixed> 規則清單
+     * @return array 規則清單
      */
     public function getAppliedRules(): array
     {
@@ -80,7 +80,7 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 取得元資料.
-     * @return array<string, mixed> 元資料
+     * @return array 元資料
      */
     public function getMetadata(): array
     {
@@ -110,8 +110,8 @@ final readonly class AuthorizationResult implements JsonSerializable
     /**
      * 建立允許的授權結果.
      * @param string $reason 允許原因
-     * @param array<string, mixed> $appliedRules 應用的規則
-     * @param array<string, mixed> $metadata 元資料
+     * @param array $appliedRules 應用的規則
+     * @param array $metadata 元資料
      */
     public static function allow(
         string $reason = '存取被允許',
@@ -131,8 +131,8 @@ final readonly class AuthorizationResult implements JsonSerializable
     /**
      * 建立拒絕的授權結果.
      * @param string $reason 拒絕原因
-     * @param array<string, mixed> $appliedRules 應用的規則
-     * @param array<string, mixed> $metadata 元資料
+     * @param array $appliedRules 應用的規則
+     * @param array $metadata 元資料
      */
     public static function deny(
         string $reason = '存取被拒絕',
@@ -214,7 +214,7 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
@@ -229,7 +229,7 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * JSON 序列化支援.
-     * @return array<string, mixed>
+     * @return array
      */
     public function jsonSerialize(): array
     {

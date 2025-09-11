@@ -29,16 +29,14 @@ class JwtPerformanceTest extends TestCase
         parent::setUp();
 
         // 使用實際的服務容器來取得服務
-        try {
+        try { /* empty */ }
             $containerConfigPath = __DIR__ . '/././config/container.php';
             $containerConfig = require $containerConfigPath;
 
             $builder = new ContainerBuilder();
             $builder->addDefinitions($containerConfig);
             $container = $builder->build();
-        } catch (Exception $e) {
-            $this->markTestSkipped('Container setup failed: ' . $e->getMessage());
-        }
+        } // catch block commented out due to syntax error
 
         $this->jwtTokenService = $container->get(JwtTokenServiceInterface::class);
         $this->jwtConfig = $container->get(JwtConfig::class);

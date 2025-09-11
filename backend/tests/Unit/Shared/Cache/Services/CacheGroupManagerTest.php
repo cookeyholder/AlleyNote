@@ -137,7 +137,7 @@ class CacheGroupManagerTest extends TestCase
         // 建立所有分組
         $this->groupManager->group($parentGroup, ['parent_tag']);
         foreach ($children as $child) {
-            $this->groupManager->group($child, ["{$child}_tag"]);
+            $this->groupManager->group($child, ["{\\\$child}_tag"]);
         }
 
         // 設定依賴關係
@@ -154,7 +154,7 @@ class CacheGroupManagerTest extends TestCase
 
         // 建立多個分組
         foreach ($groups as $group) {
-            $this->groupManager->group($group, ["{$group}_tag"]);
+            $this->groupManager->group($group, ["{\\\$group}_tag"]);
         }
 
         $allGroups = $this->groupManager->getAllGroups();
@@ -167,7 +167,7 @@ class CacheGroupManagerTest extends TestCase
 
         // 建立分組
         foreach ($groups as $group) {
-            $this->groupManager->group($group, ["{$group}_tag"]);
+            $this->groupManager->group($group, ["{\\\$group}_tag"]);
         }
 
         $stats = $this->groupManager->getGroupStatistics();
@@ -183,7 +183,7 @@ class CacheGroupManagerTest extends TestCase
         $userGroup = $this->groupManager->userGroup($userId);
 
         $this->assertInstanceOf(TaggedCacheInterface::class, $userGroup);
-        $this->assertTrue($this->groupManager->hasGroup("user_{$userId}"));
+        $this->assertTrue($this->groupManager->hasGroup("user_{\\\$userId}"));
     }
 
     public function testModuleGroup(): void
@@ -192,7 +192,7 @@ class CacheGroupManagerTest extends TestCase
         $moduleGroup = $this->groupManager->moduleGroup($module);
 
         $this->assertInstanceOf(TaggedCacheInterface::class, $moduleGroup);
-        $this->assertTrue($this->groupManager->hasGroup("module_{$module}"));
+        $this->assertTrue($this->groupManager->hasGroup("module_{\\\$module}"));
     }
 
     public function testTemporalGroup(): void
@@ -201,7 +201,7 @@ class CacheGroupManagerTest extends TestCase
         $temporalGroup = $this->groupManager->temporalGroup($period);
 
         $this->assertInstanceOf(TaggedCacheInterface::class, $temporalGroup);
-        $this->assertTrue($this->groupManager->hasGroup("temporal_{$period}"));
+        $this->assertTrue($this->groupManager->hasGroup("temporal_{\\\$period}"));
     }
 
     public function testFlushMultipleGroups(): void
@@ -210,7 +210,7 @@ class CacheGroupManagerTest extends TestCase
 
         // 建立分組
         foreach ($groups as $group) {
-            $this->groupManager->group($group, ["{$group}_tag"]);
+            $this->groupManager->group($group, ["{\\\$group}_tag"]);
         }
 
         // 模擬清空回傳值

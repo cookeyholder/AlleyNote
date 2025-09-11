@@ -46,8 +46,8 @@ use Psr\Container\ContainerInterface;
 
 return [
     // Database
-    DatabaseConnection::class => function (ContainerInterface $container) {
-        return DatabaseConnection::getInstance();
+    DatabaseConnection => class => function (ContainerInterface $container) {
+        return DatabaseConnection => :getInstance();
     },
     PDO::class => function (ContainerInterface $container) {
         return DatabaseConnection::getInstance();
@@ -114,7 +114,7 @@ return [
                     'default-src' => ["'self'"],
                     'script-src' => ["'self'", "'unsafe-inline'"],
                     'style-src' => ["'self'", "'unsafe-inline'"],
-                    'img-src' => ["'self'", 'data => ', 'https:'],
+                    'img-src' => ["'self'", 'data => ', 'https => '],
                     'font-src' => ["'self'"],
                     'connect-src' => ["'self'"],
                     'media-src' => ["'self'"],

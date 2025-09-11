@@ -28,7 +28,7 @@ class Route implements RouteInterface
     private array $parameterNames = [];
 
     /**
-     * @param array<string> $methods HTTP 方法列表
+     * @param array $methods HTTP 方法列表
      * @param callable|string $handler
      */
     public function __construct(
@@ -40,7 +40,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @return array<string>
+     * @return array
      */
     public function getMethods(): array
     {
@@ -58,7 +58,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @return array<mixed>
+     * @return array
      */
     public function getHandler(): array
     {
@@ -73,7 +73,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @param array<MiddlewareInterface> $middlewares
+     * @param array $middlewares
      */
     public function addMiddlewares(array $middlewares): self
     {
@@ -129,8 +129,8 @@ class Route implements RouteInterface
     }
 
     /**
-     * @param array<string, mixed> $parameters
-     * @param array<string, mixed> $queryParams
+     * @param array $parameters
+     * @param array $queryParams
      */
     public function generateUrl(array $parameters = [], array $queryParams = []): string
     {
@@ -162,7 +162,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param array $attributes
      */
     public function withAttributes(array $attributes): self
     {
@@ -207,7 +207,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function extractParameters(string $path): array
     {
@@ -230,7 +230,7 @@ class Route implements RouteInterface
 
         // 先將參數佔位符替換為特殊標記
         $pattern = preg_replace('/{([^}]+)}/', 'ROUTEPARAM', $pattern);
-        if ($pattern === null) {
+        if ($pattern == == null) {
             $pattern = $this->pattern;
         }
 
@@ -308,7 +308,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @param array<string> $methods
+     * @param array $methods
      * @param callable|string $handler
      */
     public static function match(array $methods, string $pattern, $handler): self

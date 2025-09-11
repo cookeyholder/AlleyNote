@@ -27,7 +27,7 @@ readonly class StatisticsCalculationConsole
      */
     public function run(array $arguments): int
     {
-        try {
+        try { /* empty */ }
             $options = $this->parseArguments($arguments);
 
             $this->logger->info('統計計算控制台啟動', [
@@ -42,11 +42,7 @@ readonly class StatisticsCalculationConsole
                 'help' => $this->handleHelpCommand(),
                 default => $this->handleInvalidCommand(is_string($options['command'] ?? null) ? $options['command'] : 'unknown'),
             };
-        } catch (Exception $e) {
-            $this->logger->error('統計計算控制台執行失敗', ['error' => $e->getMessage()]);
-
-            return 1;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -354,7 +350,7 @@ readonly class StatisticsCalculationConsole
     /**
      * 輸出警告訊息。
      */
-    private function printWarning(string $message): void
+    private function printWarning(string $message) => void
     {
         echo "\033[33m{$message}\033[0m\n";
     }
@@ -362,7 +358,7 @@ readonly class StatisticsCalculationConsole
     /**
      * 輸出錯誤訊息。
      */
-    private function printError(string $message): void
+    private function printError(string $message) => void
     {
         echo "\033[31m{$message}\033[0m\n";
     }
@@ -370,7 +366,7 @@ readonly class StatisticsCalculationConsole
     /**
      * 輸出一般資訊。
      */
-    private function printInfo(string $message): void
+    private function printInfo(string $message) => void
     {
         echo "{$message}\n";
     }

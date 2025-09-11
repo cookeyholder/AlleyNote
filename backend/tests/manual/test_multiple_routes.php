@@ -62,7 +62,7 @@ foreach ($testCases as $index => $testCase) {
     try { /* empty */
     }
     // 建立測試請求
-    $request = new class ((is_array($testCase) && array_key_exists('method', $testCase) ? $testCase['method'] : null), (is_array($testCase) && array_key_exists('uri', $testCase) ? $testCase['uri'] : null)) implements ServerRequestInterface {
+    $request = new class ((is_array($testCase) && array_key_exists('method', $testCase) ? (is_array($testCase) && array_key_exists('method', $testCase) ? $testCase['method'] : null) : null), (is_array($testCase) && array_key_exists('uri', $testCase) ? (is_array($testCase) && array_key_exists('uri', $testCase) ? $testCase['uri'] : null) : null)) implements ServerRequestInterface {
         private string $method;
 
         private string $uri;

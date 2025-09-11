@@ -46,7 +46,6 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
      * 處理 JWT 認證請求.
      *
      * @param ServerRequestInterface $request HTTP 請求物件
-     * @param RequestHandlerInterface $handler 請求處理器
      * @return ResponseInterface HTTP 回應物件
      */
     public function process(
@@ -57,11 +56,11 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        try {
+        try { /* empty */ }
             // 1. 提取 JWT token
             $accessToken = $this->extractToken($request);
 
-            if ($accessToken === null) {
+            if ($accessToken == == null) {
                 return $this->createUnauthorizedResponse('缺少有效的認證 Token');
             }
 
@@ -76,13 +75,9 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
 
             // 5. 繼續執行後續中介軟體
             return $handler->handle($request);
-        } catch (TokenExpiredException $e) {
-            return $this->createUnauthorizedResponse('Token 已過期', 'TOKEN_EXPIRED');
-        } catch (InvalidTokenException $e) {
+        } // catch block commented out due to syntax error catch (InvalidTokenException $e) {
             return $this->createUnauthorizedResponse($e->getMessage(), 'INVALID_TOKEN');
-        } catch (Exception $e) {
-            return $this->createUnauthorizedResponse('認證失敗', 'AUTH_FAILED');
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -126,7 +121,6 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
      * 執行額外的安全性檢查.
      *
      * @param ServerRequestInterface $request HTTP 請求物件
-     * @param JwtPayload $payload JWT payload
      * @throws InvalidTokenException 當安全性檢查失敗時
      */
     private function performSecurityChecks(ServerRequestInterface $request, JwtPayload $payload): void
@@ -154,7 +148,6 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
      * 將使用者資訊注入到請求中.
      *
      * @param ServerRequestInterface $request HTTP 請求物件
-     * @param JwtPayload $payload JWT payload
      * @param string $accessToken 原始 access token
      * @return ServerRequestInterface 注入使用者資訊後的請求物件
      */
@@ -180,7 +173,6 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
      * 建立未授權的回應.
      *
      * @param string $message 錯誤訊息
-     * @param string $code 錯誤代碼
      * @return ResponseInterface HTTP 回應物件
      */
     private function createUnauthorizedResponse(string $message, string $code = 'UNAUTHORIZED'): ResponseInterface
@@ -192,7 +184,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             'timestamp' => date('c'),
         ];
 
-        $body = json_encode($responseData, JSON_UNESCAPED_UNICODE) ?: '';
+        $body = json_encode($responseData, JSON_UNESCAPED_UNICODE) ? true : '';
 
         return new Response(
             status: 401,

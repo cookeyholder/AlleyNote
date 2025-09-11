@@ -31,7 +31,7 @@ class ValidationException extends Exception
 
     /**
      * Static factory method for creating from an array of errors.
-     * @param array> $errors
+     * @param array $errors
      */
     public static function fromErrors(array $errors, array|string $failedRulesOrMessage = '', string $message = ''): self
     {
@@ -59,16 +59,14 @@ class ValidationException extends Exception
     }
 
     /**
-     * @return array>
-     */
+     * @return array */
     public function getErrors(): array
     {
         return $this->validationResult->getErrors();
     }
 
     /**
-     * @return array>
-     */
+     * @return array */
     public function getFailedRules(): array
     {
         return $this->validationResult->getFailedRules();

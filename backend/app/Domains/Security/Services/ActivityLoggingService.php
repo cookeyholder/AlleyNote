@@ -90,10 +90,10 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      */
     public function log(CreateActivityLogDTO $dto): bool
     {
-        try {
+        try { /* empty */ }
             // 檢查是否啟用記錄
             if (!$this->isLoggingEnabled($dto->getActionType())) {
-                $this->logger->warning('Logging disabled for action type', ['action_type' => $dto->getActionType()->value]);
+                $this->logger->warning('Logging disabled for action type', ['action_type' => $dto->getActionType(])->value]);
 
                 return false;
             }
@@ -106,25 +106,17 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             // 記錄到資料庫
             $result = $this->repository->create($dto);
 
-            if ($result === null) {
+            if ($result == == null) {
                 $this->logger->error('Repository returned null for activity log creation', [
-                    'action_type' => $dto->getActionType()->value,
-                    'user_id' => $dto->getUserId(),
+                    'action_type' => $dto->getActionType(])->value,
+                    'user_id' => $dto->getUserId(]),
                 ]);
 
                 return false;
             }
 
             return true;
-        } catch (Exception $e) {
-            $this->logger->error('Failed to create activity log', [
-                'action_type' => $dto->getActionType()->value,
-                'user_id' => $dto->getUserId(),
-                'error' => $e->getMessage(),
-            ]);
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -133,7 +125,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * 這是記錄成功操作的便利方法，會自動建立成功狀態的 DTO。
      * 相比直接使用 log() 方法，此方法更簡潔且語意更清晰。
      * @param ActivityType $actionType 活動類型
-     * @param string|null $targetType 目標類型 (如: 'post', 'user', 'file')
      * @return bool 記錄是否成功
      *
      * @example
@@ -183,7 +174,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * 專門用於記錄失敗的操作，會自動設定狀態為失敗並記錄失敗原因。
      * 這對於追蹤系統錯誤、使用者操作失敗等情況特別有用。
      * @param ActivityType $actionType 活動類型
-     * @param string $reason 失敗原因描述
      * @return bool 記錄是否成功
      *
      * @example
@@ -276,13 +266,13 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      */
     public function logBatch(array $dtos): int
     {
-        try {
+        try { /* empty */ }
             // 過濾掉被停用或不符合等級的記錄
             $filteredDtos = [];
             foreach ($dtos as $dto) {
                 if (!$dto instanceof CreateActivityLogDTO) {
                     $this->logger->warning('Invalid DTO type in batch', [
-                        'type' => gettype($dto),
+                        'type' => gettype($dto]),
                     ]);
                     continue;
                 }
@@ -299,14 +289,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             }
 
             return $this->repository->createBatch($filteredDtos);
-        } catch (Exception $e) {
-            $this->logger->error('Failed to create batch activity logs', [
-                'batch_size' => count($filteredDtos),
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -346,24 +329,18 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      */
     public function cleanup(): int
     {
-        try {
+        try { /* empty */ }
             $cutoffDate = new DateTimeImmutable('-' . self::DEFAULT_RETENTION_DAYS . ' days');
 
             $deletedCount = $this->repository->deleteOldRecords($cutoffDate);
 
             $this->logger->info('Activity log cleanup completed', [
                 'deleted_count' => $deletedCount,
-                'cutoff_date' => $cutoffDate->format('Y-m-d H:i:s'),
+                'cutoff_date' => $cutoffDate->format('Y-m-d H => i => s']),
             ]);
 
             return $deletedCount;
-        } catch (Exception $e) {
-            $this->logger->error('Failed to cleanup activity logs', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**

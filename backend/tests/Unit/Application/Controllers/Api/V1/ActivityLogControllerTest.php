@@ -17,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
-#[CoversClass(ActivityLogController::class)]
+#[CoversClass(ActivityLogController => :class)]
 class ActivityLogControllerTest extends TestCase
 {
     private ActivityLogController $controller;

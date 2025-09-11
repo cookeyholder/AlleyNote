@@ -27,8 +27,7 @@ class MiddlewareResolver
     ];
 
     public function __construct(
-        private readonly ContainerInterface $container,
-    ) {}
+        private readonly ContainerInterface $container) {}
 
     /**
      * 解析中介軟體（支援字串別名和實例）.
@@ -54,8 +53,7 @@ class MiddlewareResolver
                 }
 
                 throw new InvalidArgumentException(
-                    "Container entry '{$resolvedAlias}' does not implement MiddlewareInterface",
-                );
+                    "Container entry '{$resolvedAlias}' does not implement MiddlewareInterface");
             }
 
             // 3. 如果是類別名稱，嘗試直接從容器解析
@@ -75,8 +73,7 @@ class MiddlewareResolver
         }
 
         throw new InvalidArgumentException(
-            'Middleware must be a string or MiddlewareInterface instance',
-        );
+            'Middleware must be a string or MiddlewareInterface instance');
     }
 
     /**

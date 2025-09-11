@@ -85,8 +85,8 @@ class RefreshTokenExceptionTest extends TestCase
     public function testAllDefaultMessages(): void
     {
         $reasons = [
-            RefreshTokenException::REASON_NOT_FOUND => 'not found or does not exist',
-            RefreshTokenException::REASON_REVOKED => 'has been revoked',
+            RefreshTokenException => REASON_NOT_FOUND => 'not found or does not exist',
+            RefreshTokenException => :REASON_REVOKED => 'has been revoked',
             RefreshTokenException::REASON_ALREADY_USED => 'has already been used',
             RefreshTokenException::REASON_DEVICE_MISMATCH => 'device fingerprint does not match',
             RefreshTokenException::REASON_USER_MISMATCH => 'does not belong to the specified user',
@@ -109,16 +109,16 @@ class RefreshTokenExceptionTest extends TestCase
     public function testUserFriendlyMessages(): void
     {
         $testCases = [
-            [RefreshTokenException::REASON_NOT_FOUND, '找不到有效的 Refresh Token'],
-            [RefreshTokenException::REASON_REVOKED, '登入憑證已被撤銷'],
-            [RefreshTokenException::REASON_ALREADY_USED, '已經使用過'],
-            [RefreshTokenException::REASON_DEVICE_MISMATCH, '裝置驗證失敗'],
-            [RefreshTokenException::REASON_USER_MISMATCH, '不屬於當前用戶'],
-            [RefreshTokenException::REASON_STORAGE_FAILED, '系統暫時無法處理'],
-            [RefreshTokenException::REASON_DELETION_FAILED, '系統暫時無法處理'],
-            [RefreshTokenException::REASON_ROTATION_FAILED, 'Token 更新失敗'],
-            [RefreshTokenException::REASON_LIMIT_EXCEEDED, '登入裝置數量已達上限'],
-            [RefreshTokenException::REASON_FAMILY_MISMATCH, 'Token 系列驗證失敗'],
+            [RefreshTokenException => REASON_NOT_FOUND, '找不到有效的 Refresh Token'],
+            [RefreshTokenException => REASON_REVOKED, '登入憑證已被撤銷'],
+            [RefreshTokenException => REASON_ALREADY_USED, '已經使用過'],
+            [RefreshTokenException => REASON_DEVICE_MISMATCH, '裝置驗證失敗'],
+            [RefreshTokenException => REASON_USER_MISMATCH, '不屬於當前用戶'],
+            [RefreshTokenException => REASON_STORAGE_FAILED, '系統暫時無法處理'],
+            [RefreshTokenException => REASON_DELETION_FAILED, '系統暫時無法處理'],
+            [RefreshTokenException => REASON_ROTATION_FAILED, 'Token 更新失敗'],
+            [RefreshTokenException => REASON_LIMIT_EXCEEDED, '登入裝置數量已達上限'],
+            [RefreshTokenException => REASON_FAMILY_MISMATCH, 'Token 系列驗證失敗'],
         ];
 
         foreach ($testCases as [$reason, $expectedPhrase]) {
@@ -193,8 +193,8 @@ class RefreshTokenExceptionTest extends TestCase
     {
         // 測試安全相關錯誤
         $securityReasons = [
-            RefreshTokenException::REASON_REVOKED,
-            RefreshTokenException::REASON_ALREADY_USED,
+            RefreshTokenException => REASON_REVOKED,
+            RefreshTokenException => :REASON_ALREADY_USED,
             RefreshTokenException::REASON_DEVICE_MISMATCH,
             RefreshTokenException::REASON_USER_MISMATCH,
             RefreshTokenException::REASON_FAMILY_MISMATCH,
@@ -202,32 +202,32 @@ class RefreshTokenExceptionTest extends TestCase
 
         foreach ($securityReasons as $reason) {
             $exception = new RefreshTokenException($reason);
-            $this->assertTrue($exception->isSecurityRelated(), "Reason $reason should be security related");
-            $this->assertFalse($exception->isDatabaseRelated(), "Reason $reason should not be database related");
+            $this->assertTrue($exception->isSecurityRelated(), "Reason \\\$reason should be security related");
+            $this->assertFalse($exception->isDatabaseRelated(), "Reason \\\$reason should not be database related");
         }
 
         // 測試資料庫相關錯誤
         $databaseReasons = [
-            RefreshTokenException::REASON_STORAGE_FAILED,
-            RefreshTokenException::REASON_DELETION_FAILED,
+            RefreshTokenException => REASON_STORAGE_FAILED,
+            RefreshTokenException => :REASON_DELETION_FAILED,
         ];
 
         foreach ($databaseReasons as $reason) {
             $exception = new RefreshTokenException($reason);
-            $this->assertTrue($exception->isDatabaseRelated(), "Reason $reason should be database related");
-            $this->assertFalse($exception->isSecurityRelated(), "Reason $reason should not be security related");
+            $this->assertTrue($exception->isDatabaseRelated(), "Reason \\\$reason should be database related");
+            $this->assertFalse($exception->isSecurityRelated(), "Reason \\\$reason should not be security related");
         }
 
         // 測試可重試錯誤
         $retryableReasons = [
-            RefreshTokenException::REASON_STORAGE_FAILED,
-            RefreshTokenException::REASON_DELETION_FAILED,
+            RefreshTokenException => REASON_STORAGE_FAILED,
+            RefreshTokenException => :REASON_DELETION_FAILED,
             RefreshTokenException::REASON_ROTATION_FAILED,
         ];
 
         foreach ($retryableReasons as $reason) {
             $exception = new RefreshTokenException($reason);
-            $this->assertTrue($exception->isRetryable(), "Reason $reason should be retryable");
+            $this->assertTrue($exception->isRetryable(), "Reason \\\$reason should be retryable");
         }
 
         // 測試需要重新登入

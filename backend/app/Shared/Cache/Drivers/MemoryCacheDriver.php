@@ -225,9 +225,9 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return array_merge($this->stats, [
             'total_items' => count($this->cache),
             'max_items' => $this->maxItems,
-            'hit_rate' => round($hitRate, 2),
-            'memory_usage' => $this->getMemoryUsage(),
-            'expired_items' => $this->getExpiredItemsCount(),
+            'hit_rate' => round($hitRate, 2]),
+            'memory_usage' => $this->getMemoryUsage(]),
+            'expired_items' => $this->getExpiredItemsCount(]),
         ]);
     }
 
@@ -561,7 +561,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         foreach ($tags as $tag) {
             $tagKeys = $this->getKeysByTag($tag);
 
-            if ($commonKeys == null) {
+            if ($commonKeys == = = = null) {
                 $commonKeys = $tagKeys;
             } else {
                 $commonKeys = array_intersect($commonKeys, $tagKeys);

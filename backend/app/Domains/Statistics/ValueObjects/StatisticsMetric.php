@@ -34,14 +34,12 @@ readonly class StatisticsMetric
     ): self {
         if ($value < 0) {
             throw new InvalidStatisticsMetricException(
-                '統計指標數值不能為負數',
-            );
+                '統計指標數值不能為負數');
         }
 
         if ($precision < 0 || $precision > 10) {
             throw new InvalidStatisticsMetricException(
-                '精確度必須在 0-10 之間',
-            );
+                '精確度必須在 0-10 之間');
         }
 
         $unit = trim($unit);
@@ -57,8 +55,7 @@ readonly class StatisticsMetric
     {
         if ($value < 0) {
             throw new InvalidStatisticsMetricException(
-                '計數值不能為負數',
-            );
+                '計數值不能為負數');
         }
 
         return new self($value, '個', $description, 0);
@@ -71,8 +68,7 @@ readonly class StatisticsMetric
     {
         if ($value < 0 || $value > 100) {
             throw new InvalidStatisticsMetricException(
-                '百分比必須在 0-100 之間',
-            );
+                '百分比必須在 0-100 之間');
         }
 
         return new self($value, '%', $description, 2);
@@ -85,8 +81,7 @@ readonly class StatisticsMetric
     {
         if ($value < 0) {
             throw new InvalidStatisticsMetricException(
-                '比率不能為負數',
-            );
+                '比率不能為負數');
         }
 
         return new self($value, ':1', $description, 3);
@@ -99,8 +94,7 @@ readonly class StatisticsMetric
     {
         if ($value < 0) {
             throw new InvalidStatisticsMetricException(
-                '時間不能為負數',
-            );
+                '時間不能為負數');
         }
 
         return new self($value, '秒', $description, 2);
@@ -113,8 +107,7 @@ readonly class StatisticsMetric
     {
         if ($value < 0) {
             throw new InvalidStatisticsMetricException(
-                '大小不能為負數',
-            );
+                '大小不能為負數');
         }
 
         return new self($value, 'bytes', $description, 0);
@@ -251,8 +244,7 @@ readonly class StatisticsMetric
         $newValue = $this->value - $other->value;
         if ($newValue < 0) {
             throw new InvalidStatisticsMetricException(
-                '減法結果不能為負數',
-            );
+                '減法結果不能為負數');
         }
 
         $maxPrecision = max($this->precision, $other->precision);
@@ -267,8 +259,7 @@ readonly class StatisticsMetric
     {
         if ($multiplier < 0) {
             throw new InvalidStatisticsMetricException(
-                '乘數不能為負數',
-            );
+                '乘數不能為負數');
         }
 
         $newValue = $this->value * $multiplier;
@@ -283,8 +274,7 @@ readonly class StatisticsMetric
     {
         if ($divisor <= 0) {
             throw new InvalidStatisticsMetricException(
-                '除數必須大於零',
-            );
+                '除數必須大於零');
         }
 
         $newValue = $this->value / $divisor;
@@ -302,8 +292,7 @@ readonly class StatisticsMetric
 
         if ($this->value == 0) {
             throw new InvalidStatisticsMetricException(
-                '基數為零時無法計算百分比變化',
-            );
+                '基數為零時無法計算百分比變化');
         }
 
         $change = (($other->value - $this->value) / $this->value) * 100;

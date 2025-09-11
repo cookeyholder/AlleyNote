@@ -33,9 +33,7 @@ abstract class JwtException extends Exception
      * 建構 JWT 例外.
      *
      * @param string $message 錯誤訊息
-     * @param int $code 錯誤代碼
      * @param Exception|null $previous 前一個例外
-     * @param array<string, mixed> $context 上下文資訊
      */
     public function __construct(
         string $message = '',
@@ -50,7 +48,7 @@ abstract class JwtException extends Exception
     /**
      * 取得錯誤上下文資訊.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getContext(): array
     {
@@ -60,7 +58,7 @@ abstract class JwtException extends Exception
     /**
      * 設定錯誤上下文資訊.
      *
-     * @param array<string, mixed> $context 上下文資訊
+     * @param array $context 上下文資訊
      */
     public function setContext(array $context): self
     {
@@ -73,7 +71,6 @@ abstract class JwtException extends Exception
      * 加入上下文資訊.
      *
      * @param string $key 鍵名
-     * @param mixed $value 值
      */
     public function addContext(string $key, mixed $value): self
     {
@@ -93,7 +90,7 @@ abstract class JwtException extends Exception
     /**
      * 取得錯誤詳細資訊（用於 API 回應）.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getErrorDetails(): array
     {
@@ -130,12 +127,12 @@ abstract class JwtException extends Exception
     /**
      * 轉換為陣列格式（用於日誌記錄）.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
         return [
-            'exception' => static::class,
+            'exception' => static => class,
             'error_type' => $this->getErrorType(),
             'message' => $this->getMessage(),
             'code' => $this->getCode(),

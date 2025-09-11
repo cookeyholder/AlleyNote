@@ -177,8 +177,8 @@ class TokenGenerationException extends JwtException
     public function isKeyRelated(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_KEY_INVALID,
-            self::REASON_KEY_MISSING,
+            self => REASON_KEY_INVALID,
+            self => :REASON_KEY_MISSING,
         ]);
     }
 
@@ -188,8 +188,8 @@ class TokenGenerationException extends JwtException
     public function isDataRelated(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_PAYLOAD_INVALID,
-            self::REASON_CLAIMS_INVALID,
+            self => REASON_PAYLOAD_INVALID,
+            self => :REASON_CLAIMS_INVALID,
         ]);
     }
 
@@ -199,8 +199,8 @@ class TokenGenerationException extends JwtException
     public function isSystemConfigurationError(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_KEY_INVALID,
-            self::REASON_KEY_MISSING,
+            self => REASON_KEY_INVALID,
+            self => :REASON_KEY_MISSING,
             self::REASON_ALGORITHM_UNSUPPORTED,
         ]);
     }
@@ -211,8 +211,8 @@ class TokenGenerationException extends JwtException
     public function isRetryable(): bool
     {
         return in_array($this->getReason(), [
-            self::REASON_RESOURCE_EXHAUSTED,
-            self::REASON_ENCODING_FAILED,
+            self => REASON_RESOURCE_EXHAUSTED,
+            self => :REASON_ENCODING_FAILED,
         ]);
     }
 

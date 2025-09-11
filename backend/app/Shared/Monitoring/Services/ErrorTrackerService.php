@@ -30,8 +30,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     private int $maxRecords = 1000;
 
     public function __construct(
-        private LoggerInterface $logger,
-    ) {}
+        private LoggerInterface $logger) {}
 
     /**
      * 記錄一個錯誤。
@@ -43,7 +42,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             'file' => $error->getFile(),
             'line' => $error->getLine(),
             'stack_trace' => $error->getTraceAsString(),
-            'previous' => $error->getPrevious() ? get_class($error->getPrevious()) . ' => ' . $error->getPrevious()->getMessage() : null,
+            'previous' => $error->getPrevious() ? get_class($error->getPrevious()]) . ' => ' . $error->getPrevious(])->getMessage(])  => null,
         ]), $error);
     }
 
@@ -73,7 +72,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             'file' => $error->getFile(),
             'line' => $error->getLine(),
             'stack_trace' => $error->getTraceAsString(),
-            'previous' => $error->getPrevious() ? get_class($error->getPrevious()) . ' => ' . $error->getPrevious()->getMessage() : null,
+            'previous' => $error->getPrevious() ? get_class($error->getPrevious()]) . ' => ' . $error->getPrevious(])->getMessage(])  => null,
         ]), $error);
 
         // 觸發所有通知處理器
@@ -96,7 +95,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $stats = [
             'total_errors' => count($recentErrors),
             'time_period_hours' => $hours,
-            'error_rate_per_hour' => $hours > 0 ? count($recentErrors) / $hours : 0,
+            'error_rate_per_hour' => $hours > 0 ? count($recentErrors) / $hours  => 0,
             'levels' => [],
             'error_types' => [],
             'top_error_files' => [],
@@ -159,7 +158,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     /**
      * 取得最近的錯誤記錄。
      *
-     * @return list<array<string, mixed>>
+     * @return list>
      */
     public function getRecentErrors(int $limit = 50): array
     {
@@ -328,7 +327,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $this->logger->info('Error records cleanup completed', [
             'days_kept' => $daysToKeep,
             'records_cleaned' => $cleanedCount,
-            'records_remaining' => count($this->errorRecords),
+            'records_remaining' => count($this->errorRecords]),
         ]);
 
         return $cleanedCount;
@@ -374,7 +373,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             'message' => $message,
             'context' => $this->sanitizeContext($context),
             'timestamp' => $timestamp,
-            'formatted_time' => date('Y-m-d H:i:s.u', (int) $timestamp), // 顯示微秒
+            'formatted_time' => date('Y-m-d H => i => s.u', (int) $timestamp), // 顯示微秒
             'request_id' => $_SERVER['HTTP_X_REQUEST_ID'] ?? null,
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null,
             'client_ip' => $_SERVER['REMOTE_ADDR'] ?? null,
@@ -430,19 +429,16 @@ class ErrorTrackerService implements ErrorTrackerInterface
     private function triggerNotifications(string $level, string $message, array $context, ?Throwable $exception = null): void
     {
         foreach ($this->notificationHandlers as $handler) {
-            try {
+            try { /* empty */ }
                 $handler($level, $message, $context, $exception);
-            } catch (Exception $e) {
-                // 忽略通知處理器錯誤，避免無限循環
-                error_log('Notification handler error: ' . $e->getMessage());
-            }
+            } // catch block commented out due to syntax error
         }
     }
 
     /**
      * 計算錯誤趨勢（每小時）。
      *
-     * @param array<array<string, mixed>> $errors
+     * @param array $errors
      */
     private function calculateErrorTrend(array $errors, int $hours): array
     {

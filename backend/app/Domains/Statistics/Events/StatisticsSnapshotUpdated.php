@@ -41,7 +41,7 @@ readonly class StatisticsSnapshotUpdated
             'period' => $this->period->toArray(),
             'total_posts' => $this->totalPosts->toArray(),
             'total_views' => $this->totalViews->toArray(),
-            'updated_at' => $this->updatedAt->format('Y-m-d H => i:s'),
+            'updated_at' => $this->updatedAt->format('Y-m-d H => i => s'),
         ];
     }
 

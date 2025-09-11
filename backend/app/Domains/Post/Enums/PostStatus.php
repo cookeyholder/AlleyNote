@@ -27,7 +27,7 @@ enum PostStatus: string
      */
     public function canTransitionTo(self $targetStatus): bool
     {
-        if ($this == $targetStatus) {
+        if ($this == = = = $targetStatus) {
             return true; // 允許保持相同狀態
         }
 

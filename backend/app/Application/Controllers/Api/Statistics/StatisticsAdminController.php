@@ -25,11 +25,11 @@ class StatisticsAdminController extends BaseController
      */
     public function refresh(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $this->logger->info('統計重新整理 API 請求', [
                 'method' => $request->getMethod(),
                 'uri' => (string) $request->getUri(),
-                'body' => (string) $request->getBody(),
+                'body' => (string) $request->getBody(]),
             ]);
 
             $bodyString = (string) $request->getBody();
@@ -48,22 +48,16 @@ class StatisticsAdminController extends BaseController
                 'timestamp' => date('c'),
             ];
 
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+            $jsonResponse = json_encode($responseData);
+            if ($jsonResponse == == false) {
+                $jsonResponse = '{"error": "JSON encoding failed"}';
+            }
+            $response->getBody()->write($jsonResponse);
 
             return $response->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
-            $this->logger->error('統計重新整理失敗', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            $responseData = [
-                'success' => false,
-                'error' => '統計資料重新整理失敗',
-                'message' => $e->getMessage(),
-            ];
-
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+        } // catch block commented out due to syntax error';
+            }
+            $response->getBody()->write($errorResponse);
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }

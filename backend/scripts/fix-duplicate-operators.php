@@ -6,7 +6,7 @@ declare(strict_types=1);
  * 修復重複運算符語法錯誤腳本
  *
  * 專門處理以下語法錯誤：
- * - == == (重複等號)
+ * - === (重複等號)
  * - => => (重複箭頭)
  * - !! (重複感嘆號)
  * - && && (重複邏輯AND)
@@ -37,7 +37,7 @@ class DuplicateOperatorsFixer
     private function initializeFixPatterns(): void
     {
         $this->fixPatterns = [
-            // 重複等號：== == -> ==
+            // 重複等號：=== -> ==
             [
                 'pattern' => '/==\s*==/',
                 'replacement' => '==',
@@ -49,7 +49,7 @@ class DuplicateOperatorsFixer
                 'replacement' => '!=',
                 'description' => '重複不等號'
             ],
-            // 重複嚴格等號：=== === -> ===
+            // 重複嚴格等號：===== -> ===
             [
                 'pattern' => '/===\s*===/',
                 'replacement' => '===',

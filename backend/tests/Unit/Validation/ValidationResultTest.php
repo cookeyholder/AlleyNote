@@ -462,10 +462,10 @@ class ValidationResultTest extends TestCase
 
         // 建立大量測試資料
         for ($i = 0; $i < 1000; $i++) {
-            $field = "field_{$i}";
-            $largeErrors[$field] = ["錯誤訊息_{$i}_1", "錯誤訊息_{$i}_2"];
-            $largeFailedRules[$field] = ["rule_{$i}_1", "rule_{$i}_2"];
-            $largeValidatedData[$field] = "value_{$i}";
+            $field = "field_{\\\$i}";
+            $largeErrors[$field] = ["錯誤訊息_{\\\$i}_1", "錯誤訊息_{\\\$i}_2"];
+            $largeFailedRules[$field] = ["rule_{\\\$i}_1", "rule_{\\\$i}_2"];
+            $largeValidatedData[$field] = "value_{\\\$i}";
         }
 
         // Act

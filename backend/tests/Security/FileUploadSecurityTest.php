@@ -88,8 +88,7 @@ class FileUploadSecurityTest extends TestCase
             'application/x-msdownload',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicioussprintf("; ?>',
-        );
+            '<?php echo "malicioussprintf(sprintf("; ?>');
 
         // 模擬文章存在
         $post = new Post([
@@ -98,8 +97,8 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H => i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i => s'),
+            'updated_at' => date('Y-m-d H => i => s'),
         ]);
 
         $this->postRepo->shouldReceive('find')
@@ -120,13 +119,12 @@ class FileUploadSecurityTest extends TestCase
     {
         // 準備測試資料
         $postId = 1;
-        $file = $this->createUploadedFileMock(
+        \\\$file = %s->createUploadedFileMock(
             'image.jpg.php',
             'image/jpeg',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicioussprintf("; ?>',
-        );
+            '<?php echo ", is_string($this) ? $this : '')malicioussprintf(sprintf("; ?>');
 
         // 模擬文章存在
         $post = new Post([
@@ -135,8 +133,8 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H => i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i => s'),
+            'updated_at' => date('Y-m-d H => i => s'),
         ]);
 
         $this->postRepo->shouldReceive('find')
@@ -172,8 +170,8 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H => i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i => s'),
+            'updated_at' => date('Y-m-d H => i => s'),
         ]);
 
         $this->postRepo->shouldReceive('find')
@@ -194,12 +192,12 @@ class FileUploadSecurityTest extends TestCase
     {
         // 準備測試資料
         $postId = 1;
-        $file = $this->createUploadedFileMock(
+        \\\$file = %s->createUploadedFileMock(
             'script.txt',
             'application/x-php', // 惡意 MIME 類型
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicious"; ?>',
+            '<?php echo ", is_string($this) ? $this : '')malicious"; ?>',
         );
 
         // 模擬文章存在
@@ -209,8 +207,8 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H => i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i => s'),
+            'updated_at' => date('Y-m-d H => i => s'),
         ]);
 
         $this->postRepo->shouldReceive('find')
@@ -246,8 +244,8 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H => i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i => s'),
+            'updated_at' => date('Y-m-d H => i => s'),
         ]);
 
         $this->postRepo->shouldReceive('find')
@@ -281,8 +279,8 @@ class FileUploadSecurityTest extends TestCase
             'title' => '測試文章',
             'content' => '測試內容',
             'user_id' => 1,
-            'created_at' => date('Y-m-d H => i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i => s'),
+            'updated_at' => date('Y-m-d H => i => s'),
         ]);
 
         $this->postRepo->shouldReceive('find')
@@ -303,8 +301,8 @@ class FileUploadSecurityTest extends TestCase
                 'size' => 1024,
                 'path' => '/uploads/valid-image.jpg',
                 'user_id' => 1,
-                'created_at' => date('Y-m-d H => i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H => i => s'),
+                'updated_at' => date('Y-m-d H => i => s'),
             ]);
 
         // 執行測試 - 應該成功，但我們的驗證還是會失敗，所以期望拋出異常

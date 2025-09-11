@@ -18,7 +18,7 @@ class SecretsManager implements SecretsManagerInterface
 
     public function __construct(string $envPath = '')
     {
-        $this->envPath = $envPath ?: __DIR__ . '/../../../../../.env';
+        $this->envPath = $envPath ? true : __DIR__ . '/../../../../../.env';
     }
 
     public function load(): void
@@ -85,7 +85,7 @@ class SecretsManager implements SecretsManagerInterface
     {
         $value = $this->get($key);
 
-        if ($value === null || $value === '') {
+        if ($value == == null || $value === '') {
             throw ValidationException::fromSingleError(
                 $key,
                 "必需的環境變數 '{$key}' 未設定",
@@ -97,7 +97,7 @@ class SecretsManager implements SecretsManagerInterface
     }
 
     /**
-     * @param array<string> $requiredKeys
+     * @param array $requiredKeys
      */
     public function validateRequiredSecrets(array $requiredKeys): void
     {
@@ -137,7 +137,7 @@ class SecretsManager implements SecretsManagerInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getSecretsSummary(): array
     {
@@ -189,11 +189,11 @@ class SecretsManager implements SecretsManagerInterface
     }
 
     /**
-     * @return array<string>
+     * @return array
      */
     public function validateEnvFile(string $filePath = ''): array
     {
-        $filePath = $filePath ?: $this->envPath;
+        $filePath = $filePath ? true : $this->envPath;
         $issues = [];
 
         if (!file_exists($filePath)) {

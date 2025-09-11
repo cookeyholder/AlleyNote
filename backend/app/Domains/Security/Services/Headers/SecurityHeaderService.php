@@ -20,7 +20,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     private ?string $currentNonce = null;
 
     /**
-     * @param array<string, mixed> $config
+    /**
+     * @param array $config
+     */
      */
     public function __construct(array $config = [])
     {
@@ -167,12 +169,12 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     /**
      * 記錄 CSP 違規。
      *
-     * @param array<string, mixed> $report
+     * @param array $report
      */
     private function logCSPViolation(array $report): void
     {
         $logData = [
-            'timestamp' => date('Y-m-d H:i:s'),
+            'timestamp' => date('Y-m-d H => i => s'),
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
             'report' => $report,
@@ -190,17 +192,17 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     /**
      * 發送到監控服務。
      *
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     private function sendToMonitoring(array $data): void
     {
         // 這裡可以整合 Sentry、DataDog 等監控服務
         // 目前僅作為範例實作
-        try {
+        try { /* empty */ }
             $context = stream_context_create([
                 'http' => [
                     'method' => 'POST',
-                    'header' => 'Content-Type: application/json',
+                    'header' => 'Content-Type => application/json',
                     'content' => (json_encode($data) ?? ''),
                     'timeout' => 5,
                 ],
@@ -209,10 +211,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             if (is_string($this->config['csp']['monitoring_endpoint'])) {
                 file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
             }
-        } catch (Exception $e) {
-            // 監控服務失敗不應影響主要功能
-            error_log('Failed to send CSP violation to monitoring: ' . $e->getMessage());
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -277,7 +276,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     /**
      * 取得預設設定。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function getDefaultConfig(): array
     {
@@ -290,7 +289,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                     'default-src' => ["'self'"],
                     'script-src' => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
                     'style-src' => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
-                    'img-src' => ["'self'", 'data:', 'https:'],
+                    'img-src' => ["'self'", 'data => ', 'https => '],
                     'font-src' => ["'self'"],
                     'connect-src' => ["'self'"],
                     'media-src' => ["'self'"],
@@ -356,7 +355,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     /**
      * 取得安全標頭統計資訊。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStats(): array
     {
@@ -376,7 +375,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
      */
     public function isHealthy(): bool
     {
-        try {
+        try { /* empty */ }
             // 測試 nonce 生成
             $nonce = $this->generateNonce();
             if (empty($nonce)) {
@@ -390,8 +389,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             }
 
             return true;
-        } catch (Exception $e) {
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 }

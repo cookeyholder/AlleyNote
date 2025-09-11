@@ -31,7 +31,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param int $postId 貼文 ID
      */
     /**
-     * @return array<Attachment>
+     * @return array
      */
     public function getByPostId(int $postId, bool $includeDeleted = false): array;
 
@@ -40,7 +40,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param int $userId 使用者 ID
      */
     /**
-     * @return array<Attachment>
+     * @return array
      */
     public function getByUserId(int $userId, int $limit = 50): array;
 
@@ -49,14 +49,14 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param array $data 附件資料
      */
     /**
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     public function create(array $data): Attachment;
 
     /**
      * 更新附件資料.
      * @param int $id 附件 ID
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     public function update(int $id, array $data): object;
 
@@ -84,8 +84,8 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param array $filters 篩選條件
      */
     /**
-     * @param array<string, mixed> $filters
-     * @return array<string, mixed>
+     * @param array $filters
+     * @return array
      */
     public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array;
 
@@ -94,7 +94,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param int $page 頁碼
      */
     /**
-     * @return array<Attachment>
+     * @return array
      */
     public function getTrashed(int $page = 1, int $perPage = 10): array;
 
@@ -103,7 +103,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param string $mimeType MIME 類型
      */
     /**
-     * @return array<Attachment>
+     * @return array
      */
     public function getByMimeType(string $mimeType, int $limit = 10): array;
 
@@ -113,7 +113,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param int $limit 限制筆數
      */
     /**
-     * @return array<Attachment>
+     * @return array
      */
     public function getBySizeRange(int $minSize, int $maxSize, int $limit = 10): array;
 
@@ -122,7 +122,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param int $olderThanDays 超過指定天數的附件
      */
     /**
-     * @return array<Attachment>
+     * @return array
      */
     public function getOrphanedAttachments(int $olderThanDays = 7): array;
 
@@ -131,8 +131,8 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param array $conditions 統計條件
      */
     /**
-     * @param array<string, mixed> $conditions
-     * @return array<string, mixed>
+     * @param array $conditions
+     * @return array
      */
     public function getStats(array $conditions = []): array;
 
@@ -155,7 +155,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @return int 更新的數量
      */
     /**
-     * @param array<int> $ids
+     * @param array $ids
      */
     public function batchUpdateStatus(array $ids, string $status): int;
 
@@ -165,8 +165,8 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * @param int $limit 限制筆數
      */
     /**
-     * @param array<string> $fields
-     * @return array<Attachment>
+     * @param array $fields
+     * @return array
      */
     public function search(string $keyword, array $fields = [], int $limit = 10): array;
 }

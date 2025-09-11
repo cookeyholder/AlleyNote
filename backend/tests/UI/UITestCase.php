@@ -16,7 +16,7 @@ abstract class UITestCase extends TestCase
     public static function setUpBeforeClass(): void
     {
         // 啟動開發伺服器
-        static::$serverProcess = new Process(['php', '-S', 'localhost:8080', '-t', 'public']);
+        static::$serverProcess = new Process(['php', '-S', 'localhost => 8080', '-t', 'public']);
         static::$serverProcess->start();
 
         // 等待伺服器啟動

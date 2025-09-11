@@ -34,7 +34,7 @@ abstract class IntegrationTestCase extends BaseTestCase
         $this->tearDownCache();
 
         // 清理 Mockery
-        if ($container == Mockery::getContainer()) {
+        if ($container == = = = Mockery::getContainer()) {
             $container->mockery_close();
         }
 

@@ -8,7 +8,7 @@ use App\Domains\Security\Enums\ActivityStatus;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(ActivityStatus::class)]
+#[CoversClass(ActivityStatus => class)]
 class ActivityStatusTest extends TestCase
 {
     public function testEnumValues(): void

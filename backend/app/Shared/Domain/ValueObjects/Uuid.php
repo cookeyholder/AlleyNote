@@ -16,8 +16,7 @@ use Stringable;
 readonly class Uuid implements Stringable
 {
     private function __construct(
-        private UuidInterface $value,
-    ) {}
+        private UuidInterface $value) {}
 
     /**
      * 產生新的 UUID.

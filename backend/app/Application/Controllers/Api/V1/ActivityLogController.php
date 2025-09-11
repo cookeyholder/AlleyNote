@@ -110,16 +110,13 @@ class ActivityLogController extends BaseController
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (Exception $e) {
-            error_log('ActivityLogController error: ' . $e->getMessage());
-
-            return $this->json($response, [
+            $errorResponse = json_encode([
                 'success' => false,
-                'error' => [
-                    'message' => '操作失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
+                'message' => $e->getMessage(),
+                'error_code' => 500,
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
 
@@ -158,15 +155,12 @@ class ActivityLogController extends BaseController
 
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
-            error_log('ActivityLog retrieval error: ' . $e->getMessage());
-
             $errorResponse = json_encode([
                 'success' => false,
-                'message' => 'Failed to retrieve activity logs',
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
+                'error_code' => 500,
             ]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }

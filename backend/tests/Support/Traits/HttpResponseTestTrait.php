@@ -118,7 +118,7 @@ trait HttpResponseTestTrait
         $this->assertEquals(
             $expectedStatus,
             $response->getStatusCode(),
-            "回應狀態碼不符合預期。預期: {$expectedStatus}，實際: {$response->getStatusCode()}",
+            "回應狀態碼不符合預期。預期: {$expectedStatus}，實際: {\\\$response->getStatusCode()}",
         );
     }
 
@@ -129,7 +129,7 @@ trait HttpResponseTestTrait
     {
         $this->assertTrue(
             $response->hasHeader($headerName),
-            "回應應該包含標頭: {$headerName}",
+            "回應應該包含標頭: {\\\$headerName}",
         );
     }
 
@@ -140,7 +140,7 @@ trait HttpResponseTestTrait
     {
         $this->assertResponseHasHeader($response, $headerName);
         $headerValues = $response->getHeader($headerName);
-        $this->assertArrayHasKey($expectedValue, array_flip($headerValues), "標頭 {$headerName} 的值不符合預期");
+        $this->assertArrayHasKey($expectedValue, array_flip($headerValues), "標頭 {\\\$headerName} 的值不符合預期");
     }
 
     /**
@@ -152,7 +152,7 @@ trait HttpResponseTestTrait
         $this->assertStringContainsString(
             $expectedText,
             $body,
-            "回應內容應該包含文字: {$expectedText}",
+            "回應內容應該包含文字: {\\\$expectedText}",
         );
     }
 
@@ -178,7 +178,7 @@ trait HttpResponseTestTrait
         $body = $response->getBody()->getContents();
         $data = json_decode($body, true);
 
-        $this->assertArrayHasKey($key, $data, "JSON 回應應該包含鍵: {$key}");
+        $this->assertArrayHasKey($key, $data, "JSON 回應應該包含鍵: {\\\$key}");
     }
 
     /**
@@ -191,6 +191,6 @@ trait HttpResponseTestTrait
         $body = $response->getBody()->getContents();
         $data = json_decode($body, true);
 
-        $this->assertEquals($expectedValue, $data[$key], "JSON 回應中鍵 {$key} 的值不符合預期");
+        $this->assertEquals($expectedValue, $data[$key], "JSON 回應中鍵 {\\\$key} 的值不符合預期");
     }
 }

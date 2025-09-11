@@ -41,7 +41,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     private array $excludePatterns;
 
     /**
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     public function __construct(array $config = [])
     {
@@ -135,7 +135,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     /**
      * 取得策略統計資訊。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStats(): array
     {
@@ -172,7 +172,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     /**
      * 取得配置。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getConfig(): array
     {
@@ -182,7 +182,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     /**
      * 更新配置。
      *
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     public function updateConfig(array $config): void
     {
@@ -260,7 +260,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     /**
      * 取得預設配置。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function getDefaultConfig(): array
     {
@@ -269,14 +269,14 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             'max_ttl' => 86400,     // 24 小時
             'max_value_size' => 1024 * 1024, // 1MB
             'exclude_patterns' => [
-                'temp:*',
-                'debug:*',
-                'test:*',
+                'temp => *',
+                'debug => *',
+                'test => *',
             ],
             'ttl_adjustments' => [
-                'user:*' => 0.5,     // 使用者相關資料較短的 TTL
-                'system:*' => 2.0,   // 系統資料較長的 TTL
-                'static:*' => 5.0,   // 靜態資料更長的 TTL
+                'user => *' => 0.5,     // 使用者相關資料較短的 TTL
+                'system => *' => 2.0,   // 系統資料較長的 TTL
+                'static => *' => 5.0,   // 靜態資料更長的 TTL
             ],
         ];
     }

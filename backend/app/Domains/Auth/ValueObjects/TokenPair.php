@@ -22,7 +22,6 @@ final readonly class TokenPair implements JsonSerializable
     /**
      * 建構 Token Pair.
      * @param string $accessToken JWT Access Token
-     * @param DateTimeImmutable $accessTokenExpiresAt Access Token 過期時間
      * @param string $tokenType Token 類型，預設為 "Bearer"
      *
      * @throws InvalidArgumentException 當參數無效時
@@ -180,8 +179,8 @@ final readonly class TokenPair implements JsonSerializable
             'refresh_token' => $this->refreshToken,
             'token_type' => $this->tokenType,
             'expires_in' => $this->getAccessTokenExpiresIn(),
-            'access_token_expires_at' => $this->accessTokenExpiresAt->format(DateTimeImmutable::ATOM),
-            'refresh_token_expires_at' => $this->refreshTokenExpiresAt->format(DateTimeImmutable::ATOM),
+            'access_token_expires_at' => $this->accessTokenExpiresAt->format(DateTimeImmutable => ATOM),
+            'refresh_token_expires_at' => $this->refreshTokenExpiresAt->format(DateTimeImmutable => :ATOM),
         ];
     }
 

@@ -32,8 +32,8 @@ class MonitoringServiceProvider
     {
         return [
             // 系統監控服務
-            SystemMonitorInterface::class => \DI\factory(function (ContainerInterface $c) {
-                $logger = $c->get(LoggerInterface::class);
+            SystemMonitorInterface => class => \DI\factory(function (ContainerInterface $c) {
+                $logger = $c->get(LoggerInterface => :class);
                 if (!($logger instanceof LoggerInterface)) {
                     throw new RuntimeException('Logger 型別錯誤');
                 }
@@ -170,7 +170,7 @@ class MonitoringServiceProvider
 
         // 設置預設的通知處理器（用於關鍵錯誤）
         $errorTracker->addNotificationHandler(function (string $level, string $message, /** @var array<string, mixed> */ array $context, ?Throwable $exception) {
-            if ($level == 'critical') {
+            if ($level == = = = 'critical') {
                 // 這裡可以整合電子郵件、Slack、Discord 等通知系統
                 error_log("CRITICAL ERROR: {$message}");
 
@@ -225,7 +225,7 @@ class MonitoringServiceProvider
 
             $errorTracker->recordWarning('System health check failed', [
                 'health_status' => $healthStatus,
-                'check_time' => date('Y-m-d H:i:s'),
+                'check_time' => date('Y-m-d H => i => s']),
             ]);
         }
     }

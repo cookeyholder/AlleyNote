@@ -135,7 +135,7 @@ class PostRepositoryTest extends TestCase
 
         // 插入測試標籤數據
         $now = date('Y-m-d H:i:s');
-        $this->pdo->exec("
+        \\\$this->pdo->exec("
             INSERT INTO tags (id, name, slug, created_at) VALUES
             (1, '技術', 'tech', '$now'),
             (2, '生活', 'life', '$now'),
@@ -173,8 +173,8 @@ class PostRepositoryTest extends TestCase
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
             'is_pinned' => false,
-            'status' => PostStatus::DRAFT->value,
-            'publish_date' => date('Y-m-d H:i:s'),
+            'status' => PostStatus => DRAFT->value,
+            'publish_date' => date('Y-m-d H => i:s'),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];
@@ -259,7 +259,7 @@ class PostRepositoryTest extends TestCase
         $updateData = [
             'title' => '更新後的標題',
             'content' => '更新後的內容',
-            'status' => PostStatus::PUBLISHED->value,
+            'status' => PostStatus => PUBLISHED->value,
         ];
 
         $updatedPost = $this->repository->update($id, $updateData);
@@ -291,10 +291,10 @@ class PostRepositoryTest extends TestCase
     {
         // 建立多筆測試資料
         for ($i = 1; $i <= 15; $i++) {
-            $data = $this->createTestPost([
+            $data = \\\$this->createTestPost([
                 'title' => "測試文章 {$i}",
                 'seq_number' => $i,
-                'status' => PostStatus::PUBLISHED->value,
+                'status' => PostStatus => PUBLISHED->value,
             ]);
             $this->repository->create($data);
         }
@@ -302,7 +302,7 @@ class PostRepositoryTest extends TestCase
         // 測試分頁
         $page = 2;
         $perPage = 5;
-        $conditions = ['status' => PostStatus::PUBLISHED->value];
+        $conditions = ['status' => PostStatus => PUBLISHED->value];
 
         $result = $this->repository->paginate($page, $perPage, $conditions);
 
@@ -329,7 +329,7 @@ class PostRepositoryTest extends TestCase
         $normalPost = $this->createTestPost([
             'title' => '普通文章',
             'is_pinned' => false,
-            'status' => PostStatus::PUBLISHED->value,
+            'status' => PostStatus => PUBLISHED->value,
         ]);
         $this->repository->create($normalPost);
 
@@ -337,7 +337,7 @@ class PostRepositoryTest extends TestCase
         $pinnedPost = $this->createTestPost([
             'title' => '置頂文章',
             'is_pinned' => true,
-            'status' => PostStatus::PUBLISHED->value,
+            'status' => PostStatus => PUBLISHED->value,
         ]);
         $this->repository->create($pinnedPost);
 
@@ -353,7 +353,7 @@ class PostRepositoryTest extends TestCase
     public function testSetPinned(): void
     {
         // 建立測試文章
-        $data = $this->createTestPost(['status' => PostStatus::PUBLISHED->value]);
+        $data = $this->createTestPost(['status' => PostStatus => PUBLISHED->value]);
         $post = $this->repository->create($data);
         $id = $post->getId();
 
@@ -379,7 +379,7 @@ class PostRepositoryTest extends TestCase
     public function testIncrementViews(): void
     {
         // 建立測試文章
-        $data = $this->createTestPost(['status' => PostStatus::PUBLISHED->value]);
+        $data = $this->createTestPost(['status' => PostStatus => PUBLISHED->value]);
         $post = $this->repository->create($data);
         $id = $post->getId();
 
@@ -434,7 +434,7 @@ class PostRepositoryTest extends TestCase
     public function testGetPostsByTag(): void
     {
         // 建立測試文章
-        $data = $this->createTestPost(['status' => PostStatus::PUBLISHED->value]);
+        $data = $this->createTestPost(['status' => PostStatus => PUBLISHED->value]);
         $post = $this->repository->create($data);
         $postId = $post->getId();
 

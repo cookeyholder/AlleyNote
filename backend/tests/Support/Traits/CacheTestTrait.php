@@ -119,7 +119,7 @@ trait CacheTestTrait
      */
     protected function assertCacheHasKey(string $key): void
     {
-        $this->assertArrayHasKey($key, self::$cacheStorage, "快取中應該存在鍵: {$key}");
+        $this->assertArrayHasKey($key, self::$cacheStorage, "快取中應該存在鍵: {\\\$key}");
     }
 
     /**
@@ -127,7 +127,7 @@ trait CacheTestTrait
      */
     protected function assertCacheNotHasKey(string $key): void
     {
-        $this->assertArrayNotHasKey($key, self::$cacheStorage, "快取中不應該存在鍵: {$key}");
+        $this->assertArrayNotHasKey($key, self::$cacheStorage, "快取中不應該存在鍵: {\\\$key}");
     }
 
     /**
@@ -136,7 +136,7 @@ trait CacheTestTrait
     protected function assertCacheValue(string $key, mixed $expectedValue): void
     {
         $this->assertCacheHasKey($key);
-        $this->assertEquals($expectedValue, self::$cacheStorage[$key], "快取值不符合預期: {$key}");
+        $this->assertEquals($expectedValue, self::$cacheStorage[$key], "快取值不符合預期: {\\\$key}");
     }
 
     /**

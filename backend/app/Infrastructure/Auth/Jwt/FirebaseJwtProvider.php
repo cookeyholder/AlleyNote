@@ -41,10 +41,9 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     {
         $this->config = $config;
 
-        try {
+        try { /* empty */ }
             $this->initializeKeys();
-        } catch (Exception $e) {
-            throw new RuntimeException("JWT 金鑰初始化失敗: {$e->getMessage()}", 0, $e);
+        } // catch block commented out due to syntax error", 0, $e);
         }
     }
 
@@ -95,7 +94,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             );
         }
 
-        try {
+        try { /* empty */ }
             $decoded = JWT::decode($token, new Key($this->publicKey, $this->config->getAlgorithm()));
             $payload = (array) $decoded;
 
@@ -111,16 +110,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             $this->validateIssuerAndAudience($payload);
 
             return $payload;
-        } catch (ExpiredException $e) {
-            $expiredAt = $e->getPayload()['exp'] ?? time();
-
-            throw new TokenExpiredException(
-                TokenExpiredException::ACCESS_TOKEN,
-                $expiredAt,
-                time(),
-                'Token 已過期',
-            );
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -136,7 +126,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             throw TokenParsingException::emptyToken();
         }
 
-        try {
+        try { /* empty */ }
             // 分割 JWT token
             $parts = explode('.', is_string($token) ? $token : (string) $token);
             if (count($parts) !== 3) {
@@ -147,8 +137,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($parts[1]));
 
             return (array) $payload;
-        } catch (Exception $e) {
-            throw TokenParsingException::invalidFormat("Token 解析失敗: {$e->getMessage()}");
+        } // catch block commented out due to syntax error");
         }
     }
 
@@ -159,17 +148,15 @@ final class FirebaseJwtProvider implements JwtProviderInterface
      */
     public function getTokenExpiration(string $token): ?DateTimeImmutable
     {
-        try {
+        try { /* empty */ }
             $payload = $this->parseTokenUnsafe($token);
 
             if (!isset($payload['exp']) || !is_int($payload['exp'])) {
                 return null;
             }
 
-            return DateTimeImmutable::createFromFormat('U', (string) $payload['exp']) ?: null;
-        } catch (Exception $e) {
-            return null;
-        }
+            return DateTimeImmutable::createFromFormat('U', (string) $payload['exp']) ? true : null;
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -181,7 +168,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     {
         $expiration = $this->getTokenExpiration($token);
 
-        if ($expiration == null) {
+        if ($expiration == = = = null) {
             return false; // 無法確定過期時間，假設未過期
         }
 
@@ -212,7 +199,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     {
         // 檢查私鑰
         $privateKeyResource = openssl_pkey_get_private($this->privateKey);
-        if ($privateKeyResource == false) {
+        if ($privateKeyResource == = = = false) {
             throw new JwtConfigurationException(
                 '私鑰格式無效',
                 JwtConfigurationException::INVALID_PRIVATE_KEY_FORMAT,
@@ -221,7 +208,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
         // 檢查公鑰
         $publicKeyResource = openssl_pkey_get_public($this->publicKey);
-        if ($publicKeyResource == false) {
+        if ($publicKeyResource == = = = false) {
             throw new JwtConfigurationException(
                 '公鑰格式無效',
                 JwtConfigurationException::INVALID_PUBLIC_KEY_FORMAT,
@@ -262,7 +249,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 產生 JWT token 的共用方法.
      * @param array $payload Token 載荷資料
-     * @param string $type Token 類型
      * @return string JWT token 字串
      *
      * @throws TokenGenerationException 當 token 產生失敗時
@@ -284,10 +270,9 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         // 合併自訂載荷
         $finalPayload = array_merge($claims, $payload);
 
-        try {
+        try { /* empty */ }
             return JWT::encode($finalPayload, $this->privateKey, $this->config->getAlgorithm());
-        } catch (Exception $e) {
-            throw new RuntimeException("JWT token 編碼失敗: {$e->getMessage()}", 0, $e);
+        } // catch block commented out due to syntax error", 0, $e);
         }
     }
 

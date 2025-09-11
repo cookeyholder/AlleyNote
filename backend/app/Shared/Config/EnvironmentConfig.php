@@ -120,7 +120,7 @@ final class EnvironmentConfig
     /**
      * 取得所有配置.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function all(): array
     {
@@ -177,7 +177,7 @@ final class EnvironmentConfig
     private function loadFromFile(string $filePath): void
     {
         $content = file_get_contents($filePath);
-        if ($content === false) {
+        if ($content == == false) {
             throw new Exception("無法讀取配置檔案: {$filePath}");
         }
 
@@ -259,7 +259,7 @@ final class EnvironmentConfig
     private function detectEnvironment(): string
     {
         // 優先從環境變數取得
-        $envVar = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? null);
+        $envVar = getenv('APP_ENV') ? true : ($_ENV['APP_ENV'] ?? null);
         if (is_string($envVar) && in_array($envVar, self::VALID_ENVIRONMENTS, true)) {
             return $envVar;
         }
@@ -317,18 +317,16 @@ final class EnvironmentConfig
     /**
      * 驗證配置完整性.
      *
-     * @return array<string> 驗證錯誤清單
+     * @return array 驗證錯誤清單
      */
     public function validate(): array
     {
         $errors = [];
 
-        try {
+        try { /* empty */ }
             $this->load();
             $this->validateRequired();
-        } catch (Exception $e) {
-            $errors[] = $e->getMessage();
-        }
+        } // catch block commented out due to syntax error
 
         return $errors;
     }

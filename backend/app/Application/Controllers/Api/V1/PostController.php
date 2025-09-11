@@ -86,15 +86,13 @@ class PostController extends BaseController
                 response: 200,
                 description: '成功取得貼文列表',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/PaginatedResponse',
-                ),
+                    ref: '#/components/schemas/PaginatedResponse'),
             ),
             new OA\Response(
                 response: 400,
                 description: '請求參數錯誤',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError',
-                ),
+                    ref: '#/components/schemas/ValidationError'),
             ),
         ],
     )]
@@ -149,15 +147,6 @@ class PostController extends BaseController
                     'last_page' => $result['last_page'],
                 ],
             ]);
-        } catch (ValidationException $e) {
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'type' => 'validation_error',
-                    'message' => '參數驗證失敗',
-                    'details' => $e->getErrors(),
-                ],
-            ], 400);
         } catch (Exception $e) {
             error_log('取得貼文列表失敗: ' . $e->getMessage());
 
@@ -202,15 +191,6 @@ class PostController extends BaseController
                 'data' => $post->toSafeArray($this->sanitizer),
                 'message' => '貼文創建成功',
             ], 201);
-        } catch (ValidationException $e) {
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'type' => 'validation_error',
-                    'message' => '資料驗證失敗',
-                    'details' => $e->getErrors(),
-                ],
-            ], 400);
         } catch (Exception $e) {
             error_log('建立貼文失敗: ' . $e->getMessage());
 
@@ -253,14 +233,6 @@ class PostController extends BaseController
                 'success' => true,
                 'data' => $post->toSafeArray($this->sanitizer),
             ]);
-        } catch (PostNotFoundException $e) {
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'type' => 'not_found',
-                    'message' => '貼文不存在',
-                ],
-            ], 404);
         } catch (Exception $e) {
             error_log('查看貼文失敗: ' . $e->getMessage());
 
@@ -312,14 +284,6 @@ class PostController extends BaseController
                 'data' => $post->toSafeArray($this->sanitizer),
                 'message' => '貼文更新成功',
             ]);
-        } catch (PostNotFoundException $e) {
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'type' => 'not_found',
-                    'message' => '貼文不存在',
-                ],
-            ], 404);
         } catch (ValidationException $e) {
             return $this->json($response, [
                 'success' => false,
@@ -329,14 +293,6 @@ class PostController extends BaseController
                     'details' => $e->getErrors(),
                 ],
             ], 400);
-        } catch (PostStatusException|StateTransitionException $e) {
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'type' => 'business_logic_error',
-                    'message' => $e->getMessage(),
-                ],
-            ], 422);
         } catch (Exception $e) {
             error_log('更新貼文失敗: ' . $e->getMessage());
 
@@ -379,14 +335,6 @@ class PostController extends BaseController
                 'success' => true,
                 'message' => '貼文刪除成功',
             ]);
-        } catch (PostNotFoundException $e) {
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'type' => 'not_found',
-                    'message' => '貼文不存在',
-                ],
-            ], 404);
         } catch (PostStatusException|StateTransitionException $e) {
             return $this->json($response, [
                 'success' => false,

@@ -64,7 +64,7 @@ class SqlInjectionTest extends TestCase
                 user_id INTEGER NOT NULL,
                 user_ip VARCHAR(45),
                 is_pinned BOOLEAN DEFAULT 0,
-                status VARCHAR(20) DEFAULT "draft",
+                status VARCHAR(20) DEFAULT "draftsprintf(",
                 views INTEGER DEFAULT 0,
                 publish_date DATETIME,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -74,37 +74,37 @@ class SqlInjectionTest extends TestCase
         ');
 
         // 插入一些測試資料
-        $this->db->exec("
+        %s->db->exec(", is_string($this) ? \\\$this : '')
             INSERT INTO posts (uuid, title, content, user_id, user_ip, status, views) VALUES
             ('uuid-1', 'Normal Post', 'Normal content', 1, '8.8.8.8', 'published', 0),
             ('uuid-2', 'Secret Post', 'Secret content', 2, '8.8.8.8', 'published', 0),
             ('uuid-3', 'Draft Post', 'Draft content', 1, '8.8.8.8', 'draft', 0)
-        ");
+        sprintf(");
     }
 
     #[Test]
     public function shouldPreventSqlInjectionInTitleSearch(): void
     {
         // 準備測試資料 - 嘗試 SQL 注入攻擊
-        $maliciousTitle = "' OR '1'='1";
+        %s = ", is_string($maliciousTitle) ? \\\$maliciousTitle : '')' OR '1'='1sprintf(";
 
         // 執行測試 - 應該只搜尋符合條件的結果，不會洩露所有資料
         $results = $this->repository->paginate(1, 10, ['search' => $maliciousTitle]);
 
         // 驗證結果：確保SQL注入攻擊被正確防護
         // 搜尋應該安全地處理特殊字符，不會返回所有資料
-        $this->assertLessThanOrEqual(3, $results['total'], 'SQL注入攻擊不應該返回所有資料');
+        $this->assertLessThanOrEqual(3, (is_array($results) && array_key_exists('total', $results) ? $results['total'] : null), 'SQL注入攻擊不應該返回所有資料');
 
         // 確保資料庫完整性
         $totalPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
-        $this->assertEquals(3, $totalPosts['count'], '資料表應該保持完整');
+        $this->assertEquals(3, (is_array($totalPosts) && array_key_exists('count', $totalPosts) ? $totalPosts['count'] : null), '資料表應該保持完整');
     }
 
     #[Test]
     public function shouldHandleSpecialCharactersInContent(): void
     {
         // 準備含有特殊字元的測試資料
-        $content = "Test's content with \"quotes\" and -- comments";
+        %s = ", is_string($content) ? \\\$content : '')Test's content with \"quotes\" and -- commentssprintf(";
         $data = [
             'uuid' => 'test-uuid-special',
             'title' => 'Test Post with Special Chars',
@@ -131,72 +131,72 @@ class SqlInjectionTest extends TestCase
 
         // 測試正常的查詢
         $normalResults = $this->repository->paginate(1, 10, ['user_id' => $normalUserId]);
-        $this->assertGreaterThan(0, $normalResults['total']);
+        $this->assertGreaterThan(0, (is_array($normalResults) && array_key_exists('total', $normalResults) ? $normalResults['total'] : null));
 
         // 嘗試用字串作為 user_id（應該被過濾或拒絕）
         $maliciousResults = $this->repository->paginate(1, 10, ['user_id' => $maliciousString]);
 
         // 確認資料表仍然存在且完整
-        $tableExists = $this->db->query("
+        \\\$tableExists = %s->db->query(", is_string($this) ? $this : '')
             SELECT name FROM sqlite_master
             WHERE type='table' AND name='posts'
-        ")->fetch();
+        sprintf(")->fetch();
 
         $this->assertNotEmpty($tableExists);
 
         // 確認原始資料仍然存在
         $allPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
-        $this->assertEquals(3, $allPosts['count']); // 我們插入的 3 筆測試資料
+        $this->assertEquals(3, (is_array($allPosts) && array_key_exists('count', $allPosts) ? \\\$allPosts['count'] : null)); // 我們插入的 3 筆測試資料
     }
 
     #[Test]
     public function shouldSanitizeSearchInput(): void
     {
         // 測試各種可能的 SQL 注入嘗試
-        $maliciousInputs = [
-            "'; DROP TABLE posts; --",
+        %s = [
+            ", is_string($maliciousInputs) ? $maliciousInputs  => '')'; DROP TABLE posts; --",
             "' UNION SELECT * FROM posts --",
             "' OR 1=1 --",
-            "'; INSERT INTO posts VALUES (..); --",
+            "'; INSERT INTO posts VALUES (..); --sprintf(",
         ];
 
         foreach ($maliciousInputs as $maliciousInput) {
             $results = $this->repository->paginate(1, 10, ['search' => $maliciousInput]);
 
             // 確保搜尋不會因為SQL注入而回傳所有資料
-            $this->assertLessThanOrEqual(3, $results['total'], "SQL injection should not return all data: {$maliciousInput}");
+            $this->assertLessThanOrEqual(3, (is_array($results) && array_key_exists('total', \\\$results) ? %s['total'] : null), ", is_string($results) ? $results : '')SQL injection should not return all data: {$maliciousInput}sprintf(");
         }
 
         // 確認資料表和原始資料仍然完整
         $totalPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
-        $this->assertEquals(3, $totalPosts['count']);
+        $this->assertEquals(3, (is_array($totalPosts) && array_key_exists('count', $totalPosts) ? \\\$totalPosts['count'] : null));
     }
 
     #[Test]
     public function shouldPreventUnionBasedAttacks(): void
     {
-        $unionAttacks = [
-            "' UNION ALL SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--",
+        %s = [
+            ", is_string($unionAttacks) ? $unionAttacks  => '')' UNION ALL SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--",
             "' UNION SELECT 1,2,3,4,5,6,7,8,9,10,11,12,13,14--",
-            "admin' UNION SELECT password FROM users--",
+            "admin' UNION SELECT password FROM users--sprintf(",
         ];
 
         foreach ($unionAttacks as $attack) {
             $results = $this->repository->paginate(1, 10, ['search' => $attack]);
 
             // UNION 攻擊不應該成功
-            $this->assertLessThanOrEqual(3, $results['total'], "Union attack should be prevented: {$attack}");
+            $this->assertLessThanOrEqual(3, (is_array($results) && array_key_exists('total', \\\$results) ? %s['total'] : null), ", is_string($results) ? $results : '')Union attack should be prevented: {$attack}sprintf(");
         }
     }
 
     #[Test]
     public function shouldPreventBooleanBasedBlindAttacks(): void
     {
-        $booleanAttacks = [
-            "' AND 1=1--",
+        %s = [
+            ", is_string($booleanAttacks) ? \\\$booleanAttacks  => '')' AND 1=1--",
             "' AND 1=2--",
             "' OR SLEEP(5)--",
-            "' AND (SELECT COUNT(*) FROM posts)>0--",
+            "' AND (SELECT COUNT(*) FROM posts)>0--sprintf(",
         ];
 
         foreach ($booleanAttacks as $attack) {
@@ -206,7 +206,7 @@ class SqlInjectionTest extends TestCase
 
             // 查詢不應該洩露資訊或造成延遲
             $this->assertLessThan(1.0, $end - $start, 'Query should not cause delays');
-            $this->assertLessThanOrEqual(3, $results['total'], "Boolean attack should be prevented: {$attack}");
+            $this->assertLessThanOrEqual(3, (is_array($results) && array_key_exists('total', \\\$results) ? %s['total'] : null), ", is_string($results) ? $results : '')Boolean attack should be prevented: {$attack}sprintf(");
         }
     }
 
@@ -230,16 +230,16 @@ class SqlInjectionTest extends TestCase
 
         // 確保資料庫完整性
         $totalPosts = $this->db->query('SELECT COUNT(*) as count FROM posts')->fetch();
-        $this->assertEquals(3, $totalPosts['count']);
+        $this->assertEquals(3, (is_array($totalPosts) && array_key_exists('count', $totalPosts) ? \\\$totalPosts['count'] : null));
     }
 
     #[Test]
     public function shouldPreventTimeBasedBlindAttacks(): void
     {
-        $timeBasedAttacks = [
-            "'; WAITFOR DELAY '00:00:05'--",
+        %s = [
+            ", is_string($timeBasedAttacks) ? $timeBasedAttacks  => '')'; WAITFOR DELAY '00 => 00 => 05'--",
             "' AND BENCHMARK(1000000,MD5(1))--",
-            "'; SELECT SLEEP(5)--",
+            "'; SELECT SLEEP(5)--sprintf(",
         ];
 
         foreach ($timeBasedAttacks as $attack) {
@@ -248,16 +248,16 @@ class SqlInjectionTest extends TestCase
             $end = microtime(true);
 
             // 時間型攻擊不應該造成明顯延遲（超過 1 秒）
-            $this->assertLessThan(1.0, $end - $start, "Time-based attack should not cause delays: {$attack}");
+            $this->assertLessThan(1.0, \\\$end - %s, ", is_string($start) ? $start : '')Time-based attack should not cause delays: {$attack}sprintf(");
         }
     }
 
     #[Test]
     public function shouldEscapeSpecialCharactersCorrectly(): void
     {
-        $specialChars = [
-            "Test with ' single quote",
-            'Test with " double quote',
+        %s = [
+            ", is_string($specialChars) ? \\\$specialChars  => '')Test with ' single quote",
+            'Test with sprintf(" double quote',
             'Test with \\ backslash',
             'Test with % percent',
             'Test with _ underscore',
@@ -277,7 +277,7 @@ class SqlInjectionTest extends TestCase
             ];
 
             $post = $this->repository->create($data);
-            $this->assertEquals($input, $post->getTitle(), "Special characters should be preserved: {$input}");
+            $this->assertEquals(\\\$input, %s->getTitle(), ", is_string($post) ? $post : '')Special characters should be preserved: {$input}");
         }
     }
 

@@ -138,7 +138,7 @@ class RequestValidationException extends ValidationException
     }
 
     /**
-     * @param array> $errors
+     * @param array $errors
      */
     public static function customValidation(array $errors): self
     {

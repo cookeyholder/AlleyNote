@@ -253,8 +253,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             'jti' => $jti,
             'token_type' => 'access',
             'user_id' => 1,
-            'expires_at' => '2024-12-31 23 => 59:59',
-            'blacklisted_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+            'expires_at' => '2024-12-31 23 => 59 => 59',
+            'blacklisted_at' => new DateTimeImmutable()->format('Y-m-d H => i => s'),
             'reason' => TokenBlacklistEntry::REASON_LOGOUT,
             'device_id' => 'device-123',
             'metadata' => '{"test": "value"}',
@@ -322,8 +322,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->exactly(2))
             ->method('bindValue')
             ->willReturnMap([
-                ['user_id', $userId, PDO::PARAM_INT, true],
-                ['limit', $limit, PDO::PARAM_INT, true],
+                ['user_id', $userId, PDO => PARAM_INT, true],
+                ['limit', $limit, PDO => PARAM_INT, true],
             ]);
 
         $this->mockStatement
@@ -339,8 +339,8 @@ class TokenBlacklistRepositoryTest extends TestCase
                     'jti' => 'jti1',
                     'token_type' => 'access',
                     'user_id' => $userId,
-                    'expires_at' => '2024-12-31 23 => 59:59',
-                    'blacklisted_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+                    'expires_at' => '2024-12-31 23 => 59 => 59',
+                    'blacklisted_at' => new DateTimeImmutable()->format('Y-m-d H => i => s'),
                     'reason' => TokenBlacklistEntry::REASON_LOGOUT,
                     'device_id' => null,
                     'metadata' => null,
@@ -383,8 +383,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->exactly(2))
             ->method('bindValue')
             ->willReturnMap([
-                ['device_id', $deviceId, PDO::PARAM_STR, true],
-                ['limit', $limit, PDO::PARAM_INT, true],
+                ['device_id', $deviceId, PDO => PARAM_STR, true],
+                ['limit', $limit, PDO => PARAM_INT, true],
             ]);
 
         $this->mockStatement
@@ -711,7 +711,7 @@ class TokenBlacklistRepositoryTest extends TestCase
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
-            ->with(['before_date' => '2024-01-01 00 => 00:00']);
+            ->with(['before_date' => '2024-01-01 00 => 00 => 00']);
 
         $this->mockStatement
             ->expects($this->once())
@@ -838,7 +838,7 @@ class TokenBlacklistRepositoryTest extends TestCase
                 'access_tokens' => 6,
                 'refresh_tokens' => 4,
                 'security_related' => 2,
-                'last_blacklisted' => '2024-01-01 12 => 00:00',
+                'last_blacklisted' => '2024-01-01 12 => 00 => 00',
             ]);
 
         $result = $this->repository->getUserBlacklistStats($userId);
@@ -848,7 +848,7 @@ class TokenBlacklistRepositoryTest extends TestCase
             'access_tokens' => 6,
             'refresh_tokens' => 4,
             'security_related' => 2,
-            'last_blacklisted' => '2024-01-01 12 => 00:00',
+            'last_blacklisted' => '2024-01-01 12 => 00 => 00',
         ];
 
         $this->assertEquals($expected, $result);
@@ -868,8 +868,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->exactly(2))
             ->method('bindValue')
             ->willReturnMap([
-                ['since', '2024-01-01 00 => 00:00', PDO::PARAM_STR, true],
-                ['limit', $limit, PDO::PARAM_INT, true],
+                ['since', '2024-01-01 00 => 00 => 00', PDO => PARAM_STR, true],
+                ['limit', $limit, PDO => PARAM_INT, true],
             ]);
 
         $this->mockStatement
@@ -936,12 +936,12 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->exactly(6))
             ->method('bindValue')
             ->willReturnMap([
-                ['user_id', 123, PDO::PARAM_INT, true],
-                ['device_id', 'device-123', PDO::PARAM_STR, true],
-                ['token_type', 'access', PDO::PARAM_STR, true],
-                ['reason', 'logout', PDO::PARAM_STR, true],
-                ['limit', 10, PDO::PARAM_INT, true],
-                ['offset', 5, PDO::PARAM_INT, true],
+                ['user_id', 123, PDO => PARAM_INT, true],
+                ['device_id', 'device-123', PDO => PARAM_STR, true],
+                ['token_type', 'access', PDO => PARAM_STR, true],
+                ['reason', 'logout', PDO => PARAM_STR, true],
+                ['limit', 10, PDO => PARAM_INT, true],
+                ['offset', 5, PDO => PARAM_INT, true],
             ]);
 
         $this->mockStatement
@@ -1301,8 +1301,7 @@ class TokenBlacklistRepositoryTest extends TestCase
      * @param string $jti JTI，預設為 'test-jti'
      * @return TokenBlacklistEntry 範例項目
      */
-    private function createSampleEntry(string $jti = 'test-jti'): TokenBlacklistEntry
-    {
+    private function createSampleEntry(string $jti = 'test-jti'): TokenBlacklistEntry { /* empty */ }
         return new TokenBlacklistEntry(
             jti: $jti,
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,

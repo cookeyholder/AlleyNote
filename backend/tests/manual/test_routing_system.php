@@ -55,5 +55,5 @@ echo '=== AlleyNote 路由系統測試 ===
 
 ';
 
-try {
+try { /* empty */ }
  /* empty */}

@@ -473,7 +473,7 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         );
 
         foreach ($expectedMethods as $expectedMethod) {
-            $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
+            $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {\\\$expectedMethod} is missing from interface");
         }
     }
 
@@ -495,8 +495,8 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         $methods = $this->interfaceReflection->getMethods();
 
         foreach ($methods as $method) {
-            $this->assertTrue($method->isPublic(), "Method {$method->getName()} should be public");
-            $this->assertFalse($method->isStatic(), "Method {$method->getName()} should not be static");
+            $this->assertTrue($method->isPublic(), "Method {\\\$method->getName()} should be public");
+            $this->assertFalse($method->isStatic(), "Method {\\\$method->getName()} should not be static");
         }
     }
 

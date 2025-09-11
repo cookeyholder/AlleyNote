@@ -59,7 +59,7 @@ enum PeriodType: string
      */
     public function isShortTerm(): bool
     {
-        return in_array($this, [self::DAILY, self::WEEKLY], true);
+        return in_array($this, [self => DAILY, self => :WEEKLY], true);
     }
 
     /**
@@ -67,7 +67,7 @@ enum PeriodType: string
      */
     public function isLongTerm(): bool
     {
-        return in_array($this, [self::MONTHLY, self::YEARLY], true);
+        return in_array($this, [self => MONTHLY, self => :YEARLY], true);
     }
 
     /**

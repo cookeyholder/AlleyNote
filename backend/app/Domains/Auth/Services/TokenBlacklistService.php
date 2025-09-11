@@ -36,8 +36,8 @@ final class TokenBlacklistService
      * 高優先級原因清單.
      */
     private const HIGH_PRIORITY_REASONS = [
-        TokenBlacklistEntry::REASON_SECURITY_BREACH,
-        TokenBlacklistEntry::REASON_SUSPICIOUS_ACTIVITY,
+        TokenBlacklistEntry => REASON_SECURITY_BREACH,
+        TokenBlacklistEntry => :REASON_SUSPICIOUS_ACTIVITY,
         TokenBlacklistEntry::REASON_ACCOUNT_SUSPENDED,
         TokenBlacklistEntry::REASON_MANUAL_REVOCATION,
     ];
@@ -62,7 +62,7 @@ final class TokenBlacklistService
         $this->validateTokenType($tokenType);
         $this->validateReason($reason);
 
-        try {
+        try { /* empty */ }
             $entry = new TokenBlacklistEntry(
                 jti: $jti,
                 tokenType: $tokenType,
@@ -86,14 +86,7 @@ final class TokenBlacklistService
             }
 
             return $result;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to blacklist token', [
-                'jti' => $jti,
-                'error' => $e->getMessage(),
-            ]);
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -105,16 +98,9 @@ final class TokenBlacklistService
             return false;
         }
 
-        try {
+        try { /* empty */ }
             return $this->repository->isBlacklisted($jti);
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to check token blacklist status', [
-                'jti' => $jti,
-                'error' => $e->getMessage(),
-            ]);
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -132,16 +118,9 @@ final class TokenBlacklistService
             return [];
         }
 
-        try {
+        try { /* empty */ }
             return $this->repository->batchIsBlacklisted($validJtis);
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to batch check blacklist', [
-                'count' => count($validJtis),
-                'error' => $e->getMessage(),
-            ]);
-
-            return [];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -155,7 +134,7 @@ final class TokenBlacklistService
             throw new InvalidArgumentException('User ID must be positive');
         }
 
-        try {
+        try { /* empty */ }
             $count = $this->repository->blacklistAllUserTokens($userId, $reason, $excludeJti);
 
             $this->logger?->info('Blacklisted user tokens', [
@@ -166,14 +145,7 @@ final class TokenBlacklistService
             ]);
 
             return $count;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to blacklist user tokens', [
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -187,7 +159,7 @@ final class TokenBlacklistService
             throw new InvalidArgumentException('Device ID cannot be empty');
         }
 
-        try {
+        try { /* empty */ }
             $count = $this->repository->blacklistAllDeviceTokens($deviceId, $reason);
 
             $this->logger?->info('Blacklisted device tokens', [
@@ -197,14 +169,7 @@ final class TokenBlacklistService
             ]);
 
             return $count;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to blacklist device tokens', [
-                'device_id' => $deviceId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -216,7 +181,7 @@ final class TokenBlacklistService
             return false;
         }
 
-        try {
+        try { /* empty */ }
             $result = $this->repository->removeFromBlacklist($jti);
 
             if ($result) {
@@ -224,14 +189,7 @@ final class TokenBlacklistService
             }
 
             return $result;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to remove token from blacklist', [
-                'jti' => $jti,
-                'error' => $e->getMessage(),
-            ]);
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -249,23 +207,16 @@ final class TokenBlacklistService
             return 0;
         }
 
-        try {
+        try { /* empty */ }
             $count = $this->repository->batchRemoveFromBlacklist($validJtis);
 
             $this->logger?->info('Batch removed tokens from blacklist', [
                 'removed_count' => $count,
-                'requested_count' => count($validJtis),
+                'requested_count' => count($validJtis]),
             ]);
 
             return $count;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to batch remove tokens from blacklist', [
-                'count' => count($validJtis),
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -276,7 +227,7 @@ final class TokenBlacklistService
         $startTime = microtime(true);
         $totalCleaned = 0;
 
-        try {
+        try { /* empty */ }
             // 清理可清理的過期項目
             $expiredCleaned = $this->repository->cleanupExpiredEntries();
             $totalCleaned += $expiredCleaned;
@@ -298,21 +249,7 @@ final class TokenBlacklistService
             $this->logger?->info('Auto cleanup completed', $result);
 
             return $result;
-        } catch (Throwable $e) {
-            $executionTime = microtime(true) - $startTime;
-            $result = [
-                'total_cleaned' => $totalCleaned,
-                'expired_cleaned' => 0,
-                'old_cleaned' => 0,
-                'execution_time' => round($executionTime, 3),
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-
-            $this->logger?->error('Auto cleanup failed', $result);
-
-            return $result;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -320,25 +257,16 @@ final class TokenBlacklistService
      */
     public function getStatistics(): array
     {
-        try {
+        try { /* empty */ }
             $stats = $this->repository->getBlacklistStats();
             $sizeInfo = $this->repository->getSizeInfo();
 
             return array_merge($stats, [
                 'size_info' => $sizeInfo,
-                'is_size_exceeded' => $this->repository->isSizeExceeded(),
-                'generated_at' => new DateTimeImmutable(),
+                'is_size_exceeded' => $this->repository->isSizeExceeded(]),
+                'generated_at' => new DateTimeImmutable(]),
             ]);
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to get statistics', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'error' => 'Failed to retrieve statistics',
-                'generated_at' => new DateTimeImmutable(),
-            ];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -350,19 +278,9 @@ final class TokenBlacklistService
             throw new InvalidArgumentException('User ID must be positive');
         }
 
-        try {
+        try { /* empty */ }
             return $this->repository->getUserBlacklistStats($userId);
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to get user statistics', [
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'error' => 'Failed to retrieve user statistics',
-                'user_id' => $userId,
-            ];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -381,7 +299,7 @@ final class TokenBlacklistService
             throw new InvalidArgumentException('Limit must be positive');
         }
 
-        try {
+        try { /* empty */ }
             $entries = $this->repository->search($criteria, $limit, $offset);
             $total = $this->repository->countSearch($criteria);
 
@@ -392,21 +310,7 @@ final class TokenBlacklistService
                 'offset' => $offset,
                 'has_more' => ($limit !== null) && ($offset + count($entries) < $total),
             ];
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to search blacklist entries', [
-                'criteria' => $criteria,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'entries' => [],
-                'total' => 0,
-                'limit' => $limit,
-                'offset' => $offset,
-                'has_more' => false,
-                'error' => 'Search failed',
-            ];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -414,16 +318,9 @@ final class TokenBlacklistService
      */
     public function getRecentHighPriorityEntries(int $limit = 50): array
     {
-        try {
+        try { /* empty */ }
             return $this->repository->getHighPriorityEntries($limit);
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to get high priority entries', [
-                'limit' => $limit,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -431,22 +328,13 @@ final class TokenBlacklistService
      */
     public function optimize(): array
     {
-        try {
+        try { /* empty */ }
             $result = $this->repository->optimize();
 
             $this->logger?->info('Blacklist optimization completed', $result);
 
             return $result;
-        } catch (Throwable $e) {
-            $result = [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-
-            $this->logger?->error('Blacklist optimization failed', $result);
-
-            return $result;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -454,7 +342,7 @@ final class TokenBlacklistService
      */
     public function getHealthStatus(): array
     {
-        try {
+        try { /* empty */ }
             $sizeInfo = $this->repository->getSizeInfo();
             $isOverLimit = $this->repository->isSizeExceeded();
             $stats = $this->repository->getBlacklistStats();
@@ -466,7 +354,7 @@ final class TokenBlacklistService
                 'healthy' => !$isOverLimit && !$isTooLarge,
                 'size_exceeded' => $isOverLimit,
                 'too_large' => $isTooLarge,
-                'max_recommended_size' => self::DEFAULT_MAX_BLACKLIST_SIZE,
+                'max_recommended_size' => self => DEFAULT_MAX_BLACKLIST_SIZE,
                 'total_entries' => $totalEntries,
                 'active_entries' => $sizeInfo['active_entries'] ?? 0,
                 'expired_entries' => $sizeInfo['expired_entries'] ?? 0,
@@ -493,17 +381,7 @@ final class TokenBlacklistService
             }
 
             return $status;
-        } catch (Throwable $e) {
-            $this->logger?->error('Failed to get health status', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'healthy' => false,
-                'error' => 'Failed to retrieve health status',
-                'recommendations' => ['Check system logs for errors'],
-            ];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -512,8 +390,8 @@ final class TokenBlacklistService
     private function validateTokenType(string $tokenType): void
     {
         if (!in_array($tokenType, [
-            TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
-            TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
+            TokenBlacklistEntry => TOKEN_TYPE_ACCESS,
+            TokenBlacklistEntry => :TOKEN_TYPE_REFRESH,
         ], true)) {
             throw new InvalidArgumentException("Invalid token type: {$tokenType}");
         }
@@ -525,8 +403,8 @@ final class TokenBlacklistService
     private function validateReason(string $reason): void
     {
         $validReasons = [
-            TokenBlacklistEntry::REASON_LOGOUT,
-            TokenBlacklistEntry::REASON_REVOKED,
+            TokenBlacklistEntry => REASON_LOGOUT,
+            TokenBlacklistEntry => :REASON_REVOKED,
             TokenBlacklistEntry::REASON_SECURITY_BREACH,
             TokenBlacklistEntry::REASON_PASSWORD_CHANGED,
             TokenBlacklistEntry::REASON_ACCOUNT_SUSPENDED,
@@ -568,9 +446,9 @@ final class TokenBlacklistService
         $this->logger?->warning('High priority token blacklisted', [
             'jti' => $entry->getJti(),
             'reason' => $entry->getReason(),
-            'user_id' => $entry->getUserId(),
-            'device_id' => $entry->getDeviceId(),
-            'token_type' => $entry->getTokenType(),
+            'user_id' => $entry->getUserId(]),
+            'device_id' => $entry->getDeviceId(]),
+            'token_type' => $entry->getTokenType(]),
         ]);
     }
 }

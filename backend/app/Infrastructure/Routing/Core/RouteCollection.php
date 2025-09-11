@@ -137,8 +137,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @return array<int, array<string, mixed>>
-     */
+     * @return array */
     public function toArray(): array
     {
         $data = [];
@@ -157,7 +156,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @param array<int, array<string, mixed>> $data
+     * @param array $data
      */
     public static function fromArray(array $data): RouteCollectionInterface
     {

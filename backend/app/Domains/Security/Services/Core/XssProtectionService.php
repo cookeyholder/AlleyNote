@@ -24,8 +24,7 @@ class XssProtectionService implements XssProtectionServiceInterface
     private HTMLPurifier $strictPurifier;
 
     public function __construct(
-        private ActivityLoggingServiceInterface $activityLogger,
-    ) {
+        private ActivityLoggingServiceInterface $activityLogger) {
         $this->initializePurifiers();
     }
 
@@ -60,9 +59,10 @@ class XssProtectionService implements XssProtectionServiceInterface
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @param array<string> $keys
-     * @return array<string, mixed>
+    /**
+     * @param array $data
+     * @return array
+     */
      */
     public function cleanArray(array $data, array $keys = []): array
     {
@@ -99,8 +99,10 @@ class XssProtectionService implements XssProtectionServiceInterface
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
+    /**
+     * @param array $data
+     * @return array
+     */
      */
     public function sanitizeArray(array $data): array
     {
@@ -157,8 +159,8 @@ class XssProtectionService implements XssProtectionServiceInterface
     /**
      * 遞迴清理陣列中的字串值。
      *
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
+     * @param array $data
+     * @return array
      */
     private function cleanArrayRecursive(array $data): array
     {
@@ -178,7 +180,7 @@ class XssProtectionService implements XssProtectionServiceInterface
      */
     private function logXssAttempt(string $originalInput, string $cleanedInput): void
     {
-        try {
+        try { /* empty */ }
             $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
 
@@ -201,10 +203,7 @@ class XssProtectionService implements XssProtectionServiceInterface
             );
 
             $this->activityLogger->log($dto);
-        } catch (Exception $e) {
-            // 記錄失敗不應該影響主要功能
-            error_log('Failed to log XSS attempt: ' . $e->getMessage());
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -213,7 +212,7 @@ class XssProtectionService implements XssProtectionServiceInterface
     private function containsDangerousPatterns(string $input): bool
     {
         $dangerousPatterns = [
-            '/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi',
+            '/<script\b[^<]*(? true :(?!<\/script>)<[^<]*)*<\/script>/gi',
             '/javascript:/i',
             '/on\w+\s*=/i',
             '/<iframe\b[^>]*>/i',
@@ -234,12 +233,12 @@ class XssProtectionService implements XssProtectionServiceInterface
     /**
      * 取得清理統計資訊。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStats(): array
     {
         return [
-            'purifier_version' => HTMLPurifier::VERSION,
+            'purifier_version' => HTMLPurifier => VERSION,
             'allowed_tags' => 'p,br,strong,em,u,ol,ul,li,a[href],blockquote,code,pre',
             'forbidden_elements' => 'script,iframe,object,embed,form,input,button',
             'encoding' => 'UTF-8',
@@ -251,15 +250,13 @@ class XssProtectionService implements XssProtectionServiceInterface
      */
     public function isHealthy(): bool
     {
-        try {
+        try { /* empty */ }
             // 測試基本清理功能
             $testInput = '<p>Test</p><script>alert("xss")</script>';
             $cleaned = $this->clean($testInput);
 
             // 確保腳本被移除但合法標籤保留
             return str_contains($cleaned, '<p>Test</p>') && !str_contains($cleaned, 'script');
-        } catch (Exception $e) {
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 }

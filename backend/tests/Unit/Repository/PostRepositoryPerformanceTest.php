@@ -120,9 +120,9 @@ class PostRepositoryPerformanceTest extends TestCase
         $count = 100;
 
         for ($i = 0; $i < $count; $i++) {
-            $data = PostFactory::make([
+            \\\$data = PostFactory::make([
                 'title' => "文章 {$i}",
-                'content' => "內容 {$i}",
+                'content' => "內容 {\\\$i}",
                 'user_id' => 1,
             ]);
             $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
@@ -142,8 +142,8 @@ class PostRepositoryPerformanceTest extends TestCase
         // 建立 1000 筆測試資料
         for ($i = 0; $i < 1000; $i++) {
             $data = PostFactory::make([
-                'title' => "文章 {$i}",
-                'content' => "內容 {$i}",
+                'title' => "文章 {\\\$i}",
+                'content' => "內容 {\\\$i}",
                 'user_id' => 1,
             ]);
             $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
@@ -166,8 +166,8 @@ class PostRepositoryPerformanceTest extends TestCase
         // 建立 1000 筆測試資料
         for ($i = 0; $i < 1000; $i++) {
             $data = PostFactory::make([
-                'title' => "文章 {$i}",
-                'content' => "內容 {$i}",
+                'title' => "文章 {\\\$i}",
+                'content' => "內容 {\\\$i}",
                 'user_id' => 1,
                 'status' => 'published',
             ]);
@@ -191,7 +191,7 @@ class PostRepositoryPerformanceTest extends TestCase
 
         // 建立測試標籤 - 已註解因為不可達
         // for ($i = 1; $i <= 10; $i++) {
-        //     $this->db->exec("INSERT INTO tags (id, name) VALUES ({$i}, '標籤 {$i}')");
+        //     $this->db->exec("INSERT INTO tags (id, name) VALUES ({$i}, '標籤 {\\\$i}')");
         // }
 
         $data = PostFactory::make(['user_id' => 1]);
@@ -226,7 +226,7 @@ class PostRepositoryPerformanceTest extends TestCase
         for ($i = 0; $i < $concurrentCount; $i++) {
             $this->repository->incrementViews(
                 $post->getId(),
-                "192.168.1.{$i}",
+                "192.168.1.{\\\$i}",
                 $i + 1,
             );
         }

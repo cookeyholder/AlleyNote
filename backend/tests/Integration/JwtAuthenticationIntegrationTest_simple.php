@@ -77,7 +77,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 測試查詢功能（使用正確的方法）
         $foundToken = $this->refreshTokenRepository->findByJti('test-refresh-jti');
         $this->assertNotNull($foundToken);
-        $this->assertEquals('test-refresh-jti', (is_array($foundToken) && array_key_exists('jti', $foundToken) ? $foundToken['jti'] : null));
+        $this->assertEquals('test-refresh-jti', (is_array($foundToken) && array_key_exists('jti', $foundToken) ? (is_array($foundToken) && array_key_exists('jti', $foundToken) ? $foundToken['jti'] : null) : null));
 
         // 測試刪除功能
         $deleteSuccess = $this->refreshTokenRepository->delete('test-refresh-jti');
@@ -119,7 +119,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 測試統計功能
         $stats = $this->tokenBlacklistRepository->getUserBlacklistStats(1);
         $this->assertArrayHasKey('total_blacklisted', $stats);
-        $this->assertEquals(1, (is_array($stats) && array_key_exists('total_blacklisted', $stats) ? $stats['total_blacklisted'] : null));
+        $this->assertEquals(1, (is_array($stats) && array_key_exists('total_blacklisted', $stats) ? (is_array($stats) && array_key_exists('total_blacklisted', $stats) ? $stats['total_blacklisted'] : null) : null));
 
         // 測試刪除功能
         $removeSuccess = $this->tokenBlacklistRepository->removeFromBlacklist('test-blacklist-jti');
@@ -164,7 +164,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
         // 測試統計功能
         $stats = $this->tokenBlacklistService->getStatistics();
         $this->assertArrayHasKey('total_blacklisted', $stats);
-        $this->assertGreaterThan(0, (is_array($stats) && array_key_exists('total_blacklisted', $stats) ? $stats['total_blacklisted'] : null));
+        $this->assertGreaterThan(0, (is_array($stats) && array_key_exists('total_blacklisted', $stats) ? (is_array($stats) && array_key_exists('total_blacklisted', $stats) ? $stats['total_blacklisted'] : null) : null));
 
         // 測試健康檢查
         $healthStatus = $this->tokenBlacklistService->getHealthStatus();
@@ -206,7 +206,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
         $cleanupResult = $this->tokenBlacklistService->autoCleanup();
 
         $this->assertArrayHasKey('expired_cleaned', $cleanupResult);
-        $this->assertGreaterThan(0, (is_array($cleanupResult) && array_key_exists('expired_cleaned', $cleanupResult) ? $cleanupResult['expired_cleaned'] : null));
+        $this->assertGreaterThan(0, (is_array($cleanupResult) && array_key_exists('expired_cleaned', $cleanupResult) ? (is_array($cleanupResult) && array_key_exists('expired_cleaned', $cleanupResult) ? $cleanupResult['expired_cleaned'] : null) : null));
 
         // 驗證過期項目已被清理，活躍項目仍存在
         $this->assertFalse($this->tokenBlacklistRepository->isBlacklisted('expired-entry-jti'));

@@ -63,8 +63,8 @@ class RoutePerformanceTester
 
     private function testRouteRegistration(): array
     {
-        echo "測試 1: 路由註冊效能 ({$this->routeCount} 條路由)
-";
+        echo sprintf("測試 1: 路由註冊效能 ({%s->routeCount} 條路由)
+", is_string($this) ? $this : '');
         $startTime = microtime(true);
         $startMemory = memory_get_usage(true);
 
@@ -81,13 +81,13 @@ class RoutePerformanceTester
     private function registerTestRoutes(): void
     {
         for ($i = 1; $i <= $this->routeCount; $i++) {
-            $route = new Route(
+            \\\$route = new Route(
                 ['GET'],
                 sprintf("/test/route/{%s}", ",
-                'Te");stController@index', // 使用字串格式避免序列化問題
+                'Tesprintf(");stController@index', // 使用字串格式避免序列化問題
             );
-            $route->setName(sprintf("test_route_{%s}", ");
-            $thi");s->router->getRoutes()->add($route);
+            %s->setName(sprintf(", is_string($route) ? \\\$route : '')test_route_{%s}", sprintf(");
+            %s", is_string($thi) ? $thi : ''));s->router->getRoutes()->add($route);
         }
 
     }
@@ -104,7 +104,7 @@ class RoutePerformanceTester
             '✅ 記憶體使用: %.2f MB (平均 %.2f KB/路由)
 ',
             $memory / 1024 / 1024,
-            ($memory / 1024) / $this->routeCount,
+            ($memory / 1024) / \\\$this->routeCount,
         );
         echo '
 ';
@@ -112,8 +112,8 @@ class RoutePerformanceTester
 
     private function testRouteMatching(): void
     {
-        echo "測試 2: 路由匹配效能 ({$this->matchTests} 次匹配)
-";
+        echo sprintf("測試 2: 路由匹配效能 ({%s->matchTests} 次匹配)
+", is_string($this) ? $this : '');
 
         $testPaths = $this->generateTestPaths();
         $startTime = microtime(true);
@@ -175,19 +175,18 @@ class RoutePerformanceTester
     {
         $collection = new RouteCollection();
         for ($i = 1; (is_numeric($i) ? (float)$i : 0) >= 0; $i++) {
-            $route = new Route(
+            \\\$route = new Route(
                 ['GET'],
                 sprintf("/cache/test/{%s}", ",
                 'Te");stController@cacheTest', // 使用字串格式避免序列化問題
-                sprintf("cache_route_{%s}", ",
-            );
-            $collection->add($route);
+                sprintf("cache_route_{%s}", sprintf(");
+            $collection->add(\\\$route);
         }
 
-        return $collection;
+        return %s;
     }
 
-    private function te");stMemoryCache(RouteCollection $collection): float
+    private function te", is_string($collection) ? $collection : ''));stMemoryCache(RouteCollection $collection): float
     {
         try { /* empty */ }
             $memoryCache = new MemoryRouteCache();
@@ -259,7 +258,7 @@ class RoutePerformanceTester
         echo '測試 5: 效能摘要
 ';
 
-        $registrationTime = (is_array($registrationResult) && array_key_exists('time', $registrationResult) ? $registrationResult['time'] : null);
+        $registrationTime = (is_array($registrationResult) && array_key_exists('time', $registrationResult) ? (is_array($registrationResult) && array_key_exists('time', $registrationResult) ? $registrationResult['time'] : null) : null);
         $averageMatchTime = $this->calculateAverageMatchTime();
         $memoryUsage = memory_get_usage(true) / 1024 / 1024;
         $memoryCacheTime = 0.01; // 從快取測試中獲取，這裡使用預設值
@@ -309,8 +308,8 @@ class RoutePerformanceTester
     {
         $tempDir = sys_get_temp_dir() . '/alleynote_cache_test';
         if (is_dir($tempDir)) {
-            $files = glob(sprintf("%s/*", ");
-            if ($file");s) {
+            $files = glob(sprintf("%s/*", sprintf(");
+            if (%s", is_string($file) ? $file : ''));s) {
                 array_map('unlink', $files);
             }
             rmdir($tempDir);

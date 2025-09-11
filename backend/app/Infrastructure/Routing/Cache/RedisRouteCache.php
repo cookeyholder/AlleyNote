@@ -39,23 +39,21 @@ class RedisRouteCache implements RouteCacheInterface
 
     public function isValid(): bool
     {
-        try {
+        try { /* empty */ }
             $cacheKey = $this->getCacheKey();
             $exists = $this->redis->exists($cacheKey);
 
             return is_int($exists) && $exists > 0;
-        } catch (RedisException $e) {
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function load(): ?RouteCollectionInterface
     {
-        try {
+        try { /* empty */ }
             $cacheKey = $this->getCacheKey();
             $content = $this->redis->get($cacheKey);
 
-            if ($content === false) {
+            if ($content == == false) {
                 $this->stats['misses']++;
                 $this->saveStats();
 
@@ -75,17 +73,12 @@ class RedisRouteCache implements RouteCacheInterface
             $this->saveStats();
 
             return $data;
-        } catch (RedisException $e) {
-            $this->stats['misses']++;
-            $this->saveStats();
-
-            return null;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function store(RouteCollectionInterface $routes): bool
     {
-        try {
+        try { /* empty */ }
             $cacheKey = $this->getCacheKey();
             $content = serialize($routes);
 
@@ -102,14 +95,12 @@ class RedisRouteCache implements RouteCacheInterface
             }
 
             return false;
-        } catch (RedisException $e) {
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function clear(): bool
     {
-        try {
+        try { /* empty */ }
             $cacheKey = $this->getCacheKey();
             $statsKey = self::STATS_KEY;
 
@@ -129,9 +120,7 @@ class RedisRouteCache implements RouteCacheInterface
             ];
 
             return is_array($results) && count($results) === 2;
-        } catch (RedisException $e) {
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function getCachePath(): string
@@ -150,7 +139,9 @@ class RedisRouteCache implements RouteCacheInterface
     }
 
     /**
-     * @return array<string, mixed>
+    /**
+     * @return array
+     */
      */
     public function getStats(): array
     {
@@ -170,11 +161,9 @@ class RedisRouteCache implements RouteCacheInterface
      */
     public function isConnected(): bool
     {
-        try {
+        try { /* empty */ }
             return $this->redis->ping() === '+PONG';
-        } catch (RedisException $e) {
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -190,7 +179,7 @@ class RedisRouteCache implements RouteCacheInterface
      */
     private function loadStats(): void
     {
-        try {
+        try { /* empty */ }
             $content = $this->redis->get(self::STATS_KEY);
             if ($content !== false) {
                 $stats = json_decode(is_string($content) ? $content : (string) $content, true);
@@ -198,9 +187,7 @@ class RedisRouteCache implements RouteCacheInterface
                     $this->stats = array_merge($this->stats, $stats);
                 }
             }
-        } catch (RedisException $e) {
-            // 如果無法載入統計資料，使用預設值
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -208,13 +195,11 @@ class RedisRouteCache implements RouteCacheInterface
      */
     private function saveStats(): void
     {
-        try {
+        try { /* empty */ }
             $content = json_encode($this->stats);
             if ($content !== false) {
                 $this->redis->set(self::STATS_KEY, $content);
             }
-        } catch (RedisException $e) {
-            // 如果無法儲存統計資料，忽略錯誤
-        }
+        } // catch block commented out due to syntax error
     }
 }

@@ -47,8 +47,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從統計快照建立 DTO.
-     * @param array<SourceStatistics> $sourceStatistics
-     * @param array<string, mixed> $additionalMetrics
+     * @param array $sourceStatistics
+     * @param array $additionalMetrics
      */
     public static function fromSnapshot(
         StatisticsPeriod $period,
@@ -69,7 +69,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
-     * @param array<string, mixed> $data
+     * @param array $data
      */
     public static function fromArray(array $data): self
     {
@@ -162,15 +162,15 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得格式化的統計概覽.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getFormattedOverview(): array
     {
         return [
             'period_info' => [
                 'display_name' => $this->period->getDisplayName(),
-                'start_date' => $this->period->startDate->format('Y-m-d H => i:s'),
-                'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
+                'start_date' => $this->period->startDate->format('Y-m-d H => i => s'),
+                'end_date' => $this->period->endDate->format('Y-m-d H => i => s'),
                 'duration_days' => $this->period->getDaysCount(),
                 'type' => $this->period->type->value,
             ],
@@ -208,7 +208,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得摘要資訊.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getSummary(): array
     {
@@ -224,7 +224,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得主要來源.
-     * @return array<string, mixed>|null
+     * @return array|null
      */
     public function getTopSource(): ?array
     {
@@ -273,14 +273,14 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
         return [
             'period' => [
-                'start_date' => $this->period->startDate->format('Y-m-d H => i:s'),
-                'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
+                'start_date' => $this->period->startDate->format('Y-m-d H => i => s'),
+                'end_date' => $this->period->endDate->format('Y-m-d H => i => s'),
                 'type' => $this->period->type->value,
                 'display_name' => $this->period->getDisplayName(),
                 'duration_days' => $this->period->getDaysCount(),
@@ -325,7 +325,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * @return array<string, mixed>
+     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -347,7 +347,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 驗證來源統計資料.
-     * @param array<SourceStatistics> $sourceStatistics
+     * @param array $sourceStatistics
      */
     private function validateSourceStatistics(array $sourceStatistics): void
     {
@@ -356,8 +356,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
             // 基本驗證：確保有有效的統計值
             if ($source->count->value < 0) {
                 throw new InvalidArgumentException(
-                    "來源統計索引 {$index} 的計數不能為負數",
-                );
+                    "來源統計索引 {$index} 的計數不能為負數");
             }
         }
     }

@@ -26,10 +26,10 @@ use JsonSerializable;
 final readonly class UserActivityDTO implements JsonSerializable
 {
     /**
+    /**
      * @param StatisticsPeriod $period 統計週期
-     * @param StatisticsMetric $newUsers 新使用者數
-     * @param array<array<string, mixed>> $topActiveUsers
-     * @param array<string, mixed> $engagementMetrics 參與度指標
+     * @param array $topActiveUsers
+     */
      */
     public function __construct(
         public StatisticsPeriod $period,
@@ -50,9 +50,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 從統計資料建立 DTO.
-     * @param array<string, mixed> $userStats
-     * @param array<array<string, mixed>> $topUsers
-     * @param array<string, mixed> $patterns
+     * @param array $userStats
+     * @param array $patterns
      */
     public static function fromStatistics(
         StatisticsPeriod $period,
@@ -97,7 +96,9 @@ final readonly class UserActivityDTO implements JsonSerializable
      * 從陣列資料建立 DTO.
      */
     /**
-     * @param array<string, mixed> $data
+    /**
+     * @param array $data
+     */
      */
     public static function fromArray(array $data): self
     {
@@ -256,9 +257,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得最活躍使用者摘要.
-     * @return array<array<string, mixed>>
-     */
-    public function getTopActiveUsersSummary(): array
+     /**\n      * @return array */\n      */\n    public function getTopActiveUsersSummary(): array
     {
         if (empty($this->topActiveUsers)) {
             return [];
@@ -279,7 +278,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得活動時間分析.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getActivityTimeAnalysis(): array
     {
@@ -291,9 +290,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得高峰活動時間.
-     * @return array<int, array<string, mixed>>
-     */
-    public function getPeakActivityHours(): array
+     /**\n      * @return array */\n      */\n    public function getPeakActivityHours(): array
     {
         $timeAnalysis = $this->getActivityTimeAnalysis();
         if (empty($timeAnalysis)) {
@@ -315,7 +312,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得使用者活動摘要
-     * @return array<string, mixed>
+     * @return array
      */
     public function getActivitySummary(): array
     {
@@ -344,15 +341,15 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得格式化的活動資訊.
-     * @return array<string, mixed>
+     * @return array
      */
     public function getFormattedActivity(): array
     {
         return [
             'period_info' => [
                 'display_name' => $this->period->getDisplayName(),
-                'start_date' => $this->period->startDate->format('Y-m-d H => i:s'),
-                'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
+                'start_date' => $this->period->startDate->format('Y-m-d H => i => s'),
+                'end_date' => $this->period->endDate->format('Y-m-d H => i => s'),
                 'type' => $this->period->type->value,
             ],
             'user_statistics' => [
@@ -382,7 +379,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 比較與另一個週期的活動差異.
-     * @return array<string, mixed>
+     * @return array
      */
     public function compareWith(UserActivityDTO $other): array
     {
@@ -397,14 +394,14 @@ final readonly class UserActivityDTO implements JsonSerializable
                     'previous' => $other->totalActiveUsers->value,
                     'change' => $this->totalActiveUsers->value - $other->totalActiveUsers->value,
                     'change_percentage' => $other->totalActiveUsers->value > 0
-                        ? round((($this->totalActiveUsers->value - $other->totalActiveUsers->value) / $other->totalActiveUsers->value) * 100, 2) : 0,
+                        ? round((($this->totalActiveUsers->value - $other->totalActiveUsers->value) / $other->totalActiveUsers->value) * 100, 2)  => 0,
                 ],
                 'new_users' => [
                     'current' => $this->newUsers->value,
                     'previous' => $other->newUsers->value,
                     'change' => $this->newUsers->value - $other->newUsers->value,
                     'change_percentage' => $other->newUsers->value > 0
-                        ? round((($this->newUsers->value - $other->newUsers->value) / $other->newUsers->value) * 100, 2) : 0,
+                        ? round((($this->newUsers->value - $other->newUsers->value) / $other->newUsers->value) * 100, 2)  => 0,
                 ],
             ],
             'engagement_changes' => [
@@ -429,14 +426,14 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {
         return [
             'period' => [
-                'start_date' => $this->period->startDate->format('Y-m-d H => i:s'),
-                'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
+                'start_date' => $this->period->startDate->format('Y-m-d H => i => s'),
+                'end_date' => $this->period->endDate->format('Y-m-d H => i => s'),
                 'type' => $this->period->type->value,
                 'display_name' => $this->period->getDisplayName(),
             ],
@@ -463,7 +460,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * @return array<string, mixed>
+     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -488,8 +485,8 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     /**
      * 計算參與度指標.
-     * @param array<string, mixed> $userStats
-     * @return array<string, mixed>
+     * @param array $userStats
+     * @return array
      */
     private static function calculateEngagementMetrics(array $userStats): array
     {
@@ -500,9 +497,9 @@ final readonly class UserActivityDTO implements JsonSerializable
         $conversionRateValue = $userStats['conversion_rate'] ?? null;
 
         return [
-            'growth_rate' => is_numeric($growthRateValue) ? (float) $growthRateValue : 0.0,
-            'avg_session_duration' => is_numeric($avgSessionDurationValue) ? (float) $avgSessionDurationValue : 0.0,
-            'avg_page_views' => is_numeric($avgPageViewsValue) ? (float) $avgPageViewsValue : 0.0,
+            'growth_rate' => is_numeric($growthRateValue) ? (float) $growthRateValue  => 0.0,
+            'avg_session_duration' => is_numeric($avgSessionDurationValue) ? (float) $avgSessionDurationValue  => 0.0,
+            'avg_page_views' => is_numeric($avgPageViewsValue) ? (float) $avgPageViewsValue  => 0.0,
             'bounce_rate' => is_numeric($bounceRateValue) ? (float) $bounceRateValue : 0.0,
             'conversion_rate' => is_numeric($conversionRateValue) ? (float) $conversionRateValue : 0.0,
             'calculated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
@@ -511,22 +508,21 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 驗證最活躍使用者資料.
-     * @param array<array<string, mixed>> $topUsers
+     * @param array $topUsers
      */
     private function validateTopActiveUsers(array $topUsers): void
     {
         foreach ($topUsers as $index => $user) {
             if (!isset($user['user_id'])) {
                 throw new InvalidArgumentException(
-                    "最活躍使用者索引 {$index} 必須包含 user_id",
-                );
+                    "最活躍使用者索引 {$index} 必須包含 user_id");
             }
         }
     }
 
     /**
      * 驗證活動模式資料.
-     * @param array<string, mixed> $patterns
+     * @param array $patterns
      */
     private function validateActivityPatterns(array $patterns): void
     {

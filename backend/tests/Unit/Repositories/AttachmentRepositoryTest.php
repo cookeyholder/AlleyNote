@@ -158,11 +158,11 @@ class AttachmentRepositoryTest extends TestCase
         for ($i = 0; $i < 3; $i++) {
             $this->repository->create([
                 'post_id' => $postId,
-                'filename' => "test{$i}.jpg",
-                'original_name' => "測試圖片{$i}.jpg",
+                'filename' => "test{\\\$i}.jpg",
+                'original_name' => "測試圖片{\\\$i}.jpg",
                 'mime_type' => 'image/jpeg',
                 'file_size' => 1024,
-                'storage_path' => "/storage/attachments/2025/04/test{$i}.jpg",
+                'storage_path' => "/storage/attachments/2025/04/test{\\\$i}.jpg",
             ]);
         }
 

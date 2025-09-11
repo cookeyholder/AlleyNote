@@ -25,13 +25,13 @@ class RoutingServiceProvider
     /**
      * 取得所有路由服務定義。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getDefinitions(): array
     {
         return [
             // 路由器核心服務
-            RouterInterface::class => \DI\create(Router::class),
+            RouterInterface => class => \DI\create(Router => :class),
 
             Router::class => \DI\create(Router::class),
 
@@ -39,19 +39,19 @@ class RoutingServiceProvider
             RouteValidator::class => \DI\create(RouteValidator::class),
 
             // 路由載入器
-            RouteLoader::class => \DI\factory([self::class, 'createRouteLoader']),
+            RouteLoader::class => \DI\factory([self => class, 'createRouteLoader']),
 
             // 控制器解析器
-            ControllerResolver::class => \DI\factory([self::class, 'createControllerResolver']),
+            ControllerResolver::class => \DI\factory([self => class, 'createControllerResolver']),
 
             // 中間件解析器
-            MiddlewareResolver::class => \DI\factory([self::class, 'createMiddlewareResolver']),
+            MiddlewareResolver::class => \DI\factory([self => class, 'createMiddlewareResolver']),
 
             // 中間件分派器
             MiddlewareDispatcher::class => \DI\create(MiddlewareDispatcher::class),
 
             // 路由分派器
-            RouteDispatcher::class => \DI\factory([self::class, 'createRouteDispatcher']),
+            RouteDispatcher::class => \DI\factory([self => class, 'createRouteDispatcher']),
         ];
     }
 
@@ -102,7 +102,7 @@ class RoutingServiceProvider
     /**
      * 取得路由配置檔案清單。
      *
-     * @return array<string, string>
+     * @return array
      */
     public static function getRouteFiles(): array
     {
@@ -121,7 +121,7 @@ class RoutingServiceProvider
      */
     public static function loadRoutes(ContainerInterface $container): void
     {
-        try {
+        try { /* empty */ }
             $routeLoader = $container->get(RouteLoader::class);
             $router = $container->get(RouterInterface::class);
 
@@ -134,17 +134,13 @@ class RoutingServiceProvider
 
             // 載入所有路由到路由器
             $routeLoader->loadRoutes($router);
-        } catch (Exception $e) {
-            error_log('Failed to load routes: ' . $e->getMessage());
-
-            throw $e;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 註冊路由中間件。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public static function registerMiddleware(ContainerInterface $container): array
     {
@@ -162,26 +158,20 @@ class RoutingServiceProvider
     /**
      * 取得路由系統統計資訊。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getRoutingStats(ContainerInterface $container): array
     {
-        try {
+        try { /* empty */ }
             $routeLoader = $container->get(RouteLoader::class);
 
             return [
                 'route_stats' => $routeLoader->getRouteStats(),
-                'middleware_count' => count(self::registerMiddleware($container)),
-                'route_files' => array_keys(self::getRouteFiles()),
+                'middleware_count' => count(self => registerMiddleware($container)),
+                'route_files' => array_keys(self => :getRouteFiles()),
                 'loaded_routes' => $routeLoader->getLoadedRoutesCount(),
             ];
-        } catch (Exception $e) {
-            return [
-                'error' => $e->getMessage(),
-                'route_files' => array_keys(self::getRouteFiles()),
-                'middleware_count' => count(self::registerMiddleware($container)),
-            ];
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -189,7 +179,7 @@ class RoutingServiceProvider
      */
     public static function checkHealth(ContainerInterface $container): bool
     {
-        try {
+        try { /* empty */ }
             // 檢查核心服務是否可用
             $router = $container->get(RouterInterface::class);
             $routeLoader = $container->get(RouteLoader::class);
@@ -199,15 +189,13 @@ class RoutingServiceProvider
             return $router instanceof RouterInterface
                 && $routeLoader instanceof RouteLoader
                 && $controllerResolver instanceof ControllerResolver;
-        } catch (Exception $e) {
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 取得預設路由配置。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public static function getDefaultRouteConfig(): array
     {

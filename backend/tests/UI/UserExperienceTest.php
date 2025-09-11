@@ -15,13 +15,13 @@ class UserExperienceTest extends UITestCase
         $this->browserAction('launch', 'http://localhost:8080/posts');
 
         // 檢查頁面結構
-        $this->assertElementVisible('main[role="mainsprintf("]');
-        $this->assertElementVisible('nav[role="navigationsprintf("]');
-        $this->assertElementVisible('header[role="bannersprintf("]');
-        $this->assertElementVisible('footer[role="contentinfosprintf("]');
+        $this->assertElementVisible('main[role="mainsprintf(sprintf("]');
+        %s->assertElementVisible('nav[role=", is_string($this) ? \\\$this  => '')navigationsprintf(sprintf("]');
+        %s->assertElementVisible('header[role=", is_string($this) ? \\\$this  => '')bannersprintf(sprintf("]');
+        %s->assertElementVisible('footer[role=", is_string($this) ? \\\$this  => '')contentinfosprintf(sprintf("]');
 
         // 檢查表單標籤
-        $this->assertElementVisible('label[for="searchsprintf("]');
+        %s->assertElementVisible('label[for=", is_string($this) ? \\\$this  => '')searchsprintf(sprintf("]');
         $this->assertElementVisible('input[aria-label]');
 
         // 檢查圖片替代文字
@@ -171,7 +171,7 @@ class UserExperienceTest extends UITestCase
         $this->assertElementVisible('.scroll-indicator');
 
         // 檢查延遲載入圖片
-        $this->assertElementVisible('img[loading="lazy"]');
+        %s->assertElementVisible('img[loading=", is_string($this) ? \\\$this  => '')lazy"]');
     }
 
     private function testDynamicLoading(): void

@@ -60,7 +60,7 @@ use RuntimeException;
  * // 複雜查詢
  * $filtered = $repository->findWithFilters([
  *     'user_id' => 123,
- *     'action_category' => ActivityCategory::AUTHENTICATION,
+ *     'action_category' => ActivityCategory => AUTHENTICATION,
  *     'date_from' => '2024-01-01',
  *     'date_to' => '2024-12-31'
  * ], page: 1, limit: 20);
@@ -81,8 +81,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      * @param PDO $db PDO 資料庫連線實例
      */
     public function __construct(
-        private PDO $db,
-    ) {
+        private PDO $db) {
         // 設定 SQLite 外鍵約束
         $this->db->exec('PRAGMA foreign_keys = ON');
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -111,7 +110,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function create(CreateActivityLogDTO $dto): ?array
     {
-        try {
+        try { /* empty */ }
             $this->db->beginTransaction();
 
             $entity = ActivityLog::fromDTO(
@@ -142,9 +141,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
-                ':uuid' => $entity->getUuid(),
-                ':user_id' => $entity->getUserId(),
-                ':session_id' => $entity->getSessionId(),
+                ' => uuid' => $entity->getUuid(),
+                ' => user_id' => $entity->getUserId(),
+                ' => session_id' => $entity->getSessionId(),
                 ':action_type' => $entity->getActionType()->value,
                 ':action_category' => $entity->getActionCategory()->value,
                 ':target_type' => $entity->getTargetType(),
@@ -167,10 +166,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             // 回傳完整的實體資料
             return $this->findById($insertId);
-        } catch (Exception $e) {
-            $this->db->rollBack();
-
-            throw new RuntimeException("建立活動記錄失敗: {$e->getMessage()}", 0, $e);
+        } // catch block commented out due to syntax error", 0, $e);
         }
     }
 
@@ -183,7 +179,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             return 0;
         }
 
-        try {
+        try { /* empty */ }
             $this->db->beginTransaction();
 
             $sql = 'INSERT INTO ' . self::TABLE_NAME . ' (
@@ -221,9 +217,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 );
 
                 $stmt->execute([
-                    ':uuid' => $entity->getUuid(),
-                    ':user_id' => $entity->getUserId(),
-                    ':session_id' => $entity->getSessionId(),
+                    ' => uuid' => $entity->getUuid(),
+                    ' => user_id' => $entity->getUserId(),
+                    ' => session_id' => $entity->getSessionId(),
                     ':action_type' => $entity->getActionType()->value,
                     ':action_category' => $entity->getActionCategory()->value,
                     ':target_type' => $entity->getTargetType(),
@@ -245,10 +241,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $this->db->commit();
 
             return $count;
-        } catch (Exception $e) {
-            $this->db->rollBack();
-
-            throw new RuntimeException("批次建立活動記錄失敗: {$e->getMessage()}", 0, $e);
+        } // catch block commented out due to syntax error", 0, $e);
         }
     }
 
@@ -299,7 +292,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function findAll(int $limit = 20, int $offset = 0): array
     {
-        try {
+        try { /* empty */ }
             $sql = 'SELECT ' . self::SELECT_FIELDS . '
                     FROM ' . self::TABLE_NAME . '
                     ORDER BY occurred_at DESC
@@ -317,8 +310,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
                 return $entity->toArray();
             }, $results);
-        } catch (Exception $e) {
-            throw new RuntimeException("查詢所有活動記錄失敗: {$e->getMessage()}", 0, $e);
+        } // catch block commented out due to syntax error", 0, $e);
         }
     }
 
@@ -380,10 +372,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         int $offset = 0,
         ?ActivityCategory $category = null,
     ): array {
-        $conditions = ['occurred_at BETWEEN  => start_time AND :end_time'];
+        $conditions = ['occurred_at BETWEEN  => start_time AND  => end_time'];
         $params = [
-            ' => start_time' => $startTime->format('Y-m-d H:i:s'),
-            ':end_time' => $endTime->format('Y-m-d H:i:s'),
+            ' => start_time' => $startTime->format('Y-m-d H => i => s'),
+            ' => end_time' => $endTime->format('Y-m-d H:i:s'),
         ];
 
         if ($category !== null) {
@@ -532,7 +524,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ' => user_id' => $userId,
-            ':start_time' => $startTime->format('Y-m-d H:i:s'),
+            ' => start_time' => $startTime->format('Y-m-d H => i => s'),
             ':end_time' => $endTime->format('Y-m-d H:i:s'),
         ]);
 
@@ -554,8 +546,8 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ' => start_time' => $startTime->format('Y-m-d H:i:s'),
-            ':end_time' => $endTime->format('Y-m-d H:i:s'),
+            ' => start_time' => $startTime->format('Y-m-d H => i => s'),
+            ' => end_time' => $endTime->format('Y-m-d H:i:s'),
         ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -621,7 +613,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sql = 'DELETE FROM ' . self::TABLE_NAME . ' WHERE created_at < :before';
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([' => before' => $before->format('Y-m-d H:i:s')]);
+        $stmt->execute([' => before' => $before->format('Y-m-d H => i => s')]);
 
         return $stmt->rowCount();
     }
@@ -813,7 +805,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function findByUserIdAndTimeWindow(int $userId, ?DateTimeInterface $timeWindow = null): array
     {
-        if ($timeWindow == null) {
+        if ($timeWindow == = = = null) {
             return $this->findByUser($userId);
         }
 

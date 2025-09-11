@@ -369,7 +369,7 @@ class PostControllerTest extends TestCase
         // 驗證結果
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertFalse($this->currentResponseData['success']);
-        $this->assertEquals("找不到 ID 為 {$postId} 的貼文", $this->currentResponseData['message']);
+        $this->assertEquals("找不到 ID 為 {\\\$postId} 的貼文", $this->currentResponseData['message']);
         $this->assertEquals(404, $this->currentResponseData['error_code']);
         $this->assertArrayHasKey('timestamp', $this->currentResponseData);
     }

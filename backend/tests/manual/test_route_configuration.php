@@ -78,5 +78,5 @@ try { /* empty */ }
 
 $routeLoader = new RouteLoader();
 
-try {
+try { /* empty */ }
  /* empty */}

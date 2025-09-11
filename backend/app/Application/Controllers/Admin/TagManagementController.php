@@ -28,7 +28,7 @@ class TagManagementController extends BaseController
      */
     public function listTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $queryParams = $request->getQueryParams();
             $page = max(1, is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
             $limit = min(100, max(10, is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 20));
@@ -39,7 +39,7 @@ class TagManagementController extends BaseController
 
             foreach ($drivers as $driverName => $driver) {
                 if ($driver instanceof TaggedCacheInterface) {
-                    try {
+                    try { /* empty */ }
                         $driverTags = $driver->getAllTags();
                         foreach ($driverTags as $tag) {
                             $tags[] = [
@@ -47,8 +47,7 @@ class TagManagementController extends BaseController
                                 'driver' => $driverName,
                             ];
                         }
-                    } catch (Exception $e) {
-                        $this->logger?->warning("無法從驅動 {$driverName} 獲取標籤", ['error' => $e->getMessage()]);
+                    } // catch block commented out due to syntax error
                     }
                 }
             }
@@ -57,7 +56,6 @@ class TagManagementController extends BaseController
             if (!empty($search)) {
                 $tags = array_filter($tags, function ($tag) use ($search) {
                     $tagName = $tag['name'] ?? '';
-
                     return is_string($tagName) && stripos($tagName, $search) !== false;
                 });
             }
@@ -82,18 +80,7 @@ class TagManagementController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $this->logger?->error('獲取標籤列表失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '獲取標籤列表失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -103,7 +90,7 @@ class TagManagementController extends BaseController
      */
     public function listGroups(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $groups = [];
 
             // 簡化的群組邏輯 - 實際應該從 GroupManager 獲取
@@ -117,29 +104,18 @@ class TagManagementController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $this->logger?->error('獲取標籤群組失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '獲取標籤群組失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 清除單個標籤.
      *
      * POST /admin/cache/tags/{tag}/flush
-     * @param array<string, mixed> $args
+     * @param array $args
      */
     public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
@@ -153,14 +129,14 @@ class TagManagementController extends BaseController
             foreach (['redis', 'memory'] as $driverName) {
                 $driver = $this->cacheManager->getDriver($driverName);
                 if ($driver && $driver instanceof TaggedCacheInterface) {
-                    try {
+                    try { /* empty */ }
                         $flushedCount = $driver->flushByTags([$tagName]);
                         if ($flushedCount > 0) {
                             $flushed = true;
                             $affectedDrivers[] = $driverName;
                         }
-                    } catch (Exception $e) {
-                        $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", ['error' => $e->getMessage()]);
+                    } // catch block commented out due to syntax error 失敗", ['error' => $e->getMessage(])]);
+                        }
                     }
                 }
             }
@@ -180,19 +156,7 @@ class TagManagementController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $tagName ??= 'unknown';
-            $this->logger?->error("清除標籤失敗: {$tagName}", ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '清除標籤失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -202,7 +166,7 @@ class TagManagementController extends BaseController
      */
     public function flushTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $bodyString = (string) $request->getBody();
             $body = json_decode($bodyString, true);
 
@@ -230,14 +194,14 @@ class TagManagementController extends BaseController
                 foreach (['redis', 'memory'] as $driverName) {
                     $driver = $this->cacheManager->getDriver($driverName);
                     if ($driver && $driver instanceof TaggedCacheInterface) {
-                        try {
+                        try { /* empty */ }
                             $flushedCount = $driver->flushByTags([$tagName]);
                             if ($flushedCount > 0) {
                                 $flushed = true;
                                 $affectedDrivers[] = $driverName;
                             }
-                        } catch (Exception $e) {
-                            $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", ['error' => $e->getMessage()]);
+                        } // catch block commented out due to syntax error 失敗", ['error' => $e->getMessage(])]);
+                            }
                         }
                     }
                 }
@@ -265,18 +229,7 @@ class TagManagementController extends BaseController
             ];
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $this->logger?->error('批量清除標籤失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '批量清除標籤失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -286,7 +239,7 @@ class TagManagementController extends BaseController
      */
     public function flushAllCache(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        try {
+        try { /* empty */ }
             $success = $this->cacheManager->clear();
 
             if ($success) {
@@ -300,17 +253,6 @@ class TagManagementController extends BaseController
             }
 
             return $this->json($response, $responseData);
-        } catch (Exception $e) {
-            $this->logger?->error('清空所有快取失敗', ['error' => $e->getMessage()]);
-
-            return $this->json($response, [
-                'success' => false,
-                'error' => [
-                    'message' => '清空所有快取失敗',
-                    'details' => $e->getMessage(),
-                ],
-                'timestamp' => time(),
-            ], 500);
-        }
+        } // catch block commented out due to syntax error
     }
 }

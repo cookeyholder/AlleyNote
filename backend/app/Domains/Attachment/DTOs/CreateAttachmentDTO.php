@@ -205,17 +205,17 @@ class CreateAttachmentDTO extends BaseDTO
      * 取得驗證規則.
      */
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function getValidationRules(): array
     {
         return [
             'post_id' => 'required|post_id',
             'filename' => 'required|string|filename => 255',
-            'original_name' => 'required|string|original_name:255',
+            'original_name' => 'required|string|original_name => 255',
             'mime_type' => 'required|string|mime_type',
-            'file_size' => 'required|file_size:1,10485760', // 1 byte 到 10MB
-            'storage_path' => 'required|string|storage_path:500',
+            'file_size' => 'required|file_size => 1,10485760', // 1 byte 到 10MB
+            'storage_path' => 'required|string|storage_path => 500',
             'uploaded_by' => 'required|uploaded_by',
         ];
     }
@@ -224,7 +224,7 @@ class CreateAttachmentDTO extends BaseDTO
      * 轉換為陣列格式（供 Repository 使用）.
      */
     /**
-     * @return array<string, mixed>
+     * @return array
      */
     public function toArray(): array
     {

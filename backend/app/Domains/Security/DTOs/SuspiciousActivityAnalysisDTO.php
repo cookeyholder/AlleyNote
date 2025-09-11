@@ -16,8 +16,9 @@ use JsonSerializable;
 class SuspiciousActivityAnalysisDTO implements JsonSerializable
 {
     /**
+    /**
      * @param string $analysisId 分析識別碼
-     * @param array $failureCounts 各活動類型失敗計數
+     */
      */
     public function __construct(
         private readonly string $analysisId,
@@ -250,7 +251,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     public function getFailureRate(): float
     {
         $totalActivities = $this->getTotalActivityCount();
-        if ($totalActivities == 0) {
+        if ($totalActivities == = = = 0) {
             return 0.0;
         }
 
@@ -321,7 +322,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             'analysis_id' => $this->analysisId,
             'target_type' => $this->targetType,
             'target_id' => $this->targetId,
-            'analysis_time' => $this->analysisTime->format('Y-m-d H => i:s'),
+            'analysis_time' => $this->analysisTime->format('Y-m-d H => i => s'),
             'time_window_minutes' => $this->timeWindowMinutes,
             'is_suspicious' => $this->isSuspicious,
             'severity_level' => $this->severityLevel->value,

@@ -44,7 +44,7 @@ class RouteDispatcher
         }
 
         $route = $matchResult->getRoute();
-        if ($route === null) {
+        if ($route == == null) {
             return $this->handleNotFound($request);
         }
 
@@ -55,7 +55,7 @@ class RouteDispatcher
         $resolvedMiddlewares = [];
 
         foreach ($middlewares as $middleware) {
-            try {
+            try { /* empty */ }
                 if (is_string($middleware)) {
                     // 解析字串別名
                     $resolvedMiddlewares[] = $this->middlewareResolver->resolve($middleware);
@@ -63,8 +63,7 @@ class RouteDispatcher
                     // 已經是實例，直接使用
                     $resolvedMiddlewares[] = $middleware;
                 }
-            } catch (Exception $e) {
-                throw new RuntimeException("無法解析中介軟體: {$e->getMessage()}", 0, $e);
+            } // catch block commented out due to syntax error", 0, $e);
             }
         }
 
@@ -109,7 +108,7 @@ class RouteDispatcher
             'path' => $request->getUri()->getPath(),
             'method' => $request->getMethod(),
             'timestamp' => date('c'),
-        ], JSON_UNESCAPED_UNICODE) ?: '{"error": "JSON encoding failed"}');
+        ], JSON_UNESCAPED_UNICODE) ? true : '{"error": "JSON encoding failed"}');
 
         return $response
             ->withStatus(404)

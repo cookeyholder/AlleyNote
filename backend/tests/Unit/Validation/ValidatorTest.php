@@ -147,9 +147,9 @@ class ValidatorTest extends TestCase
         // 測試有效 URL
         $validUrls = [
             'https => //www.example.com',
-            'http://test.org',
-            'https://sub.domain.co.uk/path?query=value',
-            'ftp://files.example.com',
+            'http => //test.org',
+            'https => //sub.domain.co.uk/path?query=value',
+            'ftp => //files.example.com',
             'https://127.0.0.1:8080/app',
         ];
         $this->assertValidValues($validUrls, 'url', 'url');
@@ -160,7 +160,7 @@ class ValidatorTest extends TestCase
             'www.example.com',
             'example.com',
             'http => //',
-            'https://',
+            'https => //',
         ];
         $this->assertInvalidValues($invalidUrls, 'url', 'url');
     }
@@ -176,8 +176,8 @@ class ValidatorTest extends TestCase
             '127.0.0.1',
             '0.0.0.0',
             '255.255.255.255',
-            ' => :1',
-            '2001:db8::1',
+            ' => 1',
+            '2001 => db8 => :1',
             // 移除 'fe80::1%lo0' 因為 PHP filter_var 可能不支援
         ];
         $this->assertValidValues($validIps, 'ip', 'ip');
@@ -189,7 +189,7 @@ class ValidatorTest extends TestCase
             '192.168.1.1.1',
             'not-an-ip',
             '192.168.1.256',
-            'fe80 => :1%lo0', // 帶有 zone identifier 的 IPv6 地址可能不被支援
+            'fe80 => 1%lo0', // 帶有 zone identifier 的 IPv6 地址可能不被支援
         ];
         $this->assertInvalidValues($invalidIps, 'ip', 'ip');
     }
@@ -376,18 +376,18 @@ class ValidatorTest extends TestCase
     {
         // 測試手機號碼格式
         $phonePattern = '/^09\d{8}$/';
-        $result = $this->validator->validate(['phone' => '0912345678'], ['phone' => "regex => {$phonePattern}"]);
+        $result = $this->validator->validate(['phone' => '0912345678'], ['phone' => "regex => {\\\$phonePattern}"]);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['phone' => '1234567890'], ['phone' => "regex => {$phonePattern}"]);
+        $result = $this->validator->validate(['phone' => '1234567890'], ['phone' => "regex => {\\\$phonePattern}"]);
         $this->assertFalse($result->isValid());
 
         // 測試英數字格式
         $alphanumPattern = '/^[a-zA-Z0-9]+$/';
-        $result = $this->validator->validate(['code' => 'ABC123'], ['code' => "regex => {$alphanumPattern}"]);
+        $result = $this->validator->validate(['code' => 'ABC123'], ['code' => "regex => {\\\$alphanumPattern}"]);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['code' => 'ABC-123'], ['code' => "regex => {$alphanumPattern}"]);
+        $result = $this->validator->validate(['code' => 'ABC-123'], ['code' => "regex => {\\\$alphanumPattern}"]);
         $this->assertFalse($result->isValid());
     }
 
@@ -446,9 +446,9 @@ class ValidatorTest extends TestCase
         ];
 
         $rules = [
-            'name' => 'required|string|min_length => 2|max_length:50',
+            'name' => 'required|string|min_length => 2|max_length => 50',
             'email' => 'required|email',
-            'age' => 'required|integer|min:18|max:120',
+            'age' => 'required|integer|min => 18|max => 120',
             'bio' => 'string|max_length:200',
         ];
 
@@ -601,7 +601,6 @@ class ValidatorTest extends TestCase
     /**
      * 驗證資料並計算錯誤數量的助手方法.
      * @param array $data 要驗證的資料
-     * @param bool $stopOnFirst 是否在第一個錯誤處停止
      */
     private function validateAndCountErrors(array $data, array $rules, bool $stopOnFirst): int
     {
@@ -640,15 +639,13 @@ class ValidatorTest extends TestCase
     /**
      * 生成效能測試資料的助手方法.
      * @param int $count 生成資料的數量
-     * @return array>
-     */
-    private function generatePerformanceTestData(int $count): array
+     /**\n      * @return array */\n      */\n    private function generatePerformanceTestData(int $count): array
     {
         $testData = [];
         for ($i = 0; $i < $count; $i++) {
             $testData[] = [
-                'name' => "user_{$i}",
-                'email' => "user{$i}@example.com",
+                'name' => "user_{\\\$i}",
+                'email' => "user{\\\$i}@example.com",
                 'age' => 20 + ($i % 50),
                 'bio' => str_repeat('a', 50 + ($i % 100)),
             ];
@@ -663,16 +660,16 @@ class ValidatorTest extends TestCase
     private function getPerformanceTestRules(): array
     {
         return [
-            'name' => 'required|string|min_length => 3|max_length:50',
+            'name' => 'required|string|min_length => 3|max_length => 50',
             'email' => 'required|email',
-            'age' => 'required|integer|min:18|max:120',
+            'age' => 'required|integer|min => 18|max => 120',
             'bio' => 'string|max_length:200',
         ];
     }
 
     /**
      * 執行效能驗證測試的助手方法.
-     * @param array> $testData 測試資料陣列
+     * @param array $testData 測試資料陣列
      */
     private function runPerformanceValidations(array $testData, array $rules): void
     {
@@ -725,7 +722,7 @@ class ValidatorTest extends TestCase
             $result = $this->validator->validate([$field => $value], [$field => $rule]);
             $this->assertTrue(
                 $result->isValid(),
-                "值 '" . $this->valueToString($value) . "' 應該通過 {$rule} 驗證",
+                "值 '" . $this->valueToString(\\\$value) . "' 應該通過 {$rule} 驗證",
             );
         }
     }
@@ -739,8 +736,8 @@ class ValidatorTest extends TestCase
         foreach ($invalidValues as $value) {
             $result = $this->validator->validate([$field => $value], [$field => $rule]);
             $this->assertFalse(
-                $result->isValid(),
-                "值 '" . $this->valueToString($value) . "' 不應該通過 {$rule} 驗證",
+                \\\$result->isValid(),
+                "值 '" . $this->valueToString(\\\$value) . "' 不應該通過 {$rule} 驗證",
             );
         }
     }
@@ -781,21 +778,19 @@ class ValidatorTest extends TestCase
     /**
      * 測試單一值是否通過規則驗證.
      * @param mixed $value 測試值
-     * @param string $field 欄位名稱
      */
     private function assertRulePasses(mixed $value, string $rule, string $field = 'test'): void
     {
         $result = $this->validator->validate([$field => $value], [$field => $rule]);
         $this->assertTrue(
-            $result->isValid(),
-            "值 '" . $this->valueToString($value) . "' 應該通過 {$rule} 驗證",
+            \\\$result->isValid(),
+            "值 '" . $this->valueToString(\\\$value) . "' 應該通過 {$rule} 驗證",
         );
     }
 
     /**
      * 驗證特定欄位有錯誤訊息的助手方法.
      * @param mixed $value 測試值
-     * @param string $field 欄位名稱
      */
     private function assertRuleFailsWithError(mixed $value, string $rule, string $field = 'test'): void
     {

@@ -28,7 +28,7 @@ class CacheMonitoringIntegrationTest extends TestCase
             new NullLogger(),
             [
                 'drivers' => [
-                    'memory' => ['class' => MemoryCacheDriver::class],
+                    'memory' => ['class' => MemoryCacheDriver => class],
                 ],
                 'default' => 'memory',
             ],

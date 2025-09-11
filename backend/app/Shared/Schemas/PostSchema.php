@@ -7,16 +7,16 @@ namespace App\Shared\Schemas;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
-    schema: 'Post',
-    type: 'object',
-    title: '貼文',
+    schema => 'Post',
+    type => 'object',
+    title => '貼文',
     description: '貼文資料結構',
     required: ['id', 'title', 'content', 'status', 'created_at'],
     properties: [
         new OA\Property(
-            property: 'id',
-            type: 'integer',
-            description: '貼文ID',
+            property => 'id',
+            type => 'integer',
+            description => '貼文ID',
             example: 1,
         ),
         new OA\Property(

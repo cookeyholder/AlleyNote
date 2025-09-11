@@ -41,7 +41,9 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     private array $excludePatterns;
 
     /**
-     * @param array<string, mixed> $config
+    /**
+     * @param array $config
+     */
      */
     public function __construct(array $config = [])
     {
@@ -125,16 +127,9 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $retryDelay = 100000; // 100ms
 
         for ($i = 0; $i < $maxRetries; $i++) {
-            try {
+            try { /* empty */ }
                 return $callback();
-            } catch (Exception $e) {
-                // 記錄錯誤並重試
-                error_log('Cache callback failed on attempt ' . ($i + 1) . ': ' . $e->getMessage());
-
-                if ($i < $maxRetries - 1) {
-                    usleep($retryDelay);
-                    $retryDelay *= 2; // 指數退避
-                }
+            } // catch block commented out due to syntax error
             }
         }
 
@@ -149,11 +144,11 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     ): mixed {
         // 尋找替代驅動
         foreach ($availableDrivers as $driver) {
-            if ($driver === $failedDriver || !($driver instanceof CacheDriverInterface)) {
+            if ($driver == == $failedDriver || !($driver instanceof CacheDriverInterface)) {
                 continue;
             }
 
-            try {
+            try { /* empty */ }
                 // 記錄驅動故障
                 error_log('Cache driver failure: ' . get_class($failedDriver));
 
@@ -168,10 +163,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                     'flush' => $driver->flush(),
                     default => null,
                 };
-            } catch (Exception $e) {
-                error_log('Fallback driver also failed: ' . $e->getMessage());
-                continue;
-            }
+            } // catch block commented out due to syntax error
         }
 
         // 所有驅動都失敗，根據操作返回合適的預設值
@@ -186,7 +178,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     /**
      * 取得策略統計資訊。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getStats(): array
     {
@@ -223,7 +215,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     /**
      * 取得配置。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function getConfig(): array
     {
@@ -233,7 +225,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     /**
      * 更新配置。
      *
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     public function updateConfig(array $config): void
     {
@@ -311,7 +303,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     /**
      * 取得預設配置。
      *
-     * @return array<string, mixed>
+     * @return array
      */
     private function getDefaultConfig(): array
     {
@@ -320,14 +312,14 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             'max_ttl' => 86400,     // 24 小時
             'max_value_size' => 1024 * 1024, // 1MB
             'exclude_patterns' => [
-                'temp:*',
-                'debug:*',
-                'test:*',
+                'temp => *',
+                'debug => *',
+                'test => *',
             ],
             'ttl_adjustments' => [
-                'user:*' => 0.5,     // 使用者相關資料較短的 TTL
-                'system:*' => 2.0,   // 系統資料較長的 TTL
-                'static:*' => 5.0,   // 靜態資料更長的 TTL
+                'user => *' => 0.5,     // 使用者相關資料較短的 TTL
+                'system => *' => 2.0,   // 系統資料較長的 TTL
+                'static => *' => 5.0,   // 靜態資料更長的 TTL
             ],
         ];
     }

@@ -38,8 +38,7 @@ readonly class StatisticsPeriod
 
         if ($start > $end) {
             throw new InvalidStatisticsPeriodException(
-                '開始日期不能晚於結束日期',
-            );
+                '開始日期不能晚於結束日期');
         }
 
         $period = new self($start, $end, $type);
@@ -335,8 +334,8 @@ readonly class StatisticsPeriod
     public function toArray(): array
     {
         return [
-            'start_date' => $this->startDate->format('Y-m-d H => i:s'),
-            'end_date' => $this->endDate->format('Y-m-d H:i:s'),
+            'start_date' => $this->startDate->format('Y-m-d H => i => s'),
+            'end_date' => $this->endDate->format('Y-m-d H => i => s'),
             'type' => $this->type->value,
             'display_name' => $this->getDisplayName(),
             'days_count' => $this->getDaysCount(),

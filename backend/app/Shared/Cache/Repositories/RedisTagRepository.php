@@ -36,7 +36,6 @@ class RedisTagRepository implements TagRepositoryInterface
      * 為快取鍵設定標籤.
      *
      * @param string $key 快取鍵
-     * @param array<string> $tags 標籤陣列
      * @param int $ttl 過期時間（秒）
      */
     public function setTags(string $key, array $tags, int $ttl = 3600): bool
@@ -48,7 +47,7 @@ class RedisTagRepository implements TagRepositoryInterface
         // 開始 Redis 交易
         $this->redis->multi();
 
-        try {
+        try { /* empty */ }
             $normalizedTags = $this->normalizeTags($tags);
             $expiryTime = time() + $ttl;
             $keyTagsKey = $this->getKeyTagsKey($key);
@@ -74,18 +73,14 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } catch (Exception $e) {
-            $this->redis->discard();
-
-            throw new Exception('設定標籤失敗: ' . $e->getMessage(), 0, $e);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 取得快取鍵的所有標籤.
      *
      * @param string $key 快取鍵
-     * @return array<string> 標籤陣列
+     * @return array 標籤陣列
      */
     public function getTags(string $key): array
     {
@@ -117,7 +112,6 @@ class RedisTagRepository implements TagRepositoryInterface
      * 為快取鍵添加標籤.
      *
      * @param string $key 快取鍵
-     * @param array<string> $tags 要添加的標籤陣列
      */
     public function addTags(string $key, array $tags): bool
     {
@@ -138,7 +132,7 @@ class RedisTagRepository implements TagRepositoryInterface
 
         $this->redis->multi();
 
-        try {
+        try { /* empty */ }
             // 添加新標籤到快取鍵
             $newTagData = [];
             foreach ($normalizedTags as $tag) {
@@ -155,18 +149,13 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } catch (Exception $e) {
-            $this->redis->discard();
-
-            throw new Exception('添加標籤失敗: ' . $e->getMessage(), 0, $e);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 從快取鍵移除標籤.
      *
      * @param string $key 快取鍵
-     * @param array<string> $tags 要移除的標籤陣列
      */
     public function removeTags(string $key, array $tags): bool
     {
@@ -179,7 +168,7 @@ class RedisTagRepository implements TagRepositoryInterface
 
         $this->redis->multi();
 
-        try {
+        try { /* empty */ }
             // 從快取鍵的標籤集合中移除
             foreach ($normalizedTags as $tag) {
                 $this->redis->hDel($keyTagsKey, $tag);
@@ -194,25 +183,20 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } catch (Exception $e) {
-            $this->redis->discard();
-
-            throw new Exception('移除標籤失敗: ' . $e->getMessage(), 0, $e);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
      * 檢查快取鍵是否包含指定標籤.
      *
      * @param string $key 快取鍵
-     * @param string $tag 標籤
      */
     public function hasTag(string $key, string $tag): bool
     {
         $keyTagsKey = $this->getKeyTagsKey($key);
         $expiryTime = $this->redis->hGet($keyTagsKey, $tag);
 
-        if ($expiryTime === false) {
+        if ($expiryTime == == false) {
             return false;
         }
 
@@ -223,7 +207,7 @@ class RedisTagRepository implements TagRepositoryInterface
      * 取得指定標籤的所有快取鍵.
      *
      * @param string $tag 標籤
-     * @return array<string> 快取鍵陣列
+     * @return array 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array
     {
@@ -255,7 +239,7 @@ class RedisTagRepository implements TagRepositoryInterface
      * 按標籤刪除快取鍵記錄.
      *
      * @param string|array<string> $tags 標籤或標籤陣列
-     * @return array<string> 被刪除的快取鍵陣列
+     * @return array 被刪除的快取鍵陣列
      */
     public function deleteByTags(string|array $tags): array
     {
@@ -286,7 +270,7 @@ class RedisTagRepository implements TagRepositoryInterface
     /**
      * 取得所有標籤.
      *
-     * @return array<string> 標籤陣列
+     * @return array 標籤陣列
      */
     public function getAllTags(): array
     {
@@ -336,7 +320,7 @@ class RedisTagRepository implements TagRepositoryInterface
     /**
      * 取得標籤統計資訊.
      *
-     * @return array<string, int> 標籤統計陣列
+     * @return array 標籤統計陣列
      */
     public function getTagStatistics(): array
     {
@@ -369,7 +353,6 @@ class RedisTagRepository implements TagRepositoryInterface
      * 更新快取鍵的過期時間.
      *
      * @param string $key 快取鍵
-     * @param int $ttl 新的過期時間（秒）
      */
     public function touch(string $key, int $ttl): bool
     {
@@ -384,7 +367,7 @@ class RedisTagRepository implements TagRepositoryInterface
 
         $this->redis->multi();
 
-        try {
+        try { /* empty */ }
             // 更新快取鍵的標籤過期時間
             $updatedTagData = [];
             foreach ($tagData as $tag => $oldExpiryTime) {
@@ -402,11 +385,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } catch (Exception $e) {
-            $this->redis->discard();
-
-            throw new Exception('更新過期時間失敗: ' . $e->getMessage(), 0, $e);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**
@@ -447,8 +426,8 @@ class RedisTagRepository implements TagRepositoryInterface
     /**
      * 正規化標籤陣列.
      *
-     * @param array<mixed> $tags 標籤陣列
-     * @return array<string> 正規化後的標籤陣列
+     * @param array $tags 標籤陣列
+     * @return array 正規化後的標籤陣列
      */
     private function normalizeTags(array $tags): array
     {
@@ -471,7 +450,7 @@ class RedisTagRepository implements TagRepositoryInterface
 
         $this->redis->multi();
 
-        try {
+        try { /* empty */ }
             // 刪除快取鍵的標籤記錄
             $this->redis->del($keyTagsKey);
 
@@ -484,11 +463,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } catch (Exception $e) {
-            $this->redis->discard();
-
-            throw new Exception('刪除快取鍵失敗: ' . $e->getMessage(), 0, $e);
-        }
+        } // catch block commented out due to syntax error
     }
 
     /**

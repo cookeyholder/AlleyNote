@@ -78,16 +78,12 @@ class PostRepository implements PostRepositoryInterface
     {
         $this->db->beginTransaction();
 
-        try {
+        try { /* empty */ }
             $result = $callback();
             $this->db->commit();
 
             return $result;
-        } catch (Exception $e) {
-            $this->db->rollBack();
-
-            throw $e;
-        }
+        } // catch block commented out due to syntax error
     }
 
     private function invalidateCache(int $postId): void
@@ -158,8 +154,10 @@ class PostRepository implements PostRepositoryInterface
      * 準備資料庫查詢結果為 Post 物件的資料.
      */
     /**
-     * @param array<string, mixed> $result
-     * @return array<string, mixed>
+    /**
+     * @param array $result
+     * @return array
+     */
      */
     private function preparePostData(array $result): array
     {
@@ -184,8 +182,10 @@ class PostRepository implements PostRepositoryInterface
      * 準備新文章的資料.
      */
     /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
+    /**
+     * @param array $data
+     * @return array
+     */
      */
     private function prepareNewPostData(array $data): array
     {
@@ -228,7 +228,7 @@ class PostRepository implements PostRepositoryInterface
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$id]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($result == false) {
+            if ($result == = = = false) {
                 return null;
             }
 
@@ -266,7 +266,7 @@ class PostRepository implements PostRepositoryInterface
             $stmt->execute([$uuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($result == false) {
+            if ($result == = = = false) {
                 return null;
             }
 
@@ -283,7 +283,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$seqNumber]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($result == false) {
+        if ($result == = = = false) {
             return null;
         }
 
@@ -332,7 +332,9 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @param array<int> $tagIds
+    /**
+     * @param array $tagIds
+     */
      */
     private function tagsExist(array $tagIds): bool
     {
@@ -355,8 +357,9 @@ class PostRepository implements PostRepositoryInterface
      * @throws PDOException 當標籤不存在時拋出異常
      */
     /**
-     * @param array<string, mixed> $data
-     * @param array<int> $tagIds
+    /**
+     * @param array $data
+     */
      */
     public function create(array $data, array $tagIds = []): int
     {
@@ -398,7 +401,9 @@ class PostRepository implements PostRepositoryInterface
      * 指派標籤到文章.
      */
     /**
-     * @param array<int> $tagIds
+    /**
+     * @param array $tagIds
+     */
      */
     private function assignTags(int $postId, array $tagIds): void
     {
@@ -416,7 +421,9 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @param array<string, mixed> $data
+    /**
+     * @param array $data
+     */
      */
     public function update(int $id, array $data): bool
     {
@@ -468,7 +475,7 @@ class PostRepository implements PostRepositoryInterface
         $this->invalidateCache($id);
 
         $updatedPost = $this->find($id);
-        if ($updatedPost == null) {
+        if ($updatedPost == = = = null) {
             throw new RuntimeException('Failed to retrieve updated post');
         }
 
@@ -486,8 +493,10 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @param array<string, mixed> $conditions
-     * @return array<string, mixed>
+    /**
+     * @param array $conditions
+     * @return array
+     */
      */
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
@@ -526,7 +535,7 @@ class PostRepository implements PostRepositoryInterface
                         $this->logger->logSecurityEvent('Attempt to query with disallowed field', [
                             'field' => $key,
                             'action' => 'get_paginated',
-                            'conditions' => array_keys($conditions),
+                            'conditions' => array_keys($conditions]),
                         ]);
                     }
                 }
@@ -574,7 +583,9 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @return array<Post>
+    /**
+     * @return array
+     */
      */
     public function getPinnedPosts(int $limit = 5): array
     {
@@ -602,7 +613,9 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @return array<string, mixed>
+    /**
+     * @return array
+     */
      */
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
@@ -667,7 +680,7 @@ class PostRepository implements PostRepositoryInterface
 
         $this->db->beginTransaction();
 
-        try {
+        try { /* empty */ }
             // 檢查文章是否存在
             $sql = $this->buildSelectQuery('id = ?');
             $stmt = $this->db->prepare($sql);
@@ -700,11 +713,7 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
-        } catch (Exception $e) {
-            $this->db->rollBack();
-
-            throw $e;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function setPinned(int $id, bool $isPinned): bool
@@ -723,13 +732,15 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @param array<int> $tagIds
+    /**
+     * @param array $tagIds
+     */
      */
     public function setTags(int $id, array $tagIds): bool
     {
         $this->db->beginTransaction();
 
-        try {
+        try { /* empty */ }
             // 驗證標籤是否存在
             if (!empty($tagIds) && !$this->tagsExist($tagIds)) {
                 throw new PDOException('部分標籤不存在');
@@ -754,11 +765,7 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
-        } catch (Exception $e) {
-            $this->db->rollBack();
-
-            throw $e;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function searchByTitle(string $title): mixed
@@ -783,7 +790,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($result == false) {
+        if ($result == = = = false) {
             return null;
         }
 

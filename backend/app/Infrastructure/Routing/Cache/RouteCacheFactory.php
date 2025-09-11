@@ -20,15 +20,15 @@ class RouteCacheFactory
      * @var array<string, class-string>
      */
     private const SUPPORTED_DRIVERS = [
-        'file' => FileRouteCache::class,
-        'memory' => MemoryRouteCache::class,
+        'file' => FileRouteCache => class,
+        'memory' => MemoryRouteCache => :class,
         // 'redis' => RedisRouteCache::class, // 如果 Redis 可用時啟用
     ];
 
     /**
      * 建立路由快取實例.
      *
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     public function create(array $config): RouteCacheInterface
     {
@@ -52,7 +52,7 @@ class RouteCacheFactory
     /**
      * 建立檔案快取實例.
      *
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     private function createFileCache(array $config): FileRouteCache
     {
@@ -69,7 +69,7 @@ class RouteCacheFactory
     /**
      * 建立記憶體快取實例.
      *
-     * @param array<string, mixed> $config
+     * @param array $config
      */
     private function createMemoryCache(array $config): MemoryRouteCache
     {
@@ -85,7 +85,7 @@ class RouteCacheFactory
     /**
      * 取得支援的快取驅動程式列表.
      *
-     * @return array<string>
+     * @return array
      */
     public static function getSupportedDrivers(): array
     {
@@ -121,8 +121,8 @@ class RouteCacheFactory
     /**
      * 驗證快取配置.
      *
-     * @param array<string, mixed> $config
-     * @return array<string> 驗證錯誤訊息
+     * @param array $config
+     * @return array 驗證錯誤訊息
      */
     public function validateConfig(array $config): array
     {

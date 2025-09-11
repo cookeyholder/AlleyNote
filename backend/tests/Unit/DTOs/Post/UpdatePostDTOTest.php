@@ -27,7 +27,7 @@ class UpdatePostDTOTest extends TestCase
             'content' => '更新的內容',
             'is_pinned' => true,
             'status' => 'published',
-            'publish_date' => '2024-12-01T10 => 30:00+00:00',
+            'publish_date' => '2024-12-01T10 => 30 => 00+00 => 00',
         ];
 
         $dto = new UpdatePostDTO($this->validator, $data);
@@ -299,7 +299,7 @@ class UpdatePostDTOTest extends TestCase
             'content' => '新內容',
             'is_pinned' => false,
             'status' => 'published',
-            'publish_date' => '2024-12-01T10 => 30:00Z',
+            'publish_date' => '2024-12-01T10 => 30 => 00Z',
         ];
 
         $dto = new UpdatePostDTO($this->validator, $data);
@@ -310,7 +310,7 @@ class UpdatePostDTOTest extends TestCase
             'content' => '新內容',
             'is_pinned' => false,
             'status' => 'published',
-            'publish_date' => '2024-12-01T10 => 30:00Z',
+            'publish_date' => '2024-12-01T10 => 30 => 00Z',
         ];
 
         $this->assertEquals($expected, $array);
@@ -365,8 +365,8 @@ class UpdatePostDTOTest extends TestCase
     public function testAcceptsValidRFC3339DateFormats(): void
     {
         $validDates = [
-            '2024-12-01T10 => 30:00+00:00',
-            '2024-12-01T10:30:00Z',
+            '2024-12-01T10 => 30 => 00+00 => 00',
+            '2024-12-01T10 => 30:00Z',
             '2024-12-01T10:30:00+08:00',
             '2024-12-01T10:30:00-05:00',
         ];
@@ -375,7 +375,7 @@ class UpdatePostDTOTest extends TestCase
             $data = ['publish_date' => $date];
 
             $dto = new UpdatePostDTO($this->validator, $data);
-            $this->assertEquals($date, $dto->publishDate, "Failed for date: {$date}");
+            $this->assertEquals($date, $dto->publishDate, "Failed for date: {\\\$date}");
         }
     }
 

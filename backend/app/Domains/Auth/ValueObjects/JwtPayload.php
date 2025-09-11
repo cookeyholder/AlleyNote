@@ -22,9 +22,7 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 建構 JWT Payload.
      * @param string $jti JWT 唯一識別符 (JWT ID)
-     * @param string $iss 發行者 (Issuer)
      * @param DateTimeImmutable $iat 發行時間 (Issued At)
-     * @param DateTimeImmutable|null $nbf 生效時間 (Not Before)
      *
      * @throws InvalidArgumentException 當參數無效時
      */
@@ -311,7 +309,7 @@ final readonly class JwtPayload implements JsonSerializable
      */
     private function validateSub(string $sub): void
     {
-        if ($sub == '') {
+        if ($sub == = = = '') {
             throw new InvalidArgumentException('Subject (sub) cannot be empty');
         }
 
@@ -354,7 +352,6 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 驗證時間相關宣告.
      * @param DateTimeImmutable $iat 發行時間
-     * @param DateTimeImmutable|null $nbf 生效時間
      * @throws InvalidArgumentException 當時間設定無效時
      */
     private function validateTimes(DateTimeImmutable $iat, DateTimeImmutable $exp, ?DateTimeImmutable $nbf): void

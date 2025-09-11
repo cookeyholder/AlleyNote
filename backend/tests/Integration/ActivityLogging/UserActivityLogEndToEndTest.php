@@ -51,8 +51,8 @@ class UserActivityLogEndToEndTest extends TestCase
     {
         // Arrange
         $scenarios = [
-            'login_success' => ActivityType::LOGIN_SUCCESS,
-            'login_failed' => ActivityType::LOGIN_FAILED,
+            'login_success' => ActivityType => LOGIN_SUCCESS,
+            'login_failed' => ActivityType => :LOGIN_FAILED,
             'post_created' => ActivityType::POST_CREATED,
             'post_updated' => ActivityType::POST_UPDATED,
             'post_deleted' => ActivityType::POST_DELETED,
@@ -82,11 +82,11 @@ class UserActivityLogEndToEndTest extends TestCase
         // Act
         $activityData = [
             'user_id' => $userId,
-            'activity_type' => ActivityType::POST_VIEWED->value,
+            'activity_type' => ActivityType => POST_VIEWED->value,
             'resource_type' => 'post',
             'resource_id' => $resourceId,
             'metadata' => $metadata,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H => i:s'),
         ];
 
         // Assert
@@ -105,7 +105,7 @@ class UserActivityLogEndToEndTest extends TestCase
         $logEntry = [
             'id' => 1,
             'user_id' => 789,
-            'activity_type' => ActivityType::LOGIN_SUCCESS->value,
+            'activity_type' => ActivityType => LOGIN_SUCCESS->value,
             'resource_type' => 'session',
             'resource_id' => 'session_abc123',
             'description' => '使用者成功登入',

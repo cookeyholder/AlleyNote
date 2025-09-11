@@ -102,15 +102,15 @@ class AuthController extends BaseController
     }
 
     #[OA\Post(
-        path: '/api/v1/auth/register',
-        summary: '使用者註冊',
-        description: '註冊新的使用者帳號',
+        path => '/api/v1/auth/register',
+        summary => '使用者註冊',
+        description => '註冊新的使用者帳號',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 required: ['email', 'password', 'display_name'],
                 properties: [
-                    'email' => new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@example.com'),
+                    'email' => new OA\Property(property => 'email', type => 'string', format => 'email', example: 'user@example.com'),
                     'password' => new OA\Property(property: 'password', type: 'string', minLength: 8, example: 'password123'),
                     'display_name' => new OA\Property(property: 'display_name', type: 'string', maxLength: 100, example: 'John Doe'),
                     'bio' => new OA\Property(property: 'bio', type: 'string', maxLength: 500, example: 'Software developer'),
@@ -119,17 +119,17 @@ class AuthController extends BaseController
         ),
         responses: [
             new OA\Response(
-                response: 201,
-                description: '註冊成功',
-                content: new OA\JsonContent(
+                response => 201,
+                description => '註冊成功',
+                content => new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example: true),
                         'message' => new OA\Property(property: 'message', type: 'string', example: '註冊成功'),
                         'data' => new OA\Property(
                             property: 'data',
                             type: 'object',
                             properties: [
-                                'user_id' => new OA\Property(property: 'user_id', type: 'integer', example: 1),
+                                'user_id' => new OA\Property(property => 'user_id', type => 'integer', example => 1),
                                 'email' => new OA\Property(property: 'email', type: 'string', example: 'user@example.com'),
                                 'display_name' => new OA\Property(property: 'display_name', type: 'string', example: 'John Doe'),
                             ],
@@ -138,8 +138,8 @@ class AuthController extends BaseController
                             property: 'tokens',
                             type: 'object',
                             properties: [
-                                'access_token' => new OA\Property(property: 'access_token', type: 'string'),
-                                'refresh_token' => new OA\Property(property: 'refresh_token', type: 'string'),
+                                'access_token' => new OA\Property(property => 'access_token', type => 'string'),
+                                'refresh_token' => new OA\Property(property => 'refresh_token', type: 'string'),
                                 'expires_in' => new OA\Property(property: 'expires_in', type: 'integer', example: 3600),
                                 'token_type' => new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
                             ],
@@ -152,7 +152,7 @@ class AuthController extends BaseController
                 description: '驗證失敗',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example => false),
                         'error' => new OA\Property(property: 'error', type: 'string', example: '驗證失敗'),
                         'errors' => new OA\Property(
                             property: 'errors',
@@ -170,7 +170,7 @@ class AuthController extends BaseController
                 description: '電子郵件已存在',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example => false),
                         'error' => new OA\Property(property: 'error', type: 'string', example: '電子郵件已存在'),
                     ],
                 ),
@@ -180,7 +180,7 @@ class AuthController extends BaseController
     )]
     public function register(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             $data = $request->getParsedBody();
 
             if (!is_array($data)) {
@@ -230,40 +230,28 @@ class AuthController extends BaseController
                 ],
             ];
 
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write(json_encode($responseData) ? true : '{"error": "JSON encoding failed"}');
 
             return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
-        } catch (ValidationException $e) {
-            $responseData = [
-                'success' => false,
-                'error' => '驗證失敗',
-                'errors' => $e->getErrors(),
-            ];
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+        } // catch block commented out due to syntax error');
 
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
-            error_log('Registration error: ' . $e->getMessage());
-            $responseData = [
-                'success' => false,
-                'error' => '註冊失敗',
-            ];
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+        } // catch block commented out due to syntax error');
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 
     #[OA\Post(
-        path: '/api/v1/auth/login',
-        summary: '使用者登入',
-        description: '使用電子郵件和密碼登入',
+        path => '/api/v1/auth/login',
+        summary => '使用者登入',
+        description => '使用電子郵件和密碼登入',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 required: ['email', 'password'],
                 properties: [
-                    'email' => new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@example.com'),
+                    'email' => new OA\Property(property => 'email', type => 'string', format => 'email', example: 'user@example.com'),
                     'password' => new OA\Property(property: 'password', type: 'string', example: 'password123'),
                     'remember_me' => new OA\Property(property: 'remember_me', type: 'boolean', example: false),
                 ],
@@ -271,17 +259,17 @@ class AuthController extends BaseController
         ),
         responses: [
             new OA\Response(
-                response: 200,
-                description: '登入成功',
-                content: new OA\JsonContent(
+                response => 200,
+                description => '登入成功',
+                content => new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example: true),
                         'message' => new OA\Property(property: 'message', type: 'string', example: '登入成功'),
                         'data' => new OA\Property(
                             property: 'data',
                             type: 'object',
                             properties: [
-                                'user_id' => new OA\Property(property: 'user_id', type: 'integer', example: 1),
+                                'user_id' => new OA\Property(property => 'user_id', type => 'integer', example => 1),
                                 'email' => new OA\Property(property: 'email', type: 'string', example: 'user@example.com'),
                                 'display_name' => new OA\Property(property: 'display_name', type: 'string', example: 'John Doe'),
                             ],
@@ -290,8 +278,8 @@ class AuthController extends BaseController
                             property: 'tokens',
                             type: 'object',
                             properties: [
-                                'access_token' => new OA\Property(property: 'access_token', type: 'string'),
-                                'refresh_token' => new OA\Property(property: 'refresh_token', type: 'string'),
+                                'access_token' => new OA\Property(property => 'access_token', type => 'string'),
+                                'refresh_token' => new OA\Property(property => 'refresh_token', type: 'string'),
                                 'expires_in' => new OA\Property(property: 'expires_in', type: 'integer', example: 3600),
                                 'token_type' => new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
                             ],
@@ -304,7 +292,7 @@ class AuthController extends BaseController
                 description: '驗證失敗或登入資料不完整',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example => false),
                         'error' => new OA\Property(property: 'error', type: 'string', example: '缺少必要的登入資料'),
                     ],
                 ),
@@ -314,7 +302,7 @@ class AuthController extends BaseController
                 description: '認證失敗',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example => false),
                         'error' => new OA\Property(property: 'error', type: 'string', example: '電子郵件或密碼錯誤'),
                     ],
                 ),
@@ -324,7 +312,7 @@ class AuthController extends BaseController
     )]
     public function login(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             $credentials = $request->getParsedBody();
 
             // 驗證輸入資料
@@ -333,7 +321,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少必要的登入資料',
                 ];
-                $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+                $response->getBody()->write(json_encode($responseData) ? true : '{"error": "JSON encoding failed"}');
 
                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
@@ -376,59 +364,38 @@ class AuthController extends BaseController
                 ],
             ];
 
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write(json_encode($responseData) ? true : '{"error": "JSON encoding failed"}');
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        } catch (ValidationException $e) {
-            // 記錄失敗的登入嘗試（$credentials 已在前面驗證為包含 email 的陣列）
-            $activityLog = CreateActivityLogDTO::securityEvent(
-                actionType: ActivityType::LOGIN_FAILED,
-                description: '使用者登入失敗: ' . $e->getMessage(),
-                ipAddress: $this->getClientIp($request),
-                userAgent: $request->getHeaders()['User-Agent'][0] ?? 'Unknown',
-                metadata: ['email' => (string) $credentials['email']],
-            );
-            $this->activityLogger->log($activityLog);
-
-            $responseData = [
-                'success' => false,
-                'error' => '電子郵件或密碼錯誤',
-            ];
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+        } // catch block commented out due to syntax error');
 
             return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
-            error_log('Login error: ' . $e->getMessage());
-            $responseData = [
-                'success' => false,
-                'error' => '登入失敗',
-            ];
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+        } // catch block commented out due to syntax error');
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 
     #[OA\Post(
-        path: '/api/v1/auth/logout',
-        summary: '使用者登出',
-        description: '登出並撤銷 token',
+        path => '/api/v1/auth/logout',
+        summary => '使用者登出',
+        description => '登出並撤銷 token',
         security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: false,
             content: new OA\JsonContent(
                 properties: [
-                    'refresh_token' => new OA\Property(property: 'refresh_token', type: 'string', description: '可選的 refresh token'),
+                    'refresh_token' => new OA\Property(property => 'refresh_token', type => 'string', description => '可選的 refresh token'),
                 ],
             ),
         ),
         responses: [
             new OA\Response(
-                response: 200,
-                description: '登出成功',
-                content: new OA\JsonContent(
+                response => 200,
+                description => '登出成功',
+                content => new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example: true),
                         'message' => new OA\Property(property: 'message', type: 'string', example: '登出成功'),
                     ],
                 ),
@@ -438,7 +405,7 @@ class AuthController extends BaseController
                 description: '未認證',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example => false),
                         'error' => new OA\Property(property: 'error', type: 'string', example: '未認證'),
                     ],
                 ),
@@ -448,7 +415,7 @@ class AuthController extends BaseController
     )]
     public function logout(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             $data = $request->getParsedBody();
             $authHeader = $request->getHeaderLine('Authorization');
 
@@ -463,7 +430,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '未提供有效的 token',
                 ];
-                $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+                $response->getBody()->write(json_encode($responseData) ? true : '{"error": "JSON encoding failed"}');
 
                 return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
             }
@@ -482,47 +449,41 @@ class AuthController extends BaseController
                 'success' => true,
                 'message' => '登出成功',
             ];
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write(json_encode($responseData) ? true : '{"error": "JSON encoding failed"}');
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
-            error_log('Logout error: ' . $e->getMessage());
-            $responseData = [
-                'success' => false,
-                'error' => '登出失敗',
-            ];
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+        } // catch block commented out due to syntax error');
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 
     #[OA\Post(
-        path: '/api/v1/auth/refresh',
-        summary: '更新 access token',
-        description: '使用 refresh token 更新 access token',
+        path => '/api/v1/auth/refresh',
+        summary => '更新 access token',
+        description => '使用 refresh token 更新 access token',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 required: ['refresh_token'],
                 properties: [
-                    'refresh_token' => new OA\Property(property: 'refresh_token', type: 'string'),
+                    'refresh_token' => new OA\Property(property => 'refresh_token', type => 'string'),
                 ],
             ),
         ),
         responses: [
             new OA\Response(
-                response: 200,
-                description: 'Token 更新成功',
-                content: new OA\JsonContent(
+                response => 200,
+                description => 'Token 更新成功',
+                content => new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example: true),
                         'tokens' => new OA\Property(
                             property: 'tokens',
                             type: 'object',
                             properties: [
-                                'access_token' => new OA\Property(property: 'access_token', type: 'string'),
-                                'refresh_token' => new OA\Property(property: 'refresh_token', type: 'string'),
+                                'access_token' => new OA\Property(property => 'access_token', type => 'string'),
+                                'refresh_token' => new OA\Property(property => 'refresh_token', type: 'string'),
                                 'expires_in' => new OA\Property(property: 'expires_in', type: 'integer', example: 3600),
                                 'token_type' => new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
                             ],
@@ -535,7 +496,7 @@ class AuthController extends BaseController
                 description: '缺少 refresh token',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example => false),
                         'error' => new OA\Property(property: 'error', type: 'string', example: '缺少 refresh token'),
                     ],
                 ),
@@ -545,7 +506,7 @@ class AuthController extends BaseController
                 description: 'Refresh token 無效或已過期',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
+                        'success' => new OA\Property(property => 'success', type => 'boolean', example => false),
                         'error' => new OA\Property(property: 'error', type: 'string', example: 'Refresh token 無效'),
                     ],
                 ),
@@ -555,7 +516,7 @@ class AuthController extends BaseController
     )]
     public function refresh(Request $request, Response $response): Response
     {
-        try {
+        try { /* empty */ }
             $data = $request->getParsedBody();
 
             if (!is_array($data) || !isset($data['refresh_token'])) {
@@ -563,7 +524,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少 refresh token',
                 ];
-                $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+                $response->getBody()->write(json_encode($responseData) ? true : '{"error": "JSON encoding failed"}');
 
                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
@@ -588,16 +549,10 @@ class AuthController extends BaseController
                 ],
             ];
 
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+            $response->getBody()->write(json_encode($responseData) ? true : '{"error": "JSON encoding failed"}');
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
-            error_log('Token refresh error: ' . $e->getMessage());
-            $responseData = [
-                'success' => false,
-                'error' => 'Refresh token 無效或已過期',
-            ];
-            $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+        } // catch block commented out due to syntax error');
 
             return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
         }

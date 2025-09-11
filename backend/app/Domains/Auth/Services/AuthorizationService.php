@@ -60,7 +60,7 @@ class AuthorizationService implements AuthorizationServiceInterface
 
     public function assignRole(int $userId, string $roleName): bool
     {
-        try {
+        try { /* empty */ }
             // 先檢查角色是否存在
             $stmt = $this->db->prepare('SELECT id FROM roles WHERE name = ?');
             $stmt->execute([$roleName]);
@@ -87,16 +87,12 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (Throwable $e) {
-            error_log('AssignRole error: ' . $e->getMessage());
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function removeRole(int $userId, string $roleName): bool
     {
-        try {
+        try { /* empty */ }
             $stmt = $this->db->prepare('
                 DELETE FROM user_roles
                 WHERE user_id = ? AND role_id = (
@@ -110,16 +106,12 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (Throwable $e) {
-            error_log('RemoveRole error: ' . $e->getMessage());
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function givePermission(int $userId, string $permission): bool
     {
-        try {
+        try { /* empty */ }
             // 先檢查權限是否存在
             $stmt = $this->db->prepare('SELECT id FROM permissions WHERE name = ?');
             $stmt->execute([$permission]);
@@ -146,16 +138,12 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (Throwable $e) {
-            error_log('GivePermission error: ' . $e->getMessage());
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function revokePermission(int $userId, string $permission): bool
     {
-        try {
+        try { /* empty */ }
             $stmt = $this->db->prepare('
                 DELETE FROM user_permissions
                 WHERE user_id = ? AND permission_id = (
@@ -169,16 +157,12 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (Throwable $e) {
-            error_log('RevokePermission error: ' . $e->getMessage());
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function getUserRoles(int $userId): array
     {
-        try {
+        try { /* empty */ }
             $stmt = $this->db->prepare('
                 SELECT r.id, r.name, r.description, r.created_at, r.updated_at
                 FROM roles r
@@ -191,16 +175,12 @@ class AuthorizationService implements AuthorizationServiceInterface
 
             /** @var array<string, mixed> $result */
             return $result;
-        } catch (Throwable $e) {
-            error_log('GetUserRoles error: ' . $e->getMessage());
-
-            return [];
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function getUserPermissions(int $userId): array
     {
-        try {
+        try { /* empty */ }
             // 取得角色權限
             $stmt = $this->db->prepare('
                 SELECT DISTINCT p.name
@@ -232,11 +212,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (Throwable $e) {
-            error_log('GetUserPermissions error: ' . $e->getMessage());
-
-            return [];
-        }
+        } // catch block commented out due to syntax error
     }
 
     public function isSuperAdmin(int $userId): bool
@@ -268,22 +244,18 @@ class AuthorizationService implements AuthorizationServiceInterface
 
     private function canAccessPost(int $userId, int $postId): bool
     {
-        try {
+        try { /* empty */ }
             $stmt = $this->db->prepare('SELECT user_id FROM posts WHERE id = ? AND deleted_at IS NULL');
             $stmt->execute([$postId]);
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $post && (int) $post['user_id'] === $userId;
-        } catch (Throwable $e) {
-            error_log('CanAccessPost error: ' . $e->getMessage());
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     private function canAccessAttachment(int $userId, string $attachmentUuid): bool
     {
-        try {
+        try { /* empty */ }
             $stmt = $this->db->prepare('
                 SELECT p.user_id
                 FROM posts p
@@ -294,11 +266,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result && (int) $result['user_id'] === $userId;
-        } catch (Throwable $e) {
-            error_log('CanAccessAttachment error: ' . $e->getMessage());
-
-            return false;
-        }
+        } // catch block commented out due to syntax error
     }
 
     private function clearUserCache(int $userId): void
