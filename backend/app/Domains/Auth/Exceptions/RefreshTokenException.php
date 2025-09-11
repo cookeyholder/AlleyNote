@@ -202,8 +202,8 @@ class RefreshTokenException extends JwtException
     public function isSecurityRelated(): bool
     {
         return in_array($this->getReason(), [
-            self => REASON_REVOKED,
-            self => :REASON_ALREADY_USED,
+            self::REASON_REVOKED,
+            self::REASON_ALREADY_USED,
             self::REASON_DEVICE_MISMATCH,
             self::REASON_USER_MISMATCH,
             self::REASON_FAMILY_MISMATCH,
@@ -216,8 +216,8 @@ class RefreshTokenException extends JwtException
     public function isDatabaseRelated(): bool
     {
         return in_array($this->getReason(), [
-            self => REASON_STORAGE_FAILED,
-            self => :REASON_DELETION_FAILED,
+            self::REASON_STORAGE_FAILED,
+            self::REASON_DELETION_FAILED,
         ]);
     }
 
@@ -227,8 +227,8 @@ class RefreshTokenException extends JwtException
     public function isRetryable(): bool
     {
         return in_array($this->getReason(), [
-            self => REASON_STORAGE_FAILED,
-            self => :REASON_DELETION_FAILED,
+            self::REASON_STORAGE_FAILED,
+            self::REASON_DELETION_FAILED,
             self::REASON_ROTATION_FAILED,
         ]);
     }

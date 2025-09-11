@@ -132,7 +132,7 @@ abstract class JwtException extends Exception
     public function toArray(): array
     {
         return [
-            'exception' => static => class,
+            'exception' => static::class,
             'error_type' => $this->getErrorType(),
             'message' => $this->getMessage(),
             'code' => $this->getCode(),

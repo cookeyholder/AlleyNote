@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-12 00:05:46",
+        "scan_time": "2025-09-12 00:50:40",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -1076,7 +1076,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Exceptions\/AuthenticationException.php",
                                             "extension": "php",
-                                            "size": 14051
+                                            "size": 14021
                                         },
                                         "TokenParsingException.php": {
                                             "type": "file",
@@ -1130,7 +1130,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/DTOs\/RegisterUserDTO.php",
                                             "extension": "php",
-                                            "size": 10906
+                                            "size": 10880
                                         },
                                         "RefreshRequestDTO.php": {
                                             "type": "file",
@@ -1220,7 +1220,7 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Auth\/Entities\/RefreshToken.php",
                                             "extension": "php",
-                                            "size": 13740
+                                            "size": 13725
                                         }
                                     }
                                 },
@@ -1340,13 +1340,13 @@
                                             "type": "file",
                                             "path": "app\/Domains\/Attachment\/Services\/AttachmentService.php",
                                             "extension": "php",
-                                            "size": 19695
+                                            "size": 20247
                                         },
                                         "FileSecurityService.php": {
                                             "type": "file",
                                             "path": "app\/Domains\/Attachment\/Services\/FileSecurityService.php",
                                             "extension": "php",
-                                            "size": 10112
+                                            "size": 10106
                                         }
                                     }
                                 }
@@ -9319,7 +9319,7 @@
                 "isBusinessEmail"
             ],
             "constants": [],
-            "lines_of_code": 374
+            "lines_of_code": 372
         },
         "app\/Domains\/Auth\/DTOs\/RefreshRequestDTO.php": {
             "path": "app\/Domains\/Auth\/DTOs\/RefreshRequestDTO.php",
@@ -10193,7 +10193,7 @@
                 "MAX_FILE_SIZE",
                 "FORBIDDEN_EXTENSIONS"
             ],
-            "lines_of_code": 579
+            "lines_of_code": 596
         },
         "app\/Domains\/Attachment\/Services\/FileSecurityService.php": {
             "path": "app\/Domains\/Attachment\/Services\/FileSecurityService.php",

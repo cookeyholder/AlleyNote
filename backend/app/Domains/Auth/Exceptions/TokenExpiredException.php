@@ -76,7 +76,7 @@ class TokenExpiredException extends JwtException
     {
         $tokenName = $tokenType === self::ACCESS_TOKEN ? 'Access token' : 'Refresh token';
 
-        if ($expiredAt == == null) {
+        if ($expiredAt === null) {
             return sprintf('%s has expired', $tokenName);
         }
 
@@ -121,7 +121,7 @@ class TokenExpiredException extends JwtException
     {
         $tokenType = $this->context['token_type'] ?? self::ACCESS_TOKEN;
 
-        if ($tokenType == == self::ACCESS_TOKEN) {
+        if ($tokenType === self::ACCESS_TOKEN) {
             return '您的登入已過期，請重新登入或使用 Refresh Token 重新取得 Access Token。';
         }
 
