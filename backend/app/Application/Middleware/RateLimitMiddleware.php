@@ -19,9 +19,7 @@ class RateLimitMiddleware implements MiddlewareInterface
     private array $config = [];
 
     /**
-    /**
      * @param array $config
-     */
      */
     public function __construct(RateLimitService $rateLimitService, array $config = [])
     {
@@ -94,7 +92,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
 
         // 內容建立
-        if ($method == = = = 'POST' && strpos($uri, '/posts') !== false) {
+        if ($method === 'POST' && strpos($uri, '/posts') !== false) {
             return 'post_create';
         }
 

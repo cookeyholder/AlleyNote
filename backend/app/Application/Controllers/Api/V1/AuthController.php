@@ -472,7 +472,7 @@ class AuthController extends BaseController
             content: new OA\JsonContent(
                 required: ['refresh_token'],
                 properties: [
-                    'refresh_token' => new OA\Property(property => 'refresh_token', type => 'string'),
+                    'refresh_token' => new OA\Property(property: 'refresh_token', type: 'string'),
                 ],
             ),
         ),

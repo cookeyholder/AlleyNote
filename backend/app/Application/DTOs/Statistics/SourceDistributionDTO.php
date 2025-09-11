@@ -379,7 +379,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 'absolute_change' => $thisCount - $otherCount,
                 'percentage_change' => $otherCount > 0
                     ? round((($thisCount - $otherCount) / $otherCount) * 100, 2)
-                     => ($thisCount > 0 ? 100  => 0),
+                    : ($thisCount > 0 ? 100 : 0),
             ];
         }
 
@@ -394,7 +394,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
                 'absolute_change' => $this->totalCount - $other->totalCount,
                 'percentage_change' => $other->totalCount > 0
                     ? round((($this->totalCount - $other->totalCount) / $other->totalCount) * 100, 2)
-                     => ($this->totalCount > 0 ? 100  => 0),
+                    : ($this->totalCount > 0 ? 100 : 0),
             ],
             'diversity_change' => round($this->getDiversityIndex() - $other->getDiversityIndex(), 4),
             'source_changes' => $changes,

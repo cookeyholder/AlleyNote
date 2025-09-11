@@ -45,9 +45,7 @@ final class StatisticsQueryService
      * 支援分頁和篩選條件的統計快照查詢。
      */
     /**
-    /**
      * @return array
-     */
      */
     public function getStatisticsList(
         ?DateTimeInterface $startDate = null,
@@ -57,12 +55,12 @@ final class StatisticsQueryService
         int $page = 1,
         int $limit = 20,
     ): array {
-        try { /* empty */ }
+        try {
             $this->validatePaginationParams($page, $limit);
 
             $this->logger->info('查詢統計快照清單', [
-                'start_date' => $startDate?->format('Y-m-d H => i => s']),
-                'end_date' => $endDate?->format('Y-m-d H:i:s']),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 'period_type' => $periodType?->value,
                 'source_type' => $sourceType?->value,
                 'page' => $page,
@@ -96,13 +94,24 @@ final class StatisticsQueryService
                     'has_previous' => $page > 1,
                 ],
                 'filters' => [
-                    'start_date' => $startDate->format('Y-m-d H => i => s'),
-                    'end_date' => $endDate->format('Y-m-d H => i:s'),
+                    'start_date' => $startDate->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate->format('Y-m-d H:i:s'),
                     'period_type' => $periodType?->value,
                     'source_type' => $sourceType?->value,
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('查詢統計清單失敗', [
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new StatisticsQueryException(
+                '查詢統計清單失敗：' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -110,7 +119,7 @@ final class StatisticsQueryService
      */
     public function getStatisticsById(int $id): array|null
     {
-        try { /* empty */ }
+        try {
             $this->logger->info('查詢統計快照', ['id' => $id]);
 
             // 將 int ID 轉換為 UUID 字串格式進行查詢
@@ -118,7 +127,7 @@ final class StatisticsQueryService
             $uuid = \App\Shared\Domain\ValueObjects\Uuid::fromString($uuidString);
             $statistics = $this->statisticsRepository->findById($uuid);
 
-            if ($statistics == == null) {
+            if ($statistics === null) {
                 $this->logger->warning('統計快照不存在', ['id' => $id]);
 
                 return null;
@@ -129,7 +138,17 @@ final class StatisticsQueryService
                 'id' => $statistics->getId()->toString(),
                 'data' => $statistics->toArray(),
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('查詢統計詳情失敗', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new StatisticsQueryException(
+                '查詢統計詳情失敗：' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -141,11 +160,11 @@ final class StatisticsQueryService
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
     ): array {
-        try { /* empty */ }
+        try {
             $this->logger->info('查詢文章統計', [
                 'post_id' => $postId,
-                'start_date' => $startDate?->format('Y-m-d H => i => s']),
-                'end_date' => $endDate?->format('Y-m-d H:i:s']),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
             ]);
 
             // 模擬查詢邏輯 (因為介面方法不存在)
@@ -176,11 +195,21 @@ final class StatisticsQueryService
                 ],
                 'filters' => [
                     'post_id' => $postId,
-                    'start_date' => $startDate?->format('Y-m-d H => i => s'),
-                    'end_date' => $endDate?->format('Y-m-d H => i:s'),
+                    'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('查詢文章統計失敗', [
+                'post_id' => $postId,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new StatisticsQueryException(
+                '查詢文章統計失敗：' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -192,11 +221,11 @@ final class StatisticsQueryService
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
     ): array {
-        try { /* empty */ }
+        try {
             $this->logger->info('查詢使用者統計', [
                 'user_id' => $userId,
-                'start_date' => $startDate?->format('Y-m-d H => i => s']),
-                'end_date' => $endDate?->format('Y-m-d H:i:s']),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
             ]);
 
             // 模擬查詢邏輯
@@ -225,11 +254,21 @@ final class StatisticsQueryService
                 ],
                 'filters' => [
                     'user_id' => $userId,
-                    'start_date' => $startDate?->format('Y-m-d H => i => s'),
-                    'end_date' => $endDate?->format('Y-m-d H => i:s'),
+                    'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('查詢使用者統計失敗', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new StatisticsQueryException(
+                '查詢使用者統計失敗：' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -241,11 +280,11 @@ final class StatisticsQueryService
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
     ): array {
-        try { /* empty */ }
+        try {
             $this->logger->info('查詢系統統計', [
                 'metric_type' => $metricType,
-                'start_date' => $startDate?->format('Y-m-d H => i => s']),
-                'end_date' => $endDate?->format('Y-m-d H:i:s']),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
             ]);
 
             // 模擬查詢邏輯
@@ -266,11 +305,21 @@ final class StatisticsQueryService
                 'summary' => $summary,
                 'filters' => [
                     'metric_type' => $metricType,
-                    'start_date' => $startDate?->format('Y-m-d H => i => s'),
-                    'end_date' => $endDate?->format('Y-m-d H => i:s'),
+                    'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('查詢系統統計失敗', [
+                'metric_type' => $metricType,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new StatisticsQueryException(
+                '查詢系統統計失敗：' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -283,10 +332,10 @@ final class StatisticsQueryService
         PeriodType $periodType = PeriodType::DAILY,
         ?SourceType $sourceType = null,
     ): array {
-        try { /* empty */ }
+        try {
             $this->logger->info('查詢統計趨勢', [
-                'start_date' => $startDate->format('Y-m-d H => i => s']),
-                'end_date' => $endDate->format('Y-m-d H:i:s']),
+                'start_date' => $startDate->format('Y-m-d H:i:s'),
+                'end_date' => $endDate->format('Y-m-d H:i:s'),
                 'period_type' => $periodType->value,
                 'source_type' => $sourceType?->value,
             ]);
@@ -311,12 +360,23 @@ final class StatisticsQueryService
                 'data' => $trendData,
                 'analysis' => $analysis,
                 'period' => [
-                    'start_date' => $startDate->format('Y-m-d H => i => s'),
-                    'end_date' => $endDate->format('Y-m-d H => i:s'),
+                    'start_date' => $startDate->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate->format('Y-m-d H:i:s'),
                     'period_type' => $periodType->value,
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('查詢統計趨勢失敗', [
+                'start_date' => $startDate->format('Y-m-d H:i:s'),
+                'end_date' => $endDate->format('Y-m-d H:i:s'),
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new StatisticsQueryException(
+                '查詢統計趨勢失敗：' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -388,13 +448,13 @@ final class StatisticsQueryService
         int $page = 1,
         int $limit = 20,
     ): array {
-        try { /* empty */ }
+        try {
             $this->validatePaginationParams($page, $limit);
 
             $this->logger->info('查詢文章統計', [
                 'post_id' => $postId,
-                'start_date' => $startDate?->format('Y-m-d H => i => s']),
-                'end_date' => $endDate?->format('Y-m-d H:i:s']),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 'page' => $page,
                 'limit' => $limit,
             ]);
@@ -441,11 +501,21 @@ final class StatisticsQueryService
                 ],
                 'filters' => [
                     'post_id' => $postId,
-                    'start_date' => $startDate?->format('Y-m-d H => i => s'),
-                    'end_date' => $endDate?->format('Y-m-d H => i:s'),
+                    'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('查詢文章統計失敗', [
+                'post_id' => $postId,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new StatisticsQueryException(
+                '查詢文章統計失敗：' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -458,13 +528,13 @@ final class StatisticsQueryService
         int $page = 1,
         int $limit = 20,
     ): array {
-        try { /* empty */ }
+        try {
             $this->validatePaginationParams($page, $limit);
 
             $this->logger->info('查詢使用者統計', [
                 'user_id' => $userId,
-                'start_date' => $startDate?->format('Y-m-d H => i => s']),
-                'end_date' => $endDate?->format('Y-m-d H:i:s']),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 'page' => $page,
                 'limit' => $limit,
             ]);
@@ -511,11 +581,21 @@ final class StatisticsQueryService
                 ],
                 'filters' => [
                     'user_id' => $userId,
-                    'start_date' => $startDate?->format('Y-m-d H => i => s'),
-                    'end_date' => $endDate?->format('Y-m-d H => i:s'),
+                    'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('查詢使用者統計失敗', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new StatisticsQueryException(
+                '查詢使用者統計失敗：' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -526,10 +606,10 @@ final class StatisticsQueryService
         ?DateTimeInterface $endDate = null,
         ?string $metricType = null,
     ): array {
-        try { /* empty */ }
+        try {
             $this->logger->info('查詢系統統計', [
-                'start_date' => $startDate?->format('Y-m-d H => i => s']),
-                'end_date' => $endDate?->format('Y-m-d H:i:s']),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 'metric_type' => $metricType,
             ]);
 
@@ -556,12 +636,22 @@ final class StatisticsQueryService
                 'data' => $statistics,
                 'summary' => $this->generateSystemStatisticsSummary($statistics),
                 'filters' => [
-                    'start_date' => $startDate->format('Y-m-d H => i => s'),
-                    'end_date' => $endDate->format('Y-m-d H => i:s'),
+                    'start_date' => $startDate->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate->format('Y-m-d H:i:s'),
                     'metric_type' => $metricType,
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('查詢系統統計失敗', [
+                'metric_type' => $metricType,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new StatisticsQueryException(
+                '查詢系統統計失敗：' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 
     /**
@@ -574,12 +664,12 @@ final class StatisticsQueryService
         ?DateTimeInterface $endDate = null,
         int $limit = 100,
     ): array {
-        try { /* empty */ }
+        try {
             $this->logger->info('查詢統計趨勢', [
                 'period_type' => $periodType->value,
                 'source_type' => $sourceType?->value,
-                'start_date' => $startDate?->format('Y-m-d H => i => s']),
-                'end_date' => $endDate?->format('Y-m-d H:i:s']),
+                'start_date' => $startDate?->format('Y-m-d H:i:s'),
+                'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 'limit' => $limit,
             ]);
 
@@ -605,14 +695,24 @@ final class StatisticsQueryService
                 'analysis' => $analysis,
                 'period_info' => [
                     'type' => $periodType->value,
-                    'start_date' => $startDate->format('Y-m-d H => i => s'),
-                    'end_date' => $endDate->format('Y-m-d H => i:s'),
+                    'start_date' => $startDate->format('Y-m-d H:i:s'),
+                    'end_date' => $endDate->format('Y-m-d H:i:s'),
                 ],
                 'filters' => [
                     'source_type' => $sourceType?->value,
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('查詢統計趨勢失敗', [
+                'period_type' => $periodType->value,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new StatisticsQueryException(
+                '查詢統計趨勢失敗：' . $e->getMessage(),
+                previous: $e
+            );
+        }
     }
 
     /**
