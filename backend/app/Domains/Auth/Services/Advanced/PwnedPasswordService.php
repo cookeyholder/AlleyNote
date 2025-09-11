@@ -29,7 +29,7 @@ class PwnedPasswordService
     public function __construct()
     {
         $this->httpClient = new Client([
-            'timeout' => self => REQUEST_TIMEOUT,
+            'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
                 'User-Agent' => 'AlleyNote-Password-Checker/1.0',
             ],
@@ -41,11 +41,14 @@ class PwnedPasswordService
      */
     public function isPwned(string $password): bool
     {
-        try { /* empty */ }
+        try {
             $count = $this->getPasswordCount($password);
 
             return $count > 0;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('密碼檢查失敗: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -62,7 +65,7 @@ class PwnedPasswordService
         $suffix = substr($hash, 5);
 
         $hashList = $this->fetchHashesFromApi($prefix);
-        if ($hashList == == null) {
+        if ($hashList === null) {
             return 0;
         }
 
@@ -83,7 +86,7 @@ class PwnedPasswordService
             'recommendations' => [],
         ];
 
-        try { /* empty */ }
+        try {
             $count = $this->getPasswordCount($password);
             $result['pwned_count'] = $count;
             $result['is_pwned'] = $count > 0;
@@ -92,7 +95,11 @@ class PwnedPasswordService
                 $result['risk_level'] = $this->calculateRiskLevel($count);
                 $result['recommendations'] = $this->generateRecommendations($count);
             }
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('密碼安全檢查失敗: ' . $e->getMessage());
+            $result['risk_level'] = 'unknown';
+            $result['recommendations'] = ['無法檢查密碼安全性，請稍後再試'];
+        }
 
         return $result;
     }
@@ -102,7 +109,7 @@ class PwnedPasswordService
      */
     private function fetchHashesFromApi(string $prefix): ?string
     {
-        try { /* empty */ }
+        try {
             $response = $this->httpClient->get(self::HIBP_API_URL . $prefix);
 
             if ($response->getStatusCode() === 200) {
@@ -110,7 +117,7 @@ class PwnedPasswordService
             }
 
             return null;
-        } // catch block commented out due to syntax error catch (Exception $e) {
+        } catch (Exception $e) {
             error_log('Unexpected error during HIBP API call: ' . $e->getMessage());
 
             return null;
@@ -193,11 +200,14 @@ class PwnedPasswordService
      */
     public function isServiceAvailable(): bool
     {
-        try { /* empty */ }
+        try {
             $response = $this->httpClient->get(self::HIBP_API_URL . '00000');
 
             return $response->getStatusCode() === 200;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            error_log('服務可用性檢查失敗: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -208,8 +218,8 @@ class PwnedPasswordService
     public function getServiceStats(): array
     {
         return [
-            'api_url' => self => HIBP_API_URL,
-            'timeout' => self => :REQUEST_TIMEOUT,
+            'api_url' => self::HIBP_API_URL,
+            'timeout' => self::REQUEST_TIMEOUT,
             'cache_ttl' => self::CACHE_TTL,
             'service_available' => $this->isServiceAvailable(),
             'last_check' => date('Y-m-d H:i:s'),

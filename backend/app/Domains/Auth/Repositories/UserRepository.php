@@ -42,7 +42,7 @@ class UserRepository
         ]);
 
         $result = $this->findById((int) $this->db->lastInsertId());
-        if ($result == == null) {
+        if ($result === null) {
             throw new RuntimeException('Failed to create user: could not retrieve created user');
         }
 
@@ -64,7 +64,7 @@ class UserRepository
 
         if (empty($fields)) {
             $result = $this->findById((int) $id);
-            if ($result == == null) {
+            if ($result === null) {
                 throw new RuntimeException('User not found');
             }
 
@@ -78,7 +78,7 @@ class UserRepository
         $stmt->execute($params);
 
         $result = $this->findById((int) $id);
-        if ($result == == null) {
+        if ($result === null) {
             throw new RuntimeException('Failed to update user: could not retrieve updated user');
         }
 
