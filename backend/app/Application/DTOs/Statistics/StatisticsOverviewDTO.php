@@ -47,14 +47,14 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從統計快照建立 DTO.
+     * @param array<SourceStatistics> $sourceStatistics
+     * @param array<string, mixed> $additionalMetrics
      */
     public static function fromSnapshot(
         StatisticsPeriod $period,
         StatisticsMetric $totalPosts,
         StatisticsMetric $totalViews,
-        /** @var array<string, mixed> */
         array $sourceStatistics,
-        /** @var array<string, mixed> */
         array $additionalMetrics = [],
     ): self {
         return new self(
@@ -69,6 +69,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -114,7 +115,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
         // 來源統計資料
         $sourceStatsDataRaw = $data['source_statistics'] ?? [];
-        /** @var array<array<string, mixed> $sourceStatsData */
+        /** @var array<array<string, mixed>> $sourceStatsData */
         $sourceStatsData = is_array($sourceStatsDataRaw) ? array_filter($sourceStatsDataRaw, 'is_array') : [];
 
         /** @var array<SourceStatistics> $sourceStatistics */
@@ -161,6 +162,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得格式化的統計概覽.
+     * @return array<string, mixed>
      */
     public function getFormattedOverview(): array
     {
@@ -206,6 +208,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得摘要資訊.
+     * @return array<string, mixed>
      */
     public function getSummary(): array
     {
@@ -221,6 +224,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得主要來源.
+     * @return array<string, mixed>|null
      */
     public function getTopSource(): ?array
     {
@@ -269,6 +273,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -320,6 +325,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -341,10 +347,12 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 驗證來源統計資料.
+     * @param array<SourceStatistics> $sourceStatistics
      */
     private function validateSourceStatistics(array $sourceStatistics): void
     {
         foreach ($sourceStatistics as $index => $source) {
+            // 型別檢查已通過 PHPDoc，這裡只做業務邏輯驗證
             // 基本驗證：確保有有效的統計值
             if ($source->count->value < 0) {
                 throw new InvalidArgumentException(

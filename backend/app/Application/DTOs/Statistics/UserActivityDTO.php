@@ -28,8 +28,8 @@ final readonly class UserActivityDTO implements JsonSerializable
     /**
      * @param StatisticsPeriod $period 統計週期
      * @param StatisticsMetric $newUsers 新使用者數
-     * @param array> $topActiveUsers
-     * @param array $engagementMetrics 參與度指標
+     * @param array<array<string, mixed>> $topActiveUsers
+     * @param array<string, mixed> $engagementMetrics 參與度指標
      */
     public function __construct(
         public StatisticsPeriod $period,
@@ -50,17 +50,14 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 從統計資料建立 DTO.
-     */
-    /**
-     * 從統計資料建立 DTO.
+     * @param array<string, mixed> $userStats
+     * @param array<array<string, mixed>> $topUsers
+     * @param array<string, mixed> $patterns
      */
     public static function fromStatistics(
         StatisticsPeriod $period,
-        /** @var array<string, mixed> */
         array $userStats,
-        /** @var array<array<string, mixed> */
         array $topUsers = [],
-        /** @var array<string, mixed> */
         array $patterns = [],
     ): self {
         $totalActiveValue = $userStats['total_active'] ?? null;
@@ -98,6 +95,9 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
+     */
+    /**
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -140,7 +140,7 @@ final readonly class UserActivityDTO implements JsonSerializable
         );
 
         $topActiveUsersRaw = $data['top_active_users'] ?? [];
-        /** @var array<array<string, mixed> $topActiveUsers */
+        /** @var array<array<string, mixed>> $topActiveUsers */
         $topActiveUsers = is_array($topActiveUsersRaw) ? array_filter($topActiveUsersRaw, 'is_array') : [];
 
         $activityPatternsRaw = $data['activity_patterns'] ?? [];
@@ -255,8 +255,8 @@ final readonly class UserActivityDTO implements JsonSerializable
     }
 
     /**
-     * 取得最活躍使用者資訊.
-     * @return array>
+     * 取得最活躍使用者摘要.
+     * @return array<string, mixed>
      */
     public function getTopActiveUsersSummary(): array
     {
@@ -278,7 +278,8 @@ final readonly class UserActivityDTO implements JsonSerializable
     }
 
     /**
-     * 取得活動時段分析.
+     * 取得活動時間分析.
+     * @return array<string, mixed>
      */
     public function getActivityTimeAnalysis(): array
     {
@@ -289,8 +290,8 @@ final readonly class UserActivityDTO implements JsonSerializable
     }
 
     /**
-     * 取得最熱門活動時段.
-     * @return array>
+     * 取得高峰活動時間.
+     * @return array<string, mixed>
      */
     public function getPeakActivityHours(): array
     {
@@ -308,12 +309,13 @@ final readonly class UserActivityDTO implements JsonSerializable
                 ? ((int) $countB <=> (int) $countA) : 0;
         });
 
-        /** @var array<int, array<string, mixed> $timeAnalysis */
+        /** @var array<int, array<string, mixed>> $timeAnalysis */
         return array_slice($timeAnalysis, 0, 3, true);
     }
 
     /**
      * 取得使用者活動摘要
+     * @return array<string, mixed>
      */
     public function getActivitySummary(): array
     {
@@ -342,6 +344,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得格式化的活動資訊.
+     * @return array<string, mixed>
      */
     public function getFormattedActivity(): array
     {
@@ -379,6 +382,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 比較與另一個週期的活動差異.
+     * @return array<string, mixed>
      */
     public function compareWith(UserActivityDTO $other): array
     {
@@ -425,6 +429,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -458,6 +463,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -482,6 +488,8 @@ final readonly class UserActivityDTO implements JsonSerializable
      */
     /**
      * 計算參與度指標.
+     * @param array<string, mixed> $userStats
+     * @return array<string, mixed>
      */
     private static function calculateEngagementMetrics(array $userStats): array
     {
@@ -503,7 +511,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 驗證最活躍使用者資料.
-     * @param array> $topUsers
+     * @param array<array<string, mixed>> $topUsers
      */
     private function validateTopActiveUsers(array $topUsers): void
     {
@@ -518,6 +526,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 驗證活動模式資料.
+     * @param array<string, mixed> $patterns
      */
     private function validateActivityPatterns(array $patterns): void
     {

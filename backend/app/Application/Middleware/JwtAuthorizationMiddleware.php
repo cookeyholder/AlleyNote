@@ -10,6 +10,7 @@ use Exception;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * JWT 授權中介軟體.
@@ -52,14 +53,19 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      */
     private array $config;
 
+    private ?LoggerInterface $logger = null;
+
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
-        /** @var array<string, mixed> $config */
-        /** @var array<string, mixed> */
         array $config = [],
+        ?LoggerInterface $logger = null,
     ) {
         $this->config = array_merge($this->getDefaultConfig(), $config);
+        $this->logger = $logger;
     }
 
     /**
