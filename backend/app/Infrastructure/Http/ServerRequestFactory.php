@@ -10,9 +10,6 @@ use Psr\Http\Message\ServerRequestInterface;
  * PSR-7 ServerRequest 工廠.
  */
 class ServerRequestFactory
-
-
-
 {
     public static function fromGlobals(): ServerRequestInterface
     {

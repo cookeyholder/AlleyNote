@@ -118,6 +118,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
+
             return;
         }
 
@@ -127,6 +128,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             && strpos($contentType, 'application/json') === false
         ) {
             http_response_code(400);
+
             return;
         }
 
@@ -135,6 +137,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             http_response_code(400);
+
             return;
         }
 
@@ -358,8 +361,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     public function getStats(): array
     {
         return [
-            'enabled_headers' => array_keys(array_filter($this->config, fn($header) =>
-                is_array($header) && ($header['enabled'] ?? false)
+            'enabled_headers' => array_keys(array_filter(
+                $this->config,
+                fn($header) => is_array($header) && ($header['enabled'] ?? false),
             )),
             'current_nonce' => $this->currentNonce,
             'https_enabled' => $this->isHTTPS(),

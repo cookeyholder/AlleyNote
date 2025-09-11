@@ -67,7 +67,7 @@ class OutputSanitizer
     }
 }
 
-    /**
+/**
  * 實作 DDD 合規的輸出清理服務.
  */
 class OutputSanitizerService implements OutputSanitizerInterface

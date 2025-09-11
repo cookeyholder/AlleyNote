@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Api\V1;
 
+use Exception;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 
 /**
- * JWT 認證 API 端點整合測試
+ * JWT 認證 API 端點整合測試.
  *
  * 測試完整的認證流程，包括：
  * - 登入端點回傳 JWT token pair
@@ -121,9 +123,9 @@ class AuthEndpointTest extends TestCase
             // Assert
             $this->assertTrue($result['success']);
             $this->assertEquals('Logout successful', $result['message']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 如果發生例外，確保有適當的錯誤處理
-            $this->assertInstanceOf(\Exception::class, $e);
+            $this->assertInstanceOf(Exception::class, $e);
             $this->assertNotEmpty($e->getMessage());
         }
     }
@@ -143,12 +145,12 @@ class AuthEndpointTest extends TestCase
             // Assert
             $this->assertArrayHasKey('access_token', $result);
             $this->assertArrayHasKey('expires_in', $result);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             // 處理無效的刷新 token
             $this->assertStringContainsString('Invalid refresh token', $e->getMessage());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 處理其他錯誤
-            $this->assertInstanceOf(\Exception::class, $e);
+            $this->assertInstanceOf(Exception::class, $e);
         }
     }
 
@@ -167,12 +169,12 @@ class AuthEndpointTest extends TestCase
             // Assert
             $this->assertTrue($result['email_sent']);
             $this->assertIsString($result['reset_token']);
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             // 處理郵件發送失敗
             $this->assertStringContainsString('Failed to send reset email', $e->getMessage());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 處理其他錯誤
-            $this->assertInstanceOf(\Exception::class, $e);
+            $this->assertInstanceOf(Exception::class, $e);
         }
     }
 
@@ -189,17 +191,17 @@ class AuthEndpointTest extends TestCase
 
             // Assert - 簡單驗證權限檢查有回傳值
             $this->addToAssertionCount(1);
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             // 處理權限不足
             $this->assertStringContainsString('Insufficient permissions', $e->getMessage());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 處理其他錯誤
-            $this->assertInstanceOf(\Exception::class, $e);
+            $this->assertInstanceOf(Exception::class, $e);
         }
     }
 
     /**
-     * 模擬登出請求處理
+     * 模擬登出請求處理.
      */
     /**
      * @param array<string, mixed> $request
@@ -208,7 +210,7 @@ class AuthEndpointTest extends TestCase
     private function processLogoutRequest(array $request): array
     {
         if (!isset($request['refresh_token'])) {
-            throw new \InvalidArgumentException('Refresh token is required');
+            throw new InvalidArgumentException('Refresh token is required');
         }
 
         return [
@@ -218,7 +220,7 @@ class AuthEndpointTest extends TestCase
     }
 
     /**
-     * 模擬 token 刷新處理
+     * 模擬 token 刷新處理.
      */
     /**
      * @param array<string, mixed> $request
@@ -227,7 +229,7 @@ class AuthEndpointTest extends TestCase
     private function processTokenRefresh(array $request): array
     {
         if (!isset($request['refresh_token'])) {
-            throw new \InvalidArgumentException('Invalid refresh token');
+            throw new InvalidArgumentException('Invalid refresh token');
         }
 
         return [
@@ -237,7 +239,7 @@ class AuthEndpointTest extends TestCase
     }
 
     /**
-     * 模擬密碼重設請求處理
+     * 模擬密碼重設請求處理.
      */
     /**
      * @param array<string, mixed> $request
@@ -246,7 +248,7 @@ class AuthEndpointTest extends TestCase
     private function processPasswordResetRequest(array $request): array
     {
         if (!isset($request['email'])) {
-            throw new \InvalidArgumentException('Email is required');
+            throw new InvalidArgumentException('Email is required');
         }
 
         return [
@@ -256,7 +258,7 @@ class AuthEndpointTest extends TestCase
     }
 
     /**
-     * 模擬使用者權限檢查
+     * 模擬使用者權限檢查.
      */
     /**
      * @param array<string> $roles

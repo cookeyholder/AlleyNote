@@ -321,8 +321,8 @@ class PostRepositoryTest extends TestCase
         foreach ($result['items'] as $post) {
             $this->assertInstanceOf(Post::class, $post);
         }
-
     }
+
     public function testGetPinnedPosts(): void
     {
         // 建立普通文章

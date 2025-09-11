@@ -19,9 +19,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
     description: 'Activity logging and retrieval endpoints',
 )]
 class ActivityLogController extends BaseController
-
-
-
 {
     public function __construct(
         private readonly ActivityLoggingServiceInterface $loggingService,

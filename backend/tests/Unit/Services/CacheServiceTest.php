@@ -9,9 +9,6 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CacheServiceTest extends TestCase
-
-
-
 {
     private CacheService $cacheService;
 

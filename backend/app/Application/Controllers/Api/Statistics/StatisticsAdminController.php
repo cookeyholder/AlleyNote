@@ -49,8 +49,8 @@ class StatisticsAdminController extends BaseController
             ];
 
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             $this->logger->error('統計重新整理失敗', [
                 'error' => $e->getMessage(),
@@ -64,6 +64,7 @@ class StatisticsAdminController extends BaseController
             ];
 
             $response->getBody()->write(json_encode($responseData) ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }

@@ -40,7 +40,6 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 建立新的統計快照.
-     * @param array $sourceStats
      */
     public static function create(
         Uuid $id,
@@ -56,7 +55,8 @@ class StatisticsSnapshot extends AggregateRoot
         foreach ($sourceStats as $sourceStatistics) {
             if (!$sourceStatistics instanceof SourceStatistics) {
                 throw new InvalidStatisticsSnapshotException(
-                    '來源統計必須是 SourceStatistics 實例');
+                    '來源統計必須是 SourceStatistics 實例',
+                );
             }
         }
 
@@ -64,7 +64,8 @@ class StatisticsSnapshot extends AggregateRoot
         foreach ($additionalMetrics as $key => $metric) {
             if (!$metric instanceof StatisticsMetric) {
                 throw new InvalidStatisticsSnapshotException(
-                    "額外指標 '{$key}' 必須是 StatisticsMetric 實例");
+                    "額外指標 '{$key}' 必須是 StatisticsMetric 實例",
+                );
             }
         }
 
@@ -109,7 +110,6 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 從資料重建統計快照.
-     * @param array $sourceStats
      */
     public static function fromData(
         Uuid $id,
@@ -182,7 +182,6 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得所有來源統計.
-     * @return array
      */
     public function getSourceStats(): array
     {
@@ -213,7 +212,6 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得所有額外指標.
-     * @return array
      */
     public function getAdditionalMetrics(): array
     {
@@ -301,7 +299,8 @@ class StatisticsSnapshot extends AggregateRoot
     {
         if ($newCount < 0) {
             throw new InvalidStatisticsSnapshotException(
-                '文章數量不能為負數');
+                '文章數量不能為負數',
+            );
         }
 
         $this->totalPosts = StatisticsMetric::count($newCount, '總文章數');
@@ -315,7 +314,8 @@ class StatisticsSnapshot extends AggregateRoot
     {
         if ($newCount < 0) {
             throw new InvalidStatisticsSnapshotException(
-                '瀏覽數量不能為負數');
+                '瀏覽數量不能為負數',
+            );
         }
 
         $this->totalViews = StatisticsMetric::count($newCount, '總瀏覽數');
@@ -324,7 +324,6 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 更新來源統計.
-     * @param array $sourceStats
      */
     public function updateSourceStats(array $sourceStats): void
     {
@@ -332,7 +331,8 @@ class StatisticsSnapshot extends AggregateRoot
         foreach ($sourceStats as $sourceStatistics) {
             if (!$sourceStatistics instanceof SourceStatistics) {
                 throw new InvalidStatisticsSnapshotException(
-                    '來源統計必須是 SourceStatistics 實例');
+                    '來源統計必須是 SourceStatistics 實例',
+                );
             }
         }
 
@@ -468,7 +468,6 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得排序後的來源統計（按計數降序）.
-     * @return array
      */
     public function getSortedSourceStats(): array
     {
@@ -484,7 +483,6 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得統計摘要.
-     * @return array
      */
     public function getSummary(): array
     {
@@ -503,7 +501,7 @@ class StatisticsSnapshot extends AggregateRoot
     }
 
     /**
-     * 取得統計資料
+     * 取得統計資料.
      * @return array<string, mixed>
      */
     public function getData(): array
@@ -522,7 +520,6 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 轉換為陣列.
-     * @return array
      */
     public function toArray(): array
     {

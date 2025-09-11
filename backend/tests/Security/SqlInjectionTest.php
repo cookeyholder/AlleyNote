@@ -205,7 +205,7 @@ class SqlInjectionTest extends TestCase
             $end = microtime(true);
 
             // 查詢不應該洩露資訊或造成延遲
-            $this->assertLessThan(1.0, $end - $start, "Query should not cause delays");
+            $this->assertLessThan(1.0, $end - $start, 'Query should not cause delays');
             $this->assertLessThanOrEqual(3, $results['total'], "Boolean attack should be prevented: {$attack}");
         }
     }
@@ -215,9 +215,9 @@ class SqlInjectionTest extends TestCase
     {
         // 測試數值型 SQL 注入
         $numericAttacks = [
-            1 . " OR 1=1",
-            "1; DROP TABLE posts;",
-            "1 UNION SELECT * FROM posts",
+            1 . ' OR 1=1',
+            '1; DROP TABLE posts;',
+            '1 UNION SELECT * FROM posts',
         ];
 
         foreach ($numericAttacks as $attack) {
@@ -258,12 +258,12 @@ class SqlInjectionTest extends TestCase
         $specialChars = [
             "Test with ' single quote",
             'Test with " double quote',
-            "Test with \\ backslash",
-            "Test with % percent",
-            "Test with _ underscore",
-            "Test with ; semicolon",
-            "Test with -- comment",
-            "Test with /* block comment */",
+            'Test with \\ backslash',
+            'Test with % percent',
+            'Test with _ underscore',
+            'Test with ; semicolon',
+            'Test with -- comment',
+            'Test with /* block comment */',
         ];
 
         foreach ($specialChars as $input) {

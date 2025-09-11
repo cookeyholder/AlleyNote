@@ -24,9 +24,6 @@ class Response implements ResponseInterface
 
     private StreamInterface $body;
 
-    /**
-     * @param array $headers
-     */
     public function __construct(
         int $statusCode = 200,
         /** @var array<string, mixed> */

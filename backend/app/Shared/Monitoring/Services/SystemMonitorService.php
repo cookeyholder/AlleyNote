@@ -16,7 +16,9 @@ use Psr\Log\LoggerInterface;
 class SystemMonitorService
 {
     private PDO $database;
+
     private LoggerInterface $logger;
+
     private array $config;
 
     public function __construct(PDO $database, LoggerInterface $logger, array $config = [])
@@ -217,6 +219,7 @@ class SystemMonitorService
     public function hasAnyIssues(): bool
     {
         $healthCheck = $this->getHealthCheck();
+
         return $healthCheck['overall_status'] !== 'healthy';
     }
 
@@ -329,6 +332,7 @@ class SystemMonitorService
             return $stats;
         } catch (Exception $e) {
             error_log('Failed to get SQLite stats: ' . $e->getMessage());
+
             return [];
         }
     }

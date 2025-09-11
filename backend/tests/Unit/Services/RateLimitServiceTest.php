@@ -12,9 +12,6 @@ use RuntimeException;
 use Tests\TestCase;
 
 class RateLimitServiceTest extends TestCase
-
-
-
 {
     private RateLimitService $rateLimitService;
 

@@ -18,11 +18,14 @@ class IpController
         private IpService $service,
         private ValidatorInterface $validator,
         private OutputSanitizerInterface $sanitizer,
-    ) {
-    }
+    ) {}
 
     /**
      * 建立IP規則.
+     */
+    /**
+     * @param array<string, mixed> $request
+     * @return array<string, mixed>
      */
     public function create(array $request): array
     {
@@ -49,6 +52,10 @@ class IpController
     /**
      * 根據類型取得IP規則.
      */
+    /**
+     * @param array<string, mixed> $request
+     * @return array<string, mixed>
+     */
     public function getByType(array $request): array
     {
         try {
@@ -59,12 +66,16 @@ class IpController
             $type = is_numeric($request['type']) ? (int) $request['type'] : 0;
             $rules = $this->service->getRulesByType($type);
 
+            $mappedRules = [];
+            foreach ($rules as $rule) {
+                if ($rule instanceof IpList) {
+                    $mappedRules[] = $rule->toSafeArray($this->sanitizer);
+                }
+            }
+
             return [
                 'status' => 200,
-                'data' => array_map(
-                    fn(IpList $rule): array => $rule->toSafeArray($this->sanitizer),
-                    $rules,
-                ),
+                'data' => $mappedRules,
             ];
         } catch (Exception $e) {
             return [
@@ -76,6 +87,10 @@ class IpController
 
     /**
      * 檢查IP存取權限.
+     */
+    /**
+     * @param array<string, mixed> $request
+     * @return array<string, mixed>
      */
     public function checkAccess(array $request): array
     {

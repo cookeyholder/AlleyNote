@@ -24,9 +24,6 @@ use Tests\TestCase;
 
 #[Group('failing')]
 class AttachmentUploadTest extends TestCase
-
-
-
 {
     protected AttachmentService $attachmentService;
 
@@ -201,9 +198,9 @@ class AttachmentUploadTest extends TestCase
     private function attemptSingleUpload(int $postId, int $fileIndex): bool
     {
         $file = $this->createUploadedFileMock(
-            sprintf("test%s.jpg", $fileIndex),
+            sprintf('test%s.jpg', $fileIndex),
             'image/jpeg',
-            1024
+            1024,
         );
 
         try {
@@ -259,8 +256,8 @@ class AttachmentUploadTest extends TestCase
         foreach ($invalidTypes as $mimeType => $filename) {
             $this->testSingleInvalidFileType($postId, $filename, $mimeType);
         }
-
     }
+
     private function testSingleInvalidFileType(int $postId, string $filename, string $mimeType): void
     {
         $file = $this->createUploadedFileMock($filename, $mimeType, 1024);
@@ -363,9 +360,9 @@ class AttachmentUploadTest extends TestCase
             } elseif (is_dir($file)) {
                 $this->removeSubdirectory($file);
             }
+        }
+    }
 
-    }
-    }
     private function removeSubdirectory(string $directory): void
     {
         $subFiles = glob($directory . '/*');

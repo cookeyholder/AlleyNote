@@ -11,7 +11,7 @@ use PDOException;
 use RuntimeException;
 
 /**
- * 系統統計資料存取實作類別
+ * 系統統計資料存取實作類別.
  *
  * 實作系統層級統計資料的查詢功能，提供系統效能、資源使用、安全性等統計分析。
  * 針對系統監控和管理需求，提供全面的系統狀態資訊。
@@ -19,11 +19,11 @@ use RuntimeException;
 final readonly class SystemStatisticsRepository implements SystemStatisticsRepositoryInterface
 {
     public function __construct(
-        private PDO $pdo
+        private PDO $pdo,
     ) {}
 
     /**
-     * 取得系統整體效能統計
+     * 取得系統整體效能統計.
      *
      * @return array<string, mixed>
      */
@@ -143,7 +143,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * StatisticsQueryService 需要的方法
+     * StatisticsQueryService 需要的方法.
      *
      * @return array<string, mixed>
      */
@@ -161,7 +161,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * StatisticsQueryService 需要的方法
+     * StatisticsQueryService 需要的方法.
      *
      * @return array<string, mixed>
      */
@@ -179,7 +179,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * StatisticsQueryService 需要的方法
+     * StatisticsQueryService 需要的方法.
      *
      * @return array<string, mixed>
      */
@@ -213,7 +213,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得資料庫使用統計
+     * 取得資料庫使用統計.
      *
      * @return array<string, mixed>
      */
@@ -251,7 +251,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統活動熱圖資料
+     * 取得系統活動熱圖資料.
      *
      * @return array<string, mixed>
      */
@@ -310,7 +310,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得快取效能統計
+     * 取得快取效能統計.
      *
      * @return array<string, mixed>
      */
@@ -327,7 +327,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得 API 使用統計
+     * 取得 API 使用統計.
      *
      * @return array<string, mixed>
      */
@@ -372,7 +372,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得錯誤與異常統計
+     * 取得錯誤與異常統計.
      *
      * @return array<string, mixed>
      */
@@ -416,7 +416,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統資源使用統計
+     * 取得系統資源使用統計.
      *
      * @return array<string, mixed>
      */
@@ -434,7 +434,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統安全統計
+     * 取得系統安全統計.
      *
      * @return array<string, mixed>
      */
@@ -494,7 +494,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統備份與維護統計
+     * 取得系統備份與維護統計.
      *
      * @return array<string, mixed>
      */
@@ -511,7 +511,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統配置與版本資訊
+     * 取得系統配置與版本資訊.
      *
      * @return array<string, mixed>
      */
@@ -532,7 +532,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統健康檢查統計
+     * 取得系統健康檢查統計.
      *
      * @return array<string, mixed>
      */
@@ -574,7 +574,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統負載統計
+     * 取得系統負載統計.
      *
      * @return array<string, mixed>
      */
@@ -622,7 +622,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統儲存空間統計
+     * 取得系統儲存空間統計.
      *
      * @return array<string, mixed>
      */
@@ -639,7 +639,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統網路統計
+     * 取得系統網路統計.
      *
      * @return array<string, mixed>
      */
@@ -675,7 +675,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統會話統計
+     * 取得系統會話統計.
      *
      * @return array<string, mixed>
      */
@@ -691,7 +691,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統版本更新統計
+     * 取得系統版本更新統計.
      *
      * @return array<string, mixed>
      */
@@ -707,7 +707,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得系統監控警報統計
+     * 取得系統監控警報統計.
      *
      * @return array<string, mixed>
      */
@@ -724,7 +724,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 檢查系統在指定週期是否正常運行
+     * 檢查系統在指定週期是否正常運行.
      */
     public function isSystemHealthyInPeriod(StatisticsPeriod $period): bool
     {
@@ -775,7 +775,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 計算成長率
+     * 計算成長率.
      */
     private function calculateGrowthRate(int $total, int $period): float
     {
@@ -789,7 +789,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     }
 
     /**
-     * 取得資料庫版本
+     * 取得資料庫版本.
      */
     private function getDatabaseVersion(): string
     {

@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Models;
 
 class Role
-
-
-
 {
     private int $id;
 

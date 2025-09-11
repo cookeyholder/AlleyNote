@@ -12,9 +12,6 @@ use PHPUnit\Framework\TestCase;
  * CacheTag 值物件測試（修正版）.
  */
 class CacheTagTest extends TestCase
-
-
-
 {
     public function testCreateUserTag(): void
     {
@@ -207,8 +204,8 @@ class CacheTagTest extends TestCase
             $tag = new CacheTag($input);
             $this->assertEquals($expected, $tag->getName(), "Input: '$input'");
         }
-
     }
+
     public function testValidationErrorMessages(): void
     {
         // 測試不同的驗證錯誤

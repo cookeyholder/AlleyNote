@@ -8,9 +8,6 @@ use App\Shared\Contracts\OutputSanitizerInterface;
 use JsonSerializable;
 
 class IpList implements JsonSerializable
-
-
-
 {
     private int $id;
 

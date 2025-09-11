@@ -142,9 +142,6 @@ class LayeredCacheDriver implements CacheDriverInterface
         return $success;
     }
 
-    /**
-     * @param array $keys
-     */
     public function many(array $keys): array
     {
         $result = [];
@@ -178,9 +175,6 @@ class LayeredCacheDriver implements CacheDriverInterface
         return $result;
     }
 
-    /**
-     * @param array $values
-     */
     public function putMany(array $values, int $ttl = 3600): bool
     {
         $success = true;
@@ -202,9 +196,6 @@ class LayeredCacheDriver implements CacheDriverInterface
         return $success;
     }
 
-    /**
-     * @param array $keys
-     */
     public function forgetMany(array $keys): bool
     {
         $success = true;
@@ -299,9 +290,6 @@ class LayeredCacheDriver implements CacheDriverInterface
         return $this->remember($key, $callback, 0);
     }
 
-    /**
-     * @return array
-     */
     public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
@@ -382,7 +370,6 @@ class LayeredCacheDriver implements CacheDriverInterface
 
     /**
      * 取得所有層級。
-     * @return array
      */
     public function getLayers(): array
     {

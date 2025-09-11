@@ -14,9 +14,6 @@ use Psr\Log\LoggerInterface;
  * CacheGroupManager 測試（修正版）.
  */
 class CacheGroupManagerTest extends TestCase
-
-
-
 {
     private CacheGroupManager $groupManager;
 

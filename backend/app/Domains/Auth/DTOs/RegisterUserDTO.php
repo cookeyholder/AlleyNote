@@ -14,9 +14,6 @@ use App\Shared\Exceptions\ValidationException;
  * 用於安全地傳輸使用者註冊所需的資料，防止巨量賦值攻擊
  */
 class RegisterUserDTO extends BaseDTO
-
-
-
 {
     public readonly string $username;
 
@@ -32,9 +29,6 @@ class RegisterUserDTO extends BaseDTO
      * @param ValidatorInterface $validator 驗證器實例
      * @throws ValidationException 當驗證失敗時
      */
-    
-    
-    
     public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
     {
         parent::__construct($validator);
@@ -229,7 +223,6 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
-     * @return array
      */
     protected function getValidationRules(): array
     {
@@ -245,7 +238,6 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 覆寫驗證方法以支援跨欄位驗證.
      * @param array $data 輸入資料
-     * @return array
      * @throws ValidationException 當驗證失敗時
      */
     protected function validate(array $data): array
@@ -267,7 +259,6 @@ class RegisterUserDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Service 使用）.
     /**
-     * @return array
      */
     public function toArray(): array
     {
@@ -281,7 +272,6 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 取得用於密碼雜湊的資料.
-     * @return array
      */
     public function getPasswordData(): array
     {

@@ -10,8 +10,8 @@ use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\ErrorHandlerServiceInterface;
 use App\Domains\Security\Contracts\IpRepositoryInterface;
 use App\Domains\Security\Contracts\IpServiceInterface;
-use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
 use App\Domains\Security\Contracts\SecretsManagerInterface;
+use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Security\Repositories\ActivityLogRepository;
 use App\Domains\Security\Repositories\IpRepository;
@@ -25,6 +25,7 @@ use App\Domains\Security\Services\Secrets\SecretsManager;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 /**
  * Security 領域服務提供者.
@@ -45,13 +46,13 @@ class SecurityServiceProvider
             // Repository Interfaces
             ActivityLogRepositoryInterface::class => static function (ContainerInterface $container): ActivityLogRepository {
                 return new ActivityLogRepository(
-                    $container->get(PDO::class)
+                    $container->get(PDO::class),
                 );
             },
 
             IpRepositoryInterface::class => static function (ContainerInterface $container): IpRepository {
                 return new IpRepository(
-                    $container->get(PDO::class)
+                    $container->get(PDO::class),
                 );
             },
 
@@ -59,44 +60,44 @@ class SecurityServiceProvider
             ActivityLoggingServiceInterface::class => static function (ContainerInterface $container): ActivityLoggingService {
                 return new ActivityLoggingService(
                     $container->get(ActivityLogRepositoryInterface::class),
-                    $container->get(LoggerInterface::class)
+                    $container->get(LoggerInterface::class),
                 );
             },
 
             CsrfProtectionServiceInterface::class => static function (ContainerInterface $container): CsrfProtectionService {
                 return new CsrfProtectionService(
-                    $container->get(LoggerInterface::class)
+                    $container->get(LoggerInterface::class),
                 );
             },
 
             XssProtectionServiceInterface::class => static function (ContainerInterface $container): XssProtectionService {
                 return new XssProtectionService(
-                    $container->get(LoggerInterface::class)
+                    $container->get(LoggerInterface::class),
                 );
             },
 
             IpServiceInterface::class => static function (ContainerInterface $container): IpService {
                 return new IpService(
                     $container->get(IpRepositoryInterface::class),
-                    $container->get(LoggerInterface::class)
+                    $container->get(LoggerInterface::class),
                 );
             },
 
             SecurityHeaderServiceInterface::class => static function (ContainerInterface $container): SecurityHeaderService {
                 return new SecurityHeaderService(
-                    $container->get(LoggerInterface::class)
+                    $container->get(LoggerInterface::class),
                 );
             },
 
             ErrorHandlerServiceInterface::class => static function (ContainerInterface $container): ErrorHandlerService {
                 return new ErrorHandlerService(
-                    $container->get(LoggerInterface::class)
+                    $container->get(LoggerInterface::class),
                 );
             },
 
             SecretsManagerInterface::class => static function (ContainerInterface $container): SecretsManager {
                 return new SecretsManager(
-                    $container->get(LoggerInterface::class)
+                    $container->get(LoggerInterface::class),
                 );
             },
 
@@ -264,7 +265,7 @@ class SecurityServiceProvider
                     'class' => get_class($service),
                     'memory_usage' => memory_get_usage(true),
                 ];
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $services[$serviceName] = [
                     'status' => 'error',
                     'error' => $e->getMessage(),

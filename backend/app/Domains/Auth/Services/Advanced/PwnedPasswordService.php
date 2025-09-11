@@ -43,10 +43,12 @@ class PwnedPasswordService
     {
         try {
             $count = $this->getPasswordCount($password);
+
             return $count > 0;
         } catch (Exception $e) {
             // 如果 API 失敗，出於安全考量回傳 false（允許密碼）
             error_log('Pwned password check failed: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -118,9 +120,11 @@ class PwnedPasswordService
             return null;
         } catch (RequestException $e) {
             error_log('HIBP API request failed: ' . $e->getMessage());
+
             return null;
         } catch (Exception $e) {
             error_log('Unexpected error during HIBP API call: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -203,6 +207,7 @@ class PwnedPasswordService
     {
         try {
             $response = $this->httpClient->get(self::HIBP_API_URL . '00000');
+
             return $response->getStatusCode() === 200;
         } catch (Exception $e) {
             return false;

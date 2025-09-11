@@ -199,8 +199,6 @@ final class StatisticsControllerIntegrationTest extends TestCase
 
     /**
      * 驗證 API 回應結構的輔助方法.
-     * @param array $expectedStructure
-     * @param array $params
      */
     private function assertApiResponseStructure(string $url, array $params, array $expectedStructure): void
     {
@@ -234,8 +232,6 @@ final class StatisticsControllerIntegrationTest extends TestCase
 
     /**
      * 驗證 API 錯誤回應的輔助方法.
-     * @param array $expectedStructure
-     * @param array $params
      */
     private function assertApiErrorResponse(string $url, array $params, int $expectedStatusCode, array $expectedStructure): void
     {

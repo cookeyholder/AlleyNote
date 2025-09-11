@@ -20,9 +20,6 @@ use Tests\TestCase;
  * 測試 DTO 與驗證器的整合功能
  */
 class DTOValidationIntegrationTest extends TestCase
-
-
-
 {
     private ValidatorInterface $validator;
 

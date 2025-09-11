@@ -6,7 +6,6 @@ namespace App\Domains\Auth\Providers;
 
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Application\Middleware\JwtAuthorizationMiddleware;
-use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtProviderInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
@@ -31,7 +30,6 @@ class AuthServiceProvider
 {
     /**
      * 取得所有認證服務定義.
-     * @return array
      */
     public static function getDefinitions(): array
     {
@@ -181,7 +179,6 @@ class AuthServiceProvider
 
     /**
      * 取得中介軟體別名映射.
-     * @return array
      */
     public static function getMiddlewareAliases(): array
     {

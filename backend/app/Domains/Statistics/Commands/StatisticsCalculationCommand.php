@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 /**
- * 統計計算定時任務指令
+ * 統計計算定時任務指令.
  *
  * 負責定期計算統計快照，支援不同統計週期和錯誤重試機制
  */
@@ -40,7 +40,7 @@ readonly class StatisticsCalculationCommand
     ) {}
 
     /**
-     * 執行統計計算任務
+     * 執行統計計算任務.
      *
      * @param array<string> $periods 要計算的週期類型 ['daily', 'weekly', 'monthly']
      * @param bool $force 是否強制執行
@@ -120,7 +120,7 @@ readonly class StatisticsCalculationCommand
     }
 
     /**
-     * 計算單一週期的統計資料
+     * 計算單一週期的統計資料.
      *
      * @return array<string, mixed>
      */
@@ -235,7 +235,7 @@ readonly class StatisticsCalculationCommand
     }
 
     /**
-     * 預熱指定週期的快取
+     * 預熱指定週期的快取.
      */
     private function warmupCacheForPeriod(StatisticsPeriod $period): void
     {
@@ -323,7 +323,7 @@ readonly class StatisticsCalculationCommand
     }
 
     /**
-     * 驗證並取得週期類型
+     * 驗證並取得週期類型.
      */
     private function validateAndGetPeriodType(string $periodName): PeriodType
     {
@@ -337,7 +337,7 @@ readonly class StatisticsCalculationCommand
     }
 
     /**
-     * 取得鎖定檔案路徑
+     * 取得鎖定檔案路徑.
      */
     private function getLockFilePath(string $periodName): string
     {
@@ -345,7 +345,7 @@ readonly class StatisticsCalculationCommand
     }
 
     /**
-     * 檢查是否已被鎖定
+     * 檢查是否已被鎖定.
      */
     private function isLocked(string $lockFile): bool
     {
@@ -368,7 +368,7 @@ readonly class StatisticsCalculationCommand
     }
 
     /**
-     * 建立鎖定檔案
+     * 建立鎖定檔案.
      */
     private function createLock(string $lockFile): void
     {
@@ -380,7 +380,7 @@ readonly class StatisticsCalculationCommand
     }
 
     /**
-     * 釋放鎖定檔案
+     * 釋放鎖定檔案.
      */
     private function releaseLock(string $lockFile): void
     {
@@ -390,7 +390,7 @@ readonly class StatisticsCalculationCommand
     }
 
     /**
-     * 清理所有過期的鎖定檔案
+     * 清理所有過期的鎖定檔案.
      */
     public function cleanupExpiredLocks(): int
     {
@@ -416,7 +416,7 @@ readonly class StatisticsCalculationCommand
     }
 
     /**
-     * 取得任務狀態
+     * 取得任務狀態.
      *
      * @return array<string, mixed>
      */

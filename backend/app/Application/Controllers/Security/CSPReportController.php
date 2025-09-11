@@ -8,7 +8,6 @@ use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use RuntimeException;
 
 /**
  * CSP 違規報告控制器。
@@ -34,8 +33,8 @@ class CSPReportController
 
             // 檢查 Content-Type
             $contentType = $request->getHeaderLine('Content-Type');
-            if (!str_contains($contentType, 'application/csp-report') &&
-                !str_contains($contentType, 'application/json')) {
+            if (!str_contains($contentType, 'application/csp-report')
+                && !str_contains($contentType, 'application/json')) {
                 return $this->createErrorResponse($response, 400, 'Invalid content type');
             }
 
@@ -58,7 +57,9 @@ class CSPReportController
             }
 
             // 處理 CSP 報告
-            $this->processCspReport($data, $request);
+            if (is_array($data)) {
+                $this->processCspReport($data, $request);
+            }
 
             // 返回成功回應
             $successResponse = json_encode(['status' => 'received']);
@@ -67,9 +68,8 @@ class CSPReportController
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(204); // No Content - CSP reports typically don't need response body
-
         } catch (Exception $e) {
-            $this->securityLogger->logError('CSP report processing failed', [
+            $this->securityLogger->logSecurityEvent('csp_processing_error', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 'request_uri' => $request->getUri()->getPath(),
@@ -83,7 +83,6 @@ class CSPReportController
     /**
      * 驗證 CSP 報告格式。
      *
-     * @param mixed $data
      * @return array{valid: bool, message: string}
      */
     private function validateCspReport(mixed $data): array
@@ -108,7 +107,7 @@ class CSPReportController
             if (!isset($report[$field])) {
                 return [
                     'valid' => false,
-                    'message' => "Missing required field: {$field}"
+                    'message' => "Missing required field: {$field}",
                 ];
             }
         }
@@ -119,11 +118,14 @@ class CSPReportController
     /**
      * 處理 CSP 報告。
      *
-     * @param array<string, mixed> $data
+     * @param array<mixed, mixed> $data
      */
     private function processCspReport(array $data, Request $request): void
     {
-        $cspReport = $data['csp-report'];
+        $cspReport = $data['csp-report'] ?? [];
+        if (!is_array($cspReport)) {
+            return;
+        }
 
         // 提取報告資訊
         $reportInfo = [
@@ -149,15 +151,16 @@ class CSPReportController
         $this->securityLogger->logSecurityEvent('csp_violation', array_merge(
             $reportInfo,
             $requestInfo,
-            ['severity' => $this->calculateSeverity($reportInfo)]
+            ['severity' => $this->calculateSeverity($reportInfo)],
         ));
 
         // 檢查是否為高風險違規
         if ($this->isHighRiskViolation($reportInfo)) {
-            $this->securityLogger->logCriticalEvent('high_risk_csp_violation', [
+            $this->securityLogger->logSecurityEvent('high_risk_csp_violation', [
                 'report' => $reportInfo,
                 'request' => $requestInfo,
                 'alert_required' => true,
+                'severity' => 'critical',
             ]);
         }
     }
@@ -182,15 +185,15 @@ class CSPReportController
         ];
 
         foreach ($highRiskDirectives as $directive) {
-            if (str_contains($violatedDirective, $directive)) {
+            if (is_string($violatedDirective) && str_contains($violatedDirective, $directive)) {
                 return 'high';
             }
         }
 
         // 檢查是否為外部惡意來源
-        if (str_contains($blockedUri, 'javascript:') ||
-            str_contains($blockedUri, 'data:') ||
-            str_contains($blockedUri, 'blob:')) {
+        if (is_string($blockedUri) && (str_contains($blockedUri, 'javascript:')
+            || str_contains($blockedUri, 'data:')
+            || str_contains($blockedUri, 'blob:'))) {
             return 'high';
         }
 
@@ -202,7 +205,7 @@ class CSPReportController
         ];
 
         foreach ($mediumRiskDirectives as $directive) {
-            if (str_contains($violatedDirective, $directive)) {
+            if (is_string($violatedDirective) && str_contains($violatedDirective, $directive)) {
                 return 'medium';
             }
         }
@@ -246,7 +249,8 @@ class CSPReportController
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? 'unknown';
+        $remoteAddr = $serverParams['REMOTE_ADDR'] ?? 'unknown';
+        return is_string($remoteAddr) ? $remoteAddr : 'unknown';
     }
 
     /**

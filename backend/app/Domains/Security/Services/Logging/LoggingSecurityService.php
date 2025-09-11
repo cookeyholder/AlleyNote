@@ -11,7 +11,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 /**
- * 安全日誌記錄服務
+ * 安全日誌記錄服務.
  *
  * 提供安全的日誌記錄功能，包含資料淨化和權限控制
  */
@@ -24,7 +24,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     private Logger $auditLogger;
 
     /**
-     * 請求資料白名單 - 只記錄這些安全的欄位
+     * 請求資料白名單 - 只記錄這些安全的欄位.
      */
     private const REQUEST_WHITELIST = [
         'method',
@@ -39,7 +39,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     ];
 
     /**
-     * 敏感資料清單 - 這些欄位需要被遮罩或移除
+     * 敏感資料清單 - 這些欄位需要被遮罩或移除.
      */
     private const SENSITIVE_FIELDS = [
         'password',
@@ -60,7 +60,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 初始化日誌記錄器
+     * 初始化日誌記錄器.
      */
     private function initializeLoggers(): void
     {
@@ -103,7 +103,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 確保日誌目錄存在且權限正確
+     * 確保日誌目錄存在且權限正確.
      */
     private function ensureLogDirectory(string $path): void
     {
@@ -114,7 +114,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 設定日誌檔案權限為 0640
+     * 設定日誌檔案權限為 0640.
      */
     private function setLogFilePermissions(string $logsDir): void
     {
@@ -142,7 +142,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄一般應用日誌
+     * 記錄一般應用日誌.
      *
      * @param array<string, mixed> $context
      */
@@ -171,7 +171,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄安全事件
+     * 記錄安全事件.
      *
      * @param array<string, mixed> $context
      */
@@ -184,7 +184,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄高風險安全事件
+     * 記錄高風險安全事件.
      *
      * @param array<string, mixed> $context
      */
@@ -200,7 +200,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄請求日誌（使用白名單模式）
+     * 記錄請求日誌（使用白名單模式）.
      *
      * @param array<string, mixed> $requestData
      */
@@ -213,7 +213,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄驗證失敗事件
+     * 記錄驗證失敗事件.
      *
      * @param array<string, mixed> $context
      */
@@ -226,7 +226,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 記錄授權失敗事件
+     * 記錄授權失敗事件.
      *
      * @param array<string, mixed> $context
      */
@@ -242,7 +242,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 應用請求資料白名單
+     * 應用請求資料白名單.
      *
      * @param array<string, mixed> $data
      * @return array<string, mixed>
@@ -261,7 +261,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 淨化上下文資料，移除敏感資訊
+     * 淨化上下文資料，移除敏感資訊.
      *
      * @param array<string, mixed> $context
      * @return array<string, mixed>
@@ -272,7 +272,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 遞迴淨化陣列，移除敏感資料
+     * 遞迴淨化陣列，移除敏感資料.
      *
      * @param array<string, mixed> $data
      * @return array<string, mixed>
@@ -310,7 +310,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 豐富安全上下文資訊
+     * 豐富安全上下文資訊.
      *
      * @param array<string, mixed> $context
      * @return array<string, mixed>
@@ -332,7 +332,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 豐富請求上下文資訊
+     * 豐富請求上下文資訊.
      *
      * @param array<string, mixed> $context
      * @return array<string, mixed>
@@ -350,7 +350,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 檢查並修正日誌檔案權限
+     * 檢查並修正日誌檔案權限.
      *
      * @return array<string, mixed>
      */
@@ -390,7 +390,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     }
 
     /**
-     * 取得日誌檔案統計資訊
+     * 取得日誌檔案統計資訊.
      *
      * @return array<string, mixed>
      */

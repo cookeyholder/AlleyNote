@@ -22,9 +22,6 @@ use Psr\Log\LoggerInterface;
  * SuspiciousActivityDetector 測試.
  */
 class SuspiciousActivityDetectorTest extends TestCase
-
-
-
 {
     private SuspiciousActivityDetector $detector;
 

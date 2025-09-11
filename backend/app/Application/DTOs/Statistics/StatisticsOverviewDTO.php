@@ -32,9 +32,6 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
      * @param StatisticsMetric $totalViews 總瀏覽數
      * @param array $additionalMetrics 額外指標
      */
-
-
-
     public function __construct(
         public StatisticsPeriod $period,
         public StatisticsMetric $totalPosts,
@@ -231,7 +228,7 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
             return null;
         }
 
-    /** @var SourceStatistics|null */
+        /** @var SourceStatistics|null */
         $topSource = array_reduce(
             $this->sourceStatistics,
             fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => $carry === null || $source->count->value > $carry->count->value ? $source : $carry,

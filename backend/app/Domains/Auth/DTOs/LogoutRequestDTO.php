@@ -10,11 +10,7 @@ namespace App\Domains\Auth\DTOs;
  * 封裝使用者登出請求的資料。
  */
 final readonly class LogoutRequestDTO
-
-
-
 {
-    
     public function __construct(
         public string $accessToken,
         public ?string $refreshToken = null,

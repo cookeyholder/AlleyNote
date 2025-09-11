@@ -160,9 +160,6 @@ class FileCacheDriver implements CacheDriverInterface
         return $success;
     }
 
-    /**
-     * @param array $keys
-     */
     public function many(array $keys): array
     {
         $result = [];
@@ -173,9 +170,6 @@ class FileCacheDriver implements CacheDriverInterface
         return $result;
     }
 
-    /**
-     * @param array $values
-     */
     public function putMany(array $values, int $ttl = self::DEFAULT_TTL): bool
     {
         $success = true;
@@ -188,9 +182,6 @@ class FileCacheDriver implements CacheDriverInterface
         return $success;
     }
 
-    /**
-     * @param array $keys
-     */
     public function forgetMany(array $keys): bool
     {
         $success = true;
@@ -264,9 +255,6 @@ class FileCacheDriver implements CacheDriverInterface
         return $this->remember($key, $callback, 0);
     }
 
-    /**
-     * @return array
-     */
     public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];

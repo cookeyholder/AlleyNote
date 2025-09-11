@@ -128,9 +128,6 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return true;
     }
 
-    /**
-     * @param array $keys
-     */
     public function many(array $keys): array
     {
         $result = [];
@@ -141,9 +138,6 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return $result;
     }
 
-    /**
-     * @param array $values
-     */
     public function putMany(array $values, int $ttl = 3600): bool
     {
         $success = true;
@@ -156,9 +150,6 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return $success;
     }
 
-    /**
-     * @param array $keys
-     */
     public function forgetMany(array $keys): bool
     {
         $success = true;
@@ -226,9 +217,6 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return $this->remember($key, $callback, 0);
     }
 
-    /**
-     * @return array
-     */
     public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
@@ -658,7 +646,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $index = array_search($key, $keys, true);
             if ($index !== false) {
                 unset($keys[$index]);
-                $keys = array_values(array_filter(array_map(fn($item) => is_scalar($item) ? (string)$item : '', $keys), fn($item) => !empty($item))); // 重新索引陣列
+                $keys = array_values(array_filter(array_map(fn($item) => is_scalar($item) ? (string) $item : '', $keys), fn($item) => !empty($item))); // 重新索引陣列
             }
 
             // 如果標籤下沒有鍵了，移除標籤

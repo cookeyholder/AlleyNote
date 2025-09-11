@@ -11,7 +11,7 @@ use Redis;
 use RedisException;
 
 /**
- * Redis 快取驅動
+ * Redis 快取驅動.
  *
  * 使用 Redis 存儲快取資料，支援分散式快取和高效能訪問
  * 提供標籤支援功能
@@ -72,6 +72,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             return $unserializedValue === false ? $default : $unserializedValue;
         } catch (RedisException $e) {
             $this->stats['misses']++;
+
             return $default;
         }
     }
@@ -354,7 +355,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 連線到 Redis
+     * 連線到 Redis.
      *
      * @param array<string, mixed> $config
      */
@@ -384,7 +385,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 取得帶前綴的快取鍵
+     * 取得帶前綴的快取鍵.
      */
     private function getPrefixedKey(string $key): string
     {
@@ -392,7 +393,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 取得快取鍵前綴
+     * 取得快取鍵前綴.
      */
     public function getPrefix(): string
     {
@@ -400,7 +401,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 設定快取鍵前綴
+     * 設定快取鍵前綴.
      */
     public function setPrefix(string $prefix): void
     {
@@ -408,7 +409,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 重設統計資料
+     * 重設統計資料.
      */
     public function resetStats(): void
     {
@@ -422,7 +423,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 解構函式，關閉 Redis 連線
+     * 解構函式，關閉 Redis 連線.
      */
     public function __destruct()
     {
@@ -438,7 +439,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     // === 標籤化快取介面實作 ===
 
     /**
-     * 設定快取標籤
+     * 設定快取標籤.
      *
      * @param array<string>|string $tags 標籤陣列或單一標籤
      * @return TaggedCacheInterface 標籤化快取實例
@@ -455,7 +456,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 取得當前標籤
+     * 取得當前標籤.
      *
      * @return array<string> 標籤陣列
      */
@@ -465,7 +466,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 根據標籤清空快取
+     * 根據標籤清空快取.
      *
      * @param array<string>|string $tags 要清空的標籤
      * @return int 清空的項目數量
@@ -499,7 +500,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 根據標籤取得快取鍵
+     * 根據標籤取得快取鍵.
      *
      * @param string $tag 標籤名稱
      * @return array<string> 快取鍵陣列
@@ -528,7 +529,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 根據多個標籤取得共同的快取鍵
+     * 根據多個標籤取得共同的快取鍵.
      *
      * @param array<string> $tags 標籤陣列
      * @return array<string> 共同的快取鍵陣列
@@ -566,7 +567,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 檢查標籤是否存在
+     * 檢查標籤是否存在.
      *
      * @param string $tag 標籤名稱
      * @return bool 是否存在
@@ -584,7 +585,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 取得所有標籤
+     * 取得所有標籤.
      *
      * @return array<string> 所有標籤陣列
      */
@@ -609,7 +610,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 取得標籤統計資訊
+     * 取得標籤統計資訊.
      *
      * @return array<string, mixed> 標籤統計資訊
      */
@@ -641,7 +642,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     // 實現 TaggedCacheInterface 的缺少方法
 
     /**
-     * 增加新標籤到快取管理器
+     * 增加新標籤到快取管理器.
      */
     public function addTags(string|array $tags): TaggedCacheInterface
     {
@@ -652,7 +653,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 為現有快取項目添加標籤
+     * 為現有快取項目添加標籤.
      */
     public function addTagsToKey(string $key, string|array $tags): bool
     {
@@ -668,7 +669,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 取得指定標籤的所有快取鍵
+     * 取得指定標籤的所有快取鍵.
      *
      * @return array<string>
      */
@@ -690,7 +691,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 取得快取項目的所有標籤
+     * 取得快取項目的所有標籤.
      *
      * @return array<string>
      */
@@ -709,7 +710,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 檢查快取項目是否包含指定標籤
+     * 檢查快取項目是否包含指定標籤.
      */
     public function hasTag(string $key, string $tag): bool
     {
@@ -719,7 +720,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 從快取項目移除標籤
+     * 從快取項目移除標籤.
      */
     public function removeTagsFromKey(string $key, string|array $tags): bool
     {
@@ -742,7 +743,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 使用指定標籤存放快取項目
+     * 使用指定標籤存放快取項目.
      *
      * @param array<string> $tags
      */
@@ -754,7 +755,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 清除未使用的標籤
+     * 清除未使用的標籤.
      */
     public function cleanupUnusedTags(): int
     {
@@ -778,7 +779,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 將快取鍵添加到標籤索引
+     * 將快取鍵添加到標籤索引.
      *
      * @param string $key 快取鍵
      * @param array<string> $tags
@@ -798,7 +799,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 從所有標籤索引中移除快取鍵
+     * 從所有標籤索引中移除快取鍵.
      *
      * @param string $key 快取鍵
      */
@@ -818,7 +819,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-     * 取得標籤索引鍵
+     * 取得標籤索引鍵.
      *
      * @param string $tag 標籤名稱
      * @return string 標籤索引鍵

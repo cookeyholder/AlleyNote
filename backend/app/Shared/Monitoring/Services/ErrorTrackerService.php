@@ -30,7 +30,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     private int $maxRecords = 1000;
 
     public function __construct(
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {}
 
     /**

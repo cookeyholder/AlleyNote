@@ -57,6 +57,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         if ($this->isExcluded($key)) {
             $this->stats['pattern_exclusions']++;
             $this->stats['cache_denied']++;
+
             return false;
         }
 
@@ -64,16 +65,19 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         if (!$this->isValueSizeAcceptable($value)) {
             $this->stats['size_rejections']++;
             $this->stats['cache_denied']++;
+
             return false;
         }
 
         // 檢查 TTL 範圍
         if ($ttl < $this->minTtl || ($this->maxTtl > 0 && $ttl > $this->maxTtl)) {
             $this->stats['cache_denied']++;
+
             return false;
         }
 
         $this->stats['cache_allowed']++;
+
         return true;
     }
 
@@ -125,7 +129,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                 return $callback();
             } catch (Exception $e) {
                 // 記錄錯誤並重試
-                error_log("Cache callback failed on attempt " . ($i + 1) . ": " . $e->getMessage());
+                error_log('Cache callback failed on attempt ' . ($i + 1) . ': ' . $e->getMessage());
 
                 if ($i < $maxRetries - 1) {
                     usleep($retryDelay);
@@ -141,7 +145,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         CacheDriverInterface $failedDriver,
         array $availableDrivers,
         string $operation,
-        array $params
+        array $params,
     ): mixed {
         // 尋找替代驅動
         foreach ($availableDrivers as $driver) {
@@ -151,7 +155,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
             try {
                 // 記錄驅動故障
-                error_log("Cache driver failure: " . get_class($failedDriver));
+                error_log('Cache driver failure: ' . get_class($failedDriver));
 
                 $key = is_string($params['key'] ?? null) ? $params['key'] : '';
                 $ttl = is_int($params['ttl'] ?? null) ? $params['ttl'] : 3600;
@@ -165,7 +169,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                     default => null,
                 };
             } catch (Exception $e) {
-                error_log("Fallback driver also failed: " . $e->getMessage());
+                error_log('Fallback driver also failed: ' . $e->getMessage());
                 continue;
             }
         }
@@ -261,6 +265,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         }
 
         $size = strlen(serialize($value));
+
         return $size <= $this->maxValueSize;
     }
 
@@ -288,6 +293,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     {
         // 支援簡單的萬用字元模式
         $pattern = str_replace(['*', '?'], ['.*', '.'], $pattern);
+
         return preg_match('/^' . $pattern . '$/', $key) === 1;
     }
 

@@ -11,9 +11,6 @@ use App\Shared\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 
 class UpdatePostDTOTest extends TestCase
-
-
-
 {
     private Validator $validator;
 
@@ -380,8 +377,8 @@ class UpdatePostDTOTest extends TestCase
             $dto = new UpdatePostDTO($this->validator, $data);
             $this->assertEquals($date, $dto->publishDate, "Failed for date: {$date}");
         }
-
     }
+
     public function testHandlesWhitespaceInStringFields(): void
     {
         $data = [

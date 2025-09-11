@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Performance;
 
-use Exception;
 use PDO;
 use PDOException;
 use PHPUnit\Framework\Attributes\Group;
@@ -12,7 +11,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 /**
- * 簡化版使用者活動記錄效能測試
+ * 簡化版使用者活動記錄效能測試.
  *
  * 測試資料庫直接操作的效能，不依賴服務容器
  */
@@ -22,7 +21,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     private PDO $pdo;
 
     /**
-     * 設定測試環境
+     * 設定測試環境.
      */
     protected function setUp(): void
     {
@@ -38,7 +37,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 測試批次插入效能
+     * 測試批次插入效能.
      */
     #[Test]
     public function testBatchInsertPerformance(): void
@@ -55,7 +54,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 執行單一批次插入測試
+     * 執行單一批次插入測試.
      *
      * @return array{duration: float, throughput: float, avg_per_record: float}
      */
@@ -85,7 +84,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 執行批次插入操作
+     * 執行批次插入操作.
      */
     private function performBatchInsert(int $batchSize): void
     {
@@ -99,7 +98,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 取得批次插入 SQL
+     * 取得批次插入 SQL.
      */
     private function getBatchInsertSql(): string
     {
@@ -112,7 +111,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 建立批次插入參數
+     * 建立批次插入參數.
      *
      * @return array<int, mixed>
      */
@@ -130,7 +129,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             'user',
             '1',
             'success',
-            sprintf("批次測試記錄 #%d", $index),
+            sprintf('批次測試記錄 #%d', $index),
             json_encode([
                 'batch_test' => true,
                 'sequence' => $index,
@@ -146,7 +145,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 清理測試資料
+     * 清理測試資料.
      */
     private function cleanupTestData(): void
     {
@@ -163,7 +162,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 驗證插入的資料
+     * 驗證插入的資料.
      */
     private function verifyInsertedData(int $expectedCount): void
     {
@@ -181,7 +180,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 測試查詢效能
+     * 測試查詢效能.
      */
     #[Test]
     public function testQueryPerformance(): void
@@ -197,7 +196,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 取得查詢測試場景
+     * 取得查詢測試場景.
      *
      * @return array<string, string>
      */
@@ -212,7 +211,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 執行查詢效能測試
+     * 執行查詢效能測試.
      */
     private function executeQueryPerformanceTest(string $scenario, string $query): void
     {
@@ -232,7 +231,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 執行重複查詢
+     * 執行重複查詢.
      */
     private function performRepeatedQueries(string $query, int $iterations, string $scenario): void
     {
@@ -248,7 +247,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 輸出查詢效能報告
+     * 輸出查詢效能報告.
      */
     private function outputQueryPerformanceReport(string $scenario, float $duration, float $avgQueryTime, int $iterations): void
     {
@@ -259,7 +258,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 測試分頁查詢效能
+     * 測試分頁查詢效能.
      */
     #[Test]
     public function testPaginationPerformance(): void
@@ -275,7 +274,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 執行分頁測試
+     * 執行分頁測試.
      *
      * @return array<int, array{duration: float, count: int}>
      */
@@ -291,7 +290,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 執行單頁測試
+     * 執行單頁測試.
      *
      * @return array{duration: float, count: int}
      */
@@ -315,14 +314,14 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 執行分頁查詢
+     * 執行分頁查詢.
      *
      * @return array<int, array<string, mixed>>
      */
     private function executePaginationQuery(int $pageSize, int $offset): array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT * FROM user_activity_logs WHERE user_id = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?'
+            'SELECT * FROM user_activity_logs WHERE user_id = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?',
         );
         $stmt->execute([$pageSize, $offset]);
 
@@ -330,7 +329,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 輸出分頁效能報告
+     * 輸出分頁效能報告.
      *
      * @param array<int, array{duration: float, count: int}> $results
      */
@@ -347,7 +346,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 建立測試資料
+     * 建立測試資料.
      */
     private function setupTestData(int $count): void
     {
@@ -364,7 +363,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 清理效能測試資料
+     * 清理效能測試資料.
      */
     private function cleanupPerformanceTestData(): void
     {
@@ -372,7 +371,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 取得測試資料插入 SQL
+     * 取得測試資料插入 SQL.
      */
     private function getTestDataInsertSql(): string
     {
@@ -385,7 +384,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 建立測試資料參數
+     * 建立測試資料參數.
      *
      * @return array<int, mixed>
      */
@@ -403,7 +402,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
             'performance_test',
             (string) $index,
             'success',
-            sprintf("效能測試資料 #%d", $index),
+            sprintf('效能測試資料 #%d', $index),
             json_encode([
                 'performance_test' => true,
                 'sequence' => $index,
@@ -419,7 +418,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 取得隨機動作類型
+     * 取得隨機動作類型.
      */
     private function getRandomActionType(int $seed): string
     {
@@ -437,7 +436,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 取得隨機類別
+     * 取得隨機類別.
      */
     private function getRandomCategory(int $seed): string
     {
@@ -452,7 +451,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 產生 UUID
+     * 產生 UUID.
      */
     private function generateUuid(): string
     {
@@ -470,7 +469,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     }
 
     /**
-     * 輸出效能報告
+     * 輸出效能報告.
      *
      * @param array<int, array{duration: float, throughput: float, avg_per_record: float}> $results
      */

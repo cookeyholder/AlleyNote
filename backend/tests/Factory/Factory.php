@@ -7,9 +7,6 @@ namespace Tests\Factory;
 use Tests\Factory\Abstracts\Factory;
 
 abstract class AbstractFactory implements Factory
-
-
-
 {
     protected array $defaultAttributes = [];
 

@@ -17,9 +17,6 @@ use Psr\Log\LoggerInterface;
  * 提供統計資料的 REST API 端點
  */
 class StatisticsController extends BaseController
-
-
-
 {
     public function __construct(
         private StatisticsApplicationService $statisticsService,

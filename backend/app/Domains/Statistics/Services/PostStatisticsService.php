@@ -28,7 +28,7 @@ use Throwable;
 final class PostStatisticsService
 {
     public function __construct(
-        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository
+        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
     ) {}
 
     /**
@@ -77,7 +77,7 @@ final class PostStatisticsService
             throw new StatisticsCalculationException(
                 'Failed to analyze popular posts: ' . $e->getMessage(),
                 0,
-                $e
+                $e,
             );
         }
     }
@@ -449,7 +449,7 @@ final class PostStatisticsService
     }
 
     /**
-     * 取得熱門文章（代理方法）
+     * 取得熱門文章（代理方法）.
      *
      * @return array<string, mixed>
      */

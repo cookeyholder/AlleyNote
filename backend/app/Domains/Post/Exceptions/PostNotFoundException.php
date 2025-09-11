@@ -7,9 +7,6 @@ namespace App\Domains\Post\Exceptions;
 use App\Shared\Exceptions\NotFoundException;
 
 class PostNotFoundException extends NotFoundException
-
-
-
 {
     public function __construct(int $postId, string $message = '')
     {

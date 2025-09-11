@@ -13,9 +13,6 @@ use Predis\Client;
  * 這些測試驗證完整的快取系統在類似生產環境的條件下是否能正確運作
  */
 final class CacheSystemE2ETest extends TestCase
-
-
-
 {
     private Client $redisClient;
 

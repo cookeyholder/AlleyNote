@@ -40,7 +40,6 @@ class CacheServiceProvider
     private array $config;
 
     /**
-     * @param Container $container
      * @param array<string, mixed> $config
      */
     public function __construct(Container $container, array $config = [])
@@ -176,6 +175,7 @@ class CacheServiceProvider
             $typedConfig = $config;
 
             $tagRepository = null;
+
             try {
                 if ($container->has(TagRepositoryInterface::class)) {
                     $tagRepositoryInstance = $container->get(TagRepositoryInterface::class);
@@ -189,6 +189,7 @@ class CacheServiceProvider
             }
 
             $monitor = null;
+
             try {
                 if ($container->has(CacheMonitorInterface::class)) {
                     $monitorInstance = $container->get(CacheMonitorInterface::class);
@@ -415,6 +416,7 @@ class CacheServiceProvider
                 }
 
                 $monitor = null;
+
                 try {
                     $monitorTmp = $c->get(CacheMonitorInterface::class);
                     if ($monitorTmp instanceof CacheMonitorInterface) {

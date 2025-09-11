@@ -12,9 +12,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class CacheMonitorController extends BaseController
-
-
-
 {
     public function __construct(
         private CacheMonitorInterface $cacheMonitor,
@@ -124,22 +121,13 @@ class CacheMonitorController extends BaseController
     public function flushCache(Request $request, Response $response): Response
     {
         try {
-
-
-
-
-
-
-
-
-
-
             $success = $this->cacheManager->clear();
 
             if ($success) {
                 return $this->json($response, ['message' => '快取已清空']);
             } else {
-                return $this->json($response, ['error' => '清空快取失敗'], 500);}
+                return $this->json($response, ['error' => '清空快取失敗'], 500);
+            }
         } catch (Exception $e) {
             return $this->json($response, [
                 'error' => '清空快取操作失敗',
@@ -154,16 +142,6 @@ class CacheMonitorController extends BaseController
     public function getDriverInfo(Request $request, Response $response): Response
     {
         try {
-
-
-
-
-
-
-
-
-
-
             $drivers = $this->cacheManager->getDrivers();
             $driverInfo = [];
 
@@ -173,8 +151,9 @@ class CacheMonitorController extends BaseController
                         'name' => $name,
                         'class' => get_class($driver),
                         'available' => $driver->isAvailable(),
-                    ];}
-        }
+                    ];
+                }
+            }
 
             return $this->json($response, ['drivers' => $driverInfo]);
         } catch (Exception $e) {

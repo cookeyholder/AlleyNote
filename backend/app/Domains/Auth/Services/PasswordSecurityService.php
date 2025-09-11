@@ -109,6 +109,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     {
         try {
             $this->validatePassword($password);
+
             return true;
         } catch (ValidationException $e) {
             return false;
@@ -160,14 +161,14 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if (strlen($password) < self::MIN_LENGTH) {
             throw ValidationException::fromSingleError(
                 'password',
-                "密碼長度不得少於 " . self::MIN_LENGTH . " 個字元"
+                '密碼長度不得少於 ' . self::MIN_LENGTH . ' 個字元',
             );
         }
 
         if (strlen($password) > self::MAX_LENGTH) {
             throw ValidationException::fromSingleError(
                 'password',
-                "密碼長度不得超過 " . self::MAX_LENGTH . " 個字元"
+                '密碼長度不得超過 ' . self::MAX_LENGTH . ' 個字元',
             );
         }
 
@@ -182,7 +183,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if ($charTypes < 3) {
             throw ValidationException::fromSingleError(
                 'password',
-                '密碼必須包含至少3種字元類型（小寫字母、大寫字母、數字、特殊符號）'
+                '密碼必須包含至少3種字元類型（小寫字母、大寫字母、數字、特殊符號）',
             );
         }
 
@@ -191,7 +192,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if ($uniqueChars < self::MIN_UNIQUE_CHARS) {
             throw ValidationException::fromSingleError(
                 'password',
-                "密碼至少需要包含 " . self::MIN_UNIQUE_CHARS . " 個不同的字元"
+                '密碼至少需要包含 ' . self::MIN_UNIQUE_CHARS . ' 個不同的字元',
             );
         }
 
@@ -199,7 +200,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if ($this->isCommonPassword($password)) {
             throw ValidationException::fromSingleError(
                 'password',
-                '此密碼過於常見，請選擇更安全的密碼'
+                '此密碼過於常見，請選擇更安全的密碼',
             );
         }
 
@@ -207,7 +208,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if ($this->hasExcessiveRepetition($password)) {
             throw ValidationException::fromSingleError(
                 'password',
-                '密碼不能包含過多重複字元'
+                '密碼不能包含過多重複字元',
             );
         }
 
@@ -215,7 +216,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if ($this->hasSequentialChars($password)) {
             throw ValidationException::fromSingleError(
                 'password',
-                '密碼不能包含連續的字元序列'
+                '密碼不能包含連續的字元序列',
             );
         }
     }
@@ -355,8 +356,8 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
         foreach ($sequences as $sequence) {
             // 檢查正向和反向序列
-            if ($this->containsSequence($password, $sequence) ||
-                $this->containsSequence($password, strrev($sequence))) {
+            if ($this->containsSequence($password, $sequence)
+                || $this->containsSequence($password, strrev($sequence))) {
                 return true;
             }
         }

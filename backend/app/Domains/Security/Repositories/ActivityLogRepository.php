@@ -10,9 +10,9 @@ use App\Domains\Security\Entities\ActivityLog;
 use App\Domains\Security\Enums\ActivityCategory;
 use App\Domains\Security\Enums\ActivityType;
 use DateTimeInterface;
+use Exception;
 use InvalidArgumentException;
 use PDO;
-use PDOException;
 use RuntimeException;
 
 /**
@@ -81,7 +81,8 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      * @param PDO $db PDO 資料庫連線實例
      */
     public function __construct(
-        private PDO $db) {
+        private PDO $db,
+    ) {
         // 設定 SQLite 外鍵約束
         $this->db->exec('PRAGMA foreign_keys = ON');
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -93,7 +94,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      * 將活動記錄 DTO 轉換為實體並儲存到資料庫。
      * 使用事務確保資料一致性，並自動產生 UUID。
      * @param CreateActivityLogDTO $dto 活動記錄資料傳輸物件
-     * @return array
      *
      * @throws RuntimeException 當資料庫操作失敗時
      *
@@ -167,15 +167,15 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             // 回傳完整的實體資料
             return $this->findById($insertId);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->db->rollBack();
+
             throw new RuntimeException("建立活動記錄失敗: {$e->getMessage()}", 0, $e);
         }
     }
 
     /**
      * 批次建立多個活動記錄.
-     * @param array $dtos
      */
     public function createBatch(array $dtos): int
     {
@@ -245,15 +245,15 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $this->db->commit();
 
             return $count;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->db->rollBack();
+
             throw new RuntimeException("批次建立活動記錄失敗: {$e->getMessage()}", 0, $e);
         }
     }
 
     /**
      * 根據 ID 查詢活動記錄.
-     * @return array
      */
     public function findById(int $id): ?array
     {
@@ -275,7 +275,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 根據 UUID 查詢活動記錄.
-     * @return array
      */
     public function findByUuid(string $uuid): ?array
     {
@@ -297,7 +296,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得所有活動記錄.
-     * @return array
      */
     public function findAll(int $limit = 20, int $offset = 0): array
     {
@@ -319,14 +317,13 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
                 return $entity->toArray();
             }, $results);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new RuntimeException("查詢所有活動記錄失敗: {$e->getMessage()}", 0, $e);
         }
     }
 
     /**
      * 查詢使用者的活動記錄.
-     * @return array
      */
     public function findByUser(
         int $userId,
@@ -375,7 +372,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 查詢指定時間範圍的活動記錄.
-     * @return array
      */
     public function findByTimeRange(
         DateTimeInterface $startTime,
@@ -422,7 +418,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 查詢安全相關的活動記錄.
-     * @return array
      */
     public function findSecurityEvents(
         int $limit = 100,
@@ -464,7 +459,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 查詢失敗的活動記錄.
-     * @return array
      */
     public function findFailedActivities(
         int $limit = 100,
@@ -547,7 +541,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得活動統計資料（依類型分組）.
-     * @return array
      */
     public function getActivityStatistics(
         DateTimeInterface $startTime,
@@ -570,7 +563,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得熱門活動類型.
-     * @return array
      */
     public function getPopularActivityTypes(int $limit = 10): array
     {
@@ -589,7 +581,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得可疑 IP 清單（基於失敗嘗試次數）.
-     * @return array
      */
     public function getSuspiciousIpAddresses(
         int $failureThreshold = 10,
@@ -637,7 +628,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 根據條件刪除記錄.
-     * @param array $conditions
      */
     public function deleteByConditions(array $conditions): int
     {
@@ -663,7 +653,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 搜尋活動記錄.
-     * @return array
      */
     public function search(
         ?string $searchTerm = null,
@@ -798,7 +787,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得可疑 IP 清單（基於失敗嘗試次數）.
-     * @return array
      */
     public function getSuspiciousIPs(int $minFailedAttempts = 5): array
     {
@@ -822,7 +810,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * Find activity logs by user ID within time window.
-     * @return array
      */
     public function findByUserIdAndTimeWindow(int $userId, ?DateTimeInterface $timeWindow = null): array
     {
@@ -849,7 +836,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 查詢使用者在指定時間範圍的活動記錄.
-     * @return array
      */
     public function findByUserAndTimeRange(
         int $userId,
@@ -884,7 +870,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 查詢指定 IP 在指定時間範圍的活動記錄.
-     * @return array
      */
     public function findByIpAddressAndTimeRange(
         string $ipAddress,
@@ -919,7 +904,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * Helper method to map database row to array.
-     * @param array $data
      */
     private function mapToArray(array $data): array
     {

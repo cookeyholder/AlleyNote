@@ -22,9 +22,6 @@ use Psr\Log\NullLogger;
  * TaggedCacheInterface 實作整合測試.
  */
 class TaggedCacheIntegrationTest extends TestCase
-
-
-
 {
     private TaggedCacheInterface $taggedCache;
 
@@ -69,13 +66,13 @@ class TaggedCacheIntegrationTest extends TestCase
                 return $requestedTtl; // 不調整 TTL
             }
 
-    public function handleMiss(string $key, callable $callback): mixed
+            public function handleMiss(string $key, callable $callback): mixed
             {
                 return $callback();
             }
 
-    /**\n      * @param array $params
-             */
+            /**\n      * @param array $params
+                     */
             public function handleDriverFailure(
                 CacheDriverInterface $failedDriver,
                 array $availableDrivers,
@@ -85,14 +82,14 @@ class TaggedCacheIntegrationTest extends TestCase
                 return null;
             }
 
-    /**\n      * @return array
-             */
+            /**\n      * @return array
+                     */
             public function getStats(): array
             {
                 return [];
             }
 
-    public function resetStats(): void
+            public function resetStats(): void
             {
                 // Nothing to reset
             }
@@ -230,8 +227,8 @@ class TaggedCacheIntegrationTest extends TestCase
             $this->assertArrayHasKey($tag, $stats);
             $this->assertEquals($expectedCount, $stats[$tag]);
         }
-
     }
+
     public function testTaggingWithComplexValues(): void
     {
         $testData = $this->createComplexValueTestData();
@@ -280,8 +277,8 @@ class TaggedCacheIntegrationTest extends TestCase
             $keys = $this->taggedCache->getKeysByTag($tag);
             $this->assertArrayHasKey($testData['key'], array_flip($keys));
         }
-
     }
+
     public function testTagExpiration(): void
     {
         $testData = $this->createTagExpirationTestData();
@@ -471,7 +468,6 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 取得標籤類型測試案例.
-     * @return array
      */
     private function getTagTypeTestCases(): array
     {
@@ -485,7 +481,6 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 設定並驗證標籤分類.
-     * @param array $testCases
      */
     private function setupAndVerifyTagClassification(array $testCases): void
     {
@@ -500,7 +495,6 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 驗證標籤統計.
-     * @param array $testCases
      */
     private function verifyTagStatistics(array $testCases): void
     {
@@ -512,7 +506,6 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 設定標籤清空測試資料.
-     * @return array
      */
     private function setupTagFlushingTestData(): array
     {
@@ -533,7 +526,6 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 驗證測試資料已儲存.
-     * @param array $testData
      */
     private function verifyTestDataStored(array $testData): void
     {
@@ -544,7 +536,6 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 執行並驗證標籤清空.
-     * @param array $testData
      */
     private function executeAndVerifyTagFlushing(array $testData): void
     {

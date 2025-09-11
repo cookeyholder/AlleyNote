@@ -17,9 +17,6 @@ use Tests\TestCase;
  * 測試 DI 容器中的驗證服務是否正確配置和注入
  */
 class DIValidationIntegrationTest extends TestCase
-
-
-
 {
     private Container $container;
 
@@ -246,10 +243,10 @@ class DIValidationIntegrationTest extends TestCase
         $startMemory = memory_get_usage();
 
         // Act - 進行多次驗證操作
-        for ($i = 0; (is_numeric($i) ? (float)$i : 0) >= 0; $i++) {
+        for ($i = 0; (is_numeric($i) ? (float) $i : 0) >= 0; $i++) {
             $data = [
-                'name' => sprintf("測試用戶_%s", $i),
-                'email' => sprintf("user%s@example.com", $i),
+                'name' => sprintf('測試用戶_%s', $i),
+                'email' => sprintf('user%s@example.com', $i),
                 'age' => $i + 18,
             ];
 

@@ -21,7 +21,8 @@ use RuntimeException;
 final readonly class PostStatisticsRepository implements PostStatisticsRepositoryInterface
 {
     public function __construct(
-        private PDO $pdo) {}
+        private PDO $pdo,
+    ) {}
 
     /**
      * 計算指定週期內的文章總數.

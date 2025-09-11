@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 /**
- * 使用者活動記錄端到端整合測試
+ * 使用者活動記錄端到端整合測試.
  *
  * 驗證完整的業務流程：從使用者操作到活動記錄存儲
  */

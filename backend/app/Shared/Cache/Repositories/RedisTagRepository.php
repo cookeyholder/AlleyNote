@@ -76,6 +76,7 @@ class RedisTagRepository implements TagRepositoryInterface
             return true;
         } catch (Exception $e) {
             $this->redis->discard();
+
             throw new Exception('設定標籤失敗: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -156,6 +157,7 @@ class RedisTagRepository implements TagRepositoryInterface
             return true;
         } catch (Exception $e) {
             $this->redis->discard();
+
             throw new Exception('添加標籤失敗: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -194,6 +196,7 @@ class RedisTagRepository implements TagRepositoryInterface
             return true;
         } catch (Exception $e) {
             $this->redis->discard();
+
             throw new Exception('移除標籤失敗: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -401,6 +404,7 @@ class RedisTagRepository implements TagRepositoryInterface
             return true;
         } catch (Exception $e) {
             $this->redis->discard();
+
             throw new Exception('更新過期時間失敗: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -482,6 +486,7 @@ class RedisTagRepository implements TagRepositoryInterface
             return true;
         } catch (Exception $e) {
             $this->redis->discard();
+
             throw new Exception('刪除快取鍵失敗: ' . $e->getMessage(), 0, $e);
         }
     }

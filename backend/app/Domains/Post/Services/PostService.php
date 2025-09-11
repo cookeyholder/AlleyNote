@@ -14,16 +14,12 @@ use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
 use Exception;
-use InvalidArgumentException;
-use RuntimeException;
 
 class PostService implements PostServiceInterface
-
-
-
 {
     public function __construct(
-        private readonly PostRepositoryInterface $repository) {}
+        private readonly PostRepositoryInterface $repository,
+    ) {}
 
     public function createPost(CreatePostDTO $dto): Post
     {
@@ -94,8 +90,6 @@ class PostService implements PostServiceInterface
     /**
      * 取得文章列表.
      * @param int $page 頁碼
-     * @param array $filters
-     * @return array
      */
     public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {
@@ -114,7 +108,6 @@ class PostService implements PostServiceInterface
     /**
      * 取得置頂文章列表.
      * @param int $limit 取得筆數
-     * @return array
      */
     public function getPinnedPosts(int $limit = 5): array
     {

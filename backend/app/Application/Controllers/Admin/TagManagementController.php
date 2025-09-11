@@ -29,9 +29,6 @@ class TagManagementController extends BaseController
     public function listTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-
-
-
             $queryParams = $request->getQueryParams();
             $page = max(1, is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
             $limit = min(100, max(10, is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 20));
@@ -48,8 +45,9 @@ class TagManagementController extends BaseController
                             $tags[] = [
                                 'name' => $tag,
                                 'driver' => $driverName,
-                            ];}
-        } catch (Exception $e) {
+                            ];
+                        }
+                    } catch (Exception $e) {
                         $this->logger?->warning("無法從驅動 {$driverName} 獲取標籤", ['error' => $e->getMessage()]);
                     }
                 }
@@ -59,6 +57,7 @@ class TagManagementController extends BaseController
             if (!empty($search)) {
                 $tags = array_filter($tags, function ($tag) use ($search) {
                     $tagName = $tag['name'] ?? '';
+
                     return is_string($tagName) && stripos($tagName, $search) !== false;
                 });
             }
@@ -141,9 +140,6 @@ class TagManagementController extends BaseController
     public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-
-
-
             $tagName = is_string($args['tag']) ? urldecode($args['tag']) : '';
 
             if (empty($tagName)) {
@@ -161,8 +157,9 @@ class TagManagementController extends BaseController
                         $flushedCount = $driver->flushByTags([$tagName]);
                         if ($flushedCount > 0) {
                             $flushed = true;
-                            $affectedDrivers[] = $driverName;}
-        } catch (Exception $e) {
+                            $affectedDrivers[] = $driverName;
+                        }
+                    } catch (Exception $e) {
                         $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", ['error' => $e->getMessage()]);
                     }
                 }
@@ -184,7 +181,7 @@ class TagManagementController extends BaseController
 
             return $this->json($response, $responseData);
         } catch (Exception $e) {
-            $tagName = $tagName ?? 'unknown';
+            $tagName ??= 'unknown';
             $this->logger?->error("清除標籤失敗: {$tagName}", ['error' => $e->getMessage()]);
 
             return $this->json($response, [
@@ -206,9 +203,6 @@ class TagManagementController extends BaseController
     public function flushTags(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-
-
-
             $bodyString = (string) $request->getBody();
             $body = json_decode($bodyString, true);
 
@@ -240,8 +234,9 @@ class TagManagementController extends BaseController
                             $flushedCount = $driver->flushByTags([$tagName]);
                             if ($flushedCount > 0) {
                                 $flushed = true;
-                                $affectedDrivers[] = $driverName;}
-        } catch (Exception $e) {
+                                $affectedDrivers[] = $driverName;
+                            }
+                        } catch (Exception $e) {
                             $this->logger?->warning("從驅動 {$driverName} 清除標籤 {$tagName} 失敗", ['error' => $e->getMessage()]);
                         }
                     }

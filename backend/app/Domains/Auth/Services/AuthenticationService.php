@@ -14,7 +14,6 @@ use App\Domains\Auth\DTOs\LogoutRequestDTO;
 use App\Domains\Auth\DTOs\RefreshRequestDTO;
 use App\Domains\Auth\DTOs\RefreshResponseDTO;
 use App\Domains\Auth\Exceptions\AuthenticationException;
-use App\Domains\Auth\Exceptions\InvalidTokenException;
 use App\Domains\Auth\Exceptions\TokenExpiredException;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
@@ -100,7 +99,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 AuthenticationException::REASON_UNKNOWN,
                 'Login failed: ' . $e->getMessage(),
                 0,
-                $e
+                $e,
             );
         }
     }
@@ -126,7 +125,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             throw new TokenExpiredException(
                 'Token refresh failed: ' . $e->getMessage(),
                 0,
-                $e
+                $e,
             );
         }
     }
@@ -155,6 +154,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
         } catch (Throwable $e) {
             // 記錄錯誤但不拋出，logout 應該總是成功
             error_log('Logout error: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -163,6 +163,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
     {
         try {
             $this->jwtTokenService->validateAccessToken($accessToken);
+
             return true;
         } catch (Throwable $e) {
             return false;
@@ -173,6 +174,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
     {
         try {
             $payload = $this->jwtTokenService->validateRefreshToken($refreshToken);
+
             return $this->refreshTokenRepository->isValid($payload->getJti());
         } catch (Throwable $e) {
             return false;
@@ -183,6 +185,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
     {
         try {
             $payload = $this->jwtTokenService->extractPayload($refreshToken);
+
             return $this->refreshTokenRepository->revoke($payload->getJti(), $reason);
         } catch (Throwable $e) {
             return false;

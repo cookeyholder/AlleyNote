@@ -172,7 +172,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         string $jti,
         DateTimeImmutable $expiresAt,
         ?int $userId = null,
-        array $metadata = []
+        array $metadata = [],
     ): self {
         return new self(
             jti: $jti,
@@ -274,7 +274,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得元資料.
-     * @return array
      */
     /**
      * @return array<string, mixed>
@@ -421,7 +420,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     * @return array
      */
     /**
      * @return array<string, mixed>
@@ -447,7 +445,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 轉換為資料庫儲存格式.
-     * @return array
      */
     /**
      * @return array<string, mixed>
@@ -468,7 +465,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     * @return array
      */
     /**
      * @return array<string, mixed>
@@ -523,7 +519,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的 Token 類型.
-     * @return array
      */
     /**
      * @return array<string>
@@ -535,7 +530,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的黑名單原因.
-     * @return array
      */
     /**
      * @return array<string>
@@ -664,7 +658,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         // 檢查 JSON 序列化是否可能
         try {
             $jsonEncoded = json_encode($metadata, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
+        } catch (JsonException $e) {
             throw new InvalidArgumentException('Invalid metadata: cannot be JSON encoded');
         }
         $serializedSize = strlen($jsonEncoded);

@@ -37,7 +37,7 @@ class RouteCacheFactory
         if (!isset(self::SUPPORTED_DRIVERS[$driver])) {
             throw new InvalidArgumentException(
                 "Unsupported cache driver: {$driver}. Supported drivers: "
-                    . implode(', ', array_keys(self::SUPPORTED_DRIVERS))
+                    . implode(', ', array_keys(self::SUPPORTED_DRIVERS)),
             );
         }
 
@@ -134,7 +134,7 @@ class RouteCacheFactory
             $errors[] = sprintf(
                 'Unsupported cache driver: %s. Supported drivers: %s',
                 $config['driver'],
-                implode(', ', self::getSupportedDrivers())
+                implode(', ', self::getSupportedDrivers()),
             );
         }
 

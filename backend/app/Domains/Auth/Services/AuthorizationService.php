@@ -89,6 +89,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('AssignRole error: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -111,6 +112,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('RemoveRole error: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -146,6 +148,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('GivePermission error: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -168,6 +171,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('RevokePermission error: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -189,6 +193,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('GetUserRoles error: ' . $e->getMessage());
+
             return [];
         }
     }
@@ -229,6 +234,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('GetUserPermissions error: ' . $e->getMessage());
+
             return [];
         }
     }
@@ -270,6 +276,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $post && (int) $post['user_id'] === $userId;
         } catch (Throwable $e) {
             error_log('CanAccessPost error: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -289,6 +296,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result && (int) $result['user_id'] === $userId;
         } catch (Throwable $e) {
             error_log('CanAccessAttachment error: ' . $e->getMessage());
+
             return false;
         }
     }

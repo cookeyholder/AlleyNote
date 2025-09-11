@@ -4,22 +4,20 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
-use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Services\AttachmentService;
-use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
+use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\UploadedFileInterface;
+use Throwable;
 
 class AttachmentController
-
-
-
 {
     public function __construct(
-        private AttachmentService $attachmentService) {}
+        private AttachmentService $attachmentService,
+    ) {}
 
     /**
      * 取得當前登入使用者 ID
@@ -115,13 +113,15 @@ class AttachmentController
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'),
+                    ref: '#/components/responses/Unauthorized',
+                ),
             ),
             new OA\Response(
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'),
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
             new OA\Response(
                 response: 413,
@@ -132,7 +132,7 @@ class AttachmentController
                     ],
                 ),
             ),
-        ]
+        ],
     )]
     public function upload(Request $request, Response $response): Response
     {
@@ -175,6 +175,20 @@ class AttachmentController
             return $response
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
+        } catch (ValidationException $e) {
+            error_log('AttachmentController validation error: ' . $e->getMessage());
+
+            $errorResponse = json_encode([
+                'success' => false,
+                'error' => [
+                    'message' => '驗證失敗',
+                    'details' => $e->getMessage(),
+                ],
+                'timestamp' => time(),
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             error_log('AttachmentController error: ' . $e->getMessage());
 
@@ -189,58 +203,8 @@ class AttachmentController
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
-            error_log('Attachment deletion error: ' . $e->getMessage());
-
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Failed to delete attachment',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-
-            return $response
-                ->withStatus(500)
-                ->withHeader('Content-Type', 'application/json');
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
-        } catch (\Exception $e) {
-            error_log('Controller error: ' . $e->getMessage());
-            $errorResponse = json_encode([
-                'success' => false,
-                'message' => 'Internal server error',
-                'error' => $e->getMessage(),
-            ]);
-            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        } catch (\Exception $e) {
-            error_log('Operation failed: ' . $e->getMessage());
-            throw $e;
         }
-
-        }
+    }
 
     /** @phpstan-ignore-next-line */
     #[OA\Get(
@@ -309,7 +273,8 @@ class AttachmentController
                 response: 404,
                 description: '附件不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'),
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
             new OA\Response(
                 response: 410,
@@ -320,7 +285,7 @@ class AttachmentController
                     ],
                 ),
             ),
-        ]
+        ],
     )]
     /**
      * 下載附件.
@@ -336,14 +301,20 @@ class AttachmentController
             }
 
             // TODO: 實作檔案下載邏輯
-            $response->getBody()->write(json_encode(['message' => '檔案下載功能待實作']));
-            return $response->withHeader('Content-Type', 'application/json');
+            $jsonResponse = json_encode(['message' => '檔案下載功能待實作']);
+            $response->getBody()->write($jsonResponse ?: '{"error": "JSON encoding failed"}');
 
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            $errorResponse = json_encode(['error' => $e->getMessage()]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         } catch (Throwable $e) {
-            $response->getBody()->write(json_encode(['error' => '檔案下載失敗']));
+            error_log('AttachmentController download error: ' . $e->getMessage());
+            $errorResponse = json_encode(['error' => '檔案下載失敗']);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }

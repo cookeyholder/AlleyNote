@@ -19,9 +19,6 @@ use PHPUnit\Framework\TestCase;
  */
 #[Group('performance')]
 class JwtPerformanceTest extends TestCase
-
-
-
 {
     private JwtTokenServiceInterface $jwtTokenService;
 

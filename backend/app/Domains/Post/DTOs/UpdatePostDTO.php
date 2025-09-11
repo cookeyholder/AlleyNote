@@ -11,7 +11,7 @@ use App\Shared\Exceptions\ValidationException;
 use DateTime;
 
 /**
- * 更新文章的資料傳輸物件
+ * 更新文章的資料傳輸物件.
  *
  * 用於安全地傳輸更新文章所需的資料，防止巨量賦值攻擊
  * 支援部分更新，只驗證和處理提供的欄位
@@ -29,7 +29,7 @@ class UpdatePostDTO extends BaseDTO
     public readonly ?string $publishDate;
 
     /**
-     * 建構函數
+     * 建構函數.
      *
      * @param ValidatorInterface $validator 驗證器實例
      * @param array<string, mixed> $data 要驗證的資料
@@ -91,7 +91,7 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 添加文章專用驗證規則
+     * 添加文章專用驗證規則.
      */
     private function addPostValidationRules(): void
     {
@@ -201,7 +201,7 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）
+     * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）.
      *
      * @return array<string, string>
      */
@@ -218,7 +218,7 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 動態驗證資料（只驗證提供的欄位）
+     * 動態驗證資料（只驗證提供的欄位）.
      *
      * @param array<string, mixed> $data
      * @return array<string, mixed> 驗證通過的資料
@@ -246,7 +246,7 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）
-     * 只包含有值的欄位
+     * 只包含有值的欄位.
      *
      * @return array<string, mixed>
      */
@@ -278,7 +278,7 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 檢查是否有任何資料需要更新
+     * 檢查是否有任何資料需要更新.
      */
     public function hasChanges(): bool
     {
@@ -286,7 +286,7 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 取得更新的欄位名稱列表
+     * 取得更新的欄位名稱列表.
      *
      * @return array<string>
      */
@@ -296,7 +296,7 @@ class UpdatePostDTO extends BaseDTO
     }
 
     /**
-     * 檢查是否更新了特定欄位
+     * 檢查是否更新了特定欄位.
      *
      * @param string $field 欄位名稱
      */

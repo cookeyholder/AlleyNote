@@ -12,9 +12,6 @@ use Throwable;
  * 當統計週期參數不正確時拋出.
  */
 class InvalidStatisticsPeriodException extends InvalidArgumentException
-
-
-
 {
     public function __construct(
         string $message = '無效的統計週期',

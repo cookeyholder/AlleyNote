@@ -8,10 +8,10 @@ use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
 use App\Infrastructure\Routing\Middleware\MiddlewareResolver;
 use Exception;
-use RuntimeException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 /**
  * 路由分派器.
@@ -19,9 +19,6 @@ use Psr\Http\Message\ServerRequestInterface;
  * 整合路由匹配、中間件執行和控制器呼叫
  */
 class RouteDispatcher
-
-
-
 {
     private MiddlewareResolver $middlewareResolver;
 
@@ -66,7 +63,7 @@ class RouteDispatcher
                     // 已經是實例，直接使用
                     $resolvedMiddlewares[] = $middleware;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new RuntimeException("無法解析中介軟體: {$e->getMessage()}", 0, $e);
             }
         }

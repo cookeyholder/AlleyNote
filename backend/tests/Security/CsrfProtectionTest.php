@@ -20,9 +20,6 @@ use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
 
 class CsrfProtectionTest extends TestCase
-
-
-
 {
     private PostServiceInterface $postService;
 

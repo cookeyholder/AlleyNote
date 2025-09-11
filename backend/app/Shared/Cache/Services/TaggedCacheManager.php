@@ -137,8 +137,9 @@ class TaggedCacheManager implements TaggedCacheInterface
         } catch (Exception $e) {
             $this->logger->error('Failed to remember cache value', [
                 'key' => $key,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }

@@ -20,7 +20,8 @@ use RuntimeException;
 final readonly class UserStatisticsRepository implements UserStatisticsRepositoryInterface
 {
     public function __construct(
-        private PDO $pdo) {}
+        private PDO $pdo,
+    ) {}
 
     /**
      * 計算指定週期內的新註冊使用者數量.

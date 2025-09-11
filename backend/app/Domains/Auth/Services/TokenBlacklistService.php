@@ -91,6 +91,7 @@ final class TokenBlacklistService
                 'jti' => $jti,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -111,6 +112,7 @@ final class TokenBlacklistService
                 'jti' => $jti,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -137,6 +139,7 @@ final class TokenBlacklistService
                 'count' => count($validJtis),
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -168,6 +171,7 @@ final class TokenBlacklistService
                 'user_id' => $userId,
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }
@@ -198,6 +202,7 @@ final class TokenBlacklistService
                 'device_id' => $deviceId,
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }
@@ -224,6 +229,7 @@ final class TokenBlacklistService
                 'jti' => $jti,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -257,6 +263,7 @@ final class TokenBlacklistService
                 'count' => count($validJtis),
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }
@@ -303,6 +310,7 @@ final class TokenBlacklistService
             ];
 
             $this->logger?->error('Auto cleanup failed', $result);
+
             return $result;
         }
     }
@@ -325,6 +333,7 @@ final class TokenBlacklistService
             $this->logger?->error('Failed to get statistics', [
                 'error' => $e->getMessage(),
             ]);
+
             return [
                 'error' => 'Failed to retrieve statistics',
                 'generated_at' => new DateTimeImmutable(),
@@ -348,6 +357,7 @@ final class TokenBlacklistService
                 'user_id' => $userId,
                 'error' => $e->getMessage(),
             ]);
+
             return [
                 'error' => 'Failed to retrieve user statistics',
                 'user_id' => $userId,
@@ -387,6 +397,7 @@ final class TokenBlacklistService
                 'criteria' => $criteria,
                 'error' => $e->getMessage(),
             ]);
+
             return [
                 'entries' => [],
                 'total' => 0,
@@ -410,6 +421,7 @@ final class TokenBlacklistService
                 'limit' => $limit,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -432,6 +444,7 @@ final class TokenBlacklistService
             ];
 
             $this->logger?->error('Blacklist optimization failed', $result);
+
             return $result;
         }
     }
@@ -484,6 +497,7 @@ final class TokenBlacklistService
             $this->logger?->error('Failed to get health status', [
                 'error' => $e->getMessage(),
             ]);
+
             return [
                 'healthy' => false,
                 'error' => 'Failed to retrieve health status',

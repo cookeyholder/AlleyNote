@@ -11,7 +11,6 @@ use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivityType;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 /**
  * 活動記錄服務實作.
@@ -135,7 +134,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * 相比直接使用 log() 方法，此方法更簡潔且語意更清晰。
      * @param ActivityType $actionType 活動類型
      * @param string|null $targetType 目標類型 (如: 'post', 'user', 'file')
-     * @param array $metadata
      * @return bool 記錄是否成功
      *
      * @example
@@ -229,7 +227,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * 專門用於記錄安全相關的事件，如可疑登入、權限違規、IP 封鎖等。
      * 這些事件通常需要特殊的關注和處理，系統會自動判斷事件的嚴重程度。
      * @param ActivityType $actionType 活動類型（必須是安全相關類型）
-     * @param array $metadata
      * @return bool 記錄是否成功
      *
      * @example
@@ -276,7 +273,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
 
     /**
      * 批次記錄多個活動.
-     * @param array $dtos
      */
     public function logBatch(array $dtos): int
     {
@@ -286,7 +282,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             foreach ($dtos as $dto) {
                 if (!$dto instanceof CreateActivityLogDTO) {
                     $this->logger->warning('Invalid DTO type in batch', [
-                        'type' => gettype($dto)
+                        'type' => gettype($dto),
                     ]);
                     continue;
                 }

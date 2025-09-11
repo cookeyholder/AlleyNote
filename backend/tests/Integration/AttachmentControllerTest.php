@@ -19,9 +19,6 @@ use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;
 
 class AttachmentControllerTest extends TestCase
-
-
-
 {
     private AttachmentService&MockInterface $attachmentService;
 

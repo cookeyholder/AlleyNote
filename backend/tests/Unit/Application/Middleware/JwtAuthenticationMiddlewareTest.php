@@ -26,9 +26,6 @@ use Tests\TestCase;
  * @since 1.0.0
  */
 class JwtAuthenticationMiddlewareTest extends TestCase
-
-
-
 {
     private JwtTokenServiceInterface|MockInterface $jwtTokenService;
 
@@ -70,8 +67,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
                 "路徑 {$path} 應該被跳過",
             );
         }
-
     }
+
     public function testShouldProcessAuthenticatedPaths(): void
     {
         $authenticatedPaths = [
@@ -89,8 +86,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
                 "路徑 {$path} 應該需要認證",
             );
         }
-
     }
+
     public function testShouldReturnUnauthorizedWhenNoTokenProvided(): void
     {
         $request = new ServerRequest('GET', new Uri('/api/posts'));

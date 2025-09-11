@@ -46,11 +46,11 @@ class RateLimitTest extends TestCase
 
         // 模擬正常請求
         $this->cacheService->shouldReceive('get')
-            ->with(sprintf("rate_limit:%s", $ip))
+            ->with(sprintf('rate_limit:%s', $ip))
             ->andReturn(null);
 
         $this->cacheService->shouldReceive('increment')
-            ->with(sprintf("rate_limit:%s", $ip))
+            ->with(sprintf('rate_limit:%s', $ip))
             ->andReturn(1);
 
         $result = $this->rateLimitService->checkLimit($ip);
@@ -65,12 +65,12 @@ class RateLimitTest extends TestCase
 
         // 第一次請求 - 模擬達到限制
         $this->cacheService->shouldReceive('get')
-            ->with(sprintf("rate_limit:%s", $ip))
+            ->with(sprintf('rate_limit:%s', $ip))
             ->once()
             ->andReturn(['count' => 60, 'reset' => time() + 60]);
 
         $this->cacheService->shouldReceive('set')
-            ->with(sprintf("rate_limit:%s", $ip), Mockery::any(), 60)
+            ->with(sprintf('rate_limit:%s', $ip), Mockery::any(), 60)
             ->once()
             ->andReturn(true);
 
@@ -80,12 +80,12 @@ class RateLimitTest extends TestCase
 
         // 第二次請求 - 模擬時間窗口重置
         $this->cacheService->shouldReceive('get')
-            ->with(sprintf("rate_limit:%s", $ip))
+            ->with(sprintf('rate_limit:%s', $ip))
             ->once()
             ->andReturn(['count' => 60, 'reset' => time() - 10]); // 已過期
 
         $this->cacheService->shouldReceive('set')
-            ->with(sprintf("rate_limit:%s", $ip), Mockery::any(), 60)
+            ->with(sprintf('rate_limit:%s', $ip), Mockery::any(), 60)
             ->andReturn(true);
 
         $resetResult = $this->rateLimitService->checkLimit($ip);
@@ -101,22 +101,22 @@ class RateLimitTest extends TestCase
 
         // IP1 正常
         $this->cacheService->shouldReceive('get')
-            ->with(sprintf("rate_limit:%s", $ip1))
+            ->with(sprintf('rate_limit:%s', $ip1))
             ->andReturn(['count' => 30, 'reset' => time() + 60]);
 
         $this->cacheService->shouldReceive('set')
-            ->with(sprintf("rate_limit:%s", $ip1), Mockery::any(), 60)
+            ->with(sprintf('rate_limit:%s', $ip1), Mockery::any(), 60)
             ->andReturn(true);
 
         $result1 = $this->rateLimitService->checkLimit($ip1);
 
         // IP2 正常
         $this->cacheService->shouldReceive('get')
-            ->with(sprintf("rate_limit:%s", $ip2))
+            ->with(sprintf('rate_limit:%s', $ip2))
             ->andReturn(['count' => 10, 'reset' => time() + 60]);
 
         $this->cacheService->shouldReceive('set')
-            ->with(sprintf("rate_limit:%s", $ip2), Mockery::any(), 60)
+            ->with(sprintf('rate_limit:%s', $ip2), Mockery::any(), 60)
             ->andReturn(true);
 
         $result2 = $this->rateLimitService->checkLimit($ip2);
@@ -132,7 +132,7 @@ class RateLimitTest extends TestCase
 
         // 模擬快取服務錯誤
         $this->cacheService->shouldReceive('get')
-            ->with(sprintf("rate_limit:%s", $ip))
+            ->with(sprintf('rate_limit:%s', $ip))
             ->andThrow(new Exception('快取錯誤'));
 
         // 當快取服務不可用時，應該允許請求以確保服務可用性
@@ -148,22 +148,22 @@ class RateLimitTest extends TestCase
 
         // 第一次請求
         $this->cacheService->shouldReceive('get')
-            ->with(sprintf("rate_limit:%s", $ip))
+            ->with(sprintf('rate_limit:%s', $ip))
             ->andReturn(null);
 
         $this->cacheService->shouldReceive('set')
-            ->with(sprintf("rate_limit:%s", $ip), Mockery::any(), 60)
+            ->with(sprintf('rate_limit:%s', $ip), Mockery::any(), 60)
             ->andReturn(true);
 
         $this->rateLimitService->checkLimit($ip);
 
         // 第二次請求
         $this->cacheService->shouldReceive('get')
-            ->with(sprintf("rate_limit:%s", $ip))
+            ->with(sprintf('rate_limit:%s', $ip))
             ->andReturn(['count' => 1, 'reset' => time() + 60]);
 
         $this->cacheService->shouldReceive('set')
-            ->with(sprintf("rate_limit:%s", $ip), Mockery::any(), 60)
+            ->with(sprintf('rate_limit:%s', $ip), Mockery::any(), 60)
             ->andReturn(true);
 
         $result = $this->rateLimitService->checkLimit($ip);
@@ -179,7 +179,7 @@ class RateLimitTest extends TestCase
 
         // 模擬達到最大嘗試次數
         $this->cacheService->shouldReceive('get')
-            ->with(sprintf("rate_limit:%s", $ip))
+            ->with(sprintf('rate_limit:%s', $ip))
             ->andReturn(['count' => $maxAttempts, 'reset' => time() + 60]);
 
         $result = $this->rateLimitService->checkLimit($ip);

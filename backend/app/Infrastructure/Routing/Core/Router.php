@@ -20,9 +20,6 @@ use Psr\Http\Message\ServerRequestInterface;
  * 提供路由註冊、解析和執行的完整功能
  */
 class Router implements RouterInterface
-
-
-
 {
     private RouteCollectionInterface $routes;
 
@@ -121,9 +118,6 @@ class Router implements RouterInterface
         return $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $pattern, $handler);
     }
 
-    /**
-     * @param array $attributes
-     */
     public function group(array $attributes, callable $callback): void
     {
         $previousAttributes = $this->currentGroupAttributes;
@@ -166,9 +160,6 @@ class Router implements RouterInterface
         return $this->routes;
     }
 
-    /**
-     * @param array $parameters
-     */
     public function url(string $name, /** @var array<string, mixed> */ array $parameters = []): string
     {
         $route = $this->routes->getByName($name);
@@ -231,9 +222,6 @@ class Router implements RouterInterface
         }
     }
 
-    /**
-     * @param array $middlewares
-     */
     public function addGlobalMiddlewares(array $middlewares): void
     {
         if ($this->middlewareManager !== null) {
@@ -262,8 +250,6 @@ class Router implements RouterInterface
 
     /**
      * 合併群組屬性.
-     * @param array $previous
-     * @return array
      */
     private function mergeGroupAttributes(array $previous, /** @var array<string, mixed> */ array $new): array
     {

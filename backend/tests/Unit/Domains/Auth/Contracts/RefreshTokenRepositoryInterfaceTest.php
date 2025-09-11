@@ -17,9 +17,6 @@ use ReflectionClass;
  * 確保所有方法簽名、參數類型、回傳類型正確。
  */
 class RefreshTokenRepositoryInterfaceTest extends TestCase
-
-
-
 {
     private ReflectionClass $interfaceReflection;
 
@@ -271,8 +268,8 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
             $returnType = $method->getReturnType();
             $this->assertEquals('bool', $returnType->getName());
         }
-
     }
+
     public function testCleanupMethodSignature(): void
     {
         $this->assertTrue($this->interfaceReflection->hasMethod('cleanup'));
@@ -344,9 +341,9 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
                 $this->assertEquals($paramType, $parameters[$paramIndex]->getType()->getName());
                 $paramIndex++;
             }
+        }
+    }
 
-    }
-    }
     public function testBatchMethods(): void
     {
         $batchMethods = ['batchCreate', 'batchRevoke'];
@@ -358,8 +355,8 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
             $returnType = $method->getReturnType();
             $this->assertEquals('int', $returnType->getName());
         }
-
     }
+
     public function testGetTokensNearExpiryMethodSignature(): void
     {
         $this->assertTrue($this->interfaceReflection->hasMethod('getTokensNearExpiry'));
@@ -424,8 +421,8 @@ class RefreshTokenRepositoryInterfaceTest extends TestCase
         foreach ($expectedMethods as $expectedMethod) {
             $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
         }
-
     }
+
     public function testInterfaceHasCorrectDocumentation(): void
     {
         $docComment = $this->interfaceReflection->getDocComment();

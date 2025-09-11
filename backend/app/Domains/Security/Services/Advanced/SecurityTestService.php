@@ -423,9 +423,9 @@ class SecurityTestService implements SecurityTestInterface
         $results['tests'][] = [
             'name' => 'PHP 版本安全性',
             'status' => $isSecure ? 'PASS' : 'FAIL',
-            'message' => $isSecure ?
-                "PHP 版本 {$phpVersion} 安全" :
-                "PHP 版本 {$phpVersion} 過舊，建議升級",
+            'message' => $isSecure
+                ? "PHP 版本 {$phpVersion} 安全"
+                : "PHP 版本 {$phpVersion} 過舊，建議升級",
         ];
 
         if ($isSecure) {
@@ -441,9 +441,9 @@ class SecurityTestService implements SecurityTestInterface
             $results['tests'][] = [
                 'name' => "擴充功能: {$extension}",
                 'status' => $isLoaded ? 'PASS' : 'FAIL',
-                'message' => $isLoaded ?
-                    "擴充功能 {$extension} 已載入" :
-                    "擴充功能 {$extension} 未載入",
+                'message' => $isLoaded
+                    ? "擴充功能 {$extension} 已載入"
+                    : "擴充功能 {$extension} 未載入",
             ];
 
             if ($isLoaded) {

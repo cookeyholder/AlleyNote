@@ -11,9 +11,6 @@ use App\Shared\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 
 class CreatePostDTOTest extends TestCase
-
-
-
 {
     private Validator $validator;
 
@@ -310,8 +307,8 @@ class CreatePostDTOTest extends TestCase
             $dto = new CreatePostDTO($this->validator, $data);
             $this->assertEquals(PostStatus::from($status), $dto->status);
         }
-
     }
+
     public function testHandlesBooleanValues(): void
     {
         $testCases = [
@@ -338,8 +335,8 @@ class CreatePostDTOTest extends TestCase
             $dto = new CreatePostDTO($this->validator, $data);
             $this->assertEquals($expected, $dto->isPinned, 'Failed for input: ' . var_export($input, true));
         }
-
     }
+
     public function testToArrayReturnsCorrectFormat(): void
     {
         $data = [
@@ -409,8 +406,8 @@ class CreatePostDTOTest extends TestCase
             $dto = new CreatePostDTO($this->validator, $data);
             $this->assertEquals($date, $dto->publishDate, "Failed for date: {$date}");
         }
-
     }
+
     public function testTrimsTitleAndContent(): void
     {
         $data = [

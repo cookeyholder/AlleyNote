@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Infrastructure\Routing;
 
 use App\Infrastructure\Routing\Contracts\RouteInterface;
+use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionType;
@@ -21,16 +21,13 @@ use RuntimeException;
  * 負責解析路由處理器並呼叫對應的控制器方法
  */
 class ControllerResolver
-
-
-
 {
     public function __construct(
-        private ContainerInterface $container) {}
+        private ContainerInterface $container,
+    ) {}
 
     /**
      * 解析並執行控制器方法.
-     * @param array $parameters
      */
     public function resolve(
         RouteInterface $route,
@@ -60,7 +57,6 @@ class ControllerResolver
 
     /**
      * 處理閉包函式處理器.
-     * @param array $parameters
      */
     private function handleCallable(callable $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
@@ -121,7 +117,7 @@ class ControllerResolver
                 return $this->statusCode;
             }
 
-    public function withStatus($code, $reasonPhrase = ''): self
+            public function withStatus($code, $reasonPhrase = ''): self
             {
                 $new = clone $this;
                 $new->statusCode = $code;
@@ -132,17 +128,17 @@ class ControllerResolver
                 return $new;
             }
 
-    public function getReasonPhrase(): string
+            public function getReasonPhrase(): string
             {
                 return $this->reasonPhrase;
             }
 
-    public function getProtocolVersion(): string
+            public function getProtocolVersion(): string
             {
                 return $this->protocolVersion;
             }
 
-    public function withProtocolVersion($version): self
+            public function withProtocolVersion($version): self
             {
                 $new = clone $this;
                 $new->protocolVersion = $version;
@@ -150,7 +146,7 @@ class ControllerResolver
                 return $new;
             }
 
-    public function getHeaders(): array
+            public function getHeaders(): array
             {
                 /** @var array<string, array<string> $headers */
                 $headers = $this->headers;
@@ -158,12 +154,12 @@ class ControllerResolver
                 return $headers;
             }
 
-    public function hasHeader($name): bool
+            public function hasHeader($name): bool
             {
                 return isset($this->headers[$name]);
             }
 
-    public function getHeader($name): array
+            public function getHeader($name): array
             {
                 /** @var array<string> $header */
                 $header = $this->headers[$name] ?? [];
@@ -171,12 +167,12 @@ class ControllerResolver
                 return $header;
             }
 
-    public function getHeaderLine($name): string
+            public function getHeaderLine($name): string
             {
                 return implode(', ', $this->getHeader($name));
             }
 
-    public function withHeader($name, $value): self
+            public function withHeader($name, $value): self
             {
                 $new = clone $this;
                 $new->headers[$name] = is_array($value) ? $value : [$value];
@@ -184,7 +180,7 @@ class ControllerResolver
                 return $new;
             }
 
-    public function withAddedHeader($name, $value): self
+            public function withAddedHeader($name, $value): self
             {
                 $new = clone $this;
                 $new->headers[$name] = array_merge($this->getHeader($name), is_array($value) ? $value : [$value]);
@@ -192,7 +188,7 @@ class ControllerResolver
                 return $new;
             }
 
-    public function withoutHeader($name): self
+            public function withoutHeader($name): self
             {
                 $new = clone $this;
                 unset($new->headers[$name]);
@@ -200,13 +196,13 @@ class ControllerResolver
                 return $new;
             }
 
-    public function getBody(): mixed
+            public function getBody(): mixed
             {
                 // @phpstan-ignore-next-line - Simple mock stream for basic functionality
                 return $this->body;
             }
 
-    public function withBody($body): self
+            public function withBody($body): self
             {
                 $new = clone $this;
                 $new->body = $body;
@@ -274,12 +270,12 @@ class ControllerResolver
                 return $this->reasonPhrase;
             }
 
-    public function getProtocolVersion(): string
+            public function getProtocolVersion(): string
             {
                 return $this->protocolVersion;
             }
 
-    public function withProtocolVersion($version): self
+            public function withProtocolVersion($version): self
             {
                 $new = clone $this;
                 $new->protocolVersion = $version;
@@ -287,7 +283,7 @@ class ControllerResolver
                 return $new;
             }
 
-    public function getHeaders(): array
+            public function getHeaders(): array
             {
                 /** @var array<string, array<string> $headers */
                 $headers = $this->headers;
@@ -295,12 +291,12 @@ class ControllerResolver
                 return $headers;
             }
 
-    public function hasHeader($name): bool
+            public function hasHeader($name): bool
             {
                 return isset($this->headers[$name]);
             }
 
-    public function getHeader($name): array
+            public function getHeader($name): array
             {
                 /** @var array<string> $header */
                 $header = $this->headers[$name] ?? [];
@@ -308,12 +304,12 @@ class ControllerResolver
                 return $header;
             }
 
-    public function getHeaderLine($name): string
+            public function getHeaderLine($name): string
             {
                 return implode(', ', $this->getHeader($name));
             }
 
-    public function withHeader($name, $value): self
+            public function withHeader($name, $value): self
             {
                 $new = clone $this;
                 $new->headers[$name] = is_array($value) ? $value : [$value];
@@ -321,7 +317,7 @@ class ControllerResolver
                 return $new;
             }
 
-    public function withAddedHeader($name, $value): self
+            public function withAddedHeader($name, $value): self
             {
                 $new = clone $this;
                 $new->headers[$name] = array_merge($this->getHeader($name), is_array($value) ? $value : [$value]);
@@ -329,7 +325,7 @@ class ControllerResolver
                 return $new;
             }
 
-    public function withoutHeader($name): self
+            public function withoutHeader($name): self
             {
                 $new = clone $this;
                 unset($new->headers[$name]);
@@ -337,13 +333,13 @@ class ControllerResolver
                 return $new;
             }
 
-    public function getBody(): mixed
+            public function getBody(): mixed
             {
                 // @phpstan-ignore-next-line - Simple mock stream for basic functionality
                 return $this->body;
             }
 
-    public function withBody($body): self
+            public function withBody($body): self
             {
                 $new = clone $this;
                 $new->body = $body;
@@ -361,7 +357,6 @@ class ControllerResolver
 
     /**
      * 處理字串格式處理器 "ControllerClass@method".
-     * @param array $parameters
      */
     private function handleStringHandler(string $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
@@ -376,7 +371,6 @@ class ControllerResolver
 
     /**
      * 處理陣列格式處理器 [ControllerClass::class, 'method'].
-     * @param array $handler
      */
     private function handleArrayHandler(array $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
@@ -430,14 +424,13 @@ class ControllerResolver
             $args = $this->resolveConstructorArguments($constructor);
 
             return new $controllerClass(...$args);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new RuntimeException("無法建立控制器實例: {$e->getMessage()}", 0, $e);
         }
     }
 
     /**
      * 解析建構子參數.
-     * @return array
      */
     private function resolveConstructorArguments(ReflectionMethod $constructor): array
     {
@@ -477,7 +470,6 @@ class ControllerResolver
 
     /**
      * 解析控制器方法參數.
-     * @param array $routeParameters
      */
     private function resolveMethodArguments(
         object $controller,
@@ -488,7 +480,7 @@ class ControllerResolver
     ): array {
         try {
             $reflection = new ReflectionMethod($controller, $methodName);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new RuntimeException("無法解析方法參數: {$e->getMessage()}", 0, $e);
         }
 

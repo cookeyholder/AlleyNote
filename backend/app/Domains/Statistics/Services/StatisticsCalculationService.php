@@ -26,7 +26,7 @@ use Throwable;
 final class StatisticsCalculationService
 {
     public function __construct(
-        private readonly UserStatisticsRepositoryInterface $userStatisticsRepository
+        private readonly UserStatisticsRepositoryInterface $userStatisticsRepository,
     ) {}
 
     /**
@@ -73,7 +73,7 @@ final class StatisticsCalculationService
             throw new StatisticsCalculationException(
                 'Failed to calculate growth rate: ' . $e->getMessage(),
                 0,
-                $e
+                $e,
             );
         }
     }
@@ -315,8 +315,8 @@ final class StatisticsCalculationService
 
         // 簡單趨勢計算
         $values = array_values(array_filter(
-            array_map(fn($item) => is_scalar($item) ? (string)$item : '', $data),
-            fn($item) => !empty($item)
+            array_map(fn($item) => is_scalar($item) ? (string) $item : '', $data),
+            fn($item) => !empty($item),
         ));
         $count = count($values);
 
@@ -463,7 +463,7 @@ final class StatisticsCalculationService
         }
 
         $variance = array_sum(
-            array_map(fn($v) => (($v - $mean) ** 2), $values)
+            array_map(fn($v) => (($v - $mean) ** 2), $values),
         ) / count($values);
 
         return sqrt($variance) / $mean;

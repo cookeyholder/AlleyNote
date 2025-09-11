@@ -25,7 +25,8 @@ use RuntimeException;
 final readonly class StatisticsRepository implements StatisticsRepositoryInterface
 {
     public function __construct(
-        private PDO $pdo) {}
+        private PDO $pdo,
+    ) {}
 
     /**
      * 儲存統計快照.
@@ -454,7 +455,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $period = new StatisticsPeriod(
                 PeriodType::from($row['period_type']),
                 new DateTimeImmutable($row['start_date']),
-                new DateTimeImmutable($row['end_date'])
+                new DateTimeImmutable($row['end_date']),
             );
 
             $snapshotData = json_decode($row['snapshot_data'], true);
@@ -508,7 +509,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
                 $name,
                 $metricData['value'] ?? 0,
                 $metricData['unit'] ?? '',
-                $metricData['metadata'] ?? []
+                $metricData['metadata'] ?? [],
             );
         }
 

@@ -218,12 +218,13 @@ class AttachmentService implements AttachmentServiceInterface
             return $result;
         } catch (Exception $e) {
             error_log('Image sanitization failed: ' . $e->getMessage());
+
             return false;
         }
     }
 
     /**
-     * 病毒掃描（如果可用）
+     * 病毒掃描（如果可用）.
      */
     private function scanForVirus(string $filePath): bool
     {
@@ -250,7 +251,7 @@ class AttachmentService implements AttachmentServiceInterface
     }
 
     /**
-     * 改善的檔案驗證流程（減緩 TOCTOU 風險）
+     * 改善的檔案驗證流程（減緩 TOCTOU 風險）.
      *
      * @return array<string, mixed>
      */
@@ -324,7 +325,7 @@ class AttachmentService implements AttachmentServiceInterface
     }
 
     /**
-     * 檢查使用者是否有權限操作指定文章
+     * 檢查使用者是否有權限操作指定文章.
      */
     private function canAccessPost(int $userId, int $postId): bool
     {
@@ -343,7 +344,7 @@ class AttachmentService implements AttachmentServiceInterface
     }
 
     /**
-     * 檢查使用者是否有權限操作指定附件
+     * 檢查使用者是否有權限操作指定附件.
      */
     private function canAccessAttachment(int $userId, string $attachmentUuid): bool
     {

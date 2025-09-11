@@ -30,8 +30,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     public function __construct(
         private readonly PDO $pdo,
-    ) {
-    }
+    ) {}
 
     /**
      * 將 token 加入黑名單.
@@ -68,6 +67,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             if ($this->isDuplicateKeyError($e)) {
                 return true; // 已經在黑名單中，視為成功
             }
+
             throw $e;
         }
     }
@@ -673,6 +673,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             ];
         } catch (PDOException $e) {
             $this->pdo->rollBack();
+
             throw new Exception('最佳化黑名單失敗: ' . $e->getMessage(), 0, $e);
         }
     }

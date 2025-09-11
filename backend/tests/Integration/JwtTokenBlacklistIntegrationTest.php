@@ -21,9 +21,6 @@ use Tests\TestCase;
 #[Group('integration')]
 #[Group('auth')]
 class JwtTokenBlacklistIntegrationTest extends TestCase
-
-
-
 {
     private TokenBlacklistRepository $tokenBlacklistRepository;
 
@@ -113,7 +110,7 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
         $entries = [];
         for ($i = 1; $i <= 5; $i++) {
             $entries[] = new TokenBlacklistEntry(
-                jti: sprintf("batch-token-%s", $i),
+                jti: sprintf('batch-token-%s', $i),
                 tokenType: 'access',
                 expiresAt: new DateTimeImmutable('+2 hours'),
                 blacklistedAt: new DateTimeImmutable(),

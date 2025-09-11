@@ -20,9 +20,6 @@ use Tests\TestCase;
  * 測試所有 DTO 類的驗證邏輯和邊界條件
  */
 class DTOValidationTest extends TestCase
-
-
-
 {
     private ValidatorInterface $validator;
 

@@ -13,12 +13,10 @@ use App\Domains\Auth\Exceptions\TokenParsingException;
 use App\Domains\Auth\Exceptions\TokenValidationException;
 use App\Shared\Config\JwtConfig;
 use DateTimeImmutable;
+use Exception;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use Firebase\JWT\SignatureInvalidException;
-use Throwable;
-use UnexpectedValueException;
 
 /**
  * Firebase JWT 提供器.
@@ -26,9 +24,6 @@ use UnexpectedValueException;
  * 封裝 Firebase JWT 函式庫，提供 RS256 演算法的 JWT token 產生、驗證、解析功能
  */
 final class FirebaseJwtProvider implements JwtProviderInterface
-
-
-
 {
     private JwtConfig $config;
 
@@ -48,7 +43,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
         try {
             $this->initializeKeys();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new RuntimeException("JWT 金鑰初始化失敗: {$e->getMessage()}", 0, $e);
         }
     }
@@ -118,6 +113,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             return $payload;
         } catch (ExpiredException $e) {
             $expiredAt = $e->getPayload()['exp'] ?? time();
+
             throw new TokenExpiredException(
                 TokenExpiredException::ACCESS_TOKEN,
                 $expiredAt,
@@ -151,7 +147,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($parts[1]));
 
             return (array) $payload;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw TokenParsingException::invalidFormat("Token 解析失敗: {$e->getMessage()}");
         }
     }
@@ -171,7 +167,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             }
 
             return DateTimeImmutable::createFromFormat('U', (string) $payload['exp']) ?: null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
@@ -290,7 +286,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
         try {
             return JWT::encode($finalPayload, $this->privateKey, $this->config->getAlgorithm());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new RuntimeException("JWT token 編碼失敗: {$e->getMessage()}", 0, $e);
         }
     }

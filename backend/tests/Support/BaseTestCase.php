@@ -12,9 +12,6 @@ use PHPUnit\Framework\TestCase as PHPUnitTestCase;
  * 只提供最基本的測試功能，具體功能由特定的 trait 或子類別提供
  */
 abstract class BaseTestCase extends PHPUnitTestCase
-
-
-
 {
     protected function setUp(): void
     {

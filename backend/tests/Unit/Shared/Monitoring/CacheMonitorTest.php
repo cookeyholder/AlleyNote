@@ -9,9 +9,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 class CacheMonitorTest extends TestCase
-
-
-
 {
     private CacheMonitor $cacheMonitor;
 

@@ -9,9 +9,6 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class DatabaseBackupTest extends TestCase
-
-
-
 {
     protected string $backupDir;
 

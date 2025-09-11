@@ -20,9 +20,6 @@ class ContentModerationService
     /** @var array<string, mixed> */
     private array $config;
 
-    /**
-     * @param array $config
-     */
     public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
@@ -36,7 +33,6 @@ class ContentModerationService
 
     /**
      * 審核內容.
-     * @param array $metadata
      */
     public function moderateContent(string $content, /** @var array<string, mixed> */ array $metadata = []): mixed
     {
@@ -124,7 +120,6 @@ class ContentModerationService
 
     /**
      * 品質檢查.
-     * @param array $metadata
      */
     private function checkQuality(string $content, /** @var array<string, mixed> */ array $metadata): mixed
     {
@@ -209,7 +204,6 @@ class ContentModerationService
 
     /**
      * 計算垃圾內容分數.
-     * @param array $metadata
      */
     private function calculateSpamScore(string $content, array $metadata): float
     {
@@ -249,7 +243,6 @@ class ContentModerationService
 
     /**
      * 決定最終審核狀態.
-     * @param array $result
      */
     private function determineFinalStatus(array &$result): void
     {
@@ -379,7 +372,6 @@ class ContentModerationService
 
     /**
      * 預設設定.
-     * @return array
      */
     private function getDefaultConfig(): array
     {

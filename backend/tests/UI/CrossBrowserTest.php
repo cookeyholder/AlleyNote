@@ -33,8 +33,8 @@ class CrossBrowserTest extends UITestCase
             // 使用特定瀏覽器的 User Agent 啟動測試
             $this->testBrowserCompatibility($browser);
         }
-
     }
+
     private function testBrowserCompatibility(array $browser): void
     {
         // 啟動瀏覽器並設定 User Agent

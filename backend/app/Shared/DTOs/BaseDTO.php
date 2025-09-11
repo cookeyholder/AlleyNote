@@ -14,9 +14,6 @@ use JsonSerializable;
  * 提供資料傳輸物件的基本功能，確保型別安全且防止巨量賦值攻擊
  */
 abstract class BaseDTO implements JsonSerializable
-
-
-
 {
     protected ValidatorInterface $validator;
 
@@ -24,9 +21,6 @@ abstract class BaseDTO implements JsonSerializable
      * 建構函式.
      * @param ValidatorInterface $validator 驗證器實例
      */
-    
-    
-    
     public function __construct(ValidatorInterface $validator)
     {
         $this->validator = $validator;
@@ -34,19 +28,16 @@ abstract class BaseDTO implements JsonSerializable
 
     /**
      * 將 DTO 轉換為陣列.
-     * @return array
      */
     abstract public function toArray(): array;
 
     /**
      * 取得驗證規則.
-     * @return array
      */
     abstract protected function getValidationRules(): array;
 
     /**
      * 實作 JsonSerializable 介面.
-     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -57,7 +48,6 @@ abstract class BaseDTO implements JsonSerializable
      * 驗證資料.
      * @param array $data 輸入資料
      * @throws ValidationException 當驗證失敗時
-     * @return array
      */
     protected function validate(array $data): array
     {
@@ -66,7 +56,6 @@ abstract class BaseDTO implements JsonSerializable
 
     /**
      * 安全地取得值
-     * @param array $data
      */
     protected function getValue(array $data, string $key, mixed $default = null): mixed
     {
@@ -75,7 +64,6 @@ abstract class BaseDTO implements JsonSerializable
 
     /**
      * 安全地取得字串值
-     * @param array $data
      */
     protected function getString(array $data, string $key, ?string $default = null): ?string
     {
@@ -86,7 +74,6 @@ abstract class BaseDTO implements JsonSerializable
 
     /**
      * 安全地取得整數值
-     * @param array $data
      */
     protected function getInt(array $data, string $key, ?int $default = null): ?int
     {
@@ -97,7 +84,6 @@ abstract class BaseDTO implements JsonSerializable
 
     /**
      * 安全地取得布林值
-     * @param array $data
      */
     protected function getBool(array $data, string $key, ?bool $default = null): ?bool
     {

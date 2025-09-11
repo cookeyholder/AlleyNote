@@ -13,9 +13,6 @@ use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
  * 使用 PHP 記憶體存儲路由快取資料，適用於開發和測試環境
  */
 class MemoryRouteCache implements RouteCacheInterface
-
-
-
 {
     private int $ttl = 3600; // 預設 1 小時
 

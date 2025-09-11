@@ -14,9 +14,6 @@ use App\Shared\Exceptions\ValidationException;
  * 用於安全地傳輸建立 IP 規則所需的資料，防止巨量賦值攻擊
  */
 class CreateIpRuleDTO extends BaseDTO
-
-
-
 {
     public readonly string $ipAddress;
 
@@ -30,9 +27,6 @@ class CreateIpRuleDTO extends BaseDTO
      * @param ValidatorInterface $validator 驗證器實例
      *                                      * @throws ValidationException 當驗證失敗時
      */
-    
-    
-    
     public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
     {
         parent::__construct($validator);
@@ -153,7 +147,6 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
-     * @return array
      */
     protected function getValidationRules(): array
     {
@@ -167,7 +160,6 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
-     * @return array
      */
     public function toArray(): array
     {
@@ -271,7 +263,6 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * 取得 IP 規則的詳細資訊.
-     * @return array
      */
     public function getDetailedInfo(): array
     {

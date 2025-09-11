@@ -8,13 +8,11 @@ use App\Domains\Security\Contracts\IpRepositoryInterface;
 use App\Domains\Security\Models\IpList;
 use App\Shared\Contracts\CacheServiceInterface;
 use DateTime;
+use Exception;
 use InvalidArgumentException;
 use PDO;
 
 class IpRepository implements IpRepositoryInterface
-
-
-
 {
     private const CACHE_TTL = 3600; // 1小時
 
@@ -103,43 +101,44 @@ class IpRepository implements IpRepositoryInterface
                 VALUES (:uuid, :ip_address, :type, :unit_id, :description, :created_at, :updated_at)';
 
         try {
-        $this->db->beginTransaction();
+            $this->db->beginTransaction();
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            'uuid' => $uuid,
-            'ip_address' => $data['ip_address'],
-            'type' => $data['type'] ?? 0,
-            'unit_id' => $data['unit_id'] ?? null,
-            'description' => $data['description'] ?? null,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                'uuid' => $uuid,
+                'ip_address' => $data['ip_address'],
+                'type' => $data['type'] ?? 0,
+                'unit_id' => $data['unit_id'] ?? null,
+                'description' => $data['description'] ?? null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
 
-        $id = (int) $this->db->lastInsertId();
+            $id = (int) $this->db->lastInsertId();
 
-        // 直接從已知資料建立物件
-        $ipList = new IpList([
-            'id' => $id,
-            'uuid' => $uuid,
-            'ip_address' => $data['ip_address'],
-            'type' => $data['type'] ?? 0,
-            'unit_id' => $data['unit_id'] ?? null,
-            'description' => $data['description'] ?? null,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
+            // 直接從已知資料建立物件
+            $ipList = new IpList([
+                'id' => $id,
+                'uuid' => $uuid,
+                'ip_address' => $data['ip_address'],
+                'type' => $data['type'] ?? 0,
+                'unit_id' => $data['unit_id'] ?? null,
+                'description' => $data['description'] ?? null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
 
-        $this->db->commit();
+            $this->db->commit();
 
-        // 儲存到快取
-        $this->cache->set($this->getCacheKey('id', $id), $ipList);
-        $this->cache->set($this->getCacheKey('uuid', $uuid), $ipList);
-        $this->cache->set($this->getCacheKey('ip', $data['ip_address']), $ipList);
+            // 儲存到快取
+            $this->cache->set($this->getCacheKey('id', $id), $ipList);
+            $this->cache->set($this->getCacheKey('uuid', $uuid), $ipList);
+            $this->cache->set($this->getCacheKey('ip', $data['ip_address']), $ipList);
 
-        return $ipList;
-        } catch (\Exception $e) {
+            return $ipList;
+        } catch (Exception $e) {
             $this->db->rollBack();
+
             throw new RuntimeException("建立 IP 規則失敗: {$e->getMessage()}", 0, $e);
         }
     }

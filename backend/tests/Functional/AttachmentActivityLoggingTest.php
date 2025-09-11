@@ -19,9 +19,6 @@ use Psr\Log\NullLogger;
  * 測試所有附件相關的活動記錄功能
  */
 class AttachmentActivityLoggingTest extends TestCase
-
-
-
 {
     private PDO $pdo;
 

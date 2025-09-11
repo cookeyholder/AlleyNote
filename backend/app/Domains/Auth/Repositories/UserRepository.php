@@ -11,19 +11,12 @@ use PDO;
 use RuntimeException;
 
 class UserRepository
-
-
-
 {
     public function __construct(
         private PDO $db,
         private ?PasswordSecurityServiceInterface $passwordService = null,
     ) {}
 
-    /**
-     * @param array $data
-     * @return array
-     */
     public function create(array $data): array
     {
         $sql = 'INSERT INTO users (uuid, username, email, password) VALUES (:uuid, :username, :email, :password)';
@@ -56,10 +49,6 @@ class UserRepository
         return $result;
     }
 
-    /**
-     * @param array $data
-     * @return array
-     */
     public function update(string $id, array $data): array
     {
         $fields = [];
@@ -104,9 +93,6 @@ class UserRepository
         return $stmt->execute(['id' => $id]);
     }
 
-    /**
-     * @return array
-     */
     public function findById(int $id): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
@@ -118,9 +104,6 @@ class UserRepository
         return is_array($result) ? $result : null;
     }
 
-    /**
-     * @return array|null
-     */
     public function findByUuid(string $uuid): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE uuid = :uuid');
@@ -132,9 +115,6 @@ class UserRepository
         return is_array($result) ? $result : null;
     }
 
-    /**
-     * @return array|null
-     */
     public function findByUsername(string $username): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE username = :username');
@@ -146,9 +126,6 @@ class UserRepository
         return is_array($result) ? $result : null;
     }
 
-    /**
-     * @return array|null
-     */
     public function findByEmail(string $email): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE email = :email');

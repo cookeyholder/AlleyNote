@@ -57,6 +57,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         if ($this->isExcluded($key)) {
             $this->stats['pattern_exclusions']++;
             $this->stats['cache_denied']++;
+
             return false;
         }
 
@@ -64,16 +65,19 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         if (!$this->isValueSizeAcceptable($value)) {
             $this->stats['size_rejections']++;
             $this->stats['cache_denied']++;
+
             return false;
         }
 
         // 檢查 TTL 範圍
         if ($ttl < $this->minTtl || ($this->maxTtl > 0 && $ttl > $this->maxTtl)) {
             $this->stats['cache_denied']++;
+
             return false;
         }
 
         $this->stats['cache_allowed']++;
+
         return true;
     }
 
@@ -210,6 +214,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         }
 
         $size = strlen(serialize($value));
+
         return $size <= $this->maxValueSize;
     }
 
@@ -237,6 +242,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     {
         // 支援簡單的萬用字元模式
         $pattern = str_replace(['*', '?'], ['.*', '.'], $pattern);
+
         return preg_match('/^' . $pattern . '$/', $key) === 1;
     }
 

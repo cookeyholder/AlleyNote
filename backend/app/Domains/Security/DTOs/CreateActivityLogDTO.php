@@ -15,11 +15,7 @@ use JsonSerializable;
  * 建立活動記錄的 DTO.
  */
 final class CreateActivityLogDTO implements JsonSerializable
-
-
-
 {
-
     public function __construct(
         private ActivityType $actionType,
         private ?int $userId = null,
@@ -310,11 +306,11 @@ final class CreateActivityLogDTO implements JsonSerializable
             $encoded = json_encode($metadata, JSON_THROW_ON_ERROR);
             if (strlen($encoded) > 65535) {
                 throw new InvalidArgumentException(
-                    "Metadata size (" . strlen($encoded) . " bytes) exceeds maximum limit (65535 bytes)"
+                    'Metadata size (' . strlen($encoded) . ' bytes) exceeds maximum limit (65535 bytes)',
                 );
             }
-        } catch (\JsonException $e) {
-            throw new InvalidArgumentException("Invalid metadata: cannot be JSON encoded");
+        } catch (JsonException $e) {
+            throw new InvalidArgumentException('Invalid metadata: cannot be JSON encoded');
         }
     }
 }

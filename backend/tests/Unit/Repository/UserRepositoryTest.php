@@ -13,9 +13,6 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class UserRepositoryTest extends TestCase
-
-
-
 {
     private PDO $db;
 

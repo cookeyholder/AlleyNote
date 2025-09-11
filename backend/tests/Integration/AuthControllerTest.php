@@ -28,9 +28,6 @@ use Tests\TestCase;
 
 #[Group('integration')]
 class AuthControllerTest extends TestCase
-
-
-
 {
     private AuthService|MockInterface $authService;
 

@@ -136,6 +136,7 @@ class RoutingServiceProvider
             $routeLoader->loadRoutes($router);
         } catch (Exception $e) {
             error_log('Failed to load routes: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -143,7 +144,6 @@ class RoutingServiceProvider
     /**
      * 註冊路由中間件。
      *
-     * @param ContainerInterface $container
      * @return array<string, mixed>
      */
     public static function registerMiddleware(ContainerInterface $container): array

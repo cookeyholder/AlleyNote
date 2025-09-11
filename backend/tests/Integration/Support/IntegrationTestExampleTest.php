@@ -11,9 +11,6 @@ use Tests\Support\IntegrationTestCase;
  * 展示整合測試架構使用方式的範例測試.
  */
 class IntegrationTestExampleTest extends IntegrationTestCase
-
-
-
 {
     public function testDatabaseIntegration(): void
     {

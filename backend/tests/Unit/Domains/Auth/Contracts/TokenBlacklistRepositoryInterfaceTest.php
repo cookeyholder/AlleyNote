@@ -17,9 +17,6 @@ use ReflectionClass;
  * 確保所有方法簽名、參數類型、回傳類型正確。
  */
 class TokenBlacklistRepositoryInterfaceTest extends TestCase
-
-
-
 {
     private ReflectionClass $interfaceReflection;
 
@@ -478,8 +475,8 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
         foreach ($expectedMethods as $expectedMethod) {
             $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
         }
-
     }
+
     public function testInterfaceHasCorrectDocumentation(): void
     {
         $docComment = $this->interfaceReflection->getDocComment();
@@ -501,8 +498,8 @@ class TokenBlacklistRepositoryInterfaceTest extends TestCase
             $this->assertTrue($method->isPublic(), "Method {$method->getName()} should be public");
             $this->assertFalse($method->isStatic(), "Method {$method->getName()} should not be static");
         }
-
     }
+
     public function testInterfaceExtendsNoOtherInterface(): void
     {
         $interfaces = $this->interfaceReflection->getInterfaces();

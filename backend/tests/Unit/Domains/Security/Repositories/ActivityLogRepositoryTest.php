@@ -20,9 +20,6 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(ActivityLogRepository::class)]
 class ActivityLogRepositoryTest extends TestCase
-
-
-
 {
     private PDO|MockObject $pdo;
 

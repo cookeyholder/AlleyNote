@@ -8,9 +8,6 @@ use App\Shared\Contracts\OutputSanitizerInterface;
 use JsonSerializable;
 
 class Post implements JsonSerializable
-
-
-
 {
     private int $id;
 

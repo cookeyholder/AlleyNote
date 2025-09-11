@@ -13,7 +13,10 @@ abstract class BaseController
     /**
      * 建立JSON回應.
      */
-    public function json(ResponseInterface $response, /** @var array<string, mixed> */ array $data, int $status = 200): ResponseInterface
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function json(ResponseInterface $response, array $data, int $status = 200): ResponseInterface
     {
         $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         if ($json === false) {
@@ -28,6 +31,7 @@ abstract class BaseController
 
     /**
      * JSON響應輔助方法.
+     * @param array<string, mixed> $data
      */
     public function jsonResponse(array $data, int $httpCode = 200): string
     {
@@ -57,6 +61,7 @@ abstract class BaseController
 
     /**
      * 分頁響應輔助方法.
+     * @param array<string, mixed> $data
      */
     public function paginatedResponse(array $data, int $total, int $page, int $perPage): string
     {

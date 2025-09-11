@@ -9,7 +9,7 @@ use App\Infrastructure\Routing\Contracts\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * 路由收集器
+ * 路由收集器.
  *
  * 管理和組織所有註冊的路由
  */
@@ -185,7 +185,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * 序列化路由處理器
+     * 序列化路由處理器.
      *
      * 注意：這裡的實作是簡化版本，實際使用時可能需要更複雜的序列化邏輯
      *

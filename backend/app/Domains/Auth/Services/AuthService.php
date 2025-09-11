@@ -21,10 +21,8 @@ class AuthService
     ) {}
 
     /**
-     * 註冊新使用者
+     * 註冊新使用者.
      *
-     * @param RegisterUserDTO $dto
-     * @param DeviceInfo|null $deviceInfo
      * @return array<string, mixed>
      */
     public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): array
@@ -77,10 +75,9 @@ class AuthService
     }
 
     /**
-     * 使用者登入
+     * 使用者登入.
      *
      * @param array<string, mixed> $credentials
-     * @param DeviceInfo|null $deviceInfo
      * @return array<string, mixed>
      */
     public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
@@ -152,10 +149,8 @@ class AuthService
     }
 
     /**
-     * 使用者登出
+     * 使用者登出.
      *
-     * @param string|null $accessToken
-     * @param DeviceInfo|null $deviceInfo
      * @return array<string, mixed>
      */
     public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): array

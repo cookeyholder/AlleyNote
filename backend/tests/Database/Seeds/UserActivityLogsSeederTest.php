@@ -15,9 +15,6 @@ use Tests\TestCase;
  * 驗證 Seeder 能夠正確建立測試資料，並確保資料品質和完整性
  */
 class UserActivityLogsSeederTest extends TestCase
-
-
-
 {
     private PDO $pdo;
 
@@ -265,7 +262,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得不同的行為類型.
-     * @return array
      */
     private function getDistinctActionTypes(): array
     {
@@ -278,7 +274,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得不同的狀態.
-     * @return array
      */
     private function getDistinctStatuses(): array
     {
@@ -291,7 +286,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得隨機記錄.
-     * @return array
      */
     private function getRandomRecord(): array
     {
@@ -307,7 +301,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 驗證基本欄位是否有效.
-     * @param array $record
      */
     private function assertBasicFieldsAreValid(array $record): void
     {
@@ -330,7 +323,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 驗證 metadata 是否為有效的 JSON.
-     * @param array $record
      */
     private function assertMetadataIsValidJson(array $record): void
     {

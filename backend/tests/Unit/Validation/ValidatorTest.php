@@ -16,9 +16,6 @@ use Tests\TestCase;
  * 測試驗證器的所有核心功能，包括內建規則、自訂規則、錯誤訊息等
  */
 class ValidatorTest extends TestCase
-
-
-
 {
     private ValidatorInterface $validator;
 

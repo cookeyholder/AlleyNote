@@ -23,9 +23,6 @@ use Psr\Http\Message\StreamInterface;
  * 負責初始化和配置整個應用程式
  */
 class Application
-
-
-
 {
     private ContainerInterface $container;
 
@@ -147,15 +144,14 @@ class Application
     {
         // 記錄錯誤到監控系統
         try {
-
-
             $errorTracker = $this->container->get(ErrorTrackerInterface::class);
             if ($errorTracker instanceof ErrorTrackerInterface) {
                 $errorTracker->recordCriticalError($e, [
                     'context' => 'application_exception',
                     'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
                     'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
-                ]);}
+                ]);
+            }
         } catch (Exception $monitoringException) {
             // 如果監控系統本身出錯，記錄到錯誤日誌
             error_log('Monitoring system error: ' . $monitoringException->getMessage());
@@ -164,6 +160,7 @@ class Application
         // 建立基本的錯誤回應（使用匿名類別實作）
         $stream = new class implements StreamInterface {
             private string $content = '';
+
             private int $position = 0;
 
             public function __toString(): string

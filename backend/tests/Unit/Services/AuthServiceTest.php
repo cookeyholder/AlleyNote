@@ -17,9 +17,6 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class AuthServiceTest extends TestCase
-
-
-
 {
     private UserRepository|MockInterface $userRepository;
 

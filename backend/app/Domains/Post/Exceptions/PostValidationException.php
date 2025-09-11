@@ -8,9 +8,6 @@ use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 
 class PostValidationException extends ValidationException
-
-
-
 {
     public function __construct(string $message = '', array $errors = [])
     {

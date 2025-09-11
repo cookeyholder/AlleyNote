@@ -23,9 +23,6 @@ use RuntimeException;
 use Tests\TestCase;
 
 class PostServiceTest extends TestCase
-
-
-
 {
     private PostRepositoryInterface|MockInterface $repository;
 

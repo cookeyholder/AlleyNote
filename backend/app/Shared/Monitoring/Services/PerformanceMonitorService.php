@@ -35,8 +35,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     public function __construct(
         private LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     /**
      * 設定慢查詢閾值。
@@ -439,7 +438,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 取得特定操作的統計。
-     * @return array
      */
     private function getOperationStats(string $operation): array
     {
@@ -474,8 +472,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 計算指標摘要。
-     * @param array $metricsSubset
-     * @return array
      */
     private function calculateMetricsSummary(?array $metricsSubset = null): array
     {
@@ -504,7 +500,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
     /**
      * 計算直方圖摘要。
-     * @return array
      */
     private function calculateHistogramSummary(): array
     {

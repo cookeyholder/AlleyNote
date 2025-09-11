@@ -14,9 +14,6 @@ use App\Shared\Exceptions\ValidationException;
  * 用於安全地傳輸建立附件所需的資料，防止巨量賦值攻擊
  */
 class CreateAttachmentDTO extends BaseDTO
-
-
-
 {
     public readonly int $postId;
 
@@ -36,9 +33,6 @@ class CreateAttachmentDTO extends BaseDTO
      * @param ValidatorInterface $validator 驗證器實例
      * @throws ValidationException 當驗證失敗時
      */
-    
-    
-    
     public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
     {
         parent::__construct($validator);

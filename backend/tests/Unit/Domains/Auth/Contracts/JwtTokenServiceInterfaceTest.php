@@ -18,9 +18,6 @@ use ReflectionClass;
  * 確保所有方法簽名、參數類型、回傳類型和例外定義正確。
  */
 class JwtTokenServiceInterfaceTest extends TestCase
-
-
-
 {
     private ReflectionClass $interfaceReflection;
 
@@ -346,8 +343,8 @@ class JwtTokenServiceInterfaceTest extends TestCase
         foreach ($expectedMethods as $expectedMethod) {
             $this->assertArrayHasKey($expectedMethod, array_flip($actualMethods), "Method {$expectedMethod} is missing from interface");
         }
-
     }
+
     public function testInterfaceHasCorrectDocumentation(): void
     {
         $docComment = $this->interfaceReflection->getDocComment();

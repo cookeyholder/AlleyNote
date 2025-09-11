@@ -30,9 +30,6 @@ use RuntimeException;
 #[CoversClass(PostStatisticsRepository::class)]
 #[CoversClass(UserStatisticsRepository::class)]
 final class StatisticsRepositoryTest extends TestCase
-
-
-
 {
     private PostStatisticsRepository $postRepository;
 

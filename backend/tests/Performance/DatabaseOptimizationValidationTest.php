@@ -76,7 +76,7 @@ class DatabaseOptimizationValidationTest extends TestCase
             $this->assertLessThan(
                 10.0,
                 $avgTimeMs,
-                "{$testName} took {$avgTimeMs}ms on average (expected < 10ms)"
+                "{$testName} took {$avgTimeMs}ms on average (expected < 10ms)",
             );
         }
     }
@@ -121,7 +121,7 @@ class DatabaseOptimizationValidationTest extends TestCase
             $this->assertStringNotContainsString(
                 'SCAN TABLE',
                 $planText,
-                "Query {$queryName} should use index, but plan shows: {$planText}"
+                "Query {$queryName} should use index, but plan shows: {$planText}",
             );
         }
     }
@@ -131,19 +131,19 @@ class DatabaseOptimizationValidationTest extends TestCase
         // 測試複合索引的效果
         $withoutIndex = $this->measureQueryTime(
             'SELECT COUNT(*) FROM user_activity_logs WHERE action_category = ? AND status = ?',
-            ['authentication', 'success']
+            ['authentication', 'success'],
         );
 
         $withIndex = $this->measureQueryTime(
             'SELECT COUNT(*) FROM user_activity_logs WHERE user_id = ? AND action_category = ?',
-            ['550e8400-e29b-41d4-a716-446655440000', 'authentication']
+            ['550e8400-e29b-41d4-a716-446655440000', 'authentication'],
         );
 
         // 有索引的查詢應該更快
         $this->assertLessThan(
             $withoutIndex * 2, // 允許 2 倍的性能差異
             $withIndex,
-            "Indexed query should be significantly faster"
+            'Indexed query should be significantly faster',
         );
     }
 
@@ -180,7 +180,7 @@ class DatabaseOptimizationValidationTest extends TestCase
     public function testTableSchema(): void
     {
         // 驗證 user_activity_logs 表格結構
-        $stmt = $this->db->query("PRAGMA table_info(user_activity_logs)");
+        $stmt = $this->db->query('PRAGMA table_info(user_activity_logs)');
         $this->assertNotFalse($stmt);
         $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -191,7 +191,7 @@ class DatabaseOptimizationValidationTest extends TestCase
             $this->assertContains(
                 $expectedColumn,
                 $actualColumns,
-                "Table should contain column: {$expectedColumn}"
+                "Table should contain column: {$expectedColumn}",
             );
         }
     }

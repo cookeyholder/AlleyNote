@@ -8,7 +8,7 @@ use Exception;
 use InvalidArgumentException;
 
 /**
- * 環境配置管理器
+ * 環境配置管理器.
  *
  * 負責載入和管理不同環境的配置檔案，支持多環境配置切換
  */
@@ -46,7 +46,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 載入環境配置
+     * 載入環境配置.
      */
     public function load(): void
     {
@@ -106,7 +106,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 檢查配置鍵是否存在
+     * 檢查配置鍵是否存在.
      */
     public function has(string $key): bool
     {
@@ -118,7 +118,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 取得所有配置
+     * 取得所有配置.
      *
      * @return array<string, mixed>
      */
@@ -130,7 +130,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 取得當前環境
+     * 取得當前環境.
      */
     public function getEnvironment(): string
     {
@@ -138,7 +138,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 檢查是否為開發環境
+     * 檢查是否為開發環境.
      */
     public function isDevelopment(): bool
     {
@@ -146,7 +146,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 檢查是否為測試環境
+     * 檢查是否為測試環境.
      */
     public function isTesting(): bool
     {
@@ -154,7 +154,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 檢查是否為生產環境
+     * 檢查是否為生產環境.
      */
     public function isProduction(): bool
     {
@@ -162,7 +162,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 重新載入配置
+     * 重新載入配置.
      */
     public function reload(): void
     {
@@ -172,7 +172,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 從檔案載入配置
+     * 從檔案載入配置.
      */
     private function loadFromFile(string $filePath): void
     {
@@ -196,7 +196,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 解析配置行
+     * 解析配置行.
      */
     private function parseLine(string $line): void
     {
@@ -209,8 +209,8 @@ final class EnvironmentConfig
         $value = trim($value);
 
         // 移除引號
-        if ((str_starts_with($value, '"') && str_ends_with($value, '"')) ||
-            (str_starts_with($value, "'") && str_ends_with($value, "'"))) {
+        if ((str_starts_with($value, '"') && str_ends_with($value, '"'))
+            || (str_starts_with($value, "'") && str_ends_with($value, "'"))) {
             $value = substr($value, 1, -1);
         }
 
@@ -242,8 +242,8 @@ final class EnvironmentConfig
         }
 
         // JSON 陣列或物件
-        if ((str_starts_with($value, '[') && str_ends_with($value, ']')) ||
-            (str_starts_with($value, '{') && str_ends_with($value, '}'))) {
+        if ((str_starts_with($value, '[') && str_ends_with($value, ']'))
+            || (str_starts_with($value, '{') && str_ends_with($value, '}'))) {
             $decoded = json_decode($value, true);
             if (json_last_error() === JSON_ERROR_NONE) {
                 return $decoded;
@@ -254,7 +254,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 偵測當前環境
+     * 偵測當前環境.
      */
     private function detectEnvironment(): string
     {
@@ -291,7 +291,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 取得預設配置路徑
+     * 取得預設配置路徑.
      */
     private function getDefaultConfigPath(): string
     {
@@ -299,7 +299,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 取得環境檔案路徑
+     * 取得環境檔案路徑.
      */
     private function getEnvironmentFile(): string
     {
@@ -315,7 +315,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 驗證配置完整性
+     * 驗證配置完整性.
      *
      * @return array<string> 驗證錯誤清單
      */
@@ -334,7 +334,7 @@ final class EnvironmentConfig
     }
 
     /**
-     * 驗證必要的配置鍵
+     * 驗證必要的配置鍵.
      */
     private function validateRequired(): void
     {
@@ -348,7 +348,7 @@ final class EnvironmentConfig
 
         if (!empty($missing)) {
             throw new Exception(
-                '缺少必要的配置鍵: ' . implode(', ', $missing)
+                '缺少必要的配置鍵: ' . implode(', ', $missing),
             );
         }
     }

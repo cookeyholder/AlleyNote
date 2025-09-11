@@ -128,7 +128,6 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 取得受眾.
-     * @return array
      */
     public function getAudience(): array
     {
@@ -161,7 +160,6 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 取得自訂宣告.
-     * @return array
      */
     public function getCustomClaims(): array
     {
@@ -217,7 +215,6 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 轉換為陣列格式（用於 JWT 編碼）.
-     * @return array
      */
     public function toArray(): array
     {
@@ -240,7 +237,6 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -395,7 +391,6 @@ final readonly class JwtPayload implements JsonSerializable
     /**
      * 標準化受眾參數為 array<string, mixed> 格式.
      * @param mixed $aud 受眾參數
-     * @return array
      */
     private static function normalizeAudience(mixed $aud): array
     {

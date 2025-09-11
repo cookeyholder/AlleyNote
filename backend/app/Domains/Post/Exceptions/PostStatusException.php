@@ -7,9 +7,6 @@ namespace App\Domains\Post\Exceptions;
 use App\Shared\Exceptions\StateTransitionException;
 
 class PostStatusException extends StateTransitionException
-
-
-
 {
     public function __construct(string $message = '', int $code = 400)
     {

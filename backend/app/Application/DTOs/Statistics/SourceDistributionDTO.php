@@ -31,9 +31,6 @@ final readonly class SourceDistributionDTO implements JsonSerializable
      * @param int $totalCount 總數量
      * @param DateTimeImmutable $generatedAt 產生時間
      */
-
-
-
     public function __construct(
         public StatisticsPeriod $period,
         /** @var array<SourceStatistics> */
@@ -49,11 +46,10 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 從來源統計資料建立 DTO.
-     * @param array $sourceStatistics
+     * @param array<SourceStatistics> $sourceStatistics
      */
     public static function fromSourceStatistics(
         StatisticsPeriod $period,
-        /** @var array<string, mixed> */
         array $sourceStatistics,
         int $totalCount,
     ): self {
@@ -71,7 +67,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
-     * @param array $data
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -97,7 +93,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
         // 確保來源統計資料是陣列
         $sourceStatsDataRaw = $data['source_statistics'] ?? [];
-        /** @var array<array<string, mixed> $sourceStatsData */
+        /** @var array<array<string, mixed>> $sourceStatsData */
         $sourceStatsData = is_array($sourceStatsDataRaw) ? array_filter($sourceStatsDataRaw, 'is_array') : [];
 
         /** @var array<SourceStatistics> $sourceStatistics */
@@ -151,7 +147,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             return null;
         }
 
-    /** @var SourceStatistics|null */
+        /** @var SourceStatistics|null */
         return array_reduce(
             $this->sourceStatistics,
             fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => $carry === null || $source->count->value > $carry->count->value ? $source : $carry,
@@ -167,7 +163,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             return null;
         }
 
-    /** @var SourceStatistics|null */
+        /** @var SourceStatistics|null */
         return array_reduce(
             $this->sourceStatistics,
             fn(?SourceStatistics $carry, SourceStatistics $source): SourceStatistics => $carry === null || $source->count->value < $carry->count->value ? $source : $carry,
@@ -234,15 +230,20 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得前 N 個來源.
-     * @return array
      */
-    public function getTopSources(int $limit = 3): array
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getTopSources(int $limit = 5): array
     {
         $sorted = $this->sourceStatistics;
         usort($sorted, fn(SourceStatistics $a, SourceStatistics $b): int => $b->count->value <=> $a->count->value);
 
-        /** @var array<int, SourceStatistics> $sorted */
-        return array_slice($sorted, 0, $limit);
+        return array_slice(array_map(fn(SourceStatistics $source): array => [
+            'source' => $source->sourceType->value,
+            'count' => $source->count->value,
+            'percentage' => $this->totalCount > 0 ? round(($source->count->value / $this->totalCount) * 100, 2) : 0,
+        ], $sorted), 0, $limit);
     }
 
     /**
@@ -254,7 +255,6 @@ final readonly class SourceDistributionDTO implements JsonSerializable
         $sorted = $this->sourceStatistics;
         usort($sorted, fn(SourceStatistics $a, SourceStatistics $b): int => $b->count->value <=> $a->count->value);
 
-        /** @var array<int, array<string, mixed> */
         return array_map(
             fn(SourceStatistics $source, int $index): array => [
                 'rank' => $index + 1,
@@ -270,7 +270,9 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得分佈摘要
-     * @return array
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function getDistributionSummary(): array
     {
@@ -299,7 +301,9 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 取得格式化的分佈資訊.
-     * @return array
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function getFormattedDistribution(): array
     {
@@ -338,7 +342,9 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 比較與另一個分佈的差異.
-     * @return array
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function compareWith(SourceDistributionDTO $other): array
     {
@@ -399,7 +405,9 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * @return array
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -428,7 +436,9 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * @return array
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -452,8 +462,10 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 計算分佈分析.
-     * @param array $sourceStatistics
-     * @return array
+     */
+    /**
+     * @param array<SourceStatistics> $sourceStatistics
+     * @return array<string, mixed>
      */
     private static function calculateDistributionAnalysis(array $sourceStatistics, int $totalCount): array
     {
@@ -486,15 +498,20 @@ final readonly class SourceDistributionDTO implements JsonSerializable
 
     /**
      * 驗證來源統計資料.
-     * @param array $sourceStatistics
+     */
+    /**
+     * @param array<SourceStatistics> $sourceStatistics
      */
     private function validateSourceStatistics(array $sourceStatistics): void
     {
         foreach ($sourceStatistics as $index => $source) {
+            // 基本型別檢查已通過 PHPDoc，這裡只做業務邏輯驗證
+
             // 基本驗證：確保有有效的統計值
             if ($source->count->value < 0) {
                 throw new InvalidArgumentException(
-                    "來源統計索引 {$index} 的計數不能為負數");
+                    "來源統計索引 {$index} 的計數不能為負數",
+                );
             }
         }
     }

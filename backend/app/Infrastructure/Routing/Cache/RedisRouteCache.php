@@ -10,7 +10,7 @@ use Redis;
 use RedisException;
 
 /**
- * Redis 快取實作
+ * Redis 快取實作.
  *
  * 使用 Redis 存儲路由快取資料，提供更好的效能和分散式支援
  */
@@ -158,7 +158,7 @@ class RedisRouteCache implements RouteCacheInterface
     }
 
     /**
-     * 取得 Redis 連線物件
+     * 取得 Redis 連線物件.
      */
     public function getRedis(): Redis
     {
@@ -166,7 +166,7 @@ class RedisRouteCache implements RouteCacheInterface
     }
 
     /**
-     * 檢查 Redis 連線狀態
+     * 檢查 Redis 連線狀態.
      */
     public function isConnected(): bool
     {
@@ -178,7 +178,7 @@ class RedisRouteCache implements RouteCacheInterface
     }
 
     /**
-     * 取得快取鍵名
+     * 取得快取鍵名.
      */
     private function getCacheKey(): string
     {
@@ -186,7 +186,7 @@ class RedisRouteCache implements RouteCacheInterface
     }
 
     /**
-     * 載入統計資料
+     * 載入統計資料.
      */
     private function loadStats(): void
     {
@@ -204,7 +204,7 @@ class RedisRouteCache implements RouteCacheInterface
     }
 
     /**
-     * 儲存統計資料
+     * 儲存統計資料.
      */
     private function saveStats(): void
     {

@@ -199,8 +199,8 @@ class IpServiceTest extends TestCase
             $result = $this->service->createIpRule($dto);
             $this->assertEquals($range, $result->getIpAddress());
         }
-
     }
+
     public function testCanGetRulesByType(): void
     {
         $type = 1; // 白名單

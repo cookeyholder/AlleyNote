@@ -12,9 +12,6 @@ use PHPUnit\Framework\TestCase;
  * Device Info Value Object 單元測試.
  */
 final class DeviceInfoTest extends TestCase
-
-
-
 {
     private string $validDeviceId;
 

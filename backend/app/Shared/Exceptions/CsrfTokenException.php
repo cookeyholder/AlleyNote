@@ -7,9 +7,6 @@ namespace App\Shared\Exceptions;
 use Exception;
 
 class CsrfTokenException extends Exception
-
-
-
 {
     public function __construct(string $message = 'CSRF token 驗證失敗', int $code = 403)
     {

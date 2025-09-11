@@ -9,9 +9,6 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class JwtConfigTest extends TestCase
-
-
-
 {
     private array $originalEnv = [];
 

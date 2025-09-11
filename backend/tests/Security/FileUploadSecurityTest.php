@@ -20,9 +20,6 @@ use Psr\Http\Message\UploadedFileInterface;
 use Tests\TestCase;
 
 class FileUploadSecurityTest extends TestCase
-
-
-
 {
     protected AttachmentService $service;
 
@@ -358,8 +355,8 @@ class FileUploadSecurityTest extends TestCase
         if (is_dir($this->uploadDir)) {
             $this->removeDirectory($this->uploadDir);
         }
-
     }
+
     private function removeDirectory(string $dir): void
     {
         if (!is_dir($dir)) {

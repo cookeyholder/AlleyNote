@@ -6,7 +6,6 @@ namespace App\Domains\Security\Services\Secrets;
 
 use App\Domains\Security\Contracts\SecretsManagerInterface;
 use App\Shared\Exceptions\ValidationException;
-use App\Shared\Validation\ValidationResult;
 
 class SecretsManager implements SecretsManagerInterface
 {
@@ -90,7 +89,7 @@ class SecretsManager implements SecretsManagerInterface
             throw ValidationException::fromSingleError(
                 $key,
                 "必需的環境變數 '{$key}' 未設定",
-                'required'
+                'required',
             );
         }
 
@@ -118,7 +117,7 @@ class SecretsManager implements SecretsManagerInterface
             throw ValidationException::fromErrors(
                 $errors,
                 $failedRules,
-                '缺少必需的環境變數: ' . implode(', ', $missing)
+                '缺少必需的環境變數: ' . implode(', ', $missing),
             );
         }
     }
@@ -126,12 +125,14 @@ class SecretsManager implements SecretsManagerInterface
     public function isProduction(): bool
     {
         $appEnv = $this->get('APP_ENV', 'production');
+
         return strtolower((string) $appEnv) === 'production';
     }
 
     public function isDevelopment(): bool
     {
         $appEnv = $this->get('APP_ENV', 'production');
+
         return strtolower((string) $appEnv) === 'development';
     }
 
@@ -183,6 +184,7 @@ class SecretsManager implements SecretsManagerInterface
         if ($length <= 0) {
             $length = 32;
         }
+
         return bin2hex(random_bytes($length));
     }
 
@@ -196,6 +198,7 @@ class SecretsManager implements SecretsManagerInterface
 
         if (!file_exists($filePath)) {
             $issues[] = '.env 檔案不存在';
+
             return $issues;
         }
 
@@ -268,7 +271,7 @@ class SecretsManager implements SecretsManagerInterface
             throw ValidationException::fromSingleError(
                 'file',
                 "無法讀取環境設定檔案: {$filePath}",
-                'readable'
+                'readable',
             );
         }
 

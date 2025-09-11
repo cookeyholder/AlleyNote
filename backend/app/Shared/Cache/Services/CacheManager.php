@@ -17,7 +17,7 @@ use Psr\Log\NullLogger;
 use RuntimeException;
 
 /**
- * 快取管理器
+ * 快取管理器.
  *
  * 負責管理多個快取驅動，提供統一的快取存取介面
  */
@@ -702,7 +702,7 @@ class CacheManager implements CacheManagerInterface
     }
 
     /**
-     * 根據優先級取得可用驅動
+     * 根據優先級取得可用驅動.
      *
      * @return array<string, CacheDriverInterface>
      */
@@ -721,7 +721,7 @@ class CacheManager implements CacheManagerInterface
     }
 
     /**
-     * 同步快取到更高優先級的驅動
+     * 同步快取到更高優先級的驅動.
      */
     private function syncCacheToHigherPriorityDrivers(string $key, mixed $value, string $currentDriver): void
     {
@@ -756,7 +756,7 @@ class CacheManager implements CacheManagerInterface
     }
 
     /**
-     * 處理驅動錯誤
+     * 處理驅動錯誤.
      *
      * @param array<string, mixed> $params
      */
@@ -787,7 +787,7 @@ class CacheManager implements CacheManagerInterface
     }
 
     /**
-     * 取得預設設定
+     * 取得預設設定.
      *
      * @return array<string, mixed>
      */
@@ -804,7 +804,7 @@ class CacheManager implements CacheManagerInterface
     }
 
     /**
-     * 更新設定
+     * 更新設定.
      *
      * @param array<string, mixed> $config
      */
@@ -818,7 +818,7 @@ class CacheManager implements CacheManagerInterface
     }
 
     /**
-     * 取得設定
+     * 取得設定.
      *
      * @return array<string, mixed>
      */

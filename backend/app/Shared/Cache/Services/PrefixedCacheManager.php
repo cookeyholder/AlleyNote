@@ -14,9 +14,6 @@ use App\Shared\Cache\Contracts\TaggedCacheInterface;
  * 為所有操作自動新增前綴
  */
 class PrefixedCacheManager implements CacheManagerInterface
-
-
-
 {
     public function __construct(
         private CacheManagerInterface $manager,

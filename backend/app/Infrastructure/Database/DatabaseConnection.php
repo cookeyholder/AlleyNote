@@ -8,9 +8,6 @@ use PDO;
 use RuntimeException;
 
 class DatabaseConnection
-
-
-
 {
     private static ?PDO $instance = null;
 

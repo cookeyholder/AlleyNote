@@ -11,9 +11,6 @@ use PHPUnit\Framework\TestCase;
  * MemoryTagRepository 測試（修正版）.
  */
 class MemoryTagRepositoryTest extends TestCase
-
-
-
 {
     private MemoryTagRepository $repository;
 
@@ -118,8 +115,8 @@ class MemoryTagRepositoryTest extends TestCase
             $keysForTag = $this->repository->getKeysByTag($tag);
             $this->assertNotContains($key, $keysForTag);
         }
-
     }
+
     public function testGetAllTags(): void
     {
         $testData = [
@@ -139,8 +136,8 @@ class MemoryTagRepositoryTest extends TestCase
         foreach ($expectedTags as $expectedTag) {
             $this->assertArrayHasKey($expectedTag, array_flip($allTags));
         }
-
     }
+
     public function testTagExists(): void
     {
         $key = 'test_key';
@@ -304,7 +301,6 @@ class MemoryTagRepositoryTest extends TestCase
 
     /**
      * Assert that tag statistics are correct.
-     * @param array $stats
      */
     private function assertTagStatisticsAreCorrect(array $stats): void
     {
@@ -314,7 +310,6 @@ class MemoryTagRepositoryTest extends TestCase
 
     /**
      * Setup multiple keys with the same tag.
-     * @param array $keys
      */
     private function setupKeysWithSameTag(array $keys, string $tag): void
     {
@@ -325,7 +320,6 @@ class MemoryTagRepositoryTest extends TestCase
 
     /**
      * Assert that all keys have empty tags.
-     * @param array $keys
      */
     private function assertAllKeysTagsAreEmpty(array $keys): void
     {

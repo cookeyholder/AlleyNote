@@ -71,7 +71,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/backup_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($this->testDir),
-            escapeshellarg($this->backupDir)
+            escapeshellarg($this->backupDir),
         ), $output, $returnVar);
 
         $this->assertEquals(0, $returnVar, '備份腳本執行失敗: ' . implode("\n", $output));
@@ -94,11 +94,11 @@ class FileSystemBackupTest extends TestCase
 
         foreach ($this->testFiles as $path => $content) {
             $backedUpFile = $extractedDir . $path;
-            $this->assertFileExists($backedUpFile, sprintf("檔案 %s 未被備份", $path));
+            $this->assertFileExists($backedUpFile, sprintf('檔案 %s 未被備份', $path));
             $this->assertEquals(
                 $content,
                 file_get_contents($backedUpFile),
-                sprintf("檔案 %s 的內容不符", $path)
+                sprintf('檔案 %s 的內容不符', $path),
             );
         }
     }
@@ -148,7 +148,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->testDir)
+            escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
         $this->assertEquals(0, $returnVar, '還原腳本執行失敗: ' . implode("\n", $output));
@@ -158,16 +158,16 @@ class FileSystemBackupTest extends TestCase
     {
         foreach ($this->testFiles as $path => $content) {
             $restoredFile = $this->testDir . $path;
-            $this->assertFileExists($restoredFile, sprintf("檔案 %s 未被還原", $path));
+            $this->assertFileExists($restoredFile, sprintf('檔案 %s 未被還原', $path));
             $this->assertEquals(
                 $content,
                 file_get_contents($restoredFile),
-                sprintf("檔案 %s 的內容不符", $path)
+                sprintf('檔案 %s 的內容不符', $path),
             );
             $this->assertEquals(
                 0o644,
                 octdec(substr(sprintf('%o', fileperms($restoredFile)), -4)),
-                sprintf("檔案 %s 的權限不正確", $path)
+                sprintf('檔案 %s 的權限不正確', $path),
             );
         }
     }
@@ -202,7 +202,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/backup_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($sourceDir),
-            escapeshellarg($this->backupDir)
+            escapeshellarg($this->backupDir),
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
@@ -218,7 +218,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->testDir)
+            escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
@@ -245,7 +245,7 @@ class FileSystemBackupTest extends TestCase
             '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
-            escapeshellarg($this->testDir)
+            escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
         $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
@@ -276,7 +276,7 @@ class FileSystemBackupTest extends TestCase
             $mtime = filemtime($file);
 
             if ($permissions === false || $owner === false || $group === false || $mtime === false) {
-                throw new RuntimeException(sprintf("無法取得檔案 %s 的中繼資料", $path));
+                throw new RuntimeException(sprintf('無法取得檔案 %s 的中繼資料', $path));
             }
 
             $originalMetadata[$path] = [
@@ -306,18 +306,18 @@ class FileSystemBackupTest extends TestCase
     {
         foreach ($originalMetadata as $path => $metadata) {
             $restoredFile = $this->testDir . $path;
-            $this->assertFileExists($restoredFile, sprintf("檔案 %s 未被還原", $path));
+            $this->assertFileExists($restoredFile, sprintf('檔案 %s 未被還原', $path));
 
             // 檢查權限（只檢查使用者權限部分）
             $restoredPermissions = fileperms($restoredFile);
-            $this->assertNotFalse($restoredPermissions, sprintf("無法取得檔案 %s 的權限", $path));
+            $this->assertNotFalse($restoredPermissions, sprintf('無法取得檔案 %s 的權限', $path));
 
             $expectedUserPerms = ($metadata['permissions'] & 0o700) >> 6;
             $actualUserPerms = ($restoredPermissions & 0o700) >> 6;
             $this->assertEquals(
                 $expectedUserPerms,
                 $actualUserPerms,
-                sprintf("檔案 %s 的使用者權限不符", $path)
+                sprintf('檔案 %s 的使用者權限不符', $path),
             );
         }
     }
@@ -342,7 +342,7 @@ class FileSystemBackupTest extends TestCase
         $this->assertEquals(
             strlen($largeFileContent),
             filesize($backedUpLargeFile),
-            '大檔案大小不符'
+            '大檔案大小不符',
         );
     }
 

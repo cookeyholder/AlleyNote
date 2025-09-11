@@ -12,9 +12,6 @@ use App\Shared\Exceptions\CsrfTokenException;
 use Exception;
 
 class CsrfProtectionService implements CsrfProtectionServiceInterface
-
-
-
 {
     private const TOKEN_LENGTH = 32;
 
@@ -25,7 +22,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
     private const TOKEN_POOL_KEY = 'csrf_token_pool';
 
     public function __construct(
-        private ActivityLoggingServiceInterface $activityLogger) {}
+        private ActivityLoggingServiceInterface $activityLogger,
+    ) {}
 
     public function generateToken(): string
     {
@@ -68,7 +66,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 // 降級到單一權杖模式
                 $this->validateSingleToken($token);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new CsrfTokenException('CSRF token 驗證失敗: ' . $e->getMessage());
         }
     }
@@ -196,7 +194,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             }
 
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -216,7 +214,6 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
     /**
      * 取得權杖池狀態（用於除錯）.
-     * @return array
      */
     public function getTokenPoolStatus(): array
     {
@@ -288,7 +285,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             );
 
             $this->activityLogger->log($dto);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // 記錄失敗時不應影響主要流程
             error_log('Failed to log CSRF attack attempt: ' . $e->getMessage());
         }

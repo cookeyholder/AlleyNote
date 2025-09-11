@@ -14,9 +14,6 @@ use PHPUnit\Framework\TestCase;
  * Token Blacklist Entry Value Object 單元測試.
  */
 final class TokenBlacklistEntryTest extends TestCase
-
-
-
 {
     private DateTimeImmutable $now;
 
@@ -714,8 +711,8 @@ final class TokenBlacklistEntryTest extends TestCase
         if ($resource) {
             fclose($resource);
         }
-
     }
+
     public function testForAccountChangeWithInvalidChangeType(): void
     {
         $this->expectException(InvalidArgumentException::class);

@@ -39,8 +39,7 @@ class CacheGroupManager
     public function __construct(
         private TaggedCacheInterface $taggedCache,
         private LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     /**
      * 建立快取分組.
@@ -96,7 +95,7 @@ class CacheGroupManager
         }
 
         $this->dependencies[$parentGroup] = array_values(array_unique(
-            array_merge($this->dependencies[$parentGroup], $childGroupsArray)
+            array_merge($this->dependencies[$parentGroup], $childGroupsArray),
         ));
 
         $this->logger->debug('設定分組依賴關係', [

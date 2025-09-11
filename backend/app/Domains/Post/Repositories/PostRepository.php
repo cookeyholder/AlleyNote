@@ -17,9 +17,6 @@ use PDOException;
 use RuntimeException;
 
 class PostRepository implements PostRepositoryInterface
-
-
-
 {
     private PDO $db;
 
@@ -86,8 +83,9 @@ class PostRepository implements PostRepositoryInterface
             $this->db->commit();
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }
@@ -158,8 +156,6 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 準備資料庫查詢結果為 Post 物件的資料.
-     * @param array $result
-     * @return array
      */
     /**
      * @param array<string, mixed> $result
@@ -186,8 +182,6 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 準備新文章的資料.
-     * @param array $data
-     * @return array
      */
     /**
      * @param array<string, mixed> $data
@@ -238,7 +232,7 @@ class PostRepository implements PostRepositoryInterface
                 return null;
             }
 
-    /** @var array<string, mixed> $result */
+            /** @var array<string, mixed> $result */
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
@@ -276,7 +270,7 @@ class PostRepository implements PostRepositoryInterface
                 return null;
             }
 
-    /** @var array<string, mixed> $result */
+            /** @var array<string, mixed> $result */
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
@@ -338,9 +332,6 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @param array $tagIds
-     */
-    /**
      * @param array<int> $tagIds
      */
     private function tagsExist(array $tagIds): bool
@@ -362,7 +353,6 @@ class PostRepository implements PostRepositoryInterface
     /**
      * 指派標籤到文章.
      * @throws PDOException 當標籤不存在時拋出異常
-     * @param array $data
      */
     /**
      * @param array<string, mixed> $data
@@ -406,7 +396,6 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 指派標籤到文章.
-     * @param array $tagIds
      */
     /**
      * @param array<int> $tagIds
@@ -426,9 +415,6 @@ class PostRepository implements PostRepositoryInterface
         }
     }
 
-    /**
-     * @param array $data
-     */
     /**
      * @param array<string, mixed> $data
      */
@@ -500,10 +486,6 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @param array $conditions
-     * @return array
-     */
-    /**
      * @param array<string, mixed> $conditions
      * @return array<string, mixed>
      */
@@ -544,7 +526,7 @@ class PostRepository implements PostRepositoryInterface
                         $this->logger->logSecurityEvent('Attempt to query with disallowed field', [
                             'field' => $key,
                             'action' => 'get_paginated',
-                            'conditions' => array_keys($conditions)
+                            'conditions' => array_keys($conditions),
                         ]);
                     }
                 }
@@ -592,9 +574,6 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @return array
-     */
-    /**
      * @return array<Post>
      */
     public function getPinnedPosts(int $limit = 5): array
@@ -622,9 +601,6 @@ class PostRepository implements PostRepositoryInterface
         }, self::CACHE_TTL);
     }
 
-    /**
-     * @return array
-     */
     /**
      * @return array<string, mixed>
      */
@@ -724,8 +700,9 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }
@@ -745,9 +722,6 @@ class PostRepository implements PostRepositoryInterface
         return $result;
     }
 
-    /**
-     * @param array $tagIds
-     */
     /**
      * @param array<int> $tagIds
      */
@@ -780,8 +754,9 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }
@@ -831,7 +806,7 @@ class PostRepository implements PostRepositoryInterface
                 /** @var array<string, mixed> $row */
                 return Post::fromArray($this->preparePostData($row));
             },
-            $results
+            $results,
         );
     }
 }

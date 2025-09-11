@@ -21,9 +21,6 @@ use RuntimeException;
 
 #[CoversClass(ActivityLoggingService::class)]
 class ActivityLoggingServiceTest extends TestCase
-
-
-
 {
     private ActivityLogRepositoryInterface|MockObject $repository;
 

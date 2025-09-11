@@ -347,7 +347,6 @@ class RefreshToken implements JsonSerializable
 
     /**
      * 實作 JsonSerializable 介面.
-     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -369,7 +368,6 @@ class RefreshToken implements JsonSerializable
 
     /**
      * 轉換為陣列（包含敏感資料）.
-     * @return array
      */
     public function toArray(): array
     {

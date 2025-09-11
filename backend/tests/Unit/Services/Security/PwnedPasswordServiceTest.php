@@ -7,9 +7,10 @@ namespace Tests\Unit\Services\Security;
 use App\Domains\Auth\Services\Advanced\PwnedPasswordService;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use TypeError;
 
 /**
- * Pwned Password Service 單元測試
+ * Pwned Password Service 單元測試.
  *
  * 測試密碼洩露檢查服務的各種情境
  */
@@ -99,7 +100,7 @@ class PwnedPasswordServiceTest extends TestCase
     public function it_handles_null_password(): void
     {
         // Arrange & Act & Assert
-        $this->expectException(\TypeError::class);
+        $this->expectException(TypeError::class);
         // @phpstan-ignore-next-line
         $this->service->checkPasswordSecurity(null);
     }
@@ -228,8 +229,11 @@ class PwnedPasswordServiceTest extends TestCase
             $result = $this->service->checkPasswordSecurity($weakPassword);
 
             if ($result['api_available'] && $result['is_leaked']) {
-                $this->assertGreaterThan(0, $result['count'],
-                    "弱密碼 '{$weakPassword}' 應該被檢測為已洩露");
+                $this->assertGreaterThan(
+                    0,
+                    $result['count'],
+                    "弱密碼 '{$weakPassword}' 應該被檢測為已洩露",
+                );
             }
         }
 

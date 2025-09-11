@@ -45,7 +45,6 @@ class SwaggerController
                 ->withHeader('Access-Control-Allow-Origin', '*')
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
                 ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
         } catch (Throwable $e) {
             // 確保清理輸出緩衝區
             if (ob_get_level() > 0) {
@@ -86,7 +85,6 @@ class SwaggerController
                 ->withHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
                 ->withHeader('Pragma', 'no-cache')
                 ->withHeader('Expires', '0');
-
         } catch (Throwable $e) {
             $errorHtml = $this->generateErrorHtml($e->getMessage());
             $response->getBody()->write($errorHtml);
@@ -103,53 +101,53 @@ class SwaggerController
     private function generateSwaggerUiHtml(): string
     {
         return <<<HTML
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlleyNote API Documentation</title>
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
-    <style>
-        .swagger-ui .topbar { display: none; }
-        .swagger-ui .info { margin: 30px 0; }
-        .swagger-ui .info .title { color: #3b4151; }
-        body { margin: 0; padding: 20px; }
-    </style>
-</head>
-<body>
-    <div id="swagger-ui"></div>
+            <!DOCTYPE html>
+            <html lang="zh-TW">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>AlleyNote API Documentation</title>
+                <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
+                <style>
+                    .swagger-ui .topbar { display: none; }
+                    .swagger-ui .info { margin: 30px 0; }
+                    .swagger-ui .info .title { color: #3b4151; }
+                    body { margin: 0; padding: 20px; }
+                </style>
+            </head>
+            <body>
+                <div id="swagger-ui"></div>
 
-    <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
-    <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js"></script>
-    <script>
-        window.onload = function() {
-            try {
-                SwaggerUIBundle({
-                    url: '/api/docs',
-                    dom_id: '#swagger-ui',
-                    deepLinking: true,
-                    presets: [
-                        SwaggerUIBundle.presets.apis,
-                        SwaggerUIStandalonePreset
-                    ],
-                    plugins: [
-                        SwaggerUIBundle.plugins.DownloadUrl
-                    ],
-                    layout: "StandaloneLayout",
-                    docExpansion: "none",
-                    defaultModelsExpandDepth: 1,
-                    defaultModelExpandDepth: 1
-                });
-            } catch (error) {
-                document.getElementById('swagger-ui').innerHTML =
-                    '<div style="color: red; padding: 20px;">載入 Swagger UI 時發生錯誤: ' + error.message + '</div>';
-            }
-        };
-    </script>
-</body>
-</html>
-HTML;
+                <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
+                <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js"></script>
+                <script>
+                    window.onload = function() {
+                        try {
+                            SwaggerUIBundle({
+                                url: '/api/docs',
+                                dom_id: '#swagger-ui',
+                                deepLinking: true,
+                                presets: [
+                                    SwaggerUIBundle.presets.apis,
+                                    SwaggerUIStandalonePreset
+                                ],
+                                plugins: [
+                                    SwaggerUIBundle.plugins.DownloadUrl
+                                ],
+                                layout: "StandaloneLayout",
+                                docExpansion: "none",
+                                defaultModelsExpandDepth: 1,
+                                defaultModelExpandDepth: 1
+                            });
+                        } catch (error) {
+                            document.getElementById('swagger-ui').innerHTML =
+                                '<div style="color: red; padding: 20px;">載入 Swagger UI 時發生錯誤: ' + error.message + '</div>';
+                        }
+                    };
+                </script>
+            </body>
+            </html>
+            HTML;
     }
 
     /**
@@ -158,42 +156,42 @@ HTML;
     private function generateErrorHtml(string $errorMessage): string
     {
         return <<<HTML
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlleyNote API - 錯誤</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f5f5f5; }
-        .error-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .error-title { color: #e74c3c; font-size: 24px; margin-bottom: 20px; }
-        .error-message { color: #666; line-height: 1.6; }
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #3498db;
-            text-decoration: none;
-        }
-        .back-link:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-    <div class="error-container">
-        <h1 class="error-title">API 文件載入失敗</h1>
-        <p class="error-message">無法載入 API 文件，錯誤訊息：{$errorMessage}</p>
-        <a href="/" class="back-link">← 返回首頁</a>
-    </div>
-</body>
-</html>
-HTML;
+            <!DOCTYPE html>
+            <html lang="zh-TW">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>AlleyNote API - 錯誤</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f5f5f5; }
+                    .error-container {
+                        max-width: 600px;
+                        margin: 0 auto;
+                        background: white;
+                        padding: 40px;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    }
+                    .error-title { color: #e74c3c; font-size: 24px; margin-bottom: 20px; }
+                    .error-message { color: #666; line-height: 1.6; }
+                    .back-link {
+                        display: inline-block;
+                        margin-top: 20px;
+                        color: #3498db;
+                        text-decoration: none;
+                    }
+                    .back-link:hover { text-decoration: underline; }
+                </style>
+            </head>
+            <body>
+                <div class="error-container">
+                    <h1 class="error-title">API 文件載入失敗</h1>
+                    <p class="error-message">無法載入 API 文件，錯誤訊息：{$errorMessage}</p>
+                    <a href="/" class="back-link">← 返回首頁</a>
+                </div>
+            </body>
+            </html>
+            HTML;
     }
 
     /**
@@ -209,7 +207,7 @@ HTML;
                 'documentation' => [
                     'ui_url' => '/api/docs/ui',
                     'spec_url' => '/api/docs',
-                    'format' => 'OpenAPI 3.0'
+                    'format' => 'OpenAPI 3.0',
                 ],
                 'contact' => [
                     'name' => 'AlleyNote Team',
@@ -239,7 +237,6 @@ HTML;
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8')
                 ->withHeader('Cache-Control', 'public, max-age=3600');
-
         } catch (Throwable $e) {
             $error = [
                 'success' => false,
@@ -283,7 +280,6 @@ HTML;
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8')
                 ->withHeader('Cache-Control', 'no-cache');
-
         } catch (Throwable $e) {
             $error = [
                 'status' => 'unhealthy',
@@ -307,7 +303,9 @@ HTML;
     {
         if (function_exists('sys_getloadavg')) {
             $uptime = sys_getloadavg();
-            return sprintf('Load: %.2f, %.2f, %.2f', $uptime[0], $uptime[1], $uptime[2]);
+            if ($uptime !== false) {
+                return sprintf('Load: %.2f, %.2f, %.2f', $uptime[0], $uptime[1], $uptime[2]);
+            }
         }
 
         return 'N/A';
@@ -321,9 +319,10 @@ HTML;
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
 
-        return sprintf('%.2f %s',
+        return sprintf(
+            '%.2f %s',
             $bytes / (1024 ** $power),
-            $units[min($power, count($units) - 1)]
+            $units[min($power, count($units) - 1)],
         );
     }
 }

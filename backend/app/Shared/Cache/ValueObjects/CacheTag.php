@@ -12,9 +12,6 @@ use InvalidArgumentException;
  * 表示快取項目的標籤，提供標籤驗證和正規化功能
  */
 class CacheTag
-
-
-
 {
     private string $name;
 

@@ -683,6 +683,7 @@ class CacheMonitor implements CacheMonitorInterface
     {
         // 簡化計算 - 實際應該基於時間範圍
         $totalOps = $this->operationStats[$driver]['total_operations'] ?? 0;
+
         return (float) ($totalOps / max(1, 3600)); // 假設1小時窗口
     }
 
@@ -693,6 +694,7 @@ class CacheMonitor implements CacheMonitorInterface
             $operations = $driverStats['operations'] ?? [];
             $count += $operations[$operation] ?? 0;
         }
+
         return $count;
     }
 

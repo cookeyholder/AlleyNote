@@ -10,9 +10,6 @@ use Tests\Support\UnitTestCase;
  * 展示新測試架構使用方式的範例測試.
  */
 class TestArchitectureExampleTest extends UnitTestCase
-
-
-
 {
     public function testBaseTestCaseHelpers(): void
     {

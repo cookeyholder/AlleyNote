@@ -19,9 +19,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
      * @param string $analysisId 分析識別碼
      * @param array $failureCounts 各活動類型失敗計數
      */
-    
-    
-    
     public function __construct(
         private readonly string $analysisId,
         private readonly string $targetType,
@@ -46,7 +43,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 工廠方法：建立使用者分析結果.
-     * @param array $activityCounts
      */
     public static function forUser(
         int $userId,
@@ -86,7 +82,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 工廠方法：建立 IP 分析結果.
-     * @param array $activityCounts
      */
     public static function forIpAddress(
         string $ipAddress,
@@ -126,7 +121,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 工廠方法：建立全域分析結果.
-     * @param array $activityCounts
      */
     public static function forGlobalPattern(
         int $timeWindowMinutes,
@@ -199,41 +193,26 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         return $this->severityLevel;
     }
 
-    /**
-     * @return array
-     */
     public function getActivityCounts(): array
     {
         return $this->activityCounts;
     }
 
-    /**
-     * @return array
-     */
     public function getFailureCounts(): array
     {
         return $this->failureCounts;
     }
 
-    /**
-     * @return array
-     */
     public function getAnomalyScores(): array
     {
         return $this->anomalyScores;
     }
 
-    /**
-     * @return array
-     */
     public function getDetectionRules(): array
     {
         return $this->detectionRules;
     }
 
-    /**
-     * @return array
-     */
     public function getMetadata(): array
     {
         return $this->metadata;
@@ -335,7 +314,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * @return array
      */
     public function toArray(): array
     {
@@ -366,7 +344,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * @return array
      */
     public function jsonSerialize(): array
     {

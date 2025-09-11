@@ -15,9 +15,6 @@ use InvalidArgumentException;
  * 統一處理所有密碼相關操作，包含安全驗證
  */
 class PasswordManagementService
-
-
-
 {
     public function __construct(
         private UserRepository $userRepository,

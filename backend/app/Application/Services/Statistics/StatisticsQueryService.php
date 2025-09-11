@@ -44,6 +44,9 @@ final class StatisticsQueryService
      *
      * 支援分頁和篩選條件的統計快照查詢。
      */
+    /**
+     * @return array<string, mixed>
+     */
     public function getStatisticsList(
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
@@ -69,7 +72,7 @@ final class StatisticsQueryService
             $endDate ??= new DateTimeImmutable();
 
             // 建立統計期間物件
-            $period = new StatisticsPeriod($startDate, $endDate, $periodType ?? PeriodType::DAILY);
+            $period = StatisticsPeriod::create($startDate, $endDate, $periodType ?? PeriodType::DAILY);
 
             // 計算分頁偏移量
             $offset = ($page - 1) * $limit;
@@ -79,7 +82,7 @@ final class StatisticsQueryService
                 $period,
                 $sourceType,
                 $limit,
-                $offset
+                $offset,
             );
 
             // 查詢總數量
@@ -102,7 +105,6 @@ final class StatisticsQueryService
                     'source_type' => $sourceType?->value,
                 ],
             ];
-
         } catch (Throwable $e) {
             $this->logger->error('查詢統計清單失敗', [
                 'error' => $e->getMessage(),
@@ -130,11 +132,11 @@ final class StatisticsQueryService
 
             if ($statistics === null) {
                 $this->logger->warning('統計快照不存在', ['id' => $id]);
+
                 return null;
             }
 
             return $statistics;
-
         } catch (Throwable $e) {
             $this->logger->error('查詢統計快照失敗', [
                 'error' => $e->getMessage(),
@@ -153,7 +155,7 @@ final class StatisticsQueryService
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
         int $page = 1,
-        int $limit = 20
+        int $limit = 20,
     ): array {
         try {
             $this->validatePaginationParams($page, $limit);
@@ -175,12 +177,12 @@ final class StatisticsQueryService
                     $startDate,
                     $endDate,
                     $limit,
-                    $offset
+                    $offset,
                 );
                 $totalCount = $this->postStatisticsRepository->countByPostId(
                     $postId,
                     $startDate,
-                    $endDate
+                    $endDate,
                 );
             } else {
                 // 查詢所有文章統計
@@ -188,11 +190,11 @@ final class StatisticsQueryService
                     $startDate,
                     $endDate,
                     $limit,
-                    $offset
+                    $offset,
                 );
                 $totalCount = $this->postStatisticsRepository->countByDateRange(
                     $startDate,
-                    $endDate
+                    $endDate,
                 );
             }
 
@@ -212,7 +214,6 @@ final class StatisticsQueryService
                     'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
-
         } catch (Throwable $e) {
             $this->logger->error('查詢文章統計失敗', [
                 'error' => $e->getMessage(),
@@ -235,7 +236,7 @@ final class StatisticsQueryService
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
         int $page = 1,
-        int $limit = 20
+        int $limit = 20,
     ): array {
         try {
             $this->validatePaginationParams($page, $limit);
@@ -257,12 +258,12 @@ final class StatisticsQueryService
                     $startDate,
                     $endDate,
                     $limit,
-                    $offset
+                    $offset,
                 );
                 $totalCount = $this->userStatisticsRepository->countByUserId(
                     $userId,
                     $startDate,
-                    $endDate
+                    $endDate,
                 );
             } else {
                 // 查詢所有使用者統計
@@ -270,11 +271,11 @@ final class StatisticsQueryService
                     $startDate,
                     $endDate,
                     $limit,
-                    $offset
+                    $offset,
                 );
                 $totalCount = $this->userStatisticsRepository->countByDateRange(
                     $startDate,
-                    $endDate
+                    $endDate,
                 );
             }
 
@@ -294,7 +295,6 @@ final class StatisticsQueryService
                     'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
-
         } catch (Throwable $e) {
             $this->logger->error('查詢使用者統計失敗', [
                 'error' => $e->getMessage(),
@@ -315,7 +315,7 @@ final class StatisticsQueryService
     public function getSystemStatistics(
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
-        ?string $metricType = null
+        ?string $metricType = null,
     ): array {
         try {
             $this->logger->info('查詢系統統計', [
@@ -333,13 +333,13 @@ final class StatisticsQueryService
                 $statistics = $this->systemStatisticsRepository->findByMetricType(
                     $metricType,
                     $startDate,
-                    $endDate
+                    $endDate,
                 );
             } else {
                 // 查詢所有系統統計
                 $statistics = $this->systemStatisticsRepository->findByDateRange(
                     $startDate,
-                    $endDate
+                    $endDate,
                 );
             }
 
@@ -352,7 +352,6 @@ final class StatisticsQueryService
                     'metric_type' => $metricType,
                 ],
             ];
-
         } catch (Throwable $e) {
             $this->logger->error('查詢系統統計失敗', [
                 'error' => $e->getMessage(),
@@ -373,7 +372,7 @@ final class StatisticsQueryService
         ?SourceType $sourceType = null,
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
-        int $limit = 100
+        int $limit = 100,
     ): array {
         try {
             $this->logger->info('查詢統計趨勢', [
@@ -395,7 +394,7 @@ final class StatisticsQueryService
             $trendData = $this->statisticsRepository->findTrendByPeriod(
                 $period,
                 $sourceType,
-                $limit
+                $limit,
             );
 
             // 計算趨勢分析
@@ -413,7 +412,6 @@ final class StatisticsQueryService
                     'source_type' => $sourceType?->value,
                 ],
             ];
-
         } catch (Throwable $e) {
             $this->logger->error('查詢統計趨勢失敗', [
                 'error' => $e->getMessage(),

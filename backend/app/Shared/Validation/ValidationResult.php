@@ -12,9 +12,6 @@ use JsonSerializable;
  * 封裝驗證操作的結果，包含驗證狀態、錯誤訊息和清理後的資料
  */
 class ValidationResult implements JsonSerializable
-
-
-
 {
     private bool $isValid;
 

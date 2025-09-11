@@ -113,6 +113,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 'user_id' => $userId,
                 'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -151,6 +152,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 'ip_address' => $ipAddress,
                 'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -183,6 +185,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->logger->error('Error in global suspicious pattern detection', [
                 'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -407,7 +410,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                             'message' => '全域失敗率異常高',
                             'threshold' => 0.2,
                             'actual' => $globalFailureRate,
-                        ]
+                        ],
                     ],
                     metadata: [
                         'detection_type' => 'global_failure_rate',
@@ -449,7 +452,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                             'message' => "動作類型 {$actionType} 失敗次數超過閾值",
                             'threshold' => $threshold,
                             'actual' => $failures,
-                        ]
+                        ],
                     ],
                     'scores' => [$actionType => min(1.0, $failures / $threshold)],
                     'confidence' => min(1.0, $failures / ($threshold * 2)),
@@ -755,7 +758,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         }
     }
 
-    private function isDetectionEnabled(string $detectionType): bool
+    public function isDetectionEnabled(string $detectionType): bool
     {
         return $this->detectionEnabled[$detectionType] ?? false;
     }
