@@ -6,7 +6,6 @@ namespace App\Domains\Auth\Services\Advanced;
 
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 
 /**
  * Pwned Password 服務。
@@ -47,6 +46,7 @@ class PwnedPasswordService
             return $count > 0;
         } catch (Throwable $e) {
             error_log('密碼檢查失敗: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -74,8 +74,6 @@ class PwnedPasswordService
 
     /**
      * 檢查密碼強度並提供建議。
-     *
-     * @return array
      */
     public function checkPasswordSecurity(string $password): array
     {
@@ -173,8 +171,6 @@ class PwnedPasswordService
 
     /**
      * 生成安全建議。
-     *
-     * @return array
      */
     private function generateRecommendations(int $count): array
     {
@@ -206,14 +202,13 @@ class PwnedPasswordService
             return $response->getStatusCode() === 200;
         } catch (Exception $e) {
             error_log('服務可用性檢查失敗: ' . $e->getMessage());
+
             return false;
         }
     }
 
     /**
      * 取得服務統計資訊。
-     *
-     * @return array
      */
     public function getServiceStats(): array
     {

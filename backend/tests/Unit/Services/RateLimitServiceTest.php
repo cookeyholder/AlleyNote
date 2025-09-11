@@ -32,12 +32,12 @@ class RateLimitServiceTest extends TestCase
 
         $this->cacheMock->shouldReceive('get')
             ->once()
-            ->with("rate_limit:{\\\$ip}")
+            ->with('rate_limit:{\\$ip}')
             ->andReturn(null);
 
         $this->cacheMock->shouldReceive('set')
             ->once()
-            ->with("rate_limit:{\\\$ip}", Mockery::on(function ($data) use ($timeNow) {
+            ->with('rate_limit:{\\$ip}', Mockery::on(function ($data) use ($timeNow) {
                 return $data['count'] === 1 && $data['reset'] >= $timeNow;
             }), 60);
 
@@ -52,7 +52,7 @@ class RateLimitServiceTest extends TestCase
         $timeNow = time();
         $this->cacheMock->shouldReceive('get')
             ->once()
-            ->with("rate_limit:{\\\$ip}")
+            ->with('rate_limit:{\\$ip}')
             ->andReturn(['count' => 60, 'reset' => $timeNow + 60]);
 
         // 當超過限制時，不應該再呼叫 set
@@ -66,7 +66,7 @@ class RateLimitServiceTest extends TestCase
         $ip = '127.0.0.1';
         $this->cacheMock->shouldReceive('get')
             ->once()
-            ->with("rate_limit:{\\\$ip}")
+            ->with('rate_limit:{\\$ip}')
             ->andThrow(new RuntimeException('快取錯誤'));
 
         // 不需要設定 set 的預期，因為在異常情況下不會呼叫 set
@@ -82,12 +82,12 @@ class RateLimitServiceTest extends TestCase
         $timeNow = time();
         $this->cacheMock->shouldReceive('get')
             ->once()
-            ->with("rate_limit:{\\\$ip}")
+            ->with('rate_limit:{\\$ip}')
             ->andReturn(['count' => 5, 'reset' => $timeNow + 60]);
 
         $this->cacheMock->shouldReceive('set')
             ->once()
-            ->with("rate_limit:{\\\$ip}", Mockery::on(function ($data) use ($timeNow) {
+            ->with('rate_limit:{\\$ip}', Mockery::on(function ($data) use ($timeNow) {
                 return $data['count'] === 6 && $data['reset'] >= $timeNow;
             }), 60);
 
@@ -102,12 +102,12 @@ class RateLimitServiceTest extends TestCase
         $timeNow = time();
         $this->cacheMock->shouldReceive('get')
             ->once()
-            ->with("rate_limit:{\\\$ip}")
+            ->with('rate_limit:{\\$ip}')
             ->andReturn(['count' => 5, 'reset' => $timeNow + 60]);
 
         $this->cacheMock->shouldReceive('set')
             ->once()
-            ->with("rate_limit:{\\\$ip}", Mockery::any(), 60)
+            ->with('rate_limit:{\\$ip}', Mockery::any(), 60)
             ->andThrow(new RuntimeException('快取更新失敗'));
 
         // 快取更新失敗時應該允許請求

@@ -137,9 +137,6 @@ class RequestValidationException extends ValidationException
         return new self('檔案大小超出限制', $errors);
     }
 
-    /**
-     * @param array $errors
-     */
     public static function customValidation(array $errors): self
     {
         return new self('自定義驗證失敗', $errors);

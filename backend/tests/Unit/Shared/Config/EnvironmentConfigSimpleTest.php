@@ -34,7 +34,7 @@ final class EnvironmentConfigSimpleTest extends TestCase
 
             // 清空環境變數以確保從檔案載入
             unset($_ENV[$key]);
-            putenv("{\\\$key}=");
+            putenv('{\\$key}=');
         }
 
         // 建立測試配置目錄
@@ -53,7 +53,7 @@ final class EnvironmentConfigSimpleTest extends TestCase
             }
 
             if ($values['getenv'] === null) {
-                putenv("{\\\$key}=");
+                putenv('{\\$key}=');
             } else {
                 putenv("{$key}={\\\$values['getenv']}");
             }

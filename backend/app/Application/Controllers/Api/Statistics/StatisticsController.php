@@ -46,6 +46,7 @@ class StatisticsController extends BaseController
             return $this->json($response, $responseData);
         } catch (Exception $e) {
             $this->logger->error('統計概覽取得失敗: ' . $e->getMessage());
+
             return $this->json($response, [
                 'success' => false,
                 'error' => '取得統計概覽時發生錯誤',
@@ -78,6 +79,7 @@ class StatisticsController extends BaseController
             return $this->json($response, $responseData);
         } catch (Exception $e) {
             $this->logger->error('文章統計取得失敗: ' . $e->getMessage());
+
             return $this->json($response, [
                 'success' => false,
                 'error' => '取得文章統計時發生錯誤',
@@ -108,6 +110,7 @@ class StatisticsController extends BaseController
             return $this->json($response, $responseData);
         } catch (Exception $e) {
             $this->logger->error('來源統計取得失敗: ' . $e->getMessage());
+
             return $this->json($response, [
                 'success' => false,
                 'error' => '取得來源統計時發生錯誤',
@@ -138,6 +141,7 @@ class StatisticsController extends BaseController
             return $this->json($response, $responseData);
         } catch (Exception $e) {
             $this->logger->error('使用者活動統計取得失敗: ' . $e->getMessage());
+
             return $this->json($response, [
                 'success' => false,
                 'error' => '取得使用者活動統計時發生錯誤',
@@ -170,6 +174,7 @@ class StatisticsController extends BaseController
             return $this->json($response, $responseData);
         } catch (Exception $e) {
             $this->logger->error('熱門內容統計取得失敗: ' . $e->getMessage());
+
             return $this->json($response, [
                 'success' => false,
                 'error' => '取得熱門內容統計時發生錯誤',
@@ -200,6 +205,7 @@ class StatisticsController extends BaseController
             return $this->json($response, $responseData);
         } catch (Exception $e) {
             $this->logger->error('統計快照取得失敗: ' . $e->getMessage());
+
             return $this->json($response, [
                 'success' => false,
                 'error' => '取得統計快照時發生錯誤',

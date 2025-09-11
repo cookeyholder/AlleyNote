@@ -236,10 +236,12 @@ class AuthController extends BaseController
         } catch (ValidationException $e) {
             $errorResponse = json_encode(['success' => false, 'error' => $e->getMessage()]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             $errorResponse = json_encode(['success' => false, 'error' => '註冊失敗']);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
@@ -372,10 +374,12 @@ class AuthController extends BaseController
         } catch (ValidationException $e) {
             $errorResponse = json_encode(['success' => false, 'error' => $e->getMessage()]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             $errorResponse = json_encode(['success' => false, 'error' => '登入失敗']);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
@@ -459,6 +463,7 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             $errorResponse = json_encode(['success' => false, 'error' => '登出失敗']);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
@@ -560,6 +565,7 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             $errorResponse = json_encode(['success' => false, 'error' => 'Token 刷新失敗']);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
         }
     }

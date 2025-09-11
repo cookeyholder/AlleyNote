@@ -45,7 +45,7 @@ class SwaggerController
                 ->withHeader('Access-Control-Allow-Origin', '*')
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
                 ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        } catch (Exception | Throwable $e) {
+        } catch (Exception|Throwable $e) {
             $error = [
                 'success' => false,
                 'error' => [
@@ -83,6 +83,7 @@ class SwaggerController
         } catch (Exception $e) {
             $errorHtml = $this->generateErrorHtml($e->getMessage());
             $response->getBody()->write($errorHtml);
+
             return $response
                 ->withStatus(500)
                 ->withHeader('Content-Type', 'text/html; charset=UTF-8');
@@ -233,6 +234,7 @@ class SwaggerController
         } catch (Exception $e) {
             $errorJson = json_encode(['error' => 'Failed to get API info']);
             $response->getBody()->write($errorJson ?: '{"error": "JSON encoding failed"}');
+
             return $response
                 ->withStatus(500)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -266,6 +268,7 @@ class SwaggerController
         } catch (Exception $e) {
             $errorJson = json_encode(['status' => 'unhealthy', 'error' => $e->getMessage()]);
             $response->getBody()->write($errorJson ?: '{"status": "unknown"}');
+
             return $response
                 ->withStatus(503)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8');

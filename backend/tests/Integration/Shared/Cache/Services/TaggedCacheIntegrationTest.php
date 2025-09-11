@@ -425,7 +425,7 @@ class TaggedCacheIntegrationTest extends TestCase
         // 模擬併發寫入
         for ($i = 0; $i < $count; $i++) {
             $key = $baseKey . $i;
-            $this->taggedCache->putWithTags($key, "value_\\\$i", [$sharedTag, "unique_\\\$i"], 3600);
+            $this->taggedCache->putWithTags($key, 'value_\\$i', [$sharedTag, 'unique_\\$i'], 3600);
         }
 
         return [
@@ -485,7 +485,7 @@ class TaggedCacheIntegrationTest extends TestCase
     private function setupAndVerifyTagClassification(array $testCases): void
     {
         foreach ($testCases as $tagName => $typeMethod) {
-            $this->taggedCache->putWithTags("test_key_\\\$tagName", 'value', [$tagName], 3600);
+            $this->taggedCache->putWithTags('test_key_\\$tagName', 'value', [$tagName], 3600);
 
             // 驗證標籤類型正確分類
             $tag = new CacheTag($tagName);
@@ -568,7 +568,7 @@ class TaggedCacheIntegrationTest extends TestCase
         ];
 
         foreach ($keys as $key) {
-            $this->taggedCache->putWithTags($key, "value_\\\$key", $tags[$key], 3600);
+            $this->taggedCache->putWithTags($key, 'value_\\$key', $tags[$key], 3600);
         }
 
         return ['keys' => $keys, 'tags' => $tags];

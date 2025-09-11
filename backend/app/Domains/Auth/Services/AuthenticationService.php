@@ -40,10 +40,10 @@ final class AuthenticationService implements AuthenticationServiceInterface
 
     public function login(LoginRequestDTO $request, DeviceInfo $deviceInfo): LoginResponseDTO
     {
-        try { /* empty */ }
+        try {
             // 1. 驗證使用者憑證
             $user = $this->userRepository->validateCredentials($request->email, $request->password);
-            if ($user == == null) {
+            if ($user === null) {
                 throw new AuthenticationException(
                     AuthenticationException::REASON_INVALID_CREDENTIALS,
                     'Invalid credentials provided',
@@ -94,12 +94,18 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 sessionId: $payload->getJti(),
                 permissions: $request->scopes ?? null,
             );
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            throw new AuthenticationException(
+                AuthenticationException::REASON_SYSTEM_ERROR,
+                'Authentication failed: ' . $e->getMessage(),
+                $e,
+            );
+        }
     }
 
     public function refresh(RefreshRequestDTO $request, DeviceInfo $deviceInfo): RefreshResponseDTO
     {
-        try { /* empty */ }
+        try {
             // 1. 驗證並取得新的 token pair（這個過程會自動撤銷舊 token 並創建新 token）
             $newTokenPair = $this->jwtTokenService->refreshTokens($request->refreshToken, $deviceInfo);
 
@@ -114,12 +120,17 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 sessionId: $newPayload->getJti(),
                 permissions: $request->scopes ?? null,
             );
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            throw new TokenExpiredException(
+                'Token refresh failed: ' . $e->getMessage(),
+                $e,
+            );
+        }
     }
 
     public function logout(LogoutRequestDTO $request): bool
     {
-        try { /* empty */ }
+        try {
             if ($request->refreshToken !== null) {
                 $payload = $this->jwtTokenService->extractPayload($request->refreshToken);
 
@@ -138,58 +149,66 @@ final class AuthenticationService implements AuthenticationServiceInterface
             }
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('Logout failed: ' . $e->getMessage());
+            return false;
+        }
     }
 
     public function validateAccessToken(string $accessToken): bool
     {
-        try { /* empty */ }
+        try {
             $this->jwtTokenService->validateAccessToken($accessToken);
-
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     public function validateRefreshToken(string $refreshToken): bool
     {
-        try { /* empty */ }
+        try {
             $payload = $this->jwtTokenService->validateRefreshToken($refreshToken);
-
             return $this->refreshTokenRepository->isValid($payload->getJti());
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     public function revokeRefreshToken(string $refreshToken, string $reason = 'manual_revocation'): bool
     {
-        try { /* empty */ }
+        try {
             $payload = $this->jwtTokenService->extractPayload($refreshToken);
-
             return $this->refreshTokenRepository->revoke($payload->getJti(), $reason);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('Failed to revoke refresh token: ' . $e->getMessage());
+            return false;
+        }
     }
 
     public function revokeAllUserTokens(int $userId, ?string $excludeJti = null, string $reason = 'logout_all'): int
     {
-        try { /* empty */ }
+        try {
             return $this->refreshTokenRepository->revokeAllByUserId($userId, $reason, $excludeJti);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('Failed to revoke user tokens: ' . $e->getMessage());
+            return 0;
+        }
     }
 
     public function revokeDeviceTokens(int $userId, string $deviceId, string $reason = 'device_logout'): int
     {
-        try { /* empty */ }
+        try {
             return $this->refreshTokenRepository->revokeAllByDevice($userId, $deviceId, $reason);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('Failed to revoke device tokens: ' . $e->getMessage());
+            return 0;
+        }
     }
 
-    /**
-    /**
-     * @return array
-     */
-     */
     public function getUserTokenStats(int $userId): array
     {
-        try { /* empty */ }
+        try {
             $stats = $this->refreshTokenRepository->getUserTokenStats($userId);
 
             return [
@@ -198,31 +217,43 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 'expired' => (int) ($stats['expired'] ?? 0),
                 'revoked' => (int) ($stats['revoked'] ?? 0),
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('Failed to get user token stats: ' . $e->getMessage());
+            return [
+                'total' => 0,
+                'active' => 0,
+                'expired' => 0,
+                'revoked' => 0,
+            ];
+        }
     }
 
     public function cleanupExpiredTokens(?DateTime $beforeDate = null): int
     {
-        try { /* empty */ }
+        try {
             return $this->refreshTokenRepository->cleanup($beforeDate);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('Failed to cleanup expired tokens: ' . $e->getMessage());
+            return 0;
+        }
     }
 
     public function cleanupRevokedTokens(int $days = 30): int
     {
-        try { /* empty */ }
+        try {
             return $this->refreshTokenRepository->cleanupRevoked($days);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('Failed to cleanup revoked tokens: ' . $e->getMessage());
+            return 0;
+        }
     }
 
     /**
      * 從 access token 取得使用者資訊.
-     *
-     * @return array|null
      */
     public function getUserFromToken(string $accessToken): ?array
     {
-        try { /* empty */ }
+        try {
             // 驗證 token
             if (!$this->validateAccessToken($accessToken)) {
                 return null;
@@ -250,6 +281,9 @@ final class AuthenticationService implements AuthenticationServiceInterface
                     'custom_claims' => $payload->getCustomClaims(),
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('Failed to get user from token: ' . $e->getMessage());
+            return null;
+        }
     }
 }

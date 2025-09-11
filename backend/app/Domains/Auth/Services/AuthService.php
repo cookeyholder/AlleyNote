@@ -22,8 +22,6 @@ class AuthService
 
     /**
      * 註冊新使用者.
-     *
-     * @return array
      */
     public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): array
     {
@@ -38,7 +36,7 @@ class AuthService
 
         // 如果啟用 JWT 且有提供 JWT 服務和裝置資訊，則產生 JWT token
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $deviceInfo !== null) {
-            try { /* empty */ }
+            try {
                 $tokenPair = $this->jwtTokenService->generateTokenPair(
                     userId: (int) $user['id'],
                     deviceInfo: $deviceInfo,
@@ -61,7 +59,10 @@ class AuthService
                         'expires_at' => $tokenPair->getAccessTokenExpiresAt()->format('c'),
                     ],
                 ];
-            } // catch block commented out due to syntax error
+            } catch (Exception $e) {
+                // JWT 產生失敗時，記錄錯誤並回傳傳統格式
+                error_log('JWT token 產生失敗: ' . $e->getMessage());
+            }
         }
 
         // 傳統回傳格式（向後相容）
@@ -74,9 +75,6 @@ class AuthService
 
     /**
      * 使用者登入.
-     *
-     * @param array $credentials
-     * @return array
      */
     public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
     {
@@ -89,7 +87,7 @@ class AuthService
             ];
         }
 
-        if ($user['status'] === 0) {
+        if (!$this->isUserActive($user)) {
             return [
                 'success' => false,
                 'message' => '帳號已被停用',
@@ -109,7 +107,7 @@ class AuthService
 
         // 如果啟用 JWT 且有提供 JWT 服務和裝置資訊，則產生 JWT token
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $deviceInfo !== null) {
-            try { /* empty */ }
+            try {
                 $tokenPair = $this->jwtTokenService->generateTokenPair(
                     userId: (int) $user['id'],
                     deviceInfo: $deviceInfo,
@@ -133,7 +131,10 @@ class AuthService
                         'expires_at' => $tokenPair->getAccessTokenExpiresAt()->format('c'),
                     ],
                 ];
-            } // catch block commented out due to syntax error
+            } catch (Exception $e) {
+                // JWT 產生失敗時，記錄錯誤並回傳傳統格式
+                error_log('JWT token 產生失敗: ' . $e->getMessage());
+            }
         }
 
         // 傳統回傳格式（向後相容）
@@ -146,14 +147,12 @@ class AuthService
 
     /**
      * 使用者登出.
-     *
-     * @return array
      */
     public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): array
     {
         // 如果啟用 JWT 且有提供 JWT 服務和 access token
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $accessToken !== null) {
-            try { /* empty */ }
+            try {
                 // 撤銷 access token（將其加入黑名單）
                 $this->jwtTokenService->revokeToken($accessToken);
 
@@ -161,7 +160,10 @@ class AuthService
                     'success' => true,
                     'message' => '登出成功',
                 ];
-            } // catch block commented out due to syntax error
+            } catch (Exception $e) {
+                // JWT 撤銷失敗時，記錄錯誤
+                error_log('JWT token 撤銷失敗: ' . $e->getMessage());
+            }
         }
 
         // 傳統模式或 JWT 撤銷失敗時的回傳格式
@@ -169,5 +171,13 @@ class AuthService
             'success' => true,
             'message' => '登出成功',
         ];
+    }
+
+    /**
+     * 檢查使用者是否為啟用狀態.
+     */
+    private function isUserActive(array $user): bool
+    {
+        return ($user['status'] ?? 'active') === 'active' || ($user['status'] ?? 1) === 1;
     }
 }

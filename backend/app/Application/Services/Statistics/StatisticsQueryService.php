@@ -11,6 +11,7 @@ use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\Enums\PeriodType;
 use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use App\Shared\Domain\ValueObjects\Uuid;
 use DateTimeImmutable;
 use DateTimeInterface;
 use InvalidArgumentException;
@@ -43,9 +44,6 @@ final class StatisticsQueryService
      * 查詢統計快照清單.
      *
      * 支援分頁和篩選條件的統計快照查詢。
-     */
-    /**
-     * @return array
      */
     public function getStatisticsList(
         ?DateTimeInterface $startDate = null,
@@ -109,7 +107,7 @@ final class StatisticsQueryService
 
             throw new StatisticsQueryException(
                 '查詢統計清單失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -117,14 +115,14 @@ final class StatisticsQueryService
     /**
      * 查詢特定統計快照.
      */
-    public function getStatisticsById(int $id): array|null
+    public function getStatisticsById(int $id): ?array
     {
         try {
             $this->logger->info('查詢統計快照', ['id' => $id]);
 
             // 將 int ID 轉換為 UUID 字串格式進行查詢
             $uuidString = sprintf('%08d-0000-0000-0000-000000000000', $id);
-            $uuid = \App\Shared\Domain\ValueObjects\Uuid::fromString($uuidString);
+            $uuid = Uuid::fromString($uuidString);
             $statistics = $this->statisticsRepository->findById($uuid);
 
             if ($statistics === null) {
@@ -146,14 +144,13 @@ final class StatisticsQueryService
 
             throw new StatisticsQueryException(
                 '查詢統計詳情失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
      * 查詢文章統計資料.
-     * @return array
      */
     public function getPostStatistics(
         ?int $postId = null,
@@ -207,14 +204,13 @@ final class StatisticsQueryService
 
             throw new StatisticsQueryException(
                 '查詢文章統計失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
      * 查詢使用者統計資料.
-     * @return array
      */
     public function getUserStatistics(
         ?int $userId = null,
@@ -266,14 +262,13 @@ final class StatisticsQueryService
 
             throw new StatisticsQueryException(
                 '查詢使用者統計失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
      * 查詢系統統計資料.
-     * @return array
      */
     public function getSystemStatistics(
         ?string $metricType = null,
@@ -317,14 +312,13 @@ final class StatisticsQueryService
 
             throw new StatisticsQueryException(
                 '查詢系統統計失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
      * 查詢統計趨勢.
-     * @return array
      */
     public function getStatisticsTrend(
         DateTimeInterface $startDate,
@@ -344,7 +338,7 @@ final class StatisticsQueryService
             $period = StatisticsPeriod::create(
                 DateTimeImmutable::createFromInterface($startDate),
                 DateTimeImmutable::createFromInterface($endDate),
-                $periodType
+                $periodType,
             );
 
             // 模擬趨勢查詢
@@ -374,15 +368,13 @@ final class StatisticsQueryService
 
             throw new StatisticsQueryException(
                 '查詢統計趨勢失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
      * 生成系統統計摘要.
-     * @param array $statistics
-     * @return array
      */
     private function generateSystemStatisticsSummary(array $statistics): array
     {
@@ -407,8 +399,6 @@ final class StatisticsQueryService
 
     /**
      * 分析趨勢資料.
-     * @param array $trendData
-     * @return array
      */
     private function analyzeTrend(array $trendData): array
     {
@@ -513,7 +503,7 @@ final class StatisticsQueryService
 
             throw new StatisticsQueryException(
                 '查詢文章統計失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -593,7 +583,7 @@ final class StatisticsQueryService
 
             throw new StatisticsQueryException(
                 '查詢使用者統計失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -649,7 +639,7 @@ final class StatisticsQueryService
 
             throw new StatisticsQueryException(
                 '查詢系統統計失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -710,7 +700,7 @@ final class StatisticsQueryService
 
             throw new StatisticsQueryException(
                 '查詢統計趨勢失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }

@@ -45,7 +45,7 @@ final class RefreshTokenService
         DeviceInfo $deviceInfo,
         ?string $parentTokenJti = null,
     ): RefreshToken {
-        try { /* empty */ }
+        try {
             $jti = $this->generateJti();
             $tokenHash = hash('sha256', $jti); // 產生 token hash
             $expiresAt = new DateTime('+30 days');
@@ -79,7 +79,10 @@ final class RefreshTokenService
             }
 
             return $refreshToken;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in RefreshTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     private function generateJti(): string
@@ -94,7 +97,7 @@ final class RefreshTokenService
      */
     public function cleanupExpiredTokens(): int
     {
-        try { /* empty */ }
+        try {
             $cleanedCount = $this->refreshTokenRepository->cleanup();
 
             $this->logger?->info('Expired refresh tokens cleaned up', [
@@ -102,7 +105,10 @@ final class RefreshTokenService
             ]);
 
             return $cleanedCount;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in RefreshTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -113,7 +119,7 @@ final class RefreshTokenService
      */
     public function getUserTokenStats(int $userId): array
     {
-        try { /* empty */ }
+        try {
             $tokens = $this->refreshTokenRepository->findByUserId($userId);
 
             $stats = [
@@ -131,7 +137,10 @@ final class RefreshTokenService
             }
 
             return $stats;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in RefreshTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -142,7 +151,7 @@ final class RefreshTokenService
      */
     public function revokeToken(string $refreshToken, string $reason = 'manual_revocation'): bool
     {
-        try { /* empty */ }
+        try {
             $payload = $this->jwtTokenService->extractPayload($refreshToken);
 
             // 撤銷 token
@@ -152,7 +161,7 @@ final class RefreshTokenService
             $payloadForBlacklist = $this->jwtTokenService->extractPayload($refreshToken);
 
             // 建立黑名單項目
-            try { /* empty */ }
+            try {
                 $blacklistEntry = new TokenBlacklistEntry(
                     jti: $payloadForBlacklist->getJti(),
                     tokenType: TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
@@ -165,11 +174,14 @@ final class RefreshTokenService
                 );
 
                 $blacklistResult = $this->blacklistRepository->addToBlacklist($blacklistEntry);
-            } // catch block commented out due to syntax error
+            } catch (Throwable $e) {
+                error_log("Error adding to blacklist: " . $e->getMessage());
+                // Continue even if blacklist fails
+            }
 
             if ($revokeResult) {
                 $this->logger?->info('Refresh token revoked', [
-                    'jti' => $payload->getJti(]),
+                    'jti' => $payload->getJti(),
                     'reason' => $reason,
                 ]);
 
@@ -177,6 +189,9 @@ final class RefreshTokenService
             }
 
             return false;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in RefreshTokenService.php: " . $e->getMessage());
+            return false;
+        }
     }
 }

@@ -453,9 +453,9 @@ class ValidationExceptionTest extends TestCase
         $largeFailedRules = [];
 
         for ($i = 0; $i < 500; $i++) {
-            $field = "field_{\\\$i}";
-            $largeErrors[$field] = ["錯誤_{\\\$i}_1", "錯誤_{\\\$i}_2"];
-            $largeFailedRules[$field] = ["rule_{\\\$i}_1", "rule_{\\\$i}_2"];
+            $field = 'field_{\\$i}';
+            $largeErrors[$field] = ['錯誤_{\\$i}_1', '錯誤_{\\$i}_2'];
+            $largeFailedRules[$field] = ['rule_{\\$i}_1', 'rule_{\\$i}_2'];
         }
 
         // Act

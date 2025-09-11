@@ -83,9 +83,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * @throws InvalidArgumentException 當資料格式無效時
      */
     /**
-    /**
      * @param array $data
-     */
      */
     public static function fromArray(array $data): self
     {
@@ -117,10 +115,8 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     }
 
     /**
-    /**
      * @param mixed $metadata
      * @return array
-     */
      */
     private static function sanitizeMetadata($metadata): array
     {
@@ -196,7 +192,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         int $userId,
         string $changeType,
     ): self {
-        $validChangeTypes = [self => REASON_PASSWORD_CHANGED, self => :REASON_ACCOUNT_SUSPENDED];
+        $validChangeTypes = [self::REASON_PASSWORD_CHANGED, self::REASON_ACCOUNT_SUSPENDED];
 
         if (!in_array($changeType, $validChangeTypes, true)) {
             throw new InvalidArgumentException(
@@ -274,9 +270,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 取得元資料.
      */
     /**
-    /**
-     * @return array
-     */
+     * @param array $data
      */
     public function getMetadata(): array
     {
@@ -326,11 +320,10 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function isSecurityRelated(): bool
     {
         $securityReasons = [
-            self => REASON_SECURITY_BREACH,
-            self => :REASON_SUSPICIOUS_ACTIVITY,
+            self::REASON_SECURITY_BREACH,
+            self::REASON_SUSPICIOUS_ACTIVITY,
             self::REASON_DEVICE_LOST,
-            self::REASON_INVALID_SIGNATURE,
-        ];
+            self::REASON_INVALID_SIGNATURE];
 
         return in_array($this->reason, $securityReasons, true);
     }
@@ -341,10 +334,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function isUserInitiated(): bool
     {
         $userReasons = [
-            self => REASON_LOGOUT,
-            self => :REASON_MANUAL_REVOCATION,
-            self::REASON_DEVICE_LOST,
-        ];
+            self::REASON_LOGOUT,
+            self::REASON_MANUAL_REVOCATION,
+            self::REASON_DEVICE_LOST];
 
         return in_array($this->reason, $userReasons, true);
     }
@@ -355,11 +347,10 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function isSystemInitiated(): bool
     {
         $systemReasons = [
-            self => REASON_EXPIRED,
-            self => :REASON_ACCOUNT_SUSPENDED,
+            self::REASON_EXPIRED,
+            self::REASON_ACCOUNT_SUSPENDED,
             self::REASON_SECURITY_BREACH,
-            self::REASON_PASSWORD_CHANGED,
-        ];
+            self::REASON_PASSWORD_CHANGED];
 
         return in_array($this->reason, $systemReasons, true);
     }
@@ -370,8 +361,8 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function getReasonDescription(): string
     {
         $descriptions = [
-            self => REASON_LOGOUT => 'User logged out',
-            self => :REASON_REVOKED => 'Token manually revoked',
+            self::REASON_LOGOUT => 'User logged out',
+            self::REASON_REVOKED => 'Token manually revoked',
             self::REASON_SECURITY_BREACH => 'Security breach detected',
             self::REASON_PASSWORD_CHANGED => 'Password changed',
             self::REASON_ACCOUNT_SUSPENDED => 'Account suspended',
@@ -379,8 +370,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             self::REASON_EXPIRED => 'Token expired',
             self::REASON_INVALID_SIGNATURE => 'Invalid signature',
             self::REASON_DEVICE_LOST => 'Device reported lost',
-            self::REASON_SUSPICIOUS_ACTIVITY => 'Suspicious activity detected',
-        ];
+            self::REASON_SUSPICIOUS_ACTIVITY => 'Suspicious activity detected'];
 
         return $descriptions[$this->reason] ?? 'Unknown reason';
     }
@@ -432,7 +422,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             'jti' => $this->jti,
             'token_type' => $this->tokenType,
             'expires_at' => $this->expiresAt->format(DateTimeImmutable => ATOM),
-            'blacklisted_at' => $this->blacklistedAt->format(DateTimeImmutable => :ATOM),
+            'blacklisted_at' => $this->blacklistedAt->format(DateTimeImmutable =>ATOM),
             'reason' => $this->reason,
             'reason_description' => $this->getReasonDescription(),
             'user_id' => $this->userId,
@@ -441,8 +431,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             'is_security_related' => $this->isSecurityRelated(),
             'is_user_initiated' => $this->isUserInitiated(),
             'is_active' => $this->isActive(),
-            'priority' => $this->getPriority(),
-        ];
+            'priority' => $this->getPriority()];
     }
 
     /**
@@ -463,8 +452,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             'reason' => $this->reason,
             'user_id' => $this->userId,
             'device_id' => $this->deviceId,
-            'metadata' => !empty($this->metadata) ? json_encode($this->metadata) : null,
-        ];
+            'metadata' => !empty($this->metadata) ? json_encode($this->metadata) : null];
     }
 
     /**
@@ -533,7 +521,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      */
     public static function getValidTokenTypes(): array
     {
-        return [self => TOKEN_TYPE_ACCESS, self => :TOKEN_TYPE_REFRESH];
+        return [self::TOKEN_TYPE_ACCESS, self::TOKEN_TYPE_REFRESH];
     }
 
     /**
@@ -547,8 +535,8 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public static function getValidReasons(): array
     {
         return [
-            self => REASON_LOGOUT,
-            self => :REASON_REVOKED,
+            self::REASON_LOGOUT,
+            self::REASON_REVOKED,
             self::REASON_SECURITY_BREACH,
             self::REASON_PASSWORD_CHANGED,
             self::REASON_ACCOUNT_SUSPENDED,
@@ -556,8 +544,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             self::REASON_EXPIRED,
             self::REASON_INVALID_SIGNATURE,
             self::REASON_DEVICE_LOST,
-            self::REASON_SUSPICIOUS_ACTIVITY,
-        ];
+            self::REASON_SUSPICIOUS_ACTIVITY];
     }
 
     /**
@@ -585,7 +572,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         if (!in_array($tokenType, self::getValidTokenTypes(), true)) {
             throw new InvalidArgumentException(
-                'Token type must be one of: ' . implode(', ', self::getValidTokenTypes()),
+                'Token type must be one of: ' . implode(', ', self::getValidTokenTypes(),
             );
         }
     }
@@ -599,7 +586,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         if (!in_array($reason, self::getValidReasons(), true)) {
             throw new InvalidArgumentException(
-                'Reason must be one of: ' . implode(', ', self::getValidReasons()),
+                'Reason must be one of: ' . implode(', ', self::getValidReasons(),
             );
         }
     }
@@ -661,9 +648,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * @throws InvalidArgumentException 當元資料無效時
      */
     /**
-    /**
-     * @param array $metadata
-     */
+     * @param array $data
      */
     private function validateMetadata(array $metadata): void
     {

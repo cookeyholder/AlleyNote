@@ -42,7 +42,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, array $customClaims = []): TokenPair
     {
-        try { /* empty */ }
+        try {
             $now = new DateTimeImmutable();
 
             // 準備 access token 的 payload
@@ -51,9 +51,9 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 'device_id' => $deviceInfo->getDeviceId(),
                 'device_name' => $deviceInfo->getDeviceName(),
                 'ip_address' => $deviceInfo->getIpAddress(),
-                'user_agent' => $deviceInfo->getUserAgent(]),
-                'platform' => $deviceInfo->getPlatform(]),
-                'browser' => $deviceInfo->getBrowser(]),
+                'user_agent' => $deviceInfo->getUserAgent(),
+                'platform' => $deviceInfo->getPlatform(),
+                'browser' => $deviceInfo->getBrowser(),
                 'type' => 'access',
             ]);
 
@@ -101,7 +101,14 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 refreshTokenExpiresAt: $refreshTokenExpiresAtFinal,
                 tokenType: 'Bearer',
             );
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            throw new TokenGenerationException(
+                TokenGenerationException::REASON_GENERATION_FAILED,
+                TokenGenerationException::TOKEN_PAIR,
+                'Token pair generation failed: ' . $e->getMessage(),
+                $e,
+            );
+        }
     }
 
     /**
@@ -109,7 +116,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function validateToken(string $token): JwtPayload
     {
-        try { /* empty */ }
+        try {
             // 檢查 token 是否在黑名單中
             if ($this->isTokenBlacklisted($token)) {
                 throw new InvalidTokenException(
@@ -124,7 +131,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 轉換為 JwtPayload 物件
             // @phpstan-ignore-next-line
             return $this->createJwtPayloadFromArray((array) $payload);
-        } // catch block commented out due to syntax error catch (Throwable $e) {
+        } catch (Throwable $e) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_MALFORMED,
                 InvalidTokenException::ACCESS_TOKEN,
@@ -138,7 +145,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function refreshToken(string $refreshToken, DeviceInfo $deviceInfo): TokenPair
     {
-        try { /* empty */ }
+        try {
             // 驗證 refresh token
             $payload = $this->jwtProvider->parseTokenUnsafe($refreshToken);
 
@@ -183,7 +190,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             // 生成新的 token pair
             return $this->generateTokenPair($userId, $deviceInfo);
-        } // catch block commented out due to syntax error catch (Throwable $e) {
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        } catch (Throwable $e) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_DECODE_FAILED,
                 InvalidTokenException::REFRESH_TOKEN,
@@ -197,7 +207,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function revokeToken(string $token, string $reason = 'manual_revocation'): bool
     {
-        try { /* empty */ }
+        try {
             $payload = $this->jwtProvider->parseTokenUnsafe($token);
             $jti = $payload['jti'] ?? null;
             $exp = $payload['exp'] ?? null;
@@ -227,7 +237,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
             }
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -235,7 +248,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function revokeAllUserTokens(int $userId, string $reason = 'user_revocation'): int
     {
-        try { /* empty */ }
+        try {
             // 撤銷所有 refresh tokens
             $revokedCount = $this->refreshTokenRepository->revokeAllByUserId($userId);
 
@@ -244,7 +257,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 在實際應用中，可能需要實現 token version 機制。
 
             return $revokedCount;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -252,9 +268,12 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function revokeDeviceTokens(int $userId, string $deviceId): void
     {
-        try { /* empty */ }
+        try {
             $this->refreshTokenRepository->revokeAllByDevice($userId, $deviceId);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -262,7 +281,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     private function isTokenBlacklisted(string $token): bool
     {
-        try { /* empty */ }
+        try {
             $payload = $this->jwtProvider->parseTokenUnsafe($token);
             $jti = $payload['jti'] ?? null;
 
@@ -271,7 +290,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
             }
 
             return $this->blacklistRepository->isBlacklisted((string) $jti);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -281,7 +303,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     private function createJwtPayloadFromArray(array $payload): JwtPayload
     {
-        try { /* empty */ }
+        try {
             // 確保必要的鍵存在
             $requiredKeys = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp'];
             foreach ($requiredKeys as $key) {
@@ -292,19 +314,19 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             // 安全地建立 DateTimeImmutable 物件
             $iat = DateTimeImmutable::createFromFormat('U', (string) $payload['iat']);
-            if ($iat == == false) {
+            if ($iat === false) {
                 throw new InvalidArgumentException('Invalid iat timestamp: ' . (string) $payload['iat']);
             }
 
             $exp = DateTimeImmutable::createFromFormat('U', (string) $payload['exp']);
-            if ($exp == == false) {
+            if ($exp === false) {
                 throw new InvalidArgumentException('Invalid exp timestamp: ' . (string) $payload['exp']);
             }
 
             $nbf = null;
             if (isset($payload['nbf'])) {
                 $nbf = DateTimeImmutable::createFromFormat('U', (string) $payload['nbf']);
-                if ($nbf == == false) {
+                if ($nbf === false) {
                     throw new InvalidArgumentException('Invalid nbf timestamp: ' . (string) $payload['nbf']);
                 }
             }
@@ -328,7 +350,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
                     'nbf',
                 ], true), ARRAY_FILTER_USE_KEY),
             );
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -336,7 +361,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function validateAccessToken(string $token, bool $checkBlacklist = true): JwtPayload
     {
-        try { /* empty */ }
+        try {
             $payload = $this->jwtProvider->validateToken($token);
 
             // 檢查黑名單
@@ -353,7 +378,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             // @phpstan-ignore-next-line
             return $this->createJwtPayloadFromArray((array) $payload);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -361,7 +389,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function validateRefreshToken(string $token, bool $checkBlacklist = true): JwtPayload
     {
-        try { /* empty */ }
+        try {
             $payload = $this->jwtProvider->validateToken($token);
 
             // 檢查 token 類型
@@ -387,7 +415,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             // @phpstan-ignore-next-line
             return $this->createJwtPayloadFromArray((array) $payload);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -395,12 +426,15 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function extractPayload(string $token): JwtPayload
     {
-        try { /* empty */ }
+        try {
             $payload = $this->jwtProvider->parseTokenUnsafe($token);
 
             // @phpstan-ignore-next-line
             return $this->createJwtPayloadFromArray((array) $payload);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -408,7 +442,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function refreshTokens(string $refreshToken, DeviceInfo $deviceInfo): TokenPair
     {
-        try { /* empty */ }
+        try {
             // 驗證 refresh token
             $payload = $this->validateRefreshToken($refreshToken);
             $userId = (int) $payload->getSubject();
@@ -439,7 +473,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             // 產生新的 token pair
             return $this->generateTokenPair($userId, $deviceInfo);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -447,12 +484,15 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function isTokenRevoked(string $token): bool
     {
-        try { /* empty */ }
+        try {
             $payload = $this->extractPayload($token);
             $jti = $payload->toArray()['jti'] ?? null;
 
             return $jti && $this->blacklistRepository->isBlacklisted((string) $jti);
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -460,7 +500,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function getTokenRemainingTime(string $token): int
     {
-        try { /* empty */ }
+        try {
             $payload = $this->extractPayload($token);
             $expiresAt = $payload->getExpiresAt();
             $now = new DateTimeImmutable();
@@ -470,7 +510,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
             }
 
             return $expiresAt->getTimestamp() - $now->getTimestamp();
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -488,11 +531,14 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function isTokenOwnedBy(string $token, int $userId): bool
     {
-        try { /* empty */ }
+        try {
             $payload = $this->extractPayload($token);
 
             return $payload->getSubject() === (string) $userId;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -500,12 +546,15 @@ final class JwtTokenService implements JwtTokenServiceInterface
      */
     public function isTokenFromDevice(string $token, DeviceInfo $deviceInfo): bool
     {
-        try { /* empty */ }
+        try {
             $payload = $this->extractPayload($token);
             $claims = $payload->toArray();
 
             return ($claims['device_id'] ?? '') === $deviceInfo->getDeviceId();
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**

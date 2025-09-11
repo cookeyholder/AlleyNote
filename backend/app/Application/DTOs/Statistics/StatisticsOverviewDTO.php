@@ -47,8 +47,6 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從統計快照建立 DTO.
-     * @param array $sourceStatistics
-     * @param array $additionalMetrics
      */
     public static function fromSnapshot(
         StatisticsPeriod $period,
@@ -69,7 +67,6 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
-     * @param array $data
      */
     public static function fromArray(array $data): self
     {
@@ -162,7 +159,6 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得格式化的統計概覽.
-     * @return array
      */
     public function getFormattedOverview(): array
     {
@@ -208,7 +204,6 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得摘要資訊.
-     * @return array
      */
     public function getSummary(): array
     {
@@ -224,7 +219,6 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得主要來源.
-     * @return array|null
      */
     public function getTopSource(): ?array
     {
@@ -273,7 +267,6 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     * @return array
      */
     public function toArray(): array
     {
@@ -325,7 +318,6 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -347,7 +339,6 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 驗證來源統計資料.
-     * @param array $sourceStatistics
      */
     private function validateSourceStatistics(array $sourceStatistics): void
     {
@@ -356,7 +347,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
             // 基本驗證：確保有有效的統計值
             if ($source->count->value < 0) {
                 throw new InvalidArgumentException(
-                    "來源統計索引 {$index} 的計數不能為負數");
+                    "來源統計索引 {$index} 的計數不能為負數",
+                );
             }
         }
     }

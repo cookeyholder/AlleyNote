@@ -37,12 +37,14 @@ readonly class SourceStatistics
     ): self {
         if ($count < 0) {
             throw new InvalidSourceStatisticsException(
-                '計數不能為負數');
+                '計數不能為負數',
+            );
         }
 
         if ($percentage < 0 || $percentage > 100) {
             throw new InvalidSourceStatisticsException(
-                '百分比必須在 0-100 之間');
+                '百分比必須在 0-100 之間',
+            );
         }
 
         $countMetric = StatisticsMetric::count($count);
@@ -52,7 +54,8 @@ readonly class SourceStatistics
         foreach ($additionalMetrics as $key => $metric) {
             if (!$metric instanceof StatisticsMetric) {
                 throw new InvalidSourceStatisticsException(
-                    "額外指標 '{$key}' 必須是 StatisticsMetric 實例");
+                    "額外指標 '{$key}' 必須是 StatisticsMetric 實例",
+                );
             }
         }
 
@@ -211,7 +214,8 @@ readonly class SourceStatistics
     {
         if ($this->sourceType !== $other->sourceType) {
             throw new InvalidSourceStatisticsException(
-                '只能合併相同來源類型的統計資料');
+                '只能合併相同來源類型的統計資料',
+            );
         }
 
         $newCount = $this->getCountValue() + $other->getCountValue();

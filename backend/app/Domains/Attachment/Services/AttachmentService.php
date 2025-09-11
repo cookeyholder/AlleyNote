@@ -13,7 +13,6 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
-use Exception;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 
@@ -218,6 +217,7 @@ class AttachmentService implements AttachmentServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('圖片清理失敗: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -251,8 +251,6 @@ class AttachmentService implements AttachmentServiceInterface
 
     /**
      * 改善的檔案驗證流程（減緩 TOCTOU 風險）.
-     *
-     * @return array
      */
     private function secureFileValidation(UploadedFileInterface $file): array
     {
@@ -471,9 +469,6 @@ class AttachmentService implements AttachmentServiceInterface
         }
     }
 
-    /**
-     * @return array
-     */
     public function download(string $uuid, int $currentUserId): array
     {
         $attachment = $this->attachmentRepo->findByUuid($uuid);
@@ -583,13 +578,11 @@ class AttachmentService implements AttachmentServiceInterface
         );
     }
 
-    /**
-     * @return array
-     */
     public function getByPostId(int $postId): array
     {
         /** @var array<Attachment> $attachments */
         $attachments = $this->attachmentRepo->getByPostId($postId);
+
         return $attachments;
     }
 }

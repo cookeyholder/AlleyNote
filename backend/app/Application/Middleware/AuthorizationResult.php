@@ -214,7 +214,6 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     * @return array
      */
     public function toArray(): array
     {
@@ -229,7 +228,6 @@ final readonly class AuthorizationResult implements JsonSerializable
 
     /**
      * JSON 序列化支援.
-     * @return array
      */
     public function jsonSerialize(): array
     {

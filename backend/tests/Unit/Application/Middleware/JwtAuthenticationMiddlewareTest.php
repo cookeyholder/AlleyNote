@@ -64,7 +64,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
 
             $this->assertFalse(
                 $this->middleware->shouldProcess($request),
-                "路徑 {\\\$path} 應該被跳過",
+                '路徑 {\\$path} 應該被跳過',
             );
         }
     }
@@ -83,7 +83,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
 
             $this->assertTrue(
                 $this->middleware->shouldProcess($request),
-                "路徑 {\\\$path} 應該需要認證",
+                '路徑 {\\$path} 應該需要認證',
             );
         }
     }

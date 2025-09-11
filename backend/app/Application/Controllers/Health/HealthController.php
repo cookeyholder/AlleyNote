@@ -14,8 +14,9 @@ use Psr\Log\LoggerInterface;
 class HealthController extends BaseController
 {
     public function __construct(
-        private ?LoggerInterface $logger = null
+        private ?LoggerInterface $logger = null,
     ) {}
+
     #[OA\Get(
         path: '/health',
         summary: '健康檢查端點',

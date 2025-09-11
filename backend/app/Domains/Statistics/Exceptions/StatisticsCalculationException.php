@@ -15,7 +15,8 @@ final class StatisticsCalculationException extends StatisticsException
     public static function insufficientData(string $operation, int $required, int $actual): self
     {
         return new self(
-            "執行 '{$operation}' 需要至少 {$required} 筆資料，但只有 {$actual} 筆");
+            "執行 '{$operation}' 需要至少 {$required} 筆資料，但只有 {$actual} 筆",
+        );
     }
 
     public static function invalidParameter(string $parameter, mixed $value): self

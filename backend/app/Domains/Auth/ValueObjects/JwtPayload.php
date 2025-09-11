@@ -309,7 +309,7 @@ final readonly class JwtPayload implements JsonSerializable
      */
     private function validateSub(string $sub): void
     {
-        if ($sub == = = = '') {
+        if ($sub === '') {
             throw new InvalidArgumentException('Subject (sub) cannot be empty');
         }
 

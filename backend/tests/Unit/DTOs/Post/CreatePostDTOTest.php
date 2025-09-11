@@ -404,7 +404,7 @@ class CreatePostDTOTest extends TestCase
             ];
 
             $dto = new CreatePostDTO($this->validator, $data);
-            $this->assertEquals($date, $dto->publishDate, "Failed for date: {\\\$date}");
+            $this->assertEquals($date, $dto->publishDate, 'Failed for date: {\\$date}');
         }
     }
 

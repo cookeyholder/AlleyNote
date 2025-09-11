@@ -11,12 +11,12 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\UploadedFileInterface;
-use Throwable;
 
 class AttachmentController
 {
     public function __construct(
-        private AttachmentService $attachmentService) {}
+        private AttachmentService $attachmentService,
+    ) {}
 
     /**
      * 取得當前登入使用者 ID
@@ -112,13 +112,15 @@ class AttachmentController
                 response: 401,
                 description: '未授權存取',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/Unauthorized'),
+                    ref: '#/components/responses/Unauthorized',
+                ),
             ),
             new OA\Response(
                 response: 404,
                 description: '貼文不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'),
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
             new OA\Response(
                 response: 413,
@@ -175,10 +177,12 @@ class AttachmentController
         } catch (ValidationException $e) {
             $errorResponse = json_encode(['error' => $e->getMessage()]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             $errorResponse = json_encode(['error' => '檔案上傳失敗']);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
@@ -250,7 +254,8 @@ class AttachmentController
                 response: 404,
                 description: '附件不存在',
                 content: new OA\JsonContent(
-                    ref: '#/components/responses/NotFound'),
+                    ref: '#/components/responses/NotFound',
+                ),
             ),
             new OA\Response(
                 response: 410,
@@ -284,10 +289,12 @@ class AttachmentController
         } catch (ValidationException $e) {
             $errorResponse = json_encode(['error' => $e->getMessage()]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             $errorResponse = json_encode(['error' => '檔案下載失敗']);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }

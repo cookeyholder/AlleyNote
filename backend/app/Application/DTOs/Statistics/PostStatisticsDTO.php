@@ -53,8 +53,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 從文章資料建立 DTO.
-     *
-     * @param array $postData
      */
     public static function fromPostData(array $postData, StatisticsPeriod $period): self
     {
@@ -106,8 +104,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 建立帶有統計分析的 DTO.
-     *
-     * @param array $rawMetrics
      */
     public static function withAnalysis(
         Uuid $postId,
@@ -227,8 +223,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 取得格式化的統計資訊.
-     *
-     * @return array
      */
     public function getFormattedStatistics(): array
     {
@@ -276,8 +270,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 比較與另一篇文章的效能.
-     *
-     * @return array
      */
     public function compareWith(PostStatisticsDTO $other): array
     {
@@ -297,8 +289,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
-     *
-     * @return array
      */
     public function toArray(): array
     {
@@ -337,8 +327,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
-     *
-     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -360,8 +348,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 計算互動率.
-     *
-     * @param array $metrics
      */
     private static function calculateEngagementRate(array $metrics): float
     {
@@ -381,8 +367,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 計算效能評分.
-     *
-     * @param array $metrics
      */
     private static function calculatePerformanceScore(array $metrics): float
     {
@@ -425,8 +409,6 @@ final readonly class PostStatisticsDTO implements JsonSerializable
 
     /**
      * 驗證額外指標.
-     *
-     * @param array $metrics
      */
     private function validateAdditionalMetrics(array $metrics): void
     {

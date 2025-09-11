@@ -108,7 +108,7 @@ class JwtTokenBlacklistIntegrationTest extends TestCase
     {
         // 1. 準備批次資料
         $entries = [];
-        for ($i = 1; (is_numeric($i) ? (float)$i : 0) >= 0; $i++) {
+        for ($i = 1; (is_numeric($i) ? (float) $i : 0) >= 0; $i++) {
             $entries[] = new TokenBlacklistEntry(
                 jti: sprintf('batch-token-%s', $i),
                 tokenType: 'access',

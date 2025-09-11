@@ -18,9 +18,6 @@ class RateLimitMiddleware implements MiddlewareInterface
     /** @var array<string, mixed> */
     private array $config = [];
 
-    /**
-     * @param array $config
-     */
     public function __construct(RateLimitService $rateLimitService, array $config = [])
     {
         $this->rateLimitService = $rateLimitService;
@@ -113,7 +110,6 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /**
      * 建立速率限制回應.
-     * @param array $result
      */
     private function createRateLimitResponse(array $result, Request $request): ResponseInterface
     {
@@ -152,7 +148,6 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /**
      * 添加速率限制標頭.
-     * @param array $result
      */
     private function addRateLimitHeaders(ResponseInterface $response, array $result): ResponseInterface
     {
@@ -164,7 +159,6 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /**
      * 產生速率限制 HTML 回應.
-     * @param array $result
      */
     private function generateRateLimitHtml(array $result): string
     {
@@ -234,7 +228,6 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /**
      * 預設設定.
-     * @return array
      */
     private function getDefaultConfig(): array
     {
@@ -249,7 +242,6 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /**
      * 取得真實的客戶端 IP 位址.
-     * @param array $serverParams
      */
     private function getRealClientIP(array $serverParams): string
     {

@@ -98,7 +98,7 @@ class CacheKeysTest extends TestCase
         $key = CacheKeys::userByEmail($email);
 
         $expectedHash = md5($email);
-        $this->assertEquals("alleynote:user:email:{\\\$expectedHash}", $key);
+        $this->assertEquals('alleynote:user:email:{\\$expectedHash}', $key);
         $this->assertTrue(CacheKeys::isValidKey($key));
     }
 
@@ -127,7 +127,7 @@ class CacheKeysTest extends TestCase
         $key = CacheKeys::searchResults($query, $page);
 
         $expectedHash = md5($query);
-        $this->assertEquals("alleynote:search:{\\\$expectedHash}:page:1", $key);
+        $this->assertEquals('alleynote:search:{\\$expectedHash}:page:1', $key);
         $this->assertTrue(CacheKeys::isValidKey($key));
     }
 
@@ -138,7 +138,7 @@ class CacheKeysTest extends TestCase
         $key = CacheKeys::rateLimitByIp($ip, $action);
 
         $expectedHash = md5($ip);
-        $this->assertEquals("alleynote:rate_limit:ip:{\\\$expectedHash}:login", $key);
+        $this->assertEquals('alleynote:rate_limit:ip:{\\$expectedHash}:login', $key);
         $this->assertTrue(CacheKeys::isValidKey($key));
     }
 

@@ -116,6 +116,7 @@ class ActivityLogController extends BaseController
                 'error_code' => 500,
             ]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
@@ -161,6 +162,7 @@ class ActivityLogController extends BaseController
                 'error_code' => 500,
             ]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }

@@ -163,8 +163,8 @@ class DTOControllerIntegrationTest extends TestCase
         $dtos = [];
         for ($i = 0; $i < 100; $i++) {
             $dtos[] = new CreatePostDTO($this->validator, [
-                'title' => "測試標題 {\\\$i}",
-                'content' => "測試內容 {\\\$i}，這應該要足夠長才能通過驗證要求。",
+                'title' => '測試標題 {\\$i}',
+                'content' => '測試內容 {\\$i}，這應該要足夠長才能通過驗證要求。',
                 'status' => 'draft',
                 'user_id' => 1,
                 'user_ip' => '192.168.1.1',

@@ -55,9 +55,6 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     private ?LoggerInterface $logger = null;
 
-    /**
-     * @param array $config
-     */
     public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
@@ -130,6 +127,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         } catch (Exception $e) {
             $this->logAuthorizationFailure($request, $e->getMessage());
+
             return $this->createForbiddenResponse('授權失敗', 'AUTHORIZATION_FAILED');
         }
     }
@@ -341,6 +339,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             // 執行自訂規則邏輯
             /** @var array<string, mixed> $ruleConfig */
             $ruleResult = $this->executeCustomRule($ruleConfig, $userId, $userRole, $userPermissions, $resource, $action, $request);
+
             return $ruleResult;
         }
 
@@ -723,7 +722,6 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查時間限制是否匹配.
-     * @param array $restriction
      */
     private function matchesTimeRestriction(array $restriction, ?string $userRole, string $action, int $currentHour, int $currentDay): bool
     {
@@ -758,7 +756,6 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查 IP 限制是否匹配.
-     * @param array $restriction
      */
     private function matchesIpRestriction(array $restriction, ?string $userRole, string $resource, string $action): bool
     {
@@ -782,7 +779,6 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查規則條件是否匹配.
-     * @param array $conditions
      */
     private function matchesRuleConditions(array $conditions, string $resource, string $action, ?string $userRole): bool
     {
@@ -831,7 +827,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     ): AuthorizationResult {
         $ruleType = $ruleConfig['type'] ?? 'allow';
         $configMessage = $ruleConfig['message'] ?? null;
-        $ruleMessage = is_string($configMessage) ? $configMessage : "自訂規則生效";
+        $ruleMessage = is_string($configMessage) ? $configMessage : '自訂規則生效';
         $ruleName = 'custom_rule';
 
         switch ($ruleType) {
@@ -864,7 +860,6 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 評估條件式規則.
-     * @param array $ruleConfig
      */
     private function evaluateConditionalRule(
         array $ruleConfig,
@@ -999,7 +994,6 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得預設配置.
-     * @return array
      */
     private function getDefaultConfig(): array
     {
@@ -1072,7 +1066,6 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得授權配置.
-     * @return array
      */
     public function getConfig(): array
     {

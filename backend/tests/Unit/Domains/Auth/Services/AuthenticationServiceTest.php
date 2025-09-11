@@ -286,7 +286,8 @@ final class AuthenticationServiceTest extends TestCase
     {
         // Arrange
         $request = new RefreshRequestDTO(
-            refreshToken: 'invalid-refresh-token');
+            refreshToken: 'invalid-refresh-token',
+        );
 
         $this->jwtTokenService
             ->expects($this->once())
@@ -305,7 +306,8 @@ final class AuthenticationServiceTest extends TestCase
     {
         // Arrange
         $request = new RefreshRequestDTO(
-            refreshToken: 'expired-refresh-token');
+            refreshToken: 'expired-refresh-token',
+        );
 
         $this->jwtTokenService
             ->expects($this->once())

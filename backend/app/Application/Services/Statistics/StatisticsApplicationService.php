@@ -17,7 +17,6 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Domain\ValueObjects\Uuid;
 use DateTimeImmutable;
-use Exception;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -51,8 +50,6 @@ final class StatisticsApplicationService
 
     /**
      * 取得系統統計摘要.
-     *
-     * @return array
      */
     public function getSystemStatisticsSummary(): array
     {
@@ -87,7 +84,7 @@ final class StatisticsApplicationService
                 'total_users' => $systemStats['total_users'],
                 'total_views' => $systemStats['total_views'],
                 'system_uptime' => $systemStats['uptime'],
-                'last_updated' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
+                'last_updated' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ];
 
             // 快取結果
@@ -103,7 +100,7 @@ final class StatisticsApplicationService
 
             throw new StatisticsException(
                 '刷新統計資料失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -125,7 +122,7 @@ final class StatisticsApplicationService
                 if ($existingSnapshot !== null) {
                     $this->logger->info('統計快照已存在', [
                         'period' => $period->getDisplayString(),
-                        'snapshot_id' => $existingSnapshot->getId()->toString()
+                        'snapshot_id' => $existingSnapshot->getId()->toString(),
                     ]);
 
                     return $existingSnapshot;
@@ -174,7 +171,7 @@ final class StatisticsApplicationService
 
             throw new StatisticsException(
                 '建立統計快照失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -183,8 +180,6 @@ final class StatisticsApplicationService
      * 取得統計概覽.
      *
      * 提供統計資料的概覽資訊，包含快取機制。
-     *
-     * @return array
      */
     public function getStatisticsOverview(StatisticsPeriod $period): array
     {
@@ -201,7 +196,6 @@ final class StatisticsApplicationService
 
         try {
             $this->logger->info('計算統計概覽', ['period' => $period->getDisplayString()]);
-
 
             // 取得統計快照
             $snapshot = $this->statisticsRepository->findByPeriod($period);
@@ -277,7 +271,7 @@ final class StatisticsApplicationService
 
             throw new StatisticsException(
                 '計算統計概覽失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -286,8 +280,6 @@ final class StatisticsApplicationService
      * 分析熱門內容.
      *
      * 分析指定週期內的熱門內容，提供詳細的分析資料。
-     *
-     * @return array
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 20): array
     {
@@ -327,7 +319,7 @@ final class StatisticsApplicationService
 
             throw new StatisticsException(
                 '分析熱門內容失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -336,9 +328,6 @@ final class StatisticsApplicationService
      * 產生統計報告.
      *
      * 產生指定週期的完整統計報告。
-     *
-     * @param array $options
-     * @return array
      */
     public function generateStatisticsReport(StatisticsPeriod $period, array $options = []): array
     {
@@ -419,7 +408,7 @@ final class StatisticsApplicationService
 
             throw new StatisticsException(
                 '產生統計報告失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -452,15 +441,13 @@ final class StatisticsApplicationService
 
             throw new StatisticsException(
                 '清除統計快取失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
      * 檢查統計服務健康狀態.
-     *
-     * @return array
      */
     public function checkHealthStatus(): array
     {
@@ -502,15 +489,13 @@ final class StatisticsApplicationService
                 'service' => 'StatisticsApplicationService',
                 'status' => 'unhealthy',
                 'error' => $e->getMessage(),
-                'checked_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
+                'checked_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ];
         }
     }
 
     /**
      * 取得統計概覽（代理方法）.
-     *
-     * @return array
      */
     public function getOverview(string $period = 'monthly'): array
     {
@@ -521,8 +506,6 @@ final class StatisticsApplicationService
 
     /**
      * 取得貼文統計（代理方法）.
-     *
-     * @return array
      */
     public function getPostStatistics(string $period = 'monthly', int $limit = 10): array
     {
@@ -533,8 +516,6 @@ final class StatisticsApplicationService
 
     /**
      * 取得來源統計（代理方法）.
-     *
-     * @return array
      */
     public function getSourceStatistics(string $period = 'monthly'): array
     {
@@ -545,8 +526,6 @@ final class StatisticsApplicationService
 
     /**
      * 取得使用者活動統計（代理方法）.
-     *
-     * @return array
      */
     public function getUserActivityStatistics(string $period = 'monthly'): array
     {
@@ -557,8 +536,6 @@ final class StatisticsApplicationService
 
     /**
      * 取得熱門內容（代理方法）.
-     *
-     * @return array
      */
     public function getPopularContent(string $period = 'monthly', int $limit = 20): array
     {
@@ -569,8 +546,6 @@ final class StatisticsApplicationService
 
     /**
      * 取得統計快照（代理方法）.
-     *
-     * @return array
      */
     public function getSnapshot(string $period = 'monthly'): array
     {
@@ -617,15 +592,13 @@ final class StatisticsApplicationService
 
             throw new StatisticsException(
                 '清理統計資料失敗：' . $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
      * 計算來源統計.
-     *
-     * @return array
      */
     private function calculateSourceStatistics(StatisticsPeriod $period): array
     {
@@ -690,8 +663,6 @@ final class StatisticsApplicationService
 
     /**
      * 檢查快取健康狀態.
-     *
-     * @return array
      */
     private function checkCacheHealth(): array
     {
@@ -721,8 +692,6 @@ final class StatisticsApplicationService
 
     /**
      * 檢查資料庫健康狀態.
-     *
-     * @return array
      */
     private function checkDatabaseHealth(): array
     {
@@ -743,8 +712,6 @@ final class StatisticsApplicationService
 
     /**
      * 檢查計算服務健康狀態.
-     *
-     * @return array
      */
     private function checkCalculationHealth(): array
     {

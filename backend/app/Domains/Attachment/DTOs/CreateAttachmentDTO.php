@@ -204,9 +204,6 @@ class CreateAttachmentDTO extends BaseDTO
     /**
      * 取得驗證規則.
      */
-    /**
-     * @return array
-     */
     public function getValidationRules(): array
     {
         return [
@@ -222,9 +219,6 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
-     */
-    /**
-     * @return array
      */
     public function toArray(): array
     {

@@ -78,7 +78,7 @@ class ValidationResult implements JsonSerializable
 
     /**
      * 取得所有錯誤訊息.
-     * @return array */
+     */
     public function getErrors(): array
     {
         return $this->errors;
@@ -159,7 +159,7 @@ class ValidationResult implements JsonSerializable
 
     /**
      * 取得失敗的規則.
-     * @return array */
+     */
     public function getFailedRules(): array
     {
         return $this->failedRules;

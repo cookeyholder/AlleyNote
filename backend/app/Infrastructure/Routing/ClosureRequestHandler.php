@@ -17,7 +17,8 @@ use Psr\Http\Message\ServerRequestInterface;
 class ClosureRequestHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private Closure $handler) {}
+        private Closure $handler,
+    ) {}
 
     /**
      * 處理請求

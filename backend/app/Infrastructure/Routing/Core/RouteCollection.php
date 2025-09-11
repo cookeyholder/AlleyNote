@@ -136,8 +136,6 @@ class RouteCollection implements RouteCollectionInterface
         return count($this->routes);
     }
 
-    /**
-     * @return array */
     public function toArray(): array
     {
         $data = [];
@@ -155,9 +153,6 @@ class RouteCollection implements RouteCollectionInterface
         return $data;
     }
 
-    /**
-     * @param array $data
-     */
     public static function fromArray(array $data): RouteCollectionInterface
     {
         $collection = new self();

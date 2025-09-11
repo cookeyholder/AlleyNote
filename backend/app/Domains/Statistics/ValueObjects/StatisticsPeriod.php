@@ -38,7 +38,8 @@ readonly class StatisticsPeriod
 
         if ($start > $end) {
             throw new InvalidStatisticsPeriodException(
-                '開始日期不能晚於結束日期');
+                '開始日期不能晚於結束日期',
+            );
         }
 
         $period = new self($start, $end, $type);

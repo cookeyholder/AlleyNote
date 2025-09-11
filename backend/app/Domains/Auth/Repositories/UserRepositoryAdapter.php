@@ -15,7 +15,8 @@ use App\Domains\Auth\Contracts\UserRepositoryInterface;
 class UserRepositoryAdapter implements UserRepositoryInterface
 {
     public function __construct(
-        private readonly UserRepository $userRepository) {}
+        private readonly UserRepository $userRepository,
+    ) {}
 
     public function findByUsername(string $username): ?array
     {

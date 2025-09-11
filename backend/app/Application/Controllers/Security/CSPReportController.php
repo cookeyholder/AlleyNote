@@ -17,7 +17,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class CSPReportController
 {
     public function __construct(
-        private LoggingSecurityServiceInterface $securityLogger) {}
+        private LoggingSecurityServiceInterface $securityLogger,
+    ) {}
 
     /**
      * 處理 CSP 違規報告。
@@ -109,8 +110,6 @@ class CSPReportController
 
     /**
      * 處理 CSP 報告。
-     *
-     * @param array $data
      */
     private function processCspReport(array $data, Request $request): void
     {
@@ -159,8 +158,6 @@ class CSPReportController
 
     /**
      * 計算違規嚴重程度。
-     *
-     * @param array $reportInfo
      */
     private function calculateSeverity(array $reportInfo): string
     {
@@ -207,8 +204,6 @@ class CSPReportController
 
     /**
      * 檢查是否為高風險違規。
-     *
-     * @param array $reportInfo
      */
     private function isHighRiskViolation(array $reportInfo): bool
     {
@@ -242,6 +237,7 @@ class CSPReportController
         }
 
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? 'unknown';
+
         return is_string($remoteAddr) ? $remoteAddr : 'unknown';
     }
 

@@ -15,7 +15,7 @@ class PostNotFoundExceptionTest extends TestCase
         $postId = 123;
         $exception = new PostNotFoundException($postId);
 
-        $this->assertEquals("找不到 ID 為 {\\\$postId} 的貼文", $exception->getMessage());
+        $this->assertEquals('找不到 ID 為 {\\$postId} 的貼文', $exception->getMessage());
         $this->assertEquals(404, $exception->getCode());
     }
 
@@ -35,7 +35,7 @@ class PostNotFoundExceptionTest extends TestCase
         $exception = PostNotFoundException::byId($postId);
 
         $this->assertInstanceOf(PostNotFoundException::class, $exception);
-        $this->assertEquals("找不到 ID 為 {\\\$postId} 的貼文", $exception->getMessage());
+        $this->assertEquals('找不到 ID 為 {\\$postId} 的貼文', $exception->getMessage());
         $this->assertEquals(404, $exception->getCode());
     }
 
@@ -45,7 +45,7 @@ class PostNotFoundExceptionTest extends TestCase
         $exception = PostNotFoundException::byUuid($uuid);
 
         $this->assertInstanceOf(PostNotFoundException::class, $exception);
-        $this->assertEquals("找不到 UUID 為 {\\\$uuid} 的貼文", $exception->getMessage());
+        $this->assertEquals('找不到 UUID 為 {\\$uuid} 的貼文', $exception->getMessage());
         $this->assertEquals(404, $exception->getCode());
     }
 

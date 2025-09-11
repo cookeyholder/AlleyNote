@@ -8,7 +8,6 @@ use App\Application\Controllers\BaseController;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
-use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Exceptions\PostStatusException;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
@@ -86,13 +85,15 @@ class PostController extends BaseController
                 response: 200,
                 description: '成功取得貼文列表',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/PaginatedResponse'),
+                    ref: '#/components/schemas/PaginatedResponse',
+                ),
             ),
             new OA\Response(
                 response: 400,
                 description: '請求參數錯誤',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/ValidationError'),
+                    ref: '#/components/schemas/ValidationError',
+                ),
             ),
         ],
     )]

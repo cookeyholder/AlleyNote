@@ -60,6 +60,7 @@ class TagManagementController extends BaseController
             if (!empty($search)) {
                 $tags = array_filter($tags, function ($tag) use ($search) {
                     $tagName = $tag['name'] ?? '';
+
                     return is_string($tagName) && stripos($tagName, $search) !== false;
                 });
             }
@@ -127,7 +128,6 @@ class TagManagementController extends BaseController
      * 清除單個標籤.
      *
      * POST /admin/cache/tags/{tag}/flush
-     * @param array $args
      */
     public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
