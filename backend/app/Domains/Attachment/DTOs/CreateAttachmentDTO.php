@@ -204,7 +204,10 @@ class CreateAttachmentDTO extends BaseDTO
     /**
      * 取得驗證規則.
      */
-    protected function getValidationRules(): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function getValidationRules(): array
     {
         return [
             'post_id' => 'required|post_id',
@@ -219,6 +222,9 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

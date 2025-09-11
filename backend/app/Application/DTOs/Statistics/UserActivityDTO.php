@@ -256,7 +256,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得最活躍使用者摘要.
-     * @return array<string, mixed>
+     * @return array<array<string, mixed>>
      */
     public function getTopActiveUsersSummary(): array
     {
@@ -291,7 +291,7 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得高峰活動時間.
-     * @return array<string, mixed>
+     * @return array<int, array<string, mixed>>
      */
     public function getPeakActivityHours(): array
     {

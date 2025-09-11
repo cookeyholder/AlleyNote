@@ -105,7 +105,7 @@ class AttachmentService implements AttachmentServiceInterface
             '/data:/i',
             '/base64/i',
             '/%3Cscript/i',
-            '/eval(/i',
+            '/eval\(/i',
             '/onload=/i',
             '/onclick=/i',
             '/onmouseover=/i',
@@ -583,6 +583,8 @@ class AttachmentService implements AttachmentServiceInterface
      */
     public function getByPostId(int $postId): array
     {
-        return $this->attachmentRepo->getByPostId($postId);
+        /** @var array<Attachment> $attachments */
+        $attachments = $this->attachmentRepo->getByPostId($postId);
+        return $attachments;
     }
 }
