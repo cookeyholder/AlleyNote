@@ -26,9 +26,7 @@ class RegisterUserDTO extends BaseDTO
     public readonly string $userIp;
 
     /**
-    /**
      * @param ValidatorInterface $validator 驗證器實例
-     */
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
@@ -204,7 +202,7 @@ class RegisterUserDTO extends BaseDTO
             ];
 
             $atPosition = strrchr($email, '@');
-            if ($atPosition == = = = false) {
+            if ($atPosition === false) {
                 return false;
             }
             $domain = substr($atPosition, 1);
@@ -343,7 +341,7 @@ class RegisterUserDTO extends BaseDTO
     public function getEmailDomain(): string
     {
         $atPosition = strrchr($this->email, '@');
-        if ($atPosition == = = = false) {
+        if ($atPosition === false) {
             return '';
         }
 

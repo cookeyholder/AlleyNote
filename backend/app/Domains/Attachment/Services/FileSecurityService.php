@@ -90,14 +90,14 @@ class FileSecurityService implements FileSecurityServiceInterface
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        if ($finfo == == false) {
+        if ($finfo === false) {
             throw new RuntimeException('無法初始化檔案資訊檢測器');
         }
 
         $mimeType = finfo_file($finfo, $filePath);
         finfo_close($finfo);
 
-        if ($mimeType == == false) {
+        if ($mimeType === false) {
             throw ValidationException::fromSingleError('file', '無法檢測檔案 MIME 類型');
         }
 
@@ -129,7 +129,7 @@ class FileSecurityService implements FileSecurityServiceInterface
         $realFilePath = realpath($filePath);
         $realBaseDir = realpath($allowedBaseDir);
 
-        if ($realFilePath == == false || $realBaseDir === false) {
+        if ($realFilePath === false || $realBaseDir === false) {
             return false;
         }
 

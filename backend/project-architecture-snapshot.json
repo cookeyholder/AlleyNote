@@ -2,7 +2,7 @@
     "project_info": {
         "name": "AlleyNote",
         "type": "DDD-based Web Application",
-        "scan_time": "2025-09-11 23:55:55",
+        "scan_time": "2025-09-12 00:05:46",
         "root_path": "\/var\/www\/html"
     },
     "directory_structure": {
@@ -1904,7 +1904,7 @@
                                     "type": "file",
                                     "path": "app\/Application\/Middleware\/RateLimitMiddleware.php",
                                     "extension": "php",
-                                    "size": 11263
+                                    "size": 11242
                                 }
                             }
                         },
@@ -1932,7 +1932,7 @@
                                             "type": "file",
                                             "path": "app\/Application\/DTOs\/Statistics\/SourceDistributionDTO.php",
                                             "extension": "php",
-                                            "size": 17602
+                                            "size": 17594
                                         },
                                         "PostStatisticsDTO.php": {
                                             "type": "file",
@@ -2044,7 +2044,7 @@
                                                     "type": "file",
                                                     "path": "app\/Application\/Controllers\/Api\/V1\/AuthController.php",
                                                     "extension": "php",
-                                                    "size": 25024
+                                                    "size": 25020
                                                 },
                                                 "PostController.php": {
                                                     "type": "file",
@@ -2112,13 +2112,13 @@
                                             "type": "file",
                                             "path": "app\/Application\/Services\/Statistics\/StatisticsQueryService.php",
                                             "extension": "php",
-                                            "size": 23949
+                                            "size": 26908
                                         },
                                         "StatisticsApplicationService.php": {
                                             "type": "file",
                                             "path": "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php",
                                             "extension": "php",
-                                            "size": 23831
+                                            "size": 26692
                                         }
                                     }
                                 }
@@ -5337,7 +5337,7 @@
             "type": "file",
             "path": "project-architecture-snapshot.json",
             "extension": "json",
-            "size": 1677038
+            "size": 1693050
         },
         "eighth-round-phase1-progress-report.md": {
             "type": "file",
@@ -12100,7 +12100,7 @@
                 "element",
                 "timer"
             ],
-            "lines_of_code": 303
+            "lines_of_code": 301
         },
         "app\/Application\/DTOs\/Statistics\/UserActivityDTO.php": {
             "path": "app\/Application\/DTOs\/Statistics\/UserActivityDTO.php",
@@ -12742,7 +12742,7 @@
                 "13": "validatePaginationParams"
             },
             "constants": [],
-            "lines_of_code": 696
+            "lines_of_code": 796
         },
         "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php": {
             "path": "app\/Application\/Services\/Statistics\/StatisticsApplicationService.php",
@@ -12797,7 +12797,7 @@
                 "CACHE_TTL",
                 "CACHE_PREFIX"
             ],
-            "lines_of_code": 671
+            "lines_of_code": 766
         },
         "app\/Infrastructure\/Database\/DatabaseConnection.php": {
             "path": "app\/Infrastructure\/Database\/DatabaseConnection.php",

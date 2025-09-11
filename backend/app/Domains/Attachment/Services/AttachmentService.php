@@ -142,7 +142,7 @@ class AttachmentService implements AttachmentServiceInterface
             return true; // 非圖片檔案不需要處理
         }
 
-        try { /* empty */ }
+        try {
             // 檢查 GD 擴充是否可用
             if (!extension_loaded('gd')) {
                 error_log('GD extension not available for image sanitization');
@@ -165,7 +165,7 @@ class AttachmentService implements AttachmentServiceInterface
                     break;
             }
 
-            if ($image == == false) {
+            if ($image === false) {
                 throw ValidationException::fromSingleError('file', '無法處理圖片檔案');
             }
 
@@ -184,7 +184,7 @@ class AttachmentService implements AttachmentServiceInterface
             $cleanImage = imagecreatetruecolor($width, $height);
 
             // 處理透明度（PNG 和 GIF）
-            if ($mimeType == == 'image/png' || $mimeType === 'image/gif') {
+            if ($mimeType === 'image/png' || $mimeType === 'image/gif') {
                 imagealphablending($cleanImage, false);
                 imagesavealpha($cleanImage, true);
                 $transparent = imagecolorallocatealpha($cleanImage, 255, 255, 255, 127);
@@ -216,7 +216,10 @@ class AttachmentService implements AttachmentServiceInterface
             imagedestroy($cleanImage);
 
             return $result;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            error_log('圖片清理失敗: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -266,7 +269,7 @@ class AttachmentService implements AttachmentServiceInterface
 
         $tempPath = $tempDir . '/' . $newFilename;
 
-        try { /* empty */ }
+        try {
             // 移動上傳檔案到安全的臨時位置
             $file->moveTo($tempPath);
 
@@ -302,7 +305,11 @@ class AttachmentService implements AttachmentServiceInterface
                 'mime_type' => $actualMimeType,
                 'file_size' => filesize($tempPath),
             ];
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            // 清理臨時檔案
+            if (file_exists($tempPath)) {
+                unlink($tempPath);
+            }
             if (is_dir($tempDir)) {
                 rmdir($tempDir);
             }
@@ -375,9 +382,13 @@ class AttachmentService implements AttachmentServiceInterface
         }
 
         // 使用改善的檔案驗證流程
-        try { /* empty */ }
+        try {
             $fileInfo = $this->secureFileValidation($file);
-        } // catch block commented out due to syntax error elseif (str_contains($errorMessage, '大小超過')) {
+        } catch (ValidationException $e) {
+            $errorMessage = $e->getMessage();
+            $activityType = ActivityType::ATTACHMENT_UPLOAD_FAILED;
+
+            if (str_contains($errorMessage, '大小超過')) {
                 $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED;
             }
 
@@ -396,7 +407,7 @@ class AttachmentService implements AttachmentServiceInterface
             throw $e;
         }
 
-        try { /* empty */ }
+        try {
             // 確保上傳目錄存在
             if (!is_dir($this->uploadDir)) {
                 mkdir($this->uploadDir, 0o755, true);
@@ -444,16 +455,24 @@ class AttachmentService implements AttachmentServiceInterface
             );
 
             return $attachment;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->activityLogger->logFailure(
+                ActivityType::ATTACHMENT_UPLOAD_FAILED,
+                $currentUserId,
+                reason: $e->getMessage(),
+                metadata: [
+                    'post_id' => $postId,
+                    'filename' => $file->getClientFilename(),
+                    'error' => $e->getMessage(),
+                ],
+            );
 
             throw $e;
         }
     }
 
     /**
-    /**
      * @return array
-     */
      */
     public function download(string $uuid, int $currentUserId): array
     {
@@ -484,7 +503,7 @@ class AttachmentService implements AttachmentServiceInterface
         $realPath = realpath($filePath);
         $uploadDirReal = realpath($this->uploadDir);
 
-        if ($realPath == == false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
+        if ($realPath === false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
             throw ValidationException::fromSingleError('path', '無效的檔案路徑');
         }
 
@@ -539,7 +558,7 @@ class AttachmentService implements AttachmentServiceInterface
             $realPath = realpath($path);
             $uploadDirReal = realpath($this->uploadDir);
 
-            if ($realPath == == false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
+            if ($realPath === false || $uploadDirReal === false || strpos($realPath, $uploadDirReal) !== 0) {
                 throw ValidationException::fromSingleError('path', '無效的檔案路徑');
             }
 
@@ -565,9 +584,7 @@ class AttachmentService implements AttachmentServiceInterface
     }
 
     /**
-    /**
      * @return array
-     */
      */
     public function getByPostId(int $postId): array
     {

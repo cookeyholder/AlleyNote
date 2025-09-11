@@ -435,8 +435,8 @@ class RefreshToken implements JsonSerializable
     private function validateStatus(string $status): void
     {
         $validStatuses = [
-            self => STATUS_ACTIVE,
-            self => :STATUS_REVOKED,
+            self::STATUS_ACTIVE,
+            self::STATUS_REVOKED,
             self::STATUS_EXPIRED,
             self::STATUS_USED,
         ];
@@ -468,12 +468,12 @@ class RefreshToken implements JsonSerializable
      */
     private function validateRevokedData(string $status, ?string $revokedReason, ?DateTime $revokedAt): void
     {
-        if ($status == = = = self::STATUS_REVOKED) {
+        if ($status === self::STATUS_REVOKED) {
             if (empty($revokedReason)) {
                 throw new InvalidArgumentException('Revoked reason is required when status is revoked');
             }
 
-            if ($revokedAt == = = = null) {
+            if ($revokedAt === null) {
                 throw new InvalidArgumentException('Revoked time is required when status is revoked');
             }
         } elseif ($revokedReason !== null || $revokedAt !== null) {
