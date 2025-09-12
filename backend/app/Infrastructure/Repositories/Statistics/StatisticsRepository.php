@@ -24,14 +24,16 @@ use RuntimeException;
  */
 final readonly class StatisticsRepository implements StatisticsRepositoryInterface
 {
-    public function __construct(): mixed {}
+    public function __construct(
+        private readonly PDO $pdo,
+    ) {}
 
     /**
      * 儲存統計快照.
      */
     public function saveSnapshot(StatisticsSnapshot $snapshot): void
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 INSERT INTO statistics_snapshots (
                     uuid, period_type, start_date, end_date, snapshot_data,
@@ -63,8 +65,8 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt->execute([
                 'uuid' => $snapshot->getId()->toString(),
                 'period_type' => $snapshot->getPeriod()->type->value,
-                'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $snapshot->getPeriod()->endDate->format('Y-m-d H => i:s'),
+                'start_date' => $snapshot->getPeriod()->startDate->format('Y-m-d H:i:s'),
+                'end_date' => $snapshot->getPeriod()->endDate->format('Y-m-d H:i:s'),
                 'snapshot_data' => json_encode($this->serializeSnapshotData($snapshot)),
                 'total_posts' => $totalPosts,
                 'total_views' => $totalViews,
@@ -75,7 +77,8 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
                 'created_at' => $snapshot->getCreatedAt()->format('Y-m-d H:i:s'),
                 'updated_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ]);
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (PDOException $e) {
+            throw new RuntimeException('無法儲存統計快照: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -84,7 +87,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
      */
     public function findById(Uuid $id): ?StatisticsSnapshot
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT * FROM statistics_snapshots
                 WHERE uuid = :uuid
@@ -98,7 +101,8 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $row ? $this->createSnapshotFromRow($row) : null;
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (PDOException $e) {
+            throw new RuntimeException('無法查詢統計快照: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -107,7 +111,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
      */
     public function findByPeriod(StatisticsPeriod $period): ?StatisticsSnapshot
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT * FROM statistics_snapshots
                 WHERE period_type = :period_type
@@ -119,15 +123,16 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 'period_type' => $period->type->value,
-                'start_date' => $period->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $period->endDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             /** @var array<string, mixed>|false $row */
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $row ? $this->createSnapshotFromRow($row) : null;
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (PDOException $e) {
+            throw new RuntimeException('無法查詢週期統計快照: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -138,7 +143,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
         PeriodType $periodType,
         int $limit = 100,
     ): array {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT * FROM statistics_snapshots
                 WHERE period_type = :period_type
@@ -154,7 +159,8 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return array_map([$this, 'createSnapshotFromRow'], $rows);
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (PDOException $e) {
+            throw new RuntimeException('無法查詢週期類型統計快照: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -163,7 +169,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
      */
     public function findLatest(int $limit = 10): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT * FROM statistics_snapshots
                 ORDER BY created_at DESC
@@ -177,7 +183,8 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return array_map([$this, 'createSnapshotFromRow'], $rows);
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (PDOException $e) {
+            throw new RuntimeException('無法查詢最新統計快照: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -186,7 +193,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
      */
     public function findExpiredSnapshots(DateTimeInterface $cutoffDate): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT * FROM statistics_snapshots
                 WHERE created_at < :cutoff_date
@@ -194,331 +201,91 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['cutoff_date' => $cutoffDate->format('Y-m-d H => i => s')]);
+            $stmt->execute(['cutoff_date' => $cutoffDate->format('Y-m-d H:i:s')]);
 
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return array_map([$this, 'createSnapshotFromRow'], $rows);
-        } // catch block commented out due to syntax error", 0, $e);
-        }
-    }
-
-    /**
-     * 取得最舊的統計快照.
-     */
-    public function getOldestSnapshot(): ?StatisticsSnapshot
-    {
-        try { /* empty */ }
-            $sql = '
-                SELECT * FROM statistics_snapshots
-                ORDER BY created_at ASC
-                LIMIT 1
-            ';
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-
-            /** @var array<string, mixed>|false $row */
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            return $row ? $this->createSnapshotFromRow($row) : null;
-        } // catch block commented out due to syntax error", 0, $e);
-        }
-    }
-
-    /**
-     * 取得最新的統計快照.
-     */
-    public function getLatestSnapshot(): ?StatisticsSnapshot
-    {
-        try { /* empty */ }
-            $sql = '
-                SELECT * FROM statistics_snapshots
-                ORDER BY created_at DESC
-                LIMIT 1
-            ';
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-
-            /** @var array<string, mixed>|false $row */
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            return $row ? $this->createSnapshotFromRow($row) : null;
-        } // catch block commented out due to syntax error", 0, $e);
-        }
-    }
-
-    /**
-     * 取得統計快照總數量.
-     */
-    public function getTotalSnapshotCount(): int
-    {
-        try { /* empty */ }
-            $sql = 'SELECT COUNT(*) FROM statistics_snapshots';
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-
-            return (int) $stmt->fetchColumn();
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (PDOException $e) {
+            throw new RuntimeException('無法查詢過期統計快照: ' . $e->getMessage(), 0, $e);
         }
     }
 
     /**
      * 刪除統計快照.
      */
-    public function deleteSnapshot(Uuid $id): void
+    public function deleteSnapshot(Uuid $id): bool
     {
-        try { /* empty */ }
+        try {
             $sql = 'DELETE FROM statistics_snapshots WHERE uuid = :uuid';
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['uuid' => $id->toString()]);
+            $result = $stmt->execute(['uuid' => $id->toString()]);
 
-            if ($stmt->rowCount() === 0) {
-                throw new RuntimeException('統計快照不存在或已被刪除');
-            }
-        } // catch block commented out due to syntax error", 0, $e);
+            return $result && $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            throw new RuntimeException('無法刪除統計快照: ' . $e->getMessage(), 0, $e);
         }
     }
 
     /**
-     * 刪除過期的統計快照.
-     */
-    public function deleteExpiredSnapshots(DateTimeInterface $cutoffDate): int
-    {
-        try { /* empty */ }
-            $sql = 'DELETE FROM statistics_snapshots WHERE created_at < :cutoff_date';
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['cutoff_date' => $cutoffDate->format('Y-m-d H => i => s')]);
-
-            return $stmt->rowCount();
-        } // catch block commented out due to syntax error", 0, $e);
-        }
-    }
-
-    /**
-     * 檢查指定週期是否存在統計快照.
-     */
-    public function existsByPeriod(StatisticsPeriod $period): bool
-    {
-        try { /* empty */ }
-            $sql = '
-                SELECT 1 FROM statistics_snapshots
-                WHERE period_type = :period_type
-                    AND start_date = :start_date
-                    AND end_date = :end_date
-                LIMIT 1
-            ';
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([
-                'period_type' => $period->type->value,
-                'start_date' => $period->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $period->endDate->format('Y-m-d H => i:s'),
-            ]);
-
-            return $stmt->fetchColumn() !== false;
-        } // catch block commented out due to syntax error", 0, $e);
-        }
-    }
-
-    /**
-     * 更新統計快照.
-     */
-    public function updateSnapshot(StatisticsSnapshot $snapshot): void
-    {
-        try { /* empty */ }
-            $sql = '
-                UPDATE statistics_snapshots SET
-                    snapshot_data = :snapshot_data,
-                    total_posts = :total_posts,
-                    total_views = :total_views,
-                    total_users = :total_users,
-                    primary_source = :primary_source,
-                    data_accuracy = :data_accuracy,
-                    updated_at = :updated_at
-                WHERE uuid = :uuid
-            ';
-
-            $stmt = $this->pdo->prepare($sql);
-
-            $totalPosts = $this->extractMetricValue($snapshot, 'total_posts');
-            $totalViews = $this->extractMetricValue($snapshot, 'total_views');
-            $totalUsers = $this->extractMetricValue($snapshot, 'total_users');
-
-            $stmt->execute([
-                'uuid' => $snapshot->getId()->toString(),
-                'snapshot_data' => json_encode($this->serializeSnapshotData($snapshot)),
-                'total_posts' => $totalPosts,
-                'total_views' => $totalViews,
-                'total_users' => $totalUsers,
-                'primary_source' => $this->extractPrimarySource($snapshot),
-                'data_accuracy' => 100.0,
-                'updated_at' => new DateTimeImmutable()->format('Y-m-d H => i => s'),
-            ]);
-
-            if ($stmt->rowCount() === 0) {
-                throw new RuntimeException('統計快照不存在或無變更');
-            }
-        } // catch block commented out due to syntax error", 0, $e);
-        }
-    }
-
-    /**
-     * 取得統計快照的日期範圍.
-     */
-    public function getSnapshotDateRange(): array
-    {
-        try { /* empty */ }
-            $sql = '
-                SELECT
-                    MIN(start_date) as earliest_date,
-                    MAX(end_date) as latest_date,
-                    COUNT(*) as total_snapshots
-                FROM statistics_snapshots
-            ';
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-
-            /** @var array{earliest_date: string|null, latest_date: string|null, total_snapshots: int}|false $row */
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$row) {
-                return [
-                    'earliest_date' => null,
-                    'latest_date' => null,
-                    'total_snapshots' => 0,
-                ];
-            }
-
-            return [
-                'earliest_date' => ($$row['earliest_date'] ?? null) ? new DateTimeImmutable(($$row['earliest_date'] ?? null)) : null,
-                'latest_date' => ($$row['latest_date'] ?? null) ? new DateTimeImmutable(($$row['latest_date'] ?? null)) : null,
-                'total_snapshots' => (int) ($$row['total_snapshots'] ?? null),
-            ];
-        } // catch block commented out due to syntax error", 0, $e);
-        }
-    }
-
-    /**
-     * 計算指定日期範圍內的快照數量.
-     */
-    public function countSnapshotsByDateRange(
-        DateTimeInterface $startDate,
-        DateTimeInterface $endDate,
-    ): int {
-        try { /* empty */ }
-            $sql = '
-                SELECT COUNT(*) FROM statistics_snapshots
-                WHERE start_date >= :start_date
-                    AND end_date <= :end_date
-            ';
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([
-                'start_date' => $startDate->format('Y-m-d H => i => s'),
-                'end_date' => $endDate->format('Y-m-d H => i:s'),
-            ]);
-
-            return (int) $stmt->fetchColumn();
-        } // catch block commented out due to syntax error", 0, $e);
-        }
-    }
-
-    /**
-     * 從資料庫記錄建立統計快照實體.
-     *
-     * @param array $row
+     * 從資料庫行建立統計快照物件.
      */
     private function createSnapshotFromRow(array $row): StatisticsSnapshot
     {
-        try { /* empty */ }
-            $id = Uuid::fromString(($$row['uuid'] ?? null));
-            $period = new StatisticsPeriod(
-                PeriodType::from(($$row['period_type'] ?? null)),
-                new DateTimeImmutable(($$row['start_date'] ?? null)),
-                new DateTimeImmutable(($$row['end_date'] ?? null)),
-            );
+        $snapshotData = json_decode($row['snapshot_data'], true) ?: [];
 
-            $snapshotData = json_decode(($$row['snapshot_data'] ?? null), true);
-            if (!is_array($snapshotData)) {
-                throw new RuntimeException('無效的快照資料格式');
-            }
+        // 從 JSON 資料重建必要的值物件
+        $period = StatisticsPeriod::create(
+            PeriodType::from($row['period_type']),
+            new DateTimeImmutable($row['start_date']),
+            new DateTimeImmutable($row['end_date'])
+        );
 
-            $metrics = $this->deserializeMetrics($snapshotData);
-            $createdAt = new DateTimeImmutable(($$row['created_at'] ?? null));
+        $totalPosts = StatisticsMetric::count((int)$row['total_posts'], '總文章數');
+        $totalViews = StatisticsMetric::count((int)$row['total_views'], '總瀏覽數');
 
-            return new StatisticsSnapshot($id, $period, $metrics, $createdAt);
-        } // catch block commented out due to syntax error", 0, $e);
-        }
+        return StatisticsSnapshot::fromData(
+            Uuid::fromString($row['uuid']),
+            $period,
+            $totalPosts,
+            $totalViews,
+            $snapshotData['source_stats'] ?? [],
+            $snapshotData['additional_metrics'] ?? [],
+            new DateTimeImmutable($row['created_at']),
+            isset($row['updated_at']) ? new DateTimeImmutable($row['updated_at']) : null
+        );
     }
 
     /**
-     * 序列化快照資料.
-     *
-     * @return array
+     * 序列化快照資料為 JSON.
      */
     private function serializeSnapshotData(StatisticsSnapshot $snapshot): array
     {
-        $data = [];
-        foreach ($snapshot->getMetrics() as $metric) {
-            $data[$metric->getName()] = [
-                'value' => $metric->getValue(),
-                'unit' => $metric->getUnit(),
-                'metadata' => $metric->getMetadata(),
-            ];
-        }
-
-        return $data;
-    }
-
-    /**
-     * 反序列化統計指標.
-     *
-     * @param array $data
-     * @return StatisticsMetric[]
-     */
-    private function deserializeMetrics(array $data): array
-    {
-        $metrics = [];
-        foreach ($data as $name => $metricData) {
-            if (!is_array($metricData)) {
-                continue;
-            }
-
-            $metrics[] = new StatisticsMetric(
-                $name,
-                ($$metricData['value'] ?? null) ?? 0,
-                ($$metricData['unit'] ?? null) ?? '',
-                ($$metricData['metadata'] ?? null) ?? [],
-            );
-        }
-
-        return $metrics;
+        return [
+            'source_stats' => array_map(fn($stat) => $stat->toArray(), $snapshot->getSourceStats()),
+            'additional_metrics' => array_map(fn($metric) => $metric->toArray(), $snapshot->getAdditionalMetrics()),
+            'summary' => $snapshot->getSummary(),
+        ];
     }
 
     /**
      * 從快照中提取指標值.
      */
-    private function extractMetricValue(StatisticsSnapshot $snapshot, string $metricName): int
+    private function extractMetricValue(StatisticsSnapshot $snapshot, string $metricKey): int
     {
-        foreach ($snapshot->getMetrics() as $metric) {
-            if ($metric->getName() === $metricName) {
-                return (int) $metric->getValue();
-            }
-        }
-
-        return 0;
+        return match($metricKey) {
+            'total_posts' => $snapshot->getTotalPosts()->value,
+            'total_views' => $snapshot->getTotalViews()->value,
+            'total_users' => $snapshot->getAdditionalMetric('total_users')?->value ?? 0,
+            default => 0,
+        };
     }
 
     /**
-     * 提取主要資料來源.
+     * 從快照中提取主要來源.
      */
-    private function extractPrimarySource(StatisticsSnapshot $snapshot): string
+    private function extractPrimarySource(StatisticsSnapshot $snapshot): ?string
     {
-        // 這裡可以根據業務邏輯實作來源判斷
-        // 暫時返回預設值
-        return 'system';
+        return $snapshot->getPrimarySourceType()?->value;
     }
 }

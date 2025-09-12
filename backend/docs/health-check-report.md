@@ -1,15 +1,15 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-12 22:21:29
+報告生成時間: 2025-09-13 00:01:18
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 267 |
-| 語法錯誤檔案 | 94 |
-| 健康度 | 74% |
+| 健康檔案 | 272 |
+| 語法錯誤檔案 | 89 |
+| 健康度 | 75.3% |
 
 ## 語法錯誤詳細清單
 
@@ -60,41 +60,6 @@ Errors parsing /var/www/html/app/Domains/Statistics/Services/PostStatisticsServi
 ```
 Parse error: syntax error, unexpected token "private", expecting end of file in /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php on line 51
 Errors parsing /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php
-```
-
-### app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php
-
-```
-Parse error: syntax error, unexpected token ":" in /var/www/html/app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php on line 73
-Errors parsing /var/www/html/app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php
-```
-
-### app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php
-
-```
-Parse error: syntax error, unexpected token "throw", expecting "function" in /var/www/html/app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php on line 67
-Errors parsing /var/www/html/app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php
-```
-
-### app/Infrastructure/Repositories/Statistics/StatisticsRepository.php
-
-```
-Parse error: Unmatched '}' in /var/www/html/app/Infrastructure/Repositories/Statistics/StatisticsRepository.php on line 80
-Errors parsing /var/www/html/app/Infrastructure/Repositories/Statistics/StatisticsRepository.php
-```
-
-### app/Infrastructure/Repositories/Statistics/PostStatisticsRepository.php
-
-```
-Parse error: Unmatched '}' in /var/www/html/app/Infrastructure/Repositories/Statistics/PostStatisticsRepository.php on line 54
-Errors parsing /var/www/html/app/Infrastructure/Repositories/Statistics/PostStatisticsRepository.php
-```
-
-### app/Infrastructure/Repositories/Statistics/UserStatisticsRepository.php
-
-```
-Parse error: Unmatched '}' in /var/www/html/app/Infrastructure/Repositories/Statistics/UserStatisticsRepository.php on line 47
-Errors parsing /var/www/html/app/Infrastructure/Repositories/Statistics/UserStatisticsRepository.php
 ```
 
 ### app/Infrastructure/Repositories/Statistics/SystemStatisticsRepository.php
@@ -675,11 +640,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 儲存庫 (風險: 中)
 
-- app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php
-- app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php
-- app/Infrastructure/Repositories/Statistics/StatisticsRepository.php
-- app/Infrastructure/Repositories/Statistics/PostStatisticsRepository.php
-- app/Infrastructure/Repositories/Statistics/UserStatisticsRepository.php
 - app/Infrastructure/Repositories/Statistics/SystemStatisticsRepository.php
 - tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
 - tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
