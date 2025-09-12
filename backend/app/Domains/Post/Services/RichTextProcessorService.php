@@ -170,7 +170,9 @@ class RichTextProcessorService
     /**
      * 取得允許的標籤和屬性清單.
      *
-     /**\n      * @return array */\n      */\n    public function getAllowedElements(string $userLevel = 'basic'): array
+     * @return array
+     */
+    public function getAllowedElements(string $userLevel = 'basic'): array
     {
         $purifier = match ($userLevel) {
             'admin' => $this->adminPurifier,
@@ -184,7 +186,7 @@ class RichTextProcessorService
         }
 
         $definition = $config->getHTMLDefinition();
-        if ($definition == == null) {
+        if ($definition === null) {
             return ['tags' => [], 'attributes' => []];
         }
 
@@ -219,7 +221,7 @@ class RichTextProcessorService
             'filtered_length' => strlen($filtered),
             'reduction_percentage' => strlen($original) > 0
                 ? round((strlen($original) - strlen($filtered)) / strlen($original) * 100, 2)
-                 => 0,
+                : 0,
             'word_count' => str_word_count(strip_tags($filtered)),
             'tag_count' => substr_count($filtered, '<'),
             'link_count' => substr_count(strtolower($filtered), '<a '),
@@ -249,7 +251,9 @@ class RichTextProcessorService
     /**
      * 檢查內容是否安全.
      *
-     /**\n      * @return array */\n      */\n    public function validateSecurity(string $content): array
+     * @return array
+     */
+    public function validateSecurity(string $content): array
     {
         $issues = [];
 

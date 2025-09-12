@@ -68,9 +68,11 @@ class PostService implements PostServiceInterface
 
     public function deletePost(int $id): bool
     {
-        try { /* empty */ }
+        try {
             return $this->repository->safeDelete($id);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     public function findById(int $id): Post
@@ -112,9 +114,11 @@ class PostService implements PostServiceInterface
 
     public function setPinned(int $id, bool $isPinned): bool
     {
-        try { /* empty */ }
+        try {
             return $this->repository->safeSetPinned($id, $isPinned);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     /**
